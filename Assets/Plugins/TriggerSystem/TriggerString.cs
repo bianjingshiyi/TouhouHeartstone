@@ -9,6 +9,5 @@ namespace TriggerSystem
     }
     public class TriggerParser
     {
-
     }
 }
