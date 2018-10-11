@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TouhouHeartstone
 {
-    public class GameManager : MonoBehaviour
+    public class Game : MonoBehaviour
     {
         protected void Update()
         {
@@ -18,15 +18,33 @@ namespace TouhouHeartstone
                 {
                     //初始化
                     UnityEngine.Random.InitState(DateTime.Now.GetHashCode());
-                    //决定先攻顺序
-                    Player firstPlayer = players[UnityEngine.Random.Range(0, players.Length)];//这个随机居然不包括最大值，我真是艹了
+                    //决定先攻顺序，并发给Client
+                    firstPlayer = players[UnityEngine.Random.Range(0, players.count)];//这个随机居然不包括最大值，我真是艹了
+                    (network as FakeHostManager).broadcastObject(new FirstPlayerDiff(firstPlayer.id));
                     log.msg(firstPlayer + "获得了先手");
                     //抽初始卡牌，并保留或者替换
 
                     //开始选择
                 }
             }
+            else if (gamePhase == GamePhase.start)
+            {
+                if (network.isClient)
+                {
+                    if (firstPlayer == null)
+                    {
+                        //决定先攻顺序，等待Host发送随机结果
+                    }
+                }
+            }
         }
+        public Player firstPlayer
+        {
+            get { return _firstPlayer; }
+            set { _firstPlayer = value; }
+        }
+        [SerializeField]
+        Player _firstPlayer = null;
         public GamePhase gamePhase
         {
             get { return _gamePhase; }
@@ -34,17 +52,17 @@ namespace TouhouHeartstone
         }
         [SerializeField]
         GamePhase _gamePhase;
-        public Player[] players
+        public PlayerManager players
         {
             get
             {
-                if (_players == null || _players.Length <= 0)
-                    _players = GetComponentsInChildren<Player>();
+                if (_players == null)
+                    _players = GetComponentInChildren<PlayerManager>();
                 return _players;
             }
         }
         [SerializeField]
-        Player[] _players;
+        PlayerManager _players = null;
         public LogManager log
         {
             get
