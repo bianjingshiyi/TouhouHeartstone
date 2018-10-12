@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using System.Collections;
 
 namespace TouhouHeartstone
 {
-    public class PlayerManager : THManager
+    public class PlayerManager : THManager, IEnumerable<Player>
     {
         protected void Update()
         {
@@ -49,6 +50,14 @@ namespace TouhouHeartstone
                 }
                 return _players;
             }
+        }
+        public IEnumerator<Player> GetEnumerator()
+        {
+            return ((IEnumerable<Player>)_players).GetEnumerator();
+        }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<Player>)_players).GetEnumerator();
         }
         [SerializeField]
         Player[] _players;

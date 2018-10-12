@@ -24,12 +24,14 @@ namespace TouhouHeartstone
         }
         public void broadcastObject(object obj)
         {
-            StartCoroutine(broadcastObjectCoroutine(obj));
+            if (UnityEngine.Random.Range(0f, 1f) > _loss)
+                StartCoroutine(broadcastObjectCoroutine(obj));
         }
-
+        [SerializeField]
+        float _loss = 0.1f;
         private IEnumerator broadcastObjectCoroutine(object obj)
         {
-            yield return new WaitForSecondsRealtime(_lag);
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(0, _lag));
             using (MemoryStream stream = new MemoryStream())
             {
                 BinaryFormatter bf = new BinaryFormatter();
@@ -44,9 +46,6 @@ namespace TouhouHeartstone
                 }
             }
         }
-
-        [SerializeField]
-        byte[] _buffer;
         float lag
         {
             get { return _lag; }

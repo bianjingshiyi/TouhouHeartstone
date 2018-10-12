@@ -20,12 +20,14 @@ namespace TouhouHeartstone
         int _id;
         public void receiveBytes(byte[] bytes)
         {
-            StartCoroutine(receiveBytesCoroutine(bytes));
+            if (UnityEngine.Random.Range(0f, 1f) > _loss)
+                StartCoroutine(receiveBytesCoroutine(bytes));
         }
-
+        [SerializeField]
+        float _loss;
         private IEnumerator receiveBytesCoroutine(byte[] bytes)
         {
-            yield return new WaitForSecondsRealtime(_lag);
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(0, _lag));
             using (MemoryStream stream = new MemoryStream())
             {
                 stream.Write(bytes, 0, bytes.Length);
@@ -38,10 +40,14 @@ namespace TouhouHeartstone
         float _lag = 0.2f;
         void onReceiveObject(object obj)
         {
-            if (obj is FirstPlayerDiff)
+            if (obj is FirstPlayerRecord)
             {
-                (obj as FirstPlayerDiff).apply(game);
+                (obj as FirstPlayerRecord).apply(game);
             }
         }
+    }
+    public class RecordManager : THManager
+    {
+
     }
 }

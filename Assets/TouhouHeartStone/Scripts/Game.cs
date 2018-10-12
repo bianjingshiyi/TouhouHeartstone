@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -20,9 +21,18 @@ namespace TouhouHeartstone
                     UnityEngine.Random.InitState(DateTime.Now.GetHashCode());
                     //决定先攻顺序，并发给Client
                     firstPlayer = players[UnityEngine.Random.Range(0, players.count)];//这个随机居然不包括最大值，我真是艹了
-                    (network as FakeHostManager).broadcastObject(new FirstPlayerDiff(firstPlayer.id));
+                    //(network as FakeHostManager).broadcastObject(new FirstPlayerRecord(firstPlayer.id));
                     log.msg(firstPlayer + "获得了先手");
-                    //抽初始卡牌，并保留或者替换
+                    //初始化卡组，抽初始卡牌，并保留或者替换
+                    foreach (Player player in players)
+                    {
+                        List<Card> cardSet = new List<Card>();
+                        for (int i = 0; i < 30; i++)
+                        {
+                            cardSet.Add(new GameObject("Card (" + i + ")").AddComponent<Card>());
+                        }
+                        player.deck.set(cardSet);
+                    }
 
                     //开始选择
                 }
@@ -31,10 +41,6 @@ namespace TouhouHeartstone
             {
                 if (network.isClient)
                 {
-                    if (firstPlayer == null)
-                    {
-                        //决定先攻顺序，等待Host发送随机结果
-                    }
                 }
             }
         }
