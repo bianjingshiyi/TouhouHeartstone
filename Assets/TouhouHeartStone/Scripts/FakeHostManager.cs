@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
@@ -18,39 +19,39 @@ namespace TouhouHeartstone
         }
         [SerializeField]
         int _id;
-        public void sendObject(object obj)
+        protected void Awake()
         {
-
+            game.records.onWitness.AddListener(onWitness);
         }
-        public void broadcastObject(object obj)
+        void onWitness(Dictionary<int, Witness> dicWitness)
         {
-            if (UnityEngine.Random.Range(0f, 1f) > _loss)
-                StartCoroutine(broadcastObjectCoroutine(obj));
-        }
-        [SerializeField]
-        float _loss = 0.1f;
-        private IEnumerator broadcastObjectCoroutine(object obj)
-        {
-            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(0, _lag));
-            using (MemoryStream stream = new MemoryStream())
+            if (dicWitness == null)
+                return;
+            for (int i = 0; i < connections.Length; i++)
             {
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(stream, obj);
-                byte[] bytes = new byte[stream.Length];
-                stream.Position = 0;
-                stream.Read(bytes, 0, (int)stream.Length);
-                for (int i = 0; i < connections.Length; i++)
+                if (connections[i] != this)
                 {
-                    if (connections[i] is FakeClientManager)
-                        (connections[i] as FakeClientManager).receiveBytes(bytes);
+                    int playerId = connections[i].id;
+                    if (!_dicWitnessed.ContainsKey(playerId))
+                        _dicWitnessed.Add(playerId, new List<Witness>());
+                    Witness witness = dicWitness[playerId];
+                    witness.number = _dicWitnessed[playerId].Count;
+                    _dicWitnessed[playerId].Add(witness);
+                    sendObject(playerId, witness);
                 }
             }
         }
-        float lag
+        Dictionary<int, List<Witness>> _dicWitnessed = new Dictionary<int, List<Witness>>();
+        protected override void onReceiveObject(int senderId, object obj)
         {
-            get { return _lag; }
+            if (obj is GetMissingWitnessRequest)
+            {
+                GetMissingWitnessRequest request = obj as GetMissingWitnessRequest;
+                for (int i = request.min; i <= request.max; i++)
+                {
+                    sendObject(senderId, _dicWitnessed[senderId].Find(e => { return e.number == i; }));
+                }
+            }
         }
-        [SerializeField]
-        float _lag = 0.2f;
     }
 }

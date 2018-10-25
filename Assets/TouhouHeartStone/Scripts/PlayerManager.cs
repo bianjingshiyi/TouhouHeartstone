@@ -16,6 +16,17 @@ namespace TouhouHeartstone
         {
             return players.FirstOrDefault(e => { return e.id == playerId; });
         }
+        public LocalPlayer localPlayer
+        {
+            get
+            {
+                if (_localPlayer == null)
+                    _localPlayer = players.FirstOrDefault(e => { return e is LocalPlayer; }) as LocalPlayer;
+                return _localPlayer;
+            }
+        }
+        [SerializeField]
+        LocalPlayer _localPlayer = null;
         public Player this[int index]
         {
             get { return players[index]; }
@@ -23,6 +34,14 @@ namespace TouhouHeartstone
         public int count
         {
             get { return players.Length; }
+        }
+        public IEnumerator<Player> GetEnumerator()
+        {
+            return ((IEnumerable<Player>)players).GetEnumerator();
+        }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<Player>)players).GetEnumerator();
         }
         Player[] players
         {
@@ -50,14 +69,6 @@ namespace TouhouHeartstone
                 }
                 return _players;
             }
-        }
-        public IEnumerator<Player> GetEnumerator()
-        {
-            return ((IEnumerable<Player>)_players).GetEnumerator();
-        }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<Player>)_players).GetEnumerator();
         }
         [SerializeField]
         Player[] _players;

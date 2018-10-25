@@ -18,36 +18,18 @@ namespace TouhouHeartstone
         }
         [SerializeField]
         int _id;
-        public void receiveBytes(byte[] bytes)
+        protected override void onReceiveObject(int senderId, object obj)
         {
-            if (UnityEngine.Random.Range(0f, 1f) > _loss)
-                StartCoroutine(receiveBytesCoroutine(bytes));
-        }
-        [SerializeField]
-        float _loss;
-        private IEnumerator receiveBytesCoroutine(byte[] bytes)
-        {
-            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(0, _lag));
-            using (MemoryStream stream = new MemoryStream())
+            if (obj is Witness)
             {
-                stream.Write(bytes, 0, bytes.Length);
-                stream.Position = 0;
-                BinaryFormatter bf = new BinaryFormatter();
-                onReceiveObject(bf.Deserialize(stream));
+                game.witness.add(obj as Witness);
+                if (game.witness.hungupCount > 0)
+                {
+                    int min, max;
+                    game.witness.getMissingRange(out min, out max);
+                    sendObject(senderId, new GetMissingWitnessRequest(min, max));
+                }
             }
         }
-        [SerializeField]
-        float _lag = 0.2f;
-        void onReceiveObject(object obj)
-        {
-            if (obj is FirstPlayerRecord)
-            {
-                (obj as FirstPlayerRecord).apply(game);
-            }
-        }
-    }
-    public class RecordManager : THManager
-    {
-
     }
 }
