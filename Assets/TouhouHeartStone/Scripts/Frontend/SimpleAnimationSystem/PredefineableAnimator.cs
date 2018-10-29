@@ -17,9 +17,9 @@ namespace TouhouHeartstone.Frontend.SimpleAnimationSystem
         }
 
         [SerializeField]
-        new AnimationWithName[] animations;
+        AnimationWithName[] predifinedAnimations;
 
-        public AnimationWithName[] Animations => animations;
+        public AnimationWithName[] PredefinedAnimations => predifinedAnimations;
 
         /// <summary>
         /// 根据名称查找并复制动画
@@ -28,7 +28,7 @@ namespace TouhouHeartstone.Frontend.SimpleAnimationSystem
         /// <returns></returns>
         public SimpleAnimationBase DupAnimation(string name)
         {
-            foreach (var item in animations)
+            foreach (var item in predifinedAnimations)
             {
                 if (item.Name == name)
                 {

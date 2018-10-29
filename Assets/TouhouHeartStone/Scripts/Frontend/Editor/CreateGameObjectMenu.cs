@@ -19,7 +19,7 @@ namespace TouhouHeartstone.Frontend.Editor
 
             go.AddComponent<MeshRenderer>();
             go.AddComponent<MeshFilter>();
-            var tm = go.AddComponent<TextMeshExtend>();
+            go.AddComponent<TextMeshExtend>();
         }
     }
 }

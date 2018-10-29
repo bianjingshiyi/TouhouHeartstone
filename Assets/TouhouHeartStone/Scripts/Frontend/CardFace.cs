@@ -75,5 +75,12 @@ namespace TouhouHeartstone.Frontend
             lifeLabel.text = "1";
             attackLabel.text = "1";
         }
+
+        public event Action OnClick;
+
+        private void OnMouseUpAsButton()
+        {
+            OnClick?.Invoke();
+        }
     }
 }
