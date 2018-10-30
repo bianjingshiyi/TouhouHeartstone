@@ -66,7 +66,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1270733666069468
 GameObject:
   m_ObjectHideFlags: 0
@@ -537,6 +537,15 @@ MonoBehaviour:
   - animation: {fileID: 114050249334394846, guid: c967f39b5e7b95f4fbb8004b6f3f4b80,
       type: 2}
     Name: cardToHand
+  - animation: {fileID: 114720723680399480, guid: 8813e17a4f5482b46881705dcd5fd020,
+      type: 2}
+    Name: tweakPos
+  - animation: {fileID: 114698115011772120, guid: bd53caa097c6baa4798144fed7b2fc3c,
+      type: 2}
+    Name: showCard
+  - animation: {fileID: 114207422787709852, guid: 0430067b9c56e8d4ab153b96042a23ac,
+      type: 2}
+    Name: unshowCard
 --- !u!114 &114947489791998532
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -704,7 +713,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1243352336394238}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.1}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_Children:
   - {fileID: 224788584248183024}
@@ -718,7 +727,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -1.11}
+  m_AnchoredPosition: {x: 0, y: -0.8}
   m_SizeDelta: {x: 3.4, y: 4.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224519749880060170

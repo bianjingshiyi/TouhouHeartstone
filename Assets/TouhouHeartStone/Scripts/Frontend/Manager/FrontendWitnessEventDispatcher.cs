@@ -1,22 +1,21 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace TouhouHeartstone.Frontend.Manager
 {
     public class FrontendWitnessEventDispatcher : FrontendSubManager
     {
+        int selfID;
+
         private new void Awake()
         {
             base.Awake();
 
             var witness = Frontend.Game.witness;
             witness.onWitnessAdded.AddListener(onWitness);
-        }
 
-        private void Start()
-        {
-            // test: 测试一下
-            onWitness(new InitDrawWitness(0, new CardInstance[] { new CardInstance(0, 0), new CardInstance(1, 0), new CardInstance(2, 0) }));
+            selfID = Frontend.Game.network.id;
         }
 
         void onWitness(Witness witness)
@@ -34,8 +33,31 @@ namespace TouhouHeartstone.Frontend.Manager
             {
                 // 初始抽卡
                 var iw = witness as InitDrawWitness;
-                getSiblingManager<FrontendCardManager>().InitDrawCard(iw.cards);
+
+                // todo: 考虑对方玩家的动画播放
+                if (iw.playerId == selfID)
+                {
+                    getSiblingManager<FrontendCardManager>().InitDrawCard(iw.cards);
+                }
+
             }
         }
+
+        /// <summary>
+        /// 替换初始手牌
+        /// </summary>
+        public UnityAction<int[]> ReplaceInitDrawAction;
+
+#if UNITY_EDITOR
+
+        private void OnGUI()
+        {
+            if (GUI.Button(new Rect(0, 0, 100, 25), "抽张卡"))
+            {
+                getSiblingManager<FrontendCardManager>().NormalDrawCard(new CardInstance(UnityEngine.Random.Range(0, 2333), 0));
+            }
+        }
+
+#endif
     }
 }

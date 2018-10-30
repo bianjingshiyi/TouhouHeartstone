@@ -47,7 +47,7 @@ namespace TouhouHeartstone.Frontend.Manager
         public void NormalDrawCard(CardInstance card)
         {
             singleDrawTemp = SpawnCard(card);
-            singleDrawTemp.CardAniController.DrawCard(singleDrawFinish);
+            singleDrawTemp.CardAniController.DrawCard(new Vector3(1, 0, -1), singleDrawFinish);
         }
 
         protected void singleDrawFinish()

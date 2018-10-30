@@ -67,9 +67,33 @@ namespace TouhouHeartstone.Frontend.SimpleAnimationSystem
             Keyframe r = new Keyframe();
             r.time = t;
             var p = (t - a.time) / (b.time - a.time);
-            r.rotation = Vector3.Lerp(a.rotation, b.rotation, p);
+
+            var rot = standardizeRotation(a.rotation, b.rotation);
+
+            r.rotation = Vector3.Lerp(rot, b.rotation, p);
             r.position = Vector3.Lerp(a.position, b.position, p);
             return r;
+        }
+
+        float standardizeRotation(float from, float to)
+        {
+            int sig = from > to ? -1 : 1;
+            while(Mathf.Abs(from - to) > 180)
+            {
+                from += sig * 360;
+            }
+
+            return from;
+        }
+
+        Vector3 standardizeRotation(Vector3 from, Vector3 to)
+        {
+            var st = from;
+            st.x = standardizeRotation(from.x, to.x);
+            st.y = standardizeRotation(from.y, to.y);
+            st.z = standardizeRotation(from.z, to.z);
+
+            return st;
         }
 
         /// <summary>

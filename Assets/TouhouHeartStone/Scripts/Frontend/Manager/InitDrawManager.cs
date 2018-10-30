@@ -53,18 +53,18 @@ namespace TouhouHeartstone.Frontend.Manager
         /// <summary>
         /// 要移出卡片的列表
         /// </summary>
-        List<CardFace> removeList = new List<CardFace>();
+        List<int> removeList = new List<int>();
 
         void onCardSelectStateChange(CardFace card, bool state)
         {
             if (state)
             {
-                removeList.Add(card);
+                removeList.Add(card.InstanceID);
             }
             else
             {
-                if (removeList.Contains(card))
-                    removeList.Remove(card);
+                if (removeList.Contains(card.InstanceID))
+                    removeList.Remove(card.InstanceID);
             }
         }
 
@@ -79,7 +79,8 @@ namespace TouhouHeartstone.Frontend.Manager
             for (int i = 0; i < initCards.Length; i++)
             {
                 var item = initCards[i];
-                if (removeList.Contains(item))
+
+                if (removeList.Contains(item.InstanceID))
                 {
                     // 移除卡片
                     Destroy(item.gameObject);
@@ -92,6 +93,9 @@ namespace TouhouHeartstone.Frontend.Manager
                     cf.Add(item);
                 }
             }
+
+            // 通知后端
+            getSiblingManager<FrontendWitnessEventDispatcher>().ReplaceInitDrawAction?.Invoke(removeList.ToArray());
 
             // 关闭背板
             ui.gameObject.SetActive(false);

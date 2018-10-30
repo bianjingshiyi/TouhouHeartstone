@@ -77,10 +77,22 @@ namespace TouhouHeartstone.Frontend
         }
 
         public event Action OnClick;
+        public event Action<CardFace> OnMouseIn;
+        public event Action<CardFace> OnMouseOut;
 
         private void OnMouseUpAsButton()
         {
             OnClick?.Invoke();
+        }
+
+        private void OnMouseEnter()
+        {
+            OnMouseIn?.Invoke(this);
+        }
+
+        private void OnMouseExit()
+        {
+            OnMouseOut?.Invoke(this);
         }
     }
 }
