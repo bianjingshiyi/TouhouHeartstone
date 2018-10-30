@@ -18,7 +18,7 @@ namespace TouhouHeartstone
             _playerId = playerId;
             _count = count;
         }
-        public override Dictionary<int, Witness> apply(Game game)
+        public override Dictionary<int, Witness> apply(GameContainer game)
         {
             Player player = game.players.getPlayer(_playerId);
             _cards = player.deck.Take(_count).ToArray();
@@ -32,7 +32,7 @@ namespace TouhouHeartstone
         }
         [NonSerialized]
         Card[] _cards = null;
-        public override Dictionary<int, Witness> revert(Game game)
+        public override Dictionary<int, Witness> revert(GameContainer game)
         {
             Player player = game.players.getPlayer(_playerId);
             player.hand.moveTo(_cards, player.deck);

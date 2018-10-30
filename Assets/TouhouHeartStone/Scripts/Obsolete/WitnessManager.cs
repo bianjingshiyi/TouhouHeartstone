@@ -14,7 +14,9 @@ namespace TouhouHeartstone
         }
         private void onWitness(Dictionary<int, Witness> dicWitness)
         {
-            add(dicWitness[game.players.localPlayer.id]);
+            Witness witness = dicWitness[game.players.localPlayer.id];
+            witness.number = _witnessed.Count;
+            add(witness);
         }
         public void add(Witness witness)
         {

@@ -8,8 +8,8 @@ namespace TouhouHeartstone
     [Serializable]
     public abstract class Record
     {
-        public abstract Dictionary<int, Witness> apply(Game game);
-        public abstract Dictionary<int, Witness> revert(Game game);
+        public abstract Dictionary<int, Witness> apply(GameContainer game);
+        public abstract Dictionary<int, Witness> revert(GameContainer game);
     }
     [Serializable]
     public abstract class Witness

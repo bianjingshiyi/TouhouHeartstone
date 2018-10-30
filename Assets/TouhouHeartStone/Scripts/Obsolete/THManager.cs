@@ -4,16 +4,16 @@ namespace TouhouHeartstone
 {
     public class THManager : MonoBehaviour
     {
-        public Game game
+        public GameContainer game
         {
             get
             {
                 if (_game == null)
-                    _game = GetComponentInParent<Game>();
+                    _game = GetComponentInParent<GameContainer>();
                 return _game;
             }
         }
         [SerializeField]
-        Game _game;
+        GameContainer _game;
     }
 }

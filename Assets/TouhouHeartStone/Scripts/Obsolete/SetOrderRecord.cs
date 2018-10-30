@@ -15,7 +15,7 @@ namespace TouhouHeartstone
         {
             _targetOrder = orderedPlayerId;
         }
-        public override Dictionary<int, Witness> apply(Game game)
+        public override Dictionary<int, Witness> apply(GameContainer game)
         {
             if (game.orderedPlayers != null)
             {
@@ -45,7 +45,7 @@ namespace TouhouHeartstone
             }
             return dicWitness;
         }
-        public override Dictionary<int, Witness> revert(Game game)
+        public override Dictionary<int, Witness> revert(GameContainer game)
         {
             if (_originOrder != null)
             {

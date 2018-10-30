@@ -21,7 +21,7 @@ namespace TouhouHeartstone
             _region = region;
             _cardInstances = cardInstances;
         }
-        public override Dictionary<int, Witness> apply(Game game)
+        public override Dictionary<int, Witness> apply(GameContainer game)
         {
             _cards = _cardInstances.Select(e => { return game.cards.create(e); }).ToArray();
             if (_region == RegionType.deck)
@@ -39,7 +39,7 @@ namespace TouhouHeartstone
         }
         [NonSerialized]
         Card[] _cards = null;
-        public override Dictionary<int, Witness> revert(Game game)
+        public override Dictionary<int, Witness> revert(GameContainer game)
         {
             if (_region == RegionType.deck)
             {
