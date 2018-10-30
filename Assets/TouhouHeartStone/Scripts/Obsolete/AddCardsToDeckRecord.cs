@@ -21,7 +21,7 @@ namespace TouhouHeartstone
             _region = region;
             _cardInstances = cardInstances;
         }
-        public override Dictionary<int, Witness> apply(GameContainer game)
+        public override Dictionary<int, Witness> apply(GameLogic game)
         {
             _cards = _cardInstances.Select(e => { return game.cards.create(e); }).ToArray();
             if (_region == RegionType.deck)
@@ -38,16 +38,12 @@ namespace TouhouHeartstone
                 throw new NotImplementedException();
         }
         [NonSerialized]
-        Card[] _cards = null;
-        public override Dictionary<int, Witness> revert(GameContainer game)
+        CardLogic[] _cards = null;
+        public override Dictionary<int, Witness> revert(GameLogic game)
         {
             if (_region == RegionType.deck)
             {
                 game.players.getPlayer(_playerId).deck.remove(_cards);
-                foreach (Card card in _cards)
-                {
-                    UnityEngine.Object.Destroy(card.gameObject);
-                }
                 Dictionary<int, Witness> dicWitness = new Dictionary<int, Witness>();
                 for (int i = 0; i < game.players.count; i++)
                 {

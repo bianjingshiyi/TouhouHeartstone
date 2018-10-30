@@ -15,29 +15,29 @@ namespace TouhouHeartstone
         {
             _targetOrder = orderedPlayerId;
         }
-        public override Dictionary<int, Witness> apply(GameContainer game)
+        public override Dictionary<int, Witness> apply(GameLogic game)
         {
-            if (game.orderedPlayers != null)
+            if (game.players.orderedPlayers != null)
             {
-                _originOrder = new int[game.orderedPlayers.Length];
+                _originOrder = new int[game.players.orderedPlayers.Length];
                 for (int i = 0; i < _originOrder.Length; i++)
                 {
-                    _originOrder[i] = game.orderedPlayers[i].id;
+                    _originOrder[i] = game.players.orderedPlayers[i].id;
                 }
             }
             else
                 _originOrder = null;
             if (_targetOrder != null)
             {
-                Player[] orderedPlayers = new Player[_targetOrder.Length];
+                PlayerLogic[] orderedPlayers = new PlayerLogic[_targetOrder.Length];
                 for (int i = 0; i < orderedPlayers.Length; i++)
                 {
                     orderedPlayers[i] = game.players.getPlayer(_targetOrder[i]);
                 }
-                game.orderedPlayers = orderedPlayers;
+                game.players.orderedPlayers = orderedPlayers;
             }
             else
-                game.orderedPlayers = null;
+                game.players.orderedPlayers = null;
             Dictionary<int, Witness> dicWitness = new Dictionary<int, Witness>();
             for (int i = 0; i < game.players.count; i++)
             {
@@ -45,19 +45,19 @@ namespace TouhouHeartstone
             }
             return dicWitness;
         }
-        public override Dictionary<int, Witness> revert(GameContainer game)
+        public override Dictionary<int, Witness> revert(GameLogic game)
         {
             if (_originOrder != null)
             {
-                Player[] orderedPlayers = new Player[_originOrder.Length];
+                PlayerLogic[] orderedPlayers = new PlayerLogic[_originOrder.Length];
                 for (int i = 0; i < orderedPlayers.Length; i++)
                 {
                     orderedPlayers[i] = game.players.getPlayer(_originOrder[i]);
                 }
-                game.orderedPlayers = orderedPlayers;
+                game.players.orderedPlayers = orderedPlayers;
             }
             else
-                game.orderedPlayers = null;
+                game.players.orderedPlayers = null;
             Dictionary<int, Witness> dicWitness = new Dictionary<int, Witness>();
             for (int i = 0; i < game.players.count; i++)
             {

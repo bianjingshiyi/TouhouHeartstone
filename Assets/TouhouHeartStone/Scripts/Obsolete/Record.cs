@@ -6,10 +6,10 @@ using UnityEngine;
 namespace TouhouHeartstone
 {
     [Serializable]
-    public abstract class Record
+    abstract class Record
     {
-        public abstract Dictionary<int, Witness> apply(GameContainer game);
-        public abstract Dictionary<int, Witness> revert(GameContainer game);
+        public abstract Dictionary<int, Witness> apply(GameLogic game);
+        public abstract Dictionary<int, Witness> revert(GameLogic game);
     }
     [Serializable]
     public abstract class Witness

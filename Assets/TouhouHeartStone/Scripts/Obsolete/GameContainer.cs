@@ -31,57 +31,8 @@ namespace TouhouHeartstone
                     }
                 }
                 game.start(playerList.ToArray());
-                //决定先攻顺序，并发给Client
-                List<Player> unorderedPlayers = new List<Player>(players);
-                int[] orderedPlayerId = new int[unorderedPlayers.Count];
-                for (int i = 0; i < orderedPlayerId.Length; i++)
-                {
-                    int index = UnityEngine.Random.Range(0, unorderedPlayers.Count);
-                    orderedPlayerId[i] = unorderedPlayers[index].id;
-                    unorderedPlayers.RemoveAt(index);
-                }
-                SetOrderRecord setOrder = new SetOrderRecord(orderedPlayerId);
-                records.addRecord(setOrder);
-                //初始化卡组，抽初始卡牌，并保留或者替换
-                for (int i = 0; i < orderedPlayers.Length; i++)
-                {
-                    int[] presetDeck = new int[30];//预设卡组是空的。
-                    AddCardRecord setDeck = new AddCardRecord(orderedPlayers[i].id, RegionType.deck, cards.createInstances(presetDeck));
-                    records.addRecord(setDeck);
-                    InitDrawRecord initDraw = new InitDrawRecord(orderedPlayers[i].id, i == 0 ? 3 : 4);
-                    records.addRecord(initDraw);
-                }
             }
         }
-        public Player[] orderedPlayers
-        {
-            get { return _orderedPlayers; }
-            set { _orderedPlayers = value; }
-        }
-        [SerializeField]
-        Player[] _orderedPlayers = null;
-        public PlayerManager players
-        {
-            get
-            {
-                if (_players == null)
-                    _players = GetComponentInChildren<PlayerManager>();
-                return _players;
-            }
-        }
-        [SerializeField]
-        PlayerManager _players = null;
-        public LogManager log
-        {
-            get
-            {
-                if (_log == null)
-                    _log = GetComponentInChildren<LogManager>();
-                return _log;
-            }
-        }
-        [SerializeField]
-        LogManager _log;
         public NetworkManager network
         {
             get
@@ -93,17 +44,6 @@ namespace TouhouHeartstone
         }
         [SerializeField]
         NetworkManager _network;
-        public RecordManager records
-        {
-            get
-            {
-                if (_records == null)
-                    _records = GetComponentInChildren<RecordManager>();
-                return _records;
-            }
-        }
-        [SerializeField]
-        RecordManager _records;
         public WitnessManager witness
         {
             get
@@ -115,18 +55,7 @@ namespace TouhouHeartstone
         }
         [SerializeField]
         WitnessManager _witness;
-        public CardManager cards
-        {
-            get
-            {
-                if (_cards == null)
-                    _cards = GetComponentInChildren<CardManager>();
-                return _cards;
-            }
-        }
-        [SerializeField]
-        CardManager _cards;
-        GameLogic game
+        internal GameLogic game
         {
             get { return _logic; }
             set
@@ -134,7 +63,6 @@ namespace TouhouHeartstone
                 _logic = value;
             }
         }
-        [SerializeField]
         GameLogic _logic = null;
     }
     [Serializable]
@@ -143,16 +71,18 @@ namespace TouhouHeartstone
         public GameLogic(int randomSeed)
         {
             random = new System.Random(randomSeed);
+            cards = new CardsLogic();
+            records = new RecordLogic(this);
         }
         System.Random random { get; set; }
         /// <summary>
         /// 开始游戏，需要提供游戏中玩家的id。
         /// </summary>
-        /// <param name="playerId">玩家id数组</param>
-        public void start(int[] playerId)
+        /// <param name="playersId">玩家id数组</param>
+        public void start(int[] playersId)
         {
             //初始化玩家
-            players = playerId.Select(e => { return new PlayerLogic(e); }).ToArray();
+            players = new PlayersLogic(playersId);
             //决定回合顺序
             List<int> unorderedPlayers = new List<int>(players.Select(e => { return e.id; }));
             int[] orderedPlayerId = new int[unorderedPlayers.Count];
@@ -162,23 +92,20 @@ namespace TouhouHeartstone
                 orderedPlayerId[i] = unorderedPlayers[index];
                 unorderedPlayers.RemoveAt(index);
             }
+            SetOrderRecord setOrder = new SetOrderRecord(orderedPlayerId);
+            records.addRecord(setOrder);
+            //初始化卡组，抽初始卡牌，并保留或者替换
+            for (int i = 0; i < players.orderedPlayers.Length; i++)
+            {
+                int[] presetDeck = new int[30];//预设卡组是空的。
+                AddCardRecord setDeck = new AddCardRecord(players.orderedPlayers[i].id, RegionType.deck, cards.createInstances(presetDeck));
+                records.addRecord(setDeck);
+                InitDrawRecord initDraw = new InitDrawRecord(players.orderedPlayers[i].id, i == 0 ? 3 : 4);
+                records.addRecord(initDraw);
+            }
         }
-        PlayerLogic[] players { get; set; }
-    }
-    class PlayerLogic
-    {
-        public PlayerLogic(int id)
-        {
-            this.id = id;
-        }
-        public int id { get; private set; }
-        public override int GetHashCode()
-        {
-            return id;
-        }
-        public override bool Equals(object obj)
-        {
-            return obj is PlayerLogic && (obj as PlayerLogic).id == id;
-        }
+        public CardsLogic cards { get; private set; }
+        public PlayersLogic players { get; private set; }
+        public RecordLogic records { get; set; }
     }
 }

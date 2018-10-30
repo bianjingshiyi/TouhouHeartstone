@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -6,28 +7,19 @@ using System.Collections;
 
 namespace TouhouHeartstone
 {
-    public class PlayerManager : THManager, IEnumerable<Player>
+    [Serializable]
+    class PlayersLogic : IEnumerable<PlayerLogic>
     {
-        protected void Update()
+        public PlayersLogic(int[] playersId)
         {
-            //
+            players = playersId.Select(e => { return new PlayerLogic(e); }).ToArray();
         }
-        public Player getPlayer(int playerId)
+        public PlayerLogic[] orderedPlayers { get; internal set; }
+        public PlayerLogic getPlayer(int playerId)
         {
             return players.FirstOrDefault(e => { return e.id == playerId; });
         }
-        public LocalPlayer localPlayer
-        {
-            get
-            {
-                if (_localPlayer == null)
-                    _localPlayer = players.FirstOrDefault(e => { return e is LocalPlayer; }) as LocalPlayer;
-                return _localPlayer;
-            }
-        }
-        [SerializeField]
-        LocalPlayer _localPlayer = null;
-        public Player this[int index]
+        public PlayerLogic this[int index]
         {
             get { return players[index]; }
         }
@@ -35,42 +27,14 @@ namespace TouhouHeartstone
         {
             get { return players.Length; }
         }
-        public IEnumerator<Player> GetEnumerator()
+        public IEnumerator<PlayerLogic> GetEnumerator()
         {
-            return ((IEnumerable<Player>)players).GetEnumerator();
+            return ((IEnumerable<PlayerLogic>)players).GetEnumerator();
         }
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable<Player>)players).GetEnumerator();
+            return ((IEnumerable<PlayerLogic>)players).GetEnumerator();
         }
-        Player[] players
-        {
-            get
-            {
-                if (_players == null || _players.Length <= 0)
-                {
-                    List<Player> playerList = new List<Player>();
-                    for (int i = 0; i < game.network.connections.Length; i++)
-                    {
-                        if (game.network.connections[i] == game.network)
-                        {
-                            //本地
-                            LocalPlayer player = LocalPlayer.create(this, game.network.connections[i].id);
-                            playerList.Add(player);
-                        }
-                        else
-                        {
-                            //远端
-                            RemotePlayer player = RemotePlayer.create(this, game.network.connections[i].id);
-                            playerList.Add(player);
-                        }
-                    }
-                    _players = playerList.ToArray();
-                }
-                return _players;
-            }
-        }
-        [SerializeField]
-        Player[] _players;
+        public PlayerLogic[] players { get; private set; }
     }
 }

@@ -7,14 +7,13 @@ namespace TouhouHeartstone
 {
     public class WitnessManager : THManager
     {
-        protected void Awake()
+        protected void Start()
         {
-            if (game.records != null)
-                game.records.onWitness.AddListener(onWitness);
+            game.game.records.onWitness += onWitness;
         }
         private void onWitness(Dictionary<int, Witness> dicWitness)
         {
-            Witness witness = dicWitness[game.players.localPlayer.id];
+            Witness witness = dicWitness[game.network.id];
             witness.number = _witnessed.Count;
             add(witness);
         }

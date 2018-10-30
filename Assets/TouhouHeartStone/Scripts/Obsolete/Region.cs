@@ -1,59 +1,43 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
 
 namespace TouhouHeartstone
 {
-    public class Region : MonoBehaviour, IEnumerable<Card>
+    class RegionLogic : IEnumerable<CardLogic>
     {
-        public void add(IEnumerable<Card> cards)
+        public void add(IEnumerable<CardLogic> cards)
         {
-            foreach (Card card in cards)
-            {
-                card.transform.parent = transform;
-                _cards.Add(card);
-            }
+            _cards.AddRange(cards);
         }
-        public void moveTo(IEnumerable<Card> cards, Region targetRegion)
+        public void moveTo(IEnumerable<CardLogic> cards, RegionLogic targetRegion)
         {
-            foreach (Card card in cards)
-            {
-                _cards.Remove(card);
-                card.transform.parent = targetRegion.transform;
-                targetRegion._cards.Add(card);
-            }
+            _cards.RemoveAll(e => { return cards.Contains(e); });
+            targetRegion._cards.AddRange(cards);
         }
-        public void remove(IEnumerable<Card> cards)
+        public void remove(IEnumerable<CardLogic> cards)
         {
-            foreach (Card card in cards)
-            {
-                _cards.Remove(card);
-                card.transform.parent = null;
-            }
+            _cards.RemoveAll(e => { return cards.Contains(e); });
         }
         public int count
         {
             get { return _cards.Count; }
         }
-        public Card this[int index]
+        public CardLogic this[int index]
         {
             get { return _cards[index]; }
         }
-        public IEnumerator<Card> GetEnumerator()
+        public IEnumerator<CardLogic> GetEnumerator()
         {
-            return ((IEnumerable<Card>)_cards).GetEnumerator();
+            return ((IEnumerable<CardLogic>)_cards).GetEnumerator();
         }
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable<Card>)_cards).GetEnumerator();
+            return ((IEnumerable<CardLogic>)_cards).GetEnumerator();
         }
-        public Card[] cards
-        {
-            get { return _cards.ToArray(); }
-        }
-        [SerializeField]
-        List<Card> _cards = new List<Card>();
+        List<CardLogic> _cards = new List<CardLogic>();
     }
     public enum RegionType
     {

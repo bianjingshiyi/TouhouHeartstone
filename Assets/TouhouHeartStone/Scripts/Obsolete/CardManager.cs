@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using System.Collections;
 
 namespace TouhouHeartstone
 {
-    public class CardManager : THManager
+    class CardsLogic : IEnumerable<CardLogic>
     {
         public CardInstance createInstance(int cardId)
         {
@@ -20,17 +21,23 @@ namespace TouhouHeartstone
                 return new CardInstance(_lastId, e);
             }).ToArray();
         }
-        [SerializeField]
-        int _lastId = 0;
-        public Card create(CardInstance instance)
+        public CardLogic create(CardInstance instance)
         {
             if (instance.instanceId > _lastId)
                 _lastId = instance.instanceId;
-            Card card = Card.create(instance);
-            _cards.Add(card);
+            CardLogic card = new CardLogic(instance);
+            _cardList.Add(card);
             return card;
         }
-        [SerializeField]
-        List<Card> _cards = new List<Card>();
+        int _lastId;
+        public IEnumerator<CardLogic> GetEnumerator()
+        {
+            return ((IEnumerable<CardLogic>)_cardList).GetEnumerator();
+        }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<CardLogic>)_cardList).GetEnumerator();
+        }
+        List<CardLogic> _cardList = new List<CardLogic>();
     }
 }

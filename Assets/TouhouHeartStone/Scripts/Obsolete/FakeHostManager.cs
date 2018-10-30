@@ -19,9 +19,9 @@ namespace TouhouHeartstone
         }
         [SerializeField]
         int _id;
-        protected void Awake()
+        protected void Start()
         {
-            game.records.onWitness.AddListener(onWitness);
+            game.game.records.onWitness += onWitness;
         }
         void onWitness(Dictionary<int, Witness> dicWitness)
         {

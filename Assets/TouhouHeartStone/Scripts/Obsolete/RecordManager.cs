@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -6,14 +7,20 @@ using System.Collections;
 
 namespace TouhouHeartstone
 {
-    public class RecordManager : THManager, IEnumerable<Record>
+    [Serializable]
+    class RecordLogic : IEnumerable<Record>
     {
+        public RecordLogic(GameLogic game)
+        {
+            this.game = game;
+        }
+        GameLogic game { get; set; }
         public void addRecord(Record record)
         {
             if (record == null)
                 return;
             _recoderList.Add(record);
-            onWitness.Invoke(record.apply(game));
+            onWitness?.Invoke(record.apply(game));
         }
         public Record this[int index]
         {
@@ -33,11 +40,6 @@ namespace TouhouHeartstone
         }
         [SerializeField]
         List<Record> _recoderList = new List<Record>();
-        public WitnessByPlayerEvent onWitness
-        {
-            get { return _onWitness; }
-        }
-        [SerializeField]
-        WitnessByPlayerEvent _onWitness = new WitnessByPlayerEvent();
+        public event Action<Dictionary<int, Witness>> onWitness;
     }
 }

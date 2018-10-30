@@ -2,39 +2,22 @@
 
 namespace TouhouHeartstone
 {
-    public abstract class Player : MonoBehaviour
+    class PlayerLogic
     {
-        public abstract int id
+        public PlayerLogic(int id)
         {
-            get;
+            this.id = id;
         }
-        public Region hand
+        public RegionLogic hand { get; } = new RegionLogic();
+        public RegionLogic deck { get; } = new RegionLogic();
+        public int id { get; private set; }
+        public override int GetHashCode()
         {
-            get
-            {
-                if (_hand == null)
-                {
-                    _hand = new GameObject("Hand").AddComponent<Region>();
-                    _hand.transform.parent = transform;
-                }
-                return _hand;
-            }
+            return id;
         }
-        [SerializeField]
-        Region _hand;
-        public Region deck
+        public override bool Equals(object obj)
         {
-            get
-            {
-                if (_deck == null)
-                {
-                    _deck = new GameObject("Deck").AddComponent<Region>();
-                    _deck.transform.parent = transform;
-                }
-                return _deck;
-            }
+            return obj is PlayerLogic && (obj as PlayerLogic).id == id;
         }
-        [SerializeField]
-        Region _deck;
     }
 }
