@@ -11,6 +11,9 @@ namespace TouhouHeartstone.Frontend.Manager
         [SerializeField]
         CardSelector selectorPrefab;
 
+        [SerializeField]
+        InitDrawUI ui;
+
         /// <summary>
         /// 向初始抽卡管理器中添加几张卡
         /// </summary>
@@ -36,9 +39,32 @@ namespace TouhouHeartstone.Frontend.Manager
         /// </summary>
         void onDrawcardAnimationFinish()
         {
+            // 开启背板
+            ui.gameObject.SetActive(true);
+
+            // 设置选择器
             foreach (var item in initCards)
             {
-                Instantiate(selectorPrefab, item.transform);
+                var cc = Instantiate(selectorPrefab, item.transform);
+                cc.OnCardSelectStateChange += onCardSelectStateChange;
+            }
+        }
+
+        /// <summary>
+        /// 要移出卡片的列表
+        /// </summary>
+        List<CardFace> removeList = new List<CardFace>();
+
+        void onCardSelectStateChange(CardFace card, bool state)
+        {
+            if (state)
+            {
+                removeList.Add(card);
+            }
+            else
+            {
+                if (removeList.Contains(card))
+                    removeList.Remove(card);
             }
         }
 
@@ -47,14 +73,39 @@ namespace TouhouHeartstone.Frontend.Manager
         /// </summary>
         public void Confirm()
         {
+            List<CardFace> cf = new List<CardFace>();
+
+            // 移出不需要的卡
+            for (int i = 0; i < initCards.Length; i++)
+            {
+                var item = initCards[i];
+                if (removeList.Contains(item))
+                {
+                    // 移除卡片
+                    Destroy(item.gameObject);
+                    initCards[i] = null;
+                }
+                else
+                {
+                    // 移除卡片选择器
+                    Destroy(item.GetComponentInChildren<CardSelector>().gameObject);
+                    cf.Add(item);
+                }
+            }
+
+            // 关闭背板
+            ui.gameObject.SetActive(false);
+
+            getSiblingManager<HandCardManager>().AddCard(cf.ToArray());
+
             Debug.Log("OnClick.");
         }
 
         public Vector3[] GetInitialDrawPosition(int count)
         {
-            Vector3 basePos = new Vector3(0, 0, -2);
-            const float minSpacing = 2;
-            const float maxWidth = 10;
+            Vector3 basePos = new Vector3(0, 0, -1);
+            const float minSpacing = 0.5f;
+            const float maxWidth = 4;
             Vector3[] pos = new Vector3[count];
 
             float sp, offset;

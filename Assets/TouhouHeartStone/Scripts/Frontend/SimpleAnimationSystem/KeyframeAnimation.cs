@@ -6,7 +6,6 @@ namespace TouhouHeartstone.Frontend.SimpleAnimationSystem
     /// <summary>
     /// 带有关键帧的旋转和位移动画
     /// </summary>
-    [CreateAssetMenu]
     public class KeyframeAnimation : SimpleAnimationBase
     {
         float startTime;
@@ -41,7 +40,7 @@ namespace TouhouHeartstone.Frontend.SimpleAnimationSystem
                 if (currentFrame.time >= dt)
                 {
                     Keyframe lastFrame = i > 0 ? keyframes[i - 1] : lastState;
-                    var result = interport(lastFrame, currentFrame, time);
+                    var result = interport(lastFrame, currentFrame, dt);
 
                     target.transform.localPosition = result.position;
                     target.transform.localRotation = Quaternion.Euler(result.rotation);
@@ -50,8 +49,11 @@ namespace TouhouHeartstone.Frontend.SimpleAnimationSystem
                 }
             }
 
-            if (dt >= keyframes[keyframes.Length - 1].time)
+            if (dt > keyframes[keyframes.Length - 1].time)
             {
+                target.transform.localPosition = keyframes[keyframes.Length - 1].position;
+                target.transform.localRotation = Quaternion.Euler(keyframes[keyframes.Length - 1].rotation);
+
                 _isFinish = true;
                 OnAnimationFinish?.Invoke();
             }

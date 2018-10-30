@@ -13,6 +13,12 @@ namespace TouhouHeartstone.Frontend.Manager
             witness.onWitnessAdded.AddListener(onWitness);
         }
 
+        private void Start()
+        {
+            // test: 测试一下
+            onWitness(new InitDrawWitness(0, new CardInstance[] { new CardInstance(0, 0), new CardInstance(1, 0), new CardInstance(2, 0) }));
+        }
+
         void onWitness(Witness witness)
         {
             if (witness is SetOrderWitness)
