@@ -22,6 +22,7 @@ namespace TouhouHeartstone.Frontend
         /// <param name="targetPosition"></param>
         public void DrawCard(Vector3 targetPosition, Action finishCallback = null)
         {
+            GetComponent<CardFace>().State = CardState.Drawing;
             PlayAnimation("drawCard", targetPosition, true, finishCallback);
         }
 
@@ -81,7 +82,14 @@ namespace TouhouHeartstone.Frontend
         /// <param name="finishCallback"></param>
         public void CardMoveToHand(Vector3 position, Vector3 rotation, Action finishCallback = null)
         {
+            finishCallback += SetCardToHandState;
             PlayAnimation("cardToHand", position, rotation, false, finishCallback);
+        }
+
+        void SetCardToHandState()
+        {
+            GetComponent<CardFace>().State = CardState.Hand;
+            Debug.Log("卡到手上了");
         }
 
         /// <summary>
@@ -103,6 +111,8 @@ namespace TouhouHeartstone.Frontend
         /// <param name="finishCallback"></param>
         public void ShowCard(Vector3 position, Action finishCallback = null)
         {
+            setActiveState();
+
             var ani = animator.DupAnimation("showCard");
             if (ani is KeyframeAnimation)
             {
@@ -115,6 +125,11 @@ namespace TouhouHeartstone.Frontend
             }
 
             animator.InstantPlay(ani);
+        }
+
+        void setActiveState()
+        {
+            GetComponent<CardFace>().State = CardState.Active;
         }
 
         /// <summary>
@@ -140,9 +155,15 @@ namespace TouhouHeartstone.Frontend
                 kfani.SetEndPosition(position);
 
                 kfani.OnAnimationFinish += finishCallback;
+                kfani.OnAnimationFinish += setNormalState;
             }
 
             animator.InstantPlay(ani);
+        }
+
+        void setNormalState()
+        {
+            GetComponent<CardFace>().State = CardState.Hand;
         }
     }
 }
