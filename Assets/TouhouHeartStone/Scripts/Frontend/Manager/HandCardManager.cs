@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 using System.Collections.Generic;
-
+using System;
 
 namespace TouhouHeartstone.Frontend.Manager
 {
@@ -16,11 +16,8 @@ namespace TouhouHeartstone.Frontend.Manager
         public void AddCard(CardFace card)
         {
             int origCnt = cards.Count;
-            cards.Add(card);
-
-            var pos = getCardPosInfo(cards.Count, origCnt);
-            card.CardAniController.CardMoveToHand(pos.Position, pos.Rotation);
-
+            var pos = getCardPosInfo(cards.Count + 1, origCnt);
+            addCardInner(card, pos);
             adjustCardPos(origCnt);
         }
 
@@ -31,15 +28,22 @@ namespace TouhouHeartstone.Frontend.Manager
         public void AddCard(CardFace[] card)
         {
             int origCnt = cards.Count;
-            cards.AddRange(card);
 
             for (int i = 0; i < card.Length; i++)
             {
-                var pos = getCardPosInfo(cards.Count, i + origCnt);
-                card[i].CardAniController.CardMoveToHand(pos.Position, pos.Rotation);
+                var pos = getCardPosInfo(origCnt + card.Length, origCnt + i);
+                addCardInner(card[i], pos);
             }
 
             adjustCardPos(origCnt);
+        }
+
+        private void addCardInner(CardFace card, CardPosInfo pos)
+        {
+            cards.Add(card);
+            card.OnMouseIn += cardOnMouseIn;
+            card.OnMouseOut += cardOnMouseOut;
+            card.CardAniController.CardMoveToHand(pos.Position, pos.Rotation);
         }
 
         struct CardPosInfo
@@ -62,7 +66,7 @@ namespace TouhouHeartstone.Frontend.Manager
             const float cardHalfHeight = 0.36f;
 
 
-            if(count <= 3)
+            if (count <= 3)
             {
                 var offset = normapSpacing * (count - 1) / 2;
                 basePos.x = normapSpacing * n - offset;
@@ -86,9 +90,26 @@ namespace TouhouHeartstone.Frontend.Manager
             }
         }
 
-        public void ShowCard()
-        {
 
+        private void cardOnMouseOut(CardFace obj)
+        {
+            if(obj.State == CardState.Active)
+            {
+                var p = getCardPosInfo(cards.Count, cards.IndexOf(obj));
+                obj.CardAniController.UnShowCard(p.Position, p.Rotation);
+            }
+        }
+
+        private void cardOnMouseIn(CardFace obj)
+        {
+            if (obj.State == CardState.Hand)
+            {
+                var p = getCardPosInfo(cards.Count, cards.IndexOf(obj));
+
+                p.Position *= 0.75f;
+
+                obj.CardAniController.ShowCard(p.Position);
+            }
         }
 
         /// <summary>

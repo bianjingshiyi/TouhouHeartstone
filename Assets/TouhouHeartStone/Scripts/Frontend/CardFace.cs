@@ -45,6 +45,11 @@ namespace TouhouHeartstone.Frontend
         public int InstanceID => instanceID;
 
         /// <summary>
+        /// 卡片当前的状态
+        /// </summary>
+        public CardState State { get; set; }
+
+        /// <summary>
         /// 设置卡片的唯一指定id
         /// </summary>
         /// <remarks>
@@ -94,5 +99,38 @@ namespace TouhouHeartstone.Frontend
         {
             OnMouseOut?.Invoke(this);
         }
+
+        public override string ToString()
+        {
+            return $"Cardface: {instanceID}";
+        }
+    }
+
+    public enum CardState
+    {
+        /// <summary>
+        /// 在牌堆中
+        /// </summary>
+        Stack,
+        /// <summary>
+        /// 正在抽卡
+        /// </summary>
+        Drawing,
+        /// <summary>
+        /// 手牌上
+        /// </summary>
+        Hand,
+        /// <summary>
+        /// 指上去的详细信息
+        /// </summary>
+        Active,
+        /// <summary>
+        /// 拿起来
+        /// </summary>
+        Pickup,
+        /// <summary>
+        /// 销毁
+        /// </summary>
+        Destory
     }
 }
