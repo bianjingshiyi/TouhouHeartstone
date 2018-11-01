@@ -36,12 +36,15 @@ namespace TouhouHeartstone.Frontend
         [Range(1, 500)]
         float sizePrescaler = 100;
 
+        [SerializeField]
+        int sortingOrder;
+
         MeshFilter _filter;
         MeshFilter filter
         {
             get
             {
-                if(_filter == null) _filter = GetComponent<MeshFilter>();
+                if (_filter == null) _filter = GetComponent<MeshFilter>();
                 return _filter;
             }
         }
@@ -55,6 +58,38 @@ namespace TouhouHeartstone.Frontend
                 return _rectTransform;
             }
         }
+
+        MeshRenderer _meshRenderer;
+        MeshRenderer meshRenderer
+        {
+            get
+            {
+                if (_meshRenderer == null) _meshRenderer = GetComponent<MeshRenderer>();
+                return _meshRenderer;
+            }
+        }
+
+        TextGenerator _generator;
+        TextGenerator generator
+        {
+            get
+            {
+                _generator = _generator ?? new TextGenerator();
+                return _generator;
+            }
+        }
+
+        Mesh _mesh;
+        Mesh mesh
+        {
+            get
+            {
+                _mesh = _mesh ?? new Mesh();
+                return _mesh;
+            }
+        }
+
+
 
         [SerializeField]
         TextGenerationSettingsInternal settingsInternal = new TextGenerationSettingsInternal()
@@ -72,14 +107,13 @@ namespace TouhouHeartstone.Frontend
 
         private void Redraw()
         {
-            TextGenerator generator = new TextGenerator();
             generator.Populate(_text, convertSetting(settingsInternal));
 
-            var msh = new Mesh();
             var vts = generator.GetVerticesArray();
-            VertsToMesh(msh, vts);
+            VertsToMesh(mesh, vts);
 
-            filter.mesh = msh;
+            filter.mesh = mesh;
+            meshRenderer.sortingOrder = sortingOrder;
         }
 
         public TextGenerationSettings convertSetting(TextGenerationSettingsInternal set)
@@ -122,6 +156,7 @@ namespace TouhouHeartstone.Frontend
 
         private void VertsToMesh(Mesh msh, UIVertex[] vts)
         {
+            msh.Clear();
             msh.SetVertices(vts.Select(e => e.position / sizePrescaler).ToList());
             msh.SetTangents(vts.Select(e => e.tangent).ToList());
             msh.SetNormals(vts.Select(e => e.normal).ToList());

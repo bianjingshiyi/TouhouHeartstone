@@ -2323,6 +2323,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _text: "\u786E\u8BA4"
   sizePrescaler: 100
+  sortingOrder: 11
   settingsInternal:
     font: {fileID: 12800000, guid: 2c3a2d5fe7fee4344a22cd42f4292a1d, type: 3}
     pivot: {x: 0, y: 0}
