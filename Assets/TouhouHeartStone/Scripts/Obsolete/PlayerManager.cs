@@ -8,18 +8,18 @@ using System.Collections;
 namespace TouhouHeartstone
 {
     [Serializable]
-    class PlayersLogic : IEnumerable<PlayerLogic>
+    class PlayerManager : IEnumerable<Player>
     {
-        public PlayersLogic(int[] playersId)
+        public PlayerManager(int[] playersId)
         {
-            players = playersId.Select(e => { return new PlayerLogic(e); }).ToArray();
+            players = playersId.Select(e => { return new Player(e); }).ToArray();
         }
-        public PlayerLogic[] orderedPlayers { get; internal set; }
-        public PlayerLogic getPlayer(int playerId)
+        public Player[] orderedPlayers { get; internal set; }
+        public Player getPlayer(int playerId)
         {
             return players.FirstOrDefault(e => { return e.id == playerId; });
         }
-        public PlayerLogic this[int index]
+        public Player this[int index]
         {
             get { return players[index]; }
         }
@@ -27,14 +27,14 @@ namespace TouhouHeartstone
         {
             get { return players.Length; }
         }
-        public IEnumerator<PlayerLogic> GetEnumerator()
+        public IEnumerator<Player> GetEnumerator()
         {
-            return ((IEnumerable<PlayerLogic>)players).GetEnumerator();
+            return ((IEnumerable<Player>)players).GetEnumerator();
         }
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable<PlayerLogic>)players).GetEnumerator();
+            return ((IEnumerable<Player>)players).GetEnumerator();
         }
-        public PlayerLogic[] players { get; private set; }
+        public Player[] players { get; private set; }
     }
 }

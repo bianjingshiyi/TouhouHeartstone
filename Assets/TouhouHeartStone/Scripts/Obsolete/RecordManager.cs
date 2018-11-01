@@ -8,13 +8,13 @@ using System.Collections;
 namespace TouhouHeartstone
 {
     [Serializable]
-    class RecordLogic : IEnumerable<Record>
+    class RecordManager : IEnumerable<Record>
     {
-        public RecordLogic(GameLogic game)
+        public RecordManager(Game game)
         {
             this.game = game;
         }
-        GameLogic game { get; set; }
+        Game game { get; set; }
         public void addRecord(Record record)
         {
             if (record == null)

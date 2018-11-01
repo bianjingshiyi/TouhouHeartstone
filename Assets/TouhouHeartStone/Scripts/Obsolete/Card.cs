@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace TouhouHeartstone
 {
-    class CardLogic
+    class Card
     {
-        public CardLogic(CardInstance instance)
+        public Card(CardInstance instance)
         {
             this.instance = instance;
         }

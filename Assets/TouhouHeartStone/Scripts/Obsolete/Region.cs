@@ -6,18 +6,18 @@ using UnityEngine;
 
 namespace TouhouHeartstone
 {
-    class RegionLogic : IEnumerable<CardLogic>
+    class Region : IEnumerable<Card>
     {
-        public void add(IEnumerable<CardLogic> cards)
+        public void add(IEnumerable<Card> cards)
         {
             _cards.AddRange(cards);
         }
-        public void moveTo(IEnumerable<CardLogic> cards, RegionLogic targetRegion)
+        public void moveTo(IEnumerable<Card> cards, Region targetRegion)
         {
             _cards.RemoveAll(e => { return cards.Contains(e); });
             targetRegion._cards.AddRange(cards);
         }
-        public void remove(IEnumerable<CardLogic> cards)
+        public void remove(IEnumerable<Card> cards)
         {
             _cards.RemoveAll(e => { return cards.Contains(e); });
         }
@@ -25,19 +25,19 @@ namespace TouhouHeartstone
         {
             get { return _cards.Count; }
         }
-        public CardLogic this[int index]
+        public Card this[int index]
         {
             get { return _cards[index]; }
         }
-        public IEnumerator<CardLogic> GetEnumerator()
+        public IEnumerator<Card> GetEnumerator()
         {
-            return ((IEnumerable<CardLogic>)_cards).GetEnumerator();
+            return ((IEnumerable<Card>)_cards).GetEnumerator();
         }
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable<CardLogic>)_cards).GetEnumerator();
+            return ((IEnumerable<Card>)_cards).GetEnumerator();
         }
-        List<CardLogic> _cards = new List<CardLogic>();
+        List<Card> _cards = new List<Card>();
     }
     public enum RegionType
     {

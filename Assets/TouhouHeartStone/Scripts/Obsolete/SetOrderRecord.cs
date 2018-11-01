@@ -15,7 +15,7 @@ namespace TouhouHeartstone
         {
             _targetOrder = orderedPlayerId;
         }
-        public override Dictionary<int, Witness> apply(GameLogic game)
+        public override Dictionary<int, Witness> apply(Game game)
         {
             if (game.players.orderedPlayers != null)
             {
@@ -29,7 +29,7 @@ namespace TouhouHeartstone
                 _originOrder = null;
             if (_targetOrder != null)
             {
-                PlayerLogic[] orderedPlayers = new PlayerLogic[_targetOrder.Length];
+                Player[] orderedPlayers = new Player[_targetOrder.Length];
                 for (int i = 0; i < orderedPlayers.Length; i++)
                 {
                     orderedPlayers[i] = game.players.getPlayer(_targetOrder[i]);
@@ -45,11 +45,11 @@ namespace TouhouHeartstone
             }
             return dicWitness;
         }
-        public override Dictionary<int, Witness> revert(GameLogic game)
+        public override Dictionary<int, Witness> revert(Game game)
         {
             if (_originOrder != null)
             {
-                PlayerLogic[] orderedPlayers = new PlayerLogic[_originOrder.Length];
+                Player[] orderedPlayers = new Player[_originOrder.Length];
                 for (int i = 0; i < orderedPlayers.Length; i++)
                 {
                     orderedPlayers[i] = game.players.getPlayer(_originOrder[i]);

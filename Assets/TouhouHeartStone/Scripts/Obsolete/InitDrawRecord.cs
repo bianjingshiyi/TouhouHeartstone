@@ -18,9 +18,9 @@ namespace TouhouHeartstone
             _playerId = playerId;
             _count = count;
         }
-        public override Dictionary<int, Witness> apply(GameLogic game)
+        public override Dictionary<int, Witness> apply(Game game)
         {
-            PlayerLogic player = game.players.getPlayer(_playerId);
+            Player player = game.players.getPlayer(_playerId);
             _cards = player.deck.Take(_count).ToArray();
             player.deck.moveTo(_cards, player.hand);
             Dictionary<int, Witness> dicWitness = new Dictionary<int, Witness>();
@@ -31,10 +31,10 @@ namespace TouhouHeartstone
             return dicWitness;
         }
         [NonSerialized]
-        CardLogic[] _cards = null;
-        public override Dictionary<int, Witness> revert(GameLogic game)
+        Card[] _cards = null;
+        public override Dictionary<int, Witness> revert(Game game)
         {
-            PlayerLogic player = game.players.getPlayer(_playerId);
+            Player player = game.players.getPlayer(_playerId);
             player.hand.moveTo(_cards, player.deck);
             return null;
         }

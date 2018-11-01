@@ -2,14 +2,14 @@
 
 namespace TouhouHeartstone
 {
-    class PlayerLogic
+    class Player
     {
-        public PlayerLogic(int id)
+        public Player(int id)
         {
             this.id = id;
         }
-        public RegionLogic hand { get; } = new RegionLogic();
-        public RegionLogic deck { get; } = new RegionLogic();
+        public Region hand { get; } = new Region();
+        public Region deck { get; } = new Region();
         public int id { get; private set; }
         public override int GetHashCode()
         {
@@ -17,7 +17,7 @@ namespace TouhouHeartstone
         }
         public override bool Equals(object obj)
         {
-            return obj is PlayerLogic && (obj as PlayerLogic).id == id;
+            return obj is Player && (obj as Player).id == id;
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Collections;
 
 namespace TouhouHeartstone
 {
-    class CardsLogic : IEnumerable<CardLogic>
+    class CardManager : IEnumerable<Card>
     {
         public CardInstance createInstance(int cardId)
         {
@@ -21,23 +21,23 @@ namespace TouhouHeartstone
                 return new CardInstance(_lastId, e);
             }).ToArray();
         }
-        public CardLogic create(CardInstance instance)
+        public Card create(CardInstance instance)
         {
             if (instance.instanceId > _lastId)
                 _lastId = instance.instanceId;
-            CardLogic card = new CardLogic(instance);
+            Card card = new Card(instance);
             _cardList.Add(card);
             return card;
         }
         int _lastId;
-        public IEnumerator<CardLogic> GetEnumerator()
+        public IEnumerator<Card> GetEnumerator()
         {
-            return ((IEnumerable<CardLogic>)_cardList).GetEnumerator();
+            return ((IEnumerable<Card>)_cardList).GetEnumerator();
         }
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable<CardLogic>)_cardList).GetEnumerator();
+            return ((IEnumerable<Card>)_cardList).GetEnumerator();
         }
-        List<CardLogic> _cardList = new List<CardLogic>();
+        List<Card> _cardList = new List<Card>();
     }
 }
