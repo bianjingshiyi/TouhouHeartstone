@@ -43,6 +43,7 @@ namespace TouhouHeartstone.Frontend.Manager
             cards.Add(card);
             card.OnMouseIn += cardOnMouseIn;
             card.OnMouseOut += cardOnMouseOut;
+            card.OnClick += cardOnClick;
             card.CardAniController.CardMoveToHand(pos.Position, pos.Rotation);
         }
 
@@ -93,7 +94,7 @@ namespace TouhouHeartstone.Frontend.Manager
 
         private void cardOnMouseOut(CardFace obj)
         {
-            if(obj.State == CardState.Active)
+            if (obj.State == CardState.Active)
             {
                 var p = getCardPosInfo(cards.Count, cards.IndexOf(obj));
                 obj.CardAniController.UnShowCard(p.Position, p.Rotation);
@@ -109,6 +110,46 @@ namespace TouhouHeartstone.Frontend.Manager
                 p.Position *= 0.75f;
 
                 obj.CardAniController.ShowCard(p.Position);
+            }
+        }
+
+        private void cardOnClick(CardFace card)
+        {
+            if (card.State == CardState.Active)
+            {
+                card.State = CardState.Pickup;
+                activeCard = card;
+            }
+            else if (card.State == CardState.Pickup)
+            {
+                var p = getCardPosInfo(cards.Count, cards.IndexOf(card));
+                p.Position *= 0.75f;
+                card.CardAniController.ShowCard(p.Position);
+
+                activeCard = null;
+            }
+        }
+
+        CardFace activeCard;
+
+        private void Update()
+        {
+            if (activeCard != null)
+            {
+                var t = activeCard.gameObject.transform;
+                var orgpos = t.position;
+
+                var mousePos = Input.mousePosition;
+                var world = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, t.position.y));
+
+                Debug.Log(world);
+                
+                orgpos.x = world.x;
+                orgpos.z = world.z;
+
+                // todo: 3D的算法
+
+                t.position = orgpos;
             }
         }
 

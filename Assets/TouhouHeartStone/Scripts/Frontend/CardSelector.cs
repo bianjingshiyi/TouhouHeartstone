@@ -28,7 +28,7 @@ namespace TouhouHeartstone.Frontend
                 card.OnClick -= OnSelect;
         }
 
-        void OnSelect()
+        void OnSelect(CardFace cf)
         {
             selectState = !selectState;
             updateEffect();
