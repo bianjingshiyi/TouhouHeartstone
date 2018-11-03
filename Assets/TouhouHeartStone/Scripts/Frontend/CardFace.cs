@@ -81,13 +81,13 @@ namespace TouhouHeartstone.Frontend
             attackLabel.text = "1";
         }
 
-        public event Action OnClick;
+        public event Action<CardFace> OnClick;
         public event Action<CardFace> OnMouseIn;
         public event Action<CardFace> OnMouseOut;
 
         private void OnMouseUpAsButton()
         {
-            OnClick?.Invoke();
+            OnClick?.Invoke(this);
         }
 
         private void OnMouseEnter()

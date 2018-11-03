@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 namespace TouhouHeartstone.Frontend
 {
@@ -12,25 +13,41 @@ namespace TouhouHeartstone.Frontend
     public class UIButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
     {
         public event Action OnMouseClick;
+        public event Action OnMouseIn;
+        public event Action OnMouseOut;
+
+        [SerializeField]
+        UnityEvent onClick = new UnityEvent();
 
         private void OnMouseUpAsButton()
         {
             OnPointerClick(null);
         }
 
-        public void OnPointerClick(PointerEventData eventData)
+        public virtual void OnPointerClick(PointerEventData eventData)
         {
             OnMouseClick?.Invoke();
+            onClick?.Invoke();
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
+        private void OnMouseEnter()
         {
-            throw new NotImplementedException();
+            OnPointerEnter(null);
         }
 
-        public void OnPointerExit(PointerEventData eventData)
+        public virtual void OnPointerEnter(PointerEventData eventData)
         {
-            throw new NotImplementedException();
+            OnMouseIn?.Invoke();
+        }
+
+        private void OnMouseExit()
+        {
+            OnPointerExit(null);
+        }
+
+        public virtual void OnPointerExit(PointerEventData eventData)
+        {
+            OnMouseOut?.Invoke();
         }
     }
 }

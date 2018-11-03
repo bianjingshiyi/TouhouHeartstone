@@ -56,6 +56,5 @@ namespace TouhouHeartstone.Frontend.Manager
 
             preloadManagers();
         }
-
     }
 }
