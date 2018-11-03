@@ -29,6 +29,11 @@ namespace TouhouHeartstone.Backend
         {
             if (dicWitness == null)
                 return;
+            //添加给自己
+            Witness witness = dicWitness[network.localPlayerId];
+            witness.number = this.witness.count;
+            this.witness.add(witness);
+            //发送给其他玩家
             for (int i = 0; i < network.playersId.Length; i++)
             {
                 if (network.playersId[i] != network.localPlayerId)
@@ -36,7 +41,7 @@ namespace TouhouHeartstone.Backend
                     int playerId = network.playersId[i];
                     if (!_dicWitnessed.ContainsKey(playerId))
                         _dicWitnessed.Add(playerId, new List<Witness>());
-                    Witness witness = dicWitness[playerId];
+                    witness = dicWitness[playerId];
                     witness.number = _dicWitnessed[playerId].Count;
                     _dicWitnessed[playerId].Add(witness);
                     network.sendObject(playerId, witness);

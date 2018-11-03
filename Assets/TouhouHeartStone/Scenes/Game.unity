@@ -752,6 +752,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a4a1b1c8b56f3a4eb648cf390e1fa70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!65 &694043284
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -939,23 +944,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 831532707}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 177584fb753998d45b75b94a44e73645, type: 3}
+  m_Script: {fileID: 11500000, guid: 0e4ad85fd1c25ea4bb42d4cf7dc74b92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _network: {fileID: 0}
   _witness: {fileID: 0}
-  <game>k__BackingField:
-    <players>k__BackingField: {}
-    <records>k__BackingField:
-      <game>k__BackingField:
-        <players>k__BackingField: {}
-        <records>k__BackingField:
-          <game>k__BackingField:
-            <players>k__BackingField: {}
-            <records>k__BackingField:
-              <game>k__BackingField:
-                <players>k__BackingField: {}
-                <records>k__BackingField: {}
 --- !u!1 &1010715796
 GameObject:
   m_ObjectHideFlags: 0
@@ -2172,6 +2165,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _text: "\u786E\u8BA4"
   sizePrescaler: 100
+  sortingOrder: 0
   settingsInternal:
     font: {fileID: 12800000, guid: 2c3a2d5fe7fee4344a22cd42f4292a1d, type: 3}
     pivot: {x: 0, y: 0}
