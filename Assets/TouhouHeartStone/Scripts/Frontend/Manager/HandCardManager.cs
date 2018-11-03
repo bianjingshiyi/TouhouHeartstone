@@ -94,6 +94,7 @@ namespace TouhouHeartstone.Frontend.Manager
 
         private void cardOnMouseOut(CardFace obj)
         {
+            if (activeCard != null) return;
             if (obj.State == CardState.Active)
             {
                 var p = getCardPosInfo(cards.Count, cards.IndexOf(obj));
@@ -103,6 +104,7 @@ namespace TouhouHeartstone.Frontend.Manager
 
         private void cardOnMouseIn(CardFace obj)
         {
+            if (activeCard != null) return;
             if (obj.State == CardState.Hand)
             {
                 var p = getCardPosInfo(cards.Count, cards.IndexOf(obj));
@@ -140,7 +142,7 @@ namespace TouhouHeartstone.Frontend.Manager
                 var orgpos = t.position;
 
                 var mousePos = Input.mousePosition;
-                var world = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, t.position.y));
+                var world = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, Camera.main.transform.position.y - t.position.y));
 
                 Debug.Log(world);
                 
