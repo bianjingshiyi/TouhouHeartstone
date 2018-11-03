@@ -140,7 +140,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1833478899}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &797256653
 MonoBehaviour:
@@ -153,52 +153,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3686cd05df6eb4fa83256d58bb2439, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _game: {fileID: 0}
   _onWitnessAdded:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: TouhouHeartstone.WitnessEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
---- !u!1 &1076638297
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1076638298}
-  - component: {fileID: 1076638299}
-  m_Layer: 0
-  m_Name: Log
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1076638298
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1076638297}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1833478899}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1076638299
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1076638297}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f36899e8cce00bf4fa81752251eb75aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _game: {fileID: 0}
 --- !u!1 &1510949757
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,15 +196,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1510949757}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f2b380a5ea3a7a42a7c8eedc3303dde, type: 3}
+  m_Script: {fileID: 11500000, guid: 961d6cedf933d234eb873f0260e15a2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _game: {fileID: 0}
-  _hostId: -1
+  _isClient: 1
+  _localPlayerId: 2
   _connections: []
+  _host: {fileID: 0}
   _loss: 0.1
   _lag: 0.2
-  _id: 1
 --- !u!1 &1833478897
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,14 +233,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e4ad85fd1c25ea4bb42d4cf7dc74b92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _orderedPlayers: []
-  _gamePhase: 0
-  _players: {fileID: 0}
-  _log: {fileID: 0}
   _network: {fileID: 0}
-  _records: {fileID: 0}
   _witness: {fileID: 0}
-  _cards: {fileID: 0}
 --- !u!4 &1833478899
 Transform:
   m_ObjectHideFlags: 0
@@ -291,52 +246,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1510949758}
-  - {fileID: 1076638298}
-  - {fileID: 2143941357}
   - {fileID: 797256652}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2143941356
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2143941357}
-  - component: {fileID: 2143941358}
-  m_Layer: 0
-  m_Name: Players
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2143941357
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2143941356}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1833478899}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2143941358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2143941356}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e586a4c1a57f05e4891f76ea1dd5e59f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _game: {fileID: 0}
-  _localPlayer: {fileID: 0}
-  _players: []

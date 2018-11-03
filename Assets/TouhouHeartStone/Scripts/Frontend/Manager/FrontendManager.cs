@@ -11,12 +11,12 @@ namespace TouhouHeartstone.Frontend.Manager
     public class FrontendManager : MonoBehaviour
     {
         [SerializeField]
-        GameContainer game;
+        Backend.GameContainer game;
 
         /// <summary>
         /// 游戏主要部分的引用
         /// </summary>
-        public GameContainer Game => game;
+        public Backend.GameContainer Game => game;
 
         Dictionary<string, FrontendSubManager> submanagerInstance = new Dictionary<string, FrontendSubManager>();
 
@@ -52,7 +52,7 @@ namespace TouhouHeartstone.Frontend.Manager
 
         protected void Awake()
         {
-            game = game ?? FindObjectOfType<GameContainer>();
+            game = game ?? FindObjectOfType<Backend.GameContainer>();
 
             preloadManagers();
         }

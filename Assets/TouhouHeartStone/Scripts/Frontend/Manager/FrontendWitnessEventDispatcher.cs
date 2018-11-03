@@ -15,7 +15,7 @@ namespace TouhouHeartstone.Frontend.Manager
             var witness = Frontend.Game.witness;
             witness.onWitnessAdded.AddListener(onWitness);
 
-            selfID = Frontend.Game.network.id;
+            selfID = Frontend.Game.network.localPlayerId;
         }
 
         void onWitness(Witness witness)

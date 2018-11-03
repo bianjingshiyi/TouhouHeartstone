@@ -2,21 +2,12 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using System.Collections;
 
-namespace TouhouHeartstone
+namespace TouhouHeartstone.Backend
 {
-    public class WitnessManager : THManager
+    public class WitnessManager : MonoBehaviour, IEnumerable<Witness>
     {
-        protected void Start()
-        {
-            game.game.records.onWitness += onWitness;
-        }
-        private void onWitness(Dictionary<int, Witness> dicWitness)
-        {
-            Witness witness = dicWitness[game.network.id];
-            witness.number = _witnessed.Count;
-            add(witness);
-        }
         public void add(Witness witness)
         {
             if (witness == null || witness.number < _witnessed.Count)
@@ -54,6 +45,22 @@ namespace TouhouHeartstone
         }
         [SerializeField]
         List<Witness> _hungup = new List<Witness>();
+        public int count
+        {
+            get { return _witnessed.Count; }
+        }
+        public Witness this[int index]
+        {
+            get { return _witnessed[index]; }
+        }
+        public IEnumerator<Witness> GetEnumerator()
+        {
+            return ((IEnumerable<Witness>)_witnessed).GetEnumerator();
+        }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<Witness>)_witnessed).GetEnumerator();
+        }
         [SerializeField]
         List<Witness> _witnessed = new List<Witness>();
         public WitnessEvent onWitnessAdded
@@ -62,5 +69,16 @@ namespace TouhouHeartstone
         }
         [SerializeField]
         WitnessEvent _onWitnessAdded = new WitnessEvent();
+        public GameContainer game
+        {
+            get
+            {
+                if (_game == null)
+                    _game = GetComponentInParent<GameContainer>();
+                return _game;
+            }
+        }
+        [SerializeField]
+        GameContainer _game;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -7,55 +8,65 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace TouhouHeartstone
+namespace TouhouHeartstone.Backend
 {
-    public abstract class NetworkManager : THManager
+    class FakeNetworkManager : NetworkManager
     {
-        public abstract bool isClient { get; }
-        public abstract int id { get; }
-        public int hostId
+        public override bool isClient
         {
-            get
-            {
-                if (_hostId < 0)
-                    _hostId = Array.FindIndex(connections, e => { return e is FakeHostManager; });
-                return _hostId;
-            }
+            get { return _isClient; }
         }
         [SerializeField]
-        int _hostId = -1;
-        public NetworkManager[] connections
+        bool _isClient = true;
+        public override int localPlayerId
+        {
+            get { return _localPlayerId; }
+        }
+        [SerializeField]
+        int _localPlayerId = 0;
+        public override int[] playersId
         {
             get
             {
                 if (_connections == null || _connections.Length <= 0)
                 {
-                    List<NetworkManager> connectionList = new List<NetworkManager>();
+                    List<FakeNetworkManager> connectionList = new List<FakeNetworkManager>();
                     for (int i = 0; i < SceneManager.sceneCount; i++)
                     {
                         Scene scene = SceneManager.GetSceneAt(i);
                         foreach (GameObject obj in scene.GetRootGameObjects())
                         {
-                            NetworkManager connection = obj.GetComponentInChildren<NetworkManager>();
+                            FakeNetworkManager connection = obj.GetComponentInChildren<FakeNetworkManager>();
                             if (connection != null)
                                 connectionList.Add(connection);
                         }
                     }
                     _connections = connectionList.ToArray();
                 }
-                return _connections;
+                return _connections.Select(e => { return e.localPlayerId; }).ToArray();
             }
         }
         [SerializeField]
-        NetworkManager[] _connections;
-        public void sendObject(int targetId, object obj)
+        FakeNetworkManager[] _connections = null;
+        public override int hostId
+        {
+            get
+            {
+                if (_host == null)
+                    _host = _connections.First(e => { return !e.isClient; });
+                return _host.localPlayerId;
+            }
+        }
+        [SerializeField]
+        FakeNetworkManager _host;
+        public override void sendObject(int targetId, object obj)
         {
             if (obj == null)
                 return;
             if (UnityEngine.Random.Range(0f, 1f) > _loss)
                 StartCoroutine(sendObjectCoroutine(targetId, obj));
             else
-                Debug.Log("Client丢包", this);
+                Debug.Log(this + "在发送过程中丢包", this);
         }
         private IEnumerator sendObjectCoroutine(int targetId, object obj)
         {
@@ -67,19 +78,19 @@ namespace TouhouHeartstone
                 byte[] bytes = new byte[stream.Length];
                 stream.Position = 0;
                 stream.Read(bytes, 0, (int)stream.Length);
-                NetworkManager target = Array.Find(connections, e => { return e.id == targetId; });
+                FakeNetworkManager target = Array.Find(_connections, e => { return e.localPlayerId == targetId; });
                 if (target != null)
-                    target.receiveBytes(id, bytes);
+                    target.receiveBytes(localPlayerId, bytes);
             }
         }
-        public void broadcastObject(object obj)
+        public override void broadcastObject(object obj)
         {
             if (obj == null)
                 return;
             if (UnityEngine.Random.Range(0f, 1f) > _loss)
                 StartCoroutine(broadcastObjectCoroutine(obj));
             else
-                Debug.Log("Host丢包", this);
+                Debug.Log(this + "在发送过程中丢包", this);
         }
         private IEnumerator broadcastObjectCoroutine(object obj)
         {
@@ -91,10 +102,10 @@ namespace TouhouHeartstone
                 byte[] bytes = new byte[stream.Length];
                 stream.Position = 0;
                 stream.Read(bytes, 0, (int)stream.Length);
-                for (int i = 0; i < connections.Length; i++)
+                for (int i = 0; i < _connections.Length; i++)
                 {
-                    if (connections[i] != this)
-                        connections[i].receiveBytes(id, bytes);
+                    if (_connections[i] != this)
+                        _connections[i].receiveBytes(localPlayerId, bytes);
                 }
             }
         }
@@ -103,7 +114,7 @@ namespace TouhouHeartstone
             if (UnityEngine.Random.Range(0f, 1f) > _loss)
                 StartCoroutine(receiveBytesCoroutine(senderId, bytes));
             else
-                Debug.Log("Client丢包", this);
+                Debug.Log(this + "在接收过程中丢包", this);
         }
         private IEnumerator receiveBytesCoroutine(int senderId, byte[] bytes)
         {
@@ -116,7 +127,7 @@ namespace TouhouHeartstone
                 onReceiveObject(senderId, bf.Deserialize(stream));
             }
         }
-        protected abstract void onReceiveObject(int senderId, object obj);
+        public override event Action<int, object> onReceiveObject;
         [SerializeField]
         float _loss = 0.1f;
         [SerializeField]
