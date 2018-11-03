@@ -66,7 +66,7 @@ namespace TouhouHeartstone.Backend
             if (UnityEngine.Random.Range(0f, 1f) > _loss)
                 StartCoroutine(sendObjectCoroutine(targetId, obj));
             else
-                Debug.Log(this + "在发送过程中丢包", this);
+                Debug.Log(this + "发送" + obj + "丢包", this);
         }
         private IEnumerator sendObjectCoroutine(int targetId, object obj)
         {
@@ -90,7 +90,7 @@ namespace TouhouHeartstone.Backend
             if (UnityEngine.Random.Range(0f, 1f) > _loss)
                 StartCoroutine(broadcastObjectCoroutine(obj));
             else
-                Debug.Log(this + "在发送过程中丢包", this);
+                Debug.Log(this + "发送" + obj + "丢包", this);
         }
         private IEnumerator broadcastObjectCoroutine(object obj)
         {
@@ -114,7 +114,7 @@ namespace TouhouHeartstone.Backend
             if (UnityEngine.Random.Range(0f, 1f) > _loss)
                 StartCoroutine(receiveBytesCoroutine(senderId, bytes));
             else
-                Debug.Log(this + "在接收过程中丢包", this);
+                Debug.Log(this + "接收丢包", this);
         }
         private IEnumerator receiveBytesCoroutine(int senderId, byte[] bytes)
         {
