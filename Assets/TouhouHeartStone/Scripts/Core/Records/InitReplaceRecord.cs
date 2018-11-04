@@ -69,6 +69,20 @@ namespace TouhouHeartstone
             this.originCards = originCards;
             this.replaceCards = replaceCards;
         }
+        public override string ToString()
+        {
+            string s = "玩家" + playerId + "将手牌：";
+            for (int i = 0; i < originCards.Length; i++)
+            {
+                s += originCards[i] + "，";
+            }
+            s += "替换为：";
+            for (int i = 0; i < replaceCards.Length; i++)
+            {
+                s += replaceCards[i] + (i != replaceCards.Length - 1 ? "，" : "。");
+            }
+            return s;
+        }
     }
     /// <summary>
     /// 直接设置手牌的Witness
@@ -82,6 +96,15 @@ namespace TouhouHeartstone
         {
             this.playerId = playerId;
             this.cards = cards;
+        }
+        public override string ToString()
+        {
+            string s = "玩家" + playerId + "的手牌为：";
+            for (int i = 0; i < cards.Length; i++)
+            {
+                s += cards[i] + (i != cards.Length - 1 ? "，" : "。");
+            }
+            return s;
         }
     }
 }

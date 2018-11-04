@@ -48,7 +48,16 @@ namespace TouhouHeartstone
         }
         public override string ToString()
         {
-            return "玩家" + playerId + "抽" + cards.Length + "张卡";
+            string s = "玩家" + playerId + "抽" + cards.Length + "张卡：";
+            for (int i = 0; i < cards.Length; i++)
+            {
+                s += cards[i].ToString();
+                if (i != cards.Length - 1)
+                    s += "，";
+                else
+                    s += "。";
+            }
+            return s;
         }
     }
 }

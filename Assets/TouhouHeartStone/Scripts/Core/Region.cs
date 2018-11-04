@@ -51,7 +51,7 @@ namespace TouhouHeartstone
         }
         public Card[] getCards(CardInstance[] instances)
         {
-            return instances.Select(e => { return _cards.Find(f => { return f.instance == e; }); }).ToArray();
+            return instances.Select(e => { return _cards.Find(f => { return f.instance.Equals(e); }); }).ToArray();
         }
         public void setCards(IEnumerable<Card> cards)
         {
