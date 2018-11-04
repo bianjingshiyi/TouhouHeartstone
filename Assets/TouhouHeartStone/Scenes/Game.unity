@@ -529,8 +529,8 @@ MonoBehaviour:
   _onWitnessAdded:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: TouhouHeartstone.WitnessEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
+    m_TypeName: TouhouHeartstone.Backend.WitnessEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   _game: {fileID: 0}
 --- !u!1 &294924415
 GameObject:
@@ -1327,6 +1327,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e4ad85fd1c25ea4bb42d4cf7dc74b92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _frontendEvents: {fileID: 0}
   _network: {fileID: 0}
   _witness: {fileID: 0}
 --- !u!1 &1010715796
@@ -2944,7 +2945,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _text: "\u786E\u8BA4"
   sizePrescaler: 100
-  sortingOrder: 0
+  sortingOrder: 11
   settingsInternal:
     font: {fileID: 12800000, guid: 2c3a2d5fe7fee4344a22cd42f4292a1d, type: 3}
     pivot: {x: 0, y: 0}
