@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
-
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace TouhouHeartstone
 {
@@ -38,7 +36,6 @@ namespace TouhouHeartstone
         {
             return ((IEnumerable<Record>)_recoderList).GetEnumerator();
         }
-        [SerializeField]
         List<Record> _recoderList = new List<Record>();
         public event Action<Dictionary<int, Witness>> onWitness;
     }

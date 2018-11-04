@@ -23,7 +23,6 @@ namespace TouhouHeartstone.Frontend.Manager
             if (witness is SetOrderWitness)
             {
                 // 设置行动顺序。此witness含有一个包含了玩家行动顺序的array.
-                Debug.Log(witness.ToString());
             }
             else if (witness is SetDeckWitness)
             {

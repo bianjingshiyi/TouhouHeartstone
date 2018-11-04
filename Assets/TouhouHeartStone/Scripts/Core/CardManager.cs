@@ -1,8 +1,6 @@
 ﻿using System.Linq;
-using System.Collections.Generic;
-
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace TouhouHeartstone
 {
@@ -30,6 +28,14 @@ namespace TouhouHeartstone
             return card;
         }
         int _lastId;
+        public Card getCard(int instanceId)
+        {
+            return _cardList.Find(e => { return e.instance.instanceId == instanceId; });
+        }
+        public Card[] getCards(int[] instanceId)
+        {
+            return instanceId.Select(e => { return _cardList.Find(f => { return f.instance.instanceId == e; }); }).ToArray();
+        }
         public IEnumerator<Card> GetEnumerator()
         {
             return ((IEnumerable<Card>)_cardList).GetEnumerator();

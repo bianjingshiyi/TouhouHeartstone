@@ -2,18 +2,13 @@
 using System.Linq;
 using System.Collections.Generic;
 
-using UnityEngine;
-
 namespace TouhouHeartstone
 {
     [Serializable]
     class AddCardRecord : Record
     {
-        [SerializeField]
         int _playerId;
-        [SerializeField]
         RegionType _region;
-        [SerializeField]
         CardInstance[] _cardInstances;
         public AddCardRecord(int playerId, RegionType region, CardInstance[] cardInstances)
         {
@@ -62,13 +57,11 @@ namespace TouhouHeartstone
         {
             get { return _playerId; }
         }
-        [SerializeField]
         int _playerId;
         public int count
         {
             get { return _count; }
         }
-        [SerializeField]
         int _count;
         public SetDeckWitness(int playerId, int count)
         {

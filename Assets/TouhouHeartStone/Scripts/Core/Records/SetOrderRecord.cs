@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace TouhouHeartstone
 {
     [Serializable]
     class SetOrderRecord : Record
     {
-        [SerializeField]
         int[] _targetOrder = null;
-        [SerializeField]
         int[] _originOrder = null;
         public SetOrderRecord(int[] orderedPlayerId)
         {
@@ -69,15 +66,10 @@ namespace TouhouHeartstone
     [Serializable]
     class SetOrderWitness : Witness
     {
-        public int[] orderedPlayerId
-        {
-            get { return _orderedPlayerId; }
-        }
-        [SerializeField]
-        int[] _orderedPlayerId = null;
+        public int[] orderedPlayerId { get; } = null;
         public SetOrderWitness(int[] orderedPlayerId)
         {
-            _orderedPlayerId = orderedPlayerId;
+            this.orderedPlayerId = orderedPlayerId;
         }
         public override string ToString()
         {

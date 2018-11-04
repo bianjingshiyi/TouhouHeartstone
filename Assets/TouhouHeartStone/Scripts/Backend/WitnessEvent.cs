@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine.Events;
 
-namespace TouhouHeartstone
+namespace TouhouHeartstone.Backend
 {
     [Serializable]
     public class WitnessEvent : UnityEvent<Witness> { }

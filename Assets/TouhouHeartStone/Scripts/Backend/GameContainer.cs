@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+using TouhouHeartstone.Frontend.Manager;
+
 namespace TouhouHeartstone.Backend
 {
     public class GameContainer : MonoBehaviour
@@ -12,10 +14,14 @@ namespace TouhouHeartstone.Backend
         protected void Awake()
         {
             network.onReceiveObject += onReceiveObject;
+            if (frontendEvents != null)
+            {
+
+            }
             if (!network.isClient)
             {
                 game = new Game((int)DateTime.Now.ToBinary());
-                game.records.onWitness += onWitness;
+                game.records.onWitness += onHostWitness;
             }
         }
         protected void Start()
@@ -25,7 +31,7 @@ namespace TouhouHeartstone.Backend
                 game.start(network.playersId);
             }
         }
-        private void onWitness(Dictionary<int, Witness> dicWitness)
+        private void onHostWitness(Dictionary<int, Witness> dicWitness)
         {
             if (dicWitness == null)
                 return;
@@ -76,6 +82,24 @@ namespace TouhouHeartstone.Backend
             }
         }
         Dictionary<int, List<Witness>> _dicWitnessed = new Dictionary<int, List<Witness>>();
+        FrontendWitnessEventDispatcher frontendEvents
+        {
+            get
+            {
+                if (_frontendEvents == null)
+                {
+                    foreach (GameObject obj in gameObject.scene.GetRootGameObjects())
+                    {
+                        _frontendEvents = obj.GetComponentInChildren<FrontendWitnessEventDispatcher>();
+                        if (_frontendEvents != null)
+                            break;
+                    }
+                }
+                return _frontendEvents;
+            }
+        }
+        [SerializeField]
+        FrontendWitnessEventDispatcher _frontendEvents;
         public NetworkManager network
         {
             get
@@ -98,6 +122,6 @@ namespace TouhouHeartstone.Backend
         }
         [SerializeField]
         WitnessManager _witness;
-        internal Game game { get; set; } = null;
+        Game game { get; set; } = null;
     }
 }

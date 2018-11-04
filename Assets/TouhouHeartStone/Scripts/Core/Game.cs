@@ -13,7 +13,6 @@ namespace TouhouHeartstone
             cards = new CardManager();
             records = new RecordManager(this);
         }
-        Random random { get; set; }
         /// <summary>
         /// 开始游戏，需要提供游戏中玩家的id。
         /// </summary>
@@ -43,6 +42,32 @@ namespace TouhouHeartstone
                 records.addRecord(initDraw);
             }
         }
+        public void initReplace(int playerId, CardInstance[] cards)
+        {
+            InitReplaceRecord initReplace = new InitReplaceRecord(playerId, cards);
+            records.addRecord(initReplace);
+        }
+        /// <summary>
+        /// 随机整数，注意该函数返回的值可能包括最大值与最小值。
+        /// </summary>
+        /// <param name="min">最小值</param>
+        /// <param name="max">最大值</param>
+        /// <returns>介于最大值与最小值之间，可能为最大值也可能为最小值</returns>
+        public int randomInt(int min, int max)
+        {
+            return random.Next(min, max + 1);
+        }
+        /// <summary>
+        /// 随机实数，注意该函数返回的值可能包括最小值，但是不包括最大值。
+        /// </summary>
+        /// <param name="min">最小值</param>
+        /// <param name="max">最大值</param>
+        /// <returns>介于最大值与最小值之间，不包括最大值</returns>
+        public float randomFloat(float min, float max)
+        {
+            return (float)(random.NextDouble() * (max - min) + min);
+        }
+        Random random { get; set; }
         public CardManager cards { get; private set; }
         public PlayerManager players { get; private set; }
         public RecordManager records { get; set; }

@@ -2,16 +2,12 @@
 using System.Linq;
 using System.Collections.Generic;
 
-using UnityEngine;
-
 namespace TouhouHeartstone
 {
     [Serializable]
     class InitDrawRecord : Record
     {
-        [SerializeField]
         int _playerId;
-        [SerializeField]
         int _count;
         public InitDrawRecord(int playerId, int count)
         {
@@ -23,6 +19,7 @@ namespace TouhouHeartstone
             Player player = game.players.getPlayer(_playerId);
             _cards = player.deck.Take(_count).ToArray();
             player.deck.moveTo(_cards, player.hand);
+
             Dictionary<int, Witness> dicWitness = new Dictionary<int, Witness>();
             for (int i = 0; i < game.players.count; i++)
             {
@@ -42,22 +39,12 @@ namespace TouhouHeartstone
     [Serializable]
     class InitDrawWitness : Witness
     {
-        public int playerId
-        {
-            get { return _playerId; }
-        }
-        [SerializeField]
-        int _playerId;
-        public CardInstance[] cards
-        {
-            get { return _cards; }
-        }
-        [SerializeField]
-        CardInstance[] _cards;
+        public int playerId { get; }
+        public CardInstance[] cards { get; }
         public InitDrawWitness(int playerId, CardInstance[] cards)
         {
-            _playerId = playerId;
-            _cards = cards;
+            this.playerId = playerId;
+            this.cards = cards;
         }
         public override string ToString()
         {

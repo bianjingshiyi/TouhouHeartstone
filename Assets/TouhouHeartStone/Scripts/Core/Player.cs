@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace TouhouHeartstone
+﻿namespace TouhouHeartstone
 {
     class Player
     {

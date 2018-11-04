@@ -204,7 +204,7 @@ MonoBehaviour:
   _localPlayerId: 2
   _connections: []
   _host: {fileID: 0}
-  _loss: 0.1
+  _loss: 0
   _lag: 0.2
 --- !u!1 &1833478897
 GameObject:

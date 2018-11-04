@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
-
-using UnityEngine;
 
 namespace TouhouHeartstone
 {
+    [Serializable]
     class Card
     {
         public Card(CardInstance instance)
@@ -12,16 +10,5 @@ namespace TouhouHeartstone
             this.instance = instance;
         }
         public CardInstance instance { get; private set; }
-    }
-    [Serializable]
-    public class CardInstance
-    {
-        public int instanceId { get; }
-        public int cardId { get; }
-        public CardInstance(int instanceId, int cardId)
-        {
-            this.instanceId = instanceId;
-            this.cardId = cardId;
-        }
     }
 }
