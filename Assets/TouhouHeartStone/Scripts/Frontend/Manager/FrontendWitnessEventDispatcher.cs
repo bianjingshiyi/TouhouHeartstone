@@ -56,6 +56,16 @@ namespace TouhouHeartstone.Frontend.Manager
         /// </summary>
         public UnityAction<int[]> ReplaceInitDrawAction;
 
+        /// <summary>
+        /// 回合结束事件
+        /// </summary>
+        public event Action EndRoundEventAction;
+        internal void InvokeEndRoundEvent()
+        {
+            EndRoundEventAction?.Invoke();
+        }
+
+
 #if UNITY_EDITOR
 
         private void OnGUI()

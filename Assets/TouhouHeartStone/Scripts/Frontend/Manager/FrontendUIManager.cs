@@ -14,7 +14,7 @@ namespace TouhouHeartstone.Frontend.Manager
         private new void Awake()
         {
             base.Awake();
-            roundEndButton.EndRound += endRoundTest;
+            roundEndButton.EndRound += getSiblingManager<FrontendWitnessEventDispatcher>().InvokeEndRoundEvent;
             roundEndButton.SetState(true);
         }
 

@@ -7,6 +7,9 @@ namespace TouhouHeartstone.Frontend.Manager
 {
     public class HandCardManager : FrontendSubManager
     {
+        [SerializeField]
+        float mouseYRate = 0.15f;
+
         List<CardFace> cards = new List<CardFace>();
 
         /// <summary>
@@ -41,10 +44,21 @@ namespace TouhouHeartstone.Frontend.Manager
         private void addCardInner(CardFace card, CardPosInfo pos)
         {
             cards.Add(card);
+            cardRegistEvent(card);
+            card.CardAniController.CardMoveToHand(pos.Position, pos.Rotation);
+        }
+
+        /// <summary>
+        /// 注册事件
+        /// </summary>
+        /// <param name="card"></param>
+        private void cardRegistEvent(CardFace card)
+        {
             card.OnMouseIn += cardOnMouseIn;
             card.OnMouseOut += cardOnMouseOut;
             card.OnClick += cardOnClick;
-            card.CardAniController.CardMoveToHand(pos.Position, pos.Rotation);
+            card.OnDrag += cardOnDrag;
+            card.OnRelease += cardOnRelease;
         }
 
         struct CardPosInfo
@@ -108,27 +122,67 @@ namespace TouhouHeartstone.Frontend.Manager
             if (obj.State == CardState.Hand)
             {
                 var p = getCardPosInfo(cards.Count, cards.IndexOf(obj));
-
                 p.Position *= 0.75f;
-
                 obj.CardAniController.ShowCard(p.Position);
             }
         }
 
         private void cardOnClick(CardFace card)
         {
+            switch (card.State)
+            {
+                case CardState.Pickup:
+                    cardOnRelease(card);
+                    break;
+                case CardState.Active:
+                    cardOnDrag(card);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 卡片被释放的事件
+        /// </summary>
+        /// <param name="card"></param>
+        private void cardOnRelease(CardFace card)
+        {
+            if (card.State == CardState.Pickup)
+            {
+                // 检测是否在安全界限内
+                if (Input.mousePosition.y < Screen.height * mouseYRate)
+                {
+                    cardBackHand(card);
+                    activeCard = null;
+                }
+                else
+                {
+                    // 根据卡的类型来做
+                    switch(card.Type)
+                    {
+                        // 无目标法术卡，直接使用
+                        case CardType.DriftlessSpell:
+                            card.Use();
+                            cardDestroy(card);
+                            activeCard = null;
+                            break;
+
+                    }
+                }
+            }
+        }
+
+        private void cardOnDrag(CardFace card)
+        {
             if (card.State == CardState.Active)
             {
-                card.State = CardState.Pickup;
                 activeCard = card;
-            }
-            else if (card.State == CardState.Pickup)
-            {
-                var p = getCardPosInfo(cards.Count, cards.IndexOf(card));
-                p.Position *= 0.75f;
-                card.CardAniController.ShowCard(p.Position);
+                card.State = CardState.Pickup;
 
-                activeCard = null;
+                // 设置拿起后的位置
+                var p = getCardPosInfo(cards.Count, cards.IndexOf(card));
+                p.Position.z -= 0.05f;
+                card.transform.localPosition = p.Position;
+                card.transform.localRotation = Quaternion.Euler(Vector3.zero);
             }
         }
 
@@ -138,22 +192,62 @@ namespace TouhouHeartstone.Frontend.Manager
         {
             if (activeCard != null)
             {
-                var t = activeCard.gameObject.transform;
-                var orgpos = t.position;
+                switch (activeCard.Type)
+                {
+                    case CardType.DriftlessSpell:
+                    case CardType.Entity:
+                    case CardType.DirectedEntity:
+                        cardFollowMouse();
+                        break;
+                    case CardType.DirectedSpell:
+                        // todo: target selector
+                        break;
 
-                var mousePos = Input.mousePosition;
-                var world = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, Camera.main.transform.position.y - t.position.y));
-
-                Debug.Log(world);
+                }
                 
-                orgpos.x = world.x;
-                orgpos.z = world.z;
-
-                // todo: 3D的算法
-
-                t.position = orgpos;
             }
         }
+
+        /// <summary>
+        /// 卡片跟随鼠标
+        /// </summary>
+        private void cardFollowMouse()
+        {
+            var t = activeCard.gameObject.transform;
+            var orgpos = t.position;
+
+            var mousePos = Input.mousePosition;
+            var world = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, Camera.main.transform.position.y - t.position.y));
+
+            orgpos.x = world.x;
+            orgpos.z = world.z;
+
+            t.position = orgpos;
+        }
+
+        /// <summary>
+        /// 销毁卡片
+        /// </summary>
+        /// <param name="card"></param>
+        void cardDestroy(CardFace card)
+        {
+            card.State = CardState.Destory;
+            if(cards.Contains(card)) cards.Remove(card);
+
+            adjustCardPos(cards.Count);
+        }
+
+        /// <summary>
+        /// 卡牌回到手牌
+        /// </summary>
+        /// <param name="card"></param>
+        private void cardBackHand(CardFace card)
+        {
+            var p = getCardPosInfo(cards.Count, cards.IndexOf(card));
+            p.Position *= 0.75f;
+            card.CardAniController.ShowCard(p.Position);
+        }
+
 
         /// <summary>
         /// 调整卡片位置

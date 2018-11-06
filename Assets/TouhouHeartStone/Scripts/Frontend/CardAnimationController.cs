@@ -140,6 +140,7 @@ namespace TouhouHeartstone.Frontend
         /// <param name="finishCallback"></param>
         public void UnShowCard(Vector3 position, Vector3 rotation, Action finishCallback = null)
         {
+            setNormalState();
             var ani = animator.DupAnimation("unshowCard");
             if (ani is KeyframeAnimation)
             {
@@ -155,7 +156,7 @@ namespace TouhouHeartstone.Frontend
                 kfani.SetEndPosition(position);
 
                 kfani.OnAnimationFinish += finishCallback;
-                kfani.OnAnimationFinish += setNormalState;
+                // kfani.OnAnimationFinish += setNormalState;
             }
 
             animator.InstantPlay(ani);
