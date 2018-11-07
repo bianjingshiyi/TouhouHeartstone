@@ -166,5 +166,10 @@ namespace TouhouHeartstone.Frontend
         {
             GetComponent<CardFace>().State = CardState.Hand;
         }
+
+        public void StopAll()
+        {
+            animator.Clear();
+        }
     }
 }

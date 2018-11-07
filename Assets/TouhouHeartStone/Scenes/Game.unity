@@ -574,6 +574,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardPrefab: {fileID: 135302889}
   cardSpawnRoot: {fileID: 1120667144}
+--- !u!1 &354509889
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 354509890}
+  - component: {fileID: 354509891}
+  m_Layer: 0
+  m_Name: DeskEntityManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &354509890
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 354509889}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 383100265}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &354509891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 354509889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 710e79e0dd50fc24e81f027f45ff25cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 114135755847652864, guid: cdf6c474cfb580c41b9ba93666e3bb01, type: 2}
+  entitySpawnNode: {fileID: 962253782}
 --- !u!1 &383100263
 GameObject:
   m_ObjectHideFlags: 0
@@ -617,6 +659,7 @@ Transform:
   - {fileID: 231375871}
   - {fileID: 1178592105}
   - {fileID: 1868334680}
+  - {fileID: 354509890}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1485,6 +1528,39 @@ MonoBehaviour:
   _frontendEvents: {fileID: 0}
   _network: {fileID: 0}
   _witness: {fileID: 0}
+--- !u!1 &962253781
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 962253782}
+  m_Layer: 0
+  m_Name: EntityDesk
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &962253782
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 962253781}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1616497595}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -0.612}
+  m_SizeDelta: {x: 10, y: 2}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1010715796
 GameObject:
   m_ObjectHideFlags: 0
@@ -2100,7 +2176,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
-  m_Children: []
+  m_Children:
+  - {fileID: 962253782}
   m_Father: {fileID: 1935347076}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2406,35 +2483,31 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 33430495086911028, guid: 489a30baefcda284eb579bc80eb33019,
-        type: 2}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 2101103063}
-    - target: {fileID: 33642778235653956, guid: 489a30baefcda284eb579bc80eb33019,
-        type: 2}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 1481816522}
-    - target: {fileID: 33836871484518052, guid: 489a30baefcda284eb579bc80eb33019,
-        type: 2}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 1609516174}
-    - target: {fileID: 33854520529638124, guid: 489a30baefcda284eb579bc80eb33019,
-        type: 2}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 703189283}
     - target: {fileID: 33886533505588106, guid: 489a30baefcda284eb579bc80eb33019,
         type: 2}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 1959176247}
-    - target: {fileID: 1243352336394238, guid: 489a30baefcda284eb579bc80eb33019, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
+    - target: {fileID: 33854520529638124, guid: 489a30baefcda284eb579bc80eb33019,
+        type: 2}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 703189283}
+    - target: {fileID: 33836871484518052, guid: 489a30baefcda284eb579bc80eb33019,
+        type: 2}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 1609516174}
+    - target: {fileID: 33642778235653956, guid: 489a30baefcda284eb579bc80eb33019,
+        type: 2}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 1481816522}
+    - target: {fileID: 33430495086911028, guid: 489a30baefcda284eb579bc80eb33019,
+        type: 2}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 2101103063}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 489a30baefcda284eb579bc80eb33019, type: 2}
   m_IsPrefabAsset: 0

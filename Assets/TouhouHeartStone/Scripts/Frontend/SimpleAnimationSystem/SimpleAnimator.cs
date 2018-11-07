@@ -64,5 +64,10 @@ namespace TouhouHeartstone.Frontend.SimpleAnimationSystem
             animations.Clear();
             QueuePlay(ani);
         }
+
+        public void Clear()
+        {
+            animations.Clear();
+        }
     }
 }
