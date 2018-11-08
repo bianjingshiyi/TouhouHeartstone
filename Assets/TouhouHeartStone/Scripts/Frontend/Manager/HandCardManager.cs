@@ -7,14 +7,29 @@ namespace TouhouHeartstone.Frontend.Manager
 {
     public class HandCardManager : FrontendSubManager
     {
-        [SerializeField]
-        float mouseYRate = 0.15f;
-
         List<CardFace> cards = new List<CardFace>();
 
-        bool isCardInHand => Input.mousePosition.y < Screen.height * mouseYRate;
+        [SerializeField]
+        Transform selfImage;
+
+        bool isCardInHand
+        {
+            get
+            {
+                var mPos = Input.mousePosition;
+                var tPos = selfImage.position;
+                var cam = Camera.main;
+
+                mPos.z = cam.transform.position.y - tPos.y;
+                var wPos = cam.ScreenToWorldPoint(mPos);
+
+                return tPos.z > wPos.z;
+            }
+        }
 
         DeskEntityManager desk => getSiblingManager<DeskEntityManager>();
+
+        TargetSelector selector => getSiblingManager<FrontendUIManager>().TargetSelector;
 
         /// <summary>
         /// 向手牌中添加一张卡
@@ -191,8 +206,11 @@ namespace TouhouHeartstone.Frontend.Manager
                         de.Insert(card, p);
                         useCard(card);
                         break;
+                    default:
+                        cardBackHand(card);
+                        activeCard = null;
+                        break;
                 }
-
             }
         }
 
@@ -218,9 +236,17 @@ namespace TouhouHeartstone.Frontend.Manager
                         cardFollowMouse();
                         break;
                     case CardType.DirectedSpell:
-                        // todo: target selector
+                        cardSpecialFollowMouse();
+                        if (!isCardInHand)
+                        {
+                            selector.SetStartPosition(selfImage.position);
+                            selector.UpdatePos(Input.mousePosition, (obj) => { return true; });
+                        }
+                        else
+                        {
+                            selector.HideSelector();
+                        }
                         break;
-
                 }
 
             }
@@ -242,6 +268,43 @@ namespace TouhouHeartstone.Frontend.Manager
             orgpos.z = world.z;
 
             t.position = orgpos;
+        }
+
+        /// <summary>
+        /// 特殊的跟随：会逐渐进入本人位置
+        /// </summary>
+        private void cardSpecialFollowMouse()
+        {
+            var cardTransform = activeCard.gameObject.transform;
+            var cardOrigPos = cardTransform.position;
+            var cam = Camera.main;
+            var mousePos = Input.mousePosition;
+            var targetPos = selfImage.position;
+
+            const float distFactor = 1f;
+
+            mousePos.z = cam.transform.position.y - cardTransform.position.y;
+            var cardWorldPos = cam.ScreenToWorldPoint(mousePos);
+
+            var dist = targetPos.z - cardWorldPos.z;
+            dist = dist > 0 ? dist : 0;
+
+            Vector2 target = Vector2.zero;
+
+            // 距离过远，使用传统的设置
+            if (dist > distFactor)
+            {
+                target = MathUtils.xzy2xy(cardWorldPos);
+            }
+            else
+            {
+                target = Vector2.Lerp(MathUtils.xzy2xy(targetPos), MathUtils.xzy2xy(cardWorldPos), dist / distFactor);
+            }
+
+            cardOrigPos.x = target.x;
+            cardOrigPos.z = target.y;
+
+            cardTransform.position = cardOrigPos;
         }
 
         /// <summary>

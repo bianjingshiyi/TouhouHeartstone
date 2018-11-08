@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+using System;
+using System.Collections.Generic;
+
 namespace TouhouHeartstone.Frontend
 {
     /// <summary>
@@ -8,6 +11,12 @@ namespace TouhouHeartstone.Frontend
     public class TargetSelector : MonoBehaviour
     {
         Vector3 startPos;
+
+        [SerializeField]
+        GameObject HintObject;
+
+        [SerializeField]
+        LineRenderer lineRenderer;
 
         public delegate bool ContentFilter(RaycastHit hit);
 
@@ -18,7 +27,8 @@ namespace TouhouHeartstone.Frontend
 
         public void HideSelector()
         {
-            // todo:
+            lineRenderer.gameObject.SetActive(false);
+            HintObject.gameObject.SetActive(false);
         }
 
         RaycastHit lastHit;
@@ -54,7 +64,42 @@ namespace TouhouHeartstone.Frontend
         /// <param name="visible"></param>
         void SetHintPos(Vector3 pos, bool visible)
         {
-            // todo: hint?
+            HintObject.transform.position = pos;
+            HintObject.SetActive(visible);
+
+            lineRenderer.gameObject.SetActive(true);
+
+            var array = generateDropLine(startPos, pos);
+            lineRenderer.positionCount = array.Length;
+            lineRenderer.SetPositions(array);
+        }
+
+        Vector3[] generateDropLine(Vector3 start, Vector3 end)
+        {
+            const double top = 1;
+            const double step = 0.05;
+
+            var start2D = MathUtils.xzy2xy(start);
+            var end2D = MathUtils.xzy2xy(end);
+
+            var b = Vector2.Distance(start2D, end2D);
+            var k = -4 * top / b / b;
+
+            List<Vector3> result = new List<Vector3>();
+
+            for (double i = 0; i < b; i += step)
+            {
+                // 2次函数
+                var y = k * i * (i - b);
+                var pos2D = Vector2.Lerp(start2D, end2D, (float)(i / b));
+                var pos = MathUtils.xzy2xyz(pos2D);
+                pos.y = (float)y + end.y;
+
+                result.Add(pos);
+            }
+            result.Add(end);
+
+            return result.ToArray();
         }
     }
 }

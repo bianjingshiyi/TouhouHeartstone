@@ -11,6 +11,11 @@ namespace TouhouHeartstone.Frontend.Manager
         [SerializeField]
         UIPopup gameSuccessPopup;
 
+        [SerializeField]
+        TargetSelector selector;
+
+        public TargetSelector TargetSelector => selector;
+
         private new void Awake()
         {
             base.Awake();

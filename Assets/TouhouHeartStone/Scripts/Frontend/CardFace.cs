@@ -110,6 +110,7 @@ namespace TouhouHeartstone.Frontend
                 if (delayCount++ > 5)
                 {
                     isDraging = true;
+                    Debug.Log("Drag");
                     OnDrag?.Invoke(this);
                 }
             }
@@ -121,6 +122,7 @@ namespace TouhouHeartstone.Frontend
             {
                 isDraging = false;
                 delayCount = 0;
+                Debug.Log("Release");
                 OnRelease?.Invoke(this);
             }
         }
