@@ -52,7 +52,7 @@ namespace TouhouHeartstone.Frontend
                     return true;
                 }
             }
-
+            lastHit = new RaycastHit();
             SetHintPos(worldPos, false);
             return false;
         }

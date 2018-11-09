@@ -101,17 +101,26 @@ namespace TouhouHeartstone.Frontend
         }
 
         bool isDraging = false;
-        int delayCount = 0;
+        bool checking = false;
+        Vector2 lastMousePos;
 
         private void OnMouseDrag()
         {
             if (!isDraging)
             {
-                if (delayCount++ > 5)
+                if (checking)
                 {
-                    isDraging = true;
-                    Debug.Log("Drag");
-                    OnDrag?.Invoke(this);
+                    if (Vector2.Distance(lastMousePos, Input.mousePosition) > 4)
+                    {
+                        isDraging = true;
+                        Debug.Log("Drag");
+                        OnDrag?.Invoke(this);
+                    }
+                }
+                else
+                {
+                    lastMousePos = Input.mousePosition;
+                    checking = true;
                 }
             }
         }
@@ -121,7 +130,7 @@ namespace TouhouHeartstone.Frontend
             if (isDraging)
             {
                 isDraging = false;
-                delayCount = 0;
+                checking = false;
                 Debug.Log("Release");
                 OnRelease?.Invoke(this);
             }

@@ -124,7 +124,11 @@ namespace TouhouHeartstone.Frontend.Manager
             }
         }
 
-
+        /// <summary>
+        /// 鼠标移出事件
+        /// 主要用于处理详细信息的显示切换
+        /// </summary>
+        /// <param name="obj"></param>
         private void cardOnMouseOut(CardFace obj)
         {
             if (activeCard != null) return;
@@ -135,6 +139,11 @@ namespace TouhouHeartstone.Frontend.Manager
             }
         }
 
+        /// <summary>
+        /// 鼠标移入事件
+        /// 主要用于处理详细信息的显示切换
+        /// </summary>
+        /// <param name="obj"></param>
         private void cardOnMouseIn(CardFace obj)
         {
             if (activeCard != null) return;
@@ -146,6 +155,11 @@ namespace TouhouHeartstone.Frontend.Manager
             }
         }
 
+        /// <summary>
+        /// 卡片点击事件
+        /// 用于处理点击拿起和使用
+        /// </summary>
+        /// <param name="card"></param>
         private void cardOnClick(CardFace card)
         {
             switch (card.State)
@@ -159,6 +173,11 @@ namespace TouhouHeartstone.Frontend.Manager
             }
         }
 
+        /// <summary>
+        /// 卡片拖动事件
+        /// 用于使用卡片
+        /// </summary>
+        /// <param name="card"></param>
         private void cardOnDrag(CardFace card)
         {
             if (card.State == CardState.Active)
@@ -201,20 +220,59 @@ namespace TouhouHeartstone.Frontend.Manager
                         break;
                     // 无目标实体卡，加入到位置中
                     case CardType.Entity:
-                        var de = getSiblingManager<DeskEntityManager>();
-                        var p = de.ReserveInsertSpace(Input.mousePosition);
-                        de.Insert(card, p);
+                        var p = desk.ReserveInsertSpace(Input.mousePosition);
+                        desk.Insert(card, p);
                         useCard(card);
                         break;
-                    default:
-                        cardBackHand(card);
-                        activeCard = null;
+                    // 有目标法术卡，使用目标选择器进行选择
+                    case CardType.DirectedSpell:
+                        if (selector.LastSelectTarget.transform != null)
+                        {
+                            useCard(card, selector.LastSelectTarget.transform.gameObject);
+                        }
+                        else
+                        {
+                            cardBackHand(card);
+                            activeCard = null;
+                        }
+                        selector.HideSelector();
+                        break;
+                    // 有目标实体卡：加入位置，然后使用目标选择器
+                    case CardType.DirectedEntity:
+                        if (!stage2)
+                        {
+                            var index = desk.ReserveInsertSpace(Input.mousePosition);
+                            desk.Insert(card, index);
+                            // 注意，这里并没有取消当前手上的卡片
+                            // useCard(card);
+                            card.Use();
+                            // todo: 临时操作，以后需要更换，使用动画或其他方式消失
+                            card.gameObject.SetActive(false);
+                            stage2 = true;
+                        }
+                        else
+                        {
+                            if (selector.LastSelectTarget.transform != null)
+                            {
+                                useCard(card, selector.LastSelectTarget.transform.gameObject);
+                            }
+                            else
+                            {
+                                desk.RemoveEntityByInstanceID(card.InstanceID);
+                                card.gameObject.SetActive(true);
+                                cardBackHand(card);
+                                activeCard = null;
+                            }
+                            selector.HideSelector();
+                            stage2 = false;
+                        }
                         break;
                 }
             }
         }
 
         CardFace activeCard;
+        bool stage2 = false;
 
         private void Update()
         {
@@ -222,19 +280,38 @@ namespace TouhouHeartstone.Frontend.Manager
             {
                 switch (activeCard.Type)
                 {
+                    // 无目标实体卡，跟随鼠标，同时在桌面上预留实体插入空间
                     case CardType.Entity:
                         cardFollowMouse();
                         if (isCardInHand) desk.UpdateEntityPos();
                         else desk.ReserveInsertSpace(Input.mousePosition);
                         break;
-
+                    // 有目标实体卡，第一阶段与上面相同
                     case CardType.DirectedEntity:
-                        cardFollowMouse();
-                        break;
+                        if (!stage2)
+                        {
+                            cardFollowMouse();
+                            if (isCardInHand) desk.UpdateEntityPos();
+                            else desk.ReserveInsertSpace(Input.mousePosition);
+                        }
+                        else
+                        {
+                            selector.SetStartPosition(desk.GetPositionByIndex(desk.GetIndexByCardID(activeCard.InstanceID)));
+                            // todo: 使用真正的instance逻辑
+                            selector.UpdatePos(Input.mousePosition, (obj) => { return true; });
 
+                            // 生成事件。用于stage2的按下检测
+                            if(Input.GetMouseButtonDown(0))
+                            {
+                                cardOnRelease(activeCard);
+                            }
+                        }
+                        break;
+                    // 无目标法术卡，跟随鼠标
                     case CardType.DriftlessSpell:
                         cardFollowMouse();
                         break;
+                    // 有目标法术卡，在界限内使用特殊方法跟随鼠标；在界限外使用目标选择器选择目标
                     case CardType.DirectedSpell:
                         cardSpecialFollowMouse();
                         if (!isCardInHand)
@@ -248,7 +325,6 @@ namespace TouhouHeartstone.Frontend.Manager
                         }
                         break;
                 }
-
             }
         }
 
@@ -338,8 +414,7 @@ namespace TouhouHeartstone.Frontend.Manager
         private void cardBackHand(CardFace card)
         {
             var p = getCardPosInfo(cards.Count, cards.IndexOf(card));
-            p.Position *= 0.75f;
-            card.CardAniController.ShowCard(p.Position);
+            card.CardAniController.UnShowCard(p.Position, p.Rotation);
         }
 
 

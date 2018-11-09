@@ -424,7 +424,7 @@ MonoBehaviour:
   headImage: {fileID: 0}
   aniController: {fileID: 114210012054714218}
   typeID: 0
-  type: 1
+  type: 3
 --- !u!114 &114572072047071020
 MonoBehaviour:
   m_ObjectHideFlags: 1

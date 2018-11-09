@@ -25,6 +25,48 @@ namespace TouhouHeartstone.Frontend.Manager
             return ett;
         }
 
+        /// <summary>
+        /// 根据卡片的instanceID获取位置index
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int GetIndexByCardID(int id)
+        {
+            for (int i = 0; i < entityList.Count; i++)
+            {
+                if(entityList[i].InstanceID == id)
+                {
+                    return i;
+                }
+            }
+            return -1; 
+        }
+
+        /// <summary>
+        /// 根据index获取位置
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public Vector3 GetPositionByIndex(int index)
+        {
+            return entitySpawnNode.localToWorldMatrix.MultiplyVector(calculateEntityPos(entityList.Count, index));
+        }
+
+        /// <summary>
+        /// 根据ID移除某个卡
+        /// </summary>
+        /// <param name="id"></param>
+        public void RemoveEntityByInstanceID(int id)
+        {
+            int index = GetIndexByCardID(id);
+            if(index >=0)
+            {
+                Destroy(entityList[index].gameObject);
+                entityList.RemoveAt(index);
+                UpdateEntityPos();
+            }
+        }
+
         Vector3 calculateEntityPos(int count, int pos)
         {
             Vector3 basePos = new Vector3(0, 0, 0);
