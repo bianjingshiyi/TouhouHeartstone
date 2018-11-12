@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace TouhouHeartstone
 {
     [Serializable]
-    class Game
+    public class Game
     {
         public Game(int randomSeed)
         {
@@ -45,7 +45,7 @@ namespace TouhouHeartstone
                 records.addRecord(new InitReplaceRecord(playerId, cards));
             preparedPlayers.Add(playerId);
             //if (players.orderedPlayers.All(e => { return preparedPlayers.Contains(e.id); }))
-                duelStart();
+            duelStart();
         }
         HashSet<int> preparedPlayers { get; } = new HashSet<int>();
         void duelStart()
@@ -57,6 +57,20 @@ namespace TouhouHeartstone
         {
             records.addRecord(new TurnStartRecord(player.id));
             records.addRecord(new AddCrystalRecord(player.id, 1, CrystalState.normal));
+            draw(player, 1);
+        }
+        void draw(Player player, int count)
+        {
+            records.addRecord(new DrawRecord(player.id, 1));
+        }
+        public void turnEnd(int playerId)
+        {
+            Player player = players.getPlayer(playerId);
+            int index = Array.IndexOf(players.orderedPlayers, player) + 1;
+            if (index >= players.orderedPlayers.Length)
+                index = 0;
+            Player nextPlayer = players.orderedPlayers[index];
+            turnStart(nextPlayer);
         }
         /// <summary>
         /// 随机整数，注意该函数返回的值可能包括最大值与最小值。
@@ -79,8 +93,8 @@ namespace TouhouHeartstone
             return (float)(random.NextDouble() * (max - min) + min);
         }
         Random random { get; set; }
-        public CardManager cards { get; private set; }
-        public PlayerManager players { get; private set; }
+        internal CardManager cards { get; private set; }
+        internal PlayerManager players { get; private set; }
         public RecordManager records { get; set; }
     }
 }

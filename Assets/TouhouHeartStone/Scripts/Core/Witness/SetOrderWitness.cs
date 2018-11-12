@@ -3,7 +3,7 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    class SetOrderWitness : Witness
+    public class SetOrderWitness : Witness
     {
         public int[] orderedPlayerId { get; } = null;
         public SetOrderWitness(int[] orderedPlayerId)

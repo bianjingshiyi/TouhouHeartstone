@@ -3,7 +3,7 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    class SetDeckWitness : Witness
+    public class SetDeckWitness : Witness
     {
         public int playerId
         {

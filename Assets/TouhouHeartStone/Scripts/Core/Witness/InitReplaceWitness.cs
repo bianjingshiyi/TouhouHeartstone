@@ -6,7 +6,7 @@ namespace TouhouHeartstone
     /// 替换初始手牌的Witness
     /// </summary>
     [Serializable]
-    class InitReplaceWitness : Witness
+    public class InitReplaceWitness : Witness
     {
         public int playerId { get; }
         public CardInstance[] originCards { get; }

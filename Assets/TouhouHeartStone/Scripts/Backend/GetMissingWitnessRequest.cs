@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TouhouHeartstone
+namespace TouhouHeartstone.Backend
 {
     [Serializable]
     class GetMissingWitnessRequest

@@ -17,6 +17,7 @@ namespace TouhouHeartstone.Backend
             if (frontendEvents != null)
             {
                 frontendEvents.ReplaceInitDrawAction += onInitReplace;
+                frontendEvents.EndRoundEventAction += onTurnEnd;
             }
             if (!network.isClient)
             {
@@ -34,6 +35,10 @@ namespace TouhouHeartstone.Backend
         private void onInitReplace(int[] cards)
         {
             game.initReplace(network.localPlayerId, cards.Select(e => { return new CardInstance(e, 0); }).ToArray());
+        }
+        private void onTurnEnd()
+        {
+            game.turnEnd(network.localPlayerId);
         }
         private void onHostWitness(Dictionary<int, Witness> dicWitness)
         {
