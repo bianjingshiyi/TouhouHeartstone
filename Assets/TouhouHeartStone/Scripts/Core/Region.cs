@@ -10,10 +10,16 @@ namespace TouhouHeartstone
         {
             _cards.AddRange(cards);
         }
-        public void moveTo(IEnumerable<Card> cards, Region targetRegion)
+        public void moveTo(IEnumerable<Card> cards, Region targetRegion, bool toBottom = true)
         {
-            _cards.RemoveAll(e => { return cards.Contains(e); });
-            targetRegion._cards.AddRange(cards);
+            foreach (Card card in cards)
+            {
+                _cards.Remove(card);
+                if (toBottom)
+                    targetRegion._cards.Add(card);
+                else
+                    targetRegion._cards.Insert(0, card);
+            }
         }
         public void replace(IEnumerable<Card> originCards, IEnumerable<Card> targetCards)
         {

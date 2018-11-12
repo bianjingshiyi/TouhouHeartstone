@@ -30,22 +30,33 @@ namespace TouhouHeartstone
                 orderedPlayerId[i] = unorderedPlayers[index];
                 unorderedPlayers.RemoveAt(index);
             }
-            SetOrderRecord setOrder = new SetOrderRecord(orderedPlayerId);
-            records.addRecord(setOrder);
+            records.addRecord(new SetOrderRecord(orderedPlayerId));
             //初始化卡组，抽初始卡牌，并保留或者替换
             for (int i = 0; i < players.orderedPlayers.Length; i++)
             {
                 int[] presetDeck = new int[30];//预设卡组是空的。
-                AddCardRecord setDeck = new AddCardRecord(players.orderedPlayers[i].id, RegionType.deck, cards.createInstances(presetDeck));
-                records.addRecord(setDeck);
-                InitDrawRecord initDraw = new InitDrawRecord(players.orderedPlayers[i].id, i == 0 ? 3 : 4);
-                records.addRecord(initDraw);
+                records.addRecord(new AddCardRecord(players.orderedPlayers[i].id, RegionType.deck, cards.createInstances(presetDeck)));
+                records.addRecord(new InitDrawRecord(players.orderedPlayers[i].id, i == 0 ? 3 : 4));
             }
         }
         public void initReplace(int playerId, CardInstance[] cards)
         {
-            InitReplaceRecord initReplace = new InitReplaceRecord(playerId, cards);
-            records.addRecord(initReplace);
+            if (cards.Length > 0)
+                records.addRecord(new InitReplaceRecord(playerId, cards));
+            preparedPlayers.Add(playerId);
+            //if (players.orderedPlayers.All(e => { return preparedPlayers.Contains(e.id); }))
+                duelStart();
+        }
+        HashSet<int> preparedPlayers { get; } = new HashSet<int>();
+        void duelStart()
+        {
+            records.addRecord(new DuelStartRecord());
+            turnStart(players.orderedPlayers[0]);
+        }
+        void turnStart(Player player)
+        {
+            records.addRecord(new TurnStartRecord(player.id));
+            records.addRecord(new AddCrystalRecord(player.id, 1, CrystalState.normal));
         }
         /// <summary>
         /// 随机整数，注意该函数返回的值可能包括最大值与最小值。

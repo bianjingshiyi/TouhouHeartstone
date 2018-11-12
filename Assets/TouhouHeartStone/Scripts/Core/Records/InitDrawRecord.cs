@@ -5,6 +5,31 @@ using System.Collections.Generic;
 namespace TouhouHeartstone
 {
     [Serializable]
+    class DrawRecord : Record
+    {
+        int playerId { get; }
+        int count { get; }
+        public DrawRecord(int playerId, int count)
+        {
+            this.playerId = playerId;
+            this.count = count;
+        }
+        public override Dictionary<int, Witness> apply(Game game)
+        {
+            Player player = game.players.getPlayer(playerId);
+            _cards = player.deck.Take(count).ToArray();
+            player.deck.moveTo(_cards, player.hand);
+
+            return null;
+        }
+        [NonSerialized]
+        Card[] _cards = null;
+        public override Dictionary<int, Witness> revert(Game game)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    [Serializable]
     class InitDrawRecord : Record
     {
         int _playerId;
@@ -34,30 +59,6 @@ namespace TouhouHeartstone
             Player player = game.players.getPlayer(_playerId);
             player.hand.moveTo(_cards, player.deck);
             return null;
-        }
-    }
-    [Serializable]
-    class InitDrawWitness : Witness
-    {
-        public int playerId { get; }
-        public CardInstance[] cards { get; }
-        public InitDrawWitness(int playerId, CardInstance[] cards)
-        {
-            this.playerId = playerId;
-            this.cards = cards;
-        }
-        public override string ToString()
-        {
-            string s = "玩家" + playerId + "抽" + cards.Length + "张卡：";
-            for (int i = 0; i < cards.Length; i++)
-            {
-                s += cards[i].ToString();
-                if (i != cards.Length - 1)
-                    s += "，";
-                else
-                    s += "。";
-            }
-            return s;
         }
     }
 }
