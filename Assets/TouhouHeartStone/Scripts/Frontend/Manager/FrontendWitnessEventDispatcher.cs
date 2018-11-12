@@ -40,12 +40,31 @@ namespace TouhouHeartstone.Frontend.Manager
                 }
 
             }
+            else if (witness is InitReplaceWitness)
+            {
+                var rpw = witness as InitReplaceWitness;
+                if (rpw.playerId == selfID)
+                {
+                    // todo: 这里给了原有的卡牌，是否要做个容错？
+                    getSiblingManager<FrontendCardManager>().NormalDrawCard(rpw.replaceCards);
+                }
+            }
         }
 
         /// <summary>
         /// 替换初始手牌
         /// </summary>
         public UnityAction<int[]> ReplaceInitDrawAction;
+
+        /// <summary>
+        /// 回合结束事件
+        /// </summary>
+        public event Action EndRoundEventAction;
+        internal void InvokeEndRoundEvent()
+        {
+            EndRoundEventAction?.Invoke();
+        }
+
 
 #if UNITY_EDITOR
 

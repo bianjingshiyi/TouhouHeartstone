@@ -9,6 +9,28 @@ namespace TouhouHeartstone.Frontend.Manager
     {
         List<CardFace> cards = new List<CardFace>();
 
+        [SerializeField]
+        Transform selfImage;
+
+        bool isCardInHand
+        {
+            get
+            {
+                var mPos = Input.mousePosition;
+                var tPos = selfImage.position;
+                var cam = Camera.main;
+
+                mPos.z = cam.transform.position.y - tPos.y;
+                var wPos = cam.ScreenToWorldPoint(mPos);
+
+                return tPos.z > wPos.z;
+            }
+        }
+
+        DeskEntityManager desk => getSiblingManager<DeskEntityManager>();
+
+        TargetSelector selector => getSiblingManager<FrontendUIManager>().TargetSelector;
+
         /// <summary>
         /// 向手牌中添加一张卡
         /// </summary>
@@ -41,10 +63,21 @@ namespace TouhouHeartstone.Frontend.Manager
         private void addCardInner(CardFace card, CardPosInfo pos)
         {
             cards.Add(card);
+            cardRegistEvent(card);
+            card.CardAniController.CardMoveToHand(pos.Position, pos.Rotation);
+        }
+
+        /// <summary>
+        /// 注册事件
+        /// </summary>
+        /// <param name="card"></param>
+        private void cardRegistEvent(CardFace card)
+        {
             card.OnMouseIn += cardOnMouseIn;
             card.OnMouseOut += cardOnMouseOut;
             card.OnClick += cardOnClick;
-            card.CardAniController.CardMoveToHand(pos.Position, pos.Rotation);
+            card.OnDrag += cardOnDrag;
+            card.OnRelease += cardOnRelease;
         }
 
         struct CardPosInfo
@@ -91,7 +124,11 @@ namespace TouhouHeartstone.Frontend.Manager
             }
         }
 
-
+        /// <summary>
+        /// 鼠标移出事件
+        /// 主要用于处理详细信息的显示切换
+        /// </summary>
+        /// <param name="obj"></param>
         private void cardOnMouseOut(CardFace obj)
         {
             if (activeCard != null) return;
@@ -102,58 +139,284 @@ namespace TouhouHeartstone.Frontend.Manager
             }
         }
 
+        /// <summary>
+        /// 鼠标移入事件
+        /// 主要用于处理详细信息的显示切换
+        /// </summary>
+        /// <param name="obj"></param>
         private void cardOnMouseIn(CardFace obj)
         {
             if (activeCard != null) return;
             if (obj.State == CardState.Hand)
             {
                 var p = getCardPosInfo(cards.Count, cards.IndexOf(obj));
-
                 p.Position *= 0.75f;
-
                 obj.CardAniController.ShowCard(p.Position);
             }
         }
 
+        /// <summary>
+        /// 卡片点击事件
+        /// 用于处理点击拿起和使用
+        /// </summary>
+        /// <param name="card"></param>
         private void cardOnClick(CardFace card)
+        {
+            switch (card.State)
+            {
+                case CardState.Pickup:
+                    cardOnRelease(card);
+                    break;
+                case CardState.Active:
+                    cardOnDrag(card);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 卡片拖动事件
+        /// 用于使用卡片
+        /// </summary>
+        /// <param name="card"></param>
+        private void cardOnDrag(CardFace card)
         {
             if (card.State == CardState.Active)
             {
-                card.State = CardState.Pickup;
                 activeCard = card;
-            }
-            else if (card.State == CardState.Pickup)
-            {
-                var p = getCardPosInfo(cards.Count, cards.IndexOf(card));
-                p.Position *= 0.75f;
-                card.CardAniController.ShowCard(p.Position);
+                card.State = CardState.Pickup;
 
-                activeCard = null;
+                card.CardAniController.StopAll();
+
+                // 设置拿起后的位置
+                var p = getCardPosInfo(cards.Count, cards.IndexOf(card));
+                p.Position.z -= 0.05f;
+                card.transform.localPosition = p.Position;
+                card.transform.localRotation = Quaternion.Euler(Vector3.zero);
+            }
+        }
+
+        /// <summary>
+        /// 卡片被释放的事件
+        /// </summary>
+        /// <param name="card"></param>
+        private void cardOnRelease(CardFace card)
+        {
+            if (card.State == CardState.Pickup)
+            {
+                // 检测是否在安全界限内
+                if (isCardInHand)
+                {
+                    cardBackHand(card);
+                    activeCard = null;
+                    return;
+                }
+
+                // 根据卡的类型来做
+                switch (card.Type)
+                {
+                    // 无目标法术卡，直接使用
+                    case CardType.DriftlessSpell:
+                        useCard(card);
+                        break;
+                    // 无目标实体卡，加入到位置中
+                    case CardType.Entity:
+                        var p = desk.ReserveInsertSpace(Input.mousePosition);
+                        desk.Insert(card, p);
+                        useCard(card);
+                        break;
+                    // 有目标法术卡，使用目标选择器进行选择
+                    case CardType.DirectedSpell:
+                        if (selector.LastSelectTarget.transform != null)
+                        {
+                            useCard(card, selector.LastSelectTarget.transform.gameObject);
+                        }
+                        else
+                        {
+                            cardBackHand(card);
+                            activeCard = null;
+                        }
+                        selector.HideSelector();
+                        break;
+                    // 有目标实体卡：加入位置，然后使用目标选择器
+                    case CardType.DirectedEntity:
+                        if (!stage2)
+                        {
+                            var index = desk.ReserveInsertSpace(Input.mousePosition);
+                            desk.Insert(card, index);
+                            // 注意，这里并没有取消当前手上的卡片
+                            // useCard(card);
+                            card.Use();
+                            // todo: 临时操作，以后需要更换，使用动画或其他方式消失
+                            card.gameObject.SetActive(false);
+                            stage2 = true;
+                        }
+                        else
+                        {
+                            if (selector.LastSelectTarget.transform != null)
+                            {
+                                useCard(card, selector.LastSelectTarget.transform.gameObject);
+                            }
+                            else
+                            {
+                                desk.RemoveEntityByInstanceID(card.InstanceID);
+                                card.gameObject.SetActive(true);
+                                cardBackHand(card);
+                                activeCard = null;
+                            }
+                            selector.HideSelector();
+                            stage2 = false;
+                        }
+                        break;
+                }
             }
         }
 
         CardFace activeCard;
+        bool stage2 = false;
 
         private void Update()
         {
             if (activeCard != null)
             {
-                var t = activeCard.gameObject.transform;
-                var orgpos = t.position;
+                switch (activeCard.Type)
+                {
+                    // 无目标实体卡，跟随鼠标，同时在桌面上预留实体插入空间
+                    case CardType.Entity:
+                        cardFollowMouse();
+                        if (isCardInHand) desk.UpdateEntityPos();
+                        else desk.ReserveInsertSpace(Input.mousePosition);
+                        break;
+                    // 有目标实体卡，第一阶段与上面相同
+                    case CardType.DirectedEntity:
+                        if (!stage2)
+                        {
+                            cardFollowMouse();
+                            if (isCardInHand) desk.UpdateEntityPos();
+                            else desk.ReserveInsertSpace(Input.mousePosition);
+                        }
+                        else
+                        {
+                            selector.SetStartPosition(desk.GetPositionByIndex(desk.GetIndexByCardID(activeCard.InstanceID)));
+                            // todo: 使用真正的instance逻辑
+                            selector.UpdatePos(Input.mousePosition, (obj) => { return true; });
 
-                var mousePos = Input.mousePosition;
-                var world = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, Camera.main.transform.position.y - t.position.y));
-
-                Debug.Log(world);
-                
-                orgpos.x = world.x;
-                orgpos.z = world.z;
-
-                // todo: 3D的算法
-
-                t.position = orgpos;
+                            // 生成事件。用于stage2的按下检测
+                            if(Input.GetMouseButtonDown(0))
+                            {
+                                cardOnRelease(activeCard);
+                            }
+                        }
+                        break;
+                    // 无目标法术卡，跟随鼠标
+                    case CardType.DriftlessSpell:
+                        cardFollowMouse();
+                        break;
+                    // 有目标法术卡，在界限内使用特殊方法跟随鼠标；在界限外使用目标选择器选择目标
+                    case CardType.DirectedSpell:
+                        cardSpecialFollowMouse();
+                        if (!isCardInHand)
+                        {
+                            selector.SetStartPosition(selfImage.position);
+                            selector.UpdatePos(Input.mousePosition, (obj) => { return true; });
+                        }
+                        else
+                        {
+                            selector.HideSelector();
+                        }
+                        break;
+                }
             }
         }
+
+        /// <summary>
+        /// 卡片跟随鼠标
+        /// </summary>
+        private void cardFollowMouse()
+        {
+            var t = activeCard.gameObject.transform;
+            var orgpos = t.position;
+
+            var mousePos = Input.mousePosition;
+            mousePos.z = Camera.main.transform.position.y - t.position.y;
+            var world = Camera.main.ScreenToWorldPoint(mousePos);
+
+            orgpos.x = world.x;
+            orgpos.z = world.z;
+
+            t.position = orgpos;
+        }
+
+        /// <summary>
+        /// 特殊的跟随：会逐渐进入本人位置
+        /// </summary>
+        private void cardSpecialFollowMouse()
+        {
+            var cardTransform = activeCard.gameObject.transform;
+            var cardOrigPos = cardTransform.position;
+            var cam = Camera.main;
+            var mousePos = Input.mousePosition;
+            var targetPos = selfImage.position;
+
+            const float distFactor = 1f;
+
+            mousePos.z = cam.transform.position.y - cardTransform.position.y;
+            var cardWorldPos = cam.ScreenToWorldPoint(mousePos);
+
+            var dist = targetPos.z - cardWorldPos.z;
+            dist = dist > 0 ? dist : 0;
+
+            Vector2 target = Vector2.zero;
+
+            // 距离过远，使用传统的设置
+            if (dist > distFactor)
+            {
+                target = MathUtils.xzy2xy(cardWorldPos);
+            }
+            else
+            {
+                target = Vector2.Lerp(MathUtils.xzy2xy(targetPos), MathUtils.xzy2xy(cardWorldPos), dist / distFactor);
+            }
+
+            cardOrigPos.x = target.x;
+            cardOrigPos.z = target.y;
+
+            cardTransform.position = cardOrigPos;
+        }
+
+        /// <summary>
+        /// 销毁卡片
+        /// </summary>
+        /// <param name="card"></param>
+        void cardDestroy(CardFace card)
+        {
+            card.State = CardState.Destory;
+            if (cards.Contains(card)) cards.Remove(card);
+
+            adjustCardPos(cards.Count);
+        }
+
+        /// <summary>
+        /// 使用卡片
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="arg"></param>
+        private void useCard(CardFace card, object arg = null)
+        {
+            card.Use(arg);
+            cardDestroy(card);
+            activeCard = null;
+        }
+
+        /// <summary>
+        /// 卡牌回到手牌
+        /// </summary>
+        /// <param name="card"></param>
+        private void cardBackHand(CardFace card)
+        {
+            var p = getCardPosInfo(cards.Count, cards.IndexOf(card));
+            card.CardAniController.UnShowCard(p.Position, p.Rotation);
+        }
+
 
         /// <summary>
         /// 调整卡片位置

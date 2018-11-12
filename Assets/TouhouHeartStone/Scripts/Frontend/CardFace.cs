@@ -34,6 +34,9 @@ namespace TouhouHeartstone.Frontend
         [SerializeField]
         int typeID;
 
+        [SerializeField]
+        CardType type;
+
         /// <summary>
         /// 卡片对应的类型ID
         /// </summary>
@@ -48,6 +51,11 @@ namespace TouhouHeartstone.Frontend
         /// 卡片当前的状态
         /// </summary>
         public CardState State { get; set; }
+
+        /// <summary>
+        /// 卡片的种类
+        /// </summary>
+        public CardType Type => type;
 
         /// <summary>
         /// 设置卡片的唯一指定id
@@ -80,14 +88,52 @@ namespace TouhouHeartstone.Frontend
             lifeLabel.text = "1";
             attackLabel.text = "1";
         }
-
+        #region MouseEvent
         public event Action<CardFace> OnClick;
         public event Action<CardFace> OnMouseIn;
         public event Action<CardFace> OnMouseOut;
+        public event Action<CardFace> OnDrag;
+        public event Action<CardFace> OnRelease;
 
         private void OnMouseUpAsButton()
         {
             OnClick?.Invoke(this);
+        }
+
+        bool isDraging = false;
+        bool checking = false;
+        Vector2 lastMousePos;
+
+        private void OnMouseDrag()
+        {
+            if (!isDraging)
+            {
+                if (checking)
+                {
+                    if (Vector2.Distance(lastMousePos, Input.mousePosition) > 4)
+                    {
+                        isDraging = true;
+                        Debug.Log("Drag");
+                        OnDrag?.Invoke(this);
+                    }
+                }
+                else
+                {
+                    lastMousePos = Input.mousePosition;
+                    checking = true;
+                }
+            }
+        }
+
+        private void OnMouseUp()
+        {
+            if (isDraging)
+            {
+                isDraging = false;
+                checking = false;
+                Debug.Log("Release");
+                OnRelease?.Invoke(this);
+            }
         }
 
         private void OnMouseEnter()
@@ -99,10 +145,21 @@ namespace TouhouHeartstone.Frontend
         {
             OnMouseOut?.Invoke(this);
         }
+        #endregion
 
         public override string ToString()
         {
             return $"Cardface: {instanceID}";
+        }
+
+        /// <summary>
+        /// 使用这张卡
+        /// </summary>
+        /// <param name="target"></param>
+        public void Use(object target = null)
+        {
+            Debug.Log($"Use card {instanceID}, target: {target}");
+            gameObject.SetActive(false);
         }
     }
 
@@ -132,5 +189,25 @@ namespace TouhouHeartstone.Frontend
         /// 销毁
         /// </summary>
         Destory
+    }
+
+    public enum CardType
+    {
+        /// <summary>
+        /// 无目标的法术卡
+        /// </summary>
+        DriftlessSpell,
+        /// <summary>
+        /// 有目标的法术卡
+        /// </summary>
+        DirectedSpell,
+        /// <summary>
+        /// 无目标的实体卡
+        /// </summary>
+        Entity,
+        /// <summary>
+        /// 有目标的实体卡
+        /// </summary>
+        DirectedEntity,
     }
 }
