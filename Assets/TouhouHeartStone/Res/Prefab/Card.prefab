@@ -537,7 +537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e138a704fb89be4c804e3b7a26f7440, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 1
+  duration: 0.3
   sprite: {fileID: 212524792486965468}
 --- !u!114 &114731142658664964
 MonoBehaviour:

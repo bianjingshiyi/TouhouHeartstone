@@ -186,7 +186,12 @@ namespace TouhouHeartstone.Frontend
         {
             handCard.UseCard(instanceID, position, target);
             Debug.Log($"Use card {instanceID}");
-            AnimateOut();
+            AnimateOut(Destroy);
+        }
+
+        public void Destroy()
+        {
+            Destroy(this.gameObject);
         }
 
         int position = -1;
@@ -222,7 +227,7 @@ namespace TouhouHeartstone.Frontend
             }
         }
 
-        public virtual void AnimateOut()
+        public virtual void AnimateOut(Action callback = null)
         {
             if(!aniOut)
             {
@@ -230,11 +235,15 @@ namespace TouhouHeartstone.Frontend
                 aniIn = false;
 
                 Hidden = true;
-                useEffect.Play();
+                useEffect.Play(false, callback);
+            }
+            else
+            {
+                callback?.Invoke();
             }
         }
 
-        public virtual void AnimateIn()
+        public virtual void AnimateIn(Action callback = null)
         {
             if (!aniIn)
             {
@@ -242,6 +251,11 @@ namespace TouhouHeartstone.Frontend
                 aniIn = true;
 
                 Hidden = false;
+                useEffect.Play(true, callback);
+            }
+            else
+            {
+                callback?.Invoke();
             }
         }
     }
