@@ -39,6 +39,9 @@ namespace TouhouHeartstone.Frontend
         [SerializeField]
         CardType type;
 
+        [SerializeField]
+        CardUseEffect useEffect;
+
         /// <summary>
         /// 卡片对应的类型ID
         /// </summary>
@@ -199,7 +202,8 @@ namespace TouhouHeartstone.Frontend
                 aniOut = true;
                 aniIn = false;
 
-                gameObject.SetActive(false);
+                // gameObject.SetActive(false);
+                useEffect.Play();
             }
         }
 

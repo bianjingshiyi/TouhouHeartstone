@@ -60,6 +60,7 @@ GameObject:
   - component: {fileID: 114928551497284482}
   - component: {fileID: 114210012054714218}
   - component: {fileID: 65062913632026116}
+  - component: {fileID: 114068187921050204}
   m_Layer: 0
   m_Name: Card
   m_TagString: Untagged
@@ -354,11 +355,24 @@ BoxCollider:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1243352336394238}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 3.4, y: 4.900001, z: 0.1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114068187921050204
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1243352336394238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e138a704fb89be4c804e3b7a26f7440, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  duration: 1
+  sprite: {fileID: 212972870574448476}
 --- !u!114 &114210012054714218
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -425,6 +439,7 @@ MonoBehaviour:
   aniController: {fileID: 114210012054714218}
   typeID: 0
   type: 3
+  useEffect: {fileID: 114068187921050204}
 --- !u!114 &114572072047071020
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -599,7 +614,7 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: c352f0a0afb49d34fb5af070b589756d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -645,7 +660,7 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 923fcc3158189dc48bf249ea78f49166, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
