@@ -42,6 +42,12 @@ namespace TouhouHeartstone.Frontend
         [SerializeField]
         CardUseEffect useEffect;
 
+        [SerializeField]
+        GameObject frontface;
+
+        [SerializeField]
+        Collider collider;
+
         /// <summary>
         /// 卡片对应的类型ID
         /// </summary>
@@ -92,6 +98,7 @@ namespace TouhouHeartstone.Frontend
         private void Awake()
         {
             aniController = aniController ?? GetComponent<CardAnimationController>();
+            collider = collider ?? GetComponent<Collider>();
         }
 
         private void Start()
@@ -112,7 +119,11 @@ namespace TouhouHeartstone.Frontend
 
         private void OnMouseUpAsButton()
         {
-            OnClick?.Invoke(this);
+            if (!isDraging)
+            {
+                Debug.Log("Click");
+                OnClick?.Invoke(this);
+            }
         }
 
         bool isDraging = false;
@@ -195,6 +206,22 @@ namespace TouhouHeartstone.Frontend
         // 动画锁，防止重复播放
         bool aniOut, aniIn;
 
+        bool hidden;
+
+        bool Hidden
+        {
+            set
+            {
+                hidden = value;
+                frontface.SetActive(!value);
+                collider.enabled = !value;
+            }
+            get
+            {
+                return hidden;
+            }
+        }
+
         public virtual void AnimateOut()
         {
             if(!aniOut)
@@ -202,7 +229,7 @@ namespace TouhouHeartstone.Frontend
                 aniOut = true;
                 aniIn = false;
 
-                // gameObject.SetActive(false);
+                Hidden = true;
                 useEffect.Play();
             }
         }
@@ -214,7 +241,7 @@ namespace TouhouHeartstone.Frontend
                 aniOut = false;
                 aniIn = true;
 
-                gameObject.SetActive(true);
+                Hidden = false;
             }
         }
     }

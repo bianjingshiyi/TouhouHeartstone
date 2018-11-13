@@ -4,6 +4,7 @@
 	{
 		_MainTex ("Texture", 2D) = "white" {}
 		_NoiseTex ("Noise Texture", 2D) = "white" {}
+		_Thresold ("Smooth Border Thresold", Float) = 0.2
 	}
 	SubShader
 	{
@@ -37,6 +38,7 @@
 			sampler2D _MainTex;
 			sampler2D _NoiseTex;
 			half _Val;
+			half _Thresold;
 			float4 _MainTex_ST;
 			
 			v2f vert (appdata v)
@@ -54,7 +56,10 @@
 				fixed4 col = tex2D(_MainTex, i.uv);
 				fixed4 noise = tex2D(_NoiseTex, i.uv);
 
-				col.a = col.a * step(_Val, noise.r);
+				half lo = clamp(_Val - _Thresold, 0, 1);
+				half hi = clamp(_Val + _Thresold, 0, 1);
+
+				col.a = col.a * clamp( (noise.r - lo)/(hi-lo), 0, 1);
 
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);

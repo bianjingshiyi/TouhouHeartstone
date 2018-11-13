@@ -20,6 +20,8 @@ namespace TouhouHeartstone.Frontend.Manager
             ett.SetInstanceID(card.InstanceID);
             ett.transform.localPosition = calculateEntityPos(entityList.Count + 1, pos);
 
+            DebugUtils.Log($"Insert card {card.InstanceID} into pos {pos}");
+
             entityList.Insert(pos, ett);
             UpdateEntityPos();
             return ett;
@@ -34,12 +36,12 @@ namespace TouhouHeartstone.Frontend.Manager
         {
             for (int i = 0; i < entityList.Count; i++)
             {
-                if(entityList[i].InstanceID == id)
+                if (entityList[i].InstanceID == id)
                 {
                     return i;
                 }
             }
-            return -1; 
+            return -1;
         }
 
         /// <summary>
@@ -60,11 +62,13 @@ namespace TouhouHeartstone.Frontend.Manager
         public void RemoveEntityByInstanceID(int id)
         {
             int index = GetIndexByCardID(id);
-            if(index >=0)
+            if (index >= 0)
             {
                 Destroy(entityList[index].gameObject);
                 entityList.RemoveAt(index);
                 UpdateEntityPos();
+
+                DebugUtils.Log($"Remove card {index}");
             }
         }
 
@@ -104,7 +108,7 @@ namespace TouhouHeartstone.Frontend.Manager
             // 设置其他卡牌的位置
             for (int i = 0; i < cnt; i++)
             {
-                setEntityPos(entityList[i],  calculateEntityPos(cnt + 1, i >= insertPos ? i + 1 : i));
+                setEntityPos(entityList[i], calculateEntityPos(cnt + 1, i >= insertPos ? i + 1 : i));
             }
 
             return insertPos;

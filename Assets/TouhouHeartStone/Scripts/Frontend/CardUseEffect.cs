@@ -19,6 +19,7 @@ namespace TouhouHeartstone.Frontend
         public void Play()
         {
             startTime = Time.time;
+            sprite.enabled = true;
         }
 
         private void Update()
