@@ -49,7 +49,8 @@ namespace TouhouHeartstone.Frontend.Manager
         /// <returns></returns>
         public Vector3 GetPositionByIndex(int index)
         {
-            return entitySpawnNode.localToWorldMatrix.MultiplyVector(calculateEntityPos(entityList.Count, index));
+            return entityList[index].transform.position;
+            // return entitySpawnNode.localToWorldMatrix.MultiplyVector(calculateEntityPos(entityList.Count, index));
         }
 
         /// <summary>
@@ -100,8 +101,6 @@ namespace TouhouHeartstone.Frontend.Manager
                     break;
                 }
             }
-            Debug.Log($"pos:{insertPos}, local:{localPos}");
-
             // 设置其他卡牌的位置
             for (int i = 0; i < cnt; i++)
             {

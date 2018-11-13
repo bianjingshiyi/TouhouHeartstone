@@ -13,14 +13,14 @@ namespace TouhouHeartstone.Frontend.Manager
         /// <summary>
         /// 前端管理器
         /// </summary>
-        protected FrontendManager Frontend => frontendManager;
+        public FrontendManager Frontend => frontendManager;
 
         /// <summary>
         /// 获取同级别的管理器
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        protected T getSiblingManager<T>() where T : FrontendSubManager
+        public T getSiblingManager<T>() where T : FrontendSubManager
         {
             return Frontend.GetSubManager<T>();
         }

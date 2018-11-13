@@ -38,7 +38,6 @@ namespace TouhouHeartstone.Frontend.Manager
                 {
                     getSiblingManager<FrontendCardManager>().InitDrawCard(iw.cards);
                 }
-
             }
             else if (witness is InitReplaceWitness)
             {
@@ -48,6 +47,56 @@ namespace TouhouHeartstone.Frontend.Manager
                     // todo: 这里给了原有的卡牌，是否要做个容错？
                     getSiblingManager<FrontendCardManager>().NormalDrawCard(rpw.replaceCards);
                 }
+            }
+            else if (witness is AddCrystalWitness)
+            {
+                // todo: 水晶的增加
+                var acw = witness as AddCrystalWitness;
+                if (acw.playerId == selfID)
+                {
+                    var stoneBar = getSiblingManager<FrontendUIManager>().StoneBar;
+                    stoneBar.Set(acw.count, acw.count);
+                }
+            }
+            else if (witness is DrawWitness)
+            {
+                // todo: 抽卡
+                var dw = witness as DrawWitness;
+                if (dw.playerId == selfID)
+                {
+                    getSiblingManager<FrontendCardManager>().NormalDrawCard(dw.cards);
+                }
+            }
+            else if (witness is DuelStartWitness)
+            {
+                // todo: 对局开始
+                DebugUtils.Log("对局开始。");
+            }
+            else if (witness is RemoveCrystalWitness)
+            {
+                var rcw = witness as RemoveCrystalWitness;
+                // todo: 移出水晶
+                DebugUtils.Log("移除水晶：" + rcw.count);
+            }
+            else if (witness is SetHandWitness)
+            {
+                var shw = witness as SetHandWitness;
+                // todo: 直接设置手牌
+                // 玛德还有这种操作？
+                DebugUtils.Log("设置手牌");
+            }
+            else if (witness is TurnStartWitness)
+            {
+                var tsw = witness as TurnStartWitness;
+                if(tsw.playerId == selfID)
+                {
+                    getSiblingManager<FrontendUIManager>().RoundStart();
+                    DebugUtils.Log("你的回合");
+                }
+            }
+            else
+            {
+                DebugUtils.Log("没有找到对应的Witness，类型：" + witness.GetType());
             }
         }
 
@@ -63,6 +112,26 @@ namespace TouhouHeartstone.Frontend.Manager
         internal void InvokeEndRoundEvent()
         {
             EndRoundEventAction?.Invoke();
+        }
+
+        /// <summary>
+        /// 卡牌使用事件
+        /// [instanceID, position, target]
+        /// 详情看Remark
+        /// </summary>
+        /// <remarks>
+        /// <![CDATA[
+        /// instanceID: 对应卡牌的ID
+        /// position: 表示了卡牌对应实体的生成位置，仅用于实体卡。非实体卡设为-1
+        /// target: 表示了卡牌对应目标的ID，敌方本体设为0。仅用于目标卡，非目标卡设为-1
+        /// ]]>
+        /// </remarks>
+        public event Action<int, int, int> UseCardEventAction;
+
+        internal void InvokeUseCardEvent(int cardID, int position = -1, int target = -1)
+        {
+            DebugUtils.Log($"使用卡片。id: {cardID}, pos: {position}, target: {target}");
+            UseCardEventAction?.Invoke(cardID, position, target);
         }
 
 

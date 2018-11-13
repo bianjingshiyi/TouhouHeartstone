@@ -35,6 +35,15 @@ namespace TouhouHeartstone.Frontend
 
         public RaycastHit LastSelectTarget => lastHit;
 
+        public bool IsSelected => lastHit.transform != null;
+
+        public int GetLastSelectID()
+        {
+            if (lastHit.transform != null)
+                return 0;
+            else return -1;
+        }
+
         public bool UpdatePos(Vector3 mousePos, ContentFilter filter)
         {
             // 假设检测底板平面的物体
@@ -100,6 +109,14 @@ namespace TouhouHeartstone.Frontend
             result.Add(end);
 
             return result.ToArray();
+        }
+    }
+
+    public class DebugUtils
+    {
+        public static void Log(string message)
+        {
+            Debug.Log("[Frontend][" + DateTime.Now + "]" + message);
         }
     }
 }

@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 using System;
 
+using TouhouHeartstone.Frontend.Manager;
+
 namespace TouhouHeartstone.Frontend
 {
     public class CardFace : MonoBehaviour
@@ -29,10 +31,10 @@ namespace TouhouHeartstone.Frontend
         CardAnimationController aniController;
 
         [NonSerialized]
-        int instanceID;
+        protected int instanceID;
 
         [SerializeField]
-        int typeID;
+        protected int typeID;
 
         [SerializeField]
         CardType type;
@@ -55,7 +57,7 @@ namespace TouhouHeartstone.Frontend
         /// <summary>
         /// 卡片的种类
         /// </summary>
-        public CardType Type => type;
+        public virtual CardType Type => type;
 
         /// <summary>
         /// 设置卡片的唯一指定id
@@ -73,6 +75,16 @@ namespace TouhouHeartstone.Frontend
         /// 卡片动画控制器
         /// </summary>
         public CardAnimationController CardAniController => aniController;
+
+        /// <summary>
+        /// 所属的手牌管理器
+        /// </summary>
+        protected HandCardManager handCard;
+
+        public void SetHand(HandCardManager hand)
+        {
+            handCard = hand;
+        }
 
         private void Awake()
         {
@@ -156,10 +168,50 @@ namespace TouhouHeartstone.Frontend
         /// 使用这张卡
         /// </summary>
         /// <param name="target"></param>
-        public void Use(object target = null)
+        public virtual void Use()
         {
-            Debug.Log($"Use card {instanceID}, target: {target}");
-            gameObject.SetActive(false);
+            handCard.UseCard(instanceID, position, target);
+            Debug.Log($"Use card {instanceID}");
+            AnimateOut();
+        }
+
+        int position = -1;
+        int target = -1;
+
+        public virtual void SetPosition(int pos)
+        {
+            position = pos;
+            AnimateOut();
+        }
+
+        public virtual void SetTarget(int tg)
+        {
+            target = tg;
+        }
+
+        // 动画锁，防止重复播放
+        bool aniOut, aniIn;
+
+        public virtual void AnimateOut()
+        {
+            if(!aniOut)
+            {
+                aniOut = true;
+                aniIn = false;
+
+                gameObject.SetActive(false);
+            }
+        }
+
+        public virtual void AnimateIn()
+        {
+            if (!aniIn)
+            {
+                aniOut = false;
+                aniIn = true;
+
+                gameObject.SetActive(true);
+            }
         }
     }
 
@@ -196,18 +248,18 @@ namespace TouhouHeartstone.Frontend
         /// <summary>
         /// 无目标的法术卡
         /// </summary>
-        DriftlessSpell,
+        SpellDriftless,
         /// <summary>
         /// 有目标的法术卡
         /// </summary>
-        DirectedSpell,
+        SpellDirected,
         /// <summary>
         /// 无目标的实体卡
         /// </summary>
-        Entity,
+        EntityDriftless,
         /// <summary>
         /// 有目标的实体卡
         /// </summary>
-        DirectedEntity,
+        EntityDirected,
     }
 }
