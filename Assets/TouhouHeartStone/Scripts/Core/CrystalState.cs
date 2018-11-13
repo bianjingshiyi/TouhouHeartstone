@@ -1,6 +1,6 @@
 ﻿namespace TouhouHeartstone
 {
-    enum CrystalState
+    public enum CrystalState
     {
         normal,
         empty,

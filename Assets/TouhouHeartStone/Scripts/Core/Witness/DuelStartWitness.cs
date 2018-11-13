@@ -3,7 +3,7 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    class DuelStartWitness : Witness
+    public class DuelStartWitness : Witness
     {
         public DuelStartWitness()
         {

@@ -3,7 +3,7 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    class RemoveCrystalWitness : Witness
+    public class RemoveCrystalWitness : Witness
     {
         public int playerId { get; }
         public int count { get; }
