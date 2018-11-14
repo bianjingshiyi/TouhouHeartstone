@@ -29,5 +29,10 @@ namespace TouhouHeartstone.Frontend.Manager
         {
             frontendManager = GetComponentInParent<FrontendManager>();
         }
+
+        /// <summary>
+        /// 各种数据依赖的初始化放在这里
+        /// </summary>
+        virtual public void Init() { }
     }
 }

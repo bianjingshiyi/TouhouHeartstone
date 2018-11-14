@@ -6,16 +6,14 @@ namespace TouhouHeartstone.Frontend.Manager
 {
     public class FrontendWitnessEventDispatcher : FrontendSubManager
     {
-        int selfID;
+        int selfID => Frontend.PlayerID;
 
-        private new void Awake()
+        public override void Init()
         {
-            base.Awake();
+            base.Init();
 
             var witness = Frontend.Game.witness;
             witness.onWitnessAdded.AddListener(onWitness);
-
-            selfID = Frontend.Game.network.localPlayerId;
         }
 
         void onWitness(Witness witness)
