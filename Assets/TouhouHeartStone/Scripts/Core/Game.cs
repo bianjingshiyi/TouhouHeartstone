@@ -63,6 +63,11 @@ namespace TouhouHeartstone
         {
             records.addRecord(new DrawRecord(player.id, 1));
         }
+        public void use(int playerId, int instance, int position, int target)
+        {
+            Card card = cards.getCard(instance);
+            card.use(position, cards.getCard(target));
+        }
         public void turnEnd(int playerId)
         {
             Player player = players.getPlayer(playerId);

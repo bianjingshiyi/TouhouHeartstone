@@ -36,6 +36,10 @@ namespace TouhouHeartstone.Backend
         {
             game.initReplace(network.localPlayerId, cards.Select(e => { return new CardInstance(e, 0); }).ToArray());
         }
+        private void onUse(int instance, int position, int target)
+        {
+            game.use(network.localPlayerId, instance, position, target);
+        }
         private void onTurnEnd()
         {
             game.turnEnd(network.localPlayerId);
