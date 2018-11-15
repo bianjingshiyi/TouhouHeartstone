@@ -10,7 +10,6 @@ namespace TouhouHeartstone.Frontend.Manager
     /// </summary>
     public class FrontendManager : MonoBehaviour
     {
-        [SerializeField]
         Backend.GameContainer game;
 
         /// <summary>
@@ -18,6 +17,12 @@ namespace TouhouHeartstone.Frontend.Manager
         /// </summary>
         public Backend.GameContainer Game => game;
 
+        /// <summary>
+        /// 本机ID
+        /// </summary>
+        public int PlayerID => Game.network.localPlayerId;
+
+        #region submanager
         Dictionary<string, FrontendSubManager> submanagerInstance = new Dictionary<string, FrontendSubManager>();
 
         /// <summary>
@@ -49,12 +54,23 @@ namespace TouhouHeartstone.Frontend.Manager
                 }
             }
         }
-
+        #endregion
         protected void Awake()
         {
-            game = game ?? FindObjectOfType<Backend.GameContainer>();
-
             preloadManagers();
+        }
+
+        public void SetGameContainer(Backend.GameContainer game)
+        {
+            this.game = game;
+        }
+
+        public void Init()
+        {
+            foreach (var item in submanagerInstance)
+            {
+                item.Value.Init();
+            }
         }
     }
 }

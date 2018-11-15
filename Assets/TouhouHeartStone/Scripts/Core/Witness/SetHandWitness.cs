@@ -6,7 +6,7 @@ namespace TouhouHeartstone
     /// 直接设置手牌的Witness
     /// </summary>
     [Serializable]
-    class SetHandWitness : Witness
+    public class SetHandWitness : Witness
     {
         public int playerId { get; }
         public CardInstance[] cards { get; }

@@ -3,7 +3,7 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    class DrawWitness : Witness
+    public class DrawWitness : Witness
     {
         public int playerId { get; }
         public CardInstance[] cards { get; }

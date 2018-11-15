@@ -14,6 +14,11 @@ namespace TouhouHeartstone.Frontend.Manager
         [SerializeField]
         TargetSelector selector;
 
+        [SerializeField]
+        UIStoneBar stoneBar;
+
+        public UIStoneBar StoneBar => stoneBar;
+
         public TargetSelector TargetSelector => selector;
 
         private new void Awake()
@@ -26,6 +31,11 @@ namespace TouhouHeartstone.Frontend.Manager
         void endRoundTest()
         {
             gameSuccessPopup.Show();
+        }
+
+        public void RoundStart()
+        {
+            roundEndButton.SetState(true);
         }
     }
 }
