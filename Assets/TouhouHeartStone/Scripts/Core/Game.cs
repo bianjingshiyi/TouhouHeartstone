@@ -65,8 +65,7 @@ namespace TouhouHeartstone
         }
         public void use(int playerId, int instance, int position, int target)
         {
-            Card card = cards.getCard(instance);
-            card.use(position, cards.getCard(target));
+            cards.getCard(instance).use(this, position, cards.getCard(target));
         }
         public void turnEnd(int playerId)
         {

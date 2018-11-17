@@ -4,6 +4,7 @@
     {
         normal,
         empty,
+        temp,
         locked
     }
 }

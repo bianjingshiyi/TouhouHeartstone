@@ -19,11 +19,11 @@ namespace TouhouHeartstone
                 return new CardInstance(_lastId, e);
             }).ToArray();
         }
-        public Card create(CardInstance instance)
+        public Card create(CardInstance instance, Player owner)
         {
             if (instance.instanceId > _lastId)
                 _lastId = instance.instanceId;
-            Card card = Card.create(instance);
+            Card card = Card.create(instance, owner);
             _cardList.Add(card);
             return card;
         }

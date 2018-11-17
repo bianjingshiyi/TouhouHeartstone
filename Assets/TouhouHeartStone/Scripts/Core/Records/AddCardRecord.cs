@@ -18,7 +18,7 @@ namespace TouhouHeartstone
         }
         public override Dictionary<int, Witness> apply(Game game)
         {
-            _cards = _cardInstances.Select(e => { return game.cards.create(e); }).ToArray();
+            _cards = _cardInstances.Select(e => { return game.cards.create(e, game.players.getPlayer(_playerId)); }).ToArray();
             if (_region == RegionType.deck)
             {
                 game.players.getPlayer(_playerId).deck.add(_cards);

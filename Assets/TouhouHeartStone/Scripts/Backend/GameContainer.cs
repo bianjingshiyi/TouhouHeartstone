@@ -25,6 +25,7 @@ namespace TouhouHeartstone.Backend
             if (frontendEvents != null)
             {
                 frontendEvents.ReplaceInitDrawAction += onInitReplace;
+                frontendEvents.UseCardEventAction += onUse;
                 frontendEvents.EndRoundEventAction += onTurnEnd;
             }
             if (!network.isClient)

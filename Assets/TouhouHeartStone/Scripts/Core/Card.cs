@@ -5,18 +5,31 @@ namespace TouhouHeartstone
     [Serializable]
     abstract class Card
     {
-        public static Card create(CardInstance instance)
+        public static Card create(CardInstance instance, Player owner)
         {
-            throw new NotImplementedException();
+            return new LuckyCoin(instance, owner);
         }
-        public abstract void use(int position, Card target);
-        public CardInstance instance { get; private set; }
+        public Card(CardInstance instance, Player owner)
+        {
+            this.instance = instance;
+            this.owner = owner;
+        }
+        public Player owner { get; protected set; }
+        public abstract void use(Game game, int position, Card target);
+        public CardInstance instance { get; protected set; }
         public override string ToString()
         {
             return instance.ToString();
         }
     }
-    abstract class MonsterCard : Card
+    class LuckyCoin : Card
     {
+        public LuckyCoin(CardInstance instance, Player owner) : base(instance, owner)
+        {
+        }
+        public override void use(Game game, int position, Card target)
+        {
+            game.records.addRecord(new AddCrystalRecord(owner.id, 1, CrystalState.temp));
+        }
     }
 }
