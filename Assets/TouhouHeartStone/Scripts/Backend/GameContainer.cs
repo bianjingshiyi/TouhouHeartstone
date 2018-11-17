@@ -14,11 +14,6 @@ namespace TouhouHeartstone.Backend
         protected void Awake()
         {
             network.onReceiveObject += onReceiveObject;
-            if (frontendEvents != null)
-            {
-                frontendEvents.ReplaceInitDrawAction += onInitReplace;
-                frontendEvents.EndRoundEventAction += onTurnEnd;
-            }
             if (!network.isClient)
             {
                 game = new Game((int)DateTime.Now.ToBinary());
@@ -27,6 +22,11 @@ namespace TouhouHeartstone.Backend
         }
         protected void Start()
         {
+            if (frontendEvents != null)
+            {
+                frontendEvents.ReplaceInitDrawAction += onInitReplace;
+                frontendEvents.EndRoundEventAction += onTurnEnd;
+            }
             if (!network.isClient)
             {
                 game.start(network.playersId);
@@ -35,6 +35,10 @@ namespace TouhouHeartstone.Backend
         private void onInitReplace(int[] cards)
         {
             game.initReplace(network.localPlayerId, cards.Select(e => { return new CardInstance(e, 0); }).ToArray());
+        }
+        private void onUse(int instance, int position, int target)
+        {
+            game.use(network.localPlayerId, instance, position, target);
         }
         private void onTurnEnd()
         {

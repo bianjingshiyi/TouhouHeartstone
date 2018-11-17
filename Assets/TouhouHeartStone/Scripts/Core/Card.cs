@@ -3,16 +3,20 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    class Card
+    abstract class Card
     {
-        public Card(CardInstance instance)
+        public static Card create(CardInstance instance)
         {
-            this.instance = instance;
+            throw new NotImplementedException();
         }
+        public abstract void use(int position, Card target);
         public CardInstance instance { get; private set; }
         public override string ToString()
         {
             return instance.ToString();
         }
+    }
+    abstract class MonsterCard : Card
+    {
     }
 }
