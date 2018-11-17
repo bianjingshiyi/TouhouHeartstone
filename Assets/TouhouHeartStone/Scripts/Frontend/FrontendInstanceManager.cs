@@ -14,18 +14,20 @@ namespace TouhouHeartstone.Frontend.Manager
 
         List<FrontendInstance> frontendInstances = new List<FrontendInstance>();
 
-        private void Awake()
+        private void Start()
         {
             AddInstanceToScene(gameObject.scene);
+            AddAnotherInstance();
         }
 
-        private void AddInstance(GameContainer gc, Scene scene)
+        private void AddInstance(GameContainer gc, Scene scene, int id)
         {
             var instance = Instantiate(prefab);
             SceneManager.MoveGameObjectToScene(instance.gameObject, scene);
 
             instance.SetFrontendInstanceManager(this);
             instance.Manager.SetGameContainer(gc);
+            instance.ID = id;
             instance.Init();
 
             frontendInstances.Add(instance);
@@ -66,7 +68,7 @@ namespace TouhouHeartstone.Frontend.Manager
             }
             if (hasInstance) return false;
 
-            AddInstance(container, scene);
+            AddInstance(container, scene, frontendInstances.Count);
             return true;
         }
 
@@ -78,6 +80,15 @@ namespace TouhouHeartstone.Frontend.Manager
                 gc = go.GetComponentInChildren<T>();
             }
             return gc;
+        }
+
+        public void SwitchInstance(int targetID)
+        {
+            for (int i = 0; i < frontendInstances.Count; i++)
+            {
+                var item = frontendInstances[i];
+                item.gameObject.SetActive(item.ID == targetID);
+            }
         }
 
     }

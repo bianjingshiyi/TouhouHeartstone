@@ -12,12 +12,16 @@ namespace TouhouHeartstone.Frontend.Manager
         {
             base.Init();
 
+            DebugUtils.Log($"[{selfID}]Init.");
+
             var witness = Frontend.Game.witness;
             witness.onWitnessAdded.AddListener(onWitness);
         }
 
         void onWitness(Witness witness)
         {
+            DebugUtils.Log($"[{selfID}]{witness.ToString()}");
+
             if (witness is SetOrderWitness)
             {
                 // 设置行动顺序。此witness含有一个包含了玩家行动顺序的array.
@@ -86,7 +90,7 @@ namespace TouhouHeartstone.Frontend.Manager
             else if (witness is TurnStartWitness)
             {
                 var tsw = witness as TurnStartWitness;
-                if(tsw.playerId == selfID)
+                if (tsw.playerId == selfID)
                 {
                     getSiblingManager<FrontendUIManager>().RoundStart();
                     DebugUtils.Log("你的回合");
