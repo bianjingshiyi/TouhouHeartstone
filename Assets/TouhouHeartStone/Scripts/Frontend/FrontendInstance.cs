@@ -12,6 +12,14 @@ namespace TouhouHeartstone.Frontend.Manager
 
         FrontendInstanceManager _manager;
 
+        public int ID
+        {
+            get { return id;}
+            set { id = value; }
+        }
+
+        int id;
+
         public FrontendInstanceManager InstanceManager => _manager;
 
         public void SetFrontendInstanceManager(FrontendInstanceManager fim)
