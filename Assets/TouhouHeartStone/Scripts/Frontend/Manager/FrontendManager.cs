@@ -22,6 +22,11 @@ namespace TouhouHeartstone.Frontend.Manager
         /// </summary>
         public int PlayerID => Game.network.localPlayerId;
 
+        /// <summary>
+        /// 玩家顺序
+        /// </summary>
+        public int[] PlayerOrder { get; set; }
+
         #region submanager
         Dictionary<string, FrontendSubManager> submanagerInstance = new Dictionary<string, FrontendSubManager>();
 
