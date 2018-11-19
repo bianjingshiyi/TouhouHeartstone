@@ -28,7 +28,14 @@ namespace TouhouHeartstone.Backend
         {
             get
             {
-                if (_connections == null || _connections.Length <= 0)
+                return connections.Select(e => { return e.localPlayerId; }).ToArray();
+            }
+        }
+        FakeNetworkManager[] connections
+        {
+            get
+            {
+                if (_connections == null || _connections.Length < 1)
                 {
                     List<FakeNetworkManager> connectionList = new List<FakeNetworkManager>();
                     for (int i = 0; i < SceneManager.sceneCount; i++)
@@ -43,7 +50,7 @@ namespace TouhouHeartstone.Backend
                     }
                     _connections = connectionList.ToArray();
                 }
-                return _connections.Select(e => { return e.localPlayerId; }).ToArray();
+                return _connections;
             }
         }
         [SerializeField]
@@ -53,7 +60,16 @@ namespace TouhouHeartstone.Backend
             get
             {
                 if (_host == null)
-                    _host = _connections.First(e => { return !e.isClient; });
+                {
+                    for (int i = 0; i < connections.Length; i++)
+                    {
+                        if (!connections[i].isClient)
+                        {
+                            _host = connections[i];
+                            break;
+                        }
+                    }
+                }
                 return _host.localPlayerId;
             }
         }
@@ -78,7 +94,7 @@ namespace TouhouHeartstone.Backend
                 byte[] bytes = new byte[stream.Length];
                 stream.Position = 0;
                 stream.Read(bytes, 0, (int)stream.Length);
-                FakeNetworkManager target = Array.Find(_connections, e => { return e.localPlayerId == targetId; });
+                FakeNetworkManager target = Array.Find(connections, e => { return e.localPlayerId == targetId; });
                 if (target != null)
                     target.receiveBytes(localPlayerId, bytes);
             }
@@ -102,10 +118,10 @@ namespace TouhouHeartstone.Backend
                 byte[] bytes = new byte[stream.Length];
                 stream.Position = 0;
                 stream.Read(bytes, 0, (int)stream.Length);
-                for (int i = 0; i < _connections.Length; i++)
+                for (int i = 0; i < connections.Length; i++)
                 {
-                    if (_connections[i] != this)
-                        _connections[i].receiveBytes(localPlayerId, bytes);
+                    if (connections[i] != this)
+                        connections[i].receiveBytes(localPlayerId, bytes);
                 }
             }
         }
