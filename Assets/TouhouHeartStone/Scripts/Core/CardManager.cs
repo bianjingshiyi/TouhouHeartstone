@@ -28,9 +28,17 @@ namespace TouhouHeartstone
             return card;
         }
         int _lastId;
+        public Card getCard(CardInstance instance)
+        {
+            return _cardList.Find(e => { return e.instance.instanceId == instance.instanceId; });
+        }
         public Card getCard(int instanceId)
         {
             return _cardList.Find(e => { return e.instance.instanceId == instanceId; });
+        }
+        public Card[] getCards(CardInstance[] instances)
+        {
+            return instances.Select(e => { return _cardList.Find(f => { return f.instance.instanceId == e.instanceId; }); }).ToArray();
         }
         public Card[] getCards(int[] instanceId)
         {

@@ -14,13 +14,21 @@ namespace TouhouHeartstone
         {
             cardList.AddRange(cards);
         }
+        public void moveTo(Card card,Region targetRegion,bool toTopOrRight)
+        {
+            cardList.Remove(card);
+            if (toTopOrRight)
+                targetRegion.cardList.Add(card);
+            else
+                targetRegion.cardList.Insert(0, card);
+        }
         public void moveTo(IEnumerable<Card> cards, Region targetRegion, bool toTopOrRight)
         {
             cardList.RemoveAll(e => { return cards.Contains(e); });
             if (toTopOrRight)
-                targetRegion.cardList.InsertRange(0, cards);
-            else
                 targetRegion.cardList.AddRange(cards);
+            else
+                targetRegion.cardList.InsertRange(0, cards);
         }
         public void replace(IEnumerable<Card> originCards, IEnumerable<Card> targetCards)
         {

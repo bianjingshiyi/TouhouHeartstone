@@ -31,6 +31,7 @@ namespace TouhouHeartstone
         List<CrystalState> crystalList { get; } = new List<CrystalState>();
         public Region hand { get; } = new Region();
         public Region deck { get; } = new Region();
+        public Region grave { get; } = new Region();
         public int id { get; private set; }
         public override int GetHashCode()
         {
