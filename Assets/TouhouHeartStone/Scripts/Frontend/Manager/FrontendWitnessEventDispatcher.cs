@@ -13,8 +13,6 @@ namespace TouhouHeartstone.Frontend.Manager
         {
             base.Init();
 
-            DebugUtils.Log($"[{selfID}]Init.");
-
             var witness = Frontend.Game.witness;
             witness.onWitnessAdded.AddListener(onWitness);
         }

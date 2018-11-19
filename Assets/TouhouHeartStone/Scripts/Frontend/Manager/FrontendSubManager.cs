@@ -13,7 +13,19 @@ namespace TouhouHeartstone.Frontend.Manager
         /// <summary>
         /// 前端管理器
         /// </summary>
-        public FrontendManager Frontend => frontendManager;
+        public FrontendManager Frontend
+        {
+            get
+            {
+                if (frontendManager == null)
+                    frontendManager = GetComponentInParent<FrontendManager>();
+                return frontendManager;
+            }
+            set
+            {
+                frontendManager = value;
+            }
+        }
 
         /// <summary>
         /// 获取同级别的管理器

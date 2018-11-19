@@ -10,7 +10,7 @@ namespace TouhouHeartstone.Frontend
         FrontendInstanceManager instanceManager;
 
         [SerializeField]
-        UIPopup privacyProtector;
+        UIPrivacyProtector privacyProtector;
 
         private void Awake()
         {
@@ -48,17 +48,20 @@ namespace TouhouHeartstone.Frontend
 
         public void OnRoundEnd(int id)
         {
+            DebugUtils.Log($"Instance {id} round end.");
             instanceManager.SetInstanceState(id, false);
-            privacyProtector.gameObject.SetActive(true);
 
             // 使用下一个行动顺序的场景
             nextID = SceneOrder[(id + 1) % SceneOrder.Length];
+
+            privacyProtector.SetCurrentUserID(nextID);
+            privacyProtector.gameObject.SetActive(true);
         }
 
         public void OnReplaceHandCard(int id)
         {
+            DebugUtils.Log($"Instance {id} replace card.");
             instanceManager.SetInstanceState(id, false);
-            privacyProtector.gameObject.SetActive(true);
 
             var instanceCount = instanceManager.Instances.Length;
 
@@ -89,6 +92,9 @@ namespace TouhouHeartstone.Frontend
             {
                 nextID = id + 1;
             }
+
+            privacyProtector.SetCurrentUserID(nextID);
+            privacyProtector.gameObject.SetActive(true);
         }
 
         public void OnProtectorHide()

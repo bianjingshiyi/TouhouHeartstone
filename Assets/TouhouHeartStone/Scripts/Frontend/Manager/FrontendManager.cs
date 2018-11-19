@@ -55,7 +55,10 @@ namespace TouhouHeartstone.Frontend.Manager
                 {
                     var instance = GetComponentInChildren(item) as FrontendSubManager;
                     if (instance != null)
+                    {
                         submanagerInstance.Add(item.Name, instance);
+                        instance.Frontend = this;
+                    }
                 }
             }
         }
@@ -72,6 +75,7 @@ namespace TouhouHeartstone.Frontend.Manager
 
         public void Init()
         {
+            preloadManagers();
             foreach (var item in submanagerInstance)
             {
                 item.Value.Init();
