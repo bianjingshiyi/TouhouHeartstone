@@ -46,84 +46,180 @@ namespace TouhouHeartstone.Frontend.Manager
 
             if (witness is SetOrderWitness)
             {
-                // 设置行动顺序。此witness含有一个包含了玩家行动顺序的array.
-                var ow = witness as SetOrderWitness;
-                Frontend.PlayerOrder = ow.orderedPlayerId;
+                witnessExec(witness as SetOrderWitness);
             }
             else if (witness is SetDeckWitness)
             {
-                // 设置玩家的卡组大小
+                witnessExec(witness as SetDeckWitness);
             }
             else if (witness is InitDrawWitness)
             {
-                // 初始抽卡
-                var iw = witness as InitDrawWitness;
-
-                // todo: 考虑对方玩家的动画播放
-                if (iw.playerId == selfID)
-                {
-                    getSiblingManager<FrontendCardManager>().InitDrawCard(iw.cards);
-                }
+                witnessExec(witness as InitDrawWitness);
             }
             else if (witness is InitReplaceWitness)
             {
-                var rpw = witness as InitReplaceWitness;
-                if (rpw.playerId == selfID)
-                {
-                    // todo: 这里给了原有的卡牌，是否要做个容错？
-                    getSiblingManager<FrontendCardManager>().NormalDrawCard(rpw.replaceCards);
-                }
+                witnessExec(witness as InitReplaceWitness);
             }
             else if (witness is AddCrystalWitness)
             {
-                // todo: 水晶的增加
-                var acw = witness as AddCrystalWitness;
-                if (acw.playerId == selfID)
-                {
-                    var stoneBar = getSiblingManager<FrontendUIManager>().StoneBar;
-                    stoneBar.Set(acw.count, acw.count);
-                }
+                witnessExec(witness as AddCrystalWitness);
             }
             else if (witness is DrawWitness)
             {
-                // todo: 抽卡
-                var dw = witness as DrawWitness;
-                if (dw.playerId == selfID)
-                {
-                    getSiblingManager<FrontendCardManager>().NormalDrawCard(dw.cards);
-                }
+                witnessExec(witness as DrawWitness);
             }
             else if (witness is DuelStartWitness)
             {
-                // todo: 对局开始
-                DebugUtils.Log("对局开始。");
+                witnessExec(witness as DuelStartWitness);
             }
             else if (witness is RemoveCrystalWitness)
             {
-                var rcw = witness as RemoveCrystalWitness;
-                // todo: 移出水晶
-                DebugUtils.Log("移除水晶：" + rcw.count);
+                witnessExec(witness as RemoveCrystalWitness);
             }
             else if (witness is SetHandWitness)
             {
-                var shw = witness as SetHandWitness;
-                // todo: 直接设置手牌
-                // 玛德还有这种操作？
-                DebugUtils.Log("设置手牌");
+                witnessExec(witness as SetHandWitness);
             }
             else if (witness is TurnStartWitness)
             {
-                var tsw = witness as TurnStartWitness;
-                if (tsw.playerId == selfID)
-                {
-                    getSiblingManager<FrontendUIManager>().RoundStart();
-                    DebugUtils.Log("你的回合");
-                }
+                witnessExec(witness as TurnStartWitness);
             }
             else
             {
                 DebugUtils.Log("没有找到对应的Witness，类型：" + witness.GetType());
             }
+        }
+
+        /// <summary>
+        /// 设置行动顺序
+        /// </summary>
+        /// <param name="witness"></param>
+        /// <returns></returns>
+        private bool witnessExec(SetOrderWitness witness)
+        {
+            Frontend.PlayerOrder = witness.orderedPlayerId;
+            return true;
+        }
+
+        /// <summary>
+        /// 设置玩家卡组大小
+        /// </summary>
+        /// <param name="witness"></param>
+        /// <returns></returns>
+        private bool witnessExec(SetDeckWitness witness)
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// 初始抽卡
+        /// </summary>
+        /// <param name="witness"></param>
+        /// <returns></returns>
+        private bool witnessExec(InitDrawWitness witness)
+        {
+            // todo: 考虑对方玩家的动画播放
+            if (witness.playerId == selfID)
+            {
+                getSiblingManager<FrontendCardManager>().InitDrawCard(witness.cards);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 替换初始卡牌
+        /// </summary>
+        /// <param name="witness"></param>
+        /// <returns></returns>
+        private bool witnessExec(InitReplaceWitness witness)
+        {
+            if (witness.playerId == selfID)
+            {
+                // todo: 这里给了原有的卡牌，是否要做个容错？
+                getSiblingManager<FrontendCardManager>().NormalDrawCard(witness.replaceCards);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 添加水晶
+        /// </summary>
+        /// <param name="witness"></param>
+        /// <returns></returns>
+        private bool witnessExec(AddCrystalWitness witness)
+        {
+            if (witness.playerId == selfID)
+            {
+                var stoneBar = getSiblingManager<FrontendUIManager>().StoneBar;
+                // todo: 这个count有问题
+                stoneBar.Set(witness.count, witness.count);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 抽卡
+        /// </summary>
+        /// <param name="witness"></param>
+        /// <returns></returns>
+        private bool witnessExec(DrawWitness witness)
+        {
+            if (witness.playerId == selfID)
+            {
+                getSiblingManager<FrontendCardManager>().NormalDrawCard(witness.cards);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 对局开始
+        /// </summary>
+        /// <param name="witness"></param>
+        /// <returns></returns>
+        private bool witnessExec(DuelStartWitness witness)
+        {
+            DebugUtils.Log("对局开始。");
+            return true;
+        }
+
+        /// <summary>
+        /// 移除水晶
+        /// </summary>
+        /// <param name="witness"></param>
+        /// <returns></returns>
+        private bool witnessExec(RemoveCrystalWitness witness)
+        {
+            // todo: 移出水晶
+            DebugUtils.Log("移除水晶：" + witness.count);
+            return true;
+        }
+
+        /// <summary>
+        /// 直接设置手牌
+        /// </summary>
+        /// <param name="witness"></param>
+        /// <returns></returns>
+        private bool witnessExec(SetHandWitness witness)
+        {
+            // todo: 设置手牌
+            // 玛德还有这种操作？
+            DebugUtils.Log("设置手牌");
+            return true;
+        }
+
+        /// <summary>
+        /// 回合开始
+        /// </summary>
+        /// <param name="witness"></param>
+        /// <returns></returns>
+        private bool witnessExec(TurnStartWitness witness)
+        {
+            if (witness.playerId == selfID)
+            {
+                getSiblingManager<FrontendUIManager>().RoundStart();
+                DebugUtils.Log("你的回合");
+            }
+            return true;
         }
 
         /// <summary>
