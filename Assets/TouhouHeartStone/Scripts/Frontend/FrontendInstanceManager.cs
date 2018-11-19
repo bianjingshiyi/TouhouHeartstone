@@ -1,11 +1,9 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using System.Collections.Generic;
-
+﻿using System.Collections.Generic;
 using TouhouHeartstone.Backend;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
-
-namespace TouhouHeartstone.Frontend.Manager
+namespace TouhouHeartstone.Frontend
 {
     public class FrontendInstanceManager : MonoBehaviour
     {
@@ -14,15 +12,18 @@ namespace TouhouHeartstone.Frontend.Manager
 
         List<FrontendInstance> frontendInstances = new List<FrontendInstance>();
 
+        public FrontendInstance[] Instances => frontendInstances.ToArray();
+
         private void Start()
         {
             AddInstanceToScene(gameObject.scene);
-            AddAnotherInstance();
+            Instances[0].gameObject.SetActive(true);
         }
 
-        private void AddInstance(GameContainer gc, Scene scene, int id)
+        public void AddInstance(GameContainer gc, Scene scene, int id)
         {
             var instance = Instantiate(prefab);
+            instance.gameObject.SetActive(false);
             SceneManager.MoveGameObjectToScene(instance.gameObject, scene);
 
             instance.SetFrontendInstanceManager(this);
@@ -36,7 +37,7 @@ namespace TouhouHeartstone.Frontend.Manager
         /// <summary>
         /// 再加一个
         /// </summary>
-        private void AddAnotherInstance()
+        public void AddAnotherInstance()
         {
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {
@@ -91,5 +92,9 @@ namespace TouhouHeartstone.Frontend.Manager
             }
         }
 
+        public void SetInstanceState(int targetID, bool state)
+        {
+            frontendInstances[targetID].gameObject.SetActive(state);
+        }
     }
 }

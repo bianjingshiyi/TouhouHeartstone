@@ -114,9 +114,9 @@ namespace TouhouHeartstone.Frontend
 
     public class DebugUtils
     {
-        public static void Log(string message)
+        public static void Log(string message, UnityEngine.Object context = null)
         {
-            Debug.Log("[Frontend][" + DateTime.Now + "]" + message);
+            Debug.Log("[Frontend]" + message, context);
         }
     }
 }

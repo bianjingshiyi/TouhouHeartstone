@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 
+using TouhouHeartstone.Frontend.Manager;
 
-namespace TouhouHeartstone.Frontend.Manager
+namespace TouhouHeartstone.Frontend
 {
     public class FrontendInstance : MonoBehaviour
     {
@@ -14,11 +15,9 @@ namespace TouhouHeartstone.Frontend.Manager
 
         public int ID
         {
-            get { return id;}
-            set { id = value; }
+            get;
+            set;
         }
-
-        int id;
 
         public FrontendInstanceManager InstanceManager => _manager;
 
@@ -29,6 +28,7 @@ namespace TouhouHeartstone.Frontend.Manager
 
         public void Init()
         {
+            DebugUtils.Log("Instance Init.");
             Manager.Init();
         }
     }

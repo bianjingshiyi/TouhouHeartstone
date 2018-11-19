@@ -39,6 +39,9 @@ namespace TouhouHeartstone.Frontend
         [SerializeField]
         int sortingOrder;
 
+        [SerializeField]
+        string sortingLayer = "Default";
+
         MeshFilter _filter;
         MeshFilter filter
         {
@@ -114,6 +117,7 @@ namespace TouhouHeartstone.Frontend
 
             filter.mesh = mesh;
             meshRenderer.sortingOrder = sortingOrder;
+            meshRenderer.sortingLayerName = sortingLayer;
         }
 
         public TextGenerationSettings convertSetting(TextGenerationSettingsInternal set)

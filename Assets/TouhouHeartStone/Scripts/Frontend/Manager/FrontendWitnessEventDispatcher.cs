@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,19 +13,42 @@ namespace TouhouHeartstone.Frontend.Manager
         {
             base.Init();
 
-            DebugUtils.Log($"[{selfID}]Init.");
-
             var witness = Frontend.Game.witness;
             witness.onWitnessAdded.AddListener(onWitness);
         }
 
+        Queue<Witness> witnessQueue = new Queue<Witness>();
+
+        private void OnEnable()
+        {
+            while(witnessQueue.Count > 0)
+            {
+                witnessExecutor(witnessQueue.Dequeue());
+            }
+        }
+
         void onWitness(Witness witness)
+        {
+            if (!gameObject.activeInHierarchy || witnessQueue.Count > 0)
+            {
+                witnessQueue.Enqueue(witness);
+                DebugUtils.Log($"[{selfID}]Buff a witness.");
+            }
+            else
+            {
+                witnessExecutor(witness);
+            }
+        }
+
+        private void witnessExecutor(Witness witness)
         {
             DebugUtils.Log($"[{selfID}]{witness.ToString()}");
 
             if (witness is SetOrderWitness)
             {
                 // 设置行动顺序。此witness含有一个包含了玩家行动顺序的array.
+                var ow = witness as SetOrderWitness;
+                Frontend.PlayerOrder = ow.orderedPlayerId;
             }
             else if (witness is SetDeckWitness)
             {

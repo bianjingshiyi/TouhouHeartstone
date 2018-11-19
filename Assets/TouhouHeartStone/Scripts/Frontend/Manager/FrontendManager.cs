@@ -22,6 +22,11 @@ namespace TouhouHeartstone.Frontend.Manager
         /// </summary>
         public int PlayerID => Game.network.localPlayerId;
 
+        /// <summary>
+        /// 玩家顺序
+        /// </summary>
+        public int[] PlayerOrder { get; set; }
+
         #region submanager
         Dictionary<string, FrontendSubManager> submanagerInstance = new Dictionary<string, FrontendSubManager>();
 
@@ -50,7 +55,10 @@ namespace TouhouHeartstone.Frontend.Manager
                 {
                     var instance = GetComponentInChildren(item) as FrontendSubManager;
                     if (instance != null)
+                    {
                         submanagerInstance.Add(item.Name, instance);
+                        instance.Frontend = this;
+                    }
                 }
             }
         }
@@ -67,6 +75,7 @@ namespace TouhouHeartstone.Frontend.Manager
 
         public void Init()
         {
+            preloadManagers();
             foreach (var item in submanagerInstance)
             {
                 item.Value.Init();

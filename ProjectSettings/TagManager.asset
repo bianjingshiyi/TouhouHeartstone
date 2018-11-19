@@ -41,3 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Overlay(Effect)
+    uniqueID: 2798962605
+    locked: 0
+  - name: Overlay(UI)
+    uniqueID: 113207419
+    locked: 0
