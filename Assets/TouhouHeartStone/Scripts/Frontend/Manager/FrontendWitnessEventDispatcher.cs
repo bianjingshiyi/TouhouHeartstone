@@ -21,207 +21,32 @@ namespace TouhouHeartstone.Frontend.Manager
 
         private void OnEnable()
         {
-            while(witnessQueue.Count > 0)
+            DequeueWitness();
+        }
+
+        private void DequeueWitness()
+        {
+            while (witnessQueue.Count > 0)
             {
-                witnessExecutor(witnessQueue.Dequeue());
+                var wit = witnessQueue.Dequeue();
+                bool hasAnime = new WitnessHandler.WitnessHandler().Exec(wit, this.Frontend);
+                // debug: 在没有做完动画播放前不要启用这个玩意
+                // if (hasAnime) break;
             }
         }
 
         void onWitness(Witness witness)
         {
-            if (!gameObject.activeInHierarchy || witnessQueue.Count > 0)
-            {
-                witnessQueue.Enqueue(witness);
-                DebugUtils.LogDebug($"[{selfID}]Buff a witness.");
-            }
-            else
-            {
-                witnessExecutor(witness);
-            }
-        }
+            var original = witnessQueue.Count;
 
-        private void witnessExecutor(Witness witness)
-        {
-            DebugUtils.LogDebug($"[{selfID}]{witness.ToString()}");
+            witnessQueue.Enqueue(witness);
+            DebugUtils.LogDebug($"[{selfID}]Buff a witness.");
 
-            if (witness is SetOrderWitness)
+            // 如果是启用状态且这个是第一个，那就立即播放。
+            if (gameObject.activeInHierarchy && original == 0)
             {
-                witnessExec(witness as SetOrderWitness);
+                DequeueWitness();
             }
-            else if (witness is SetDeckWitness)
-            {
-                witnessExec(witness as SetDeckWitness);
-            }
-            else if (witness is InitDrawWitness)
-            {
-                witnessExec(witness as InitDrawWitness);
-            }
-            else if (witness is InitReplaceWitness)
-            {
-                witnessExec(witness as InitReplaceWitness);
-            }
-            else if (witness is AddCrystalWitness)
-            {
-                witnessExec(witness as AddCrystalWitness);
-            }
-            else if (witness is DrawWitness)
-            {
-                witnessExec(witness as DrawWitness);
-            }
-            else if (witness is DuelStartWitness)
-            {
-                witnessExec(witness as DuelStartWitness);
-            }
-            else if (witness is RemoveCrystalWitness)
-            {
-                witnessExec(witness as RemoveCrystalWitness);
-            }
-            else if (witness is SetHandWitness)
-            {
-                witnessExec(witness as SetHandWitness);
-            }
-            else if (witness is TurnStartWitness)
-            {
-                witnessExec(witness as TurnStartWitness);
-            }
-            else
-            {
-                DebugUtils.Log("没有找到对应的Witness，类型：" + witness.GetType());
-            }
-        }
-
-        /// <summary>
-        /// 设置行动顺序
-        /// </summary>
-        /// <param name="witness"></param>
-        /// <returns></returns>
-        private bool witnessExec(SetOrderWitness witness)
-        {
-            Frontend.PlayerOrder = witness.orderedPlayerId;
-            return true;
-        }
-
-        /// <summary>
-        /// 设置玩家卡组大小
-        /// </summary>
-        /// <param name="witness"></param>
-        /// <returns></returns>
-        private bool witnessExec(SetDeckWitness witness)
-        {
-            return true;
-        }
-
-        /// <summary>
-        /// 初始抽卡
-        /// </summary>
-        /// <param name="witness"></param>
-        /// <returns></returns>
-        private bool witnessExec(InitDrawWitness witness)
-        {
-            // todo: 考虑对方玩家的动画播放
-            if (witness.playerId == selfID)
-            {
-                getSiblingManager<FrontendCardManager>().InitDrawCard(witness.cards);
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// 替换初始卡牌
-        /// </summary>
-        /// <param name="witness"></param>
-        /// <returns></returns>
-        private bool witnessExec(InitReplaceWitness witness)
-        {
-            if (witness.playerId == selfID)
-            {
-                // todo: 这里给了原有的卡牌，是否要做个容错？
-                getSiblingManager<FrontendCardManager>().NormalDrawCard(witness.replaceCards);
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// 添加水晶
-        /// </summary>
-        /// <param name="witness"></param>
-        /// <returns></returns>
-        private bool witnessExec(AddCrystalWitness witness)
-        {
-            if (witness.playerId == selfID)
-            {
-                var stoneBar = getSiblingManager<FrontendUIManager>().StoneBar;
-
-                // 这里就直接回满了
-                stoneBar.MaxStone += witness.count;
-                stoneBar.CurrentStone = stoneBar.MaxStone;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// 抽卡
-        /// </summary>
-        /// <param name="witness"></param>
-        /// <returns></returns>
-        private bool witnessExec(DrawWitness witness)
-        {
-            if (witness.playerId == selfID)
-            {
-                getSiblingManager<FrontendCardManager>().NormalDrawCard(witness.cards);
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// 对局开始
-        /// </summary>
-        /// <param name="witness"></param>
-        /// <returns></returns>
-        private bool witnessExec(DuelStartWitness witness)
-        {
-            DebugUtils.Log("对局开始。");
-            return true;
-        }
-
-        /// <summary>
-        /// 移除水晶
-        /// </summary>
-        /// <param name="witness"></param>
-        /// <returns></returns>
-        private bool witnessExec(RemoveCrystalWitness witness)
-        {
-            // todo: 移出水晶
-            DebugUtils.Log("移除水晶：" + witness.count);
-            return true;
-        }
-
-        /// <summary>
-        /// 直接设置手牌
-        /// </summary>
-        /// <param name="witness"></param>
-        /// <returns></returns>
-        private bool witnessExec(SetHandWitness witness)
-        {
-            // todo: 设置手牌
-            // 玛德还有这种操作？
-            DebugUtils.Log("设置手牌");
-            return true;
-        }
-
-        /// <summary>
-        /// 回合开始
-        /// </summary>
-        /// <param name="witness"></param>
-        /// <returns></returns>
-        private bool witnessExec(TurnStartWitness witness)
-        {
-            if (witness.playerId == selfID)
-            {
-                getSiblingManager<FrontendUIManager>().RoundStart();
-                DebugUtils.Log("你的回合");
-            }
-            return true;
         }
 
         /// <summary>
