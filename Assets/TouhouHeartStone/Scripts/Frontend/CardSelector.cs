@@ -23,7 +23,6 @@ namespace TouhouHeartstone.Frontend
 
         private void OnDestroy()
         {
-            card = GetComponentInParent<CardFace>();
             if (card != null)
                 card.OnClick -= OnSelect;
         }
