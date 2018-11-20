@@ -48,7 +48,7 @@ namespace TouhouHeartstone.Frontend
 
         public void OnRoundEnd(int id)
         {
-            DebugUtils.Log($"Instance {id} round end.");
+            DebugUtils.LogDebug($"Instance {id} round end.");
             instanceManager.SetInstanceState(id, false);
 
             // 使用下一个行动顺序的场景
@@ -60,7 +60,7 @@ namespace TouhouHeartstone.Frontend
 
         public void OnReplaceHandCard(int id)
         {
-            DebugUtils.Log($"Instance {id} replace card.");
+            DebugUtils.LogDebug($"Instance {id} replace card.");
             instanceManager.SetInstanceState(id, false);
 
             var instanceCount = instanceManager.Instances.Length;

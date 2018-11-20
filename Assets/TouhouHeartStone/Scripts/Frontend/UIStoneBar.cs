@@ -14,17 +14,42 @@ namespace TouhouHeartstone.Frontend
 
         List<UIStone> stoneList = new List<UIStone>();
 
-        public void Set(int curr, int max)
+        int _currentStone, _maxStone;
+
+        public int CurrentStone
         {
-            while(stoneList.Count < max)
+            get
+            {
+                return _currentStone;
+            }
+            set
+            {
+                _currentStone = value;
+                Reload();
+            }
+        }
+
+        public int MaxStone
+        {
+            get { return _maxStone;  }
+            set
+            {
+                _maxStone = value;
+                Reload();
+            }
+        }
+
+        void Reload()
+        {
+            while(stoneList.Count < MaxStone)
             {
                 addStone();
             }
 
             for (int i = 0; i < stoneList.Count; i++)
             {
-                stoneList[i].gameObject.SetActive(i < max);
-                stoneList[i].SetLight(i < curr);
+                stoneList[i].gameObject.SetActive(i < MaxStone);
+                stoneList[i].SetLight(i < CurrentStone);
             }
         }
 
@@ -43,7 +68,8 @@ namespace TouhouHeartstone.Frontend
 
         public void Start()
         {
-            Set(5, 8);
+            CurrentStone = 0;
+            MaxStone = 0;
         }
 
     }

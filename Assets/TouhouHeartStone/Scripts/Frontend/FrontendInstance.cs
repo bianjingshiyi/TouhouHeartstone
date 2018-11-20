@@ -28,7 +28,7 @@ namespace TouhouHeartstone.Frontend
 
         public void Init()
         {
-            DebugUtils.Log("Instance Init.");
+            DebugUtils.LogDebug("Instance Init.");
             Manager.Init();
         }
     }

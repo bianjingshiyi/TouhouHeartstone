@@ -32,7 +32,7 @@ namespace TouhouHeartstone.Frontend.Manager
             if (!gameObject.activeInHierarchy || witnessQueue.Count > 0)
             {
                 witnessQueue.Enqueue(witness);
-                DebugUtils.Log($"[{selfID}]Buff a witness.");
+                DebugUtils.LogDebug($"[{selfID}]Buff a witness.");
             }
             else
             {
@@ -42,7 +42,7 @@ namespace TouhouHeartstone.Frontend.Manager
 
         private void witnessExecutor(Witness witness)
         {
-            DebugUtils.Log($"[{selfID}]{witness.ToString()}");
+            DebugUtils.LogDebug($"[{selfID}]{witness.ToString()}");
 
             if (witness is SetOrderWitness)
             {
@@ -151,8 +151,10 @@ namespace TouhouHeartstone.Frontend.Manager
             if (witness.playerId == selfID)
             {
                 var stoneBar = getSiblingManager<FrontendUIManager>().StoneBar;
-                // todo: 这个count有问题
-                stoneBar.Set(witness.count, witness.count);
+
+                // 这里就直接回满了
+                stoneBar.MaxStone += witness.count;
+                stoneBar.CurrentStone = stoneBar.MaxStone;
             }
             return true;
         }
@@ -252,7 +254,7 @@ namespace TouhouHeartstone.Frontend.Manager
 
         internal void InvokeUseCardEvent(int cardID, int position = -1, int target = -1)
         {
-            DebugUtils.Log($"使用卡片。id: {cardID}, pos: {position}, target: {target}");
+            DebugUtils.LogDebug($"使用卡片。id: {cardID}, pos: {position}, target: {target}");
             UseCardEventAction?.Invoke(cardID, position, target);
         }
 

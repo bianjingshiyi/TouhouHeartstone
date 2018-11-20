@@ -20,7 +20,7 @@ namespace TouhouHeartstone.Frontend.Manager
             ett.SetInstanceID(card.InstanceID);
             ett.transform.localPosition = calculateEntityPos(entityList.Count + 1, pos);
 
-            DebugUtils.Log($"Insert card {card.InstanceID} into pos {pos}");
+            DebugUtils.LogDebug($"Insert card {card.InstanceID} into pos {pos}");
 
             entityList.Insert(pos, ett);
             UpdateEntityPos();
@@ -68,7 +68,7 @@ namespace TouhouHeartstone.Frontend.Manager
                 entityList.RemoveAt(index);
                 UpdateEntityPos();
 
-                DebugUtils.Log($"Remove card {index}");
+                DebugUtils.LogDebug($"Remove card {index}");
             }
         }
 
