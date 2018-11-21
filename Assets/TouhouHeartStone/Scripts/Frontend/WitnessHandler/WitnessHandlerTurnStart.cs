@@ -1,7 +1,10 @@
 ﻿using TouhouHeartstone.Frontend.Manager;
+using System;
+using System.Runtime.InteropServices;
 
 namespace TouhouHeartstone.Frontend.WitnessHandler
 {
+    [ComVisible(false)]
     public class WitnessHandlerTurnStart : WitnessHandlerBase<TurnStartWitness>
     {
         public override bool HasAnimation => false;

@@ -95,7 +95,7 @@ namespace TouhouHeartstone.Frontend.Manager
             }
 
             // 通知后端
-            getSiblingManager<FrontendWitnessEventDispatcher>().ReplaceInitDrawAction?.Invoke(removeList.ToArray());
+            getSiblingManager<FrontendWitnessEventDispatcher>().InvokeReplaceInitDrawEvent(removeList.ToArray());
 
             // 关闭背板
             ui.gameObject.SetActive(false);

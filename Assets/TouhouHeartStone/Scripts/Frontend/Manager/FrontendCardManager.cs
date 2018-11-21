@@ -11,6 +11,8 @@ namespace TouhouHeartstone.Frontend.Manager
 
         InitDrawManager initDraw => getSiblingManager<InitDrawManager>();
 
+        public event Action OnDrawCardFinish;
+
         [SerializeField]
         CardFace cardPrefab;
 
@@ -79,10 +81,11 @@ namespace TouhouHeartstone.Frontend.Manager
             {
                 drawCardInner(cardQueue.Peek());
             }
+            else
+            {
+                OnDrawCardFinish?.Invoke();
+            }
         }
-
-
-
         #endregion
 
         #region 多抽

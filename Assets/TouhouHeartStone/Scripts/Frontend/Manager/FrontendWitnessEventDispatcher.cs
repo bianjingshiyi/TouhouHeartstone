@@ -21,7 +21,11 @@ namespace TouhouHeartstone.Frontend.Manager
 
         private void OnEnable()
         {
-            DequeueWitness();
+            if(playOnEnable)
+            {
+                playOnEnable = false;
+                DequeueWitness();
+            }
         }
 
         private void DequeueWitness()
@@ -30,10 +34,22 @@ namespace TouhouHeartstone.Frontend.Manager
             {
                 var wit = witnessQueue.Dequeue();
                 bool hasAnime = new WitnessHandler.WitnessHandler().Exec(wit, this.Frontend);
+
+                // 若上个动画没有播放完毕，则不要在Enable的时候播放下一个动画
+                playOnEnable = !hasAnime;
                 // debug: 在没有做完动画播放前不要启用这个玩意
-                // if (hasAnime) break;
+                if (hasAnime)
+                {
+                    DebugUtils.LogDebug("等候动画播放");
+                    break;
+                }
             }
         }
+
+        /// <summary>
+        /// 在启用时播放动画
+        /// </summary>
+        bool playOnEnable;
 
         void onWitness(Witness witness)
         {
@@ -43,16 +59,41 @@ namespace TouhouHeartstone.Frontend.Manager
             DebugUtils.LogDebug($"[{selfID}]Buff a witness.");
 
             // 如果是启用状态且这个是第一个，那就立即播放。
-            if (gameObject.activeInHierarchy && original == 0)
+            if (gameObject.activeInHierarchy)
+            {
+                if(original == 0)
+                    DequeueWitness();
+            }
+            else
+            {
+                playOnEnable = true;
+            }
+        }
+        /// <summary>
+        /// witness动画播放完毕后调用这个玩意
+        /// </summary>
+        public void OnWitnessFinish()
+        {
+            DebugUtils.LogDebug("动画播放完毕");
+            if (gameObject.activeInHierarchy)
             {
                 DequeueWitness();
+            }
+            else
+            {
+                playOnEnable = true;
             }
         }
 
         /// <summary>
         /// 替换初始手牌
         /// </summary>
-        public UnityAction<int[]> ReplaceInitDrawAction;
+        public event UnityAction<int[]> ReplaceInitDrawAction;
+
+        internal void InvokeReplaceInitDrawEvent(int[] arg)
+        {
+            ReplaceInitDrawAction?.Invoke(arg);
+        }
 
         /// <summary>
         /// 回合结束事件
