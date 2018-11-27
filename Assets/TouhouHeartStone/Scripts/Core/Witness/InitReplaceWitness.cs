@@ -6,13 +6,15 @@ namespace TouhouHeartstone
     /// 替换初始手牌的Witness
     /// </summary>
     [Serializable]
-    public class InitReplaceWitness : Witness
+    public struct InitReplaceWitness : IWitness
     {
+        public int number { get; set; }
         public int playerId { get; }
         public CardInstance[] originCards { get; }
         public CardInstance[] replaceCards { get; }
         public InitReplaceWitness(int playerId, CardInstance[] originCards, CardInstance[] replaceCards)
         {
+            number = 0;
             this.playerId = playerId;
             this.originCards = originCards;
             this.replaceCards = replaceCards;

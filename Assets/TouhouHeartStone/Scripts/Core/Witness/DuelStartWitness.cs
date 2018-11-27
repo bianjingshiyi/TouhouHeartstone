@@ -3,11 +3,9 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    public class DuelStartWitness : Witness
+    public struct DuelStartWitness : IWitness
     {
-        public DuelStartWitness()
-        {
-        }
+        public int number { get; set; }
         public override string ToString()
         {
             return "对战开始";

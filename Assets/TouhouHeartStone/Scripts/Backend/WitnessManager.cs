@@ -6,9 +6,9 @@ using System.Collections;
 
 namespace TouhouHeartstone.Backend
 {
-    public class WitnessManager : MonoBehaviour, IEnumerable<Witness>
+    public class WitnessManager : MonoBehaviour, IEnumerable<IWitness>
     {
-        public void add(Witness witness)
+        public void add(IWitness witness)
         {
             if (witness == null || witness.number < _witnessed.Count)
                 return;
@@ -19,7 +19,7 @@ namespace TouhouHeartstone.Backend
                 onWitnessAdded.Invoke(witness);
                 if (_hungup.Count > 0)
                 {
-                    Witness next = _hungup.FirstOrDefault(e => { return e.number == _witnessed.Count; });
+                    IWitness next = _hungup.FirstOrDefault(e => { return e.number == _witnessed.Count; });
                     if (next != null)
                     {
                         _hungup.Remove(next);
@@ -30,7 +30,7 @@ namespace TouhouHeartstone.Backend
             else
                 _hungup.Add(witness);
         }
-        public Witness getWitness(int number)
+        public IWitness getWitness(int number)
         {
             return _witnessed[number];
         }
@@ -44,25 +44,25 @@ namespace TouhouHeartstone.Backend
             max = _hungup.Min(e => { return e.number; }) - 1;
         }
         [SerializeField]
-        List<Witness> _hungup = new List<Witness>();
+        List<IWitness> _hungup = new List<IWitness>();
         public int count
         {
             get { return _witnessed.Count; }
         }
-        public Witness this[int index]
+        public IWitness this[int index]
         {
             get { return _witnessed[index]; }
         }
-        public IEnumerator<Witness> GetEnumerator()
+        public IEnumerator<IWitness> GetEnumerator()
         {
-            return ((IEnumerable<Witness>)_witnessed).GetEnumerator();
+            return ((IEnumerable<IWitness>)_witnessed).GetEnumerator();
         }
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable<Witness>)_witnessed).GetEnumerator();
+            return ((IEnumerable<IWitness>)_witnessed).GetEnumerator();
         }
         [SerializeField]
-        List<Witness> _witnessed = new List<Witness>();
+        List<IWitness> _witnessed = new List<IWitness>();
         public WitnessEvent onWitnessAdded
         {
             get { return _onWitnessAdded; }

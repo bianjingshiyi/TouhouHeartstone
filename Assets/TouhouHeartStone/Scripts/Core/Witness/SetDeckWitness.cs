@@ -3,26 +3,21 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    public class SetDeckWitness : Witness
+    public struct SetDeckWitness : IWitness
     {
-        public int playerId
-        {
-            get { return _playerId; }
-        }
-        int _playerId;
-        public int count
-        {
-            get { return _count; }
-        }
-        int _count;
+        public int number { get; set; }
+        public int playerId { get; }
+        public int count { get; }
+
         public SetDeckWitness(int playerId, int count)
         {
-            _playerId = playerId;
-            _count = count;
+            number = 0;
+            this.playerId = playerId;
+            this.count = count;
         }
         public override string ToString()
         {
-            return "玩家" + _playerId + "的卡组大小设置为" + _count + "。";
+            return "玩家" + playerId + "的卡组大小设置为" + count + "。";
         }
     }
 }

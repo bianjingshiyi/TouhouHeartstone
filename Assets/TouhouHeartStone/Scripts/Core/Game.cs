@@ -4,15 +4,34 @@ using System.Collections.Generic;
 
 namespace TouhouHeartstone
 {
+    public abstract class Rule
+    {
+        public abstract void onInit(Game game);
+        public abstract int getFirstPlayer(Game game);
+    }
     [Serializable]
     public class Game
     {
-        public Game(int randomSeed)
+        public Game(Rule rule, int randomSeed)
         {
+            this.rule = rule;
             random = new Random(randomSeed);
             cards = new CardManager();
             records = new RecordManager(this);
         }
+        public void setInt(string name, int value)
+        {
+            properties[name] = value;
+        }
+        public int getInt(string name)
+        {
+            if (properties.ContainsKey(name) && properties[name] is int)
+                return (int)properties[name];
+            else
+                return 0;
+        }
+        internal Dictionary<string, object> properties { get; } = new Dictionary<string, object>();
+        public Rule rule { get; }
         /// <summary>
         /// 开始游戏，需要提供游戏中玩家的id。
         /// </summary>

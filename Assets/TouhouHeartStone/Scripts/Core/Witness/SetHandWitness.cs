@@ -6,12 +6,14 @@ namespace TouhouHeartstone
     /// 直接设置手牌的Witness
     /// </summary>
     [Serializable]
-    public class SetHandWitness : Witness
+    public struct SetHandWitness : IWitness
     {
+        public int number { get; set; }
         public int playerId { get; }
         public CardInstance[] cards { get; }
         public SetHandWitness(int playerId, CardInstance[] cards)
         {
+            number = 0;
             this.playerId = playerId;
             this.cards = cards;
         }

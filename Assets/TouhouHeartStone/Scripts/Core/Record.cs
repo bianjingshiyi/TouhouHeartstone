@@ -6,12 +6,11 @@ namespace TouhouHeartstone
     [Serializable]
     abstract class Record
     {
-        public abstract Dictionary<int, Witness> apply(Game game);
-        public abstract Dictionary<int, Witness> revert(Game game);
+        public abstract Dictionary<int, IWitness> apply(Game game);
+        public abstract Dictionary<int, IWitness> revert(Game game);
     }
-    [Serializable]
-    public abstract class Witness
+    public interface IWitness
     {
-        public int number { get; set; }
+        int number { get; set; }
     }
 }

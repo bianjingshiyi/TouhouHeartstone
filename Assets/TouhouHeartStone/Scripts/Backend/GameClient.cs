@@ -16,9 +16,9 @@
         }
         protected override void onReceiveObject(int senderId, object obj)
         {
-            if (obj is Witness)
+            if (obj is IWitness)
             {
-                witness.add(obj as Witness);
+                witness.add(obj as IWitness);
                 if (witness.hungupCount > 0)
                 {
                     int min, max;

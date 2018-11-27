@@ -37,6 +37,6 @@ namespace TouhouHeartstone
             return ((IEnumerable<Record>)_recoderList).GetEnumerator();
         }
         List<Record> _recoderList = new List<Record>();
-        public event Action<Dictionary<int, Witness>> onWitness;
+        public event Action<Dictionary<int, IWitness>> onWitness;
     }
 }

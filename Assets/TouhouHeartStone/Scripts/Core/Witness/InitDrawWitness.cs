@@ -3,12 +3,14 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    public class InitDrawWitness : Witness
+    public struct InitDrawWitness : IWitness
     {
+        public int number { get; set; }
         public int playerId { get; }
         public CardInstance[] cards { get; }
         public InitDrawWitness(int playerId, CardInstance[] cards)
         {
+            number = 0;
             this.playerId = playerId;
             this.cards = cards;
         }

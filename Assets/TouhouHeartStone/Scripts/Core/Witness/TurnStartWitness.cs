@@ -3,11 +3,13 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    public class TurnStartWitness : Witness
+    public struct TurnStartWitness : IWitness
     {
+        public int number { get; set; }
         public int playerId { get; }
         public TurnStartWitness(int playerId)
         {
+            number = 0;
             this.playerId = playerId;
         }
         public override string ToString()

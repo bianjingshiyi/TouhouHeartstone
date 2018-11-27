@@ -3,27 +3,9 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    public class UseWitness : Witness
+    public class DrawWitness : IWitness
     {
-        public int playerId { get; }
-        public CardInstance card { get; }
-        public int position { get; }
-        public CardInstance target { get; }
-        public UseWitness(int playerId, CardInstance card, int position, CardInstance target)
-        {
-            this.playerId = playerId;
-            this.card = card;
-            this.position = position;
-            this.target = target;
-        }
-        public override string ToString()
-        {
-            return "玩家" + playerId + "使用了" + card;
-        }
-    }
-    [Serializable]
-    public class DrawWitness : Witness
-    {
+        public int number { get; set; }
         public int playerId { get; }
         public CardInstance[] cards { get; }
         public DrawWitness(int playerId, CardInstance[] cards)

@@ -17,7 +17,7 @@ namespace TouhouHeartstone.Frontend.Manager
             witness.onWitnessAdded.AddListener(onWitness);
         }
 
-        Queue<Witness> witnessQueue = new Queue<Witness>();
+        Queue<IWitness> witnessQueue = new Queue<IWitness>();
 
         private void OnEnable()
         {
@@ -51,7 +51,7 @@ namespace TouhouHeartstone.Frontend.Manager
         /// </summary>
         bool playOnEnable;
 
-        void onWitness(Witness witness)
+        void onWitness(IWitness witness)
         {
             var original = witnessQueue.Count;
 

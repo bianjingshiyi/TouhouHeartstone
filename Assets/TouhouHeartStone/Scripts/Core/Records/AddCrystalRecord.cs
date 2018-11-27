@@ -15,22 +15,22 @@ namespace TouhouHeartstone
             this.count = count;
             this.state = state;
         }
-        public override Dictionary<int, Witness> apply(Game game)
+        public override Dictionary<int, IWitness> apply(Game game)
         {
             game.players.getPlayer(playerId).addCrystal(count, state);
 
-            Dictionary<int, Witness> dicWitness = new Dictionary<int, Witness>();
+            Dictionary<int, IWitness> dicWitness = new Dictionary<int, IWitness>();
             for (int i = 0; i < game.players.count; i++)
             {
                 dicWitness.Add(game.players[i].id, new AddCrystalWitness(playerId, count, state));
             }
             return dicWitness;
         }
-        public override Dictionary<int, Witness> revert(Game game)
+        public override Dictionary<int, IWitness> revert(Game game)
         {
             game.players.getPlayer(playerId).removeCrystal(count);
 
-            Dictionary<int, Witness> dicWitness = new Dictionary<int, Witness>();
+            Dictionary<int, IWitness> dicWitness = new Dictionary<int, IWitness>();
             for (int i = 0; i < game.players.count; i++)
             {
                 dicWitness.Add(game.players[i].id, new RemoveCrystalWitness(playerId, count));

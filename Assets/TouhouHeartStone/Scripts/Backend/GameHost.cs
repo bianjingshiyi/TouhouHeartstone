@@ -10,7 +10,7 @@ namespace TouhouHeartstone.Backend
         protected override void onAwake()
         {
             base.onAwake();
-            game = new Game((int)DateTime.Now.ToBinary());
+            game = new Game(new HeartStoneRule(), (int)DateTime.Now.ToBinary());
             game.records.onWitness += onHostWitness;
         }
         protected override void onStart()
@@ -30,12 +30,12 @@ namespace TouhouHeartstone.Backend
         {
             game.turnEnd(network.localPlayerId);
         }
-        private void onHostWitness(Dictionary<int, Witness> dicWitness)
+        private void onHostWitness(Dictionary<int, IWitness> dicWitness)
         {
             if (dicWitness == null)
                 return;
             //添加给自己
-            Witness witness = dicWitness[network.localPlayerId];
+            IWitness witness = dicWitness[network.localPlayerId];
             witness.number = this.witness.count;
             this.witness.add(witness);
             //发送给其他玩家
@@ -45,7 +45,7 @@ namespace TouhouHeartstone.Backend
                 {
                     int playerId = network.playersId[i];
                     if (!_dicWitnessed.ContainsKey(playerId))
-                        _dicWitnessed.Add(playerId, new List<Witness>());
+                        _dicWitnessed.Add(playerId, new List<IWitness>());
                     witness = dicWitness[playerId];
                     witness.number = _dicWitnessed[playerId].Count;
                     _dicWitnessed[playerId].Add(witness);
@@ -79,7 +79,7 @@ namespace TouhouHeartstone.Backend
                 game.turnEnd(senderId);
             }
         }
-        Dictionary<int, List<Witness>> _dicWitnessed = new Dictionary<int, List<Witness>>();
+        Dictionary<int, List<IWitness>> _dicWitnessed = new Dictionary<int, List<IWitness>>();
         Game game { get; set; } = null;
     }
 }

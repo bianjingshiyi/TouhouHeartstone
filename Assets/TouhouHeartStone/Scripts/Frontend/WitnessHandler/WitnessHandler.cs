@@ -5,7 +5,7 @@ namespace TouhouHeartstone.Frontend.WitnessHandler
 {
     public class WitnessHandler
     {
-        public bool Exec(Witness witness, Frontend.Manager.FrontendManager frontend)
+        public bool Exec(IWitness witness, Frontend.Manager.FrontendManager frontend)
         {
             var type = witness.GetType();
             var types = typeof(WitnessHandler).Assembly.GetTypes();
@@ -33,7 +33,7 @@ namespace TouhouHeartstone.Frontend.WitnessHandler
     public abstract class WitnessHandlerBase
     {
         protected Frontend.Manager.FrontendManager frontend;
-        public abstract void Exec(Witness witness);
+        public abstract void Exec(IWitness witness);
 
         public abstract bool HasAnimation { get; }
 
@@ -43,11 +43,11 @@ namespace TouhouHeartstone.Frontend.WitnessHandler
         }
     }
 
-    public abstract class WitnessHandlerBase<T> : WitnessHandlerBase where T : Witness
+    public abstract class WitnessHandlerBase<T> : WitnessHandlerBase where T : IWitness
     {
-        public override void Exec(Witness witness)
+        public override void Exec(IWitness witness)
         {
-            Exec(witness as T);
+            Exec((T)witness);
         }
 
         public abstract void Exec(T witness);

@@ -3,11 +3,13 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    public class SetOrderWitness : Witness
+    public struct SetOrderWitness : IWitness
     {
-        public int[] orderedPlayerId { get; } = null;
+        public int number { get; set; }
+        public int[] orderedPlayerId { get; }
         public SetOrderWitness(int[] orderedPlayerId)
         {
+            number = 0;
             this.orderedPlayerId = orderedPlayerId;
         }
         public override string ToString()

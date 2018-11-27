@@ -3,13 +3,15 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    public class AddCrystalWitness : Witness
+    public struct AddCrystalWitness : IWitness
     {
+        public int number { get; set; }
         public int playerId { get; }
         public int count { get; }
         public CrystalState state { get; }
         public AddCrystalWitness(int playerId, int count, CrystalState state)
         {
+            number = 0;
             this.playerId = playerId;
             this.count = count;
             this.state = state;

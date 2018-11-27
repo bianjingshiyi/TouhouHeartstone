@@ -4,5 +4,5 @@ using UnityEngine.Events;
 namespace TouhouHeartstone.Backend
 {
     [Serializable]
-    public class WitnessEvent : UnityEvent<Witness> { }
+    public class WitnessEvent : UnityEvent<IWitness> { }
 }

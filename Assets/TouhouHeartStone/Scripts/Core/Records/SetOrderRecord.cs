@@ -4,6 +4,26 @@ using System.Collections.Generic;
 namespace TouhouHeartstone
 {
     [Serializable]
+    class SetGameIntRecord : Record
+    {
+        string name { get; } = null;
+        int value { get; } = 0;
+        public SetGameIntRecord(string name, int value)
+        {
+            this.name = name;
+            this.value = 0;
+        }
+        public override Dictionary<int, IWitness> apply(Game game)
+        {
+            game.properties[name] = value;
+            return null;
+        }
+        public override Dictionary<int, IWitness> revert(Game game)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    [Serializable]
     class SetOrderRecord : Record
     {
         int[] _targetOrder = null;
@@ -12,7 +32,7 @@ namespace TouhouHeartstone
         {
             _targetOrder = orderedPlayerId;
         }
-        public override Dictionary<int, Witness> apply(Game game)
+        public override Dictionary<int, IWitness> apply(Game game)
         {
             if (game.players.orderedPlayers != null)
             {
@@ -35,14 +55,14 @@ namespace TouhouHeartstone
             }
             else
                 game.players.orderedPlayers = null;
-            Dictionary<int, Witness> dicWitness = new Dictionary<int, Witness>();
+            Dictionary<int, IWitness> dicWitness = new Dictionary<int, IWitness>();
             for (int i = 0; i < game.players.count; i++)
             {
                 dicWitness.Add(game.players[i].id, new SetOrderWitness(_targetOrder));
             }
             return dicWitness;
         }
-        public override Dictionary<int, Witness> revert(Game game)
+        public override Dictionary<int, IWitness> revert(Game game)
         {
             if (_originOrder != null)
             {
@@ -55,7 +75,7 @@ namespace TouhouHeartstone
             }
             else
                 game.players.orderedPlayers = null;
-            Dictionary<int, Witness> dicWitness = new Dictionary<int, Witness>();
+            Dictionary<int, IWitness> dicWitness = new Dictionary<int, IWitness>();
             for (int i = 0; i < game.players.count; i++)
             {
                 dicWitness.Add(game.players[i].id, new SetOrderWitness(_originOrder));
