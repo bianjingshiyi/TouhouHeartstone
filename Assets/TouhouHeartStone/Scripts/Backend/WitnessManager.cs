@@ -15,7 +15,7 @@ namespace TouhouHeartstone.Backend
             if (witness.number == _witnessed.Count)
             {
                 _witnessed.Add(witness);
-                Debug.Log("玩家" + game.network.localPlayerId + "收到：" + witness, this);
+                Debug.Log("玩家" + game.localPlayerIndex + "收到：" + witness, this);
                 onWitnessAdded.Invoke(witness);
                 if (_hungup.Count > 0)
                 {

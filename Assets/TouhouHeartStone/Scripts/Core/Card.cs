@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TouhouHeartstone
 {
     [Serializable]
-    abstract class Card
+    public abstract class Card
     {
         public static Card create(CardInstance instance, Player owner)
         {
@@ -20,6 +21,10 @@ namespace TouhouHeartstone
         public override string ToString()
         {
             return instance.ToString();
+        }
+        public static implicit operator Card[] (Card card)
+        {
+            return new Card[] { card };
         }
     }
     class LuckyCoin : Card

@@ -4,26 +4,6 @@ using System.Collections.Generic;
 namespace TouhouHeartstone
 {
     [Serializable]
-    class SetGameIntRecord : Record
-    {
-        string name { get; } = null;
-        int value { get; } = 0;
-        public SetGameIntRecord(string name, int value)
-        {
-            this.name = name;
-            this.value = 0;
-        }
-        public override Dictionary<int, IWitness> apply(Game game)
-        {
-            game.properties[name] = value;
-            return null;
-        }
-        public override Dictionary<int, IWitness> revert(Game game)
-        {
-            throw new NotImplementedException();
-        }
-    }
-    [Serializable]
     class SetOrderRecord : Record
     {
         int[] _targetOrder = null;

@@ -1,7 +1,13 @@
-﻿namespace TouhouHeartstone.Backend
+﻿using System;
+
+namespace TouhouHeartstone.Backend
 {
     public class GameClient : GameContainer
     {
+        public override int localPlayerIndex
+        {
+            get { throw new NotImplementedException(); }
+        }
         protected override void onInitReplace(int[] cards)
         {
             network.sendObject(network.hostId, new InitReplaceRequest(cards));

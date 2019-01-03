@@ -32,6 +32,7 @@ namespace TouhouHeartstone.Backend
         protected abstract void onUse(int instance, int position, int target);
         protected abstract void onTurnEnd();
         protected abstract void onReceiveObject(int senderId, object obj);
+        public abstract int localPlayerIndex { get; }
         FrontendWitnessEventDispatcher frontendEvents
         {
             get

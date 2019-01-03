@@ -3,7 +3,7 @@
 namespace TouhouHeartstone
 {
     [Serializable]
-    public class CardInstance
+    public struct CardInstance
     {
         public int instanceId { get; }
         public int cardId { get; }
@@ -18,11 +18,23 @@ namespace TouhouHeartstone
         }
         public override bool Equals(object obj)
         {
-            return obj is CardInstance && (obj as CardInstance).instanceId == instanceId;
+            return obj is CardInstance && ((CardInstance)obj).instanceId == instanceId;
         }
         public override string ToString()
         {
             return "Card(" + instanceId + ")<" + cardId + ">";
+        }
+        public static bool operator ==(CardInstance a, CardInstance b)
+        {
+            return a.instanceId == b.instanceId;
+        }
+        public static bool operator !=(CardInstance a, CardInstance b)
+        {
+            return a.instanceId != b.instanceId;
+        }
+        public static implicit operator CardInstance[](CardInstance instance)
+        {
+            return new CardInstance[] { instance };
         }
     }
 }

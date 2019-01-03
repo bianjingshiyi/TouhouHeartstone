@@ -12,6 +12,10 @@ namespace TouhouHeartstone
         {
             players = playersId.Select(e => { return new Player(e); }).ToArray();
         }
+        public int getPlayerIndex(Player player)
+        {
+            return Array.IndexOf(players, player);
+        }
         public Player[] orderedPlayers { get; internal set; }
         public Player getPlayer(int playerId)
         {
@@ -19,7 +23,13 @@ namespace TouhouHeartstone
         }
         public Player this[int index]
         {
-            get { return players[index]; }
+            get
+            {
+                if (0 <= index && index < count)
+                    return players[index];
+                else
+                    return null;
+            }
         }
         public int count
         {

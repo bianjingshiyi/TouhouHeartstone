@@ -20,22 +20,22 @@ namespace TouhouHeartstone.Backend
         }
         protected override void onInitReplace(int[] cards)
         {
-            game.initReplace(network.localPlayerId, cards.Select(e => { return new CardInstance(e, 0); }).ToArray());
+            game.initReplace(localPlayerIndex, cards.Select(e => { return new CardInstance(e, 0); }).ToArray());
         }
         protected override void onUse(int instance, int position, int target)
         {
-            game.use(network.localPlayerId, instance, position, target);
+            game.use(localPlayerIndex, instance, position, target);
         }
         protected override void onTurnEnd()
         {
-            game.turnEnd(network.localPlayerId);
+            game.turnEnd(localPlayerIndex);
         }
         private void onHostWitness(Dictionary<int, IWitness> dicWitness)
         {
             if (dicWitness == null)
                 return;
             //添加给自己
-            IWitness witness = dicWitness[network.localPlayerId];
+            IWitness witness = dicWitness[localPlayerIndex];
             witness.number = this.witness.count;
             this.witness.add(witness);
             //发送给其他玩家
@@ -44,12 +44,16 @@ namespace TouhouHeartstone.Backend
                 if (network.playersId[i] != network.localPlayerId)
                 {
                     int playerId = network.playersId[i];
+                    int playerIndex = game.getPlayerIndex(playerId);
                     if (!_dicWitnessed.ContainsKey(playerId))
                         _dicWitnessed.Add(playerId, new List<IWitness>());
-                    witness = dicWitness[playerId];
-                    witness.number = _dicWitnessed[playerId].Count;
-                    _dicWitnessed[playerId].Add(witness);
-                    network.sendObject(playerId, witness);
+                    if (dicWitness.ContainsKey(playerIndex))
+                    {
+                        witness = dicWitness[playerIndex];
+                        witness.number = _dicWitnessed[playerId].Count;
+                        _dicWitnessed[playerId].Add(witness);
+                        network.sendObject(playerId, witness);
+                    }
                 }
             }
         }
@@ -80,6 +84,10 @@ namespace TouhouHeartstone.Backend
             }
         }
         Dictionary<int, List<IWitness>> _dicWitnessed = new Dictionary<int, List<IWitness>>();
+        public override int localPlayerIndex
+        {
+            get { return game.getPlayerIndex(network.localPlayerId); }
+        }
         Game game { get; set; } = null;
     }
 }

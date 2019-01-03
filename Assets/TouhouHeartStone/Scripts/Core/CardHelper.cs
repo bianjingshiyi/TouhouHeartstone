@@ -13,5 +13,9 @@ namespace TouhouHeartstone
         {
             return cards.Select(e => { return new CardInstance(e.instance.instanceId, isVisible ? e.instance.cardId : 0); }).ToArray();
         }
+        public static CardInstance[] getInstances(this IEnumerable<CardInstance> cards, bool isVisible)
+        {
+            return isVisible ? cards.ToArray() : cards.Select(e => { return new CardInstance(e.instanceId, 0); }).ToArray();
+        }
     }
 }

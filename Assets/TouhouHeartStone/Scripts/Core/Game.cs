@@ -4,11 +4,6 @@ using System.Collections.Generic;
 
 namespace TouhouHeartstone
 {
-    public abstract class Rule
-    {
-        public abstract void onInit(Game game);
-        public abstract int getFirstPlayer(Game game);
-    }
     [Serializable]
     public class Game
     {
@@ -19,45 +14,120 @@ namespace TouhouHeartstone
             cards = new CardManager();
             records = new RecordManager(this);
         }
-        public void setInt(string name, int value)
-        {
-            properties[name] = value;
-        }
-        public int getInt(string name)
-        {
-            if (properties.ContainsKey(name) && properties[name] is int)
-                return (int)properties[name];
-            else
-                return 0;
-        }
-        internal Dictionary<string, object> properties { get; } = new Dictionary<string, object>();
         public Rule rule { get; }
+        public int getPlayerAt(int playerIndex)
+        {
+            return (0 <= playerIndex && playerIndex < players.count) ? players[playerIndex].id : 0;
+        }
+        public int getPlayerIndex(int playerId)
+        {
+            for (int i = 0; i < players.count; i++)
+            {
+                if (players[i].id == playerId)
+                    return i;
+            }
+            return -1;
+        }
         /// <summary>
         /// 开始游戏，需要提供游戏中玩家的id。
         /// </summary>
-        /// <param name="playersId">玩家id数组</param>
-        public void start(int[] playersId)
+        /// <param name="playersID">玩家id数组</param>
+        public void start(int[] playersID)
         {
-            //初始化玩家
-            players = new PlayerManager(playersId);
-            //决定回合顺序
-            List<int> unorderedPlayers = new List<int>(players.Select(e => { return e.id; }));
-            int[] orderedPlayerId = new int[unorderedPlayers.Count];
-            for (int i = 0; i < orderedPlayerId.Length; i++)
+            Event @event = new Event("Init");
+            @event["playersID"] = playersID;
+            doEvent(@event, (g, e) =>
             {
-                int index = random.Next(0, unorderedPlayers.Count);
-                orderedPlayerId[i] = unorderedPlayers[index];
-                unorderedPlayers.RemoveAt(index);
+                //初始化玩家
+                playersID = e.getVar<int[]>("playersID");
+                if (playersID == null || playersID.Length == 0)
+                    return;
+                players = new PlayerManager(playersID);
+                for (int i = 0; i < players.count; i++)
+                {
+                    dicWitnessList.Add(players[i], new List<EventWitness>());
+                }
+            });
+        }
+        public void doEvent(Event e, Action<Game, Event> logic)
+        {
+            beginEvent(e);
+            logic(this, e);
+            endEvent();
+        }
+        public void beginEvent(Event e)
+        {
+            e.parent = currentEvent;
+            currentEvent = e;
+            for (int i = 0; i < players.count; i++)
+            {
+                EventWitness witness = new EventWitness(e.name);
+                witness.parent = dicCurrentWitness.ContainsKey(players[i]) ? dicCurrentWitness[players[i]] : null;
+                dicCurrentWitness[players[i]] = witness;
             }
-            records.addRecord(new SetOrderRecord(orderedPlayerId));
-            //初始化卡组，抽初始卡牌，并保留或者替换
-            for (int i = 0; i < players.orderedPlayers.Length; i++)
+            rule.beforeEvent(this, e);
+        }
+        public void endEvent(params Player[] visiblePlayers)
+        {
+            rule.afterEvent(this, currentEvent);
+            if (visiblePlayers != null && visiblePlayers.Length > 0)
             {
-                int[] presetDeck = new int[30];//预设卡组是空的。
-                records.addRecord(new AddCardRecord(players.orderedPlayers[i].id, RegionType.deck, cards.createInstances(presetDeck)));
-                records.addRecord(new InitDrawRecord(players.orderedPlayers[i].id, i == 0 ? 3 : 4));
+                for (int i = 0; i < players.count; i++)
+                {
+                    if (visiblePlayers.Contains(players[i]))
+                    {
+                        //特定玩家可见
+                        currentEvent.copyVars(dicCurrentWitness[players[i]]);
+                        if (dicCurrentWitness[players[i]].parent != null)
+                            dicCurrentWitness[players[i]] = dicCurrentWitness[players[i]].parent;
+                        else
+                            sendWitness(players[i]);
+                    }
+                    else
+                    {
+                        //特定玩家不可见
+                        EventWitness witness = dicCurrentWitness[players[i]];
+                        if (witness.parent != null)
+                        {
+                            dicCurrentWitness[players[i]] = witness.parent;
+                            witness.parent = null;
+                        }
+                        else
+                            dicCurrentWitness[players[i]] = null;
+                    }
+                }
+            }
+            else
+            {
+                //所有玩家可见
+                for (int i = 0; i < players.count; i++)
+                {
+                    currentEvent.copyVars(dicCurrentWitness[players[i]]);
+                    if (dicCurrentWitness[players[i]].parent != null)
+                        dicCurrentWitness[players[i]] = dicCurrentWitness[players[i]].parent;
+                    else
+                        sendWitness(players[i]);
+                }
+            }
+            if (currentEvent.parent != null)
+            {
+                currentEvent = currentEvent.parent;
+            }
+            else
+            {
+                eventList.Add(currentEvent);
+                currentEvent = null;
             }
         }
+        void sendWitness(Player player)
+        {
+            dicWitnessList[player].Add(dicCurrentWitness[player]);
+            dicCurrentWitness[player] = null;
+        }
+        Dictionary<Player, EventWitness> dicCurrentWitness { get; } = new Dictionary<Player, EventWitness>();
+        Dictionary<Player, List<EventWitness>> dicWitnessList { get; } = new Dictionary<Player, List<EventWitness>>();
+        Event currentEvent { get; set; } = null;
+        List<Event> eventList { get; } = new List<Event>();
         public void initReplace(int playerId, CardInstance[] cards)
         {
             if (cards.Length > 0)
@@ -116,6 +186,10 @@ namespace TouhouHeartstone
             return (float)(random.NextDouble() * (max - min) + min);
         }
         Random random { get; set; }
+        public Player[] getPlayers()
+        {
+            return players.ToArray();
+        }
         internal CardManager cards { get; private set; }
         internal PlayerManager players { get; private set; }
         public RecordManager records { get; set; }
