@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 
-using TouhouHeartstone.Frontend.Manager;
+using TouhouHeartstone.OldFrontend.Manager;
 
 namespace TouhouHeartstone.Backend
 {
