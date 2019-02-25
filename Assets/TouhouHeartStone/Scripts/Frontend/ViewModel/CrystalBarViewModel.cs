@@ -76,7 +76,7 @@ namespace TouhouHeartstone.Frontend.ViewModel
 
         void Start()
         {
-            CrystalTotal = Random.Range(3, 7);
+            CrystalTotal = Random.Range(3, 11);
             CrystalUsed = 1;
             CrystalDisable = 1;
             CrystalHighlight = 1;

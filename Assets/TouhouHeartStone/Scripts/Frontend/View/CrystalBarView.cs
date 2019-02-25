@@ -1,7 +1,5 @@
 ﻿using IGensoukyo.Utilities;
 using TouhouHeartstone.Frontend.ViewModel;
-
-using UnityEngine;
 namespace TouhouHeartstone.Frontend.View
 {
     public class CrystalBarView : ItemSpawner<CrystalItem>

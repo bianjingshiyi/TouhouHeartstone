@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace IGensoukyo.Utilities
 {
@@ -11,7 +12,7 @@ namespace IGensoukyo.Utilities
         [SerializeField]
         protected Transform _spawnRoot;
 
-        Transform spawnRoot => _spawnRoot ?? this.transform ;
+        Transform spawnRoot => _spawnRoot ?? this.transform;
 
         protected List<T> itemList = new List<T>();
 
@@ -50,6 +51,61 @@ namespace IGensoukyo.Utilities
                 Destroy(item.gameObject);
             }
             itemList.Clear();
+        }
+    }
+
+    public class HoverTooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    {
+        [SerializeField]
+        float timeThresole;
+
+        float beginTime;
+        bool popuped;
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            OnMouseEnter();
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            OnMouseExit();
+        }
+
+        protected void OnMouseEnter()
+        {
+            beginTime = Time.time;
+        }
+
+        protected void OnMouseExit()
+        {
+            beginTime = -1;
+            if (popuped)
+            {
+                hidePopup();
+            }
+        }
+
+        void showPopup()
+        {
+            popuped = true;
+        }
+
+        void hidePopup()
+        {
+            popuped = false;
+        }
+
+        void Update()
+        {
+            if (beginTime >= 0)
+            {
+                if (Time.time - beginTime > timeThresole)
+                {
+                    beginTime = -1;
+                    showPopup();
+                }
+            }
         }
     }
 }
