@@ -16,16 +16,16 @@ namespace TouhouHeartstone
             _region = region;
             _cardInstances = cardInstances;
         }
-        public override Dictionary<int, IWitness> apply(Game game)
+        public override Dictionary<int, IWitness> apply(CardEngine game)
         {
-            _cards = _cardInstances.Select(e => { return game.cards.create(e, game.players.getPlayer(_playerId)); }).ToArray();
+            _cards = _cardInstances.Select(e => { return game.cardManager.create(e, game.playerManager.getPlayer(_playerId)); }).ToArray();
             if (_region == RegionType.deck)
             {
-                game.players.getPlayer(_playerId).deck.add(_cards);
+                game.playerManager.getPlayer(_playerId).deck.add(_cards);
                 Dictionary<int, IWitness> dicWitness = new Dictionary<int, IWitness>();
-                for (int i = 0; i < game.players.count; i++)
+                for (int i = 0; i < game.playerManager.count; i++)
                 {
-                    dicWitness.Add(game.players[i].id, new SetDeckWitness(_playerId, game.players.getPlayer(_playerId).deck.count));
+                    dicWitness.Add(game.playerManager[i].id, new SetDeckWitness(_playerId, game.playerManager.getPlayer(_playerId).deck.count));
                 }
                 return dicWitness;
             }
@@ -34,15 +34,15 @@ namespace TouhouHeartstone
         }
         [NonSerialized]
         Card[] _cards = null;
-        public override Dictionary<int, IWitness> revert(Game game)
+        public override Dictionary<int, IWitness> revert(CardEngine game)
         {
             if (_region == RegionType.deck)
             {
-                game.players.getPlayer(_playerId).deck.remove(_cards);
+                game.playerManager.getPlayer(_playerId).deck.remove(_cards);
                 Dictionary<int, IWitness> dicWitness = new Dictionary<int, IWitness>();
-                for (int i = 0; i < game.players.count; i++)
+                for (int i = 0; i < game.playerManager.count; i++)
                 {
-                    dicWitness.Add(game.players[i].id, new SetDeckWitness(_playerId, game.players.getPlayer(_playerId).deck.count));
+                    dicWitness.Add(game.playerManager[i].id, new SetDeckWitness(_playerId, game.playerManager.getPlayer(_playerId).deck.count));
                 }
                 return dicWitness;
             }

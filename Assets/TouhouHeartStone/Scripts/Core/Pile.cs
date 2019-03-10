@@ -4,6 +4,16 @@ using System.Linq;
 
 namespace TouhouHeartstone
 {
+    class ShuffleEvent : Event
+    {
+        public ShuffleEvent() : base("Shuffle")
+        {
+        }
+        public override void execute(CardEngine core)
+        {
+
+        }
+    }
     /// <summary>
     /// Pile（牌堆）表示一个可以容纳卡片的有序集合，比如卡组，手牌，战场等等。一个Region中可以包含可枚举数量的卡牌。
     /// 注意，卡片在Region中的顺序代表了它的位置。0是最左边（手牌），0也是最底部（卡组）。
@@ -14,89 +24,45 @@ namespace TouhouHeartstone
         {
             this.name = name;
         }
+        public Pile(string name, Card[] cards)
+        {
+            this.name = name;
+            cardList.AddRange(cards);
+        }
+        public Pile(Player owner, string name)
+        {
+            this.owner = owner;
+            this.name = name;
+        }
+        public Player owner { get; set; } = null;
         public string name { get; } = null;
-        public void createCard(Game game, Player owner, int[] cardDefs, int position, Visibility visibility)
-        {
-            createCards(game, this, owner, cardDefs, position, visibility);
-        }
-        static void createCards(Game game, Pile[] piles, Player[] owners, int[] cardDefs, int position, Visibility visibility)
-        {
-            Event @event = new Event("CreateCards");
-            @event["piles"] = piles;
-            @event["owners"] = owners;
-            @event["cardDefs"] = cardDefs;
-            @event["position"] = position;
-            @event["visibility"] = visibility;
-            game.doEvent(@event, (g, e) =>
-             {
-                 piles = e.getVar<Pile[]>("piles");
-                 owners = e.getVar<Player[]>("owners");
-                 cardDefs = e.getVar<int[]>("cardDefs");
-                 position = e.getVar<int>("position");
-                 visibility = e.getVar<Visibility>("visibility");
-                 if (piles == null || piles.Length == 0)
-                     return;
-                 if (owners == null || owners.Length == 0)
-                     return;
-                 if (cardDefs == null || cardDefs.Length == 0)
-                     return;
-                 foreach (Pile pile in piles)
-                 {
-                     foreach (Player owner in owners)
-                     {
-                         var cards = cardDefs.Select(f => { return Card.create(game.cards.createInstance(f), owner); });
-                         pile.cardList.InsertRange(position, cards);
-                     }
-                 }
-             });
-        }
         /// <summary>
         /// 将一张卡从当前牌堆中移动到另一个牌堆中。如果这张牌或者目标牌堆为空，则什么都不发生。
         /// </summary>
         /// <param name="card">这张牌</param>
         /// <param name="targetPile">目标牌堆</param>
         /// <param name="toTopOrRight">移动到目标牌堆的顶端还是低端</param>
-        public void moveCardTo(Game game, Card[] cards, Pile targetPile, int position, Visibility visibility)
+        public void moveCardTo(Card[] cards, Pile targetPile, int position)
         {
-            moveCardTo(game, cards, this, targetPile, position, visibility);
-        }
-        static void moveCardTo(Game game, Card[] cards, Pile pile, Pile targetPile, int position, Visibility visibility)
-        {
-            Event @event = new Event("MoveCardsTo");
-            @event["cards"] = cards;
-            @event["pile"] = pile;
-            @event["targetPile"] = targetPile;
-            @event["position"] = position;
-            @event["visibility"] = visibility;
-            game.doEvent(@event, (g, e) =>
+            if (cards == null || cards.Length == 0)
+                return;
+            if (targetPile == null)
+                return;
+            List<Card> removedCards = new List<Card>();
+            foreach (Card card in cards)
             {
-                cards = e.getVar<Card[]>("cards");
-                pile = e.getVar<Pile>("pile");
-                targetPile = e.getVar<Pile>("targetPile");
-                position = e.getVar<int>("position");
-                visibility = e.getVar<Visibility>("visibility");
-                if (cards == null || cards.Length == 0)
-                    return;
-                if (pile == null)
-                    return;
-                if (targetPile == null)
-                    return;
-                List<Card> removedCards = new List<Card>();
-                foreach (Card card in cards)
+                for (int i = 0; i < cardList.Count; i++)
                 {
-                    for (int i = 0; i < pile.cardList.Count; i++)
+                    if (cardList[i] == card)
                     {
-                        if (pile.cardList[i] == card)
-                        {
-                            removedCards.Add(card);
-                            pile.cardList.RemoveAt(i);
-                            break;
-                        }
+                        removedCards.Add(card);
+                        cardList.RemoveAt(i);
+                        break;
                     }
                 }
-                if (removedCards.Count > 0)
-                    targetPile.cardList.InsertRange(e.getVar<int>("position"), removedCards);
-            });
+            }
+            if (removedCards.Count > 0)
+                targetPile.cardList.InsertRange(position, removedCards);
         }
         public Card[] getCards(int count)
         {
@@ -132,30 +98,18 @@ namespace TouhouHeartstone
                 cardList[index] = targetArray[i];
             }
         }
-        public void shuffle(Game game)
+        internal void shuffle(CardEngine game)
         {
-            shuffle(game, this);
-        }
-        static void shuffle(Game game, Pile pile)
-        {
-            Event @event = new Event("Shuffle");
-            @event["pile"] = pile;
-            game.doEvent(@event, (g, e) =>
+            Card[] shuffleArray = new Card[cardList.Count];
+            int currentIndex = 0;
+            while (cardList.Count > 0)
             {
-                pile = e.getVar<Pile>("pile");
-                if (pile == null)
-                    return;
-                Card[] shuffleArray = new Card[pile.cardList.Count];
-                int currentIndex = 0;
-                while (pile.cardList.Count > 0)
-                {
-                    int index = g.randomInt(0, pile.cardList.Count - 1);
-                    shuffleArray[currentIndex] = pile.cardList[index];
-                    pile.cardList.RemoveAt(index);
-                    currentIndex++;
-                }
-                pile.cardList.AddRange(shuffleArray);
-            });
+                int index = game.randomInt(0, cardList.Count - 1);
+                shuffleArray[currentIndex] = cardList[index];
+                cardList.RemoveAt(index);
+                currentIndex++;
+            }
+            cardList.AddRange(shuffleArray);
         }
         public void remove(IEnumerable<Card> cards)
         {
@@ -223,7 +177,20 @@ namespace TouhouHeartstone
         }
         public Card this[int index]
         {
-            get { return cardList[index]; }
+            get
+            {
+                if (0 <= index && index < cardList.Count)
+                    return cardList[index];
+                else
+                    return null;
+            }
+        }
+        public Card[] this[int startIndex, int endIndex]
+        {
+            get
+            {
+                return cardList.GetRange(startIndex, endIndex - startIndex + 1).ToArray();
+            }
         }
         public IEnumerator<Card> GetEnumerator()
         {
@@ -240,7 +207,10 @@ namespace TouhouHeartstone
         }
         public static implicit operator Pile[] (Pile pile)
         {
-            return new Pile[] { pile };
+            if (pile != null)
+                return new Pile[] { pile };
+            else
+                return new Pile[0];
         }
     }
     public enum RegionType

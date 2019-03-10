@@ -8,11 +8,11 @@ namespace TouhouHeartstone
     [Serializable]
     public class RecordManager : IEnumerable<Record>
     {
-        public RecordManager(Game game)
+        public RecordManager(CardEngine game)
         {
             this.game = game;
         }
-        Game game { get; set; }
+        CardEngine game { get; set; }
         internal void addRecord(Record record)
         {
             if (record == null)

@@ -25,11 +25,11 @@ namespace TouhouHeartstone
             this.position = position;
             this.visibility = visibility;
         }
-        public override Dictionary<int, IWitness> apply(Game game)
+        public override Dictionary<int, IWitness> apply(CardEngine game)
         {
             throw new NotImplementedException();
         }
-        public override Dictionary<int, IWitness> revert(Game game)
+        public override Dictionary<int, IWitness> revert(CardEngine game)
         {
             throw new NotImplementedException();
         }

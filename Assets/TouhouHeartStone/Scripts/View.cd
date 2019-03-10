@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="Effect是游戏中动画特效的元件，所有卡片表现出的动画特效都是Effect元件的组合。">
+    <Position X="1.385" Y="3.26" Height="0.844" Width="1.7" />
+  </Comment>
+  <Comment CommentText="CardAnimation代表了一张卡的一个动画效果，这个动画效果可能是由若干个Effect元件以一定的规则和顺序组成的。">
+    <Position X="1.406" Y="4.24" Height="1.052" Width="1.7" />
+  </Comment>
+  <Comment CommentText="CardAppearance代表了一张卡的外观，包括了这张卡是什么样的，文字介绍以及在游戏中使用这张卡会有的动画效果（CardAnimation）。">
+    <Position X="1.354" Y="0.719" Height="2.146" Width="1.7" />
+  </Comment>
+  <Comment CommentText="CardActor代表一张卡在游戏中的显示。">
+    <Position X="6.698" Y="0.719" Height="0.49" Width="1.7" />
+  </Comment>
+  <Class Name="CardActor">
+    <Position X="5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CardActor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Effect">
+    <Position X="3.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Effect.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CardAnimation">
+    <Position X="3.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CardAnimation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="ICardAppearance">
+    <Position X="3.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAEAAEEABAAAAIAAAAAgA=</HashCode>
+      <FileName>ICardAppearance.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>

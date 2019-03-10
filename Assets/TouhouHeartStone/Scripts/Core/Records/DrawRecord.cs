@@ -14,24 +14,24 @@ namespace TouhouHeartstone
             this.playerId = playerId;
             this.count = count;
         }
-        public override Dictionary<int, IWitness> apply(Game game)
+        public override Dictionary<int, IWitness> apply(CardEngine game)
         {
-            Player player = game.players.getPlayer(playerId);
+            Player player = game.playerManager.getPlayer(playerId);
             _cards = player.deck.Take(count).ToArray();
             player.deck.moveTo(_cards, player.hand, true);
 
             Dictionary<int, IWitness> dicWitness = new Dictionary<int, IWitness>();
-            for (int i = 0; i < game.players.count; i++)
+            for (int i = 0; i < game.playerManager.count; i++)
             {
-                dicWitness.Add(game.players[i].id, new DrawWitness(playerId, _cards.getInstances(playerId == game.players[i].id)));
+                dicWitness.Add(game.playerManager[i].id, new DrawWitness(playerId, _cards.getInstances(playerId == game.playerManager[i].id)));
             }
             return dicWitness;
         }
         [NonSerialized]
         Card[] _cards = null;
-        public override Dictionary<int, IWitness> revert(Game game)
+        public override Dictionary<int, IWitness> revert(CardEngine game)
         {
-            Player player = game.players.getPlayer(playerId);
+            Player player = game.playerManager.getPlayer(playerId);
             player.hand.moveTo(_cards, player.deck, true);
             return null;
         }

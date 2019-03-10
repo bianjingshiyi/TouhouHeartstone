@@ -12,14 +12,14 @@ namespace TouhouHeartstone
         {
             _targetOrder = orderedPlayerId;
         }
-        public override Dictionary<int, IWitness> apply(Game game)
+        public override Dictionary<int, IWitness> apply(CardEngine game)
         {
-            if (game.players.orderedPlayers != null)
+            if (game.playerManager.orderedPlayers != null)
             {
-                _originOrder = new int[game.players.orderedPlayers.Length];
+                _originOrder = new int[game.playerManager.orderedPlayers.Length];
                 for (int i = 0; i < _originOrder.Length; i++)
                 {
-                    _originOrder[i] = game.players.orderedPlayers[i].id;
+                    _originOrder[i] = game.playerManager.orderedPlayers[i].id;
                 }
             }
             else
@@ -29,36 +29,36 @@ namespace TouhouHeartstone
                 Player[] orderedPlayers = new Player[_targetOrder.Length];
                 for (int i = 0; i < orderedPlayers.Length; i++)
                 {
-                    orderedPlayers[i] = game.players.getPlayer(_targetOrder[i]);
+                    orderedPlayers[i] = game.playerManager.getPlayer(_targetOrder[i]);
                 }
-                game.players.orderedPlayers = orderedPlayers;
+                game.playerManager.orderedPlayers = orderedPlayers;
             }
             else
-                game.players.orderedPlayers = null;
+                game.playerManager.orderedPlayers = null;
             Dictionary<int, IWitness> dicWitness = new Dictionary<int, IWitness>();
-            for (int i = 0; i < game.players.count; i++)
+            for (int i = 0; i < game.playerManager.count; i++)
             {
-                dicWitness.Add(game.players[i].id, new SetOrderWitness(_targetOrder));
+                dicWitness.Add(game.playerManager[i].id, new SetOrderWitness(_targetOrder));
             }
             return dicWitness;
         }
-        public override Dictionary<int, IWitness> revert(Game game)
+        public override Dictionary<int, IWitness> revert(CardEngine game)
         {
             if (_originOrder != null)
             {
                 Player[] orderedPlayers = new Player[_originOrder.Length];
                 for (int i = 0; i < orderedPlayers.Length; i++)
                 {
-                    orderedPlayers[i] = game.players.getPlayer(_originOrder[i]);
+                    orderedPlayers[i] = game.playerManager.getPlayer(_originOrder[i]);
                 }
-                game.players.orderedPlayers = orderedPlayers;
+                game.playerManager.orderedPlayers = orderedPlayers;
             }
             else
-                game.players.orderedPlayers = null;
+                game.playerManager.orderedPlayers = null;
             Dictionary<int, IWitness> dicWitness = new Dictionary<int, IWitness>();
-            for (int i = 0; i < game.players.count; i++)
+            for (int i = 0; i < game.playerManager.count; i++)
             {
-                dicWitness.Add(game.players[i].id, new SetOrderWitness(_originOrder));
+                dicWitness.Add(game.playerManager[i].id, new SetOrderWitness(_originOrder));
             }
             return dicWitness;
         }

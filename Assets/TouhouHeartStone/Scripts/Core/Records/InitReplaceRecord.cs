@@ -14,10 +14,10 @@ namespace TouhouHeartstone
             _playerId = playerId;
             _originCards = originCards;
         }
-        public override Dictionary<int, IWitness> apply(Game game)
+        public override Dictionary<int, IWitness> apply(CardEngine game)
         {
             //记录当前手牌和卡组状态
-            Player player = game.players.getPlayer(_playerId);
+            Player player = game.playerManager.getPlayer(_playerId);
             _originDeck = player.deck.getCards();
             _originHand = player.hand.getCards();
             //将原本的手牌替换为从卡组中抽出的牌，再重新洗牌。
@@ -29,10 +29,10 @@ namespace TouhouHeartstone
             player.deck.shuffle(game);
 
             Dictionary<int, IWitness> dicWitness = new Dictionary<int, IWitness>();
-            for (int i = 0; i < game.players.count; i++)
+            for (int i = 0; i < game.playerManager.count; i++)
             {
-                dicWitness.Add(game.players[i].id, new InitReplaceWitness(_playerId, originCards.getInstances(game.players[i].id == _playerId),
-                                                                                     targetCards.getInstances(game.players[i].id == _playerId)));
+                dicWitness.Add(game.playerManager[i].id, new InitReplaceWitness(_playerId, originCards.getInstances(game.playerManager[i].id == _playerId),
+                                                                                     targetCards.getInstances(game.playerManager[i].id == _playerId)));
             }
             return dicWitness;
         }
@@ -40,16 +40,16 @@ namespace TouhouHeartstone
         Card[] _originDeck;
         [NonSerialized]
         Card[] _originHand;
-        public override Dictionary<int, IWitness> revert(Game game)
+        public override Dictionary<int, IWitness> revert(CardEngine game)
         {
-            Player player = game.players.getPlayer(_playerId);
+            Player player = game.playerManager.getPlayer(_playerId);
             player.deck.setCards(_originDeck);
             player.hand.setCards(_originHand);
 
             Dictionary<int, IWitness> dicWitness = new Dictionary<int, IWitness>();
-            for (int i = 0; i < game.players.count; i++)
+            for (int i = 0; i < game.playerManager.count; i++)
             {
-                dicWitness.Add(game.players[i].id, new SetHandWitness(_playerId, _originHand.getInstances(game.players[i].id == _playerId)));
+                dicWitness.Add(game.playerManager[i].id, new SetHandWitness(_playerId, _originHand.getInstances(game.playerManager[i].id == _playerId)));
             }
             return dicWitness;
         }

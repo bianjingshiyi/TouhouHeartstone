@@ -23,7 +23,7 @@ namespace TouhouHeartstone
         {
             if (instance.instanceId > _lastId)
                 _lastId = instance.instanceId;
-            Card card = Card.create(instance, owner);
+            Card card = Card.create(instance);
             _cardList.Add(card);
             return card;
         }
