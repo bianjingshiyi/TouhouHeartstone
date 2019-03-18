@@ -10,7 +10,7 @@ namespace TouhouHeartstone
         {
             name = eventName;
         }
-        public virtual void execute(CardEngine core)
+        public virtual void execute(CardEngine engine)
         {
 
         }

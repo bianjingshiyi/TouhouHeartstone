@@ -37,15 +37,15 @@ namespace TouhouHeartstone
             return cardList.Count - 1;
         }
         List<Card> cardList { get; } = new List<Card>();
-        public int getPlayerAt(int playerIndex)
+        public Player getPlayerAt(int playerIndex)
         {
-            return (0 <= playerIndex && playerIndex < playerManager.count) ? playerManager[playerIndex].id : 0;
+            return (0 <= playerIndex && playerIndex < playerList.Count) ? playerList[playerIndex] : null;
         }
-        public int getPlayerIndex(int playerId)
+        public int getPlayerIndex(Player player)
         {
-            for (int i = 0; i < playerManager.count; i++)
+            for (int i = 0; i < playerList.Count; i++)
             {
-                if (playerManager[i].id == playerId)
+                if (playerList[i] == player)
                     return i;
             }
             return -1;

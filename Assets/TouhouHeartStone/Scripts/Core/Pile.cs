@@ -98,7 +98,7 @@ namespace TouhouHeartstone
                 cardList[index] = targetArray[i];
             }
         }
-        internal void shuffle(CardEngine game)
+        public void shuffle(CardEngine game)
         {
             Card[] shuffleArray = new Card[cardList.Count];
             int currentIndex = 0;

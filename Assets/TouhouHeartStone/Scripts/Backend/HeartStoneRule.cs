@@ -93,7 +93,7 @@ namespace TouhouHeartstone.Backend
                 player[Keywords.deck].moveCardTo(player[Keywords.deck][player[Keywords.deck].count - 1], player[Keywords.init], player[Keywords.init].count);
             }
         }
-        private void afterInitReplace(TouhouHeartstone.CardEngine game, Player player)
+        private void afterInitReplace(CardEngine game, Player player)
         {
             preparedPlayerList.Add(player);
             if (game.getPlayers().All(p => { return preparedPlayerList.Contains(p); }))

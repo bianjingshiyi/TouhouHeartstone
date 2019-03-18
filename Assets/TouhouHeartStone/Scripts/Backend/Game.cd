@@ -3,7 +3,7 @@
   <Class Name="TouhouHeartstone.Backend.Game">
     <Position X="6.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAACAIAAAAAAAQAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAACAAAAACAIAAAAAAAQAAAA=</HashCode>
       <FileName>Assets\TouhouHeartStone\Scripts\Backend\Game.cs</FileName>
     </TypeIdentifier>
   </Class>
