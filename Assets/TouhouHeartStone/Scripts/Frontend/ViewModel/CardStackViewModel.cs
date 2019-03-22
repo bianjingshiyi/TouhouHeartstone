@@ -5,30 +5,20 @@ using UnityWeld.Binding;
 namespace TouhouHeartstone.Frontend.ViewModel
 {
     /// <summary>
-    /// 侧面面板的VM
+    /// 牌堆的VM
     /// </summary>
     [Binding]
-    public class SidePanelViewModel :MonoBehaviour, INotifyPropertyChanged
+    public class CardStackViewModel : MonoBehaviour, INotifyPropertyChanged
     {
-        [SerializeField]
-        float width;
-
-        bool collapse;
-
+        private int _CardCount;
+        /// <summary>
+        /// 卡片数目
+        /// </summary>
         [Binding]
-        public float Width
+        public int CardCount
         {
-            get
-            {
-                return collapse ? 0 : width;
-            }
-        }
-
-        [Binding]
-        public void SwitchCollapse()
-        {
-            collapse = !collapse;
-            NotifyPropertyChange("Width");
+            get { return _CardCount; }
+            set { _CardCount = value; NotifyPropertyChange("CardCount"); }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

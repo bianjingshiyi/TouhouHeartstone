@@ -4,6 +4,9 @@ using UnityWeld.Binding;
 
 namespace TouhouHeartstone.Frontend.ViewModel
 {
+    /// <summary>
+    /// 水晶条的VM
+    /// </summary>
     [Binding]
     public class CrystalBarViewModel : MonoBehaviour, INotifyPropertyChanged
     {
@@ -72,14 +75,6 @@ namespace TouhouHeartstone.Frontend.ViewModel
         void NotifyPropertyChange(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        void Start()
-        {
-            CrystalTotal = Random.Range(3, 11);
-            CrystalUsed = 1;
-            CrystalDisable = 1;
-            CrystalHighlight = 1;
         }
     }
 }

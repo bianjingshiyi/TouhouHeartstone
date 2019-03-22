@@ -40,29 +40,29 @@ namespace TouhouHeartstone.Frontend.View
             {
                 if(i >= Total)
                 {
-                    GetItemAt(i).State = ViewModel.CrystalState.hidden;
+                    GetItemAt(i).State = ViewModel.CrystalItemState.hidden;
                     continue;
                 }
 
                 if (Disable > i)
                 {
-                    GetItemAt(i).State = ViewModel.CrystalState.disable;
+                    GetItemAt(i).State = ViewModel.CrystalItemState.disable;
                     continue;
                 }
 
                 if (i >= Total - Used)
                 {
-                    GetItemAt(i).State = ViewModel.CrystalState.used;
+                    GetItemAt(i).State = ViewModel.CrystalItemState.used;
                     continue;
                 }
 
                 if (i >= Total - Used - Highlight)
                 {
-                    GetItemAt(i).State = ViewModel.CrystalState.highlight;
+                    GetItemAt(i).State = ViewModel.CrystalItemState.highlight;
                     continue;
                 }
 
-                GetItemAt(i).State = ViewModel.CrystalState.normal;
+                GetItemAt(i).State = ViewModel.CrystalItemState.normal;
             }
         }
     }

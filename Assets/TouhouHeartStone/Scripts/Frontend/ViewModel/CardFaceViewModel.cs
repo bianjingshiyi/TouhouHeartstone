@@ -4,9 +4,13 @@ using UnityWeld.Binding;
 
 namespace TouhouHeartstone.Frontend.ViewModel
 {
+    /// <summary>
+    /// 卡面的VM
+    /// </summary>
     [Binding]
     public class CardFaceViewModel : MonoBehaviour, INotifyPropertyChanged
     {
+        #region cardface
         CardImageResource imageResource = new CardImageResource();
         public CardImageResource ImageResource
         {
@@ -51,7 +55,9 @@ namespace TouhouHeartstone.Frontend.ViewModel
         public string DescText => textResource.Description;
         [Binding]
         public string TypeText => textResource.Type;
+        #endregion
 
+        #region carddata
         CardSpecification cardSpec = new CardSpecification();
         public CardSpecification CardSpec
         {
@@ -81,6 +87,8 @@ namespace TouhouHeartstone.Frontend.ViewModel
         [Binding]
         public int Cost => cardSpec.Cost;
 
+        #endregion
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         void NotifyPropertyChange(string propertyName)
@@ -93,23 +101,5 @@ namespace TouhouHeartstone.Frontend.ViewModel
             if (cardSpec != null)
                 cardSpec.PropertyChanged += PropertyChanged;
         }
-
-        #region test
-
-        [SerializeField]
-        CardImageResources images;
-
-        [SerializeField]
-        CardTextResources texts;
-
-        void Start()
-        {
-            CardSpec.Cost = Random.Range(0, 10);
-            CardSpec.HP = Random.Range(0, 10);
-            CardSpec.Atk = Random.Range(0, 10);
-            ImageResource = images.Get("0", "zh-CN");
-            TextResource = texts.Get("0", "zh-CN");
-        }
-        #endregion
     }
 }
