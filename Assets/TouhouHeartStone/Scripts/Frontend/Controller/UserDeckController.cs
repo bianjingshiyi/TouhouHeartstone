@@ -1,9 +1,11 @@
-﻿using UnityEngine;
-
-using TouhouHeartstone.Frontend.ViewModel;
+﻿using TouhouHeartstone.Frontend.ViewModel;
+using UnityEngine;
 
 namespace TouhouHeartstone.Frontend.Controller
 {
+    /// <summary>
+    /// 用户桌面
+    /// </summary>
     public class UserDeckController : MonoBehaviour
     {
         [SerializeField]
@@ -21,7 +23,6 @@ namespace TouhouHeartstone.Frontend.Controller
         [SerializeField]
         CardStackViewModel cardStackGrave;
 
-
         #region test
 
         [SerializeField]
@@ -32,6 +33,7 @@ namespace TouhouHeartstone.Frontend.Controller
 
         void Start()
         {
+            #region test_data
             cardfacePrefab.CardSpec.Cost = Random.Range(0, 10);
             cardfacePrefab.CardSpec.HP = Random.Range(0, 10);
             cardfacePrefab.CardSpec.Atk = Random.Range(0, 10);
@@ -46,7 +48,10 @@ namespace TouhouHeartstone.Frontend.Controller
             characterInfo.Character = new Model.CharacterData() { Atk = 3, Defence = 4, HP = 9 };
             cardStackLibrary.CardCount = 30;
             cardStackGrave.CardCount = 2;
+            #endregion
+
         }
+
         #endregion
     }
 }

@@ -1,4 +1,6 @@
 ﻿using IGensoukyo.Utilities;
+using System;
+using System.Collections.Generic;
 using TouhouHeartstone.Frontend.ViewModel;
 namespace TouhouHeartstone.Frontend.View
 {
@@ -66,4 +68,5 @@ namespace TouhouHeartstone.Frontend.View
             }
         }
     }
+
 }
