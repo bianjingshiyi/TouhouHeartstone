@@ -1,4 +1,5 @@
-﻿using TouhouHeartstone.Frontend.ViewModel;
+﻿using TouhouHeartstone.Frontend.View.Animation;
+using TouhouHeartstone.Frontend.ViewModel;
 using UnityEngine;
 
 namespace TouhouHeartstone.Frontend.Controller
@@ -22,6 +23,24 @@ namespace TouhouHeartstone.Frontend.Controller
 
         [SerializeField]
         CardStackViewModel cardStackGrave;
+
+        [SerializeField]
+        Transform cardSpawnRoot;
+
+        /// <summary>
+        /// 通用的抽卡
+        /// </summary>
+        public void DrawCard(GenericAction callback)
+        {
+            var card = Instantiate(cardfacePrefab, cardSpawnRoot);
+            // card.gameObject.SetActive(false);
+
+            card.PlayAnimation(this, new CardAnimationEventArgs()
+            {
+                AnimationName = "DrawCard",
+                EventArgs = new CardPositionEventArgs(1, 0)
+            }, callback);
+        }
 
         #region test
 
@@ -50,8 +69,9 @@ namespace TouhouHeartstone.Frontend.Controller
             cardStackGrave.CardCount = 2;
             #endregion
 
+            DrawCard(null);
         }
-
         #endregion
     }
+
 }

@@ -26,17 +26,26 @@ namespace TouhouHeartstone.Frontend.View.Animation
         /// <param name="sender"></param>
         /// <param name="args"></param>
         /// <param name="callback"></param>
-        public virtual void PlayAnimation(object sender, EventArgs args, GenericAction callback)
-        {
-            PlayAnimation(sender, args as CardAnimationEventArgs, callback);
-        }
+        public abstract void PlayAnimation(object sender, EventArgs args, GenericAction callback);
+    }
+
+
+    /// <summary>
+    /// 卡片位置的参数
+    /// </summary>
+    public class CardPositionEventArgs : System.EventArgs
+    {
+        public CardPositionEventArgs() { }
+        public CardPositionEventArgs(int count, int id) { GroupCount = count; GroupID = id; }
 
         /// <summary>
-        /// 播放对应动画
+        /// 组内的牌的数量
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        /// <param name="callback"></param>
-        public abstract void PlayAnimation(object sender, CardAnimationEventArgs args, GenericAction callback);
+        public int GroupCount;
+
+        /// <summary>
+        /// 此卡在组内的Index
+        /// </summary>
+        public int GroupID;
     }
- }
+}

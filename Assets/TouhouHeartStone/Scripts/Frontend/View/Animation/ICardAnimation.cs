@@ -28,30 +28,4 @@ namespace TouhouHeartstone.Frontend.View.Animation
         /// <param name="callback"></param>
         void PlayAnimation(object sender, EventArgs args, GenericAction callback);
     }
-
-
-    /// <summary>
-    /// 卡片动画关联的Animation
-    /// </summary>
-    public class CardAnimationEventArgs : EventArgs
-    {
-        /// <summary>
-        /// 卡片动画名称
-        /// </summary>
-        public string AnimationName;
-        /// <summary>
-        /// 卡片动画附带的参数
-        /// </summary>
-        public EventArgs EventArgs;
-    }
-
-    /// <summary>
-    /// 参数类型错误
-    /// </summary>
-    [Serializable]
-    public class WrongArumentTypeException : Exception
-    {
-        public WrongArumentTypeException() { }
-        public WrongArumentTypeException(Type expected, Type actual) : base($"错误的数据类型。需要{expected}但提供了{actual}") { }
-    }
 }

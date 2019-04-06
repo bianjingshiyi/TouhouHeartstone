@@ -19,17 +19,6 @@ namespace TouhouHeartstone.Frontend.View.Animation
         /// <param name="sender"></param>
         /// <param name="args"></param>
         /// <param name="callback"></param>
-        public virtual void PlayAnimation(object sender, EventArgs args, GenericAction callback)
-        {
-            PlayAnimation(sender, args as CardAnimationEventArgs, callback);
-        }
-
-        /// <summary>
-        /// 播放对应动画
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        /// <param name="callback"></param>
-        public abstract void PlayAnimation(object sender, CardAnimationEventArgs args, GenericAction callback);
+        public abstract void PlayAnimation(object sender, EventArgs args, GenericAction callback);
     }
 }

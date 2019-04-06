@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
+using System;
 using UnityEngine;
 using UnityWeld.Binding;
+using TouhouHeartstone.Frontend.View;
 
 namespace TouhouHeartstone.Frontend.ViewModel
 {
@@ -88,6 +90,33 @@ namespace TouhouHeartstone.Frontend.ViewModel
         public int Cost => cardSpec.Cost;
 
         #endregion
+
+        /// <summary>
+        /// 动画播放的事件，监听此事件用于处理各种奇奇怪怪的动画
+        /// </summary>
+        public event CallbackEvent OnAnimationPlay;
+
+        /// <summary>
+        /// 播放动画
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        /// <param name="callback"></param>
+        public void PlayAnimation(object sender, CardAnimationEventArgs args, GenericAction callback)
+        {
+            OnAnimationPlay?.Invoke(sender, args, callback);
+        }
+
+        /// <summary>
+        /// 卡片动作的事件，监听此事件以获取卡片操作
+        /// </summary>
+        public event CallbackEvent OnCardAction;
+
+        public void DoCardAction(string name, EventArgs args)
+        {
+            // todo: 把卡片事件名称给封装进去
+            OnCardAction?.Invoke(gameObject, args);
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

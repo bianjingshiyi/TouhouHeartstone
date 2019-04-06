@@ -3,7 +3,10 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-namespace TouhouHeartstone.Frontend.View.Animation
+using TouhouHeartstone.Frontend.ViewModel;
+using TouhouHeartstone.Frontend.View.Animation;
+
+namespace TouhouHeartstone.Frontend.View
 {
     /// <summary>
     /// 卡片的View
@@ -21,10 +24,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
         /// <param name="callback"></param>
         public void PlayAnimation(object sender, EventArgs args, GenericAction callback)
         {
-            if (!(args is CardAnimationEventArgs))
-                throw new WrongArumentTypeException(typeof(CardAnimationEventArgs), args.GetType());
-
-            CardAnimationEventArgs aniArgs = args as CardAnimationEventArgs;
+            CardAnimationEventArgs aniArgs = Utilities.CheckType<CardAnimationEventArgs>(args);
             ICardAnimation ani;
 
             if (cardAnimations.ContainsKey(aniArgs.AnimationName))
@@ -49,6 +49,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
             }
 
             ani.PlayAnimation(sender, aniArgs.EventArgs, callback);
+            Debug.Log($"播放动画：{aniArgs.AnimationName}");
         }
 
         /// <summary>
@@ -66,15 +67,16 @@ namespace TouhouHeartstone.Frontend.View.Animation
         }
         #endregion
 
+        CardFaceViewModel cardVM;
+
         protected void Awake()
         {
-            reloadAnimationList();
-        }
+            // 注册VM事件
+            cardVM = GetComponent<CardFaceViewModel>();
+            if (cardVM == null)
+                throw new Exception("关联的ViewModel未找到");
 
-        protected void Start()
-        {
-            // test: something
-            PlayAnimation(this, new CardAnimationEventArgs() { AnimationName = "Disappear", EventArgs = new EventArgs() }, null);
+            cardVM.OnAnimationPlay += PlayAnimation;
         }
     }
 }

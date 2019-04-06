@@ -6,7 +6,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
     {
         public override string AnimationName => "Disappear";
 
-        public override void PlayAnimation(object sender, CardAnimationEventArgs args, GenericAction callback)
+        public override void PlayAnimation(object sender, EventArgs args, GenericAction callback)
         {
             Card.gameObject.SetActive(false);
             callback?.Invoke(gameObject, new EventArgs());
