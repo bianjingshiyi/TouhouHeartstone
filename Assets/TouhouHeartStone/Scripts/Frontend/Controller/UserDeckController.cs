@@ -33,12 +33,12 @@ namespace TouhouHeartstone.Frontend.Controller
         public void DrawCard(GenericAction callback)
         {
             var card = Instantiate(cardfacePrefab, cardSpawnRoot);
-            // card.gameObject.SetActive(false);
+            card.gameObject.SetActive(true);
 
             card.PlayAnimation(this, new CardAnimationEventArgs()
             {
                 AnimationName = "DrawCard",
-                EventArgs = new CardPositionEventArgs(1, 0)
+                EventArgs = new CardPositionEventArgs(3, 0)
             }, callback);
         }
 
@@ -59,6 +59,8 @@ namespace TouhouHeartstone.Frontend.Controller
             cardfacePrefab.ImageResource = images.Get("0", "zh-CN");
             cardfacePrefab.TextResource = texts.Get("0", "zh-CN");
 
+            cardfacePrefab.gameObject.SetActive(false);
+
             crystalBar.CrystalTotal = 5;
             crystalBar.CrystalHighlight = 2;
             crystalBar.CrystalUsed = 1;
@@ -72,6 +74,42 @@ namespace TouhouHeartstone.Frontend.Controller
             DrawCard(null);
         }
         #endregion
-    }
 
+
+        private int _SelfID;
+        public int SelfID => _SelfID;
+
+        /// <summary>
+        /// 设置自己的ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="character"></param>
+        public void Init(int id, int character, bool isSelf)
+        {
+            if (!isSelf)
+                transform.localRotation = Quaternion.Euler(0, 0, 180);
+            _SelfID = id;
+
+            // todo: 设置角色图像
+        }
+
+        /// <summary>
+        /// 初始抽卡
+        /// </summary>
+        /// <param name="cards"></param>
+        public void InitDraw(int[] cards)
+        {
+            for (int i = 0; i < cards.Length; i++)
+            {
+                var card = Instantiate(cardfacePrefab, cardSpawnRoot);
+                card.gameObject.SetActive(true);
+
+                card.PlayAnimation(this, new CardAnimationEventArgs()
+                {
+                    AnimationName = "InitDrawCard",
+                    EventArgs = new CardPositionEventArgs(cards.Length, i)
+                }, null);
+            }
+        }
+    }
 }
