@@ -20,12 +20,28 @@ namespace TouhouHeartstone.Frontend.ViewModel
             {
                 return imageResource;
             }
-            set
+            protected set
             {
                 imageResource = value;
                 NotifyPropertyChange("SpriteMain");
                 NotifyPropertyChange("SpriteBkg");
                 NotifyPropertyChange("SpriteRibbon");
+            }
+        }
+
+        private int _CardID;
+        /// <summary>
+        /// 卡片类型ID
+        /// </summary>
+        public int CardID
+        {
+            get { return _CardID; }
+            set
+            {
+                _CardID = value;
+                var gv = GetComponentInParent<GlobalView>();
+                ImageResource = gv.GetCardImageResource(_CardID);
+                TextResource = gv.GetCardTextResource(_CardID);
             }
         }
 
@@ -42,7 +58,7 @@ namespace TouhouHeartstone.Frontend.ViewModel
         public CardTextResource TextResource
         {
             get { return textResource; }
-            set
+            protected set
             {
                 textResource = value;
                 NotifyPropertyChange("NameText");

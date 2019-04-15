@@ -80,6 +80,17 @@ namespace TouhouHeartstone.Frontend.Model
             users[selfID].InitDraw(cards);
         }
 
+        /// <summary>
+        /// 设置初始替换
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <param name="cards"></param>
+        /// <param name="callback"></param>
+        public void SetInitReplace(int uid, int[] cards, GenericAction callback = null)
+        {
+            users[uid].DrawCard(cards, callback);
+        }
+
         private void Awake()
         {
             userPrefab.gameObject.SetActive(false);

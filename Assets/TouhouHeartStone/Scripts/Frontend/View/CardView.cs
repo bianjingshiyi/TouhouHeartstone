@@ -6,12 +6,17 @@ using UnityEngine;
 using TouhouHeartstone.Frontend.ViewModel;
 using TouhouHeartstone.Frontend.View.Animation;
 
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using IGensoukyo.Utilities;
+
 namespace TouhouHeartstone.Frontend.View
 {
     /// <summary>
     /// 卡片的View
     /// </summary>
-    public class CardView : MonoBehaviour
+    public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
     {
         #region animation_base
         Dictionary<string, ICardAnimation> cardAnimations = new Dictionary<string, ICardAnimation>();
@@ -77,6 +82,40 @@ namespace TouhouHeartstone.Frontend.View
                 throw new Exception("关联的ViewModel未找到");
 
             cardVM.OnAnimationPlay += PlayAnimation;
+        }
+        #region Card_state_event
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            GetComponent<CardHighlight>()?.SetHighlight(true);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            GetComponent<CardHighlight>()?.SetHighlight(false);
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            DebugUtils.Log("鼠标按下");
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            DebugUtils.Log("鼠标松开");
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            DebugUtils.Log("鼠标点击");
+        }
+        #endregion
+
+        public enum state
+        {
+            hand,
+            hand_hover,
+            free,
+            center
         }
     }
 }

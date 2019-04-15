@@ -4,7 +4,7 @@
     {
         public override string Name => "onInit";
 
-        public override bool HandleWitness(EventWitness witness, DeckController deck)
+        public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback)
         {
             int[] charactersID = witness.getVar<int[]>("players_master_define_id");
             int[] playerOrder = witness.getVar<int[]>("sortedPlayers_id");

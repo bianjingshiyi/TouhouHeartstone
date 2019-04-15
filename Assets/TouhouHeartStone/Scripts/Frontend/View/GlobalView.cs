@@ -12,6 +12,25 @@ namespace TouhouHeartstone.Frontend.View
     {
         public CardPositionCalculator CardPositionCalculator => cardPositionCalculator;
         CardPositionCalculator cardPositionCalculator = new CardPositionCalculator(new Vector2(Screen.width, Screen.height));
+
+        [SerializeField]
+        CardImageResources images;
+
+        [SerializeField]
+        CardTextResources texts;
+
+        public CardImageResource GetCardImageResource(int id) { return GetCardImageResource(id.ToString()); }
+        public CardTextResource GetCardTextResource(int id) { return GetCardTextResource(id.ToString()); }
+
+        public CardImageResource GetCardImageResource(string id)
+        {
+            return images.Get(id, "zh-CN");
+        }
+
+        public CardTextResource GetCardTextResource(string id)
+        {
+            return texts.Get(id, "zh-CN");
+        }
     }
 
     public class CardPositionCalculator

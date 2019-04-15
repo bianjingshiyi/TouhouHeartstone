@@ -27,39 +27,71 @@ namespace TouhouHeartstone.Frontend.Controller
         [SerializeField]
         Transform cardSpawnRoot;
 
-        /// <summary>
-        /// 通用的抽卡
-        /// </summary>
-        public void DrawCard(GenericAction callback)
-        {
-            var card = Instantiate(cardfacePrefab, cardSpawnRoot);
-            card.gameObject.SetActive(true);
+        [SerializeField]
+        ThrowCardViewModel throwCard;
 
+        /// <summary>
+        /// 初始抽卡
+        /// </summary>
+        /// <param name="cards"></param>
+        public void InitDraw(int[] cards)
+        {
+            GenericAction a = (evt, arg) => { ThrowCard(0, 0); };
+
+            for (int i = 0; i < cards.Length; i++)
+            {
+                var card = drawCard(cards[i]);
+                card.PlayAnimation(this, new CardAnimationEventArgs()
+                {
+                    AnimationName = "InitDrawCard",
+                    EventArgs = new CardPositionEventArgs(cards.Length, i)
+                }, i == 0 ? a : null);
+            }
+        }
+
+        /// <summary>
+        /// 抽一张卡
+        /// </summary>
+        public void DrawCard(int cardID, GenericAction callback)
+        {
+            CardFaceViewModel card = drawCard(cardID);
             card.PlayAnimation(this, new CardAnimationEventArgs()
             {
                 AnimationName = "DrawCard",
-                EventArgs = new CardPositionEventArgs(3, 0)
+                EventArgs = new CardPositionEventArgs(1, 0)
             }, callback);
         }
 
+        /// <summary>
+        /// 抽多张卡
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <param name="callback"></param>
+        public void DrawCard(int[] cards, GenericAction callback)
+        {
+            for (int i = 0; i < cards.Length; i++)
+            {
+                var card = drawCard(cards[i]);
+                card.PlayAnimation(this, new CardAnimationEventArgs()
+                {
+                    AnimationName = "InitDrawCard",
+                    EventArgs = new CardPositionEventArgs(cards.Length, i)
+                }, i == 0 ? callback : null);
+            }
+        }
+
+        private CardFaceViewModel drawCard(int cardID)
+        {
+            var card = Instantiate(cardfacePrefab, cardSpawnRoot);
+            card.gameObject.SetActive(true);
+            card.CardID = cardID;
+            return card;
+        }
+
         #region test
-
-        [SerializeField]
-        CardImageResources images;
-
-        [SerializeField]
-        CardTextResources texts;
-
         void Start()
         {
             #region test_data
-            cardfacePrefab.CardSpec.Cost = Random.Range(0, 10);
-            cardfacePrefab.CardSpec.HP = Random.Range(0, 10);
-            cardfacePrefab.CardSpec.Atk = Random.Range(0, 10);
-            cardfacePrefab.ImageResource = images.Get("0", "zh-CN");
-            cardfacePrefab.TextResource = texts.Get("0", "zh-CN");
-
-            cardfacePrefab.gameObject.SetActive(false);
 
             crystalBar.CrystalTotal = 5;
             crystalBar.CrystalHighlight = 2;
@@ -71,10 +103,17 @@ namespace TouhouHeartstone.Frontend.Controller
             cardStackGrave.CardCount = 2;
             #endregion
 
-            DrawCard(null);
+            cardfacePrefab.gameObject.SetActive(false);
+            throwCard.gameObject.SetActive(false);
+
+            throwCard.OnThrow += ThrowCard_OnThrow;
+        }
+
+        private void ThrowCard_OnThrow()
+        {
+            throw new System.NotImplementedException();
         }
         #endregion
-
 
         private int _SelfID;
         public int SelfID => _SelfID;
@@ -93,23 +132,13 @@ namespace TouhouHeartstone.Frontend.Controller
             // todo: 设置角色图像
         }
 
-        /// <summary>
-        /// 初始抽卡
-        /// </summary>
-        /// <param name="cards"></param>
-        public void InitDraw(int[] cards)
+        public void ThrowCard(int min, int max)
         {
-            for (int i = 0; i < cards.Length; i++)
-            {
-                var card = Instantiate(cardfacePrefab, cardSpawnRoot);
-                card.gameObject.SetActive(true);
-
-                card.PlayAnimation(this, new CardAnimationEventArgs()
-                {
-                    AnimationName = "InitDrawCard",
-                    EventArgs = new CardPositionEventArgs(cards.Length, i)
-                }, null);
-            }
+            throwCard.gameObject.SetActive(true);
+            throwCard.Max = max;
+            throwCard.Min = min;
         }
+
+        public bool ThrowingCard => throwCard.gameObject.activeSelf;
     }
 }

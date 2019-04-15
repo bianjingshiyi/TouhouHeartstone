@@ -12,4 +12,14 @@ namespace TouhouHeartstone.Frontend.View.Animation
             callback?.Invoke(gameObject, new EventArgs());
         }
     }
+
+    public class CardHighlightAnimation : CardAnimationComponent
+    {
+        public override string AnimationName => "CardHighlight";
+
+        public override void PlayAnimation(object sender, EventArgs args, GenericAction callback)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

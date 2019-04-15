@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace TouhouHeartstone.OldFrontend
+namespace IGensoukyo.Utilities
 {
     public class DebugUtils
     {
