@@ -22,7 +22,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
             ani = new PositionAnimation(Time.time, transform)
             {
                 Positions = new Vector3[2]{
-                     new Vector3(1920, 0, 0),
+                     gv.CardPositionCalculator.StackPosition,
                      t.Position
                 }
             };

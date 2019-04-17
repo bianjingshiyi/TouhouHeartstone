@@ -22,5 +22,10 @@ namespace TouhouHeartstone.Frontend.Model
 
             gm.Game.init();
         }
+
+        public void InitReplace(int uid, int[] cards)
+        {
+            gm.Game.initReplace(uid, cards);
+        }
     }
 }

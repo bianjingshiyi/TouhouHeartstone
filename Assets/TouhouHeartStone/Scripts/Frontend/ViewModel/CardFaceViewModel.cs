@@ -45,6 +45,16 @@ namespace TouhouHeartstone.Frontend.ViewModel
             }
         }
 
+        private int _RuntimeID;
+        /// <summary>
+        /// 运行时ID
+        /// </summary>
+        public int RuntimeID
+        {
+            get { return _RuntimeID; }
+            set { _RuntimeID = value; }
+        }
+
         [Binding]
         public Sprite SpriteMain => ImageResource.SpriteMain;
 

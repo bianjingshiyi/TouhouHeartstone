@@ -45,12 +45,17 @@ namespace TouhouHeartstone.Frontend.View
 
                 cardAnimations.Add(aniArgs.AnimationName, c);
             }
-            else
+            else if (CardAnimationDynamicLibrary.ContainsAnimation(aniArgs.AnimationName))
             {
                 // 在库里面的普通类
                 var ca = CardAnimationDynamicLibrary.CreateAnimation(aniArgs.AnimationName);
                 ca.SetGameObject(gameObject);
                 ani = ca;
+            }
+            else
+            {
+                ani = null;
+                Debug.LogError($"没有找到动画: {aniArgs.AnimationName}");
             }
 
             ani.PlayAnimation(sender, aniArgs.EventArgs, callback);
@@ -87,16 +92,35 @@ namespace TouhouHeartstone.Frontend.View
         public void OnPointerEnter(PointerEventData eventData)
         {
             GetComponent<CardHighlight>()?.SetHighlight(true);
+            if (CurrentState == state.hand)
+                CurrentState = state.hand_hover;
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
             GetComponent<CardHighlight>()?.SetHighlight(false);
+            if (CurrentState == state.hand_hover)
+                CurrentState = state.hand;
+        }
+
+        state currentState = state.hand;
+        public state CurrentState
+        {
+            get { return currentState; }
+            set { currentState = value; }
         }
 
         public void OnPointerDown(PointerEventData eventData)
         {
             DebugUtils.Log("鼠标按下");
+            switch(CurrentState) {
+                case state.hand_hover:
+                    // check,
+                    break;
+                case state.center:
+                    // xxx
+                    break;
+            }
         }
 
         public void OnPointerUp(PointerEventData eventData)
@@ -106,7 +130,26 @@ namespace TouhouHeartstone.Frontend.View
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            DebugUtils.Log("鼠标点击");
+            DebugUtils.Log("鼠标按下");
+            var deck = GetComponentInParent<Controller.UserDeckController>();
+            switch (CurrentState)
+            {
+                case state.hand_hover:
+                    // check,
+                    if (deck.ThrowingCard)
+                    {
+                        deck.PrepareThrowCard(this.GetComponent<CardFaceViewModel>(), true);
+                        CurrentState = state.center;
+                    }
+                    break;
+                case state.center:
+                    if (deck.ThrowingCard)
+                    {
+                        deck.PrepareThrowCard(this.GetComponent<CardFaceViewModel>(), false);
+                        CurrentState = state.hand_hover;
+                    }
+                    break;
+            }
         }
         #endregion
 

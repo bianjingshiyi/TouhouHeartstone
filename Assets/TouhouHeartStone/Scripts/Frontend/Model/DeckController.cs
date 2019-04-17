@@ -91,6 +91,16 @@ namespace TouhouHeartstone.Frontend.Model
             users[uid].DrawCard(cards, callback);
         }
 
+        /// <summary>
+        /// 丢掉初始手牌
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <param name="cards"></param>
+        public void InitReplace(int uid, int[] cards)
+        {
+            GetComponentInParent<DeckModel>().InitReplace(uid, cards);
+        }
+
         private void Awake()
         {
             userPrefab.gameObject.SetActive(false);

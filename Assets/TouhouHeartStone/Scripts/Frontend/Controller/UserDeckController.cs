@@ -1,6 +1,8 @@
 ﻿using TouhouHeartstone.Frontend.View.Animation;
 using TouhouHeartstone.Frontend.ViewModel;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TouhouHeartstone.Frontend.Controller
 {
@@ -30,13 +32,15 @@ namespace TouhouHeartstone.Frontend.Controller
         [SerializeField]
         ThrowCardViewModel throwCard;
 
+        List<CardFaceViewModel> handCards = new List<CardFaceViewModel>();
+
         /// <summary>
         /// 初始抽卡
         /// </summary>
         /// <param name="cards"></param>
         public void InitDraw(int[] cards)
         {
-            GenericAction a = (evt, arg) => { ThrowCard(0, 0); };
+            GenericAction a = (evt, arg) => { EnterThrowingMode(0, 0); };
 
             for (int i = 0; i < cards.Length; i++)
             {
@@ -54,6 +58,8 @@ namespace TouhouHeartstone.Frontend.Controller
         /// </summary>
         public void DrawCard(int cardID, GenericAction callback)
         {
+            updateHandCardPos(handCards.Count + 1);
+
             CardFaceViewModel card = drawCard(cardID);
             card.PlayAnimation(this, new CardAnimationEventArgs()
             {
@@ -69,13 +75,16 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <param name="callback"></param>
         public void DrawCard(int[] cards, GenericAction callback)
         {
+            updateHandCardPos(handCards.Count + cards.Length);
+            callback += (sender, arg) =>{ updateHandCardPos(); };
+
             for (int i = 0; i < cards.Length; i++)
             {
                 var card = drawCard(cards[i]);
                 card.PlayAnimation(this, new CardAnimationEventArgs()
                 {
                     AnimationName = "InitDrawCard",
-                    EventArgs = new CardPositionEventArgs(cards.Length, i)
+                    EventArgs = new CardPositionEventArgs(cards.Length, i) { GroupOffset = handCards.Count }
                 }, i == 0 ? callback : null);
             }
         }
@@ -85,6 +94,8 @@ namespace TouhouHeartstone.Frontend.Controller
             var card = Instantiate(cardfacePrefab, cardSpawnRoot);
             card.gameObject.SetActive(true);
             card.CardID = cardID;
+
+            handCards.Add(card);
             return card;
         }
 
@@ -106,12 +117,7 @@ namespace TouhouHeartstone.Frontend.Controller
             cardfacePrefab.gameObject.SetActive(false);
             throwCard.gameObject.SetActive(false);
 
-            throwCard.OnThrow += ThrowCard_OnThrow;
-        }
-
-        private void ThrowCard_OnThrow()
-        {
-            throw new System.NotImplementedException();
+            throwCard.OnThrow += onThrow;
         }
         #endregion
 
@@ -132,13 +138,100 @@ namespace TouhouHeartstone.Frontend.Controller
             // todo: 设置角色图像
         }
 
-        public void ThrowCard(int min, int max)
+        /// <summary>
+        /// 点击了丢卡按钮
+        /// </summary>
+        private void onThrow()
+        {
+            for (int i = 0; i < throwingCards.Count; i++)
+            {
+                throwingCards[i].PlayAnimation(this, new CardAnimationEventArgs()
+                {
+                    AnimationName = "CardToStack",
+                    EventArgs = new CardPositionEventArgs() { GroupCount = throwingCards.Count, GroupID = i }
+                }, (s, a) => {
+                    Destroy(s as GameObject);
+                });
+            }
+            // todo: call some function
+
+            GetComponentInParent<Model.DeckController>()?.InitReplace(SelfID, throwingCards.Select(c => c.RuntimeID).ToArray());
+
+            throwingCards.Clear();
+            throwCard.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// 进入丢卡模式
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        public void EnterThrowingMode(int min, int max)
         {
             throwCard.gameObject.SetActive(true);
             throwCard.Max = max;
             throwCard.Min = min;
         }
 
+        /// <summary>
+        /// 当前是否正在丢卡
+        /// </summary>
         public bool ThrowingCard => throwCard.gameObject.activeSelf;
+
+        /// <summary>
+        /// 等待被丢的卡
+        /// </summary>
+        List<CardFaceViewModel> throwingCards = new List<CardFaceViewModel>();
+
+        /// <summary>
+        /// 准备丢弃卡牌
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="moveIn"></param>
+        public void PrepareThrowCard(CardFaceViewModel card, bool moveIn)
+        {
+            if (moveIn)
+            {
+                throwingCards.Add(card);
+                handCards.Remove(card);
+            }
+            else
+            {
+                if (throwingCards.Contains(card))
+                {
+                    throwingCards.Remove(card);
+                    handCards.Add(card);
+                }
+            }
+            for (int i = 0; i < throwingCards.Count; i++)
+            {
+                var item = throwingCards[i];
+                CardAnimationEventArgs arg = new CardAnimationEventArgs()
+                {
+                    AnimationName = "CardToCenter",
+                    EventArgs = new CardPositionEventArgs() { GroupCount = throwingCards.Count, GroupID = i }
+                };
+                item.PlayAnimation(this, arg, null);
+            }
+            updateHandCardPos();
+        }
+
+        void updateHandCardPos(int count)
+        {
+            for (int i = 0; i < handCards.Count; i++)
+            {
+                CardAnimationEventArgs arg = new CardAnimationEventArgs()
+                {
+                    AnimationName = "CardToHand",
+                    EventArgs = new CardPositionEventArgs() { GroupCount = count, GroupID = i }
+                };
+                handCards[i].PlayAnimation(this, arg, null);
+            }
+        }
+
+        void updateHandCardPos()
+        {
+            updateHandCardPos(handCards.Count);
+        }
     }
 }

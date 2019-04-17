@@ -58,7 +58,7 @@ namespace TouhouHeartstone.Frontend.View
 
             Vector3 center = screenSize / 2;
 
-            center.x += (i - (count - 1) / 2) * cardCenterSpacing;
+            center.x += (i - (count - 1) / 2f) * cardCenterSpacing;
             return new PositionWithRotation() { Position = center };
         }
 
@@ -72,7 +72,7 @@ namespace TouhouHeartstone.Frontend.View
 
             if (count <= 3)
             {
-                basePos.x += (i - (count - 1) / 2) * cardHandSpacing;
+                basePos.x += (i - (count - 1) / 2f) * cardHandSpacing;
 
                 return new PositionWithRotation() { Position = basePos, Rotation = Vector3.zero };
             }
@@ -92,6 +92,8 @@ namespace TouhouHeartstone.Frontend.View
             }
         }
 
+        public Vector3 StackPosition => new Vector3(1920, 0, 0);
+       
     }
     public struct PositionWithRotation
     {

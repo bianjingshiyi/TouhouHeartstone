@@ -38,5 +38,16 @@ namespace TouhouHeartstone.Frontend.View.Animation
             if (aniDict.Count == 0) ReloadAniALibrary();
             return (CardAnimation)Activator.CreateInstance(aniDict[name]);
         }
+
+        /// <summary>
+        /// 是否存在同名动画
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static bool ContainsAnimation(string name)
+        {
+            if (aniDict.Count == 0) ReloadAniALibrary();
+            return aniDict.ContainsKey(name);
+        }
     }
 }

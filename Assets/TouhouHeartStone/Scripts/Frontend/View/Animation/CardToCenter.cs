@@ -3,12 +3,9 @@ using UnityEngine;
 
 namespace TouhouHeartstone.Frontend.View.Animation
 {
-    /// <summary>
-    /// 卡到手牌
-    /// </summary>
-    public class CardDrawToHand : CardAnimationComponent
+    public class CardToCenter : CardAnimationComponent
     {
-        public override string AnimationName => "CardToHand";
+        public override string AnimationName => "CardToCenter";
 
         GenericAction animateFinishCallback;
 
@@ -19,26 +16,17 @@ namespace TouhouHeartstone.Frontend.View.Animation
             var arg = Utilities.CheckType<CardPositionEventArgs>(args);
             animateFinishCallback = callback;
 
-            arg.GroupID += arg.GroupOffset;
-            arg.GroupCount += arg.GroupOffset;
-
             var gv = GetComponentInParent<GlobalView>();
-            var t = gv.CardPositionCalculator.GetCardHand(arg.GroupID, arg.GroupCount);
-
-            transform.SetSiblingIndex(arg.GroupID);
+            var t = gv.CardPositionCalculator.GetCardCenter(arg.GroupID, arg.GroupCount);
 
             ani = new PositionAnimation(Time.time, transform)
             {
                 Positions = new Vector3[2]{
                      transform.position,
                      t.Position
-                },
-                Rotations = new Vector3[2]
-                {
-                    transform.rotation.eulerAngles,
-                    t.Rotation
                 }
             };
+            gameObject.SetActive(true);
         }
 
         private void Update()
@@ -48,7 +36,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
                 if (ani.Update(Time.time))
                 {
                     ani = null;
-                    animateFinishCallback?.Invoke(this, new EventArgs());
+                    animateFinishCallback?.Invoke(this.gameObject, new EventArgs());
                     // Destroy(this);
                 }
             }
