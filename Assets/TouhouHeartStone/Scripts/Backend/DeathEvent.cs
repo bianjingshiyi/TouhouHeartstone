@@ -1,0 +1,40 @@
+﻿using System.Linq;
+using System.Collections.Generic;
+
+namespace TouhouHeartstone.Backend
+{
+    class DeathEvent : VisibleEvent
+    {
+        public DeathEvent(Card[] cards) : base("onDeath")
+        {
+            this.cards = cards;
+        }
+        Card[] cards { get; }
+        public override void execute(CardEngine engine)
+        {
+            List<Player> remainPlayerList = new List<Player>(engine.getPlayers());
+            for (int i = 0; i < cards.Length; i++)
+            {
+                Pile pile = cards[i].pile;
+                Player player = pile.owner;
+                if (cards[i] != player["Master"][0])
+                    pile.moveTo(cards[i], player["Grave"], player["Grave"].count);
+                else
+                    remainPlayerList.Remove(player);
+            }
+            if (remainPlayerList.Count < engine.getPlayers().Length)
+            {
+                if (remainPlayerList.Count > 0)
+                    engine.doEvent(new GameEndEvent(remainPlayerList.ToArray()));
+                else
+                    engine.doEvent(new GameEndEvent(new Player[0]));
+            }
+        }
+        public override EventWitness getWitness(CardEngine engine, Player player)
+        {
+            EventWitness witness = new EventWitness("onDeath");
+            witness.setVar("cardsRID", cards.Select(c => { return c.getRID(); }).ToArray());
+            return witness;
+        }
+    }
+}

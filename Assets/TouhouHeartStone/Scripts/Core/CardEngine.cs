@@ -11,30 +11,62 @@ namespace TouhouHeartstone
         {
             this.rule = rule;
             random = new Random(randomSeed);
-            cardManager = new CardManager();
             recordManager = new RecordManager(this);
         }
         public Rule rule { get; }
-        public T getVar<T>(string varName)
+        public Card[] moveCard(Player player, string pileName, Card[] cards, Player targetPlayer, string targetPileName, int position)
+        {
+            MoveCardEvent e = new MoveCardEvent(player, pileName, cards, targetPlayer, targetPileName, position);
+            doEvent(e);
+            return e.cards;
+        }
+        public void setPlayerProp<T>(Player player, string propName, T value)
+        {
+            doEvent(new PlayerPropChangeEvent(player, propName, PropertyChangeType.set, value));
+        }
+        public void setPlayerProp(Player player, string propName, PropertyChangeType changeType, int value)
+        {
+            doEvent(new PlayerPropChangeEvent(player, propName, changeType, value));
+        }
+        public void setPlayerProp(Player player, string propName, PropertyChangeType changeType, float value)
+        {
+            doEvent(new PlayerPropChangeEvent(player, propName, changeType, value));
+        }
+        public void setPlayerProp(Player player, string propName, PropertyChangeType changeType, string value)
+        {
+            doEvent(new PlayerPropChangeEvent(player, propName, changeType, value));
+        }
+        public T getProp<T>(string varName)
         {
             if (dicVar.ContainsKey(varName) && dicVar[varName] is T)
                 return (T)dicVar[varName];
-            return default(T);
+            return default;
         }
-        public void setVar<T>(string varName, T value)
+        public void setProp<T>(string varName, T value)
         {
-            dicVar[varName] = value;
+            doEvent(new GamePropChangeEvent(varName, PropertyChangeType.set, value));
         }
-        public object this[string varName]
+        public void setProp(string varName, PropertyChangeType changeType, int value)
         {
-            get { return dicVar.ContainsKey(varName) ? dicVar[varName] : null; }
-            set { dicVar[varName] = value; }
+            doEvent(new GamePropChangeEvent(varName, changeType, value));
         }
-        Dictionary<string, object> dicVar { get; } = new Dictionary<string, object>();
+        public void setProp(string varName, PropertyChangeType changeType, float value)
+        {
+            doEvent(new GamePropChangeEvent(varName, changeType, value));
+        }
+        public void setProp(string varName, PropertyChangeType changeType, string value)
+        {
+            doEvent(new GamePropChangeEvent(varName, changeType, value));
+        }
+        internal Dictionary<string, object> dicVar { get; } = new Dictionary<string, object>();
         internal int registerCard(Card card)
         {
             cardList.Add(card);
             return cardList.Count - 1;
+        }
+        public Card[] getCards()
+        {
+            return cardList.ToArray();
         }
         List<Card> cardList { get; } = new List<Card>();
         public Player getPlayerAt(int playerIndex)
@@ -58,6 +90,10 @@ namespace TouhouHeartstone
         {
             return playerList.ToArray();
         }
+        public int playerCount
+        {
+            get { return playerList.Count; }
+        }
         public void addPlayer(Player player)
         {
             playerList.Add(player);
@@ -69,7 +105,6 @@ namespace TouhouHeartstone
             beginEvent(e);
             e.phase = EventPhase.logic;
             e.execute(this);
-            onEvent(currentEvent);
             e.phase = EventPhase.after;
             endEvent();
         }
@@ -78,11 +113,13 @@ namespace TouhouHeartstone
             e.parent = currentEvent;
             currentEvent = e;
             rule.beforeEvent(this, e);
+            beforeEvent?.Invoke(currentEvent);
         }
         public void endEvent()
         {
             //进行游戏规则内容中事件结束之后的处理，比如在事件之后发生的效果。
             rule.afterEvent(this, currentEvent);
+            afterEvent?.Invoke(currentEvent);
             if (currentEvent.parent != null)
                 currentEvent = currentEvent.parent;
             else
@@ -92,7 +129,8 @@ namespace TouhouHeartstone
             }
         }
         public delegate void EventAction(Event @event);
-        public event EventAction onEvent;
+        public event EventAction beforeEvent;
+        public event EventAction afterEvent;
         Event currentEvent { get; set; } = null;
         List<Event> eventList { get; } = new List<Event>();
         /// <summary>
@@ -116,7 +154,6 @@ namespace TouhouHeartstone
             return (float)(random.NextDouble() * (max - min) + min);
         }
         Random random { get; set; }
-        internal CardManager cardManager { get; private set; }
         internal PlayerManager playerManager { get; private set; }
         public RecordManager recordManager { get; set; }
     }
@@ -126,5 +163,10 @@ namespace TouhouHeartstone
         logic = 0,
         before,
         after
+    }
+    public enum PropertyChangeType
+    {
+        set,
+        add
     }
 }

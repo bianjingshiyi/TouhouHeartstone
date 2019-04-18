@@ -1,4 +1,4 @@
-﻿namespace TouhouHeartstone.Backend
+﻿namespace TouhouHeartstone
 {
     public abstract class VisibleEvent : Event
     {

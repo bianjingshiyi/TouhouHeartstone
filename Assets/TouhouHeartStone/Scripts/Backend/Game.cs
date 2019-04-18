@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace TouhouHeartstone.Backend
@@ -8,7 +9,7 @@ namespace TouhouHeartstone.Backend
         public Game()
         {
             engine = new CardEngine(new HeartStoneRule(), (int)DateTime.Now.ToBinary());
-            engine.onEvent += onEvent;
+            engine.afterEvent += afterEvent;
         }
         CardEngine engine { get; }
         /// <summary>
@@ -39,18 +40,72 @@ namespace TouhouHeartstone.Backend
         {
             engine.doEvent(new InitEvent());
         }
-        public void initReplace(int playerIndex, int[] cardIndex)
+        public void initReplace(int playerIndex, int[] cardsRID)
         {
-            engine.doEvent(new InitReplaceEvent(engine.getPlayerAt(playerIndex), cardIndex));
+            Player player = engine.getPlayerAt(playerIndex);
+            engine.doEvent(new InitReplaceEvent(player, cardsRID.Select(id => { return player["Init"].First(c => { return c.getRID() == id; }); }).ToArray()));
         }
-        private void onEvent(Event @event)
+        public void use(int playerIndex, int cardRID, int targetPosition, int targetCardRID)
         {
-            if (@event is VisibleEvent)
+            Player player = engine.getPlayerAt(playerIndex);
+            Card card = player["Hand"].First(c => { return c.getRID() == cardRID; });
+            Card targetCard = engine.getCards().First(c => { return c.getRID() == targetCardRID; });
+            engine.doEvent(new UseEvent(player, card, targetPosition, targetCard));
+        }
+        public void attack(int playerIndex, int cardRID, int targetCardRID)
+        {
+            Player player = engine.getPlayerAt(playerIndex);
+            Card card = engine.getCards().First(c => { return c.getRID() == cardRID; });
+            Card targetCard = engine.getCards().First(c => { return c.getRID() == targetCardRID; });
+            engine.doEvent(new AttackEvent(player, card, targetCard));
+        }
+        public void turnEnd(int playerIndex)
+        {
+            Player player = engine.getPlayerAt(playerIndex);
+            engine.doEvent(new TurnEndEvent(player));
+        }
+        private void afterEvent(Event @event)
+        {
+            if (@event.parent == null)
             {
                 foreach (Player player in engine.getPlayers())
                 {
-                    dicPlayerFrontend[player].sendWitness((@event as VisibleEvent).getWitness(engine, player));
+                    EventWitness[] wArray = generateWitnessTree(engine, player, @event);
+                    for (int i = 0; i < wArray.Length; i++)
+                    {
+                        dicPlayerFrontend[player].sendWitness(wArray[i]);
+                    }
                 }
+            }
+        }
+        EventWitness[] generateWitnessTree(CardEngine engine, Player player, Event e)
+        {
+            List<EventWitness> wlist = new List<EventWitness>();
+            if (e is VisibleEvent)
+            {
+                EventWitness w = (e as VisibleEvent).getWitness(engine, player);
+                for (int i = 0; i < e.before.Count; i++)
+                {
+                    wlist.AddRange(generateWitnessTree(engine, player, e.before[i]));
+                }
+                for (int i = 0; i < e.child.Count; i++)
+                {
+                    w.child.AddRange(generateWitnessTree(engine, player, e.child[i]));
+                }
+                wlist.Add(w);
+                for (int i = 0; i < e.after.Count; i++)
+                {
+                    wlist.AddRange(generateWitnessTree(engine, player, e.after[i]));
+                }
+                return wlist.ToArray();
+            }
+            else
+            {
+                for (int i = 0; i < e.child.Count; i++)
+                {
+                    wlist.AddRange(generateWitnessTree(engine, player, e.child[i]));
+                }
+                return wlist.ToArray();
             }
         }
         Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
