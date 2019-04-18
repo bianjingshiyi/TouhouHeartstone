@@ -7,10 +7,10 @@ namespace TouhouHeartstone.Frontend.ViewModel
     [Binding]
     public class CrystalItem : MonoBehaviour, INotifyPropertyChanged
     {
-        private CrystalState _State;
+        private CrystalItemState _State;
 
         [Binding]
-        public CrystalState State
+        public CrystalItemState State
         {
             get { return _State; }
             set { _State = value; NotifyPropertyChange("State"); }
@@ -27,7 +27,7 @@ namespace TouhouHeartstone.Frontend.ViewModel
         }
     }
 
-    public enum CrystalState
+    public enum CrystalItemState
     {
         /// <summary>
         /// 禁用

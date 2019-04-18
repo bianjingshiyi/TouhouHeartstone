@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using TouhouHeartstone.Frontend.ViewModel;
+using UnityEngine;
 
-namespace TouhouHeartstone.Frontend.ViewModel
+namespace TouhouHeartstone.Frontend.View
 {
     public class UICrystalItem : MonoBehaviour
     {
@@ -23,28 +24,28 @@ namespace TouhouHeartstone.Frontend.ViewModel
             image = GetComponent<UnityEngine.UI.Image>();
         }
 
-        private CrystalState _State;
+        private CrystalItemState _State;
 
-        public CrystalState State
+        public CrystalItemState State
         {
             get { return _State; }
             set
             {
                 _State = value;
-                gameObject.SetActive(CrystalState.hidden != value);
+                gameObject.SetActive(CrystalItemState.hidden != value);
 
-                switch(value)
+                switch (value)
                 {
-                    case CrystalState.disable:
+                    case CrystalItemState.disable:
                         image.sprite = disable;
                         break;
-                    case CrystalState.highlight:
+                    case CrystalItemState.highlight:
                         image.sprite = highlight;
                         break;
-                    case CrystalState.normal:
+                    case CrystalItemState.normal:
                         image.sprite = normal;
                         break;
-                    case CrystalState.used:
+                    case CrystalItemState.used:
                         image.sprite = used;
                         break;
                 }

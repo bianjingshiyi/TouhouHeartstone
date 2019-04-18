@@ -534,8 +534,8 @@ RectTransform:
   m_Father: {fileID: 555683126}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.49999818, y: 0}
-  m_AnchorMax: {x: 0.49999818, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1183,7 +1183,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 97836952}
   m_HandleRect: {fileID: 97836951}
   m_Direction: 0
-  m_Value: 0.49999818
+  m_Value: 0.49999997
   m_Size: 0
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2869,6 +2869,8 @@ GameObject:
   - component: {fileID: 624655118}
   - component: {fileID: 624655117}
   - component: {fileID: 624655120}
+  - component: {fileID: 624655121}
+  - component: {fileID: 624655122}
   m_Layer: 5
   m_Name: CardLibrary
   m_TagString: Untagged
@@ -2965,6 +2967,32 @@ MonoBehaviour:
   prefab: {fileID: 794938058}
   _spawnRoot: {fileID: 624655116}
   Limit: 30
+--- !u!114 &624655121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 624655115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3678019d3575f145a4a6fd5f628bc23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &624655122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 624655115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1670825535, guid: 94f5ecf3c8f5a394b91a889848c86e7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewAdapterTypeName: 
+  viewAdapterOptions: {fileID: 0}
+  viewModelPropertyName: TouhouHeartstone.Frontend.ViewModel.CardStackViewModel.CardCount
+  viewPropertyName: TouhouHeartstone.Frontend.View.CardBackStackView.Count
 --- !u!1 &626207296
 GameObject:
   m_ObjectHideFlags: 0
@@ -3861,8 +3889,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 521e25898da4c404ba5a5b2231c9bf1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  images: {fileID: 11400000, guid: 61e1ed9251bc4cc469a656d5184e6399, type: 2}
-  texts: {fileID: 11400000, guid: 307eabdb94c94104cafc1bd4d2d59fd1, type: 2}
 --- !u!1 &790920648
 GameObject:
   m_ObjectHideFlags: 0
@@ -4601,6 +4627,8 @@ GameObject:
   - component: {fileID: 906453094}
   - component: {fileID: 906453093}
   - component: {fileID: 906453092}
+  - component: {fileID: 906453096}
+  - component: {fileID: 906453097}
   m_Layer: 5
   m_Name: CardGrave
   m_TagString: Untagged
@@ -4697,6 +4725,32 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 906453090}
   m_CullTransparentMesh: 0
+--- !u!114 &906453096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 906453090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3678019d3575f145a4a6fd5f628bc23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &906453097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 906453090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1670825535, guid: 94f5ecf3c8f5a394b91a889848c86e7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewAdapterTypeName: 
+  viewAdapterOptions: {fileID: 0}
+  viewModelPropertyName: TouhouHeartstone.Frontend.ViewModel.CardStackViewModel.CardCount
+  viewPropertyName: TouhouHeartstone.Frontend.View.CardBackStackView.Count
 --- !u!1 &912741872
 GameObject:
   m_ObjectHideFlags: 0
@@ -4803,7 +4857,7 @@ MonoBehaviour:
   viewAdapterTypeName: 
   viewAdapterOptions: {fileID: 0}
   viewModelPropertyName: TouhouHeartstone.Frontend.ViewModel.CrystalItem.State
-  viewPropertyName: TouhouHeartstone.Frontend.ViewModel.UICrystalItem.State
+  viewPropertyName: TouhouHeartstone.Frontend.View.UICrystalItem.State
 --- !u!114 &912741878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5251,6 +5305,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1043422651}
+  - component: {fileID: 1043422652}
   m_Layer: 5
   m_Name: Self
   m_TagString: Untagged
@@ -5281,6 +5336,24 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1043422652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1043422650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b85f5c9625697754886b192804462c4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  crystalBar: {fileID: 1388557540}
+  characterInfo: {fileID: 1318222980}
+  cardfacePrefab: {fileID: 1566284630}
+  cardStackLibrary: {fileID: 624655121}
+  cardStackGrave: {fileID: 906453096}
+  images: {fileID: 11400000, guid: 61e1ed9251bc4cc469a656d5184e6399, type: 2}
+  texts: {fileID: 11400000, guid: 307eabdb94c94104cafc1bd4d2d59fd1, type: 2}
 --- !u!1 &1050442041
 GameObject:
   m_ObjectHideFlags: 0
@@ -5464,7 +5537,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 277253430}
   m_HandleRect: {fileID: 277253429}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0.99999946
   m_Size: 0.81
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -5803,6 +5876,7 @@ GameObject:
   - component: {fileID: 1129068847}
   - component: {fileID: 1129068849}
   - component: {fileID: 1129068848}
+  - component: {fileID: 1129068850}
   m_Layer: 5
   m_Name: DefenceText
   m_TagString: Untagged
@@ -5868,6 +5942,21 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1129068846}
   m_CullTransparentMesh: 0
+--- !u!114 &1129068850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1129068846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1670825535, guid: 94f5ecf3c8f5a394b91a889848c86e7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewAdapterTypeName: UnityWeld.Binding.Adapters.IntToStringAdapter
+  viewAdapterOptions: {fileID: 0}
+  viewModelPropertyName: TouhouHeartstone.Frontend.ViewModel.CharacterInfoViewModel.Defence
+  viewPropertyName: UnityEngine.UI.Text.text
 --- !u!1 &1133896414
 GameObject:
   m_ObjectHideFlags: 0
@@ -7049,6 +7138,8 @@ GameObject:
   - component: {fileID: 1318222976}
   - component: {fileID: 1318222978}
   - component: {fileID: 1318222977}
+  - component: {fileID: 1318222980}
+  - component: {fileID: 1318222979}
   m_Layer: 5
   m_Name: Character
   m_TagString: Untagged
@@ -7111,6 +7202,32 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1318222975}
   m_CullTransparentMesh: 0
+--- !u!114 &1318222979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1318222975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1670825535, guid: 94f5ecf3c8f5a394b91a889848c86e7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewAdapterTypeName: 
+  viewAdapterOptions: {fileID: 0}
+  viewModelPropertyName: TouhouHeartstone.Frontend.ViewModel.CharacterInfoViewModel.CharacterImage
+  viewPropertyName: UnityEngine.UI.Image.sprite
+--- !u!114 &1318222980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1318222975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09f1d5add514f3a4f98be17ee1519e1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1336255374
 GameObject:
   m_ObjectHideFlags: 0
@@ -7121,6 +7238,7 @@ GameObject:
   - component: {fileID: 1336255375}
   - component: {fileID: 1336255377}
   - component: {fileID: 1336255376}
+  - component: {fileID: 1336255378}
   m_Layer: 5
   m_Name: HpText
   m_TagString: Untagged
@@ -7186,6 +7304,21 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1336255374}
   m_CullTransparentMesh: 0
+--- !u!114 &1336255378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1336255374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1670825535, guid: 94f5ecf3c8f5a394b91a889848c86e7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewAdapterTypeName: UnityWeld.Binding.Adapters.IntToStringAdapter
+  viewAdapterOptions: {fileID: 0}
+  viewModelPropertyName: TouhouHeartstone.Frontend.ViewModel.CharacterInfoViewModel.HP
+  viewPropertyName: UnityEngine.UI.Text.text
 --- !u!1 &1379398996
 GameObject:
   m_ObjectHideFlags: 0
@@ -8246,6 +8379,12 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1530203791}
   m_CullTransparentMesh: 0
+--- !u!114 &1566284630 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114862921800056944, guid: b3061aab427fdd442aaee9123d5cfe1f,
+    type: 2}
+  m_PrefabInternal: {fileID: 1527297671}
+  m_Script: {fileID: 11500000, guid: 521e25898da4c404ba5a5b2231c9bf1d, type: 3}
 --- !u!1001 &1581824370
 Prefab:
   m_ObjectHideFlags: 0
@@ -8409,6 +8548,7 @@ GameObject:
   - component: {fileID: 1601912750}
   - component: {fileID: 1601912752}
   - component: {fileID: 1601912751}
+  - component: {fileID: 1601912753}
   m_Layer: 5
   m_Name: AtkText
   m_TagString: Untagged
@@ -8474,6 +8614,21 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1601912749}
   m_CullTransparentMesh: 0
+--- !u!114 &1601912753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1601912749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1670825535, guid: 94f5ecf3c8f5a394b91a889848c86e7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewAdapterTypeName: UnityWeld.Binding.Adapters.IntToStringAdapter
+  viewAdapterOptions: {fileID: 0}
+  viewModelPropertyName: TouhouHeartstone.Frontend.ViewModel.CharacterInfoViewModel.Atk
+  viewPropertyName: UnityEngine.UI.Text.text
 --- !u!224 &1708426961 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224109322247772092, guid: b3061aab427fdd442aaee9123d5cfe1f,
