@@ -20,14 +20,14 @@ namespace TouhouHeartstone.Backend
                 remainedList.RemoveAt(index);
             }
             engine.setProp("sortedPlayers", sortedPlayers);
+            engine.allocateRID(sortedPlayers.Select(p => { return p["Master"][0]; }).ToArray());
             //抽初始卡牌
             for (int i = 0; i < sortedPlayers.Length; i++)
             {
                 int count = i == 0 ? 3 : 4;
-                engine.moveCard(sortedPlayers[i], "Deck", sortedPlayers[i]["Deck"][sortedPlayers[i]["Deck"].count - count, sortedPlayers[i]["Deck"].count - 1], sortedPlayers[i], "Init", 0);
-            }
-            foreach (Card card in engine.getPlayers().Select(p => { return p["Master"][0]; }))
-            {
+                Card[] cards = sortedPlayers[i]["Deck"][sortedPlayers[i]["Deck"].count - count, sortedPlayers[i]["Deck"].count - 1];
+                engine.moveCard(sortedPlayers[i], "Deck", cards, sortedPlayers[i], "Init", 0);
+                engine.allocateRID(cards);
             }
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
