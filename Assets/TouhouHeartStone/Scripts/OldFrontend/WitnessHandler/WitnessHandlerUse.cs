@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using IGensoukyo.Utilities;
 
 [assembly: ComVisible(false)]
 namespace TouhouHeartstone.OldFrontend.WitnessHandler

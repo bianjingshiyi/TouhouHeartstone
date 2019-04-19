@@ -67,7 +67,7 @@ namespace TouhouHeartstone
             if (dicProp.ContainsKey(propName) && dicProp[propName] is T)
                 return (T)dicProp[propName];
             else
-                return default;
+                return default(T);
         }
         internal Dictionary<string, object> dicProp { get; } = new Dictionary<string, object>();
         public int id { get; } = -1;

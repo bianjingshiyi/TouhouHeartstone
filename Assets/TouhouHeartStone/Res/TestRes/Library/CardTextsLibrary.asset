@@ -22,3 +22,13 @@ MonoBehaviour:
     name: "\u5C04\u547D\u4E38\u6587"
     desc: "\u4E00\u53EA\u559C\u6B22\u641E\u4E2A\u5927\u65B0\u95FB\u7684\u5929\u72D7"
     type: "\u5996\u602A"
+  - id: invalid
+    lang: en-US
+    name: Invalid Card
+    desc: Specific card not fpund.
+    type: Card
+  - id: invalid
+    lang: zh-CN
+    name: "\u65E0\u6548\u7684\u5361\u7247"
+    desc: "\u6307\u5B9A\u5361\u7247\u672A\u627E\u5230"
+    type: Card

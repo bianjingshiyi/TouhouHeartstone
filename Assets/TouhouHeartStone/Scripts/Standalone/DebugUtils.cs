@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace TouhouHeartstone.OldFrontend
+namespace IGensoukyo.Utilities
 {
     public class DebugUtils
     {
@@ -22,6 +22,14 @@ namespace TouhouHeartstone.OldFrontend
         public static void LogWarning(string message, UnityEngine.Object context = null)
         {
             Debug.LogWarning("[Frontend]" + message, context);
+        }
+
+        public static void NullCheck(object obj, string name)
+        {
+            if (obj == null)
+            {
+                Debug.LogWarning($"{name} 为空");
+            }
         }
     }
 }

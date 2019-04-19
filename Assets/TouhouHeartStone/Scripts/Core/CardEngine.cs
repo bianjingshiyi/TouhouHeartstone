@@ -40,7 +40,7 @@ namespace TouhouHeartstone
         {
             if (dicVar.ContainsKey(varName) && dicVar[varName] is T)
                 return (T)dicVar[varName];
-            return default;
+            return default(T);
         }
         public void setProp<T>(string varName, T value)
         {

@@ -66,8 +66,8 @@ namespace TouhouHeartstone.Frontend.ViewModel
         /// </summary>
         void NotifyPropertyChange(string propertyName)
         {
-            Debug.Log("On change");
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
+
 }
