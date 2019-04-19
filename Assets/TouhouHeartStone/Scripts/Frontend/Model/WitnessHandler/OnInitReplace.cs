@@ -2,18 +2,15 @@
 {
     public class OnInitReplace : WitnessHandler
     {
-        public override string Name => "onInitReplace";
+        public override string Name => "initReplace";
 
         public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback)
         {
-            int player = witness.getVar<int>("player_index");
-            int[] cards = witness.getVar<int[]>("replaced_define_id");
-            int cardCount = witness.getVar<int>("replaced_count");
+            int player = witness.getVar<int>("playerIndex");
+            int[] cardsRID = witness.getVar<int[]>("cardsRID");
+            int[] cardsDID = witness.getVar<int[]>("cardsDID");
 
-            if (cards.Length == 0 && cardCount > 0)
-                cards = new int[cardCount];
-
-            deck.SetInitReplace(player, cards, callback);
+            deck.SetInitReplace(player, CardID.ToCardIDs(cardsDID, cardsRID), callback);
 
             return false;
         }

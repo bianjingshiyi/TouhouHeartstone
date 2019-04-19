@@ -55,7 +55,7 @@ namespace TouhouHeartstone.Frontend.Model
         /// </summary>
         /// <param name="players"></param>
         /// <param name="characters"></param>
-        public void SetPlayer(int[] players, int[] characters)
+        public void SetPlayer(int[] players, CardID[] characters)
         {
             if (players.Length != characters.Length)
                 throw new System.Exception("两个数据不匹配");
@@ -75,9 +75,21 @@ namespace TouhouHeartstone.Frontend.Model
         /// 设置初始抽卡
         /// </summary>
         /// <param name="cards"></param>
-        public void SetInitHandcard(int[] cards)
+        public void SetInitHandcard(int[] selfCardsDefine, int[][] cardsRuntime)
         {
-            users[selfID].InitDraw(cards);
+            for (int i = 0; i < cardsRuntime.Length; i++)
+            {
+                users[i].InitDraw(CardID.ToCardIDs(i == selfID ? selfCardsDefine : new int[cardsRuntime[i].Length], cardsRuntime[i]));
+            }
+        }
+
+        /// <summary>
+        /// 设置自己的卡牌库
+        /// </summary>
+        /// <param name="cards"></param>
+        public void SetSelfDeck(int[] cards)
+        {
+            users[selfID].SetDeck(cards);
         }
 
         /// <summary>
@@ -86,7 +98,7 @@ namespace TouhouHeartstone.Frontend.Model
         /// <param name="uid"></param>
         /// <param name="cards"></param>
         /// <param name="callback"></param>
-        public void SetInitReplace(int uid, int[] cards, GenericAction callback = null)
+        public void SetInitReplace(int uid, CardID[] cards, GenericAction callback = null)
         {
             users[uid].DrawCard(cards, callback);
         }
@@ -105,5 +117,38 @@ namespace TouhouHeartstone.Frontend.Model
         {
             userPrefab.gameObject.SetActive(false);
         }
+    }
+
+    public class CardID
+    {
+        public static CardID[] ToCardIDs(int[] define, int[] runtime)
+        {
+            if (define.Length != runtime.Length)
+                throw new LengthNotMatchException();
+
+            CardID[] cards = new CardID[define.Length];
+            for (int i = 0; i < define.Length; i++)
+            {
+                cards[i] = new CardID(define[i], runtime[i]);
+            }
+            return cards;
+        }
+        public CardID(int define, int runtime)
+        {
+            DefineID = define;
+            RuntimeID = runtime;
+        }
+        public CardID() { }
+
+        public int DefineID;
+        public int RuntimeID;
+    }
+
+
+    [System.Serializable]
+    public class LengthNotMatchException : System.Exception
+    {
+        public LengthNotMatchException() { }
+        public LengthNotMatchException(int expected, int actual) : base($"Length is not match. Expect {expected} but actual {actual}") { }
     }
 }

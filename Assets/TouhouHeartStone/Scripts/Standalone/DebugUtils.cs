@@ -23,5 +23,13 @@ namespace IGensoukyo.Utilities
         {
             Debug.LogWarning("[Frontend]" + message, context);
         }
+
+        public static void NullCheck(object obj, string name)
+        {
+            if (obj == null)
+            {
+                Debug.LogWarning($"{name} 为空");
+            }
+        }
     }
 }

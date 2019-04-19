@@ -1,4 +1,7 @@
-﻿namespace TouhouHeartstone.Frontend.Model.Witness
+﻿using IGensoukyo.Utilities;
+using System;
+
+namespace TouhouHeartstone.Frontend.Model.Witness
 {
     public class OnInit : WitnessHandler
     {
@@ -6,12 +9,33 @@
 
         public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback)
         {
-            int[] charactersID = witness.getVar<int[]>("players_master_define_id");
-            int[] playerOrder = witness.getVar<int[]>("sortedPlayers_id");
-            int[] initHandCard = witness.getVar<int[]>("self_init_define_id");
+            // 角色卡的DefineID
+            int[] charactersDID = witness.getVar<int[]>("masterCardsDID");
+            // 角色卡的RuntimeID
+            int[] charactersRID = witness.getVar<int[]>("masterCardsRID");
+            // 玩家卡组
+            int[] userCards = witness.getVar<int[]>("deck");
+            // 玩家顺序
+            int[] playerOrder = witness.getVar<int[]>("sortedPlayersIndex");
+            // 初始手牌DefineID
+            int[] initHandCard = witness.getVar<int[]>("initCardsDID");
+            // 初始手牌RuntimeID
+            int[][] initCardsRID = witness.getVar<int[][]>("initCardsRID");
 
-            deck.SetPlayer(playerOrder, charactersID);
-            deck.SetInitHandcard(initHandCard);
+            DebugUtils.NullCheck(charactersDID, "charactersDID");
+            DebugUtils.NullCheck(charactersRID, "charactersRID");
+            DebugUtils.NullCheck(userCards, "userCards");
+            DebugUtils.NullCheck(playerOrder, "playerOrder");
+            DebugUtils.NullCheck(initHandCard, "initHandCard");
+            DebugUtils.NullCheck(initCardsRID, "initCardsRID");
+
+            if (charactersDID.Length != charactersRID.Length)
+                throw new LengthNotMatchException(charactersDID.Length, charactersRID.Length);
+
+            deck.SetPlayer(playerOrder, CardID.ToCardIDs(charactersDID, charactersRID));
+            deck.SetSelfDeck(userCards);
+
+            deck.SetInitHandcard(initHandCard, initCardsRID);
 
             return false;
         }

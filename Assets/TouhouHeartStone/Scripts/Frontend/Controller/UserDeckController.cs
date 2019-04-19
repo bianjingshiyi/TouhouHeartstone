@@ -3,6 +3,7 @@ using TouhouHeartstone.Frontend.ViewModel;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using TouhouHeartstone.Frontend.Model;
 
 namespace TouhouHeartstone.Frontend.Controller
 {
@@ -38,7 +39,7 @@ namespace TouhouHeartstone.Frontend.Controller
         /// 初始抽卡
         /// </summary>
         /// <param name="cards"></param>
-        public void InitDraw(int[] cards)
+        public void InitDraw(CardID[] cards)
         {
             GenericAction a = (evt, arg) => { EnterThrowingMode(0, 0); };
 
@@ -56,7 +57,7 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <summary>
         /// 抽一张卡
         /// </summary>
-        public void DrawCard(int cardID, GenericAction callback)
+        public void DrawCard(CardID cardID, GenericAction callback)
         {
             updateHandCardPos(handCards.Count + 1);
 
@@ -73,7 +74,7 @@ namespace TouhouHeartstone.Frontend.Controller
         /// </summary>
         /// <param name="cards"></param>
         /// <param name="callback"></param>
-        public void DrawCard(int[] cards, GenericAction callback)
+        public void DrawCard(CardID[] cards, GenericAction callback)
         {
             updateHandCardPos(handCards.Count + cards.Length);
             callback += (sender, arg) =>{ updateHandCardPos(); };
@@ -89,14 +90,24 @@ namespace TouhouHeartstone.Frontend.Controller
             }
         }
 
-        private CardFaceViewModel drawCard(int cardID)
+        private CardFaceViewModel drawCard(CardID cardID)
         {
             var card = Instantiate(cardfacePrefab, cardSpawnRoot);
             card.gameObject.SetActive(true);
-            card.CardID = cardID;
+            card.CardID = cardID.DefineID;
+            card.RuntimeID = cardID.RuntimeID;
 
             handCards.Add(card);
             return card;
+        }
+
+        /// <summary>
+        /// 设置默认卡牌堆
+        /// </summary>
+        /// <param name="cards"></param>
+        public void SetDeck(int[] cards)
+        {
+            // todo: 设置卡牌堆
         }
 
         #region test
@@ -129,7 +140,7 @@ namespace TouhouHeartstone.Frontend.Controller
         /// </summary>
         /// <param name="id"></param>
         /// <param name="character"></param>
-        public void Init(int id, int character, bool isSelf)
+        public void Init(int id, CardID character, bool isSelf)
         {
             if (!isSelf)
                 transform.localRotation = Quaternion.Euler(0, 0, 180);
@@ -138,6 +149,7 @@ namespace TouhouHeartstone.Frontend.Controller
             // todo: 设置角色图像
         }
 
+        #region throw
         /// <summary>
         /// 点击了丢卡按钮
         /// </summary>
@@ -233,5 +245,6 @@ namespace TouhouHeartstone.Frontend.Controller
         {
             updateHandCardPos(handCards.Count);
         }
+        #endregion 
     }
 }
