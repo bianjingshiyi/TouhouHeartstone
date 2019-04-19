@@ -8,35 +8,63 @@ namespace TouhouHeartstone.Backend
         public InitEvent() : base("onInit")
         {
         }
-        public override void execute(CardEngine core)
+        public override void execute(CardEngine engine)
         {
             //决定玩家行动顺序
-            List<Player> remainedList = new List<Player>(core.getPlayers());
+            List<Player> remainedList = new List<Player>(engine.getPlayers());
             Player[] sortedPlayers = new Player[remainedList.Count];
             for (int i = 0; i < sortedPlayers.Length; i++)
             {
-                int index = core.randomInt(0, remainedList.Count - 1);
+                int index = engine.randomInt(0, remainedList.Count - 1);
                 sortedPlayers[i] = remainedList[index];
                 remainedList.RemoveAt(index);
             }
-            core.setVar("sortedPlayers", sortedPlayers);
+            engine.setProp("sortedPlayers", sortedPlayers);
             //抽初始卡牌
             for (int i = 0; i < sortedPlayers.Length; i++)
             {
                 int count = i == 0 ? 3 : 4;
-                sortedPlayers[i]["Deck"].moveCardTo(sortedPlayers[i]["Deck"][sortedPlayers[i]["Deck"].count - count, sortedPlayers[i]["Deck"].count - 1], sortedPlayers[i]["Init"], 0);
+                engine.moveCard(sortedPlayers[i], "Deck", sortedPlayers[i]["Deck"][sortedPlayers[i]["Deck"].count - count, sortedPlayers[i]["Deck"].count - 1], sortedPlayers[i], "Init", 0);
+            }
+            foreach (Card card in engine.getPlayers().Select(p => { return p["Master"][0]; }))
+            {
             }
         }
-        public override EventWitness getWitness(CardEngine core, Player player)
+        public override EventWitness getWitness(CardEngine engine, Player player)
         {
             EventWitness witness = new EventWitness("onInit");
             //双方玩家所使用的卡组主人公
-            witness.setVar("players_master_define_id", core.getPlayers().Select(e => { return e["Master"][0].define.id; }).ToArray());
+            witness.setVar("masterCardRID", engine.getPlayers().Select(e => { return e["Master"][0].getProp<int>("RID"); }).ToArray());
+            witness.setVar("masterCardDID", engine.getPlayers().Select(e => { return e["Master"][0].define.id; }).ToArray());
             //然后是玩家的先后行动顺序
-            witness.setVar("sortedPlayers_id", core.getVar<Player[]>("sortedPlayers").Select(e => { return e.id; }).ToArray());
+            witness.setVar("sortedPlayerIndex", engine.getProp<Player[]>("sortedPlayers").Select(e => { return engine.getPlayerIndex(e); }).ToArray());
             //接着是初始手牌
-            witness.setVar("self_init_define_id", player["Init"].Select(e => { return e.define.id; }).ToArray());
+            witness.setVar("initCardsRID", player["Init"].Select(e => { return e.getProp<int>("RID"); }).ToArray());
+            witness.setVar("initCardsDID", player["Init"].Select(e => { return e.define.id; }).ToArray());
+            //剩余卡组
+            witness.setVar("deck", player["Deck"].OrderBy(c => { return c.define.id; }).Select(c => { return c.define.id; }).ToArray());
             return witness;
+        }
+    }
+    static partial class HeartstoneExtension
+    {
+        public static int allocateRID(this CardEngine engine, Card card)
+        {
+            engine.setProp("RID", engine.getProp<int>("RID") + 1);
+            card.setProp("RID", engine.getProp<int>("RID"));
+            return card.getProp<int>("RID");
+        }
+        public static int[] allocateRID(this CardEngine engine, Card[] cards)
+        {
+            return cards.Select(c => { return engine.allocateRID(c); }).ToArray();
+        }
+        public static int getRID(this Card card)
+        {
+            return card.getProp<int>("RID");
+        }
+        public static int[] getRID(this Card[] cards)
+        {
+            return cards.Select(c => { return c.getRID(); }).ToArray();
         }
     }
 }

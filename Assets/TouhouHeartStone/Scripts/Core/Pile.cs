@@ -1,19 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace TouhouHeartstone
 {
-    class ShuffleEvent : Event
-    {
-        public ShuffleEvent() : base("Shuffle")
-        {
-        }
-        public override void execute(CardEngine core)
-        {
-
-        }
-    }
     /// <summary>
     /// Pile（牌堆）表示一个可以容纳卡片的有序集合，比如卡组，手牌，战场等等。一个Region中可以包含可枚举数量的卡牌。
     /// 注意，卡片在Region中的顺序代表了它的位置。0是最左边（手牌），0也是最底部（卡组）。
@@ -27,75 +18,23 @@ namespace TouhouHeartstone
         public Pile(string name, Card[] cards)
         {
             this.name = name;
+            foreach (Card card in cards)
+            {
+                card.pile = this;
+            }
             cardList.AddRange(cards);
-        }
-        public Pile(Player owner, string name)
-        {
-            this.owner = owner;
-            this.name = name;
         }
         public Player owner { get; set; } = null;
         public string name { get; } = null;
-        /// <summary>
-        /// 将一张卡从当前牌堆中移动到另一个牌堆中。如果这张牌或者目标牌堆为空，则什么都不发生。
-        /// </summary>
-        /// <param name="card">这张牌</param>
-        /// <param name="targetPile">目标牌堆</param>
-        /// <param name="toTopOrRight">移动到目标牌堆的顶端还是低端</param>
-        public void moveCardTo(Card[] cards, Pile targetPile, int position)
-        {
-            if (cards == null || cards.Length == 0)
-                return;
-            if (targetPile == null)
-                return;
-            List<Card> removedCards = new List<Card>();
-            foreach (Card card in cards)
-            {
-                for (int i = 0; i < cardList.Count; i++)
-                {
-                    if (cardList[i] == card)
-                    {
-                        removedCards.Add(card);
-                        cardList.RemoveAt(i);
-                        break;
-                    }
-                }
-            }
-            if (removedCards.Count > 0)
-                targetPile.cardList.InsertRange(position, removedCards);
-        }
-        public Card[] getCards(int count)
-        {
-            return cardList.GetRange(cardList.Count - count, count).ToArray();
-        }
         public void add(IEnumerable<Card> cards)
         {
             cardList.AddRange(cards);
         }
-        public void moveTo(Card card, Pile targetRegion, bool toTopOrRight)
+        public void moveTo(Card card, Pile targetPile, int position)
         {
-            cardList.Remove(card);
-            if (toTopOrRight)
-                targetRegion.cardList.Add(card);
-            else
-                targetRegion.cardList.Insert(0, card);
-        }
-        public void moveTo(IEnumerable<Card> cards, Pile targetRegion, bool toTopOrRight)
-        {
-            cardList.RemoveAll(e => { return cards.Contains(e); });
-            if (toTopOrRight)
-                targetRegion.cardList.AddRange(cards);
-            else
-                targetRegion.cardList.InsertRange(0, cards);
-        }
-        public void replace(IEnumerable<Card> originCards, IEnumerable<Card> targetCards)
-        {
-            Card[] originArray = originCards.ToArray();
-            Card[] targetArray = targetCards.ToArray();
-            for (int i = 0; i < originArray.Length; i++)
+            if (cardList.Remove(card))
             {
-                int index = cardList.IndexOf(originArray[i]);
-                cardList[index] = targetArray[i];
+                targetPile.cardList.Insert(position, card);
             }
         }
         public void shuffle(CardEngine game)
@@ -111,27 +50,9 @@ namespace TouhouHeartstone
             }
             cardList.AddRange(shuffleArray);
         }
-        public void remove(IEnumerable<Card> cards)
-        {
-            cardList.RemoveAll(e => { return cards.Contains(e); });
-        }
         public Card[] getCards()
         {
             return cardList.ToArray();
-        }
-        public Card[] getCards(CardInstance[] instances)
-        {
-            Card[] cards = new Card[instances.Length];
-            for (int i = 0; i < instances.Length; i++)
-            {
-                cards[i] = cardList.Find(e => { return e.instance.Equals(instances[i]); });
-            }
-            return cards;
-        }
-        public void setCards(IEnumerable<Card> cards)
-        {
-            cardList.Clear();
-            cardList.AddRange(cards.ToList());
         }
         /// <summary>
         /// 获取左边或者底端的卡牌。注意如果没有足够的卡牌的话，返回的卡牌数量会比参数更少。
@@ -171,6 +92,19 @@ namespace TouhouHeartstone
             else
                 return cardList.ToArray();
         }
+        public Card top
+        {
+            get
+            {
+                if (cardList.Count < 1)
+                    return null;
+                return cardList[cardList.Count - 1];
+            }
+        }
+        public int indexOf(Card card)
+        {
+            return cardList.IndexOf(card);
+        }
         public int count
         {
             get { return cardList.Count; }
@@ -200,7 +134,7 @@ namespace TouhouHeartstone
         {
             return ((IEnumerable<Card>)cardList).GetEnumerator();
         }
-        List<Card> cardList { get; } = new List<Card>();
+        internal List<Card> cardList { get; } = new List<Card>();
         public override string ToString()
         {
             return name + "[" + cardList.Count + "]";
