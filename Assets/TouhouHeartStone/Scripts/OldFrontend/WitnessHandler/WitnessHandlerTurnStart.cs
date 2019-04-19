@@ -1,6 +1,7 @@
 ﻿using TouhouHeartstone.OldFrontend.Manager;
 using System;
 using System.Runtime.InteropServices;
+using IGensoukyo.Utilities;
 
 namespace TouhouHeartstone.OldFrontend.WitnessHandler
 {

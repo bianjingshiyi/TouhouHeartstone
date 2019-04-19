@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 using TouhouHeartstone.OldFrontend.Manager;
+using IGensoukyo.Utilities;
 
 namespace TouhouHeartstone.OldFrontend
 {

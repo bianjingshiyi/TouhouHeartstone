@@ -22,3 +22,13 @@ MonoBehaviour:
     mainSprite: {fileID: 21300000, guid: 560d7c87b74ab2b4eb03c36ee9fb7ce9, type: 3}
     bkgSprite: {fileID: 21300000, guid: 66955244305c4e54288fa8ec789d3f68, type: 3}
     ribbonSprite: {fileID: 0}
+  - id: invalid
+    lang: en-US
+    mainSprite: {fileID: 21300000, guid: 560d7c87b74ab2b4eb03c36ee9fb7ce9, type: 3}
+    bkgSprite: {fileID: 21300000, guid: 66955244305c4e54288fa8ec789d3f68, type: 3}
+    ribbonSprite: {fileID: 0}
+  - id: invalid
+    lang: zh-CN
+    mainSprite: {fileID: 21300000, guid: 560d7c87b74ab2b4eb03c36ee9fb7ce9, type: 3}
+    bkgSprite: {fileID: 21300000, guid: 66955244305c4e54288fa8ec789d3f68, type: 3}
+    ribbonSprite: {fileID: 0}

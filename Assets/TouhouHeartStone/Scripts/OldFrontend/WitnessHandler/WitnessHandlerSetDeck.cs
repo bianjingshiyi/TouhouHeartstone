@@ -1,4 +1,5 @@
-﻿namespace TouhouHeartstone.OldFrontend.WitnessHandler
+﻿using IGensoukyo.Utilities;
+namespace TouhouHeartstone.OldFrontend.WitnessHandler
 {
     /// <summary>
     /// 设置玩家卡组大小

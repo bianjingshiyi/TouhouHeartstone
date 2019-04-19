@@ -3,12 +3,20 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-namespace TouhouHeartstone.Frontend.View.Animation
+using TouhouHeartstone.Frontend.ViewModel;
+using TouhouHeartstone.Frontend.View.Animation;
+
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using IGensoukyo.Utilities;
+
+namespace TouhouHeartstone.Frontend.View
 {
     /// <summary>
     /// 卡片的View
     /// </summary>
-    public class CardView : MonoBehaviour
+    public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
     {
         #region animation_base
         Dictionary<string, ICardAnimation> cardAnimations = new Dictionary<string, ICardAnimation>();
@@ -21,10 +29,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
         /// <param name="callback"></param>
         public void PlayAnimation(object sender, EventArgs args, GenericAction callback)
         {
-            if (!(args is CardAnimationEventArgs))
-                throw new WrongArumentTypeException(typeof(CardAnimationEventArgs), args.GetType());
-
-            CardAnimationEventArgs aniArgs = args as CardAnimationEventArgs;
+            CardAnimationEventArgs aniArgs = Utilities.CheckType<CardAnimationEventArgs>(args);
             ICardAnimation ani;
 
             if (cardAnimations.ContainsKey(aniArgs.AnimationName))
@@ -40,15 +45,21 @@ namespace TouhouHeartstone.Frontend.View.Animation
 
                 cardAnimations.Add(aniArgs.AnimationName, c);
             }
-            else
+            else if (CardAnimationDynamicLibrary.ContainsAnimation(aniArgs.AnimationName))
             {
                 // 在库里面的普通类
                 var ca = CardAnimationDynamicLibrary.CreateAnimation(aniArgs.AnimationName);
                 ca.SetGameObject(gameObject);
                 ani = ca;
             }
+            else
+            {
+                ani = null;
+                Debug.LogError($"没有找到动画: {aniArgs.AnimationName}");
+            }
 
             ani.PlayAnimation(sender, aniArgs.EventArgs, callback);
+            Debug.Log($"播放动画：{aniArgs.AnimationName}");
         }
 
         /// <summary>
@@ -66,15 +77,88 @@ namespace TouhouHeartstone.Frontend.View.Animation
         }
         #endregion
 
+        CardFaceViewModel cardVM;
+
         protected void Awake()
         {
-            reloadAnimationList();
+            // 注册VM事件
+            cardVM = GetComponent<CardFaceViewModel>();
+            if (cardVM == null)
+                throw new Exception("关联的ViewModel未找到");
+
+            cardVM.OnAnimationPlay += PlayAnimation;
+        }
+        #region Card_state_event
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            GetComponent<CardHighlight>()?.SetHighlight(true);
+            if (CurrentState == state.hand)
+                CurrentState = state.hand_hover;
         }
 
-        protected void Start()
+        public void OnPointerExit(PointerEventData eventData)
         {
-            // test: something
-            PlayAnimation(this, new CardAnimationEventArgs() { AnimationName = "Disappear", EventArgs = new EventArgs() }, null);
+            GetComponent<CardHighlight>()?.SetHighlight(false);
+            if (CurrentState == state.hand_hover)
+                CurrentState = state.hand;
+        }
+
+        state currentState = state.hand;
+        public state CurrentState
+        {
+            get { return currentState; }
+            set { currentState = value; }
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            DebugUtils.Log("鼠标按下");
+            switch(CurrentState) {
+                case state.hand_hover:
+                    // check,
+                    break;
+                case state.center:
+                    // xxx
+                    break;
+            }
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            DebugUtils.Log("鼠标松开");
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            DebugUtils.Log("鼠标按下");
+            var deck = GetComponentInParent<Controller.UserDeckController>();
+            switch (CurrentState)
+            {
+                case state.hand_hover:
+                    // check,
+                    if (deck.ThrowingCard)
+                    {
+                        deck.PrepareThrowCard(this.GetComponent<CardFaceViewModel>(), true);
+                        CurrentState = state.center;
+                    }
+                    break;
+                case state.center:
+                    if (deck.ThrowingCard)
+                    {
+                        deck.PrepareThrowCard(this.GetComponent<CardFaceViewModel>(), false);
+                        CurrentState = state.hand_hover;
+                    }
+                    break;
+            }
+        }
+        #endregion
+
+        public enum state
+        {
+            hand,
+            hand_hover,
+            free,
+            center
         }
     }
 }

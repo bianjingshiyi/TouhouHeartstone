@@ -7,6 +7,7 @@ namespace TouhouHeartstone.Frontend
     public class CardImageResources : ScriptableObject
     {
         string fallbackLang = "en-US";
+        string fallbackID = "invalid";
 
         [SerializeField]
         CardImageResource[] cardTexts;
@@ -14,7 +15,11 @@ namespace TouhouHeartstone.Frontend
         public CardImageResource Get(string id, string lang)
         {
             var cards = cardTexts.Where(e => e.ID == id);
-            if (cards.Count() == 0) throw new ResourcesIDNotFoundException(id);
+            if (cards.Count() == 0)
+            {
+                if (id != fallbackID) return Get(fallbackID, lang);
+                else throw new ResourcesIDNotFoundException();
+            }
 
             var langSpec = cards.Where(e => e.Lang == lang);
             if (langSpec.Count() != 0) return langSpec.First();

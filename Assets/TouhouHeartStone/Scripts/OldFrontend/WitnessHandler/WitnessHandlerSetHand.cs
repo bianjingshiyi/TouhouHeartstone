@@ -1,4 +1,5 @@
-﻿namespace TouhouHeartstone.OldFrontend.WitnessHandler
+﻿using IGensoukyo.Utilities;
+namespace TouhouHeartstone.OldFrontend.WitnessHandler
 {
     public class WitnessHandlerSetHand : WitnessHandlerBase<SetHandWitness>
     {

@@ -6,7 +6,7 @@ namespace TouhouHeartstone.Frontend.Controller
     /// <summary>
     /// 桌面的公共部分管理器
     /// </summary>
-    public class DeckController : MonoBehaviour
+    public class CommonDeckController : MonoBehaviour
     {
         [SerializeField]
         WeatherViewModel weather;
