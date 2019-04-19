@@ -34,8 +34,8 @@ namespace TouhouHeartstone.Backend
         {
             EventWitness witness = new EventWitness("onInit");
             //双方玩家所使用的卡组主人公
-            witness.setVar("masterCardRID", engine.getPlayers().Select(e => { return e["Master"][0].getProp<int>("RID"); }).ToArray());
-            witness.setVar("masterCardDID", engine.getPlayers().Select(e => { return e["Master"][0].define.id; }).ToArray());
+            witness.setVar("masterCardsRID", engine.getPlayers().Select(p => { return p["Master"][0].getProp<int>("RID"); }).ToArray());
+            witness.setVar("masterCardsDID", engine.getPlayers().Select(p => { return p["Master"][0].define.id; }).ToArray());
             //然后是玩家的先后行动顺序
             witness.setVar("sortedPlayerIndex", engine.getProp<Player[]>("sortedPlayers").Select(e => { return engine.getPlayerIndex(e); }).ToArray());
             //接着是初始手牌
