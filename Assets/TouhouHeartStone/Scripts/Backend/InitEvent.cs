@@ -37,7 +37,7 @@ namespace TouhouHeartstone.Backend
             witness.setVar("masterCardsRID", engine.getPlayers().Select(p => { return p["Master"][0].getProp<int>("RID"); }).ToArray());
             witness.setVar("masterCardsDID", engine.getPlayers().Select(p => { return p["Master"][0].define.id; }).ToArray());
             //然后是玩家的先后行动顺序
-            witness.setVar("sortedPlayerIndex", engine.getProp<Player[]>("sortedPlayers").Select(e => { return engine.getPlayerIndex(e); }).ToArray());
+            witness.setVar("sortedPlayersIndex", engine.getProp<Player[]>("sortedPlayers").Select(e => { return engine.getPlayerIndex(e); }).ToArray());
             //接着是初始手牌
             witness.setVar("initCardsRID", player["Init"].Select(e => { return e.getProp<int>("RID"); }).ToArray());
             witness.setVar("initCardsDID", player["Init"].Select(e => { return e.define.id; }).ToArray());

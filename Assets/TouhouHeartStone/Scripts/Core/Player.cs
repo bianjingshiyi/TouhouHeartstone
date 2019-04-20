@@ -61,28 +61,6 @@ namespace TouhouHeartstone
             return pileList.FirstOrDefault(e => { return e.name == name; });
         }
         List<Pile> pileList { get; } = new List<Pile>();
-        public void addCrystal(int count, CrystalState state)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                crystalList.Add(state);
-            }
-        }
-        public void removeCrystal(int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                crystalList.RemoveAt(crystalList.Count - 1);
-            }
-        }
-        public int crystalCount
-        {
-            get { return crystalList.Count; }
-        }
-        List<CrystalState> crystalList { get; } = new List<CrystalState>();
-        public Pile hand { get; }
-        public Pile deck { get; }
-        public Pile grave { get; }
         public int id { get; private set; }
         public override string ToString()
         {
