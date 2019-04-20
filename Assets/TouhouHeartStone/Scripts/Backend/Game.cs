@@ -49,7 +49,7 @@ namespace TouhouHeartstone.Backend
         {
             Player player = engine.getPlayerAt(playerIndex);
             Card card = player["Hand"].First(c => { return c.getRID() == cardRID; });
-            Card targetCard = engine.getCards().First(c => { return c.getRID() == targetCardRID; });
+            Card targetCard = targetCardRID > -1 ? engine.getCards().First(c => { return c.getRID() == targetCardRID; }) : null;
             engine.doEvent(new UseEvent(player, card, targetPosition, targetCard));
         }
         public void attack(int playerIndex, int cardRID, int targetCardRID)

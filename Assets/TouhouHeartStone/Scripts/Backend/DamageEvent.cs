@@ -30,7 +30,7 @@ namespace TouhouHeartstone.Backend
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
             EventWitness witness = new EventWitness("onDamage");
-            witness.setVar("cardsRID", cards.Select(c => { return c.getRID(); }));
+            witness.setVar("cardsRID", cards.Select(c => { return c.getRID(); }).ToArray());
             witness.setVar("amounts", amounts);
             return witness;
         }
