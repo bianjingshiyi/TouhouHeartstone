@@ -13,7 +13,7 @@
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
             EventWitness witness = new EventWitness("onTurnEnd");
-            witness.setVar("playerIndex", engine.getPlayerIndex(player));
+            witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
             return witness;
         }
     }
