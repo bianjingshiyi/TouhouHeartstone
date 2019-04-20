@@ -42,21 +42,30 @@ namespace TouhouHeartstone
                 return (T)dicVar[varName];
             return default(T);
         }
-        public void setProp<T>(string varName, T value)
+        public void setProp<T>(string propName, T value)
         {
-            doEvent(new GamePropChangeEvent(varName, PropertyChangeType.set, value));
+            dicVar[propName] = value;
         }
-        public void setProp(string varName, PropertyChangeType changeType, int value)
+        public void setProp(string propName, PropertyChangeType changeType, int value)
         {
-            doEvent(new GamePropChangeEvent(varName, changeType, value));
+            if (changeType == PropertyChangeType.set)
+                dicVar[propName] = value;
+            else if (changeType == PropertyChangeType.add)
+                dicVar[propName] = getProp<int>(propName) + propName;
         }
-        public void setProp(string varName, PropertyChangeType changeType, float value)
+        public void setProp(string propName, PropertyChangeType changeType, float value)
         {
-            doEvent(new GamePropChangeEvent(varName, changeType, value));
+            if (changeType == PropertyChangeType.set)
+                dicVar[propName] = value;
+            else if (changeType == PropertyChangeType.add)
+                dicVar[propName] = getProp<float>(propName) + propName;
         }
-        public void setProp(string varName, PropertyChangeType changeType, string value)
+        public void setProp(string propName, PropertyChangeType changeType, string value)
         {
-            doEvent(new GamePropChangeEvent(varName, changeType, value));
+            if (changeType == PropertyChangeType.set)
+                dicVar[propName] = value;
+            else if (changeType == PropertyChangeType.add)
+                dicVar[propName] = getProp<string>(propName) + propName;
         }
         internal Dictionary<string, object> dicVar { get; } = new Dictionary<string, object>();
         internal int registerCard(Card card)

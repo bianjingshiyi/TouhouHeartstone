@@ -24,6 +24,7 @@ namespace TouhouHeartstone.Backend
             {
                 engine.moveCard(player, "Deck", cards[i], player, "Init", cardsIndex[i]);
             }
+            engine.allocateRID(cards);
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
@@ -32,10 +33,10 @@ namespace TouhouHeartstone.Backend
             if (player == this.player)
             {
                 //自己
-                witness.setVar("replacedCardsDID", cards.Select(c => { return c.define.id; }).ToArray());
+                witness.setVar("cardsDID", cards.Select(c => { return c.define.id; }).ToArray());
             }
             //其他玩家
-            witness.setVar("replacedCardsRID", cards.Select(c => { return c.getRID(); }).ToArray());
+            witness.setVar("cardsRID", cards.Select(c => { return c.getRID(); }).ToArray());
             return witness;
         }
     }
