@@ -33,9 +33,12 @@ namespace TouhouHeartstone.Frontend.Model.Witness
                 throw new LengthNotMatchException(charactersDID.Length, charactersRID.Length);
 
             deck.SetPlayer(playerOrder, CardID.ToCardIDs(charactersDID, charactersRID));
+            deck.SetInitHandcard(initHandCard, initCardsRID);
+
+            // 先抽卡再设置deck，防止deck中的被抽走（
             deck.SetSelfDeck(userCards);
 
-            deck.SetInitHandcard(initHandCard, initCardsRID);
+            callback?.Invoke(this, null);
 
             return false;
         }

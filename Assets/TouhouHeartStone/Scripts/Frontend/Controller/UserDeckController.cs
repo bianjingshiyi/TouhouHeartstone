@@ -59,13 +59,14 @@ namespace TouhouHeartstone.Frontend.Controller
         /// </summary>
         public void DrawCard(CardID cardID, GenericAction callback)
         {
-            updateHandCardPos(handCards.Count + 1);
+            int originCount = handCards.Count;
+            updateHandCardPos(originCount + 1);
 
             CardFaceViewModel card = drawCard(cardID);
             card.PlayAnimation(this, new CardAnimationEventArgs()
             {
                 AnimationName = "DrawCard",
-                EventArgs = new CardPositionEventArgs(1, 0)
+                EventArgs = new CardPositionEventArgs(1, 0) { GroupOffset = originCount }
             }, callback);
         }
 
@@ -76,8 +77,8 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <param name="callback"></param>
         public void DrawCard(CardID[] cards, GenericAction callback)
         {
-            updateHandCardPos(handCards.Count + cards.Length);
-            callback += (sender, arg) =>{ updateHandCardPos(); };
+            int originCount = handCards.Count;
+            updateHandCardPos(originCount + cards.Length);
 
             for (int i = 0; i < cards.Length; i++)
             {
@@ -85,7 +86,7 @@ namespace TouhouHeartstone.Frontend.Controller
                 card.PlayAnimation(this, new CardAnimationEventArgs()
                 {
                     AnimationName = "InitDrawCard",
-                    EventArgs = new CardPositionEventArgs(cards.Length, i) { GroupOffset = handCards.Count }
+                    EventArgs = new CardPositionEventArgs(cards.Length, i) { GroupOffset = originCount }
                 }, i == 0 ? callback : null);
             }
         }
@@ -108,20 +109,14 @@ namespace TouhouHeartstone.Frontend.Controller
         public void SetDeck(int[] cards)
         {
             // todo: 设置卡牌堆
+            cardStackLibrary.CardCount = cards.Length;
         }
 
         #region test
         void Start()
         {
             #region test_data
-
-            crystalBar.CrystalTotal = 5;
-            crystalBar.CrystalHighlight = 2;
-            crystalBar.CrystalUsed = 1;
-            crystalBar.CrystalDisable = 1;
-
             characterInfo.Character = new Model.CharacterData() { Atk = 3, Defence = 4, HP = 9 };
-            cardStackLibrary.CardCount = 30;
             cardStackGrave.CardCount = 2;
             #endregion
 
@@ -167,10 +162,10 @@ namespace TouhouHeartstone.Frontend.Controller
             }
             // todo: call some function
 
-            GetComponentInParent<Model.DeckController>()?.InitReplace(SelfID, throwingCards.Select(c => c.RuntimeID).ToArray());
-
-            throwingCards.Clear();
             throwCard.gameObject.SetActive(false);
+
+            GetComponentInParent<Model.DeckController>()?.InitReplace(SelfID, throwingCards.Select(c => c.RuntimeID).ToArray());
+            throwingCards.Clear();
         }
 
         /// <summary>
@@ -230,6 +225,7 @@ namespace TouhouHeartstone.Frontend.Controller
 
         void updateHandCardPos(int count)
         {
+            IGensoukyo.Utilities.DebugUtils.Log("重载卡片位置");
             for (int i = 0; i < handCards.Count; i++)
             {
                 CardAnimationEventArgs arg = new CardAnimationEventArgs()
@@ -246,5 +242,16 @@ namespace TouhouHeartstone.Frontend.Controller
             updateHandCardPos(handCards.Count);
         }
         #endregion 
+
+        /// <summary>
+        /// 设置水晶数量
+        /// </summary>
+        /// <param name="maxGem"></param>
+        /// <param name="currentGem"></param>
+        public void SetGem(int maxGem, int currentGem)
+        {
+            crystalBar.CrystalTotal = maxGem;
+            crystalBar.CrystalUsed = maxGem - currentGem;
+        }
     }
 }

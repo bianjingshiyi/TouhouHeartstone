@@ -45,7 +45,8 @@ namespace TouhouHeartstone.Frontend.Model
 
         bool witnessHandler(EventWitness witness)
         {
-            return WitnessLibrary.CreateHandler(witness.eventName).HandleWitness(witness, this);
+            var result = WitnessLibrary.CreateHandler(witness.eventName).HandleWitness(witness, this);
+            return result;
         }
 
         int[] playerOrder = new int[0];
@@ -116,6 +117,42 @@ namespace TouhouHeartstone.Frontend.Model
         private void Awake()
         {
             userPrefab.gameObject.SetActive(false);
+            common.OnRoundendBtnClick += OnRoundendBtnClick;
+        }
+
+        private void OnRoundendBtnClick()
+        {
+            GetComponentInParent<DeckModel>().Roundend(selfID);
+        }
+
+        /// <summary>
+        /// 回合开始
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="maxGem"></param>
+        /// <param name="currentGem"></param>
+        public void TurnStart(int playerID, int maxGem, int currentGem)
+        {
+            users[playerID].SetGem(maxGem, currentGem);
+            common.RoundStart(playerID == selfID);
+        }
+
+        public void TurnEnd(int playerID)
+        {
+            if (playerID == selfID)
+            {
+                common.RoundEnd();
+            }
+        }
+
+        /// <summary>
+        /// 抽一张卡
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="card"></param>
+        public void DrawCard(int playerID, CardID card, GenericAction callback)
+        {
+            users[playerID].DrawCard(card, callback);
         }
     }
 
