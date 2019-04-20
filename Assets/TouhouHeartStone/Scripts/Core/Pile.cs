@@ -37,6 +37,16 @@ namespace TouhouHeartstone
                 targetPile.cardList.Insert(position, card);
             }
         }
+        public void moveTo(Card[] cards, Pile targetPile, int position)
+        {
+            List<Card> removedCardList = new List<Card>(cards.Length);
+            foreach (Card card in cards)
+            {
+                if (cardList.Remove(card))
+                    removedCardList.Add(card);
+            }
+            targetPile.cardList.InsertRange(position, removedCardList);
+        }
         public void shuffle(CardEngine game)
         {
             Card[] shuffleArray = new Card[cardList.Count];

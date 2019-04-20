@@ -36,7 +36,7 @@
             witness.setVar("cardRID", card.getRID());
             witness.setVar("cardDID", card.define.id);
             witness.setVar("targetPosition", targetPosition);
-            witness.setVar("targetCardRID", targetCard.getRID());
+            witness.setVar("targetCardRID", targetCard != null ? targetCard.getRID() : -1);
             return witness;
         }
     }

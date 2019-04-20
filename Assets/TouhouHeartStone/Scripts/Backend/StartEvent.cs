@@ -7,7 +7,10 @@
         }
         public override void execute(CardEngine engine)
         {
-            //空事件
+            foreach (Player player in engine.getProp<Player[]>("sortedPlayers"))
+            {
+                player["Init"].moveTo(player["Init"][0, player["Init"].count - 1], player["Hand"], 0);
+            }
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
