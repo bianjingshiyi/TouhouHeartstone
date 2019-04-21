@@ -49,7 +49,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
         public int GroupID;
 
         /// <summary>
-        /// 组的偏移。有可能
+        /// 组的偏移。其用处不大。
         /// </summary>
         public int GroupOffset;
     }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace TouhouHeartstone.Frontend.Model.Witness
 {
     /// <summary>
-    /// Animation的库
+    /// Witness的库
     /// </summary>
     public static class WitnessLibrary
     {
@@ -36,7 +36,12 @@ namespace TouhouHeartstone.Frontend.Model.Witness
         /// <returns></returns>
         public static WitnessHandler CreateHandler(string name)
         {
-            if (typeDict.Count == 0) ReloadALibrary();
+            if (typeDict.Count == 0)
+                ReloadALibrary();
+
+            if (!typeDict.ContainsKey(name))
+                throw new KeyNotFoundException($"指定的{name}未找到");
+
             return (WitnessHandler)Activator.CreateInstance(typeDict[name]);
         }
     }

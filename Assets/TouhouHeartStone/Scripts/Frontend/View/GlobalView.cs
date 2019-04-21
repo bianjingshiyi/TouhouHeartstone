@@ -83,7 +83,7 @@ namespace TouhouHeartstone.Frontend.View
                 var step = width / bt;
                 var deg = ((bt / 2f) - i) * 10;
 
-                basePos.x = step * i - width / 2 + cardHalfHeight * Mathf.Sin(deg * Mathf.Deg2Rad);
+                basePos.x += step * i - width / 2 + cardHalfHeight * Mathf.Sin(deg * Mathf.Deg2Rad);
                 basePos.y -= cardHalfHeight * (1 - Mathf.Cos(deg * Mathf.Deg2Rad)) * 3;
 
                 var rot = new Vector3();

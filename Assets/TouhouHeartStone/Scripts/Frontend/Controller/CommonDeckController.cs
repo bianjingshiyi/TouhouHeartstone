@@ -1,5 +1,6 @@
 ﻿using TouhouHeartstone.Frontend.ViewModel;
 using UnityEngine;
+using System;
 
 namespace TouhouHeartstone.Frontend.Controller
 {
@@ -20,9 +21,29 @@ namespace TouhouHeartstone.Frontend.Controller
             roundEnd.TimeRemain = 1;
         }
 
+        /// <summary>
+        /// 回合结束按钮点击事件
+        /// </summary>
+        public event Action OnRoundendBtnClick;
+
         private void OnRoundend()
         {
-            throw new System.NotImplementedException();
+            OnRoundendBtnClick?.Invoke();
+        }
+
+        /// <summary>
+        /// 回合开始后调用这玩意
+        /// </summary>
+        /// <param name="isMyTurn"></param>
+        public void RoundStart(bool isMyTurn)
+        {
+            roundEnd.Interactivable = isMyTurn;
+            roundEnd.TimeRemain = 0.6f;
+        }
+
+        public void RoundEnd()
+        {
+            roundEnd.Interactivable = false;
         }
     }
 }

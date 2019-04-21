@@ -27,5 +27,10 @@ namespace TouhouHeartstone.Frontend.Model
         {
             gm.Game.initReplace(uid, cards);
         }
+
+        public void Roundend(int playerID)
+        {
+            gm.Game.turnEnd(playerID);
+        }
     }
 }

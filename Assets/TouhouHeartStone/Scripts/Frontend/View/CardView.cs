@@ -59,7 +59,6 @@ namespace TouhouHeartstone.Frontend.View
             }
 
             ani.PlayAnimation(sender, aniArgs.EventArgs, callback);
-            Debug.Log($"播放动画：{aniArgs.AnimationName}");
         }
 
         /// <summary>
