@@ -35,9 +35,12 @@
         {
             EventWitness witness = new EventWitness("onDraw");
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
-            if (player == this.player)
-                witness.setVar("cardDID", card.define.id);
-            witness.setVar("cardRID", card.getRID());
+            if (card != null)
+            {
+                if (player == this.player)
+                    witness.setVar("cardDID", card.define.id);
+                witness.setVar("cardRID", card.getRID());
+            }
             return witness;
         }
     }

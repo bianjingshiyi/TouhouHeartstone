@@ -20,7 +20,12 @@ namespace TouhouHeartstone.Backend
                 remainedList.RemoveAt(index);
             }
             engine.setProp("sortedPlayers", sortedPlayers);
-            engine.allocateRID(sortedPlayers.Select(p => { return p["Master"][0]; }).ToArray());
+            Card[] masterCards = sortedPlayers.Select(p => { return p["Master"][0]; }).ToArray();
+            foreach (Card card in masterCards)
+            {
+                card.setProp("life", 30);
+                engine.allocateRID(card);
+            }
             //抽初始卡牌
             for (int i = 0; i < sortedPlayers.Length; i++)
             {
