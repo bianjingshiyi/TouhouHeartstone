@@ -7,7 +7,6 @@
             this.player = player;
         }
         Player player { get; }
-        Card card { get; set; }
         public override void execute(CardEngine engine)
         {
             //玩家的最大能量加1但是不超过10，充满玩家的能量。
@@ -16,7 +15,7 @@
                 player.setProp("maxGem", PropertyChangeType.add, 1);
             player.setProp("gem", player.getProp<int>("maxGem"));
             //抽一张牌
-            card = engine.draw(player);
+            engine.draw(player);
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {

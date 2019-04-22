@@ -59,18 +59,5 @@ namespace TouhouHeartstone.Backend
                 engine.doEvent(new TurnStartEvent(nextPlayer));
             }
         }
-        public Card draw(CardEngine engine, Player player)
-        {
-            DrawEvent e = new DrawEvent(player);
-            engine.doEvent(e);
-            return e.card;
-        }
-    }
-    static class HeartStoneGameExtension
-    {
-        public static Card draw(this CardEngine engine, Player player)
-        {
-            return (engine.rule as HeartStoneRule).draw(engine, player);
-        }
     }
 }
