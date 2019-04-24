@@ -35,6 +35,13 @@ namespace TouhouHeartstone.Frontend.Controller
 
         List<CardFaceViewModel> handCards = new List<CardFaceViewModel>();
 
+
+        private bool _IsSelf;
+        /// <summary>
+        /// 是否为本体
+        /// </summary>
+        public bool IsSelf => _IsSelf;
+
         /// <summary>
         /// 初始抽卡
         /// </summary>
@@ -77,6 +84,12 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <param name="callback"></param>
         public void DrawCard(CardID[] cards, GenericAction callback)
         {
+            if (cards.Length == 0)
+            {
+                callback?.Invoke(this, null);
+                return;
+            }
+
             int originCount = handCards.Count;
             updateHandCardPos(originCount + cards.Length);
 
@@ -137,10 +150,14 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <param name="character"></param>
         public void Init(int id, CardID character, bool isSelf)
         {
-            if (!isSelf)
-                transform.localRotation = Quaternion.Euler(0, 0, 180);
             _SelfID = id;
+            _IsSelf = isSelf;
 
+            if (!isSelf)
+            {
+                transform.localRotation = Quaternion.Euler(0, 0, 180);
+            }
+            
             // todo: 设置角色图像
         }
 
@@ -175,9 +192,13 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <param name="max"></param>
         public void EnterThrowingMode(int min, int max)
         {
-            throwCard.gameObject.SetActive(true);
-            throwCard.Max = max;
-            throwCard.Min = min;
+            // 仅本玩家显示丢卡
+            if (IsSelf)
+            {
+                throwCard.gameObject.SetActive(true);
+                throwCard.Max = max;
+                throwCard.Min = min;
+            }
         }
 
         /// <summary>

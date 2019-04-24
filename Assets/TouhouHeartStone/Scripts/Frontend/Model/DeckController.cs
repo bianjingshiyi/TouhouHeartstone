@@ -4,6 +4,8 @@ using UnityEngine;
 using TouhouHeartstone.Frontend.Controller;
 
 using TouhouHeartstone.Frontend.Model.Witness;
+using System;
+using IGensoukyo.Utilities;
 
 namespace TouhouHeartstone.Frontend.Model
 {
@@ -38,18 +40,49 @@ namespace TouhouHeartstone.Frontend.Model
             set { _selfID = value; }
         }
 
+        #region witness
+        Queue<EventWitness> witnessQueue = new Queue<EventWitness>();
+        bool queueEmpty = true;
+
         public void sendWitness(EventWitness witness)
         {
-            witness.foreachDo(witnessHandler);
+            witnessQueue.Enqueue(witness);
+
+            // 当前活动且没有执行witness时，开始执行
+            if (gameObject.activeSelf)
+            {
+                if (queueEmpty)
+                    executeNext();
+                else
+                    DebugUtils.LogDebug($"{this.name}收到事件，当前Active但有事件block");
+            }
+            queueEmpty = false;
         }
 
-        bool witnessHandler(EventWitness witness)
+        void OnEnable()
         {
-            var result = WitnessLibrary.CreateHandler(witness.eventName).HandleWitness(witness, this);
-            return result;
+            // 启用后检查是否有等待播放的witness
+            if (!queueEmpty)
+                executeNext();
         }
+
+        void executeNext()
+        {
+            if (witnessQueue.Count == 0)
+            {
+                queueEmpty = true;
+                return;
+            }
+            var witness = witnessQueue.Dequeue();
+            EventWitnessExecutor.ExecuteWitness(witness.Flattern(), this, (a, b) => { executeNext(); });
+        }
+        #endregion
 
         int[] playerOrder = new int[0];
+        /// <summary>
+        /// 玩家顺序
+        /// </summary>
+        public int[] PlayerOrder => playerOrder;
 
         /// <summary>
         /// 设置本场游戏的玩家
@@ -120,6 +153,21 @@ namespace TouhouHeartstone.Frontend.Model
             common.OnRoundendBtnClick += OnRoundendBtnClick;
         }
 
+        /// <summary>
+        /// 回合结束按钮按下
+        /// </summary>
+        /// <remarks>
+        /// 回合结束的事件传递如下
+        /// <see cref="ViewModel.RoundEndViewModel.RoundEndEvent"/> -> 
+        /// <see cref="CommonDeckController.OnRoundendBtnClick"/> ->
+        /// <see cref="OnRoundendBtnClick"/> ->
+        /// <see cref="DeckModel.Roundend"/> ->
+        /// <see cref="Backend.Game.turnEnd"/> ->
+        /// <see cref="sendWitness"/> -> 进入事件处理程序
+        /// <see cref="OnTurnEnd"/> ->
+        /// <see cref="onTurnEnd"/> ->
+        /// <see cref="CommonDeckController.RoundEnd"/> // 设置按钮禁用
+        /// </remarks>
         private void OnRoundendBtnClick()
         {
             GetComponentInParent<DeckModel>().Roundend(selfID);
@@ -137,12 +185,35 @@ namespace TouhouHeartstone.Frontend.Model
             common.RoundStart(playerID == selfID);
         }
 
-        public void TurnEnd(int playerID)
+        /// <summary>
+        /// 当前回合结束事件
+        /// param1: 当前回合PID, param2: 下一回合PID
+        /// </summary>
+        public event Action<int, int> OnTurnEndEvent;
+
+        /// <summary>
+        /// 回合结束后的处理
+        /// </summary>
+        /// <param name="playerID"></param>
+        public void onTurnEnd(int playerID)
         {
             if (playerID == selfID)
             {
                 common.RoundEnd();
+                OnTurnEndEvent?.Invoke(playerID, GetNextPlayerID(playerID));
             }
+        }
+
+        private int GetNextPlayerID(int current)
+        {
+            for (int i = 0; i < playerOrder.Length; i++)
+            {
+                if (playerOrder[i] == current)
+                {
+                    return playerOrder[(i + 1) % playerOrder.Length];
+                }
+            }
+            return -1;
         }
 
         /// <summary>
