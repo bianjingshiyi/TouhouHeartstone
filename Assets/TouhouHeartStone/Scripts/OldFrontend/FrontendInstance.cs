@@ -29,7 +29,7 @@ namespace TouhouHeartstone.OldFrontend
 
         public void Init()
         {
-            DebugUtils.LogDebug("Instance Init.");
+            DebugUtils.Debug("Instance Init.");
             Manager.Init();
         }
     }

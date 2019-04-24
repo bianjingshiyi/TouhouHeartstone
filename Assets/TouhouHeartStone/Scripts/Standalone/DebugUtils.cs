@@ -1,34 +1,52 @@
-﻿using UnityEngine;
+﻿using UberLogger;
+using UnityEngine;
 
 namespace IGensoukyo.Utilities
 {
     public class DebugUtils
     {
+        [StackTraceIgnore]
         public static void Log(string message, UnityEngine.Object context = null)
         {
-            Debug.Log("[Frontend]" + message, context);
+            UberDebug.LogChannel("Frontend", message, context);
         }
 
-        public static void LogDebug(string message, UnityEngine.Object context = null)
+        [StackTraceIgnore]
+        public static void Debug(string message, UnityEngine.Object context = null)
         {
-            Debug.Log($"<color=grey>[Frontend]{message}</color>", context);
+            UberDebug.LogDebugChannel("Frontend", message, context);
         }
 
+        [StackTraceIgnore]
+        public static void Trace(string message, UnityEngine.Object context = null)
+        {
+            UberDebug.LogTraceChannel("Frontend", message, context);
+        }
+
+        [StackTraceIgnore]
         public static void LogNoImpl(string message, UnityEngine.Object context = null)
         {
-            Debug.Log($"<color=yellow>[Frontend][NoImpl]{message}</color>", context);
+            UberDebug.LogWarningChannel("Frontend", $"[NoImpl]{message}", context);
         }
 
-        public static void LogWarning(string message, UnityEngine.Object context = null)
+        [StackTraceIgnore]
+        public static void Warning(string message, UnityEngine.Object context = null)
         {
-            Debug.LogWarning("[Frontend]" + message, context);
+            UberDebug.LogWarningChannel("Frontend", message, context);
         }
 
+        [StackTraceIgnore]
+        public static void Error(string message, UnityEngine.Object context = null)
+        {
+            UberDebug.LogErrorChannel("Frontend", message, context);
+        }
+
+        [StackTraceIgnore]
         public static void NullCheck(object obj, string name)
         {
             if (obj == null)
             {
-                Debug.LogWarning($"{name} 为空");
+                Warning($"{name} 为空");
             }
         }
     }

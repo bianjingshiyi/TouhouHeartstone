@@ -70,7 +70,7 @@ namespace TouhouHeartstone.Frontend.Model
 
         private static void WitnessExecutor(EventWitness witness, DeckController deck, GenericAction callback)
         {
-            DebugUtils.LogDebug($"{deck.name}执行事件{witness.eventName}");
+            DebugUtils.Debug($"{deck.name}执行事件{witness.eventName}");
             WitnessLibrary.CreateHandler(witness.eventName).HandleWitness(witness, deck, callback);
         }
     }

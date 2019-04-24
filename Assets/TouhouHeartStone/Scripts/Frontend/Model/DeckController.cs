@@ -54,7 +54,7 @@ namespace TouhouHeartstone.Frontend.Model
                 if (queueEmpty)
                     executeNext();
                 else
-                    DebugUtils.LogDebug($"{this.name}收到事件，当前Active但有事件block");
+                    DebugUtils.Debug($"{this.name}收到事件，当前Active但有事件block");
             }
             queueEmpty = false;
         }

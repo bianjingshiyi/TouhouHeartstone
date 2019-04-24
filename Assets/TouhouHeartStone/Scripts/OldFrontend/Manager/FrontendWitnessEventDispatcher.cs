@@ -41,7 +41,7 @@ namespace TouhouHeartstone.OldFrontend.Manager
                 // debug: 在没有做完动画播放前不要启用这个玩意
                 if (hasAnime)
                 {
-                    DebugUtils.LogDebug("等候动画播放");
+                    DebugUtils.Debug("等候动画播放");
                     break;
                 }
             }
@@ -57,7 +57,7 @@ namespace TouhouHeartstone.OldFrontend.Manager
             var original = witnessQueue.Count;
 
             witnessQueue.Enqueue(witness);
-            DebugUtils.LogDebug($"[{selfID}]Buff a witness.");
+            DebugUtils.Debug($"[{selfID}]Buff a witness.");
 
             // 如果是启用状态且这个是第一个，那就立即播放。
             if (gameObject.activeInHierarchy)
@@ -75,7 +75,7 @@ namespace TouhouHeartstone.OldFrontend.Manager
         /// </summary>
         public void OnWitnessFinish()
         {
-            DebugUtils.LogDebug("动画播放完毕");
+            DebugUtils.Debug("动画播放完毕");
             if (gameObject.activeInHierarchy)
             {
                 DequeueWitness();
@@ -121,7 +121,7 @@ namespace TouhouHeartstone.OldFrontend.Manager
 
         internal void InvokeUseCardEvent(int cardID, int position = -1, int target = -1)
         {
-            DebugUtils.LogDebug($"使用卡片。id: {cardID}, pos: {position}, target: {target}");
+            DebugUtils.Debug($"使用卡片。id: {cardID}, pos: {position}, target: {target}");
             UseCardEventAction?.Invoke(cardID, position, target);
         }
 

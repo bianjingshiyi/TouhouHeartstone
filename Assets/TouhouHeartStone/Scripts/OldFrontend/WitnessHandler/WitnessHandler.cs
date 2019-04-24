@@ -26,7 +26,7 @@ namespace TouhouHeartstone.OldFrontend.WitnessHandler
                 }
             }
 
-            DebugUtils.LogWarning($"Witness {type} 没有对应的处理类.");
+            DebugUtils.Warning($"Witness {type} 没有对应的处理类.");
             return false;
         }
     }

@@ -111,7 +111,7 @@ namespace TouhouHeartstone.Frontend.View
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            DebugUtils.Log("鼠标按下");
+            DebugUtils.Trace("鼠标按下");
             switch(CurrentState) {
                 case state.hand_hover:
                     // check,
@@ -124,12 +124,12 @@ namespace TouhouHeartstone.Frontend.View
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            DebugUtils.Log("鼠标松开");
+            DebugUtils.Trace("鼠标松开");
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            DebugUtils.Log("鼠标按下");
+            DebugUtils.Trace("鼠标按下");
             var deck = GetComponentInParent<Controller.UserDeckController>();
             switch (CurrentState)
             {

@@ -103,7 +103,7 @@ namespace TouhouHeartstone.OldFrontend.Manager
 
             getSiblingManager<HandCardManager>().AddCard(cf.ToArray());
 
-            DebugUtils.LogDebug("OnClick.");
+            DebugUtils.Debug("OnClick.");
         }
 
         public Vector3[] GetInitialDrawPosition(int count)

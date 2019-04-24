@@ -17,7 +17,7 @@ namespace TouhouHeartstone.OldFrontend.WitnessHandler
                 frontend.GetSubManager<FrontendUIManager>().RoundStart();
                 var stoneBar = frontend.GetSubManager<FrontendUIManager>().StoneBar;
                 stoneBar.CurrentStone = stoneBar.CurrentStone;
-                DebugUtils.LogDebug("你的回合开始");
+                DebugUtils.Debug("你的回合开始");
             }
             else
             {

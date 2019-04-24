@@ -1,0 +1,3 @@
+[submodule "Assets/Plugins/UberLogger"]
+	path = Assets/Plugins/UberLogger
+	url = https://code.lotlab.org/IGensokyo/UberLogger-fork.git

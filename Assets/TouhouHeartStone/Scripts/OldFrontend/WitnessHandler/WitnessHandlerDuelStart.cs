@@ -7,7 +7,7 @@ namespace TouhouHeartstone.OldFrontend.WitnessHandler
 
         public override void Exec(DuelStartWitness witness)
         {
-            DebugUtils.LogDebug("对局开始了.");
+            DebugUtils.Debug("对局开始了.");
         }
     }
 }
