@@ -15,6 +15,7 @@ namespace TouhouHeartstone.Backend
         Card targetCard { get; }
         public override void execute(CardEngine engine)
         {
+            card.setProp("attackTimes", PropertyChangeType.add, 1);
             Card[] cards = new Card[2];
             int[] amounts = new int[2];
             if (card.getRID() < targetCard.getRID())

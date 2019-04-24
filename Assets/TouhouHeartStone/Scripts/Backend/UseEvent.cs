@@ -20,6 +20,7 @@
             targetCardIndex = player["Field"].indexOf(targetCard);
             if (0 <= cardIndex && cardIndex < player["Hand"].count)
             {
+                engine.setGem(player, player.getProp<int>("gem") - (card.define as ICost).cost);
                 if (card.define is ServantCardDefine)
                 {
                     //随从卡，将卡置入战场

@@ -1,6 +1,6 @@
 ﻿namespace TouhouHeartstone.Backend
 {
-    public abstract class ServantCardDefine : CardDefine
+    public abstract class ServantCardDefine : CardDefine, ICost
     {
         public abstract int cost { get; }
         public abstract int attack { get; }

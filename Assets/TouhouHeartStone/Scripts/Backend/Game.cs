@@ -48,14 +48,54 @@ namespace TouhouHeartstone.Backend
         public void use(int playerIndex, int cardRID, int targetPosition, int targetCardRID)
         {
             Player player = engine.getPlayerAt(playerIndex);
+            if (engine.getProp<Player>("currentPlayer") != player)
+            {
+                EventWitness witness = new EventWitness("onUse");
+                witness.setVar("error", true);
+                witness.setVar("code", ErrorCode.use_NotYourTurn);
+                sendWitness(witness);
+                return;
+            }
             Card card = player["Hand"].First(c => { return c.getRID() == cardRID; });
+            if (player.getProp<int>("gem") < (card.define as ICost).cost)
+            {
+                EventWitness witness = new EventWitness("onUse");
+                witness.setVar("error", true);
+                witness.setVar("code", ErrorCode.use_NoEnoughGem);
+                sendWitness(witness);
+                return;
+            }
             Card targetCard = targetCardRID > -1 ? engine.getCards().First(c => { return c.getRID() == targetCardRID; }) : null;
             engine.doEvent(new UseEvent(player, card, targetPosition, targetCard));
         }
         public void attack(int playerIndex, int cardRID, int targetCardRID)
         {
             Player player = engine.getPlayerAt(playerIndex);
+            if (engine.getProp<Player>("currentPlayer") != player)
+            {
+                EventWitness witness = new EventWitness("onAttack");
+                witness.setVar("error", true);
+                witness.setVar("code", ErrorCode.attack_NotYourTurn);
+                sendWitness(witness);
+                return;
+            }
             Card card = engine.getCards().First(c => { return c.getRID() == cardRID; });
+            if (!card.getProp<bool>("isReady"))
+            {
+                EventWitness witness = new EventWitness("onAttack");
+                witness.setVar("error", true);
+                witness.setVar("code", ErrorCode.attack_waitOneTurn);
+                sendWitness(witness);
+                return;
+            }
+            if (card.getProp<int>("attackTimes") > 0)
+            {
+                EventWitness witness = new EventWitness("onAttack");
+                witness.setVar("error", true);
+                witness.setVar("code", ErrorCode.attack_AlreadyAttacked);
+                sendWitness(witness);
+                return;
+            }
             Card targetCard = engine.getCards().First(c => { return c.getRID() == targetCardRID; });
             engine.doEvent(new AttackEvent(player, card, targetCard));
         }
@@ -76,6 +116,13 @@ namespace TouhouHeartstone.Backend
                         dicPlayerFrontend[player].sendWitness(wArray[i]);
                     }
                 }
+            }
+        }
+        void sendWitness(EventWitness witness)
+        {
+            foreach (Player player in engine.getPlayers())
+            {
+                dicPlayerFrontend[player].sendWitness(witness);
             }
         }
         EventWitness[] generateWitnessTree(CardEngine engine, Player player, Event e)

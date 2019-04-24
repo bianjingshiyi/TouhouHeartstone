@@ -4,6 +4,14 @@ namespace TouhouHeartstone.Backend
 {
     static partial class HeartstoneExtension
     {
+        public static void setMaxGem(this CardEngine engine, Player player, int value)
+        {
+            engine.doEvent(new MaxGemChangeEvent(player, value));
+        }
+        public static void setGem(this CardEngine engine, Player player, int value)
+        {
+            engine.doEvent(new GemChangeEvent(player, value));
+        }
         public static void draw(this CardEngine engine, Player player)
         {
             if (player["Deck"].count > 0)

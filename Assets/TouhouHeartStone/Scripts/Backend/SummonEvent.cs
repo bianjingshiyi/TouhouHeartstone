@@ -16,6 +16,7 @@
             engine.doEvent(new MoveCardEvent(player, "Hand", card, player, "Field", position));
             card.setProp("life", (card.define as ServantCardDefine).life);
             card.setProp("attack", (card.define as ServantCardDefine).attack);
+            card.setProp("isReady", false);
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {

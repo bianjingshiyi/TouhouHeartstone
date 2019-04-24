@@ -11,11 +11,16 @@
         {
             //玩家的最大能量加1但是不超过10，充满玩家的能量。
             engine.setProp("currentPlayer", player);
-            if (player.getProp<int>("maxGem") < 10)
-                player.setProp("maxGem", PropertyChangeType.add, 1);
-            player.setProp("gem", player.getProp<int>("maxGem"));
+            engine.setMaxGem(player, player.getProp<int>("maxGem") + 1);
+            engine.setGem(player, player.getProp<int>("maxGem"));
             //抽一张牌
             engine.draw(player);
+            //使随从可以攻击
+            foreach (Card card in player["Field"])
+            {
+                card.setProp("isReady", true);
+                card.setProp("attackTimes", 0);
+            }
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
