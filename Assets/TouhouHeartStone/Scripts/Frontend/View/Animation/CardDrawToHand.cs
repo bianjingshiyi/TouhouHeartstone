@@ -27,18 +27,14 @@ namespace TouhouHeartstone.Frontend.View.Animation
 
             transform.SetSiblingIndex(arg.GroupID);
 
-            ani = new PositionAnimation(Time.time, transform)
-            {
-                Positions = new Vector3[2] {
+            ani = new PositionAnimation(Time.time, transform, new Vector3[2] {
                     transform.localPosition,
                     t.Position
-                },
-                Rotations = new Vector3[2]
+                }, new Vector3[2]
                 {
                     transform.localRotation.eulerAngles,
                     t.Rotation
-                }
-            };
+                });
         }
 
         private void Update()

@@ -19,18 +19,14 @@ namespace TouhouHeartstone.Frontend.View.Animation
             var gv = GetComponentInParent<GlobalView>();
             var t = gv.CardPositionCalculator.GetCardCenter(arg.GroupID, arg.GroupCount);
 
-            ani = new PositionAnimation(Time.time, transform)
-            {
-                Positions = new Vector3[2]{
+            ani = new PositionAnimation(Time.time, transform, new Vector3[2]{
                      transform.localPosition,
                      t.Position
-                },
-                Rotations = new Vector3[2]
+                }, new Vector3[2]
                 {
                     transform.localRotation.eulerAngles,
                     Vector3.zero
-                }
-            };
+                });
             gameObject.SetActive(true);
         }
 

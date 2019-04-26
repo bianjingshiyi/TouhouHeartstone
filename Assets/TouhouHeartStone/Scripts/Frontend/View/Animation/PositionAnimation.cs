@@ -6,17 +6,30 @@ namespace TouhouHeartstone.Frontend.View.Animation
     {
         float startTime;
         public float Duration = 1;
+        float minMovingSpeed = 1000;
+        float minRotateSpeed = 180;
 
-        public Vector3[] Positions = new Vector3[0];
-        public Vector3[] Rotations = new Vector3[0];
+        public Vector3[] Positions { get; } = new Vector3[0];
+        public Vector3[] Rotations { get; } = new Vector3[0];
         public AnimationCurve Curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
         Transform target;
 
-        public PositionAnimation(float startTime, Transform target)
+        public PositionAnimation(float startTime, Transform target, Vector3[] position, Vector3[] rotation)
         {
             this.startTime = startTime;
             this.target = target;
+
+            this.Positions = position;
+            this.Rotations = rotation;
+
+            var dist = Vector3.Distance(Positions[0], Positions[1]);
+            var posDuration = dist / minMovingSpeed;
+
+            var rot = Vector3.Distance(standardizeRotation(Rotations[0], Rotations[1]), Rotations[1]);
+            var rotDuration = rot / minRotateSpeed;
+
+            Duration = Mathf.Min(Duration, Mathf.Max(posDuration, rotDuration));
         }
 
         public bool Update(float time)
