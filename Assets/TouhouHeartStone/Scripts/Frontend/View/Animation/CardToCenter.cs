@@ -22,8 +22,13 @@ namespace TouhouHeartstone.Frontend.View.Animation
             ani = new PositionAnimation(Time.time, transform)
             {
                 Positions = new Vector3[2]{
-                     transform.position,
+                     transform.localPosition,
                      t.Position
+                },
+                Rotations = new Vector3[2]
+                {
+                    transform.localRotation.eulerAngles,
+                    Vector3.zero
                 }
             };
             gameObject.SetActive(true);

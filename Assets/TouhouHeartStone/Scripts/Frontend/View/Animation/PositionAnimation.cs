@@ -26,11 +26,11 @@ namespace TouhouHeartstone.Frontend.View.Animation
 
             if (Positions.Length > 1)
             {
-                target.position = Vector3.Lerp(Positions[0], Positions[1], val);
+                target.localPosition = Vector3.Lerp(Positions[0], Positions[1], val);
             }
             if (Rotations.Length > 1)
             {
-                target.rotation = Quaternion.Euler(Vector3.Lerp(standardizeRotation(Rotations[0], Rotations[1]), Rotations[1], val));
+                target.localRotation = Quaternion.Euler(Vector3.Lerp(standardizeRotation(Rotations[0], Rotations[1]), Rotations[1], val));
             }
             return (deltaTime > Duration);
         }

@@ -274,5 +274,19 @@ namespace TouhouHeartstone.Frontend.Controller
             crystalBar.CrystalTotal = maxGem;
             crystalBar.CrystalUsed = maxGem - currentGem;
         }
+
+        /// <summary>
+        /// 设置最大水晶数量
+        /// </summary>
+        /// <param name="maxGem"></param>
+        public void SetMaxGem(int maxGem)
+        {
+            crystalBar.CrystalTotal = maxGem;
+        }
+
+        public void SetCurrentGem(int currentGem)
+        {
+            crystalBar.CrystalUsed = crystalBar.CrystalTotal - currentGem;
+        }
     }
 }

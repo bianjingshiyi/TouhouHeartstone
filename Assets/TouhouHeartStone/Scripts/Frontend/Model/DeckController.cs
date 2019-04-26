@@ -179,10 +179,40 @@ namespace TouhouHeartstone.Frontend.Model
         /// <param name="playerID"></param>
         /// <param name="maxGem"></param>
         /// <param name="currentGem"></param>
+        [Obsolete]
         public void TurnStart(int playerID, int maxGem, int currentGem)
         {
             users[playerID].SetGem(maxGem, currentGem);
             common.RoundStart(playerID == selfID);
+        }
+
+        /// <summary>
+        /// 回合开始
+        /// </summary>
+        /// <param name="playerID"></param>
+        public void TurnStart(int playerID)
+        {
+            common.RoundStart(playerID == selfID);
+        }
+
+        /// <summary>
+        /// 设置玩家最大水晶数量
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="maxGem"></param>
+        public void SetMaxGem(int playerID, int maxGem)
+        {
+            users[playerID].SetMaxGem(maxGem);
+        }
+
+        /// <summary>
+        /// 设置玩家当前水晶数量
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="currentGem"></param>
+        public void SetCurrentGem(int playerID, int currentGem)
+        {
+            users[playerID].SetCurrentGem(currentGem);
         }
 
         /// <summary>

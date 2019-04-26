@@ -24,6 +24,11 @@ namespace TouhouHeartstone.Frontend.View.Animation
                 Positions = new Vector3[2]{
                      gv.CardPositionCalculator.StackPosition,
                      t.Position
+                },
+                Rotations = new Vector3[2]
+                {
+                    transform.localRotation.eulerAngles,
+                    Vector3.zero
                 }
             };
             gameObject.SetActive(true);
