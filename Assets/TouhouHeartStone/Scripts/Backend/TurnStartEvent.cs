@@ -26,8 +26,6 @@
         {
             EventWitness witness = new EventWitness("onTurnStart");
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
-            witness.setVar("maxGem", this.player.getProp<int>("maxGem"));
-            witness.setVar("gem", this.player.getProp<int>("gem"));
             return witness;
         }
     }

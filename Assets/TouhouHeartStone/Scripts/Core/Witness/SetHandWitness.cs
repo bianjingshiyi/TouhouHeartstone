@@ -5,6 +5,7 @@ namespace TouhouHeartstone
     /// <summary>
     /// 直接设置手牌的Witness
     /// </summary>
+    [Obsolete("除了EventWitness以外的其他Witness都被废除了")]
     [Serializable]
     public struct SetHandWitness : IWitness
     {

@@ -5,6 +5,7 @@ namespace TouhouHeartstone
     /// <summary>
     /// 替换初始手牌的Witness
     /// </summary>
+    [Obsolete("除了EventWitness以外的其他Witness都被废除了")]
     [Serializable]
     public struct InitReplaceWitness : IWitness
     {

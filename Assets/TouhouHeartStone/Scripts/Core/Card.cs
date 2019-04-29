@@ -3,28 +3,6 @@ using System.Collections.Generic;
 
 namespace TouhouHeartstone
 {
-    public abstract class CardDefine
-    {
-        public abstract int id { get; }
-        public object this[string propName]
-        {
-            get { return getProp<object>(propName); }
-        }
-        public virtual T getProp<T>(string propName)
-        {
-            if (propName == nameof(id))
-                return (T)(object)id;
-            else
-                return default(T);
-        }
-    }
-    public class Coin : CardDefine
-    {
-        public override int id
-        {
-            get { return 1; }
-        }
-    }
     [Serializable]
     public class Card
     {

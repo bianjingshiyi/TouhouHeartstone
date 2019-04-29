@@ -21,7 +21,7 @@
         {
             EventWitness witness = new EventWitness("onMaxGemChange");
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
-            witness.setVar("value", player.getProp<int>("maxGem"));
+            witness.setVar("value", this.player.getProp<int>("maxGem"));
             return witness;
         }
     }

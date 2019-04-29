@@ -14,48 +14,6 @@ namespace TouhouHeartstone
         {
 
         }
-        public void copyVars(CardEngine game, EventWitness witness)
-        {
-            foreach (var p in dicVar)
-            {
-                //基本类型
-                if (p.Value is int ||
-                    p.Value is int[] ||
-                    p.Value is float ||
-                    p.Value is float[] ||
-                    p.Value is bool ||
-                    p.Value is bool[] ||
-                    p.Value is string ||
-                    p.Value is string[])
-                    witness[p.Key] = p.Value;
-                else if (p.Value is Card)
-                {
-                    witness[p.Key + "_id"] = (p.Value as Card).id;
-                    witness[p.Key + "_define_id"] = (p.Value as Card).define.id;
-                }
-                else if (p.Value is Card[])
-                {
-                    witness[p.Key + "_id"] = (p.Value as Card[]).Select(e => { return e.id; }).ToArray();
-                    witness[p.Key + "_define_id"] = (p.Value as Card[]).Select(e => { return e.define.id; }).ToArray();
-                }
-                else if (p.Value is Pile)
-                {
-                    witness[p.Key + "_owner_index"] = Array.IndexOf(game.getPlayers(), (p.Value as Pile).owner);
-                    witness[p.Key + "_name"] = (p.Value as Pile).name;
-                }
-                else if (p.Value is Pile[])
-                {
-                    witness[p.Key + "_owner_index"] = (p.Value as Pile[]).Select(e => { return Array.IndexOf(game.getPlayers(), e); }).ToArray();
-                    witness[p.Key + "_name"] = (p.Value as Pile[]).Select(e => { return e.name; }).ToArray();
-                }
-                else if (p.Value is Player)
-                    witness[p.Key + "_index"] = Array.IndexOf(game.getPlayers(), p.Value);
-                else if (p.Value is Player[])
-                    witness[p.Key + "_index"] = (p.Value as Player[]).Select(e => { return Array.IndexOf(game.getPlayers(), e); }).ToArray();
-                else
-                    throw new NotSupportedException("Event无法将" + p.Value.GetType().Name + "类型的属性写入Witness！");
-            }
-        }
         public Event parent
         {
             get { return _parent; }

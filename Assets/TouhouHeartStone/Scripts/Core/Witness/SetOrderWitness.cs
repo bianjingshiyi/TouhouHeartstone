@@ -2,6 +2,7 @@
 
 namespace TouhouHeartstone
 {
+    [Obsolete("除了EventWitness以外的其他Witness都被废除了")]
     [Serializable]
     public struct SetOrderWitness : IWitness
     {

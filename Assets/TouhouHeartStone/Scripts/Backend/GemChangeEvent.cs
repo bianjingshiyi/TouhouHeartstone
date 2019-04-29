@@ -21,7 +21,7 @@
         {
             EventWitness witness = new EventWitness("onGemChange");
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
-            witness.setVar("value", player.getProp<int>("gem"));
+            witness.setVar("value", this.player.getProp<int>("gem"));
             return witness;
         }
     }
