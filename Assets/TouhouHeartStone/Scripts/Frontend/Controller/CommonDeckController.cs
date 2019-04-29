@@ -1,6 +1,7 @@
 ﻿using TouhouHeartstone.Frontend.ViewModel;
 using UnityEngine;
 using System;
+using TouhouHeartstone.Frontend.View;
 
 namespace TouhouHeartstone.Frontend.Controller
 {
@@ -14,6 +15,9 @@ namespace TouhouHeartstone.Frontend.Controller
 
         [SerializeField]
         RoundEndViewModel roundEnd;
+
+        [SerializeField]
+        AnimatorPlayer roundStart;
 
         private void Start()
         {
@@ -39,6 +43,10 @@ namespace TouhouHeartstone.Frontend.Controller
         {
             roundEnd.Interactivable = isMyTurn;
             roundEnd.TimeRemain = 0.6f;
+            if (isMyTurn)
+            {
+                roundStart?.Play();
+            }
         }
 
         public void RoundEnd()
