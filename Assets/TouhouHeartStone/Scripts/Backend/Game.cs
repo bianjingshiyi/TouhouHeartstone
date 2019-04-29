@@ -97,6 +97,14 @@ namespace TouhouHeartstone.Backend
                 return;
             }
             Card targetCard = engine.getCards().First(c => { return c.getRID() == targetCardRID; });
+            if (targetCard.pile.owner["Field"].Any(c => { return c.getProp<bool>("taunt"); }) && targetCard.getProp<bool>("taunt") == false)
+            {
+                EventWitness witness = new EventWitness("onAttack");
+                witness.setVar("error", true);
+                witness.setVar("code", ErrorCode.attack_AttackTauntFirst);
+                sendWitness(witness);
+                return;
+            }
             engine.doEvent(new AttackEvent(player, card, targetCard));
         }
         public void turnEnd(int playerIndex)

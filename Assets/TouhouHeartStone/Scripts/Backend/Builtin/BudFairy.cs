@@ -24,6 +24,10 @@ namespace TouhouHeartstone.Backend.Builtin
         {
             get { return 1; }
         }
+        public override bool taunt
+        {
+            get { return false; }
+        }
         public override int category
         {
             get { return 2; }

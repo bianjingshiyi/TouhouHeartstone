@@ -38,5 +38,9 @@
         /// 必须等到你的回合才能进行攻击
         /// </summary>
         attack_NotYourTurn = 0x204,
+        /// <summary>
+        /// 必须先攻击具有嘲讽的随从
+        /// </summary>
+        attack_AttackTauntFirst = 0x205,
     }
 }

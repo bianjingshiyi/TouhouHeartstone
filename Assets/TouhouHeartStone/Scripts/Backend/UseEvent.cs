@@ -15,21 +15,18 @@
         Card targetCard { get; }
         public override void execute(CardEngine engine)
         {
-            //卡牌必须在手牌中才能使用，否则就不算
-            cardIndex = player["Hand"].indexOf(card);
-            targetCardIndex = player["Field"].indexOf(targetCard);
-            if (0 <= cardIndex && cardIndex < player["Hand"].count)
+            engine.setGem(player, player.getProp<int>("gem") - (card.define as ICost).cost);
+            if (card.define is ServantCardDefine)
             {
-                engine.setGem(player, player.getProp<int>("gem") - (card.define as ICost).cost);
-                if (card.define is ServantCardDefine)
-                {
-                    //随从卡，将卡置入战场
-                    engine.doEvent(new SummonEvent(player, card, targetPosition));
-                }
+                //随从卡，将卡置入战场
+                engine.doEvent(new SummonEvent(player, card, targetPosition));
+            }
+            else if (card.define is SpellCardDefine)
+            {
+                //法术卡，释放效果然后丢进墓地
+                player["Hand"].moveTo(card, player["Grave"], player["Grave"].count);
             }
         }
-        int cardIndex { get; set; }
-        int targetCardIndex { get; set; }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
             EventWitness witness = new EventWitness("onUse");
