@@ -10,8 +10,10 @@ namespace TouhouHeartstone.Frontend.View
 {
     public class GlobalView : MonoBehaviour
     {
-        public CardPositionCalculator CardPositionCalculator => cardPositionCalculator;
-        CardPositionCalculator cardPositionCalculator = new CardPositionCalculator(new Vector2(Screen.width, Screen.height));
+        [SerializeField]
+        RectTransform deckRect;
+
+        public CardPositionCalculator CardPositionCalculator { get; private set; }
 
         [SerializeField]
         CardImageResources images;
@@ -30,6 +32,11 @@ namespace TouhouHeartstone.Frontend.View
         public CardTextResource GetCardTextResource(string id)
         {
             return texts.Get(id, "zh-CN");
+        }
+
+        private void Awake()
+        {
+            CardPositionCalculator = new CardPositionCalculator(deckRect.rect.size);
         }
     }
 
