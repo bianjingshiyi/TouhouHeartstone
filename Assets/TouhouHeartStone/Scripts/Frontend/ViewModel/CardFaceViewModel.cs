@@ -156,5 +156,40 @@ namespace TouhouHeartstone.Frontend.ViewModel
             if (cardSpec != null)
                 cardSpec.PropertyChanged += PropertyChanged;
         }
+
+        /// <summary>
+        /// 当前卡片的位置
+        /// </summary>
+        public int Index { get; set; }
+
+        /// <summary>
+        /// 位置改变事件（给VM监听）
+        /// </summary>
+        public event Action OnIndexChangeEvent;
+
+        /// <summary>
+        /// 通知位置改变了
+        /// </summary>
+        public void OnIndexChange()
+        {
+            OnIndexChangeEvent?.Invoke();
+        }
+
+        public event GenericAction DrawCallback;
+
+        /// <summary>
+        /// 卡片抽到手上了
+        /// </summary>
+        public void OnDrawCard()
+        {
+            DrawCallback?.Invoke(this, null);
+        }
+
+        public event Action<CardFaceViewModel> OnDestroyEvent;
+
+        void OnDestroy()
+        {
+            OnDestroyEvent?.Invoke(this);
+        }
     }
 }
