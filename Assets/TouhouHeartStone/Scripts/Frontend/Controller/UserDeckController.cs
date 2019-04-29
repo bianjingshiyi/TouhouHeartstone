@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using TouhouHeartstone.Frontend.Model;
+using System;
 
 namespace TouhouHeartstone.Frontend.Controller
 {
@@ -35,6 +36,8 @@ namespace TouhouHeartstone.Frontend.Controller
 
         List<CardFaceViewModel> handCards = new List<CardFaceViewModel>();
 
+        public int HandCardCount => handCards.Count;
+
 
         private bool _IsSelf;
         /// <summary>
@@ -49,16 +52,7 @@ namespace TouhouHeartstone.Frontend.Controller
         public void InitDraw(CardID[] cards)
         {
             GenericAction a = (evt, arg) => { EnterThrowingMode(0, 0); };
-
-            for (int i = 0; i < cards.Length; i++)
-            {
-                var card = drawCard(cards[i]);
-                card.PlayAnimation(this, new CardAnimationEventArgs()
-                {
-                    AnimationName = "InitDrawCard",
-                    EventArgs = new CardPositionEventArgs(cards.Length, i)
-                }, i == 0 ? a : null);
-            }
+            DrawCard(cards, a);
         }
 
         /// <summary>
@@ -66,15 +60,10 @@ namespace TouhouHeartstone.Frontend.Controller
         /// </summary>
         public void DrawCard(CardID cardID, GenericAction callback)
         {
-            int originCount = handCards.Count;
-            updateHandCardPos(originCount + 1);
-
             CardFaceViewModel card = drawCard(cardID);
-            card.PlayAnimation(this, new CardAnimationEventArgs()
-            {
-                AnimationName = "DrawCard",
-                EventArgs = new CardPositionEventArgs(1, 0) { GroupOffset = originCount }
-            }, callback);
+            card.DrawCallback += callback;
+
+            HandCardChangeEvent?.Invoke();
         }
 
         /// <summary>
@@ -89,19 +78,24 @@ namespace TouhouHeartstone.Frontend.Controller
                 callback?.Invoke(this, null);
                 return;
             }
-
-            int originCount = handCards.Count;
-            updateHandCardPos(originCount + cards.Length);
-
             for (int i = 0; i < cards.Length; i++)
             {
                 var card = drawCard(cards[i]);
-                card.PlayAnimation(this, new CardAnimationEventArgs()
+                if (i == 0)
                 {
-                    AnimationName = "InitDrawCard",
-                    EventArgs = new CardPositionEventArgs(cards.Length, i) { GroupOffset = originCount }
-                }, i == 0 ? callback : null);
+                    card.DrawCallback += callback;
+                }
             }
+            HandCardChangeEvent?.Invoke();
+        }
+
+        event Action HandCardChangeEvent;
+
+        void onCardDestroy(CardFaceViewModel card)
+        {
+            HandCardChangeEvent -= card.OnIndexChange;
+            if (handCards.Contains(card))
+                handCards.Remove(card);
         }
 
         private CardFaceViewModel drawCard(CardID cardID)
@@ -110,6 +104,10 @@ namespace TouhouHeartstone.Frontend.Controller
             card.gameObject.SetActive(true);
             card.CardID = cardID.DefineID;
             card.RuntimeID = cardID.RuntimeID;
+            card.Index = handCards.Count;
+
+            HandCardChangeEvent += card.OnIndexChange;
+            card.OnDestroyEvent += onCardDestroy;
 
             handCards.Add(card);
             return card;
@@ -167,6 +165,7 @@ namespace TouhouHeartstone.Frontend.Controller
         /// </summary>
         private void onThrow()
         {
+            // todo: 这个也移动到CardView里面去可好？
             for (int i = 0; i < throwingCards.Count; i++)
             {
                 throwingCards[i].PlayAnimation(this, new CardAnimationEventArgs()
@@ -177,7 +176,6 @@ namespace TouhouHeartstone.Frontend.Controller
                     Destroy(s as GameObject);
                 });
             }
-            // todo: call some function
 
             throwCard.gameObject.SetActive(false);
 
@@ -211,6 +209,8 @@ namespace TouhouHeartstone.Frontend.Controller
         /// </summary>
         List<CardFaceViewModel> throwingCards = new List<CardFaceViewModel>();
 
+        public int ThrowingCardCount => throwingCards.Count;
+
         /// <summary>
         /// 准备丢弃卡牌
         /// </summary>
@@ -231,36 +231,15 @@ namespace TouhouHeartstone.Frontend.Controller
                     handCards.Add(card);
                 }
             }
-            for (int i = 0; i < throwingCards.Count; i++)
-            {
-                var item = throwingCards[i];
-                CardAnimationEventArgs arg = new CardAnimationEventArgs()
-                {
-                    AnimationName = "CardToCenter",
-                    EventArgs = new CardPositionEventArgs() { GroupCount = throwingCards.Count, GroupID = i }
-                };
-                item.PlayAnimation(this, arg, null);
-            }
-            updateHandCardPos();
-        }
-
-        void updateHandCardPos(int count)
-        {
-            IGensoukyo.Utilities.DebugUtils.Log("重载卡片位置");
             for (int i = 0; i < handCards.Count; i++)
             {
-                CardAnimationEventArgs arg = new CardAnimationEventArgs()
-                {
-                    AnimationName = "CardToHand",
-                    EventArgs = new CardPositionEventArgs() { GroupCount = count, GroupID = i }
-                };
-                handCards[i].PlayAnimation(this, arg, null);
+                handCards[i].Index = i;
             }
-        }
-
-        void updateHandCardPos()
-        {
-            updateHandCardPos(handCards.Count);
+            for (int i = 0; i < throwingCards.Count; i++)
+            {
+                throwingCards[i].Index = i;
+            }
+            HandCardChangeEvent?.Invoke();
         }
         #endregion 
 

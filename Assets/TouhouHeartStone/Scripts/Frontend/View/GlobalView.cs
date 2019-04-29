@@ -61,7 +61,7 @@ namespace TouhouHeartstone.Frontend.View
         public PositionWithRotation GetCardCenter(int i, int count)
         {
             if (i >= count)
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException($"argument i({i}) > count({count})");
 
             Vector3 center = screenSize / 2;
 

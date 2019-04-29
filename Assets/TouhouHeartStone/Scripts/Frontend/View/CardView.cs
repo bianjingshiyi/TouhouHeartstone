@@ -86,11 +86,54 @@ namespace TouhouHeartstone.Frontend.View
                 throw new Exception("关联的ViewModel未找到");
 
             cardVM.OnAnimationPlay += PlayAnimation;
+            cardVM.OnIndexChangeEvent += CardVM_OnIndexChangeEvent;
 
             checker.OnClick += onMouseClick;
             checker.OnDrag += onMouseDrag;
             checker.OnRelease += onMouseRelease;
         }
+
+        bool drawed = false;
+
+        private void CardVM_OnIndexChangeEvent()
+        {
+            if (drawed)
+            {
+                switch (CurrentState)
+                {
+                    case state.center:
+                        // 调整中心位置
+                        if (Deck.ThrowingCard)
+                        {
+                            PlayAnimation(this, new CardAnimationEventArgs()
+                            {
+                                AnimationName = "CardToCenter",
+                                EventArgs = new CardPositionEventArgs() { GroupCount = Deck.ThrowingCardCount, GroupID = cardVM.Index }
+                            }, null);
+                        }
+                        break;
+                    case state.hand:
+                        // 调整手牌位置
+                        PlayAnimation(this, new CardAnimationEventArgs()
+                        {
+                            AnimationName = "CardToHand",
+                            EventArgs = new CardPositionEventArgs() { GroupCount = Deck.HandCardCount, GroupID = cardVM.Index }
+                        }, null);
+                        break;
+                }
+            }
+            else
+            {
+                // 首次抽卡动画
+                PlayAnimation(this, new CardAnimationEventArgs()
+                {
+                    AnimationName = "DrawCard",
+                    EventArgs = new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index)
+                }, (a, b) => { cardVM.OnDrawCard(); });
+                drawed = true;
+            }
+        }
+
         #region Card_state_event
         public void OnPointerEnter(PointerEventData eventData)
         {
@@ -122,7 +165,10 @@ namespace TouhouHeartstone.Frontend.View
 
         void onStateChange(state original, state current)
         {
+            switch(current)
+            {
 
+            }
         }
 
         DragInputChecker checker = new DragInputChecker();
@@ -130,41 +176,6 @@ namespace TouhouHeartstone.Frontend.View
         protected void Update()
         {
             checker.Update(Time.time);
-        }
-
-        void onMouseDrag()
-        {
-            DebugUtils.Trace("鼠标按住");
-            var deck = GetComponentInParent<Controller.UserDeckController>();
-
-            switch (CurrentState)
-            {
-                case state.hand_hover:
-                    // check,
-                    if (!deck.ThrowingCard)
-                    {
-                        // 进入跟随模式
-                        CurrentState = state.free;
-                    }
-                    break;
-                case state.center:
-                    // xxx
-                    break;
-            }
-        }
-
-        void onMouseRelease()
-        {
-            DebugUtils.Trace("鼠标松开");
-            switch (CurrentState)
-            {
-                case state.hand_hover:
-                    // check,
-                    break;
-                case state.center:
-                    // xxx
-                    break;
-            }
         }
 
         public void OnPointerDown(PointerEventData eventData)
@@ -177,28 +188,109 @@ namespace TouhouHeartstone.Frontend.View
             checker.PointerUp();
         }
 
+        Controller.UserDeckController Deck => GetComponentInParent<Controller.UserDeckController>();
+
+        void setThrowing(bool state)
+        {
+            Deck.PrepareThrowCard(GetComponent<CardFaceViewModel>(), state);
+        }
+
+        void onMouseDrag()
+        {
+            DebugUtils.Trace("鼠标按住");
+
+            if (Deck.ThrowingCard)
+            {
+                switch (CurrentState)
+                {
+                    case state.hand:
+                    case state.hand_hover:
+                        CurrentState = state.center;
+                        setThrowing(true);
+                        break;
+                    case state.free:
+                    case state.center:
+                        CurrentState = state.hand;
+                        setThrowing(false);
+                        break;
+                }
+            }
+            else
+            {
+                switch (CurrentState)
+                {
+                    case state.hand:
+                    case state.hand_hover:
+                        CurrentState = state.free;
+                        break;
+                }
+            }
+        }
+
+        void onMouseRelease()
+        {
+            DebugUtils.Trace("鼠标松开");
+            if (Deck.ThrowingCard)
+            {
+                // do nothing
+            }
+            else
+            {
+                switch (CurrentState)
+                {
+                    case state.free:
+                        if (checkTarget()) Use();
+                        else CurrentState = state.hand;
+                        break;
+                }
+            }
+        }
+
         private void onMouseClick()
         {
             DebugUtils.Trace("鼠标按下");
-            var deck = GetComponentInParent<Controller.UserDeckController>();
-            switch (CurrentState)
+            if (Deck.ThrowingCard)
             {
-                case state.hand_hover:
-                    // check,
-                    if (deck.ThrowingCard)
-                    {
-                        deck.PrepareThrowCard(this.GetComponent<CardFaceViewModel>(), true);
+                switch (CurrentState)
+                {
+                    case state.hand:
+                    case state.hand_hover:
                         CurrentState = state.center;
-                    }
-                    break;
-                case state.center:
-                    if (deck.ThrowingCard)
-                    {
-                        deck.PrepareThrowCard(this.GetComponent<CardFaceViewModel>(), false);
-                        CurrentState = state.hand_hover;
-                    }
-                    break;
+                        setThrowing(true);
+                        break;
+                    case state.center:
+                        CurrentState = state.hand;
+                        setThrowing(false);
+                        break;
+                    case state.free:
+                        break;
+                }
             }
+            else
+            {
+                switch (CurrentState)
+                {
+                    case state.hand:
+                    case state.hand_hover:
+                        CurrentState = state.free;
+                        break;
+                    case state.free:
+                        if (checkTarget()) Use();
+                        else CurrentState = state.hand;
+                        break;
+                    case state.center:
+                        break;
+                }
+            }
+        }
+
+        bool checkTarget()
+        {
+            return true;
+        }
+        void Use()
+        {
+            CurrentState = state.undefined;
         }
         #endregion
 
@@ -207,7 +299,8 @@ namespace TouhouHeartstone.Frontend.View
             hand,
             hand_hover,
             free,
-            center
+            center,
+            undefined
         }
     }
 
