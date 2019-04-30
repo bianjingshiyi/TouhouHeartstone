@@ -132,9 +132,17 @@ namespace TouhouHeartstone.Frontend.Model
         /// <param name="uid"></param>
         /// <param name="cards"></param>
         /// <param name="callback"></param>
+        [Obsolete]
         public void SetInitReplace(int uid, CardID[] cards, GenericAction callback = null)
         {
             users[uid].DrawCard(cards, callback);
+        }
+
+        public void SetInitReplace(int uid, CardID[] oldCards, CardID[] newCards, GenericAction callback = null)
+        {
+            users[uid].ThrowCards(oldCards, (c, b)=> {
+                users[uid].DrawCard(newCards, callback);
+            });
         }
 
         /// <summary>
@@ -271,9 +279,24 @@ namespace TouhouHeartstone.Frontend.Model
             }
             return cards;
         }
+
+        public static CardID[] ToCardIDs(int[] runtime)
+        {
+            CardID[] cards = new CardID[runtime.Length];
+            for (int i = 0; i < runtime.Length; i++)
+            {
+                cards[i] = new CardID(runtime[i]);
+            }
+            return cards;
+        }
+
         public CardID(int define, int runtime)
         {
             DefineID = define;
+            RuntimeID = runtime;
+        }
+        public CardID(int runtime)
+        {
             RuntimeID = runtime;
         }
         public CardID() { }

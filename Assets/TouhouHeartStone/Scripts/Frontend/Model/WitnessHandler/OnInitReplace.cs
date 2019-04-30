@@ -9,14 +9,16 @@ namespace TouhouHeartstone.Frontend.Model.Witness
         public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback)
         {
             int player = witness.getVar<int>("playerIndex");
-            int[] cardsRID = witness.getVar<int[]>("cardsRID");
-            int[] cardsDID = witness.getVar<int[]>("cardsDID");
+            int[] originalRID = witness.getVar<int[]>("originCardsRID");
+            int[] cardsRID = witness.getVar<int[]>("replacedCardsRID");
+            int[] cardsDID = witness.getVar<int[]>("replacedCardsDID");
 
-            DebugUtils.NullCheck(cardsRID, "cardsRID");
+            DebugUtils.NullCheck(cardsRID, "replacedCardsRID");
+            DebugUtils.NullCheck(originalRID, "originCardsRID");
             if (cardsDID == null)
                 cardsDID = new int[cardsRID.Length];
             
-            deck.SetInitReplace(player, CardID.ToCardIDs(cardsDID, cardsRID), callback);
+            deck.SetInitReplace(player, CardID.ToCardIDs(originalRID), CardID.ToCardIDs(cardsDID, cardsRID), callback);
 
             return false;
         }
