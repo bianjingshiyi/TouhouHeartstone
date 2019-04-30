@@ -183,6 +183,41 @@ namespace TouhouHeartstone.Frontend.Controller
             throwingCards.Clear();
         }
 
+        public void ThrowCards(CardID[] cards, GenericAction callback)
+        {
+            List<CardFaceViewModel> throwList = new List<CardFaceViewModel>();
+            foreach (var card in cards)
+            {
+                var f = handCards.Where(v => v.RuntimeID == card.RuntimeID)?.First();
+                if (f != null)
+                {
+                    throwList.Add(f);
+                    handCards.Remove(f);
+                }
+            }
+
+            for (int i = 0; i < throwList.Count; i++)
+            {
+                throwList[i].PlayAnimation(this, new CardAnimationEventArgs()
+                {
+                    AnimationName = "CardToStack",
+                    EventArgs = new CardPositionEventArgs() { GroupCount = throwList.Count, GroupID = i }
+                }, (s, a) => {
+                    Destroy(s as GameObject);
+                });
+            }
+
+            if (throwList.Count > 0)
+            {
+                for (int i = 0; i < handCards.Count; i++)
+                {
+                    handCards[i].Index = i;
+                }
+                HandCardChangeEvent?.Invoke();
+            }
+            callback?.Invoke(this, null);
+        }
+
         /// <summary>
         /// 进入丢卡模式
         /// </summary>

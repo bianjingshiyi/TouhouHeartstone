@@ -47,10 +47,5 @@ namespace TouhouHeartstone.Frontend.View.Animation
         /// 此卡在组内的Index
         /// </summary>
         public int GroupID;
-
-        /// <summary>
-        /// 组的偏移。其用处不大。
-        /// </summary>
-        public int GroupOffset;
     }
 }
