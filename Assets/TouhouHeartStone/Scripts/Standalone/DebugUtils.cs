@@ -1,5 +1,4 @@
 ﻿using UberLogger;
-using UnityEngine;
 
 namespace IGensoukyo.Utilities
 {

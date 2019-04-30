@@ -1,24 +1,25 @@
-﻿using IGensoukyo.Utilities;
-using System;
+﻿using System;
 using UnityEngine;
+
+using IGensoukyo.Utilities;
 
 namespace TouhouHeartstone.Frontend.View.Animation
 {
     /// <summary>
     /// 卡到手牌
     /// </summary>
-    public class CardDrawToHand : CardAnimation
+    public class CardToPreview : CardAnimation
     {
-        public override string AnimationName => "CardToHand";
+        public override string AnimationName => "CardToPreview";
 
         public override void PlayAnimation(object sender, EventArgs args, GenericAction callback)
         {
             var arg = Utilities.CheckType<CardPositionEventArgs>(args);
 
             var gv = Card.GetComponentInParent<GlobalView>();
-            var t = gv.CardPositionCalculator.GetCardHand(arg.GroupID, arg.GroupCount);
+            var t = gv.CardPositionCalculator.GetCardFlow(arg.GroupID, arg.GroupCount);
 
-            Card.transform.SetSiblingIndex(arg.GroupID);
+            Card.transform.SetAsLastSibling();
 
             Card.GetOrAddComponent<PositionAnimation>().Play(new Vector3[2] {
                     Card.transform.localPosition,
@@ -29,6 +30,5 @@ namespace TouhouHeartstone.Frontend.View.Animation
                     t.Rotation
                 }, callback);
         }
-
     }
 }

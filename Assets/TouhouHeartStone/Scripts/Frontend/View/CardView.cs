@@ -137,16 +137,22 @@ namespace TouhouHeartstone.Frontend.View
         #region Card_state_event
         public void OnPointerEnter(PointerEventData eventData)
         {
-            GetComponent<CardHighlight>()?.SetHighlight(true);
-            if (CurrentState == state.hand)
-                CurrentState = state.hand_hover;
+            if (Deck.IsSelf && drawed)
+            {
+                GetComponent<CardHighlight>()?.SetHighlight(true);
+                if (CurrentState == state.hand)
+                    CurrentState = state.hand_hover;
+            }
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            GetComponent<CardHighlight>()?.SetHighlight(false);
-            if (CurrentState == state.hand_hover)
-                CurrentState = state.hand;
+            if (Deck.IsSelf && drawed)
+            {
+                GetComponent<CardHighlight>()?.SetHighlight(false);
+                if (CurrentState == state.hand_hover)
+                    CurrentState = state.hand;
+            }
         }
 
         state currentState = state.hand;
@@ -157,35 +163,77 @@ namespace TouhouHeartstone.Frontend.View
             {
                 if (currentState != value)
                 {
-                    onStateChange(currentState, value);
+                    var last = currentState;
                     currentState = value;
+                    onStateChange(last, value);
                 }
             }
         }
 
         void onStateChange(state original, state current)
         {
-            switch(current)
+            if (original == state.free)
             {
+                mousePosOffset = null;
+            }
 
+            switch (current)
+            {
+                case state.hand_hover:
+                    PlayAnimation(this, new CardAnimationEventArgs()
+                    {
+                        AnimationName = "CardToPreview",
+                        EventArgs = new CardPositionEventArgs()
+                        {
+                            GroupCount = Deck.HandCardCount,
+                            GroupID = cardVM.Index
+                        }
+                    }, null);
+                    break;
+                case state.hand:
+                    PlayAnimation(this, new CardAnimationEventArgs()
+                    {
+                        AnimationName = "CardToHand",
+                        EventArgs = new CardPositionEventArgs()
+                        {
+                            GroupCount = Deck.HandCardCount,
+                            GroupID = cardVM.Index
+                        }
+                    }, null);
+                    break;
+                case state.free:
+                    mousePosOffset = Input.mousePosition - transform.position;
+                    break;
             }
         }
+
+        Vector2? mousePosOffset;
 
         DragInputChecker checker = new DragInputChecker();
 
         protected void Update()
         {
             checker.Update(Time.time);
+            if (mousePosOffset != null)
+            {
+                transform.position = (Vector2)Input.mousePosition - mousePosOffset.Value;
+            }
         }
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            checker.PointerDown(Time.time);
+            if (Deck.IsSelf && drawed)
+            {
+                checker.PointerDown(Time.time);
+            }
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            checker.PointerUp();
+            if (Deck.IsSelf && drawed)
+            {
+                checker.PointerUp();
+            }
         }
 
         Controller.UserDeckController Deck => GetComponentInParent<Controller.UserDeckController>();
@@ -283,16 +331,16 @@ namespace TouhouHeartstone.Frontend.View
                 }
             }
         }
+        #endregion
 
         bool checkTarget()
         {
-            return true;
+            return false;
         }
         void Use()
         {
             CurrentState = state.undefined;
         }
-        #endregion
 
         public enum state
         {
@@ -315,12 +363,16 @@ namespace TouhouHeartstone.Frontend.View
         /// </summary>
         float? lastPointerDownTime;
         const float dragThresold = 0.25f;
+        const int distanceThresold = 5;
+
+        Vector3 mousePos;
 
         public void Update(float time)
         {
             if (lastPointerDownTime != null)
             {
-                if (time - lastPointerDownTime > dragThresold)
+                if (time - lastPointerDownTime > dragThresold || 
+                    Vector3.Distance(mousePos, Input.mousePosition) > distanceThresold)
                 {
                     OnDrag?.Invoke();
                     lastPointerDownTime = null;
@@ -331,6 +383,7 @@ namespace TouhouHeartstone.Frontend.View
         public void PointerDown(float time)
         {
             lastPointerDownTime = time;
+            mousePos = Input.mousePosition;
         }
 
         public void PointerUp()

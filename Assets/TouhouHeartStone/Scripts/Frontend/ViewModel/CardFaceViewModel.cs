@@ -52,7 +52,7 @@ namespace TouhouHeartstone.Frontend.ViewModel
         public int RuntimeID
         {
             get { return _RuntimeID; }
-            set { _RuntimeID = value; }
+            set { _RuntimeID = value; name = $"Card({value})"; }
         }
 
         [Binding]

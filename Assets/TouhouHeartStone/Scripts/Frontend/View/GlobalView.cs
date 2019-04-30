@@ -52,6 +52,8 @@ namespace TouhouHeartstone.Frontend.View
         float cardCenterSpacing => screenSize.y * 0.2f;
         float cardHandBaseY => screenSize.y * 0.01f;
 
+        float cardFloatBaseY => screenSize.y * 0.10f;
+
         float maxHandWidth => screenSize.y * 0.5f;
 
         float cardHalfHeight => screenSize.y * 0.2f;
@@ -69,10 +71,17 @@ namespace TouhouHeartstone.Frontend.View
             return new PositionWithRotation() { Position = center };
         }
 
+        public PositionWithRotation GetCardFlow(int i, int count)
+        {
+            var pos = GetCardHand(i, count).Position;
+            pos.y = cardFloatBaseY;
+            return new PositionWithRotation() { Position = pos, Rotation = Vector3.zero };
+        }
+
         public PositionWithRotation GetCardHand(int i, int count)
         {
             if (i >= count)
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException($"argument i({i}) > count({count})");
 
             // position
             Vector3 basePos = new Vector3(screenSize.x / 2, cardHandBaseY);
@@ -99,7 +108,7 @@ namespace TouhouHeartstone.Frontend.View
             }
         }
 
-        public Vector3 StackPosition => new Vector3(1920, 0, 0);
+        public Vector3 StackPosition => new Vector3(screenSize.x, 0, 0);
        
     }
     public struct PositionWithRotation
