@@ -19,7 +19,7 @@ namespace TouhouHeartstone.Backend
             //然后洗牌
             player["Deck"].shuffle(engine);
             //最后再抽相同数量的卡并替换
-            replacedCards = player["Deck"][player["Deck"].count - replacedCards.Length, player["Deck"].count - 1];
+            replacedCards = player["Deck"][player["Deck"].count - originCards.Length, player["Deck"].count - 1];
             for (int i = 0; i < replacedCards.Length; i++)
             {
                 engine.moveCard(player, "Deck", replacedCards[i], player, "Init", cardsIndex[i]);
