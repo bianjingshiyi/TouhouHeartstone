@@ -191,5 +191,40 @@ namespace TouhouHeartstone.Frontend.ViewModel
         {
             OnDestroyEvent?.Invoke(this);
         }
+
+        /// <summary>
+        /// 使用这张卡
+        /// </summary>
+        public void Use()
+        {
+            // 通常效果卡
+            UberDebug.LogDebugChannel("Frontend", $"使用卡{this}");
+
+            // debug: 假设这是张随从卡
+            OnCardUse(this, new Model.UseCardWithPositionArgs(0));
+        }
+
+        /// <summary>
+        /// 卡片被使用的事件
+        /// </summary>
+        public event Action<CardFaceViewModel, Model.UseCardEventArgs> OnCardUse;
+
+
+        /// <summary>
+        /// 确定卡被使用的事件
+        /// </summary>
+        public event Action<Model.UseCardEventArgs, GenericAction> OnCardUseComfirm;
+        /// <summary>
+        /// 被使用了
+        /// </summary>
+        public void OnUse(Model.UseCardEventArgs args, GenericAction callback)
+        {
+            OnCardUseComfirm?.Invoke(args, callback);
+        }
+
+        public override string ToString()
+        {
+            return $"CardVM {RuntimeID}(Type {CardID})";
+        }
     }
 }

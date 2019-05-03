@@ -112,5 +112,35 @@ namespace TouhouHeartstone.Frontend.Model
         {
             gm.Game.turnEnd(playerID);
         }
+
+        /// <summary>
+        /// 用卡
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="cardRuntimeID"></param>
+        /// <param name="args"></param>
+        public void UseCard(int playerID, int cardRuntimeID, UseCardEventArgs args)
+        {
+            UberDebug.LogDebugChannel("Frontend", $"玩家{playerID}使用卡牌{cardRuntimeID}，{args}");
+            if (args is UseCardWithPositionArgs)
+            {
+                var arg = args as UseCardWithPositionArgs;
+                gm.Game.use(playerID, cardRuntimeID, arg.Position, 0);
+            }
+            else if (args is UseCardWithTargetArgs)
+            {
+                var arg = args as UseCardWithTargetArgs;
+                gm.Game.use(playerID, cardRuntimeID, -1, arg.TargetCardRuntimeID);
+            }
+            else if (args is UseCardWithTargetPositionArgs)
+            {
+                var arg = args as UseCardWithTargetPositionArgs;
+                gm.Game.use(playerID, cardRuntimeID, arg.Position, arg.TargetCardRuntimeID);
+            }
+            else
+            {
+                gm.Game.use(playerID, cardRuntimeID, -1, 0);
+            }
+        }
     }
 }

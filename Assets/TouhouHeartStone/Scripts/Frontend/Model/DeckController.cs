@@ -25,6 +25,17 @@ namespace TouhouHeartstone.Frontend.Model
 
         List<UserDeckController> users = new List<UserDeckController>();
 
+        DeckModel _model;
+        DeckModel Model
+        {
+            get
+            {
+                if (_model == null)
+                    _model = GetComponentInParent<DeckModel>();
+                return _model;
+            }
+        }
+
         int _id = 0;
 
         public int id
@@ -42,27 +53,33 @@ namespace TouhouHeartstone.Frontend.Model
 
         #region witness
         Queue<EventWitness> witnessQueue = new Queue<EventWitness>();
-        bool queueEmpty = true;
+        bool QueueEmpty = true;
+
 
         public void sendWitness(EventWitness witness)
         {
             witnessQueue.Enqueue(witness);
+            var lastStatus = QueueEmpty;
+            QueueEmpty = false;
 
             // 当前活动且没有执行witness时，开始执行
             if (gameObject.activeSelf)
             {
-                if (queueEmpty)
+                if (lastStatus)
+                {
                     executeNext();
+                }
                 else
-                    DebugUtils.Debug($"{this.name}收到事件，当前Active但有事件block");
+                {
+                    DebugUtils.Debug($"{name}收到事件，当前Active但有事件block");
+                }
             }
-            queueEmpty = false;
         }
 
         void OnEnable()
         {
             // 启用后检查是否有等待播放的witness
-            if (!queueEmpty)
+            if (!QueueEmpty)
                 executeNext();
         }
 
@@ -70,7 +87,7 @@ namespace TouhouHeartstone.Frontend.Model
         {
             if (witnessQueue.Count == 0)
             {
-                queueEmpty = true;
+                QueueEmpty = true;
                 return;
             }
             var witness = witnessQueue.Dequeue();
@@ -140,7 +157,8 @@ namespace TouhouHeartstone.Frontend.Model
 
         public void SetInitReplace(int uid, CardID[] oldCards, CardID[] newCards, GenericAction callback = null)
         {
-            users[uid].ThrowCards(oldCards, (c, b)=> {
+            users[uid].ThrowCards(oldCards, (c, b) =>
+            {
                 users[uid].DrawCard(newCards, callback);
             });
         }
@@ -178,7 +196,7 @@ namespace TouhouHeartstone.Frontend.Model
         /// </remarks>
         private void OnRoundendBtnClick()
         {
-            GetComponentInParent<DeckModel>().Roundend(selfID);
+            Model.Roundend(selfID);
         }
 
         /// <summary>
@@ -263,6 +281,29 @@ namespace TouhouHeartstone.Frontend.Model
         {
             users[playerID].DrawCard(card, callback);
         }
+
+        /// <summary>
+        /// 用卡
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="cardRuntimeID"></param>
+        /// <param name="args"></param>
+        public void UseCard(int playerID, int cardRuntimeID, UseCardEventArgs args)
+        {
+            Model.UseCard(playerID, cardRuntimeID, args);
+        }
+
+        /// <summary>
+        /// 用卡事件
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="card"></param>
+        /// <param name="args"></param>
+        /// <param name="callback"></param>
+        public void OnCardUse(int playerID, CardID card, UseCardEventArgs args, GenericAction callback)
+        {
+            users[playerID].Game_OnCardUse(card, args, callback);
+        }
     }
 
     public class CardID
@@ -303,6 +344,11 @@ namespace TouhouHeartstone.Frontend.Model
 
         public int DefineID;
         public int RuntimeID;
+
+        public override string ToString()
+        {
+            return $"卡片{RuntimeID}({DefineID})";
+        }
     }
 
 

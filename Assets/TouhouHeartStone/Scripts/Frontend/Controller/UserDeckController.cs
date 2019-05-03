@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TouhouHeartstone.Frontend.Model;
 using System;
+using IGensoukyo.Utilities;
 
 namespace TouhouHeartstone.Frontend.Controller
 {
@@ -38,6 +39,8 @@ namespace TouhouHeartstone.Frontend.Controller
 
         public int HandCardCount => handCards.Count;
 
+        public DeckController Deck => GetComponentInParent<DeckController>();
+
 
         private bool _IsSelf;
         /// <summary>
@@ -51,7 +54,11 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <param name="cards"></param>
         public void InitDraw(CardID[] cards)
         {
-            GenericAction a = (evt, arg) => { EnterThrowingMode(0, 0); };
+            GenericAction a = (evt, arg) =>
+            {
+                UberDebug.LogDebugChannel("Frontend", "准备进入抽卡选择模式");
+                EnterThrowingMode(0, 0);
+            };
             DrawCard(cards, a);
         }
 
@@ -108,6 +115,7 @@ namespace TouhouHeartstone.Frontend.Controller
 
             HandCardChangeEvent += card.OnIndexChange;
             card.OnDestroyEvent += onCardDestroy;
+            card.OnCardUse += view_onCardUse;
 
             handCards.Add(card);
             return card;
@@ -155,7 +163,7 @@ namespace TouhouHeartstone.Frontend.Controller
             {
                 transform.localRotation = Quaternion.Euler(0, 0, 180);
             }
-            
+
             // todo: 设置角色图像
         }
 
@@ -166,20 +174,10 @@ namespace TouhouHeartstone.Frontend.Controller
         private void onThrow()
         {
             // todo: 这个也移动到CardView里面去可好？
-            for (int i = 0; i < throwingCards.Count; i++)
-            {
-                throwingCards[i].PlayAnimation(this, new CardAnimationEventArgs()
-                {
-                    AnimationName = "CardToStack",
-                    EventArgs = new CardPositionEventArgs() { GroupCount = throwingCards.Count, GroupID = i }
-                }, (s, a) => {
-                    Destroy(s as GameObject);
-                });
-            }
-
+            throwCardsInternal(throwingCards);
             throwCard.gameObject.SetActive(false);
 
-            GetComponentInParent<Model.DeckController>()?.InitReplace(SelfID, throwingCards.Select(c => c.RuntimeID).ToArray());
+            Deck.InitReplace(SelfID, throwingCards.Select(c => c.RuntimeID).ToArray());
             throwingCards.Clear();
         }
 
@@ -188,34 +186,38 @@ namespace TouhouHeartstone.Frontend.Controller
             List<CardFaceViewModel> throwList = new List<CardFaceViewModel>();
             foreach (var card in cards)
             {
-                var f = handCards.Where(v => v.RuntimeID == card.RuntimeID)?.First();
-                if (f != null)
+                var f = handCards.Where(v => v.RuntimeID == card.RuntimeID);
+                if (f.Count() > 0)
                 {
-                    throwList.Add(f);
-                    handCards.Remove(f);
+                    var c = f.First();
+                    throwList.Add(c);
+                    handCards.Remove(c);
                 }
             }
 
+            throwCardsInternal(throwList);
+            if (throwList.Count > 0)
+            {
+                reArrangeHandCards();
+            }
+            callback?.Invoke(this, null);
+        }
+
+        private void throwCardsInternal(List<CardFaceViewModel> throwList)
+        {
             for (int i = 0; i < throwList.Count; i++)
             {
                 throwList[i].PlayAnimation(this, new CardAnimationEventArgs()
                 {
                     AnimationName = "CardToStack",
                     EventArgs = new CardPositionEventArgs() { GroupCount = throwList.Count, GroupID = i }
-                }, (s, a) => {
-                    Destroy(s as GameObject);
-                });
-            }
-
-            if (throwList.Count > 0)
-            {
-                for (int i = 0; i < handCards.Count; i++)
+                }, (s, a) =>
                 {
-                    handCards[i].Index = i;
-                }
-                HandCardChangeEvent?.Invoke();
+                    Destroy((s as MonoBehaviour).gameObject);
+                    UberDebug.LogDebugChannel("Frontend", $"准备销毁{s}");
+                });
+                UberDebug.LogDebugChannel("Frontend", $"丢弃卡{throwList[i]}");
             }
-            callback?.Invoke(this, null);
         }
 
         /// <summary>
@@ -266,17 +268,22 @@ namespace TouhouHeartstone.Frontend.Controller
                     handCards.Add(card);
                 }
             }
-            for (int i = 0; i < handCards.Count; i++)
-            {
-                handCards[i].Index = i;
-            }
             for (int i = 0; i < throwingCards.Count; i++)
             {
                 throwingCards[i].Index = i;
             }
+            reArrangeHandCards();
+        }
+
+        private void reArrangeHandCards()
+        {
+            for (int i = 0; i < handCards.Count; i++)
+            {
+                handCards[i].Index = i;
+            }
             HandCardChangeEvent?.Invoke();
         }
-        #endregion 
+        #endregion
 
         /// <summary>
         /// 设置水晶数量
@@ -298,9 +305,50 @@ namespace TouhouHeartstone.Frontend.Controller
             crystalBar.CrystalTotal = maxGem;
         }
 
+        /// <summary>
+        /// 设置当前水晶数量
+        /// </summary>
+        /// <param name="currentGem"></param>
         public void SetCurrentGem(int currentGem)
         {
             crystalBar.CrystalUsed = crystalBar.CrystalTotal - currentGem;
+        }
+
+        /// <summary>
+        /// 用卡事件
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <param name="args"></param>
+        private void view_onCardUse(CardFaceViewModel vm, UseCardEventArgs args)
+        {
+            if (args == null)
+                args = new UseCardEventArgs();
+
+            Deck.UseCard(SelfID, vm.RuntimeID, args);
+        }
+
+        public void Game_OnCardUse(CardID card, UseCardEventArgs args, GenericAction callback)
+        {
+            for (int i = 0; i < handCards.Count; i++)
+            {
+                var item = handCards[i];
+                if (item.RuntimeID == card.RuntimeID)
+                {
+                    if (item.CardID == 0)
+                        item.CardID = card.DefineID;
+
+                    handCards.RemoveAt(i);
+                    callback += (a, b) =>
+                    {
+                        // 重载卡的位置
+                        reArrangeHandCards();
+                    };
+                    item.OnUse(args, callback);
+                    return;
+                }
+            }
+            UberDebug.LogWarningChannel("Frontend", $"指定卡片[{card}]未找到");
+            callback?.Invoke(this, null);
         }
     }
 }
