@@ -89,6 +89,8 @@ VisibleEvent如何处理树状结构？
 这样的话，组合效果怎么显示就是一个问题了，所以Witness毫无疑问是有子Witness结构的。
 绕了一圈又回到原来的地方了，很难受。
 
-4/29:
-效果行为分析：
-1.战吼
+5/3:
+思考一下，卡片制作器这个玩意怎么整？首先生成的CardDefine肯定是类似于GeneratedCardDefine之类的东西。那么Rule从哪里获得GeneratedCardDefine之类的东西呢？
+按道理来讲应该是Rule自己规定有哪些CardDefine，而不是外界给Rule。那么Rule必定要掌握着某种从外界读取CardDefine的方法。
+Resources,AssetBundle,StreamingAssets。可能需要先定义一个类似CardDefineReader的东西？或者这直接是Rule的一部分？
+CardDefineReader暂时没有必要。可以写在Rule里。

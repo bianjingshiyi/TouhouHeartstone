@@ -19,13 +19,19 @@ namespace TouhouHeartstone.Backend
     {
         public HeartStoneRule()
         {
-            pool = new CardPool(new CardDefine[]
-            {
-                new BudFairy(),
-                new FairyTwins(),
-                new Reimu(),
-                new Marisa()
-            });
+            //pool = new CardPool(new CardDefine[]
+            //{
+            //    new BudFairy(),
+            //    new FairyTwins(),
+            //    new Reimu(),
+            //    new Marisa()
+            //});
+            pool = new CardPool(typeof(HeartStoneRule).Assembly.GetTypes().
+                                Where(t => { return !t.IsAbstract && t.IsSubclassOf(typeof(CardDefine)); }).
+                                Select(t =>
+                                {
+                                    return t.GetConstructor(new Type[0]).Invoke(new object[0]) as CardDefine;
+                                }).ToArray());
         }
         public override CardPool pool { get; } = null;
         public override void beforeEvent(CardEngine game, Event e)
