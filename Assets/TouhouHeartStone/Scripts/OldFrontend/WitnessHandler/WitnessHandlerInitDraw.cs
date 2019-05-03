@@ -3,6 +3,7 @@ using IGensoukyo.Utilities;
 
 namespace TouhouHeartstone.OldFrontend.WitnessHandler
 {
+    [System.Obsolete]
     public class WitnessHandlerInitDraw : WitnessHandlerBase<InitDrawWitness>
     {
         public override bool HasAnimation => true;

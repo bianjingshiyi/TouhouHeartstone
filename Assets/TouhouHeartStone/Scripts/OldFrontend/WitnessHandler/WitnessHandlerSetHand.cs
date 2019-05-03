@@ -1,6 +1,7 @@
 ﻿using IGensoukyo.Utilities;
 namespace TouhouHeartstone.OldFrontend.WitnessHandler
 {
+    [System.Obsolete]
     public class WitnessHandlerSetHand : WitnessHandlerBase<SetHandWitness>
     {
         public override bool HasAnimation => false;
