@@ -46,6 +46,14 @@ namespace TouhouHeartstone.Backend
         {
             return cards.Select(c => { return c.getRID(); }).ToArray();
         }
+        public static void summon(this CardEngine engine, Player player, Card card, int position)
+        {
+            engine.doEvent(new SummonEvent(player, card, position));
+        }
+        public static void createToken(this CardEngine engine, Player player, CardDefine define, int position)
+        {
+            engine.doEvent(new SummonEvent(player, new Card(engine, define), position));
+        }
         public static void damage(this CardEngine engine, Card card, int amount)
         {
             engine.doEvent(new DamageEvent(card, new int[] { amount }));

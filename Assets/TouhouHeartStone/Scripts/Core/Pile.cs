@@ -26,14 +26,11 @@ namespace TouhouHeartstone
         }
         public Player owner { get; set; } = null;
         public string name { get; } = null;
-        public void add(IEnumerable<Card> cards)
-        {
-            cardList.AddRange(cards);
-        }
         public void moveTo(Card card, Pile targetPile, int position)
         {
             if (cardList.Remove(card))
             {
+                card.pile = targetPile;
                 targetPile.cardList.Insert(position, card);
             }
         }
@@ -43,7 +40,10 @@ namespace TouhouHeartstone
             foreach (Card card in cards)
             {
                 if (cardList.Remove(card))
+                {
+                    card.pile = targetPile;
                     removedCardList.Add(card);
+                }
             }
             targetPile.cardList.InsertRange(position, removedCardList);
         }

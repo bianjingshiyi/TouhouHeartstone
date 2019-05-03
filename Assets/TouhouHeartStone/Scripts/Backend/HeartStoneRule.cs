@@ -22,6 +22,7 @@ namespace TouhouHeartstone.Backend
             pool = new CardPool(new CardDefine[]
             {
                 new BudFairy(),
+                new FairyTwins(),
                 new Reimu(),
                 new Marisa()
             });

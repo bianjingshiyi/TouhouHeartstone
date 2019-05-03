@@ -24,35 +24,13 @@ namespace TouhouHeartstone.Backend.Builtin
         {
             get { return 1; }
         }
-        public override bool taunt
-        {
-            get { return false; }
-        }
         public override int category
         {
             get { return 2; }
         }
-    }
-    public class Reimu : MasterCardDefine
-    {
-        public override int id
+        public override Effect[] getEffects()
         {
-            get { return 1000; }
-        }
-        public override int category
-        {
-            get { return 1000; }
-        }
-    }
-    public class Marisa : MasterCardDefine
-    {
-        public override int id
-        {
-            get { return 2000; }
-        }
-        public override int category
-        {
-            get { return 2000; }
+            return new Effect[0];
         }
     }
 }

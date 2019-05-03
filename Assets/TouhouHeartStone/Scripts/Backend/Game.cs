@@ -15,8 +15,8 @@ namespace TouhouHeartstone.Backend
         /// <summary>
         /// 添加玩家
         /// </summary>
-        /// <param name="frontend"></param>
-        /// <param name="deck"></param>
+        /// <param name="frontend">实现接口的前端对象，Game会通过这个对象与前端进行沟通。</param>
+        /// <param name="deck">玩家使用的卡组，数组的第一个整数代表玩家使用的角色卡，后30个是玩家使用的卡组。</param>
         public void addPlayer(IFrontend frontend, int[] deck)
         {
             Card[] cards = new Card[deck.Length - 1];
@@ -36,15 +36,30 @@ namespace TouhouHeartstone.Backend
             engine.addPlayer(player);
             dicPlayerFrontend.Add(player, frontend);
         }
+        /// <summary>
+        /// 游戏初始化
+        /// </summary>
         public void init()
         {
             engine.doEvent(new InitEvent());
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="playerIndex"></param>
+        /// <param name="cardsRID"></param>
         public void initReplace(int playerIndex, int[] cardsRID)
         {
             Player player = engine.getPlayerAt(playerIndex);
             engine.doEvent(new InitReplaceEvent(player, cardsRID.Select(id => { return player["Init"].First(c => { return c.getRID() == id; }); }).ToArray()));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="playerIndex"></param>
+        /// <param name="cardRID"></param>
+        /// <param name="targetPosition"></param>
+        /// <param name="targetCardRID"></param>
         public void use(int playerIndex, int cardRID, int targetPosition, int targetCardRID)
         {
             Player player = engine.getPlayerAt(playerIndex);

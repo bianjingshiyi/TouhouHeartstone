@@ -18,8 +18,14 @@
             engine.setGem(player, player.getProp<int>("gem") - (card.define as ICost).cost);
             if (card.define is ServantCardDefine)
             {
+                ServantCardDefine define = card.define as ServantCardDefine;
                 //随从卡，将卡置入战场
-                engine.doEvent(new SummonEvent(player, card, targetPosition));
+                engine.summon(player, card, targetPosition);
+                foreach (Effect effect in define.getEffects())
+                {
+                    if (card.pile.name == effect.pile && effect.trigger == "onUse")
+                        effect.execute(engine, player, card, targetCard);
+                }
             }
             else if (card.define is SpellCardDefine)
             {
