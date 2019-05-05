@@ -1,6 +1,7 @@
 ﻿using IGensoukyo.Utilities;
 namespace TouhouHeartstone.OldFrontend.WitnessHandler
 {
+    [System.Obsolete]
     public class WitnessHandlerDuelStart : WitnessHandlerBase<DuelStartWitness>
     {
         public override bool HasAnimation => false;

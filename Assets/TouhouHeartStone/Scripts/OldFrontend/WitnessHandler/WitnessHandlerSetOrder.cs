@@ -1,5 +1,6 @@
 ﻿namespace TouhouHeartstone.OldFrontend.WitnessHandler
 {
+    [System.Obsolete]
     public class WitnessHandlerSetOrder : WitnessHandlerBase<SetOrderWitness>
     {
         public override bool HasAnimation => false;

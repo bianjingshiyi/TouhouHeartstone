@@ -4,6 +4,7 @@ using IGensoukyo.Utilities;
 [assembly: ComVisible(false)]
 namespace TouhouHeartstone.OldFrontend.WitnessHandler
 {
+    [System.Obsolete]
     public class WitnessHandlerUse : WitnessHandlerBase<UseWitness>
     {
         public override bool HasAnimation => false;

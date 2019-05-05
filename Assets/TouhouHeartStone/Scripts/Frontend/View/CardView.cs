@@ -10,6 +10,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using IGensoukyo.Utilities;
+using TouhouHeartstone.Frontend.Model;
 
 namespace TouhouHeartstone.Frontend.View
 {
@@ -78,6 +79,8 @@ namespace TouhouHeartstone.Frontend.View
 
         CardFaceViewModel cardVM;
 
+        RectTransform rectTransform => GetComponent<RectTransform>();
+
         protected void Awake()
         {
             // 注册VM事件
@@ -87,10 +90,19 @@ namespace TouhouHeartstone.Frontend.View
 
             cardVM.OnAnimationPlay += PlayAnimation;
             cardVM.OnIndexChangeEvent += CardVM_OnIndexChangeEvent;
+            cardVM.OnCardUseComfirm += onUse;
 
             checker.OnClick += onMouseClick;
             checker.OnDrag += onMouseDrag;
             checker.OnRelease += onMouseRelease;
+        }
+
+        private void onUse(UseCardEventArgs arg1, GenericAction arg2)
+        {
+            // todo: 使用的动画
+
+            Destroy(gameObject);
+            arg2?.Invoke(this, null);
         }
 
         bool drawed = false;
@@ -129,8 +141,7 @@ namespace TouhouHeartstone.Frontend.View
                 {
                     AnimationName = "DrawCard",
                     EventArgs = new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index)
-                }, (a, b) => { cardVM.OnDrawCard(); });
-                drawed = true;
+                }, (a, b) => { drawed = true; cardVM.OnDrawCard(); });
             }
         }
 
@@ -191,15 +202,18 @@ namespace TouhouHeartstone.Frontend.View
                     }, null);
                     break;
                 case state.hand:
-                    PlayAnimation(this, new CardAnimationEventArgs()
+                    if (!Deck.ThrowingCard) // 丢卡模式则等待丢卡发事件
                     {
-                        AnimationName = "CardToHand",
-                        EventArgs = new CardPositionEventArgs()
+                        PlayAnimation(this, new CardAnimationEventArgs()
                         {
-                            GroupCount = Deck.HandCardCount,
-                            GroupID = cardVM.Index
-                        }
-                    }, null);
+                            AnimationName = "CardToHand",
+                            EventArgs = new CardPositionEventArgs()
+                            {
+                                GroupCount = Deck.HandCardCount,
+                                GroupID = cardVM.Index
+                            }
+                        }, null);
+                    }
                     break;
                 case state.free:
                     mousePosOffset = Input.mousePosition - transform.position;
@@ -335,11 +349,19 @@ namespace TouhouHeartstone.Frontend.View
 
         bool checkTarget()
         {
+            var gv = GetComponentInParent<GlobalView>();
+            if (gv.CardPositionCalculator.CardUseThresold < rectTransform.position.y)
+            {
+                // todo: 做更多的判定
+                return true;
+            }
             return false;
         }
         void Use()
         {
+            // 进入未知状态，等待Core发布使用的指令再移动
             CurrentState = state.undefined;
+            cardVM.Use();
         }
 
         public enum state

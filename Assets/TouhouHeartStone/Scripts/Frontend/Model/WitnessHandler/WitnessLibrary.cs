@@ -40,7 +40,7 @@ namespace TouhouHeartstone.Frontend.Model.Witness
                 ReloadALibrary();
 
             if (!typeDict.ContainsKey(name))
-                throw new KeyNotFoundException($"指定的{name}未找到");
+                throw new KeyNotFoundException($"指定的WitnessHandler({name})未找到");
 
             return (WitnessHandler)Activator.CreateInstance(typeDict[name]);
         }

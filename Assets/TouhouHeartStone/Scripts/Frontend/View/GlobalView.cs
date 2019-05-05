@@ -48,17 +48,40 @@ namespace TouhouHeartstone.Frontend.View
             screenSize = size;
         }
 
+        /// <summary>
+        /// 两张手牌之间的距离
+        /// </summary>
         float cardHandSpacing => screenSize.y * 0.08f;
+
+        /// <summary>
+        /// 两张屏幕中间的牌之间的距离
+        /// </summary>
         float cardCenterSpacing => screenSize.y * 0.2f;
+
+        /// <summary>
+        /// 手牌的基础高度
+        /// </summary>
         float cardHandBaseY => screenSize.y * 0.01f;
 
+        /// <summary>
+        /// 卡片预览的高度
+        /// </summary>
         float cardFloatBaseY => screenSize.y * 0.10f;
 
+        /// <summary>
+        /// 卡片位置。高于此位置则尝试使用；低于此位置则回到手牌
+        /// </summary>
+        public float CardUseThresold => screenSize.y * 0.2f;
+
+        /// <summary>
+        /// 手牌最大宽度
+        /// </summary>
         float maxHandWidth => screenSize.y * 0.5f;
 
+        /// <summary>
+        /// 卡片高度的一半
+        /// </summary>
         float cardHalfHeight => screenSize.y * 0.2f;
-
-        float rotateAngle = 2;
 
         public PositionWithRotation GetCardCenter(int i, int count)
         {

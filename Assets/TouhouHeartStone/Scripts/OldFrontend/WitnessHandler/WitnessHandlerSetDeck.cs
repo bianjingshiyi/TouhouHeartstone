@@ -4,6 +4,7 @@ namespace TouhouHeartstone.OldFrontend.WitnessHandler
     /// <summary>
     /// 设置玩家卡组大小
     /// </summary>
+    [System.Obsolete]
     public class WitnessHandlerSetDeck : WitnessHandlerBase<SetDeckWitness>
     {
         public override bool HasAnimation => false;

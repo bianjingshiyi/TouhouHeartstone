@@ -4,6 +4,7 @@ using IGensoukyo.Utilities;
 
 namespace TouhouHeartstone.OldFrontend.WitnessHandler
 {
+    [Obsolete]
     public class WitnessHandler
     {
         public bool Exec(IWitness witness, OldFrontend.Manager.FrontendManager frontend)
@@ -31,6 +32,7 @@ namespace TouhouHeartstone.OldFrontend.WitnessHandler
         }
     }
 
+    [Obsolete]
     public abstract class WitnessHandlerBase
     {
         protected OldFrontend.Manager.FrontendManager frontend;
@@ -44,6 +46,7 @@ namespace TouhouHeartstone.OldFrontend.WitnessHandler
         }
     }
 
+    [Obsolete]
     public abstract class WitnessHandlerBase<T> : WitnessHandlerBase where T : IWitness
     {
         public override void Exec(IWitness witness)

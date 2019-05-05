@@ -3,6 +3,7 @@ using IGensoukyo.Utilities;
 
 namespace TouhouHeartstone.OldFrontend.WitnessHandler
 {
+    [System.Obsolete]
     public class WitnessHandlerRemoveCrystal : WitnessHandlerBase<RemoveCrystalWitness>
     {
         public override bool HasAnimation => false;

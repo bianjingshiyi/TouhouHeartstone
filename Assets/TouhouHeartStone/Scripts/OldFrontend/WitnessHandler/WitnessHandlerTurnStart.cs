@@ -6,6 +6,7 @@ using IGensoukyo.Utilities;
 namespace TouhouHeartstone.OldFrontend.WitnessHandler
 {
     [ComVisible(false)]
+    [System.Obsolete]
     public class WitnessHandlerTurnStart : WitnessHandlerBase<TurnStartWitness>
     {
         public override bool HasAnimation => false;
