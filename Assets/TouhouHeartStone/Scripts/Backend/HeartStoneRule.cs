@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -6,34 +7,23 @@ using TouhouHeartstone.Backend.Builtin;
 
 namespace TouhouHeartstone.Backend
 {
-    public static class Keywords
-    {
-        public const string init = "Init";
-        public const string deck = "Deck";
-        public const string hand = "Hand";
-    }
     /// <summary>
     /// 这个炉石规则是测试用的。
     /// </summary>
     public class HeartStoneRule : Rule
     {
+        public override CardPool pool { get; } = null;
         public HeartStoneRule()
         {
-            //pool = new CardPool(new CardDefine[]
-            //{
-            //    new BudFairy(),
-            //    new FairyTwins(),
-            //    new Reimu(),
-            //    new Marisa()
-            //});
-            pool = new CardPool(typeof(HeartStoneRule).Assembly.GetTypes().
-                                Where(t => { return !t.IsAbstract && t.IsSubclassOf(typeof(CardDefine)); }).
-                                Select(t =>
-                                {
-                                    return t.GetConstructor(new Type[0]).Invoke(new object[0]) as CardDefine;
-                                }).ToArray());
+            List<CardDefine> cardList = new List<CardDefine>();
+            cardList.AddRange(typeof(HeartStoneRule).Assembly.GetTypes().
+                              Where(t => { return !t.IsAbstract && t.IsSubclassOf(typeof(CardDefine)); }).
+                              Select(t =>
+                              {
+                                  return t.GetConstructor(new Type[0]).Invoke(new object[0]) as CardDefine;
+                              }));
+            pool = new CardPool(cardList.ToArray());
         }
-        public override CardPool pool { get; } = null;
         public override void beforeEvent(CardEngine game, Event e)
         {
         }
