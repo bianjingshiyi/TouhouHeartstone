@@ -35,8 +35,11 @@
                     args = new UseCardWithTargetPositionArgs(targetPosition, targetCardRID);
                 }
             }
+            args.CardRID = cardRID;
+            args.CardDID = cardDID;
+            args.PlayerID = playerIndex;
 
-            deck.OnCardUse(playerIndex, new CardID(cardDID, cardRID), args, callback);
+            deck.RecvEvent(args, callback);
             return false;
         }
     }

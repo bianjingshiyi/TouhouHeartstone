@@ -62,15 +62,26 @@ namespace TouhouHeartstone.Frontend.Controller
             DrawCard(cards, a);
         }
 
+        GenericAction savedCallback;
+        int lastDrawCardRID = -1;
+
         /// <summary>
         /// 抽一张卡
         /// </summary>
         public void DrawCard(CardID cardID, GenericAction callback)
         {
-            CardFaceViewModel card = drawCard(cardID);
-            card.DrawCallback += callback;
+            setCallback(cardID, callback);
+            drawCard(cardID);
 
-            HandCardChangeEvent?.Invoke();
+            reArrangeHandCards();
+        }
+
+        private void setCallback(CardID cardID, GenericAction callback)
+        {
+            if (savedCallback != null)
+                savedCallback?.Invoke(this, null);
+            lastDrawCardRID = cardID.CardRID;
+            savedCallback = callback;
         }
 
         /// <summary>
@@ -87,35 +98,34 @@ namespace TouhouHeartstone.Frontend.Controller
             }
             for (int i = 0; i < cards.Length; i++)
             {
-                var card = drawCard(cards[i]);
+                var item = cards[i];
                 if (i == 0)
                 {
-                    card.DrawCallback += callback;
+                    setCallback(item, callback);
                 }
+                drawCard(cards[i]);
             }
-            HandCardChangeEvent?.Invoke();
+            reArrangeHandCards();
         }
-
-        event Action HandCardChangeEvent;
 
         void onCardDestroy(CardFaceViewModel card)
         {
-            HandCardChangeEvent -= card.OnIndexChange;
             if (handCards.Contains(card))
                 handCards.Remove(card);
+
+            reArrangeHandCards();
         }
 
         private CardFaceViewModel drawCard(CardID cardID)
         {
             var card = Instantiate(cardfacePrefab, cardSpawnRoot);
             card.gameObject.SetActive(true);
-            card.CardID = cardID.DefineID;
-            card.RuntimeID = cardID.RuntimeID;
+            card.CardID = cardID.CardDID;
+            card.RuntimeID = cardID.CardRID;
             card.Index = handCards.Count;
 
-            HandCardChangeEvent += card.OnIndexChange;
             card.OnDestroyEvent += onCardDestroy;
-            card.OnCardUse += view_onCardUse;
+            card.OnActionEvent += DoAction;
 
             handCards.Add(card);
             return card;
@@ -177,7 +187,7 @@ namespace TouhouHeartstone.Frontend.Controller
             throwCardsInternal(throwingCards);
             throwCard.gameObject.SetActive(false);
 
-            Deck.InitReplace(SelfID, throwingCards.Select(c => c.RuntimeID).ToArray());
+            DoAction(this, new ThrowCardEventArgs(SelfID, throwingCards.Select(c => c.RuntimeID).ToArray()));
             throwingCards.Clear();
         }
 
@@ -186,7 +196,7 @@ namespace TouhouHeartstone.Frontend.Controller
             List<CardFaceViewModel> throwList = new List<CardFaceViewModel>();
             foreach (var card in cards)
             {
-                var f = handCards.Where(v => v.RuntimeID == card.RuntimeID);
+                var f = handCards.Where(v => v.RuntimeID == card.CardRID);
                 if (f.Count() > 0)
                 {
                     var c = f.First();
@@ -271,6 +281,7 @@ namespace TouhouHeartstone.Frontend.Controller
             for (int i = 0; i < throwingCards.Count; i++)
             {
                 throwingCards[i].Index = i;
+                throwingCards[i].RecvAction(new IndexChangeEventArgs(i));
             }
             reArrangeHandCards();
         }
@@ -280,75 +291,60 @@ namespace TouhouHeartstone.Frontend.Controller
             for (int i = 0; i < handCards.Count; i++)
             {
                 handCards[i].Index = i;
+                if (handCards[i] != null)
+                    handCards[i].RecvAction(new IndexChangeEventArgs(i));
             }
-            HandCardChangeEvent?.Invoke();
         }
         #endregion
 
-        /// <summary>
-        /// 设置水晶数量
-        /// </summary>
-        /// <param name="maxGem"></param>
-        /// <param name="currentGem"></param>
-        public void SetGem(int maxGem, int currentGem)
+        public event GenericAction OnDeckAction;
+        public void DoAction(object sender, EventArgs args)
         {
-            crystalBar.CrystalTotal = maxGem;
-            crystalBar.CrystalUsed = maxGem - currentGem;
-        }
-
-        /// <summary>
-        /// 设置最大水晶数量
-        /// </summary>
-        /// <param name="maxGem"></param>
-        public void SetMaxGem(int maxGem)
-        {
-            crystalBar.CrystalTotal = maxGem;
-        }
-
-        /// <summary>
-        /// 设置当前水晶数量
-        /// </summary>
-        /// <param name="currentGem"></param>
-        public void SetCurrentGem(int currentGem)
-        {
-            crystalBar.CrystalUsed = crystalBar.CrystalTotal - currentGem;
-        }
-
-        /// <summary>
-        /// 用卡事件
-        /// </summary>
-        /// <param name="vm"></param>
-        /// <param name="args"></param>
-        private void view_onCardUse(CardFaceViewModel vm, UseCardEventArgs args)
-        {
-            if (args == null)
-                args = new UseCardEventArgs();
-
-            Deck.UseCard(SelfID, vm.RuntimeID, args);
-        }
-
-        public void Game_OnCardUse(CardID card, UseCardEventArgs args, GenericAction callback)
-        {
-            for (int i = 0; i < handCards.Count; i++)
+            if (args is IPlayer)
             {
-                var item = handCards[i];
-                if (item.RuntimeID == card.RuntimeID)
-                {
-                    if (item.CardID == 0)
-                        item.CardID = card.DefineID;
+                (args as IPlayer).PlayerID = SelfID;
+            }
 
-                    handCards.RemoveAt(i);
-                    callback += (a, b) =>
-                    {
-                        // 重载卡的位置
-                        reArrangeHandCards();
-                    };
-                    item.OnUse(args, callback);
-                    return;
+            // 处理抽卡完成的事件
+            if (args is CardDrewEventArgs)
+            {
+                var arg = args as CardDrewEventArgs;
+                UberDebug.LogDebugChannel("Frontend", $"卡{arg}抽出完毕");
+                if (arg.CardRID == lastDrawCardRID)
+                {
+                    savedCallback?.Invoke(this, null);
+                    lastDrawCardRID = -1;
+                    savedCallback = null;
                 }
             }
-            UberDebug.LogWarningChannel("Frontend", $"指定卡片[{card}]未找到");
-            callback?.Invoke(this, null);
+
+            OnDeckAction?.Invoke(sender, args);
+        }
+
+        public void RecvAction(EventArgs args, GenericAction callback = null)
+        {
+            // 若传入事件是卡相关事件，则交予卡处理
+            if (args is ICardID)
+            {
+                var card = handCards.Where(e => e.RuntimeID == (args as ICardID).CardRID);
+                if (card.Count() > 0)
+                {
+                    card.First().RecvAction(args, callback);
+                }
+            }
+
+            // 设置水晶的事件
+            if (args is SetGemEventArgs)
+            {
+                var gemArgs = args as SetGemEventArgs;
+                if (gemArgs.MaxGem>=0)
+                    crystalBar.CrystalTotal = gemArgs.MaxGem;
+                if (gemArgs.CurrentGem >= 0)
+                    crystalBar.CrystalUsed = crystalBar.CrystalTotal - gemArgs.CurrentGem;
+
+                callback?.Invoke(this, null);
+                return;
+            }
         }
     }
 }

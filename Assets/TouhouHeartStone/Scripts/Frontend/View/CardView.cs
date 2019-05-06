@@ -89,12 +89,24 @@ namespace TouhouHeartstone.Frontend.View
                 throw new Exception("关联的ViewModel未找到");
 
             cardVM.OnAnimationPlay += PlayAnimation;
-            cardVM.OnIndexChangeEvent += CardVM_OnIndexChangeEvent;
-            cardVM.OnCardUseComfirm += onUse;
+            cardVM.OnRecvActionEvent += onRecvAction;
 
             checker.OnClick += onMouseClick;
             checker.OnDrag += onMouseDrag;
             checker.OnRelease += onMouseRelease;
+        }
+
+        private void onRecvAction(object sender, EventArgs args, GenericAction callback)
+        {
+            if (args is UseCardEventArgs)
+            {
+                // todo: 重载卡的位置
+                onUse(args as UseCardEventArgs, callback);
+            }
+            if (args is IndexChangeEventArgs)
+            {
+                CardVM_OnIndexChangeEvent();
+            }
         }
 
         private void onUse(UseCardEventArgs arg1, GenericAction arg2)
@@ -109,7 +121,7 @@ namespace TouhouHeartstone.Frontend.View
 
         private void CardVM_OnIndexChangeEvent()
         {
-            if (drawed)
+            if (drawed && this != null)
             {
                 switch (CurrentState)
                 {
@@ -141,7 +153,11 @@ namespace TouhouHeartstone.Frontend.View
                 {
                     AnimationName = "DrawCard",
                     EventArgs = new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index)
-                }, (a, b) => { drawed = true; cardVM.OnDrawCard(); });
+                }, (a, b) => 
+                {
+                    drawed = true;
+                    cardVM.DoAction(new CardDrewEventArgs());
+                });
             }
         }
 
@@ -202,7 +218,7 @@ namespace TouhouHeartstone.Frontend.View
                     }, null);
                     break;
                 case state.hand:
-                    if (!Deck.ThrowingCard) // 丢卡模式则等待丢卡发事件
+                    if (!Deck.ThrowingCard || original == state.hand_hover) // 丢卡模式则等待丢卡发事件
                     {
                         PlayAnimation(this, new CardAnimationEventArgs()
                         {

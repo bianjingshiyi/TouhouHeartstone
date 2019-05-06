@@ -1,7 +1,11 @@
 ﻿namespace TouhouHeartstone.Frontend.Model
 {
-    public class UseCardEventArgs : System.EventArgs
+    public class UseCardEventArgs : System.EventArgs, ICardID, IPlayer
     {
+        public int CardDID { get; set ; }
+        public int CardRID { get; set; }
+        public int PlayerID { get; set; }
+
         public override string ToString()
         {
             return "无参数";

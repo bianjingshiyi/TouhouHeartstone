@@ -40,6 +40,7 @@ namespace TouhouHeartstone.Frontend.Model
             {
                 if (currentIndex >= actions.Length)
                 {
+                    DebugUtils.Debug($"{deck.name}事件{actions}执行完毕");
                     callback?.Invoke(sender, args);
                     return;
                 }

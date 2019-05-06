@@ -3,6 +3,8 @@ using UnityEngine;
 using IGensoukyo.Utilities;
 using TouhouHeartstone.Frontend.ViewModel;
 
+using System.Linq;
+
 namespace TouhouHeartstone.Frontend.Model
 {
     public class DeckModel : ItemSpawner<DeckController>
@@ -64,6 +66,7 @@ namespace TouhouHeartstone.Frontend.Model
             gm.Game.addPlayer(item, new int[] { 1000, 1, 1, 1, 1, 1, 1, 1 });
             item.selfID = ItemCount - 1;
             item.gameObject.name = $"Deck{item.selfID}";
+            item.OnDeckAction += onDeckAction;
 
             if (hotSeatMode)
             {
@@ -72,6 +75,24 @@ namespace TouhouHeartstone.Frontend.Model
 
             // 仅启用0号玩家
             item.gameObject.SetActive(item.selfID == 0);
+        }
+
+        private void onDeckAction(object sender, System.EventArgs args)
+        {
+            if (args is UseCardEventArgs)
+            {
+                UseCard(args as UseCardEventArgs);
+                return;
+            }
+            if (args is RoundEventArgs)
+            {
+                gm.Game.turnEnd((args as RoundEventArgs).PlayerID);
+            }
+            if (args is ThrowCardEventArgs)
+            {
+                var t = args as ThrowCardEventArgs;
+                initReplace(t.PlayerID, t.Cards.Select(e => e.CardRID).ToArray());
+            }
         }
 
         /// <summary>
@@ -84,12 +105,7 @@ namespace TouhouHeartstone.Frontend.Model
             switchPrepare(arg1, arg2);
         }
 
-        /// <summary>
-        /// 初始替换卡牌
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <param name="cards"></param>
-        public void InitReplace(int playerID, int[] cards)
+        void initReplace(int playerID, int[] cards)
         {
             // 热座模式下，先按添加播放，全部换牌完毕后再按游戏顺序播放
             if (hotSeatMode)
@@ -105,42 +121,43 @@ namespace TouhouHeartstone.Frontend.Model
         }
 
         /// <summary>
-        /// 结束回合
-        /// </summary>
-        /// <param name="playerID"></param>
-        public void Roundend(int playerID)
-        {
-            gm.Game.turnEnd(playerID);
-        }
-
-        /// <summary>
         /// 用卡
         /// </summary>
         /// <param name="playerID"></param>
         /// <param name="cardRuntimeID"></param>
         /// <param name="args"></param>
+        [System.Obsolete("使用DoAction来达到目的")]
         public void UseCard(int playerID, int cardRuntimeID, UseCardEventArgs args)
         {
-            UberDebug.LogDebugChannel("Frontend", $"玩家{playerID}使用卡牌{cardRuntimeID}，{args}");
+            args.PlayerID = playerID;
+            args.CardRID = cardRuntimeID;
+            UseCard(args);
+        }
+
+        /// <summary>
+        /// 用卡
+        /// </summary>
+        /// <param name="args"></param>
+        void UseCard(UseCardEventArgs args)
+        {
+            UberDebug.LogDebugChannel("Frontend", $"玩家{args.PlayerID}使用卡牌{args.CardRID}，{args}");
+            int position = -1, target = 0;
             if (args is UseCardWithPositionArgs)
             {
-                var arg = args as UseCardWithPositionArgs;
-                gm.Game.use(playerID, cardRuntimeID, arg.Position, 0);
+                position = (args as UseCardWithPositionArgs).Position;
             }
             else if (args is UseCardWithTargetArgs)
             {
                 var arg = args as UseCardWithTargetArgs;
-                gm.Game.use(playerID, cardRuntimeID, -1, arg.TargetCardRuntimeID);
+                target = arg.TargetCardRuntimeID;
             }
             else if (args is UseCardWithTargetPositionArgs)
             {
                 var arg = args as UseCardWithTargetPositionArgs;
-                gm.Game.use(playerID, cardRuntimeID, arg.Position, arg.TargetCardRuntimeID);
+                position = arg.Position;
+                target = arg.TargetCardRuntimeID;
             }
-            else
-            {
-                gm.Game.use(playerID, cardRuntimeID, -1, 0);
-            }
+            gm.Game.use(args.PlayerID, args.CardRID, position, target);
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using UnityWeld.Binding;
 using TouhouHeartstone.Frontend.View;
+using TouhouHeartstone.Frontend.Model;
 
 namespace TouhouHeartstone.Frontend.ViewModel
 {
@@ -133,17 +134,6 @@ namespace TouhouHeartstone.Frontend.ViewModel
             OnAnimationPlay?.Invoke(sender, args, callback);
         }
 
-        /// <summary>
-        /// 卡片动作的事件，监听此事件以获取卡片操作
-        /// </summary>
-        public event CallbackEvent OnCardAction;
-
-        public void DoCardAction(string name, EventArgs args)
-        {
-            // todo: 把卡片事件名称给封装进去
-            OnCardAction?.Invoke(gameObject, args);
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         void NotifyPropertyChange(string propertyName)
@@ -162,29 +152,6 @@ namespace TouhouHeartstone.Frontend.ViewModel
         /// </summary>
         public int Index { get; set; }
 
-        /// <summary>
-        /// 位置改变事件（给VM监听）
-        /// </summary>
-        public event Action OnIndexChangeEvent;
-
-        /// <summary>
-        /// 通知位置改变了
-        /// </summary>
-        public void OnIndexChange()
-        {
-            OnIndexChangeEvent?.Invoke();
-        }
-
-        public event GenericAction DrawCallback;
-
-        /// <summary>
-        /// 卡片抽到手上了
-        /// </summary>
-        public void OnDrawCard()
-        {
-            DrawCallback?.Invoke(this, null);
-        }
-
         public event Action<CardFaceViewModel> OnDestroyEvent;
 
         void OnDestroy()
@@ -201,30 +168,52 @@ namespace TouhouHeartstone.Frontend.ViewModel
             UberDebug.LogDebugChannel("Frontend", $"使用卡{this}");
 
             // debug: 假设这是张随从卡
-            OnCardUse(this, new Model.UseCardWithPositionArgs(0));
-        }
-
-        /// <summary>
-        /// 卡片被使用的事件
-        /// </summary>
-        public event Action<CardFaceViewModel, Model.UseCardEventArgs> OnCardUse;
-
-
-        /// <summary>
-        /// 确定卡被使用的事件
-        /// </summary>
-        public event Action<Model.UseCardEventArgs, GenericAction> OnCardUseComfirm;
-        /// <summary>
-        /// 被使用了
-        /// </summary>
-        public void OnUse(Model.UseCardEventArgs args, GenericAction callback)
-        {
-            OnCardUseComfirm?.Invoke(args, callback);
+            DoAction(new UseCardWithPositionArgs(0));
         }
 
         public override string ToString()
         {
             return $"CardVM {RuntimeID}(Type {CardID})";
+        }
+
+
+        /// <summary>
+        /// 卡片接收事件，监听此事件以获取系统指令
+        /// </summary>
+        public event CallbackEvent OnRecvActionEvent;
+
+        /// <summary>
+        /// 卡片动作的事件，监听此事件以获取卡片操作
+        /// </summary>
+        public event GenericAction OnActionEvent;
+
+        /// <summary>
+        /// VM 发布的Action
+        /// </summary>
+        public void RecvAction(EventArgs args, GenericAction callback = null)
+        {
+            if (args is ICardID)
+            {
+                if (CardID <= 0)
+                {
+                    CardID = (args as ICardID).CardDID;
+                }
+            }
+            OnRecvActionEvent?.Invoke(this, args, callback);
+        }
+
+        /// <summary>
+        /// View 发出的Action
+        /// </summary>
+        public void DoAction(EventArgs args)
+        {
+            if (args is ICardID)
+            {
+                (args as ICardID).CardRID = RuntimeID;
+                (args as ICardID).CardDID = CardID;
+            }
+
+            OnActionEvent?.Invoke(this, args);
         }
     }
 }
