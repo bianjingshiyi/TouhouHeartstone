@@ -88,7 +88,6 @@ namespace TouhouHeartstone.Frontend.View
             if (cardVM == null)
                 throw new Exception("关联的ViewModel未找到");
 
-            cardVM.OnAnimationPlay += PlayAnimation;
             cardVM.OnRecvActionEvent += onRecvAction;
 
             checker.OnClick += onMouseClick;
@@ -106,6 +105,15 @@ namespace TouhouHeartstone.Frontend.View
             if (args is IndexChangeEventArgs)
             {
                 CardVM_OnIndexChangeEvent();
+            }
+            if (args is CardToStackEventArgs)
+            {
+                var arg = args as CardToStackEventArgs;
+                PlayAnimation(this, new CardAnimationEventArgs()
+                {
+                    AnimationName = "CardToStack",
+                    EventArgs = new CardPositionEventArgs() { GroupCount = arg.Count, GroupID = arg.Index }
+                }, callback);
             }
         }
 
@@ -266,11 +274,19 @@ namespace TouhouHeartstone.Frontend.View
             }
         }
 
-        Controller.UserDeckController Deck => GetComponentInParent<Controller.UserDeckController>();
+        Controller.UserDeckController _deck;
+        Controller.UserDeckController Deck
+        {
+            get
+            {
+                _deck = _deck ?? GetComponentInParent<Controller.UserDeckController>();
+                return _deck;
+            }
+        }
 
         void setThrowing(bool state)
         {
-            Deck.PrepareThrowCard(GetComponent<CardFaceViewModel>(), state);
+            cardVM.DoAction(new PrepareThrowEventArgs(state));
         }
 
         void onMouseDrag()

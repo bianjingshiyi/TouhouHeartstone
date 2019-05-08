@@ -72,6 +72,8 @@ namespace TouhouHeartstone.Frontend.Model
 
         public CardID[] Cards { get; set; }
 
+        public CardID[] NewCards { get; set; }
+
         public ThrowCardEventArgs(int playerID, int[] cards)
         {
             PlayerID = playerID;
@@ -94,5 +96,50 @@ namespace TouhouHeartstone.Frontend.Model
         {
             Cards = cards;
         }
+    }
+
+    /// <summary>
+    /// 准备丢卡事件
+    /// </summary>
+    public class PrepareThrowEventArgs : EventArgs, ICardID
+    {
+        public int CardDID { get; set; }
+        public int CardRID { get; set; }
+
+        public bool State { get; }
+
+        public PrepareThrowEventArgs(bool state)
+        {
+            State = state;
+        }
+    }
+
+    /// <summary>
+    /// 抽卡事件
+    /// </summary>
+    public class DrawCardEventArgs : EventArgs, IPlayer
+    {
+        public int PlayerID { get ; set ; }
+
+        public CardID Card { get; set; }
+    }
+
+    /// <summary>
+    /// 设置用户牌堆事件
+    /// </summary>
+    public class SetUserDeckEventArgs : EventArgs, IPlayer
+    {
+        public int PlayerID { get; set; }
+
+        public int[] CardsDID { get; set; }
+    }
+
+    /// <summary>
+    /// 卡片至手牌
+    /// </summary>
+    public class CardToStackEventArgs : EventArgs
+    {
+        public int Index { get; set; }
+        public int Count { get; set; }
     }
 }

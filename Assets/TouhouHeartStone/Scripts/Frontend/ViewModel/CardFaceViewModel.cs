@@ -118,22 +118,6 @@ namespace TouhouHeartstone.Frontend.ViewModel
 
         #endregion
 
-        /// <summary>
-        /// 动画播放的事件，监听此事件用于处理各种奇奇怪怪的动画
-        /// </summary>
-        public event CallbackEvent OnAnimationPlay;
-
-        /// <summary>
-        /// 播放动画
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        /// <param name="callback"></param>
-        public void PlayAnimation(object sender, CardAnimationEventArgs args, GenericAction callback)
-        {
-            OnAnimationPlay?.Invoke(sender, args, callback);
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         void NotifyPropertyChange(string propertyName)

@@ -146,28 +146,7 @@ namespace TouhouHeartstone.Frontend.Model
         /// <param name="cards"></param>
         public void SetSelfDeck(int[] cards)
         {
-            users[selfID].SetDeck(cards);
-        }
-
-        /// <summary>
-        /// 设置初始替换
-        /// </summary>
-        /// <param name="uid"></param>
-        /// <param name="cards"></param>
-        /// <param name="callback"></param>
-        [Obsolete]
-        public void SetInitReplace(int uid, CardID[] cards, GenericAction callback = null)
-        {
-            users[uid].DrawCard(cards, callback);
-        }
-
-        [Obsolete]
-        public void SetInitReplace(int uid, CardID[] oldCards, CardID[] newCards, GenericAction callback = null)
-        {
-            users[uid].ThrowCards(oldCards, (c, b) =>
-            {
-                users[uid].DrawCard(newCards, callback);
-            });
+            RecvEvent(new SetUserDeckEventArgs() { PlayerID = selfID, CardsDID = cards });
         }
 
         private void Awake()
@@ -194,19 +173,6 @@ namespace TouhouHeartstone.Frontend.Model
         private void OnRoundendBtnClick()
         {
             onDeckAction(this, new RoundEventArgs(selfID));
-        }
-
-        /// <summary>
-        /// 回合开始
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <param name="maxGem"></param>
-        /// <param name="currentGem"></param>
-        [Obsolete]
-        public void TurnStart(int playerID, int maxGem, int currentGem)
-        {
-            users[playerID].RecvAction(new SetGemEventArgs(maxGem, currentGem));
-            common.RoundStart(playerID == selfID);
         }
 
         /// <summary>
@@ -247,28 +213,6 @@ namespace TouhouHeartstone.Frontend.Model
                 }
             }
             return -1;
-        }
-
-        /// <summary>
-        /// 抽一张卡
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <param name="card"></param>
-        public void DrawCard(int playerID, CardID card, GenericAction callback)
-        {
-            users[playerID].DrawCard(card, callback);
-        }
-
-        /// <summary>
-        /// 用卡
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <param name="cardRuntimeID"></param>
-        /// <param name="args"></param>
-        [Obsolete]
-        public void UseCard(int playerID, int cardRuntimeID, UseCardEventArgs args)
-        {
-            Model.UseCard(playerID, cardRuntimeID, args);
         }
 
         public void RecvEvent(EventArgs args, GenericAction callback = null)

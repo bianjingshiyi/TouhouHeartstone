@@ -16,6 +16,12 @@ namespace TouhouHeartstone.Frontend.View.Animation
             var arg = Utilities.CheckType<CardPositionEventArgs>(args);
 
             var gv = Card.GetComponentInParent<GlobalView>();
+            if (gv == null)
+            {
+                callback?.Invoke(null, null);
+                return;
+            }
+
             var t = gv.CardPositionCalculator.GetCardHand(arg.GroupID, arg.GroupCount);
 
             Card.transform.SetSiblingIndex(arg.GroupID);
