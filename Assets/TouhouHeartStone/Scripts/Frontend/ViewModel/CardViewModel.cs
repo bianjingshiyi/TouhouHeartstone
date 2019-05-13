@@ -8,10 +8,10 @@ using TouhouHeartstone.Frontend.Model;
 namespace TouhouHeartstone.Frontend.ViewModel
 {
     /// <summary>
-    /// 卡面的VM
+    /// 卡的VM
     /// </summary>
     [Binding]
-    public class CardFaceViewModel : MonoBehaviour, INotifyPropertyChanged
+    public class CardViewModel : MonoBehaviour, INotifyPropertyChanged
     {
         #region cardface
         CardImageResource imageResource = new CardImageResource();
@@ -136,7 +136,7 @@ namespace TouhouHeartstone.Frontend.ViewModel
         /// </summary>
         public int Index { get; set; }
 
-        public event Action<CardFaceViewModel> OnDestroyEvent;
+        public event Action<CardViewModel> OnDestroyEvent;
 
         void OnDestroy()
         {

@@ -21,7 +21,7 @@ namespace TouhouHeartstone.Frontend.Controller
         CharacterInfoViewModel characterInfo;
 
         [SerializeField]
-        CardFaceViewModel cardfacePrefab;
+        CardViewModel cardfacePrefab;
 
         [SerializeField]
         CardStackViewModel cardStackLibrary;
@@ -35,7 +35,7 @@ namespace TouhouHeartstone.Frontend.Controller
         [SerializeField]
         ThrowCardViewModel throwCard;
 
-        List<CardFaceViewModel> handCards = new List<CardFaceViewModel>();
+        List<CardViewModel> handCards = new List<CardViewModel>();
 
         public int HandCardCount => handCards.Count;
 
@@ -109,7 +109,7 @@ namespace TouhouHeartstone.Frontend.Controller
             reArrangeHandCards();
         }
 
-        void onCardDestroy(CardFaceViewModel card)
+        void onCardDestroy(CardViewModel card)
         {
             if (handCards.Contains(card))
                 handCards.Remove(card);
@@ -117,7 +117,7 @@ namespace TouhouHeartstone.Frontend.Controller
             reArrangeHandCards();
         }
 
-        private CardFaceViewModel drawCardInternal(CardID cardID)
+        private CardViewModel drawCardInternal(CardID cardID)
         {
             var card = Instantiate(cardfacePrefab, cardSpawnRoot);
             card.gameObject.SetActive(true);
@@ -173,7 +173,6 @@ namespace TouhouHeartstone.Frontend.Controller
         /// </summary>
         private void onThrow()
         {
-            // todo: 这个也移动到CardView里面去可好？
             throwCardsInternal(throwingCards.ToArray());
             throwCard.gameObject.SetActive(false);
 
@@ -183,7 +182,7 @@ namespace TouhouHeartstone.Frontend.Controller
 
         private void throwCards(CardID[] cards, GenericAction callback)
         {
-            List<CardFaceViewModel> throwList = new List<CardFaceViewModel>();
+            List<CardViewModel> throwList = new List<CardViewModel>();
             foreach (var card in cards)
             {
                 var f = handCards.Where(v => v.RuntimeID == card.CardRID);
@@ -207,7 +206,7 @@ namespace TouhouHeartstone.Frontend.Controller
         /// </summary>
         /// <param name="throwCards"></param>
         /// <param name="callback"></param>
-        private void throwCardsInternal(CardFaceViewModel[] throwCards, GenericAction callback = null)
+        private void throwCardsInternal(CardViewModel[] throwCards, GenericAction callback = null)
         {
             if (throwCards.Length == 0)
             {
@@ -253,13 +252,13 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <summary>
         /// 等待被丢的卡
         /// </summary>
-        List<CardFaceViewModel> throwingCards = new List<CardFaceViewModel>();
+        List<CardViewModel> throwingCards = new List<CardViewModel>();
 
         public int ThrowingCardCount => throwingCards.Count;
 
         void PrepareThrowCard(int cardRID, bool moveIn)
         {
-            CardFaceViewModel card;
+            CardViewModel card;
             if (moveIn)
                 card = handCards.Where(e => e.RuntimeID == cardRID).FirstOrDefault();
             else
@@ -273,7 +272,7 @@ namespace TouhouHeartstone.Frontend.Controller
         /// </summary>
         /// <param name="card"></param>
         /// <param name="moveIn"></param>
-        void PrepareThrowCard(CardFaceViewModel card, bool moveIn)
+        void PrepareThrowCard(CardViewModel card, bool moveIn)
         {
             if (moveIn)
             {

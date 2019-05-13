@@ -77,14 +77,14 @@ namespace TouhouHeartstone.Frontend.View
         }
         #endregion
 
-        CardFaceViewModel cardVM;
+        CardViewModel cardVM;
 
         RectTransform rectTransform => GetComponent<RectTransform>();
 
         protected void Awake()
         {
             // 注册VM事件
-            cardVM = GetComponent<CardFaceViewModel>();
+            cardVM = GetComponentInParent<CardViewModel>();
             if (cardVM == null)
                 throw new Exception("关联的ViewModel未找到");
 
