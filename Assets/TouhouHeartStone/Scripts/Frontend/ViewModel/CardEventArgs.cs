@@ -15,6 +15,12 @@ namespace TouhouHeartstone.Frontend.Model
     public class IndexChangeEventArgs : EventArgs
     {
         public int Index { get; set; }
+
+        /// <summary>
+        /// 卡片总数。若不指定则自己看着办
+        /// </summary>
+        public int Count { get; set; }
+
         public IndexChangeEventArgs(int index) { Index = index; }
     }
 
@@ -141,5 +147,33 @@ namespace TouhouHeartstone.Frontend.Model
     {
         public int Index { get; set; }
         public int Count { get; set; }
+    }
+
+    /// <summary>
+    /// 生成一个随从
+    /// </summary>
+    public class RetinueSummonEventArgs : EventArgs, IPlayer, ICardID
+    {
+        public int PlayerID { get; set; }
+        public int CardDID { get; set; }
+        public int CardRID { get; set; }
+
+        /// <summary>
+        /// 位置
+        /// </summary>
+        public int Position { get; set; }
+    }
+
+    /// <summary>
+    /// 预览插入
+    /// </summary>
+    public class RetinuePreview: EventArgs
+    {
+        public int Position { get; set; }
+
+        public RetinuePreview(int position)
+        {
+            Position = position;
+        }
     }
 }

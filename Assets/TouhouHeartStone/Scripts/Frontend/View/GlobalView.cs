@@ -83,6 +83,12 @@ namespace TouhouHeartstone.Frontend.View
         /// </summary>
         float cardHalfHeight => screenSize.y * 0.2f;
 
+        /// <summary>
+        /// 获取丢卡位置的坐标
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public PositionWithRotation GetCardCenter(int i, int count)
         {
             if (i >= count)
@@ -94,6 +100,12 @@ namespace TouhouHeartstone.Frontend.View
             return new PositionWithRotation() { Position = center };
         }
 
+        /// <summary>
+        /// 获取卡片预览位置的坐标
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public PositionWithRotation GetCardFlow(int i, int count)
         {
             var pos = GetCardHand(i, count).Position;
@@ -101,6 +113,12 @@ namespace TouhouHeartstone.Frontend.View
             return new PositionWithRotation() { Position = pos, Rotation = Vector3.zero };
         }
 
+        /// <summary>
+        /// 获取手牌的坐标
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public PositionWithRotation GetCardHand(int i, int count)
         {
             if (i >= count)
@@ -132,7 +150,21 @@ namespace TouhouHeartstone.Frontend.View
         }
 
         public Vector3 StackPosition => new Vector3(screenSize.x, 0, 0);
-       
+
+        float retinueSpacing => screenSize.y * 0.15f;
+
+        public PositionWithRotation GetRetinuePosition(int i, int count)
+        {
+            if (i >= count)
+                throw new ArgumentOutOfRangeException($"argument i({i}) > count({count})");
+
+            Vector3 center = screenSize / 2;
+            center.y *= 0.8f;
+
+            center.x += (i - (count - 1) / 2f) * retinueSpacing;
+            return new PositionWithRotation() { Position = center };
+        }
+
     }
     public struct PositionWithRotation
     {

@@ -30,6 +30,14 @@ namespace TouhouHeartstone.Frontend.ViewModel
             }
         }
 
+
+        private CardType _CardType;
+        public CardType CardType
+        {
+            get { return _CardType; }
+            set { _CardType = value; NotifyPropertyChange("CardType"); }
+        }
+
         private int _CardID;
         /// <summary>
         /// 卡片类型ID
@@ -43,6 +51,7 @@ namespace TouhouHeartstone.Frontend.ViewModel
                 var gv = GetComponentInParent<GlobalView>();
                 ImageResource = gv.GetCardImageResource(_CardID);
                 TextResource = gv.GetCardTextResource(_CardID);
+                _CardType = CardType.PositionArg;
             }
         }
 
@@ -146,13 +155,10 @@ namespace TouhouHeartstone.Frontend.ViewModel
         /// <summary>
         /// 使用这张卡
         /// </summary>
-        public void Use()
+        public void Use(UseCardEventArgs arg)
         {
-            // 通常效果卡
             UberDebug.LogDebugChannel("Frontend", $"使用卡{this}");
-
-            // debug: 假设这是张随从卡
-            DoAction(new UseCardWithPositionArgs(0));
+            DoAction(arg);
         }
 
         public override string ToString()
@@ -199,5 +205,25 @@ namespace TouhouHeartstone.Frontend.ViewModel
 
             OnActionEvent?.Invoke(this, args);
         }
+    }
+
+    public enum CardType
+    {
+        /// <summary>
+        /// 无目标法术卡
+        /// </summary>
+        NoArg,
+        /// <summary>
+        /// 随从卡
+        /// </summary>
+        PositionArg,
+        /// <summary>
+        /// 有目标的法术卡
+        /// </summary>
+        TargetArg,
+        /// <summary>
+        /// 有目标的随从卡
+        /// </summary>
+        PositionTargerArg,
     }
 }

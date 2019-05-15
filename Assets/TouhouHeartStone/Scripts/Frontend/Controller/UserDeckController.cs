@@ -131,7 +131,7 @@ namespace TouhouHeartstone.Frontend.Controller
             handCards.Add(card);
             return card;
         }
-#endregion
+        #endregion
 
         void Start()
         {
@@ -304,6 +304,8 @@ namespace TouhouHeartstone.Frontend.Controller
         }
         #endregion
 
+        #region event_handler
+
         public event GenericAction OnDeckAction;
 
         /// <summary>
@@ -333,11 +335,32 @@ namespace TouhouHeartstone.Frontend.Controller
                 PrepareThrowCard(arg.CardRID, arg.State);
             }
 
+            // 预览随从
+            if (args is RetinuePreview)
+            {
+                retinuePreview((args as RetinuePreview).Position);
+            }
+
             if (args is IPlayer)
             {
                 (args as IPlayer).PlayerID = SelfID;
                 OnDeckAction?.Invoke(sender, args);
             }
+        }
+
+        CardViewModel GetCardByRID(int rid)
+        {
+            var card = handCards.Where(e => e.RuntimeID == rid);
+            if (card.Count() > 0)
+                return card.First();
+            card = retinues.Where(e => e.RuntimeID == rid);
+            if (card.Count() > 0)
+                return card.First();
+            card = throwingCards.Where(e => e.RuntimeID == rid);
+            if (card.Count() > 0)
+                return card.First();
+
+            return null;
         }
 
         /// <summary>
@@ -347,21 +370,11 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <param name="callback"></param>
         public void RecvAction(EventArgs args, GenericAction callback = null)
         {
-            // 若传入事件是卡相关事件，则交予卡处理
-            if (args is ICardID)
-            {
-                var card = handCards.Where(e => e.RuntimeID == (args as ICardID).CardRID);
-                if (card.Count() > 0)
-                {
-                    card.First().RecvAction(args, callback);
-                }
-            }
-
             // 设置水晶的事件
             if (args is SetGemEventArgs)
             {
                 var gemArgs = args as SetGemEventArgs;
-                if (gemArgs.MaxGem>=0)
+                if (gemArgs.MaxGem >= 0)
                     crystalBar.CrystalTotal = gemArgs.MaxGem;
                 if (gemArgs.CurrentGem >= 0)
                     crystalBar.CrystalUsed = crystalBar.CrystalTotal - gemArgs.CurrentGem;
@@ -381,7 +394,8 @@ namespace TouhouHeartstone.Frontend.Controller
                 }
                 else
                 {
-                    throwCards(arg.Cards, (a, b) => {
+                    throwCards(arg.Cards, (a, b) =>
+                    {
                         DrawCard(arg.NewCards, callback);
                     });
                 }
@@ -400,6 +414,96 @@ namespace TouhouHeartstone.Frontend.Controller
                 // todo: 设置牌库
                 cardStackLibrary.CardCount = arg.CardsDID.Length;
             }
+
+            // 设置这个什么玩意来着……没错是随从
+            if (args is RetinueSummonEventArgs)
+            {
+                retinueSummon(args as RetinueSummonEventArgs);
+            }
+
+            // 若传入事件是卡相关事件，则交予卡处理
+            if (args is ICardID)
+            {
+                var rid = (args as ICardID).CardRID;
+                var card = GetCardByRID(rid);
+                if (card != null)
+                {
+                    card.RecvAction(args, callback);
+                }
+                else
+                {
+                    UberDebug.LogWarningChannel("Frontend", $"没用找到对应RID为{rid}的卡片。");
+                }
+            }
         }
+        #endregion
+
+        #region Retinue
+
+        List<CardViewModel> retinues = new List<CardViewModel>();
+
+        /// <summary>
+        /// 随从数量
+        /// </summary>
+        public int RetinueCount => retinues.Count;
+
+        /// <summary>
+        /// 将一个随从放到场上
+        /// </summary>
+        /// <param name="arg"></param>
+        void retinueSummon(RetinueSummonEventArgs arg)
+        {
+            var cards = handCards.Where(c => c.RuntimeID == arg.CardRID);
+            if (cards.Count() == 1)
+            {
+                var card = cards.First();
+                handCards.Remove(card);
+                retinues.Insert(arg.Position, card);
+
+                reArrangeHandCards();
+                reArrangeRetinues();
+            }
+            else
+            {
+                UberDebug.LogWarningChannel("Frontend", "没找到对应的卡片");
+            }
+        }
+
+        /// <summary>
+        /// 重排列随从
+        /// </summary>
+        void reArrangeRetinues()
+        {
+            for (int i = 0; i < retinues.Count; i++)
+            {
+                retinues[i].Index = i;
+                if (retinues[i] != null)
+                    retinues[i].RecvAction(new IndexChangeEventArgs(i));
+            }
+        }
+
+        /// <summary>
+        /// 预览随从位置
+        /// </summary>
+        /// <param name="index"></param>
+        void retinuePreview(int index)
+        {
+            if (index == -1)
+            {
+                reArrangeRetinues();
+            }
+            else
+            {
+                for (int i = 0; i < retinues.Count; i++)
+                {
+                    int previewIndex = i >= index ? i + 1 : i;
+                    if (retinues[i] != null)
+                        retinues[i].RecvAction(new IndexChangeEventArgs(previewIndex) { Count = retinues.Count + 1 });
+                }
+            }
+        }
+
+        #endregion
+
     }
 }
