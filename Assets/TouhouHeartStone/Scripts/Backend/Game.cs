@@ -125,7 +125,7 @@ namespace TouhouHeartstone.Backend
         public void turnEnd(int playerIndex)
         {
             Player player = engine.getPlayerAt(playerIndex);
-            engine.doEvent(new TurnEndEvent(player));
+            engine.turnEnd(player);
         }
         private void afterEvent(Event @event)
         {

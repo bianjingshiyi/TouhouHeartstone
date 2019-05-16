@@ -62,5 +62,9 @@ namespace TouhouHeartstone.Backend
         {
             engine.doEvent(new DamageEvent(cards, amounts));
         }
+        public static void turnEnd(this CardEngine engine, Player player)
+        {
+            engine.doEvent(new TurnEndEvent(player));
+        }
     }
 }
