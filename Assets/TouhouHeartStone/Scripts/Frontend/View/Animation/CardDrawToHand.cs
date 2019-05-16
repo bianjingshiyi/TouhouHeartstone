@@ -1,5 +1,6 @@
 ﻿using IGensoukyo.Utilities;
 using System;
+using TouhouHeartstone.Frontend.ViewModel;
 using UnityEngine;
 
 namespace TouhouHeartstone.Frontend.View.Animation
@@ -16,9 +17,16 @@ namespace TouhouHeartstone.Frontend.View.Animation
             var arg = Utilities.CheckType<CardPositionEventArgs>(args);
 
             var gv = Card.GetComponentInParent<GlobalView>();
+            if (gv == null)
+            {
+                callback?.Invoke(null, null);
+                return;
+            }
+
             var t = gv.CardPositionCalculator.GetCardHand(arg.GroupID, arg.GroupCount);
 
-            Card.transform.SetSiblingIndex(arg.GroupID);
+            // 设置父物体的层级
+            Card.GetComponentInParent<CardViewModel>().transform.SetSiblingIndex(arg.GroupID);
 
             Card.GetOrAddComponent<PositionAnimation>().Play(new Vector3[2] {
                     Card.transform.localPosition,

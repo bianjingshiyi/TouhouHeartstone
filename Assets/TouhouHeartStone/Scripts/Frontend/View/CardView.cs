@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -17,84 +16,51 @@ namespace TouhouHeartstone.Frontend.View
     /// <summary>
     /// 卡片的View
     /// </summary>
-    public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
+    public class CardView : AnimationPlayerBase, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
     {
-        #region animation_base
-        Dictionary<string, ICardAnimation> cardAnimations = new Dictionary<string, ICardAnimation>();
-
-        /// <summary>
-        /// 播放卡片动画
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        /// <param name="callback"></param>
-        public void PlayAnimation(object sender, EventArgs args, GenericAction callback)
-        {
-            CardAnimationEventArgs aniArgs = Utilities.CheckType<CardAnimationEventArgs>(args);
-            ICardAnimation ani;
-
-            if (cardAnimations.ContainsKey(aniArgs.AnimationName))
-            {
-                // 在卡片本体上的
-                ani = cardAnimations[aniArgs.AnimationName];
-            }
-            else if (CardAnimationComponentLibrary.AnimationExists(aniArgs.AnimationName))
-            {
-                // 在库里面可以实例化调用的
-                var c = CardAnimationComponentLibrary.CreateAnimation(aniArgs.AnimationName, gameObject);
-                ani = c;
-
-                cardAnimations.Add(aniArgs.AnimationName, c);
-            }
-            else if (CardAnimationDynamicLibrary.ContainsAnimation(aniArgs.AnimationName))
-            {
-                // 在库里面的普通类
-                var ca = CardAnimationDynamicLibrary.CreateAnimation(aniArgs.AnimationName);
-                ca.SetGameObject(gameObject);
-                ani = ca;
-            }
-            else
-            {
-                ani = null;
-                Debug.LogError($"没有找到动画: {aniArgs.AnimationName}");
-            }
-
-            ani.PlayAnimation(sender, aniArgs.EventArgs, callback);
-        }
-
-        /// <summary>
-        /// 重载动画组件列表
-        /// </summary>
-        void reloadAnimationList()
-        {
-            cardAnimations.Clear();
-
-            var cards = gameObject.GetComponents<ICardAnimation>();
-            foreach (var item in cards)
-            {
-                cardAnimations.Add(item.AnimationName, item);
-            }
-        }
-        #endregion
-
-        CardFaceViewModel cardVM;
+        CardViewModel cardVM;
 
         RectTransform rectTransform => GetComponent<RectTransform>();
 
         protected void Awake()
         {
             // 注册VM事件
-            cardVM = GetComponent<CardFaceViewModel>();
+            cardVM = GetComponentInParent<CardViewModel>();
             if (cardVM == null)
                 throw new Exception("关联的ViewModel未找到");
 
-            cardVM.OnAnimationPlay += PlayAnimation;
-            cardVM.OnIndexChangeEvent += CardVM_OnIndexChangeEvent;
-            cardVM.OnCardUseComfirm += onUse;
+            cardVM.OnRecvActionEvent += onRecvAction;
 
             checker.OnClick += onMouseClick;
             checker.OnDrag += onMouseDrag;
             checker.OnRelease += onMouseRelease;
+        }
+
+        protected void OnDestroy()
+        {
+            cardVM.OnRecvActionEvent -= onRecvAction;
+        }
+
+        private void onRecvAction(object sender, EventArgs args, GenericAction callback)
+        {
+            if (args is UseCardEventArgs)
+            {
+                // todo: 重载卡的位置
+                onUse(args as UseCardEventArgs, callback);
+            }
+            if (args is IndexChangeEventArgs)
+            {
+                CardVM_OnIndexChangeEvent();
+            }
+            if (args is CardToStackEventArgs)
+            {
+                var arg = args as CardToStackEventArgs;
+                PlayAnimation(this, new CardAnimationEventArgs()
+                {
+                    AnimationName = "CardToStack",
+                    EventArgs = new CardPositionEventArgs() { GroupCount = arg.Count, GroupID = arg.Index }
+                }, callback);
+            }
         }
 
         private void onUse(UseCardEventArgs arg1, GenericAction arg2)
@@ -109,7 +75,7 @@ namespace TouhouHeartstone.Frontend.View
 
         private void CardVM_OnIndexChangeEvent()
         {
-            if (drawed)
+            if (drawed && this != null)
             {
                 switch (CurrentState)
                 {
@@ -141,7 +107,11 @@ namespace TouhouHeartstone.Frontend.View
                 {
                     AnimationName = "DrawCard",
                     EventArgs = new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index)
-                }, (a, b) => { drawed = true; cardVM.OnDrawCard(); });
+                }, (a, b) => 
+                {
+                    drawed = true;
+                    cardVM.DoAction(new CardDrewEventArgs());
+                });
             }
         }
 
@@ -202,7 +172,7 @@ namespace TouhouHeartstone.Frontend.View
                     }, null);
                     break;
                 case state.hand:
-                    if (!Deck.ThrowingCard) // 丢卡模式则等待丢卡发事件
+                    if (!Deck.ThrowingCard || original == state.hand_hover) // 丢卡模式则等待丢卡发事件
                     {
                         PlayAnimation(this, new CardAnimationEventArgs()
                         {
@@ -225,12 +195,44 @@ namespace TouhouHeartstone.Frontend.View
 
         DragInputChecker checker = new DragInputChecker();
 
+        int lastRetinuePos = -1;
+
         protected void Update()
         {
             checker.Update(Time.time);
             if (mousePosOffset != null)
             {
                 transform.position = (Vector2)Input.mousePosition - mousePosOffset.Value;
+
+                // 随从生成的预览
+                if (cardVM.CardType == CardType.PositionArg || cardVM.CardType == CardType.PositionTargerArg)
+                {
+                    if (checkTarget())
+                    {
+                        var cnt = Deck.RetinueCount;
+                        var calc = GetComponentInParent<GlobalView>().CardPositionCalculator;
+                        var pos = 0;
+                        for (pos = 0; pos < cnt; pos++)
+                        {
+                            var p = calc.GetRetinuePosition(pos, cnt);
+                            if (transform.localPosition.x < p.Position.x)
+                                break;
+                        }
+                        if (lastRetinuePos != pos)
+                        {
+                            lastRetinuePos = pos;
+                            cardVM.DoAction(new RetinuePreview(pos));
+                        }
+                    }
+                    else
+                    {
+                        if (lastRetinuePos >= 0)
+                        {
+                            lastRetinuePos = -1;
+                            cardVM.DoAction(new RetinuePreview(-1));
+                        }
+                    }
+                }
             }
         }
 
@@ -250,11 +252,19 @@ namespace TouhouHeartstone.Frontend.View
             }
         }
 
-        Controller.UserDeckController Deck => GetComponentInParent<Controller.UserDeckController>();
+        Controller.UserDeckController _deck;
+        Controller.UserDeckController Deck
+        {
+            get
+            {
+                _deck = _deck ?? GetComponentInParent<Controller.UserDeckController>();
+                return _deck;
+            }
+        }
 
         void setThrowing(bool state)
         {
-            Deck.PrepareThrowCard(GetComponent<CardFaceViewModel>(), state);
+            cardVM.DoAction(new PrepareThrowEventArgs(state));
         }
 
         void onMouseDrag()
@@ -361,7 +371,10 @@ namespace TouhouHeartstone.Frontend.View
         {
             // 进入未知状态，等待Core发布使用的指令再移动
             CurrentState = state.undefined;
-            cardVM.Use();
+            if (cardVM.CardType == CardType.PositionArg)
+            {
+                cardVM.Use(new UseCardWithPositionArgs(lastRetinuePos));
+            }
         }
 
         public enum state

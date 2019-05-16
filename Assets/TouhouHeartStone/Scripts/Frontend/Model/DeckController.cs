@@ -87,11 +87,15 @@ namespace TouhouHeartstone.Frontend.Model
         {
             if (witnessQueue.Count == 0)
             {
+                UberDebug.LogDebugChannel("Frontend", "所有事件播放完毕");
                 QueueEmpty = true;
-                return;
             }
-            var witness = witnessQueue.Dequeue();
-            EventWitnessExecutor.ExecuteWitness(witness.Flattern(), this, (a, b) => { executeNext(); });
+            else
+            {
+                var witness = witnessQueue.Dequeue();
+                UberDebug.LogDebugChannel("Frontend", $"准备播放{witness}, 队列剩余{witnessQueue.Count}");
+                EventWitnessExecutor.ExecuteWitness(witness.Flattern(), this, (a, b) => { executeNext(); });
+            }
         }
         #endregion
 
@@ -119,6 +123,8 @@ namespace TouhouHeartstone.Frontend.Model
                 u.Init(i, characters[i], selfID == i);
                 u.gameObject.SetActive(true);
                 users.Add(u);
+
+                u.OnDeckAction += onDeckAction;
             }
         }
 
@@ -140,37 +146,7 @@ namespace TouhouHeartstone.Frontend.Model
         /// <param name="cards"></param>
         public void SetSelfDeck(int[] cards)
         {
-            users[selfID].SetDeck(cards);
-        }
-
-        /// <summary>
-        /// 设置初始替换
-        /// </summary>
-        /// <param name="uid"></param>
-        /// <param name="cards"></param>
-        /// <param name="callback"></param>
-        [Obsolete]
-        public void SetInitReplace(int uid, CardID[] cards, GenericAction callback = null)
-        {
-            users[uid].DrawCard(cards, callback);
-        }
-
-        public void SetInitReplace(int uid, CardID[] oldCards, CardID[] newCards, GenericAction callback = null)
-        {
-            users[uid].ThrowCards(oldCards, (c, b) =>
-            {
-                users[uid].DrawCard(newCards, callback);
-            });
-        }
-
-        /// <summary>
-        /// 丢掉初始手牌
-        /// </summary>
-        /// <param name="uid"></param>
-        /// <param name="cards"></param>
-        public void InitReplace(int uid, int[] cards)
-        {
-            GetComponentInParent<DeckModel>().InitReplace(uid, cards);
+            RecvEvent(new SetUserDeckEventArgs() { PlayerID = selfID, CardsDID = cards });
         }
 
         private void Awake()
@@ -196,20 +172,7 @@ namespace TouhouHeartstone.Frontend.Model
         /// </remarks>
         private void OnRoundendBtnClick()
         {
-            Model.Roundend(selfID);
-        }
-
-        /// <summary>
-        /// 回合开始
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <param name="maxGem"></param>
-        /// <param name="currentGem"></param>
-        [Obsolete]
-        public void TurnStart(int playerID, int maxGem, int currentGem)
-        {
-            users[playerID].SetGem(maxGem, currentGem);
-            common.RoundStart(playerID == selfID);
+            onDeckAction(this, new RoundEventArgs(selfID));
         }
 
         /// <summary>
@@ -219,26 +182,6 @@ namespace TouhouHeartstone.Frontend.Model
         public void TurnStart(int playerID)
         {
             common.RoundStart(playerID == selfID);
-        }
-
-        /// <summary>
-        /// 设置玩家最大水晶数量
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <param name="maxGem"></param>
-        public void SetMaxGem(int playerID, int maxGem)
-        {
-            users[playerID].SetMaxGem(maxGem);
-        }
-
-        /// <summary>
-        /// 设置玩家当前水晶数量
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <param name="currentGem"></param>
-        public void SetCurrentGem(int playerID, int currentGem)
-        {
-            users[playerID].SetCurrentGem(currentGem);
         }
 
         /// <summary>
@@ -272,41 +215,32 @@ namespace TouhouHeartstone.Frontend.Model
             return -1;
         }
 
-        /// <summary>
-        /// 抽一张卡
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <param name="card"></param>
-        public void DrawCard(int playerID, CardID card, GenericAction callback)
+        public void RecvEvent(EventArgs args, GenericAction callback = null)
         {
-            users[playerID].DrawCard(card, callback);
+            if (args is IPlayer)
+            {
+                int playerID = (args as IPlayer).PlayerID;
+                users[playerID].RecvAction(args, callback);
+            }
         }
 
         /// <summary>
-        /// 用卡
+        /// Deck有啥动作了就触发这个事件
         /// </summary>
-        /// <param name="playerID"></param>
-        /// <param name="cardRuntimeID"></param>
-        /// <param name="args"></param>
-        public void UseCard(int playerID, int cardRuntimeID, UseCardEventArgs args)
+        public event GenericAction OnDeckAction;
+        private void onDeckAction(object sender, EventArgs args)
         {
-            Model.UseCard(playerID, cardRuntimeID, args);
-        }
-
-        /// <summary>
-        /// 用卡事件
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <param name="card"></param>
-        /// <param name="args"></param>
-        /// <param name="callback"></param>
-        public void OnCardUse(int playerID, CardID card, UseCardEventArgs args, GenericAction callback)
-        {
-            users[playerID].Game_OnCardUse(card, args, callback);
+            OnDeckAction?.Invoke(sender, args);
         }
     }
 
-    public class CardID
+
+    public interface ICardID
+    {
+        int CardDID { get; set; }
+        int CardRID { get; set; }
+    }
+    public class CardID : ICardID
     {
         public static CardID[] ToCardIDs(int[] define, int[] runtime)
         {
@@ -333,21 +267,21 @@ namespace TouhouHeartstone.Frontend.Model
 
         public CardID(int define, int runtime)
         {
-            DefineID = define;
-            RuntimeID = runtime;
+            CardDID = define;
+            CardRID = runtime;
         }
         public CardID(int runtime)
         {
-            RuntimeID = runtime;
+            CardRID = runtime;
         }
         public CardID() { }
 
-        public int DefineID;
-        public int RuntimeID;
+        public int CardDID { get; set; }
+        public int CardRID { get; set; }
 
         public override string ToString()
         {
-            return $"卡片{RuntimeID}({DefineID})";
+            return $"卡片{CardRID}({CardDID})";
         }
     }
 

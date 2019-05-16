@@ -10,8 +10,7 @@
             int cardRID = witness.getVar<int>("cardRID");
             int cardDID = witness.getVar<int>("cardDID");
 
-            deck.DrawCard(player, new CardID(cardDID, cardRID), callback);
-
+            deck.RecvEvent(new DrawCardEventArgs() { PlayerID = player, Card = new CardID(cardDID, cardRID) }, callback);
             return false;
         }
     }

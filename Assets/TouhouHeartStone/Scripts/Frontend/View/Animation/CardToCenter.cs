@@ -25,6 +25,5 @@ namespace TouhouHeartstone.Frontend.View.Animation
                 }, callback);
             Card.SetActive(true);
         }
-
     }
 }

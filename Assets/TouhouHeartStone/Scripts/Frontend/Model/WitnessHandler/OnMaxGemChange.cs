@@ -6,11 +6,12 @@
 
         public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback = null)
         {
-            var maxGem = witness.getVar<int>("value");
-            var player = witness.getVar<int>("playerIndex");
-
-            deck.SetMaxGem(player, maxGem);
-            callback?.Invoke(this, null);
+            var args = new SetGemEventArgs()
+            {
+                MaxGem = witness.getVar<int>("value"),
+                PlayerID = witness.getVar<int>("playerIndex")
+            };
+            deck.RecvEvent(args, callback);
             return false;
         }
     }
