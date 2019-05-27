@@ -48,4 +48,22 @@ namespace TouhouHeartstone.Frontend.View.Animation
         /// </summary>
         public int GroupID;
     }
+
+    public class ServantAttackEventArgs : EventArgs
+    {
+        public CardPositionEventArgs SelfServant { get; }
+        public CardPositionEventArgs TargetServant { get; }
+
+        public ServantAttackEventArgs(CardPositionEventArgs self, CardPositionEventArgs target)
+        {
+            SelfServant = self;
+            TargetServant = target;
+        }
+
+        public ServantAttackEventArgs(int selfID, int selfCount, int targetID, int targetCount) :
+            this(new CardPositionEventArgs(selfCount, selfID),
+                new CardPositionEventArgs(targetCount, targetID))
+        { }
+
+    }
 }

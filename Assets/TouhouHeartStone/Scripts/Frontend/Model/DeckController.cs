@@ -6,6 +6,7 @@ using TouhouHeartstone.Frontend.Controller;
 using TouhouHeartstone.Frontend.Model.Witness;
 using System;
 using IGensoukyo.Utilities;
+using TouhouHeartstone.Frontend.ViewModel;
 
 namespace TouhouHeartstone.Frontend.Model
 {
@@ -213,6 +214,22 @@ namespace TouhouHeartstone.Frontend.Model
                 }
             }
             return -1;
+        }
+
+        /// <summary>
+        /// 获取场上指定id的卡的VM
+        /// </summary>
+        /// <param name="rid"></param>
+        /// <returns></returns>
+        public CardViewModel GetCardByRID(int rid)
+        {
+            foreach (var user in users)
+            {
+                var c = user.GetCardByRID(rid);
+                if (c != null)
+                    return c;
+            }
+            return null;
         }
 
         public void RecvEvent(EventArgs args, GenericAction callback = null)

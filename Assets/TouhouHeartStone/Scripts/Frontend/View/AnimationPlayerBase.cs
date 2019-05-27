@@ -17,7 +17,7 @@ namespace TouhouHeartstone.Frontend.View
         /// <param name="sender"></param>
         /// <param name="args"></param>
         /// <param name="callback"></param>
-        public void PlayAnimation(object sender, EventArgs args, GenericAction callback)
+        public void PlayAnimation(object sender, EventArgs args, GenericAction callback = null)
         {
             CardAnimationEventArgs aniArgs = Utilities.CheckType<CardAnimationEventArgs>(args);
             ICardAnimation ani;
@@ -50,6 +50,30 @@ namespace TouhouHeartstone.Frontend.View
 
             ani.PlayAnimation(sender, aniArgs.EventArgs, callback);
         }
+
+        /// <summary>
+        /// 播放动画
+        /// </summary>
+        /// <param name="sender">发送者</param>
+        /// <param name="aniName">动画名称</param>
+        /// <param name="args">动画参数</param>
+        /// <param name="callback">回调</param>
+        public void PlayAnimation(object sender, string aniName, EventArgs args = null, GenericAction callback = null)
+        {
+            PlayAnimation(sender, new CardAnimationEventArgs(aniName, args));
+        }
+
+        /// <summary>
+        /// 播放动画
+        /// </summary>
+        /// <param name="aniName">动画名称</param>
+        /// <param name="args">参数</param>
+        /// <param name="callback">回调</param>
+        public void PlayAnimation(string aniName, EventArgs args = null, GenericAction callback = null)
+        {
+            PlayAnimation(this, aniName, args, callback);
+        }
+
 
         /// <summary>
         /// 重载动画组件列表

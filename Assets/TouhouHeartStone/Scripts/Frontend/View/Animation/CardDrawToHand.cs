@@ -15,7 +15,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
         {
             AutoPlayerCardEventArgs autoArgs = args as AutoPlayerCardEventArgs;
 
-
+            callback?.Invoke(this, null);
         }
     }
     /// <summary>

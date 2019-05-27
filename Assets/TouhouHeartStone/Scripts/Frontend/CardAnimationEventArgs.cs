@@ -15,5 +15,9 @@ namespace TouhouHeartstone.Frontend
         /// 卡片动画附带的参数
         /// </summary>
         public EventArgs EventArgs;
+
+        public CardAnimationEventArgs() { }
+        public CardAnimationEventArgs(string name) { AnimationName = name; }
+        public CardAnimationEventArgs(string name, EventArgs args) : this(name) { EventArgs = args; }
     }
 }
