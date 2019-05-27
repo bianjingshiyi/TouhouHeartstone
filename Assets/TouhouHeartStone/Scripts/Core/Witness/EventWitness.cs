@@ -15,6 +15,7 @@ namespace TouhouHeartstone
         /// 以前序优先的方式遍历整个结构并执行参数动作。参数动作的返回值表示是否已经对该节点完成了处理，如果返回值为真，则放弃对该节点的子节点的遍历。
         /// </summary>
         /// <param name="action"></param>
+        [Obsolete("foreachDo方法被废弃")]
         public void foreachDo(Func<EventWitness, bool> action)
         {
             for (int i = 0; i < before.Count; i++)
@@ -76,13 +77,13 @@ namespace TouhouHeartstone
         {
             if (dicVar.ContainsKey(varName))
                 return dicVar[varName];
-            return default;
+            throw new KeyNotFoundException("没有找到变量" + varName);
         }
         public T getVar<T>(string varName)
         {
             if (dicVar.ContainsKey(varName) && dicVar[varName] is T)
                 return (T)dicVar[varName];
-            return default(T);
+            throw new KeyNotFoundException("没有找到变量" + varName);
         }
         public void setVar<T>(string varName, T value)
         {
