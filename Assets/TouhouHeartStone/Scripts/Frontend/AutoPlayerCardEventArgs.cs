@@ -5,11 +5,11 @@
         public AutoPlayerCardEventArgs(EventWitness witness) : base(witness)
         {
         }
-        public AutoPlayerCardEventArgs(string eventName, int playerIndex, int cardRID, int cardDID) : base(eventName)
+        public AutoPlayerCardEventArgs(string eventName, int playerIndex, int cardRID, int targetCardRID) : base(eventName)
         {
             (this as IPlayerEventArgs).PlayerID = playerIndex;
             (this as ICardEventArgs).CardRID = cardRID;
-            (this as ICardEventArgs).CardDID = cardDID;
+            this.targetCardRID = targetCardRID;
         }
         int IPlayerEventArgs.PlayerID
         {
@@ -25,6 +25,12 @@
         {
             get { return getProp<int>("cardRID"); }
             set { setProp("cardRID", value); }
+        }
+
+        int targetCardRID
+        {
+            get { return getProp<int>("targetCardRID"); }
+            set { setProp("targetCardRID", value); }
         }
     }
 }

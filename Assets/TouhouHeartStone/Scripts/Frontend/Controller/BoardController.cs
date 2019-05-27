@@ -360,7 +360,7 @@ namespace TouhouHeartstone.Frontend.Controller
             }
         }
 
-        CardViewModel GetCardByRID(int rid)
+        public CardViewModel GetCardByRID(int rid)
         {
             var card = handCards.Where(e => e.RuntimeID == rid);
             if (card.Count() > 0)
@@ -445,6 +445,7 @@ namespace TouhouHeartstone.Frontend.Controller
                 else
                 {
                     UberDebug.LogWarningChannel("Frontend", $"没用找到对应RID为{rid}的卡片。");
+                    callback?.Invoke(this, null);
                 }
             }
         }

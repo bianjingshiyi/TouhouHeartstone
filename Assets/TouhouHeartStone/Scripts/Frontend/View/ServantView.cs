@@ -79,11 +79,9 @@ namespace TouhouHeartstone.Frontend.View
                 if (autoArgs.eventName == "onAttack")
                 {
                     UberDebug.LogChannel(this, "View-BJSY", "ServantView收到攻击事件");
-                    PlayAnimation(this, new CardAnimationEventArgs()
-                    {
-                        AnimationName = "servantAttack",
-                        EventArgs = autoArgs
-                    }, callback);
+                    var targetServant = cardVM.board.Deck.GetCardByRID(autoArgs.getProp<int>("targetCardRID"));
+
+                    PlayAnimation("servantAttack", new ServantAttackEventArgs(cardVM.Index, cardVM.board.RetinueCount, targetServant.Index, targetServant.board.RetinueCount), callback);
                 }
             }
 
@@ -199,6 +197,7 @@ namespace TouhouHeartstone.Frontend.View
                 if (targetCard != null && targetCard != cardVM && targetCard.board != cardVM.board)
                 {
                     AutoPlayerCardEventArgs args = new AutoPlayerCardEventArgs("attack", cardVM.board.SelfID, cardVM.RuntimeID, targetCard.RuntimeID);
+                    Debug.Log(targetCard);
                     cardVM.DoAction(args);
                 }
             }
