@@ -18,12 +18,12 @@ namespace TouhouHeartstone.Frontend.Model
         CommonDeckController common;
 
         [SerializeField]
-        UserDeckController userPrefab;
+        BoardController userPrefab;
 
         [SerializeField]
         Transform spawnRoot;
 
-        List<UserDeckController> users = new List<UserDeckController>();
+        List<BoardController> users = new List<BoardController>();
 
         DeckModel _model;
         DeckModel Model
@@ -217,9 +217,9 @@ namespace TouhouHeartstone.Frontend.Model
 
         public void RecvEvent(EventArgs args, GenericAction callback = null)
         {
-            if (args is IPlayer)
+            if (args is IPlayerEventArgs)
             {
-                int playerID = (args as IPlayer).PlayerID;
+                int playerID = (args as IPlayerEventArgs).PlayerID;
                 users[playerID].RecvAction(args, callback);
             }
         }
@@ -233,14 +233,7 @@ namespace TouhouHeartstone.Frontend.Model
             OnDeckAction?.Invoke(sender, args);
         }
     }
-
-
-    public interface ICardID
-    {
-        int CardDID { get; set; }
-        int CardRID { get; set; }
-    }
-    public class CardID : ICardID
+    public class CardID : ICardEventArgs
     {
         public static CardID[] ToCardIDs(int[] define, int[] runtime)
         {

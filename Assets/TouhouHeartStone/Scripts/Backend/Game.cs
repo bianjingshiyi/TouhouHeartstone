@@ -85,6 +85,7 @@ namespace TouhouHeartstone.Backend
         }
         public void attack(int playerIndex, int cardRID, int targetCardRID)
         {
+            UberDebug.LogChannel("Core", "攻击事件：玩家" + playerIndex + "使用卡片" + cardRID + "攻击卡片" + targetCardRID);
             Player player = engine.getPlayerAt(playerIndex);
             if (engine.getProp<Player>("currentPlayer") != player)
             {

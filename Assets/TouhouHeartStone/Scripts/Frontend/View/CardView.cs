@@ -252,12 +252,12 @@ namespace TouhouHeartstone.Frontend.View
             }
         }
 
-        Controller.UserDeckController _deck;
-        Controller.UserDeckController Deck
+        Controller.BoardController _deck;
+        Controller.BoardController Deck
         {
             get
             {
-                _deck = _deck ?? GetComponentInParent<Controller.UserDeckController>();
+                _deck = _deck ?? GetComponentInParent<Controller.BoardController>();
                 return _deck;
             }
         }

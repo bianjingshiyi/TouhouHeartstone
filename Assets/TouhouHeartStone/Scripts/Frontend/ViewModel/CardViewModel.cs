@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityWeld.Binding;
 using TouhouHeartstone.Frontend.View;
 using TouhouHeartstone.Frontend.Model;
+using TouhouHeartstone.Frontend.Controller;
 
 namespace TouhouHeartstone.Frontend.ViewModel
 {
@@ -127,6 +128,18 @@ namespace TouhouHeartstone.Frontend.ViewModel
 
         #endregion
 
+        [SerializeField]
+        BoardController _board;
+        public BoardController board
+        {
+            get
+            {
+                if (_board == null)
+                    _board = GetComponentInParent<BoardController>();
+                return _board;
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         void NotifyPropertyChange(string propertyName)
@@ -165,8 +178,6 @@ namespace TouhouHeartstone.Frontend.ViewModel
         {
             return $"CardVM {RuntimeID}(Type {CardID})";
         }
-
-
         /// <summary>
         /// 卡片接收事件，监听此事件以获取系统指令
         /// </summary>
@@ -182,11 +193,11 @@ namespace TouhouHeartstone.Frontend.ViewModel
         /// </summary>
         public void RecvAction(EventArgs args, GenericAction callback = null)
         {
-            if (args is ICardID)
+            if (args is ICardEventArgs)
             {
                 if (CardID <= 0)
                 {
-                    CardID = (args as ICardID).CardDID;
+                    CardID = (args as ICardEventArgs).CardDID;
                 }
             }
             OnRecvActionEvent?.Invoke(this, args, callback);
@@ -197,16 +208,15 @@ namespace TouhouHeartstone.Frontend.ViewModel
         /// </summary>
         public void DoAction(EventArgs args)
         {
-            if (args is ICardID)
+            if (args is ICardEventArgs)
             {
-                (args as ICardID).CardRID = RuntimeID;
-                (args as ICardID).CardDID = CardID;
+                (args as ICardEventArgs).CardRID = RuntimeID;
+                (args as ICardEventArgs).CardDID = CardID;
             }
 
             OnActionEvent?.Invoke(this, args);
         }
     }
-
     public enum CardType
     {
         /// <summary>

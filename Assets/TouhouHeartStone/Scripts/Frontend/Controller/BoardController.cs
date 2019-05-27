@@ -12,7 +12,7 @@ namespace TouhouHeartstone.Frontend.Controller
     /// <summary>
     /// 用户桌面
     /// </summary>
-    public class UserDeckController : MonoBehaviour
+    public class BoardController : MonoBehaviour
     {
         [SerializeField]
         CrystalBarViewModel crystalBar;
@@ -37,16 +37,28 @@ namespace TouhouHeartstone.Frontend.Controller
 
         List<CardViewModel> handCards = new List<CardViewModel>();
 
+        [SerializeField]
+        private bool _IsSelf;
+
+        [SerializeField]
+        CardViewModel _selectingCard = null;
+
+        public CardViewModel selectingCard
+        {
+            get { return _selectingCard; }
+            set { _selectingCard = value; }
+        }
+
         public int HandCardCount => handCards.Count;
 
         public DeckController Deck => GetComponentInParent<DeckController>();
-
-
-        private bool _IsSelf;
         /// <summary>
         /// 是否为本体
         /// </summary>
-        public bool IsSelf => _IsSelf;
+        public bool IsSelf
+        {
+            get { return _IsSelf; }
+        }
 
         #region draw
         /// <summary>
@@ -341,9 +353,9 @@ namespace TouhouHeartstone.Frontend.Controller
                 retinuePreview((args as RetinuePreview).Position);
             }
 
-            if (args is IPlayer)
+            if (args is IPlayerEventArgs)
             {
-                (args as IPlayer).PlayerID = SelfID;
+                (args as IPlayerEventArgs).PlayerID = SelfID;
                 OnDeckAction?.Invoke(sender, args);
             }
         }
@@ -422,9 +434,9 @@ namespace TouhouHeartstone.Frontend.Controller
             }
 
             // 若传入事件是卡相关事件，则交予卡处理
-            if (args is ICardID)
+            if (args is ICardEventArgs)
             {
-                var rid = (args as ICardID).CardRID;
+                var rid = (args as ICardEventArgs).CardRID;
                 var card = GetCardByRID(rid);
                 if (card != null)
                 {

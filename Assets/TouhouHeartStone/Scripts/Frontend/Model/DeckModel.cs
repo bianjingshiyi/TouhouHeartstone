@@ -79,16 +79,21 @@ namespace TouhouHeartstone.Frontend.Model
 
         private void onDeckAction(object sender, System.EventArgs args)
         {
-            if (args is UseCardEventArgs)
+            if (args is AutoPlayerCardEventArgs)
+            {
+                AutoPlayerCardEventArgs gArgs = args as AutoPlayerCardEventArgs;
+                if (gArgs.eventName == "attack")
+                    gm.Game.attack(gArgs.getProp<int>("playerIndex"), gArgs.getProp<int>("cardRID"), gArgs.getProp<int>("targetCardRID"));
+            }
+            else if (args is UseCardEventArgs)
             {
                 UseCard(args as UseCardEventArgs);
-                return;
             }
-            if (args is RoundEventArgs)
+            else if (args is RoundEventArgs)
             {
                 gm.Game.turnEnd((args as RoundEventArgs).PlayerID);
             }
-            if (args is ThrowCardEventArgs)
+            else if (args is ThrowCardEventArgs)
             {
                 var t = args as ThrowCardEventArgs;
                 initReplace(t.PlayerID, t.Cards.Select(e => e.CardRID).ToArray());

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace TouhouHeartstone
@@ -67,6 +68,16 @@ namespace TouhouHeartstone
         public List<EventWitness> before { get; } = new List<EventWitness>();
         public List<EventWitness> child { get; } = new List<EventWitness>();
         public List<EventWitness> after { get; } = new List<EventWitness>();
+        public string[] getVarNames()
+        {
+            return dicVar.Keys.ToArray();
+        }
+        public object getVar(string varName)
+        {
+            if (dicVar.ContainsKey(varName))
+                return dicVar[varName];
+            return default;
+        }
         public T getVar<T>(string varName)
         {
             if (dicVar.ContainsKey(varName) && dicVar[varName] is T)

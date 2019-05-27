@@ -27,21 +27,16 @@ namespace TouhouHeartstone.Frontend.Model
     /// <summary>
     /// 卡片抽出的事件
     /// </summary>
-    public class CardDrewEventArgs : EventArgs, ICardID
+    public class CardDrewEventArgs : EventArgs, ICardEventArgs
     {
         public int CardDID { get; set; }
         public int CardRID { get; set ; }
     }
 
-    public interface IPlayer
-    {
-        int PlayerID { get; set; }
-    }
-
     /// <summary>
     /// 设置水晶事件
     /// </summary>
-    public class SetGemEventArgs : EventArgs, IPlayer
+    public class SetGemEventArgs : EventArgs, IPlayerEventArgs
     {
         public int PlayerID { get; set; }
 
@@ -60,7 +55,7 @@ namespace TouhouHeartstone.Frontend.Model
     /// <summary>
     /// 回合结束事件
     /// </summary>
-    public class RoundEventArgs : EventArgs, IPlayer
+    public class RoundEventArgs : EventArgs, IPlayerEventArgs
     {
         public int PlayerID { get; set; }
         public RoundEventArgs(int playerID)
@@ -72,7 +67,7 @@ namespace TouhouHeartstone.Frontend.Model
     /// <summary>
     /// 丢卡事件
     /// </summary>
-    public class ThrowCardEventArgs : EventArgs, IPlayer
+    public class ThrowCardEventArgs : EventArgs, IPlayerEventArgs
     {
         public int PlayerID { get; set; }
 
@@ -107,7 +102,7 @@ namespace TouhouHeartstone.Frontend.Model
     /// <summary>
     /// 准备丢卡事件
     /// </summary>
-    public class PrepareThrowEventArgs : EventArgs, ICardID
+    public class PrepareThrowEventArgs : EventArgs, ICardEventArgs
     {
         public int CardDID { get; set; }
         public int CardRID { get; set; }
@@ -123,7 +118,7 @@ namespace TouhouHeartstone.Frontend.Model
     /// <summary>
     /// 抽卡事件
     /// </summary>
-    public class DrawCardEventArgs : EventArgs, IPlayer
+    public class DrawCardEventArgs : EventArgs, IPlayerEventArgs
     {
         public int PlayerID { get ; set ; }
 
@@ -133,7 +128,7 @@ namespace TouhouHeartstone.Frontend.Model
     /// <summary>
     /// 设置用户牌堆事件
     /// </summary>
-    public class SetUserDeckEventArgs : EventArgs, IPlayer
+    public class SetUserDeckEventArgs : EventArgs, IPlayerEventArgs
     {
         public int PlayerID { get; set; }
 
@@ -152,7 +147,7 @@ namespace TouhouHeartstone.Frontend.Model
     /// <summary>
     /// 生成一个随从
     /// </summary>
-    public class RetinueSummonEventArgs : EventArgs, IPlayer, ICardID
+    public class RetinueSummonEventArgs : EventArgs, IPlayerEventArgs, ICardEventArgs
     {
         public int PlayerID { get; set; }
         public int CardDID { get; set; }

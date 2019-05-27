@@ -5,6 +5,19 @@ using UnityEngine;
 
 namespace TouhouHeartstone.Frontend.View.Animation
 {
+    class CardAttackAnimation : CardAnimation
+    {
+        public override string AnimationName
+        {
+            get { return "servantAttack"; }
+        }
+        public override void PlayAnimation(object sender, EventArgs args, GenericAction callback)
+        {
+            AutoPlayerCardEventArgs autoArgs = args as AutoPlayerCardEventArgs;
+
+
+        }
+    }
     /// <summary>
     /// 卡到手牌
     /// </summary>
@@ -28,15 +41,15 @@ namespace TouhouHeartstone.Frontend.View.Animation
             // 设置父物体的层级
             Card.GetComponentInParent<CardViewModel>().transform.SetSiblingIndex(arg.GroupID);
 
-            Card.GetOrAddComponent<PositionAnimation>().Play(new Vector3[2] {
-                    Card.transform.localPosition,
-                    t.Position
-                }, new Vector3[2]
-                {
-                    Card.transform.localRotation.eulerAngles,
-                    t.Rotation
-                }, callback);
+            Card.GetOrAddComponent<PositionAnimation>().Play(new Vector3[2]
+            {
+                Card.transform.localPosition,
+                t.Position
+            }, new Vector3[2]
+            {
+                Card.transform.localRotation.eulerAngles,
+                t.Rotation
+            }, callback);
         }
-
     }
 }
