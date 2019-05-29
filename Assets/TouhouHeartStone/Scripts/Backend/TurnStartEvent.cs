@@ -3,36 +3,6 @@ using System.Threading.Tasks;
 
 namespace TouhouHeartstone.Backend
 {
-    class TimeOutEvent : VisibleEvent
-    {
-        public TimeOutEvent() : base("onTimeOut")
-        {
-        }
-        public override void execute(CardEngine engine)
-        {
-            //空事件
-        }
-        public override EventWitness getWitness(CardEngine engine, Player player)
-        {
-            EventWitness witness = new EventWitness("onTimeOut");
-            return witness;
-        }
-    }
-    class CountDownEvent : VisibleEvent
-    {
-        public CountDownEvent() : base("onCountDown")
-        {
-        }
-        public override void execute(CardEngine engine)
-        {
-            //空事件
-        }
-        public override EventWitness getWitness(CardEngine engine, Player player)
-        {
-            EventWitness witness = new EventWitness("onCountDown");
-            return witness;
-        }
-    }
     class TurnStartEvent : VisibleEvent
     {
         public TurnStartEvent(Player player) : base("onTurnStart")
@@ -59,11 +29,7 @@ namespace TouhouHeartstone.Backend
             {
                 Thread.Sleep(20000);
                 //开始烧绳
-                engine.doEvent(new CountDownEvent());
-                Thread.Sleep(10000);
-                //强制结束回合
-                engine.doEvent(new TimeOutEvent());
-                engine.turnEnd(player);
+                engine.doEvent(new CountDownEvent(player, 10));
             });
         }
         public override EventWitness getWitness(CardEngine engine, Player player)

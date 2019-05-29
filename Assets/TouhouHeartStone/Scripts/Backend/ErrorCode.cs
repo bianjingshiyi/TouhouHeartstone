@@ -2,6 +2,11 @@
 {
     public enum ErrorCode
     {
+        //0x000表示没有发生任何错误
+        /// <summary>
+        /// 没有错误
+        /// </summary>
+        none = 0x000,
         //0x001~099为内部错误
         /// <summary>
         /// 抛出异常
