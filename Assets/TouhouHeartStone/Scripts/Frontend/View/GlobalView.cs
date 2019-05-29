@@ -165,6 +165,15 @@ namespace TouhouHeartstone.Frontend.View
             return new PositionWithRotation() { Position = center };
         }
 
+        public PositionWithRotation GetOppositeRetinuePosition(int i, int count)
+        {
+            var a = GetRetinuePosition(i, count);
+            a.Position.x = screenSize.x - a.Position.x;
+            a.Position.y = screenSize.y - a.Position.y;
+
+            return a;
+        }
+
     }
     public struct PositionWithRotation
     {

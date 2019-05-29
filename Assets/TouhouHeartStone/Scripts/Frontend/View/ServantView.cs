@@ -81,7 +81,12 @@ namespace TouhouHeartstone.Frontend.View
                     UberDebug.LogChannel(this, "View-BJSY", "ServantView收到攻击事件");
                     var targetServant = cardVM.board.Deck.GetCardByRID(autoArgs.getProp<int>("targetCardRID"));
 
-                    PlayAnimation("servantAttack", new ServantAttackEventArgs(cardVM.Index, cardVM.board.RetinueCount, targetServant.Index, targetServant.board.RetinueCount), callback);
+                    PlayAnimation("ServantAttack", new ServantAttackEventArgs(
+                        cardVM.Index, 
+                        cardVM.board.RetinueCount, 
+                        targetServant.Index, 
+                        targetServant.board.RetinueCount)
+                        , callback);
                 }
             }
 

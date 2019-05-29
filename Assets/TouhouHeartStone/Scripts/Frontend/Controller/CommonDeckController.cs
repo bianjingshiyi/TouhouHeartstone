@@ -22,7 +22,13 @@ namespace TouhouHeartstone.Frontend.Controller
         private void Start()
         {
             roundEnd.RoundEndEvent += OnRoundend;
-            roundEnd.TimeRemain = 1;
+            TimeRemain = 1;
+        }
+
+        public float TimeRemain
+        {
+            get { return roundEnd.TimeRemain; }
+            set { roundEnd.TimeRemain = Mathf.Clamp01(value); }
         }
 
         /// <summary>
@@ -42,7 +48,9 @@ namespace TouhouHeartstone.Frontend.Controller
         public void RoundStart(bool isMyTurn)
         {
             roundEnd.Interactivable = isMyTurn;
-            roundEnd.TimeRemain = 0.6f;
+            TimeRemain = 1;
+            counter = false;
+
             if (isMyTurn)
             {
                 roundStart?.Play();
@@ -52,6 +60,22 @@ namespace TouhouHeartstone.Frontend.Controller
         public void RoundEnd()
         {
             roundEnd.Interactivable = false;
+        }
+
+        bool counter = false;
+        public void RoundTimerStart()
+        {
+            counter = true;
+        }
+
+        private void Update()
+        {
+            if (counter)
+            {
+                TimeRemain -= Time.deltaTime / 10;
+                if (TimeRemain == 0)
+                    counter = false;
+            }
         }
     }
 }

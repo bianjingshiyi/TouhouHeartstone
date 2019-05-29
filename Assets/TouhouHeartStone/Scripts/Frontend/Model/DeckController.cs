@@ -60,6 +60,7 @@ namespace TouhouHeartstone.Frontend.Model
         public void sendWitness(EventWitness witness)
         {
             witnessQueue.Enqueue(witness);
+            UberDebug.LogDebugChannel("Frontend", $"{name} 收到事件{witness}");
             var lastStatus = QueueEmpty;
             QueueEmpty = false;
 
@@ -248,6 +249,14 @@ namespace TouhouHeartstone.Frontend.Model
         private void onDeckAction(object sender, EventArgs args)
         {
             OnDeckAction?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// 开始倒计时
+        /// </summary>
+        public void CountdownStart()
+        {
+            common.RoundTimerStart();
         }
     }
     public class CardID : ICardEventArgs

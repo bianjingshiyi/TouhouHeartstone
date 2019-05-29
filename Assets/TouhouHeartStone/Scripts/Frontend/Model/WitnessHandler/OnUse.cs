@@ -50,8 +50,7 @@
 
         public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback = null)
         {
-            // todo: 实现这个玩意
-            UberDebug.LogWarning("View", "暂时没有实现onCountDown");
+            deck.CountdownStart();
             callback?.Invoke(this, null);
             return true;
         }
