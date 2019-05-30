@@ -20,22 +20,6 @@ namespace TouhouHeartstone
             doEvent(e);
             return e.cards;
         }
-        public void setPlayerProp<T>(Player player, string propName, T value)
-        {
-            doEvent(new PlayerPropChangeEvent(player, propName, PropertyChangeType.set, value));
-        }
-        public void setPlayerProp(Player player, string propName, PropertyChangeType changeType, int value)
-        {
-            doEvent(new PlayerPropChangeEvent(player, propName, changeType, value));
-        }
-        public void setPlayerProp(Player player, string propName, PropertyChangeType changeType, float value)
-        {
-            doEvent(new PlayerPropChangeEvent(player, propName, changeType, value));
-        }
-        public void setPlayerProp(Player player, string propName, PropertyChangeType changeType, string value)
-        {
-            doEvent(new PlayerPropChangeEvent(player, propName, changeType, value));
-        }
         public T getProp<T>(string varName)
         {
             if (dicVar.ContainsKey(varName) && dicVar[varName] is T)

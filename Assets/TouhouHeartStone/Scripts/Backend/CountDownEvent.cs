@@ -20,10 +20,33 @@ namespace TouhouHeartstone.Backend
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
-            EventWitness witness = new EventWitness("onCountDown");
+            EventWitness witness = new CountDownWitness();
             witness.setVar("playerIndex", player);
             witness.setVar("time", time);
             return witness;
+        }
+    }
+    /// <summary>
+    /// 倒计时事件
+    /// </summary>
+    public class CountDownWitness : EventWitness
+    {
+        /// <summary>
+        /// 倒计时的玩家索引
+        /// </summary>
+        public int playerIndex
+        {
+            get { return getVar<int>("playerIndex"); }
+        }
+        /// <summary>
+        /// 玩家当前回合的剩余时间
+        /// </summary>
+        public float time
+        {
+            get { return getVar<float>("time"); }
+        }
+        public CountDownWitness() : base("onCountDown")
+        {
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     public abstract class MasterCardDefine : CardDefine
     {
+        public abstract int skillID { get; }
         public abstract int category { get; }
         public override T getProp<T>(string propName)
         {

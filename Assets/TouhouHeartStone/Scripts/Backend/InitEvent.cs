@@ -37,7 +37,7 @@ namespace TouhouHeartstone.Backend
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
-            EventWitness witness = new EventWitness("onInit");
+            EventWitness witness = new InitWitness();
             //双方玩家所使用的卡组主人公
             witness.setVar("masterCardsRID", engine.getPlayers().Select(p => { return p["Master"][0].getProp<int>("RID"); }).ToArray());
             witness.setVar("masterCardsDID", engine.getPlayers().Select(p => { return p["Master"][0].define.id; }).ToArray());
@@ -49,6 +49,57 @@ namespace TouhouHeartstone.Backend
             //剩余卡组
             witness.setVar("deck", player["Deck"].OrderBy(c => { return c.define.id; }).Select(c => { return c.define.id; }).ToArray());
             return witness;
+        }
+    }
+    /// <summary>
+    /// 初始化事件
+    /// </summary>
+    public class InitWitness : EventWitness
+    {
+        /// <summary>
+        /// 双方玩家所使用的卡组主人公RID
+        /// </summary>
+        public int[] masterCardsRID
+        {
+            get { return getVar<int[]>("masterCardsRID"); }
+        }
+        /// <summary>
+        /// 双方玩家所使用的卡组主人公DID
+        /// </summary>
+        public int[] masterCardsDID
+        {
+            get { return getVar<int[]>("masterCardsDID"); }
+        }
+        /// <summary>
+        /// 按照先后行动顺序排列的玩家索引
+        /// </summary>
+        public int[] sortedPlayersIndex
+        {
+            get { return getVar<int[]>("sortedPlayersIndex"); }
+        }
+        /// <summary>
+        /// 所有玩家的初始手牌的RID
+        /// </summary>
+        public int[][] initCardsRID
+        {
+            get { return getVar<int[][]>("initCardsRID"); }
+        }
+        /// <summary>
+        /// 所有玩家的初始手牌DID
+        /// </summary>
+        public int[][] initCardsDID
+        {
+            get { return getVar<int[][]>("initCardsDID"); }
+        }
+        /// <summary>
+        /// 玩家自己的卡组中所有卡的DID
+        /// </summary>
+        public int[] deck
+        {
+            get { return getVar<int[]>("deck"); }
+        }
+        public InitWitness() : base("onInit")
+        {
         }
     }
 }

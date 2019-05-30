@@ -35,13 +35,57 @@
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
-            EventWitness witness = new EventWitness("onUse");
+            EventWitness witness = new UseWitness();
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
             witness.setVar("cardRID", card.getRID());
             witness.setVar("cardDID", card.define.id);
             witness.setVar("targetPosition", targetPosition);
             witness.setVar("targetCardRID", targetCard != null ? targetCard.getRID() : -1);
             return witness;
+        }
+    }
+    /// <summary>
+    /// 使用卡片事件
+    /// </summary>
+    public class UseWitness : EventWitness
+    {
+        /// <summary>
+        /// 使用卡片的玩家索引
+        /// </summary>
+        public int playerIndex
+        {
+            get { return getVar<int>("playerIndex"); }
+        }
+        /// <summary>
+        /// 使用卡片的RID
+        /// </summary>
+        public int cardRID
+        {
+            get { return getVar<int>("cardRID"); }
+        }
+        /// <summary>
+        /// 使用卡片的DID
+        /// </summary>
+        public int cardDID
+        {
+            get { return getVar<int>("cardDID"); }
+        }
+        /// <summary>
+        /// 卡片的使用目标的RID
+        /// </summary>
+        public int targetCardRID
+        {
+            get { return getVar<int>("targetCardRID"); }
+        }
+        /// <summary>
+        /// 如果使用的随从卡，在战场上的放置位置
+        /// </summary>
+        public int targetPosition
+        {
+            get { return getVar<int>("targetPosition"); }
+        }
+        public UseWitness() : base("onUse")
+        {
         }
     }
 }

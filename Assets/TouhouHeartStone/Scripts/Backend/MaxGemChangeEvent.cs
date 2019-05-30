@@ -19,10 +19,33 @@
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
-            EventWitness witness = new EventWitness("onMaxGemChange");
+            EventWitness witness = new MaxGemChangeWitness();
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
             witness.setVar("value", this.player.getProp<int>("maxGem"));
             return witness;
+        }
+    }
+    /// <summary>
+    /// 最大宝石数量改变事件
+    /// </summary>
+    public class MaxGemChangeWitness : EventWitness
+    {
+        /// <summary>
+        /// 最大宝石数量改变的玩家索引
+        /// </summary>
+        public int playerIndex
+        {
+            get { return getVar<int>("playerIndex"); }
+        }
+        /// <summary>
+        /// 改变后的最大宝石数量
+        /// </summary>
+        public int value
+        {
+            get { return getVar<int>("value"); }
+        }
+        public MaxGemChangeWitness() : base("onMaxGemChange")
+        {
         }
     }
 }

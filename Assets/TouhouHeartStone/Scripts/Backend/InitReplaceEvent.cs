@@ -29,7 +29,7 @@ namespace TouhouHeartstone.Backend
         Card[] replacedCards { get; set; }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
-            EventWitness witness = new EventWitness("onInitReplace");
+            EventWitness witness = new InitReplaceWitness();
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
             witness.setVar("originCardsRID", originCards.Select(c => { return c.getRID(); }).ToArray());
             if (player == this.player)
@@ -40,6 +40,43 @@ namespace TouhouHeartstone.Backend
             //其他玩家
             witness.setVar("replacedCardsRID", replacedCards.Select(c => { return c.getRID(); }).ToArray());
             return witness;
+        }
+    }
+    /// <summary>
+    /// 替换初始手牌事件
+    /// </summary>
+    public class InitReplaceWitness : EventWitness
+    {
+        /// <summary>
+        /// 替换初始手牌的玩家索引
+        /// </summary>
+        public int playerIndex
+        {
+            get { return getVar<int>("playerIndex"); }
+        }
+        /// <summary>
+        /// 被替换的所有初始手牌RID
+        /// </summary>
+        public int[] originCardsRID
+        {
+            get { return getVar<int[]>("originCardsRID"); }
+        }
+        /// <summary>
+        /// 替换后的所有初始手牌DID
+        /// </summary>
+        public int[] replacedCardsDID
+        {
+            get { return getVar<int[]>("replacedCardsDID"); }
+        }
+        /// <summary>
+        /// 替换后的所有初始手牌RID
+        /// </summary>
+        public int[] replacedCardsRID
+        {
+            get { return getVar<int[]>("replacedCardsRID"); }
+        }
+        public InitReplaceWitness() : base("onInitReplace")
+        {
         }
     }
 }

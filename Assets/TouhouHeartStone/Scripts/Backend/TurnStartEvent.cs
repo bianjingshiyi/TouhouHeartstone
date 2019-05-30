@@ -34,9 +34,25 @@ namespace TouhouHeartstone.Backend
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
-            EventWitness witness = new EventWitness("onTurnStart");
+            EventWitness witness = new TurnStartWitness();
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
             return witness;
+        }
+    }
+    /// <summary>
+    /// 回合开始事件
+    /// </summary>
+    public class TurnStartWitness : EventWitness
+    {
+        /// <summary>
+        /// 回合开始的玩家索引
+        /// </summary>
+        public int playerIndex
+        {
+            get { return getVar<int>("playerIndex"); }
+        }
+        public TurnStartWitness() : base("onTurnStart")
+        {
         }
     }
 }

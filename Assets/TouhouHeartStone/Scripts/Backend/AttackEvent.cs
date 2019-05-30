@@ -43,11 +43,41 @@ namespace TouhouHeartstone.Backend
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
-            EventWitness witness = new EventWitness("onAttack");
+            EventWitness witness = new AttackWitness();
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
             witness.setVar("cardRID", card.getRID());
             witness.setVar("targetCardRID", targetCard.getRID());
             return witness;
+        }
+    }
+    /// <summary>
+    /// 攻击事件
+    /// </summary>
+    public class AttackWitness : EventWitness
+    {
+        /// <summary>
+        /// 发布攻击命令的玩家
+        /// </summary>
+        public int playerIndex
+        {
+            get { return getVar<int>("playerIndex"); }
+        }
+        /// <summary>
+        /// 进行攻击的卡片RID
+        /// </summary>
+        public int cardRID
+        {
+            get { return getVar<int>("cardRID"); }
+        }
+        /// <summary>
+        /// 被攻击的卡片RID
+        /// </summary>
+        public int targetCardRID
+        {
+            get { return getVar<int>("targetCardRID"); }
+        }
+        public AttackWitness() : base("onAttack")
+        {
         }
     }
 }

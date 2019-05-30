@@ -11,8 +11,17 @@
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
-            EventWitness witness = new EventWitness("onTimeOut");
+            EventWitness witness = new TimeOutWitness();
             return witness;
+        }
+    }
+    /// <summary>
+    /// 时间耗尽事件
+    /// </summary>
+    public class TimeOutWitness : EventWitness
+    {
+        public TimeOutWitness() : base("onTimeOut")
+        {
         }
     }
 }

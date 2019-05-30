@@ -14,8 +14,17 @@
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
-            EventWitness witness = new EventWitness("onStart");
+            EventWitness witness = new StartWitness();
             return witness;
+        }
+    }
+    /// <summary>
+    /// 游戏开始事件
+    /// </summary>
+    public class StartWitness : EventWitness
+    {
+        public StartWitness() : base("onStart")
+        {
         }
     }
 }

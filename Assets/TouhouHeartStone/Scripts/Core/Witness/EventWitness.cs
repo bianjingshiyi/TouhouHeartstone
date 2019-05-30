@@ -7,7 +7,7 @@ namespace TouhouHeartstone
     [Serializable]
     public class EventWitness : IWitness
     {
-        public EventWitness(string eventName)
+        protected EventWitness(string eventName)
         {
             this.eventName = eventName;
         }
@@ -73,17 +73,23 @@ namespace TouhouHeartstone
         {
             return dicVar.Keys.ToArray();
         }
-        public object getVar(string varName)
+        public object getVar(string varName, bool throwException = true)
         {
             if (dicVar.ContainsKey(varName))
                 return dicVar[varName];
-            throw new KeyNotFoundException("没有找到变量" + varName);
+            if (throwException)
+                throw new KeyNotFoundException("没有找到变量" + varName);
+            else
+                return null;
         }
-        public T getVar<T>(string varName)
+        public T getVar<T>(string varName, bool throwException = true)
         {
             if (dicVar.ContainsKey(varName) && dicVar[varName] is T)
                 return (T)dicVar[varName];
-            throw new KeyNotFoundException("没有找到变量" + varName);
+            if (throwException)
+                throw new KeyNotFoundException("没有找到变量" + varName);
+            else
+                return default;
         }
         public void setVar<T>(string varName, T value)
         {
