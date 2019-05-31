@@ -4,7 +4,7 @@
     {
         public override string Name => "onMaxGemChange";
 
-        public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback = null)
+        protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback = null)
         {
             var args = new SetGemEventArgs()
             {
@@ -12,7 +12,7 @@
                 PlayerID = witness.getVar<int>("playerIndex")
             };
             deck.RecvEvent(args, callback);
-            return false;
+            return true;
         }
     }
 }

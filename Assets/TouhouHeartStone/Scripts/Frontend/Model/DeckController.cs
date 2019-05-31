@@ -96,7 +96,7 @@ namespace TouhouHeartstone.Frontend.Model
             {
                 var witness = witnessQueue.Dequeue();
                 UberDebug.LogDebugChannel("Frontend", $"准备播放{witness}, 队列剩余{witnessQueue.Count}");
-                EventWitnessExecutor.ExecuteWitness(witness.Flattern(), this, (a, b) => { executeNext(); });
+                EventWitnessExecutor.ExecuteWitness(witness, this, (a, b) => { executeNext(); });
             }
         }
         #endregion

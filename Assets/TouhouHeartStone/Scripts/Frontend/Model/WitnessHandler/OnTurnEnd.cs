@@ -4,13 +4,11 @@
     {
         public override string Name => "onTurnEnd";
 
-        public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback = null)
+        protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback = null)
         {
             var player = witness.getVar<int>("playerIndex");
 
             deck.onTurnEnd(player);
-            callback?.Invoke(this, null);
-
             return false;
         }
     }

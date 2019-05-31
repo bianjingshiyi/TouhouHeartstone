@@ -4,9 +4,8 @@
     {
         public override string Name => "onStart";
 
-        public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback = null)
+        protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback = null)
         {
-            callback?.Invoke(this, null);
             return false;
         }
     }

@@ -6,12 +6,12 @@ namespace TouhouHeartstone.Frontend.Model.Witness
     {
         public override string Name => "onInitReplace";
 
-        public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback)
+        protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback)
         {
             int player = witness.getVar<int>("playerIndex");
             int[] originalRID = witness.getVar<int[]>("originCardsRID");
             int[] cardsRID = witness.getVar<int[]>("replacedCardsRID");
-            int[] cardsDID = witness.getVar<int[]>("replacedCardsDID");
+            int[] cardsDID = witness.getVar<int[]>("replacedCardsDID", false);
 
             DebugUtils.NullCheck(cardsRID, "replacedCardsRID");
             DebugUtils.NullCheck(originalRID, "originCardsRID");
@@ -21,7 +21,7 @@ namespace TouhouHeartstone.Frontend.Model.Witness
             var args = new ThrowCardEventArgs(player, originalRID) { NewCards = CardID.ToCardIDs(cardsDID, cardsRID) };
             deck.RecvEvent(args, callback);
 
-            return false;
+            return true;
         }
     }
 }

@@ -4,7 +4,7 @@
     {
         public override string Name => "onSummon";
 
-        public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback = null)
+        protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback = null)
         {
             int playerIndex = witness.getVar<int>("playerIndex");
             int cardRID = witness.getVar<int>("cardRID");
@@ -22,7 +22,7 @@
             };
             deck.RecvEvent(arg, callback);
 
-            return false;
+            return true;
         }
     }
 }

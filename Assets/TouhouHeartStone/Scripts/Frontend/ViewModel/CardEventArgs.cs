@@ -171,4 +171,13 @@ namespace TouhouHeartstone.Frontend.Model
             Position = position;
         }
     }
+
+    public class OnAttackEventArgs : EventArgs, IPlayerEventArgs, ICardEventArgs
+    {
+        public int PlayerID { get; set; }
+        public int CardDID { get; set; }
+        public int CardRID { get; set; }
+
+        public int TargetRID { get; set; }
+    }
 }

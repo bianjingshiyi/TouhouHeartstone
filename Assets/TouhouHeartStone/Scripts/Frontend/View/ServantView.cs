@@ -73,21 +73,18 @@ namespace TouhouHeartstone.Frontend.View
 
         private void onRecvAction(object sender, EventArgs args, GenericAction callback)
         {
-            if (args is AutoPlayerCardEventArgs)
+            if (args is OnAttackEventArgs)
             {
-                AutoPlayerCardEventArgs autoArgs = args as AutoPlayerCardEventArgs;
-                if (autoArgs.eventName == "onAttack")
-                {
-                    UberDebug.LogChannel(this, "View-BJSY", "ServantView收到攻击事件");
-                    var targetServant = cardVM.board.Deck.GetCardByRID(autoArgs.getProp<int>("targetCardRID"));
+                var arg = args as OnAttackEventArgs;
+                UberDebug.LogChannel(this, "Frontend", "ServantView收到攻击事件");
+                var targetServant = cardVM.board.Deck.GetCardByRID(arg.TargetRID);
 
-                    PlayAnimation("ServantAttack", new ServantAttackEventArgs(
-                        cardVM.Index, 
-                        cardVM.board.RetinueCount, 
-                        targetServant.Index, 
-                        targetServant.board.RetinueCount)
-                        , callback);
-                }
+                PlayAnimation("ServantAttack", new ServantAttackEventArgs(
+                    cardVM.Index, 
+                    cardVM.board.RetinueCount, 
+                    targetServant.Index, 
+                    targetServant.board.RetinueCount)
+                    ,callback);
             }
 
             if (args is IndexChangeEventArgs && drawed)
