@@ -107,6 +107,11 @@ namespace TouhouHeartstone.Frontend.View
                     EventArgs = new CardPositionEventArgs() { GroupCount = cardVM.board.RetinueCount, GroupID = cardVM.Index }
                 }, callback);
             }
+
+            if (args is OnDamageEventArgs)
+            {
+                // todo: 增加卡片伤害动画
+            }
         }
 
         protected void Update()

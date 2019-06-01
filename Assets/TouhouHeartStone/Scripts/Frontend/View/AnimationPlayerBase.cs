@@ -60,7 +60,7 @@ namespace TouhouHeartstone.Frontend.View
         /// <param name="callback">回调</param>
         public void PlayAnimation(object sender, string aniName, EventArgs args = null, GenericAction callback = null)
         {
-            PlayAnimation(sender, new CardAnimationEventArgs(aniName, args));
+            PlayAnimation(sender, new CardAnimationEventArgs(aniName, args), callback);
         }
 
         /// <summary>

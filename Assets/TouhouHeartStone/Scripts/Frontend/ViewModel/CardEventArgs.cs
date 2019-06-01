@@ -180,4 +180,14 @@ namespace TouhouHeartstone.Frontend.Model
 
         public int TargetRID { get; set; }
     }
+
+    public class OnDamageEventArgs : EventArgs
+    {
+        public int DamageAmount { get; set; }
+
+        public OnDamageEventArgs(int amount)
+        {
+            DamageAmount = amount;
+        }
+    }
 }
