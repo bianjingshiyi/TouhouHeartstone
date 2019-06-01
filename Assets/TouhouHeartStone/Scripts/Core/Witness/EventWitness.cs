@@ -5,9 +5,9 @@ using System.Collections.Generic;
 namespace TouhouHeartstone
 {
     [Serializable]
-    public class EventWitness : IWitness
+    public abstract class EventWitness : IWitness
     {
-        protected EventWitness(string eventName)
+        public EventWitness(string eventName)
         {
             this.eventName = eventName;
         }
