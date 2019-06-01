@@ -5,7 +5,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
     public class PositionAnimation : MonoBehaviour
     {
         float? startTime;
-        public float Duration = 1;
+        public float Duration = 0;
         public float MaxDuration = 1;
         float minMovingSpeed = 1000;
         float minRotateSpeed = 180;
@@ -14,6 +14,8 @@ namespace TouhouHeartstone.Frontend.View.Animation
         public Vector3[] Rotations { get; private set; } = new Vector3[0];
         public AnimationCurve Curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
         GenericAction callback;
+
+        float[] timeDurations;
 
         public void Play(Vector3[] position, Vector3[] rotation, GenericAction callback)
         {
@@ -29,13 +31,20 @@ namespace TouhouHeartstone.Frontend.View.Animation
             this.Positions = position;
             this.Rotations = rotation;
 
-            var dist = Vector3.Distance(Positions[0], Positions[1]);
-            var posDuration = dist / minMovingSpeed;
+            timeDurations = new float[position.Length];
 
-            var rot = Vector3.Distance(standardizeRotation(Rotations[0], Rotations[1]), Rotations[1]);
-            var rotDuration = rot / minRotateSpeed;
+            Duration = 0;
+            for (int i = 0; i < Positions.Length - 1; i++)
+            {
+                var dist = Vector3.Distance(Positions[i], Positions[i + 1]);
+                var rot = Vector3.Distance(standardizeRotation(Rotations[i], Rotations[i + 1]), Rotations[i + 1]);
 
-            Duration = Mathf.Min(MaxDuration, Mathf.Max(posDuration, rotDuration));
+                var posDuration = dist / minMovingSpeed;
+                var rotDuration = rot / minRotateSpeed;
+
+                Duration += Mathf.Min(MaxDuration, Mathf.Max(posDuration, rotDuration));
+                timeDurations[i + 1] = Duration;
+            }
         }
 
         private void Update()
@@ -45,20 +54,30 @@ namespace TouhouHeartstone.Frontend.View.Animation
                 float deltaTime = Time.time - startTime.Value;
 
                 float val = 1;
+                int index = 0;
 
-                if (Duration != 0)
+                for (int i = 1; i < timeDurations.Length; i++)
                 {
-                    var t = Mathf.Clamp01(deltaTime / Duration);
-                    val = Curve.Evaluate(t);
+                    index = i;
+                    if (timeDurations[i - 1] <= deltaTime && deltaTime <= timeDurations[i])
+                    {
+                        var dura = timeDurations[i] - timeDurations[i - 1];
+                        if (dura != 0)
+                        {
+                            var t = Mathf.Clamp01((deltaTime - timeDurations[i - 1]) / dura);
+                            val = Curve.Evaluate(t);
+                        }
+                        break;
+                    }
                 }
 
-                if (Positions.Length > 1)
+                if (Positions.Length > index)
                 {
-                    transform.localPosition = Vector3.Lerp(Positions[0], Positions[1], val);
+                    transform.localPosition = Vector3.Lerp(Positions[index - 1], Positions[index], val);
                 }
-                if (Rotations.Length > 1)
+                if (Rotations.Length > index)
                 {
-                    transform.localRotation = Quaternion.Euler(Vector3.Lerp(standardizeRotation(Rotations[0], Rotations[1]), Rotations[1], val));
+                    transform.localRotation = Quaternion.Euler(Vector3.Lerp(standardizeRotation(Rotations[index - 1], Rotations[index]), Rotations[index], val));
                 }
 
                 if (deltaTime > Duration)

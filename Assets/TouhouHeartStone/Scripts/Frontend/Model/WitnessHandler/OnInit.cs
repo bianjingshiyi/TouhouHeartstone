@@ -7,7 +7,7 @@ namespace TouhouHeartstone.Frontend.Model.Witness
     {
         public override string Name => "onInit";
 
-        public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback)
+        protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback)
         {
             // 角色卡的DefineID
             int[] charactersDID = witness.getVar<int[]>("masterCardsDID");
@@ -37,8 +37,6 @@ namespace TouhouHeartstone.Frontend.Model.Witness
 
             // 先抽卡再设置deck，防止deck中的被抽走（
             deck.SetSelfDeck(userCards);
-
-            callback?.Invoke(this, null);
 
             return false;
         }

@@ -4,7 +4,7 @@
     {
         public override string Name => "onUse";
 
-        public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback = null)
+        protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback = null)
         {
             int playerIndex = witness.getVar<int>("playerIndex");
             int cardRID = witness.getVar<int>("cardRID");
@@ -40,7 +40,7 @@
             args.PlayerID = playerIndex;
 
             deck.RecvEvent(args, callback);
-            return false;
+            return true;
         }
     }
 
@@ -48,12 +48,20 @@
     {
         public override string Name => "onCountDown";
 
-        public override bool HandleWitness(EventWitness witness, DeckController deck, GenericAction callback = null)
+        protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback = null)
         {
-            // todo: 实现这个玩意
-            UberDebug.LogWarning("View", "暂时没有实现onCountDown");
-            callback?.Invoke(this, null);
-            return true;
+            deck.CountdownStart();
+            return false;
+        }
+    }
+
+    public class OnTimeOut : WitnessHandler
+    {
+        public override string Name => "onTimeOut";
+
+        protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback = null)
+        {
+            return false;
         }
     }
 }
