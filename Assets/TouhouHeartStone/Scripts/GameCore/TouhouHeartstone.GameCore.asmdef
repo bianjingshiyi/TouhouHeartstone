@@ -1,6 +1,8 @@
 {
-    "name": "TouhouHeartstone.Core",
-    "references": [],
+    "name": "TouhouHeartstone.GameCore",
+    "references": [
+        "TouhouHeartstone.Core"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],

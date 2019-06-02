@@ -24,7 +24,7 @@ namespace TouhouHeartstone.Backend
             {
                 cards[i] = new Card(engine, engine.rule.pool[deck[i + 1]]);
             }
-            Player player = new Player(frontend.id, new Pile[]
+            Player player = new Player(engine, new Pile[]
             {
                 new Pile("Deck",cards),
                 new Pile("Init"),
@@ -86,7 +86,6 @@ namespace TouhouHeartstone.Backend
         }
         public void attack(int playerIndex, int cardRID, int targetCardRID)
         {
-            UberDebug.LogChannel("Core", "攻击事件：玩家" + playerIndex + "使用卡片" + cardRID + "攻击卡片" + targetCardRID);
             Player player = engine.getPlayerAt(playerIndex);
             if (engine.getProp<Player>("currentPlayer") != player)
             {

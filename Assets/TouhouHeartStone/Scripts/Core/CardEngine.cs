@@ -11,7 +11,6 @@ namespace TouhouHeartstone
         {
             this.rule = rule;
             random = new Random(randomSeed);
-            recordManager = new RecordManager(this);
         }
         public Rule rule { get; }
         public Card[] moveCard(Player player, string pileName, Card[] cards, Player targetPlayer, string targetPileName, int position)
@@ -147,8 +146,6 @@ namespace TouhouHeartstone
             return (float)(random.NextDouble() * (max - min) + min);
         }
         Random random { get; set; }
-        internal PlayerManager playerManager { get; private set; }
-        public RecordManager recordManager { get; set; }
     }
     public delegate void PlayerIndexWitnessEvent(int playerIndex, EventWitness witness);
     public enum EventPhase

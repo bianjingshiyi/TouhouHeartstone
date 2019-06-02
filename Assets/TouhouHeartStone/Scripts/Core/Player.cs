@@ -7,13 +7,9 @@ namespace TouhouHeartstone
     [Serializable]
     public class Player
     {
-        public Player(int id)
+        public Player(CardEngine engine, Pile[] piles)
         {
-            this.id = id;
-        }
-        public Player(int id, Pile[] piles)
-        {
-            this.id = id;
+            this.engine = engine;
             foreach (Pile pile in piles)
             {
                 pile.owner = this;
@@ -24,7 +20,7 @@ namespace TouhouHeartstone
         {
             if (dicProp.ContainsKey(propName) && dicProp[propName] is T)
                 return (T)dicProp[propName];
-            return default(T);
+            return default;
         }
         public void setProp<T>(string propName, T value)
         {
@@ -61,10 +57,10 @@ namespace TouhouHeartstone
             return pileList.FirstOrDefault(e => { return e.name == name; });
         }
         List<Pile> pileList { get; } = new List<Pile>();
-        public int id { get; private set; }
+        CardEngine engine { get; }
         public override string ToString()
         {
-            return "Player(" + id + ")";
+            return "Player(" + engine.getPlayerIndex(this) + ")";
         }
         public static implicit operator Player[] (Player player)
         {

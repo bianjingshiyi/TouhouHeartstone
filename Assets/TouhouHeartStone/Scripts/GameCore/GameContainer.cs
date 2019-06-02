@@ -1,8 +1,6 @@
 ﻿
 using UnityEngine;
 
-using TouhouHeartstone.OldFrontend.Manager;
-
 namespace TouhouHeartstone.Backend
 {
     public abstract class GameContainer : MonoBehaviour
@@ -21,36 +19,36 @@ namespace TouhouHeartstone.Backend
         }
         protected virtual void onStart()
         {
-            if (frontendEvents != null)
-            {
-                frontendEvents.ReplaceInitDrawAction += onInitReplace;
-                frontendEvents.UseCardEventAction += onUse;
-                frontendEvents.EndRoundEventAction += onTurnEnd;
-            }
+            //if (frontendEvents != null)
+            //{
+            //    frontendEvents.ReplaceInitDrawAction += onInitReplace;
+            //    frontendEvents.UseCardEventAction += onUse;
+            //    frontendEvents.EndRoundEventAction += onTurnEnd;
+            //}
         }
         protected abstract void onInitReplace(int[] cards);
         protected abstract void onUse(int instance, int position, int target);
         protected abstract void onTurnEnd();
         protected abstract void onReceiveObject(int senderId, object obj);
         public abstract int localPlayerIndex { get; }
-        FrontendWitnessEventDispatcher frontendEvents
-        {
-            get
-            {
-                if (_frontendEvents == null)
-                {
-                    foreach (GameObject obj in gameObject.scene.GetRootGameObjects())
-                    {
-                        _frontendEvents = obj.GetComponentInChildren<FrontendWitnessEventDispatcher>();
-                        if (_frontendEvents != null)
-                            break;
-                    }
-                }
-                return _frontendEvents;
-            }
-        }
-        [SerializeField]
-        FrontendWitnessEventDispatcher _frontendEvents;
+        //FrontendWitnessEventDispatcher frontendEvents
+        //{
+        //    get
+        //    {
+        //        if (_frontendEvents == null)
+        //        {
+        //            foreach (GameObject obj in gameObject.scene.GetRootGameObjects())
+        //            {
+        //                _frontendEvents = obj.GetComponentInChildren<FrontendWitnessEventDispatcher>();
+        //                if (_frontendEvents != null)
+        //                    break;
+        //            }
+        //        }
+        //        return _frontendEvents;
+        //    }
+        //}
+        //[SerializeField]
+        //FrontendWitnessEventDispatcher _frontendEvents;
         public NetworkManager network
         {
             get
