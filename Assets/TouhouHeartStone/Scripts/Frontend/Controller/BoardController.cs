@@ -32,9 +32,6 @@ namespace TouhouHeartstone.Frontend.Controller
         [SerializeField]
         Transform cardSpawnRoot;
 
-        [SerializeField]
-        ThrowCardViewModel throwCard;
-
         List<CardViewModel> handCards = new List<CardViewModel>();
 
         [SerializeField]
@@ -153,9 +150,6 @@ namespace TouhouHeartstone.Frontend.Controller
             #endregion
 
             cardfacePrefab.gameObject.SetActive(false);
-            throwCard.gameObject.SetActive(false);
-
-            throwCard.OnThrow += onThrow;
         }
 
         private int _SelfID;
@@ -171,11 +165,6 @@ namespace TouhouHeartstone.Frontend.Controller
             _SelfID = id;
             _IsSelf = isSelf;
 
-            if (!isSelf)
-            {
-                transform.localRotation = Quaternion.Euler(0, 0, 180);
-            }
-
             // todo: 设置角色图像
         }
 
@@ -186,7 +175,6 @@ namespace TouhouHeartstone.Frontend.Controller
         private void onThrow()
         {
             throwCardsInternal(throwingCards.ToArray());
-            throwCard.gameObject.SetActive(false);
 
             DoAction(this, new ThrowCardEventArgs(SelfID, throwingCards.Select(c => c.RuntimeID).ToArray()));
             throwingCards.Clear();
@@ -250,16 +238,14 @@ namespace TouhouHeartstone.Frontend.Controller
             // 仅本玩家显示丢卡
             if (IsSelf)
             {
-                throwCard.gameObject.SetActive(true);
-                throwCard.Max = max;
-                throwCard.Min = min;
+                Deck.CommonDeck.ShowThrowCardDialog(min, max, onThrow);
             }
         }
 
         /// <summary>
         /// 当前是否正在丢卡
         /// </summary>
-        public bool ThrowingCard => throwCard.gameObject.activeSelf;
+        public bool ThrowingCard => Deck.CommonDeck.Throwing;
 
         /// <summary>
         /// 等待被丢的卡

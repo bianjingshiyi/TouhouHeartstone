@@ -18,13 +18,12 @@ namespace TouhouHeartstone.Frontend.Model
         [SerializeField]
         CommonDeckController common;
 
-        [SerializeField]
-        BoardController userPrefab;
+        public CommonDeckController CommonDeck => common;
 
         [SerializeField]
-        Transform spawnRoot;
+        BoardController[] userBoards = new BoardController[0];
 
-        List<BoardController> users = new List<BoardController>();
+        BoardController[] users = new BoardController[2];
 
         DeckModel _model;
         DeckModel Model
@@ -117,16 +116,24 @@ namespace TouhouHeartstone.Frontend.Model
             if (players.Length != characters.Length)
                 throw new System.Exception("两个数据不匹配");
 
+            if (players.Length != users.Length)
+                throw new System.Exception("用户数目与场上的东西不匹配");
+
+            if (userBoards.Length != 2)
+                throw new System.Exception("当前仅支持两个玩家");
+
             playerOrder = players;
+
+            // 重新排列deck，确保当前玩家是0号board
+            for (int i = 0; i < userBoards.Length; i++)
+            {
+                users[i] = userBoards[(userBoards.Length + i - selfID) % userBoards.Length];
+            }
 
             for (int i = 0; i < players.Length; i++)
             {
-                var u = Instantiate(userPrefab, spawnRoot);
-                u.Init(i, characters[i], selfID == i);
-                u.gameObject.SetActive(true);
-                users.Add(u);
-
-                u.OnDeckAction += onDeckAction;
+                users[i].Init(i, characters[i], selfID == i);
+                users[i].OnDeckAction += onDeckAction;
             }
         }
 
@@ -153,7 +160,6 @@ namespace TouhouHeartstone.Frontend.Model
 
         private void Awake()
         {
-            userPrefab.gameObject.SetActive(false);
             common.OnRoundendBtnClick += OnRoundendBtnClick;
         }
 

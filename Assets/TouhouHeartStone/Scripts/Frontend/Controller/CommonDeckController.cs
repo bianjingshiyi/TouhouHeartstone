@@ -19,8 +19,13 @@ namespace TouhouHeartstone.Frontend.Controller
         [SerializeField]
         AnimatorPlayer roundStart;
 
+        [SerializeField]
+        ThrowCardViewModel throwCard;
+
         private void Start()
         {
+            throwCard.gameObject.SetActive(false);
+            throwCard.OnThrow += ThrowCard_OnThrow;
             roundEnd.RoundEndEvent += OnRoundend;
             TimeRemain = 1;
         }
@@ -67,6 +72,27 @@ namespace TouhouHeartstone.Frontend.Controller
         {
             counter = true;
         }
+
+        Action throwCardCallback;
+        public void ShowThrowCardDialog(int min, int max, Action callback)
+        {
+            throwCardCallback = callback;
+            throwCard.Max = max;
+            throwCard.Min = min;
+            throwCard.gameObject.SetActive(true);
+        }
+
+        private void ThrowCard_OnThrow()
+        {
+            throwCardCallback?.Invoke();
+            throwCardCallback = null;
+            throwCard.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// 是否正在丢卡
+        /// </summary>
+        public bool Throwing => throwCard.gameObject.activeSelf;
 
         private void Update()
         {
