@@ -430,7 +430,7 @@ namespace TouhouHeartstone.Frontend.Controller
                 }
                 else
                 {
-                    UberDebug.LogWarningChannel("Frontend", $"没用找到对应RID为{rid}的卡片。");
+                    UberDebug.LogWarningChannel("Frontend", $"没用找到对应RID为{rid}的卡片。当前卡片列表：{getCardsString()}");
                     callback?.Invoke(this, null);
                 }
             }
@@ -500,6 +500,33 @@ namespace TouhouHeartstone.Frontend.Controller
                         retinues[i].RecvAction(new IndexChangeEventArgs(previewIndex) { Count = retinues.Count + 1 });
                 }
             }
+        }
+
+        string getCardsString()
+        {
+            string str = "手牌叠：{";
+            for (int i = 0; i < handCards.Count; i++)
+            {
+                if (i > 0) str += ", ";
+                str += handCards[i].ToString();
+            }
+
+            str += "}, 随从叠：{";
+            for (int i = 0; i < retinues.Count; i++)
+            {
+                if (i > 0) str += ", ";
+                str += retinues[i].ToString();
+            }
+
+            str += "}, 丢弃叠：{";
+            for (int i = 0; i < throwingCards.Count; i++)
+            {
+                if (i > 0) str += ", ";
+                str += throwingCards[i].ToString();
+            }
+            str += "}";
+
+            return str;
         }
 
         #endregion
