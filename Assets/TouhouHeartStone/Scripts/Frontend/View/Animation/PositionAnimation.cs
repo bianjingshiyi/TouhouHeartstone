@@ -10,13 +10,38 @@ namespace TouhouHeartstone.Frontend.View.Animation
         float minMovingSpeed = 1000;
         float minRotateSpeed = 180;
 
-        public Vector3[] Positions { get; private set; } = new Vector3[0];
-        public Vector3[] Rotations { get; private set; } = new Vector3[0];
+        Vector3[] Positions { get; set; } = new Vector3[0];
+        Vector3[] Rotations { get; set; } = new Vector3[0];
+
         public AnimationCurve Curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
         GenericAction callback;
 
         float[] timeDurations;
 
+        /// <summary>
+        /// 播放动画序列
+        /// </summary>
+        /// <param name="prs"></param>
+        /// <param name="callback"></param>
+        public void Play(PositionWithRotation[] prs, GenericAction callback)
+        {
+            Vector3[] positions = new Vector3[prs.Length];
+            Vector3[] rotations = new Vector3[prs.Length];
+
+            for (int i = 0; i < prs.Length; i++)
+            {
+                positions[i] = prs[i].Position;
+                rotations[i] = prs[i].Rotation;
+            }
+            Play(positions, rotations, callback);
+        }
+
+        /// <summary>
+        /// 播放位置和旋转的序列
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="rotation"></param>
+        /// <param name="callback"></param>
         public void Play(Vector3[] position, Vector3[] rotation, GenericAction callback)
         {
             if (startTime != null)

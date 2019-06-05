@@ -37,12 +37,24 @@ namespace TouhouHeartstone.Frontend.View.Animation
     {
         [Obsolete("使用带参数版")]
         public CardPositionEventArgs() { }
+
+        [Obsolete("使用带边的版本")]
         public CardPositionEventArgs(int count, int id)
         {
             GroupCount = count;
             GroupID = id;
             if (id >= count)
                 throw new ArgumentOutOfRangeException($"卡片位置{id}越界（总数{count}）");
+        }
+
+        public CardPositionEventArgs(int count, int id, bool opposite)
+        {
+            GroupCount = count;
+            GroupID = id;
+            if (id >= count)
+                throw new ArgumentOutOfRangeException($"卡片位置{id}越界（总数{count}）");
+
+            OppoSide = opposite;
         }
 
         /// <summary>
@@ -54,6 +66,11 @@ namespace TouhouHeartstone.Frontend.View.Animation
         /// 此卡在组内的Index
         /// </summary>
         public int GroupID;
+
+        /// <summary>
+        /// 卡片所属边
+        /// </summary>
+        public bool OppoSide;
     }
 
     public class ServantAttackEventArgs : EventArgs

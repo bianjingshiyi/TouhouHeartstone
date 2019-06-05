@@ -13,6 +13,9 @@ namespace TouhouHeartstone.Frontend.View
         [SerializeField]
         RectTransform deckRect;
 
+        [SerializeField]
+        RectTransform canvasRect;
+
         public CardPositionCalculator CardPositionCalculator { get; private set; }
 
         [SerializeField]
@@ -36,60 +39,62 @@ namespace TouhouHeartstone.Frontend.View
 
         private void Awake()
         {
-            CardPositionCalculator = new CardPositionCalculator(deckRect.rect.size);
+            CardPositionCalculator = new CardPositionCalculator(deckRect.rect.size, new Vector2(1920, 1080));
         }
     }
 
     public class CardPositionCalculator
     {
+        Vector2 rectSize;
         Vector2 screenSize;
-        public CardPositionCalculator(Vector2 size)
+        public CardPositionCalculator(Vector2 rect, Vector2 screen)
         {
-            screenSize = size;
+            rectSize = rect;
+            screenSize = screen;
         }
 
         /// <summary>
         /// 两张手牌之间的距离
         /// </summary>
-        float cardHandSpacing => screenSize.y * 0.08f;
+        float cardHandSpacing => rectSize.y * 0.08f;
 
         /// <summary>
         /// 两张屏幕中间的牌之间的距离
         /// </summary>
-        float cardCenterSpacing => screenSize.y * 0.2f;
+        float cardCenterSpacing => rectSize.y * 0.2f;
 
         /// <summary>
         /// 手牌的基础高度
         /// </summary>
-        float cardHandBaseY => screenSize.y * 0.01f;
+        float cardHandBaseY => rectSize.y * 0.01f;
 
         /// <summary>
         /// 卡片预览的高度
         /// </summary>
-        float cardFloatBaseY => screenSize.y * 0.10f;
+        float cardFloatBaseY => rectSize.y * 0.10f;
 
         /// <summary>
         /// 卡片位置。高于此位置则尝试使用；低于此位置则回到手牌
         /// </summary>
-        public float CardUseThresold => screenSize.y * 0.2f;
+        public float CardUseThresold => rectSize.y * 0.2f;
 
         /// <summary>
         /// 手牌最大宽度
         /// </summary>
-        float maxHandWidth => screenSize.y * 0.5f;
+        float maxHandWidth => rectSize.y * 0.5f;
 
         /// <summary>
         /// 卡片高度的一半
         /// </summary>
-        float cardHalfHeight => screenSize.y * 0.2f;
+        float cardHalfHeight => rectSize.y * 0.2f;
 
         /// <summary>
-        /// 获取丢卡位置的坐标
+        /// 获取丢卡位置的坐标（全局）
         /// </summary>
         /// <param name="i"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public PositionWithRotation GetCardCenter(int i, int count)
+        public PositionWithRotation GetThrowCardPosition(int i, int count)
         {
             if (i >= count)
                 throw new ArgumentOutOfRangeException($"argument i({i}) > count({count})");
@@ -125,7 +130,8 @@ namespace TouhouHeartstone.Frontend.View
                 throw new ArgumentOutOfRangeException($"argument i({i}) > count({count})");
 
             // position
-            Vector3 basePos = new Vector3(screenSize.x / 2, cardHandBaseY);
+            // Vector3 basePos = new Vector3(screenSize.x / 2, cardHandBaseY);
+            Vector3 basePos = Vector3.zero;
 
             if (count <= 3)
             {
@@ -149,16 +155,22 @@ namespace TouhouHeartstone.Frontend.View
             }
         }
 
-        public Vector3 StackPosition => new Vector3(screenSize.x, 0, 0);
+        public Vector3 StackPosition => new Vector3(rectSize.x, 0, 0);
 
-        float retinueSpacing => screenSize.y * 0.15f;
+        float retinueSpacing => rectSize.y * 0.15f;
 
+        /// <summary>
+        /// 获取随从位置坐标
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public PositionWithRotation GetRetinuePosition(int i, int count)
         {
             if (i >= count)
                 throw new ArgumentOutOfRangeException($"argument i({i}) > count({count})");
 
-            Vector3 center = screenSize / 2;
+            Vector3 center = rectSize / 2;
             center.y *= 0.8f;
 
             center.x += (i - (count - 1) / 2f) * retinueSpacing;
@@ -168,8 +180,8 @@ namespace TouhouHeartstone.Frontend.View
         public PositionWithRotation GetOppositeRetinuePosition(int i, int count)
         {
             var a = GetRetinuePosition(i, count);
-            a.Position.x = screenSize.x - a.Position.x;
-            a.Position.y = screenSize.y - a.Position.y;
+            a.Position.x = rectSize.x - a.Position.x;
+            a.Position.y = rectSize.y - a.Position.y;
 
             return a;
         }
