@@ -21,7 +21,7 @@ namespace TouhouHeartstone.Backend
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
             EventWitness witness = new CountDownWitness();
-            witness.setVar("playerIndex", player);
+            witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
             witness.setVar("time", time);
             return witness;
         }
