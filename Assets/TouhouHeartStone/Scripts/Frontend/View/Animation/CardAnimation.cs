@@ -35,8 +35,15 @@ namespace TouhouHeartstone.Frontend.View.Animation
     /// </summary>
     public class CardPositionEventArgs : System.EventArgs
     {
+        [Obsolete("使用带参数版")]
         public CardPositionEventArgs() { }
-        public CardPositionEventArgs(int count, int id) { GroupCount = count; GroupID = id; }
+        public CardPositionEventArgs(int count, int id)
+        {
+            GroupCount = count;
+            GroupID = id;
+            if (id >= count)
+                throw new ArgumentOutOfRangeException($"卡片位置{id}越界（总数{count}）");
+        }
 
         /// <summary>
         /// 组内的牌的数量

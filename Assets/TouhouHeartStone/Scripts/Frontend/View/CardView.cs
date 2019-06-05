@@ -36,9 +36,20 @@ namespace TouhouHeartstone.Frontend.View
             checker.OnRelease += onMouseRelease;
         }
 
+        bool destroied = false;
         protected void OnDestroy()
         {
-            cardVM.OnRecvActionEvent -= onRecvAction;
+            if (!destroied)
+            {
+                cardVM.OnRecvActionEvent -= onRecvAction;
+                destroied = true;
+            }
+        }
+
+        void destroy()
+        {
+            Destroy(gameObject);
+            OnDestroy();
         }
 
         private void onRecvAction(object sender, EventArgs args, GenericAction callback)
@@ -58,7 +69,7 @@ namespace TouhouHeartstone.Frontend.View
                 PlayAnimation(this, new CardAnimationEventArgs()
                 {
                     AnimationName = "CardToStack",
-                    EventArgs = new CardPositionEventArgs() { GroupCount = arg.Count, GroupID = arg.Index }
+                    EventArgs = new CardPositionEventArgs(arg.Count, arg.Index)
                 }, callback);
             }
         }
@@ -66,8 +77,7 @@ namespace TouhouHeartstone.Frontend.View
         private void onUse(UseCardEventArgs arg1, GenericAction arg2)
         {
             // todo: 使用的动画
-
-            Destroy(gameObject);
+            destroy();
             arg2?.Invoke(this, null);
         }
 
@@ -86,7 +96,7 @@ namespace TouhouHeartstone.Frontend.View
                             PlayAnimation(this, new CardAnimationEventArgs()
                             {
                                 AnimationName = "CardToCenter",
-                                EventArgs = new CardPositionEventArgs() { GroupCount = Deck.ThrowingCardCount, GroupID = cardVM.Index }
+                                EventArgs = new CardPositionEventArgs(Deck.ThrowingCardCount, cardVM.Index)
                             }, null);
                         }
                         break;
@@ -95,7 +105,7 @@ namespace TouhouHeartstone.Frontend.View
                         PlayAnimation(this, new CardAnimationEventArgs()
                         {
                             AnimationName = "CardToHand",
-                            EventArgs = new CardPositionEventArgs() { GroupCount = Deck.HandCardCount, GroupID = cardVM.Index }
+                            EventArgs = new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index)
                         }, null);
                         break;
                 }
@@ -107,7 +117,7 @@ namespace TouhouHeartstone.Frontend.View
                 {
                     AnimationName = "DrawCard",
                     EventArgs = new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index)
-                }, (a, b) => 
+                }, (a, b) =>
                 {
                     drawed = true;
                     cardVM.DoAction(new CardDrewEventArgs());
@@ -164,11 +174,7 @@ namespace TouhouHeartstone.Frontend.View
                     PlayAnimation(this, new CardAnimationEventArgs()
                     {
                         AnimationName = "CardToPreview",
-                        EventArgs = new CardPositionEventArgs()
-                        {
-                            GroupCount = Deck.HandCardCount,
-                            GroupID = cardVM.Index
-                        }
+                        EventArgs = new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index)
                     }, null);
                     break;
                 case state.hand:
@@ -177,11 +183,7 @@ namespace TouhouHeartstone.Frontend.View
                         PlayAnimation(this, new CardAnimationEventArgs()
                         {
                             AnimationName = "CardToHand",
-                            EventArgs = new CardPositionEventArgs()
-                            {
-                                GroupCount = Deck.HandCardCount,
-                                GroupID = cardVM.Index
-                            }
+                            EventArgs = new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index)
                         }, null);
                     }
                     break;
@@ -406,7 +408,7 @@ namespace TouhouHeartstone.Frontend.View
         {
             if (lastPointerDownTime != null)
             {
-                if (time - lastPointerDownTime > dragThresold || 
+                if (time - lastPointerDownTime > dragThresold ||
                     Vector3.Distance(mousePos, Input.mousePosition) > distanceThresold)
                 {
                     OnDrag?.Invoke();
