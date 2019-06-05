@@ -16,14 +16,14 @@ namespace IGensoukyo.Utilities
             float h = rt.rect.height;
 
             var sprite = sr.sprite;
-            if(sprite != null)
+            if (sprite != null)
             {
                 var pw = sprite.rect.width / sprite.pixelsPerUnit;
                 var ph = sprite.rect.height / sprite.pixelsPerUnit;
 
                 float factor = 1;
 
-                if(w / h > pw / ph)
+                if (w / h > pw / ph)
                 {
                     factor = w / pw;
                 }
@@ -40,7 +40,7 @@ namespace IGensoukyo.Utilities
 
         void Update()
         {
-            if(oldSprite != sr?.sprite)
+            if (oldSprite != sr?.sprite)
             {
                 oldSprite = sr?.sprite;
                 Resize();

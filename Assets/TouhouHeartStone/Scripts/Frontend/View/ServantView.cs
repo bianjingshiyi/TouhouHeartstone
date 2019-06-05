@@ -93,7 +93,7 @@ namespace TouhouHeartstone.Frontend.View
                 PlayAnimation(this, new CardAnimationEventArgs()
                 {
                     AnimationName = "RetinueMove",
-                    EventArgs = new CardPositionEventArgs() { GroupCount = arg.Count > 0 ? arg.Count : cardVM.board.RetinueCount, GroupID = arg.Index }
+                    EventArgs = new CardPositionEventArgs(arg.Count > 0 ? arg.Count : cardVM.board.RetinueCount, arg.Index)
                 }, callback);
             }
 
@@ -104,7 +104,7 @@ namespace TouhouHeartstone.Frontend.View
                 PlayAnimation(this, new CardAnimationEventArgs()
                 {
                     AnimationName = "RetinueSummon",
-                    EventArgs = new CardPositionEventArgs() { GroupCount = cardVM.board.RetinueCount, GroupID = cardVM.Index }
+                    EventArgs = new CardPositionEventArgs(cardVM.board.RetinueCount, cardVM.Index)
                 }, callback);
             }
 

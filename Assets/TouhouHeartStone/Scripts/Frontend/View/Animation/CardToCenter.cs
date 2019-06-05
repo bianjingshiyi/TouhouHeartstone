@@ -13,11 +13,20 @@ namespace TouhouHeartstone.Frontend.View.Animation
             var arg = Utilities.CheckType<CardPositionEventArgs>(args);
 
             var gv = Card.GetComponentInParent<GlobalView>();
-            var t = gv.CardPositionCalculator.GetCardCenter(arg.GroupID, arg.GroupCount);
+            var t = gv.CardPositionCalculator.GetThrowCardPosition(arg.GroupID, arg.GroupCount);
 
+            // todo: 需要做坐标转换
+            Vector3 loWorld = Card.transform.parent.localToWorldMatrix * Card.transform.localPosition;
+            Vector3 offset = loWorld - Card.transform.position;
+            Vector3 newWo = t.Position + offset;
+            Vector3 newLo = Card.transform.parent.worldToLocalMatrix * newWo;
+
+            DebugUtils.Debug($"CalcPos: {t.Position}\nCurrentLo: {Card.transform.localPosition}\n CurrentWo: {loWorld}\nWo: {Card.transform.position}\n" +
+                $"Offset:{offset}\nCalcWo:{newWo}\nCalclo:{newLo}");
+                
             Card.GetOrAddComponent<PositionAnimation>().Play(new Vector3[2]{
                      Card.transform.localPosition,
-                     t.Position
+                     newLo
                 }, new Vector3[2]
                 {
                     Card.transform.localRotation.eulerAngles,
