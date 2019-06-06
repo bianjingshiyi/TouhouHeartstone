@@ -39,7 +39,7 @@ namespace TouhouHeartstone.Frontend.View
 
         private void Awake()
         {
-            CardPositionCalculator = new CardPositionCalculator(deckRect.rect.size, new Vector2(1920, 1080));
+            CardPositionCalculator = new CardPositionCalculator(deckRect.rect.size, new Vector2(Screen.width, Screen.height));
         }
     }
 
@@ -170,7 +170,7 @@ namespace TouhouHeartstone.Frontend.View
             if (i >= count)
                 throw new ArgumentOutOfRangeException($"argument i({i}) > count({count})");
 
-            Vector3 center = rectSize / 2;
+            Vector3 center = Vector3.zero;
             center.y *= 0.8f;
 
             center.x += (i - (count - 1) / 2f) * retinueSpacing;

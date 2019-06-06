@@ -15,47 +15,53 @@ namespace TouhouHeartstone.Frontend.Controller
     public class BoardController : MonoBehaviour
     {
         [SerializeField]
-        CrystalBarViewModel crystalBar;
+        CrystalBarViewModel crystalBar = null;
 
         [SerializeField]
-        CharacterInfoViewModel characterInfo;
+        CharacterInfoViewModel characterInfo = null;
 
         [SerializeField]
-        CardViewModel cardfacePrefab;
+        CardViewModel cardfacePrefab = null;
 
         [SerializeField]
-        CardStackViewModel cardStackLibrary;
+        CardStackViewModel cardStackLibrary = null;
 
         [SerializeField]
-        CardStackViewModel cardStackGrave;
+        CardStackViewModel cardStackGrave = null;
 
         [SerializeField]
-        Transform cardSpawnRoot;
+        Transform cardSpawnRoot = null;
 
+        [SerializeField]
+        Transform throwRoot = null;
+
+        [SerializeField]
+        Transform servantRoot = null;
+
+        /// <summary>
+        /// 场上的所有卡（包括手上、等待丢弃和随从卡）
+        /// </summary>
+        List<CardViewModel> cards = new List<CardViewModel>();
+
+        /// <summary>
+        /// 手上的卡
+        /// </summary>
         List<CardViewModel> handCards = new List<CardViewModel>();
 
-        [SerializeField]
-        private bool _IsSelf;
-
-        [SerializeField]
-        CardViewModel _selectingCard = null;
-
-        public CardViewModel selectingCard
-        {
-            get { return _selectingCard; }
-            set { _selectingCard = value; }
-        }
-
+        /// <summary>
+        /// 手牌的数目
+        /// </summary>
         public int HandCardCount => handCards.Count;
 
+        /// <summary>
+        /// 关联的DeckController
+        /// </summary>
         public DeckController Deck => GetComponentInParent<DeckController>();
+
         /// <summary>
         /// 是否为本体
         /// </summary>
-        public bool IsSelf
-        {
-            get { return _IsSelf; }
-        }
+        public bool IsSelf { get; private set; }
 
         #region draw
         /// <summary>
@@ -118,14 +124,29 @@ namespace TouhouHeartstone.Frontend.Controller
             reArrangeHandCards();
         }
 
+        /// <summary>
+        /// 卡片销毁时做的工作
+        /// </summary>
+        /// <param name="card"></param>
         void onCardDestroy(CardViewModel card)
         {
-            if (handCards.Contains(card))
-                handCards.Remove(card);
-
+            if (cards.Contains(card))
+            {
+                if (handCards.Contains(card))
+                    handCards.Remove(card);
+                if (servants.Contains(card))
+                    servants.Remove(card);
+                if (preparingThrowCards.Contains(card))
+                    preparingThrowCards.Remove(card);
+            }
             reArrangeHandCards();
         }
 
+        /// <summary>
+        /// 内部 生成一张卡
+        /// </summary>
+        /// <param name="cardID"></param>
+        /// <returns></returns>
         private CardViewModel drawCardInternal(CardID cardID)
         {
             var card = Instantiate(cardfacePrefab, cardSpawnRoot);
@@ -138,6 +159,7 @@ namespace TouhouHeartstone.Frontend.Controller
             card.OnActionEvent += DoAction;
 
             handCards.Add(card);
+            cards.Add(card);
             return card;
         }
         #endregion
@@ -148,12 +170,12 @@ namespace TouhouHeartstone.Frontend.Controller
             characterInfo.Character = new Model.CharacterData() { Atk = 3, Defence = 4, HP = 9 };
             cardStackGrave.CardCount = 2;
             #endregion
-
-            cardfacePrefab.gameObject.SetActive(false);
         }
 
-        private int _SelfID;
-        public int SelfID => _SelfID;
+        /// <summary>
+        /// 自己的ID
+        /// </summary>
+        public int SelfID { get; private set; }
 
         /// <summary>
         /// 设置自己的ID
@@ -162,8 +184,8 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <param name="character"></param>
         public void Init(int id, CardID character, bool isSelf)
         {
-            _SelfID = id;
-            _IsSelf = isSelf;
+            SelfID = id;
+            IsSelf = isSelf;
 
             // todo: 设置角色图像
         }
@@ -174,12 +196,17 @@ namespace TouhouHeartstone.Frontend.Controller
         /// </summary>
         private void onThrow()
         {
-            throwCardsInternal(throwingCards.ToArray());
+            throwCardsInternal(preparingThrowCards.ToArray());
 
-            DoAction(this, new ThrowCardEventArgs(SelfID, throwingCards.Select(c => c.RuntimeID).ToArray()));
-            throwingCards.Clear();
+            DoAction(this, new ThrowCardEventArgs(SelfID, preparingThrowCards.Select(c => c.RuntimeID).ToArray()));
+            preparingThrowCards.Clear();
         }
 
+        /// <summary>
+        /// 丢卡
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <param name="callback"></param>
         private void throwCards(CardID[] cards, GenericAction callback)
         {
             List<CardViewModel> throwList = new List<CardViewModel>();
@@ -191,6 +218,7 @@ namespace TouhouHeartstone.Frontend.Controller
                     var c = f.First();
                     throwList.Add(c);
                     handCards.Remove(c);
+                    this.cards.Remove(c);
                 }
             }
 
@@ -250,17 +278,25 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <summary>
         /// 等待被丢的卡
         /// </summary>
-        List<CardViewModel> throwingCards = new List<CardViewModel>();
+        List<CardViewModel> preparingThrowCards = new List<CardViewModel>();
 
-        public int ThrowingCardCount => throwingCards.Count;
+        /// <summary>
+        /// 当前丢卡的数目
+        /// </summary>
+        public int ThrowingCardCount => preparingThrowCards.Count;
 
+        /// <summary>
+        /// 将卡加入准备丢弃队列中
+        /// </summary>
+        /// <param name="cardRID"></param>
+        /// <param name="moveIn"></param>
         void PrepareThrowCard(int cardRID, bool moveIn)
         {
             CardViewModel card;
             if (moveIn)
                 card = handCards.Where(e => e.RuntimeID == cardRID).FirstOrDefault();
             else
-                card = throwingCards.Where(e => e.RuntimeID == cardRID).FirstOrDefault();
+                card = preparingThrowCards.Where(e => e.RuntimeID == cardRID).FirstOrDefault();
 
             PrepareThrowCard(card, moveIn);
         }
@@ -274,19 +310,21 @@ namespace TouhouHeartstone.Frontend.Controller
         {
             if (moveIn)
             {
-                throwingCards.Add(card);
+                preparingThrowCards.Add(card);
                 handCards.Remove(card);
+                moveCard(card, CardPos.Throw);
             }
             else
             {
-                throwingCards.Remove(card);
+                preparingThrowCards.Remove(card);
                 handCards.Add(card);
+                moveCard(card, CardPos.Hand);
             }
 
-            for (int i = 0; i < throwingCards.Count; i++)
+            for (int i = 0; i < preparingThrowCards.Count; i++)
             {
-                throwingCards[i].Index = i;
-                throwingCards[i].RecvAction(new IndexChangeEventArgs(i));
+                preparingThrowCards[i].Index = i;
+                preparingThrowCards[i].RecvAction(new IndexChangeEventArgs(i));
             }
             reArrangeHandCards();
         }
@@ -336,7 +374,7 @@ namespace TouhouHeartstone.Frontend.Controller
             // 预览随从
             if (args is RetinuePreview)
             {
-                retinuePreview((args as RetinuePreview).Position);
+                servantPreviewInsert((args as RetinuePreview).Position);
             }
 
             if (args is IPlayerEventArgs)
@@ -344,21 +382,6 @@ namespace TouhouHeartstone.Frontend.Controller
                 (args as IPlayerEventArgs).PlayerID = SelfID;
                 OnDeckAction?.Invoke(sender, args);
             }
-        }
-
-        public CardViewModel GetCardByRID(int rid)
-        {
-            var card = handCards.Where(e => e.RuntimeID == rid);
-            if (card.Count() > 0)
-                return card.First();
-            card = retinues.Where(e => e.RuntimeID == rid);
-            if (card.Count() > 0)
-                return card.First();
-            card = throwingCards.Where(e => e.RuntimeID == rid);
-            if (card.Count() > 0)
-                return card.First();
-
-            return null;
         }
 
         /// <summary>
@@ -416,7 +439,7 @@ namespace TouhouHeartstone.Frontend.Controller
             // 设置这个什么玩意来着……没错是随从
             if (args is RetinueSummonEventArgs)
             {
-                retinueSummon(args as RetinueSummonEventArgs);
+                servantSummon(args as RetinueSummonEventArgs);
             }
 
             // 若传入事件是卡相关事件，则交予卡处理
@@ -437,30 +460,31 @@ namespace TouhouHeartstone.Frontend.Controller
         }
         #endregion
 
-        #region Retinue
+        #region Servant
 
-        List<CardViewModel> retinues = new List<CardViewModel>();
+        List<CardViewModel> servants = new List<CardViewModel>();
 
         /// <summary>
         /// 随从数量
         /// </summary>
-        public int RetinueCount => retinues.Count;
+        public int ServantCount => servants.Count;
 
         /// <summary>
         /// 将一个随从放到场上
         /// </summary>
         /// <param name="arg"></param>
-        void retinueSummon(RetinueSummonEventArgs arg)
+        void servantSummon(RetinueSummonEventArgs arg)
         {
             var cards = handCards.Where(c => c.RuntimeID == arg.CardRID);
             if (cards.Count() == 1)
             {
                 var card = cards.First();
                 handCards.Remove(card);
-                retinues.Insert(arg.Position, card);
+                servants.Insert(arg.Position, card);
+                moveCard(card, CardPos.Servant);
 
                 reArrangeHandCards();
-                reArrangeRetinues();
+                reArrangeServants();
             }
             else
             {
@@ -471,13 +495,13 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <summary>
         /// 重排列随从
         /// </summary>
-        void reArrangeRetinues()
+        void reArrangeServants()
         {
-            for (int i = 0; i < retinues.Count; i++)
+            for (int i = 0; i < servants.Count; i++)
             {
-                retinues[i].Index = i;
-                if (retinues[i] != null)
-                    retinues[i].RecvAction(new IndexChangeEventArgs(i));
+                servants[i].Index = i;
+                if (servants[i] != null)
+                    servants[i].RecvAction(new IndexChangeEventArgs(i));
             }
         }
 
@@ -485,21 +509,61 @@ namespace TouhouHeartstone.Frontend.Controller
         /// 预览随从位置
         /// </summary>
         /// <param name="index"></param>
-        void retinuePreview(int index)
+        void servantPreviewInsert(int index)
         {
             if (index == -1)
             {
-                reArrangeRetinues();
+                reArrangeServants();
             }
             else
             {
-                for (int i = 0; i < retinues.Count; i++)
+                for (int i = 0; i < servants.Count; i++)
                 {
                     int previewIndex = i >= index ? i + 1 : i;
-                    if (retinues[i] != null)
-                        retinues[i].RecvAction(new IndexChangeEventArgs(previewIndex) { Count = retinues.Count + 1 });
+                    if (servants[i] != null)
+                        servants[i].RecvAction(new IndexChangeEventArgs(previewIndex) { Count = servants.Count + 1 });
                 }
             }
+        }
+        #endregion
+
+        /// <summary>
+        /// 根据ID获取卡
+        /// </summary>
+        /// <param name="rid"></param>
+        /// <returns></returns>
+        public CardViewModel GetCardByRID(int rid)
+        {
+            var card = cards.Where(e => e.RuntimeID == rid);
+            if (card.Count() > 0)
+                return card.First();
+            return null;
+        }
+
+        void moveCard(CardViewModel card, CardPos pos)
+        {
+            switch(pos)
+            {
+                case CardPos.Hand:
+                    card.transform.SetParent(cardSpawnRoot);
+                    break;
+                case CardPos.Servant:
+                    card.transform.SetParent(servantRoot);
+                    break;
+                case CardPos.Throw:
+                    card.transform.SetParent(throwRoot);
+                    break;
+                default:
+                    return;
+            }
+            card.transform.localPosition = Vector3.zero;
+        }
+
+        enum CardPos
+        {
+            Hand,
+            Throw,
+            Servant
         }
 
         string getCardsString()
@@ -512,24 +576,21 @@ namespace TouhouHeartstone.Frontend.Controller
             }
 
             str += "}, 随从叠：{";
-            for (int i = 0; i < retinues.Count; i++)
+            for (int i = 0; i < servants.Count; i++)
             {
                 if (i > 0) str += ", ";
-                str += retinues[i].ToString();
+                str += servants[i].ToString();
             }
 
             str += "}, 丢弃叠：{";
-            for (int i = 0; i < throwingCards.Count; i++)
+            for (int i = 0; i < preparingThrowCards.Count; i++)
             {
                 if (i > 0) str += ", ";
-                str += throwingCards[i].ToString();
+                str += preparingThrowCards[i].ToString();
             }
             str += "}";
 
             return str;
         }
-
-        #endregion
-
     }
 }

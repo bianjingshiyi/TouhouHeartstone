@@ -66,7 +66,7 @@ namespace TouhouHeartstone.Frontend.View
             if (args is CardToStackEventArgs)
             {
                 var arg = args as CardToStackEventArgs;
-                PlayAnimation("CardToStack", new CardPositionEventArgs(arg.Count, arg.Index), callback);
+                PlayAnimation("CardToStack", new CardPositionEventArgs(arg.Count, arg.Index, cardVM.Board.IsSelf), callback);
             }
         }
 
@@ -89,19 +89,19 @@ namespace TouhouHeartstone.Frontend.View
                         // 调整中心位置
                         if (Deck.ThrowingCard)
                         {
-                            PlayAnimation("CardToCenter", new CardPositionEventArgs(Deck.ThrowingCardCount, cardVM.Index), null);
+                            PlayAnimation("CardToCenter", new CardPositionEventArgs(Deck.ThrowingCardCount, cardVM.Index, cardVM.Board.IsSelf), null);
                         }
                         break;
                     case state.hand:
                         // 调整手牌位置
-                        PlayAnimation("CardToHand",new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index), null);
+                        PlayAnimation("CardToHand", new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index, cardVM.Board.IsSelf), null);
                         break;
                 }
             }
             else
             {
                 // 首次抽卡动画
-                PlayAnimation("DrawCard", new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index), (a, b) =>
+                PlayAnimation("DrawCard", new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index, cardVM.Board.IsSelf), (a, b) =>
                 {
                     drawed = true;
                     cardVM.DoAction(new CardDrewEventArgs());
@@ -155,12 +155,12 @@ namespace TouhouHeartstone.Frontend.View
             switch (current)
             {
                 case state.hand_hover:
-                    PlayAnimation("CardToPreview", new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index), null);
+                    PlayAnimation("CardToPreview", new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index, cardVM.Board.IsSelf), null);
                     break;
                 case state.hand:
                     if (!Deck.ThrowingCard || original == state.hand_hover) // 丢卡模式则等待丢卡发事件
                     {
-                        PlayAnimation("CardToHand", new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index), null);
+                        PlayAnimation("CardToHand", new CardPositionEventArgs(Deck.HandCardCount, cardVM.Index, cardVM.Board.IsSelf), null);
                     }
                     break;
                 case state.free:
@@ -187,7 +187,7 @@ namespace TouhouHeartstone.Frontend.View
                 {
                     if (checkTarget())
                     {
-                        var cnt = Deck.RetinueCount;
+                        var cnt = Deck.ServantCount;
                         var calc = GetComponentInParent<GlobalView>().CardPositionCalculator;
                         var pos = 0;
                         for (pos = 0; pos < cnt; pos++)
