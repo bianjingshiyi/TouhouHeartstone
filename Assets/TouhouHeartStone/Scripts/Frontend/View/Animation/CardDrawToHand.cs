@@ -36,7 +36,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
                 return;
             }
 
-            var t = gv.CardPositionCalculator.GetCardHand(arg.GroupID, arg.GroupCount);
+            var t = gv.CardPositionCalculator.GetCardHand(arg.GroupID, arg.GroupCount, arg.SelfSide);
 
             // 设置父物体的层级
             Card.GetComponentInParent<CardViewModel>().transform.SetSiblingIndex(arg.GroupID);

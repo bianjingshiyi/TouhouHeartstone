@@ -12,18 +12,13 @@ namespace TouhouHeartstone.Frontend.View.Animation
             var arg = Utilities.CheckType<ServantAttackEventArgs>(args);
             var gv = Card.GetComponentInParent<GlobalView>();
 
-            var posA = gv.CardPositionCalculator.GetRetinuePosition(arg.SelfServant.GroupID, arg.SelfServant.GroupCount);
-            var posB = gv.CardPositionCalculator.GetOppositeRetinuePosition(arg.TargetServant.GroupID, arg.TargetServant.GroupCount);
-            Card.GetOrAddComponent<PositionAnimation>().Play(new Vector3[]
-            {
-                Card.transform.localPosition,
-                posB.Position,
-                posA.Position
-            }, new Vector3[] {
-                Card.transform.localRotation.eulerAngles,
-                posB.Rotation,
-                posA.Rotation
-            }, callback);
+            var posA = gv.CardPositionCalculator.GetRetinuePosition(arg.SelfServant.GroupID, arg.SelfServant.GroupCount, arg.SelfServant.SelfSide);
+            var posB = gv.CardPositionCalculator.GetRetinuePosition(arg.TargetServant.GroupID, arg.TargetServant.GroupCount, arg.SelfServant.SelfSide, true);
+
+            posB.Position = Card.transform.parent.InverseTransformPoint(posB.Position);
+            var current = new PositionWithRotation() { Position = Card.transform.localPosition, Rotation = Card.transform.localRotation.eulerAngles };
+
+            Card.GetOrAddComponent<PositionAnimation>().Play(new PositionWithRotation[] { current, posA, posB }, callback);
         }
     }
 }

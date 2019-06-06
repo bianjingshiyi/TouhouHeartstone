@@ -549,6 +549,7 @@ namespace TouhouHeartstone.Frontend.Controller
                     break;
                 case CardPos.Servant:
                     card.transform.SetParent(servantRoot);
+                    card.transform.localPosition = Vector3.zero;
                     break;
                 case CardPos.Throw:
                     card.transform.SetParent(throwRoot);
@@ -556,7 +557,6 @@ namespace TouhouHeartstone.Frontend.Controller
                 default:
                     return;
             }
-            card.transform.localPosition = Vector3.zero;
         }
 
         enum CardPos
