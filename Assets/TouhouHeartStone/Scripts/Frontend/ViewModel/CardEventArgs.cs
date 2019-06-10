@@ -181,6 +181,7 @@ namespace TouhouHeartstone.Frontend.Model
         public int TargetRID { get; set; }
     }
 
+    [Obsolete("请直接使用RecvAction播放伤害动画")]
     public class OnDamageEventArgs : EventArgs
     {
         public int DamageAmount { get; set; }

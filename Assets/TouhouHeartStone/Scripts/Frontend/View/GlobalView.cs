@@ -13,6 +13,9 @@ namespace TouhouHeartstone.Frontend.View
         public CardPositionCalculator CardPositionCalculator = null;
 
         [SerializeField]
+        public DamageView damagePrefab = null;
+
+        [SerializeField]
         CardImageResources images;
 
         [SerializeField]

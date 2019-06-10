@@ -88,6 +88,11 @@ namespace TouhouHeartstone.Frontend.View.Animation
             this(new CardPositionEventArgs(selfCount, selfID, isSelf),
                 new CardPositionEventArgs(targetCount, targetID, !isSelf))
         { }
+    }
 
+    public class IntEventArgs : EventArgs
+    {
+        public int Value { get; }
+        public IntEventArgs(int val) { Value = val; }
     }
 }

@@ -68,6 +68,10 @@ namespace TouhouHeartstone.Frontend.View
                 var arg = args as CardToStackEventArgs;
                 PlayAnimation("CardToStack", new CardPositionEventArgs(arg.Count, arg.Index, cardVM.Board.IsSelf), callback);
             }
+            if (args is CardAnimationEventArgs)
+            {
+                PlayAnimation(this, args, callback);
+            }
         }
 
         private void onUse(UseCardEventArgs arg1, GenericAction arg2)

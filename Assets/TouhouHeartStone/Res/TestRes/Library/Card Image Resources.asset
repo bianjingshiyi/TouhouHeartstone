@@ -4,7 +4,8 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -15,20 +16,20 @@ MonoBehaviour:
   - id: 0
     lang: en-US
     mainSprite: {fileID: 21300000, guid: 79e621501334f074abf6891d0c3fee6f, type: 3}
-    bkgSprite: {fileID: 21300000, guid: 66955244305c4e54288fa8ec789d3f68, type: 3}
+    bkgSprite: {fileID: 21300000, guid: ee5d8afeae80d0e4ab37d4f808692ed7, type: 3}
     ribbonSprite: {fileID: 0}
   - id: 0
     lang: zh-CN
-    mainSprite: {fileID: 21300000, guid: 560d7c87b74ab2b4eb03c36ee9fb7ce9, type: 3}
-    bkgSprite: {fileID: 21300000, guid: 66955244305c4e54288fa8ec789d3f68, type: 3}
+    mainSprite: {fileID: 21300000, guid: 613689129cc15ea40b5652e7ddc95e49, type: 3}
+    bkgSprite: {fileID: 21300000, guid: ee5d8afeae80d0e4ab37d4f808692ed7, type: 3}
     ribbonSprite: {fileID: 0}
   - id: invalid
     lang: en-US
-    mainSprite: {fileID: 21300000, guid: 560d7c87b74ab2b4eb03c36ee9fb7ce9, type: 3}
-    bkgSprite: {fileID: 21300000, guid: 66955244305c4e54288fa8ec789d3f68, type: 3}
+    mainSprite: {fileID: 21300000, guid: 613689129cc15ea40b5652e7ddc95e49, type: 3}
+    bkgSprite: {fileID: 21300000, guid: ee5d8afeae80d0e4ab37d4f808692ed7, type: 3}
     ribbonSprite: {fileID: 0}
   - id: invalid
     lang: zh-CN
-    mainSprite: {fileID: 21300000, guid: 560d7c87b74ab2b4eb03c36ee9fb7ce9, type: 3}
-    bkgSprite: {fileID: 21300000, guid: 66955244305c4e54288fa8ec789d3f68, type: 3}
+    mainSprite: {fileID: 21300000, guid: 613689129cc15ea40b5652e7ddc95e49, type: 3}
+    bkgSprite: {fileID: 21300000, guid: ee5d8afeae80d0e4ab37d4f808692ed7, type: 3}
     ribbonSprite: {fileID: 0}
