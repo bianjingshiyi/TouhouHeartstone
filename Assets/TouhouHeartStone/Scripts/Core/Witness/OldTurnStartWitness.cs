@@ -4,11 +4,11 @@ namespace TouhouHeartstone
 {
     [Obsolete("除了EventWitness以外的其他Witness都被废除了")]
     [Serializable]
-    public struct TurnStartWitness : IWitness
+    public struct OldTurnStartWitness : IWitness
     {
         public int number { get; set; }
         public int playerId { get; }
-        public TurnStartWitness(int playerId)
+        public OldTurnStartWitness(int playerId)
         {
             number = 0;
             this.playerId = playerId;

@@ -20,10 +20,16 @@ namespace TouhouHeartstone.Backend
                 remainedList.RemoveAt(index);
             }
             engine.setProp("sortedPlayers", sortedPlayers);
+            //创建主人公和技能卡
             Card[] masterCards = sortedPlayers.Select(p => { return p["Master"][0]; }).ToArray();
             foreach (Card card in masterCards)
             {
                 card.setProp("life", 30);
+                engine.allocateRID(card);
+            }
+            Card[] skillCards = sortedPlayers.Select(p => { return p["Skill"][0]; }).ToArray();
+            foreach (Card card in skillCards)
+            {
                 engine.allocateRID(card);
             }
             //抽初始卡牌
@@ -41,8 +47,11 @@ namespace TouhouHeartstone.Backend
             //双方玩家所使用的卡组主人公
             witness.setVar("masterCardsRID", engine.getPlayers().Select(p => { return p["Master"][0].getProp<int>("RID"); }).ToArray());
             witness.setVar("masterCardsDID", engine.getPlayers().Select(p => { return p["Master"][0].define.id; }).ToArray());
+            //双方玩家所使用的技能
+            witness.setVar("skillCardsRID", engine.getPlayers().Select(p => { return p["Skill"][0].getProp<int>("RID"); }).ToArray());
+            witness.setVar("skillCardsDID", engine.getPlayers().Select(p => { return p["Skill"][0].define.id; }).ToArray());
             //然后是玩家的先后行动顺序
-            witness.setVar("sortedPlayersIndex", engine.getProp<Player[]>("sortedPlayers").Select(e => { return engine.getPlayerIndex(e); }).ToArray());
+            witness.setVar("sortedPlayersIndex", engine.getProp<Player[]>("sortedPlayers").Select(p => { return engine.getPlayerIndex(p); }).ToArray());
             //接着是初始手牌
             witness.setVar("initCardsRID", engine.getPlayers().Select(p => { return p["Init"].Select(c => { return c.getRID(); }).ToArray(); }).ToArray());
             witness.setVar("initCardsDID", player["Init"].Select(e => { return e.define.id; }).ToArray());
@@ -56,6 +65,20 @@ namespace TouhouHeartstone.Backend
     /// </summary>
     public class InitWitness : EventWitness
     {
+        /// <summary>
+        /// 双方玩家所使用的技能卡RID
+        /// </summary>
+        public int[] skillCardsRID
+        {
+            get { return getVar<int[]>("skillCardsRID"); }
+        }
+        /// <summary>
+        /// 双方玩家所使用的技能卡DID
+        /// </summary>
+        public int[] skillCardsDID
+        {
+            get { return getVar<int[]>("skillCardsDID"); }
+        }
         /// <summary>
         /// 双方玩家所使用的卡组主人公RID
         /// </summary>
@@ -87,9 +110,9 @@ namespace TouhouHeartstone.Backend
         /// <summary>
         /// 所有玩家的初始手牌DID
         /// </summary>
-        public int[][] initCardsDID
+        public int[] initCardsDID
         {
-            get { return getVar<int[][]>("initCardsDID"); }
+            get { return getVar<int[]>("initCardsDID"); }
         }
         /// <summary>
         /// 玩家自己的卡组中所有卡的DID

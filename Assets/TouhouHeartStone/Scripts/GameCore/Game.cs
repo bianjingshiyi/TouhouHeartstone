@@ -11,7 +11,7 @@ namespace TouhouHeartstone.Backend
             engine = new CardEngine(new HeartStoneRule(), (int)DateTime.Now.ToBinary());
             engine.afterEvent += afterEvent;
         }
-        CardEngine engine { get; }
+        public CardEngine engine { get; }
         /// <summary>
         /// 添加玩家
         /// </summary>
@@ -26,11 +26,11 @@ namespace TouhouHeartstone.Backend
             }
             Player player = new Player(engine, new Pile[]
             {
+                new Pile("Master",new Card(engine,engine.rule.pool[deck[0]])),
+                new Pile("Skill",new Card(engine,engine.rule.pool[(engine.rule.pool[deck[0]] as MasterCardDefine).skillID])),
                 new Pile("Deck",cards),
                 new Pile("Init"),
                 new Pile("Hand"),
-                new Pile("Master",new Card(engine,engine.rule.pool[deck[0]])),
-                new Pile("Skill",new Card(engine,engine.rule.pool[(engine.rule.pool[deck[0]] as MasterCardDefine).skillID])),
                 new Pile("Field"),
                 new Pile("Grave")
             });
@@ -127,6 +127,24 @@ namespace TouhouHeartstone.Backend
         {
             Player player = engine.getPlayerAt(playerIndex);
             engine.turnEnd(player);
+        }
+        public int getNextPlayerIndex(int playerIndex)
+        {
+            Player player = engine.getPlayerAt(playerIndex);
+            Player[] sortedPlayers = engine.getProp<Player[]>("sortedPlayers");
+            int index = Array.IndexOf(sortedPlayers, player);
+            index++;
+            if (index == sortedPlayers.Length)
+                index = 0;
+            return engine.getPlayerIndex(sortedPlayers[index]);
+        }
+        public int getCardDID(int cardRID)
+        {
+            return engine.getCard(cardRID).define.id;
+        }
+        public int[] getCardsDID(int[] cardsRID)
+        {
+            return cardsRID.Select(rid => { return getCardDID(rid); }).ToArray();
         }
         private void afterEvent(Event @event)
         {

@@ -4,11 +4,11 @@ using IGensoukyo.Utilities;
 namespace TouhouHeartstone.OldFrontend.WitnessHandler
 {
     [System.Obsolete]
-    public class WitnessHandlerInitReplace : WitnessHandlerBase<InitReplaceWitness>
+    public class WitnessHandlerInitReplace : WitnessHandlerBase<OldInitReplaceWitness>
     {
         public override bool HasAnimation => true;
 
-        public override void Exec(InitReplaceWitness witness)
+        public override void Exec(OldInitReplaceWitness witness)
         {
             if (witness.playerId == frontend.PlayerID)
             {

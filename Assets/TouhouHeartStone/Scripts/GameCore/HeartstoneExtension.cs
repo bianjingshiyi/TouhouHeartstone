@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Collections.Generic;
 
 namespace TouhouHeartstone.Backend
 {
@@ -30,8 +31,15 @@ namespace TouhouHeartstone.Backend
         }
         public static int allocateRID(this CardEngine engine, Card card)
         {
+            Dictionary<int, Card> dicRIDCard = engine.getProp<Dictionary<int, Card>>("dicRIDCard");
+            if (dicRIDCard == null)
+            {
+                dicRIDCard = new Dictionary<int, Card>();
+                engine.setProp("dicRIDCard", dicRIDCard);
+            }
             engine.setProp("RID", engine.getProp<int>("RID") + 1);
             card.setProp("RID", engine.getProp<int>("RID"));
+            dicRIDCard.Add(engine.getProp<int>("RID"), card);
             return card.getProp<int>("RID");
         }
         public static int[] allocateRID(this CardEngine engine, Card[] cards)
@@ -45,6 +53,16 @@ namespace TouhouHeartstone.Backend
         public static int[] getRID(this Card[] cards)
         {
             return cards.Select(c => { return c.getRID(); }).ToArray();
+        }
+        public static Card getCard(this CardEngine engine, int rid)
+        {
+            Dictionary<int, Card> dicRIDCard = engine.getProp<Dictionary<int, Card>>("dicRIDCard");
+            if (dicRIDCard == null)
+            {
+                dicRIDCard = new Dictionary<int, Card>();
+                engine.setProp("dicRIDCard", dicRIDCard);
+            }
+            return dicRIDCard[rid];
         }
         public static void summon(this CardEngine engine, Player player, Card card, int position)
         {

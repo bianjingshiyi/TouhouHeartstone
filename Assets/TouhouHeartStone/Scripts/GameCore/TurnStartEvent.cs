@@ -25,12 +25,12 @@ namespace TouhouHeartstone.Backend
                 card.setProp("attackTimes", 0);
             }
             //开始烧绳倒计时
-            Task.Run(() =>
-            {
-                Thread.Sleep(20000);
-                //开始烧绳
-                engine.doEvent(new CountDownEvent(player, 10));
-            });
+            //Task.Run(() =>
+            //{
+            //    Thread.Sleep(20000);
+            //    //开始烧绳
+            //    engine.doEvent(new CountDownEvent(player, 10));
+            //});
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {

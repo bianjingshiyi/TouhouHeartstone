@@ -7,13 +7,13 @@ namespace TouhouHeartstone
     /// </summary>
     [Obsolete("除了EventWitness以外的其他Witness都被废除了")]
     [Serializable]
-    public struct InitReplaceWitness : IWitness
+    public struct OldInitReplaceWitness : IWitness
     {
         public int number { get; set; }
         public int playerId { get; }
         public CardInstance[] originCards { get; }
         public CardInstance[] replaceCards { get; }
-        public InitReplaceWitness(int playerId, CardInstance[] originCards, CardInstance[] replaceCards)
+        public OldInitReplaceWitness(int playerId, CardInstance[] originCards, CardInstance[] replaceCards)
         {
             number = 0;
             this.playerId = playerId;
