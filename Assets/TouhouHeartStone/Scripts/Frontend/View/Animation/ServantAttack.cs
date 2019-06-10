@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 using IGensoukyo.Utilities;
 
 namespace TouhouHeartstone.Frontend.View.Animation

@@ -80,6 +80,8 @@ namespace TouhouHeartstone.Frontend.View
                 UberDebug.LogChannel(this, "Frontend", "ServantView收到攻击事件");
                 var targetServant = cardVM.Board.Deck.GetCardByRID(arg.TargetRID);
 
+                callback += (a,b) => { UberDebug.LogChannel("Frontend", "ServantAttack动画播放完毕"); };
+
                 PlayAnimation("ServantAttack", new ServantAttackEventArgs(
                     cardVM.Index,
                     cardVM.Board.ServantCount,
@@ -110,9 +112,9 @@ namespace TouhouHeartstone.Frontend.View
                 }, callback);
             }
 
-            if (args is OnDamageEventArgs)
+            if (args is CardAnimationEventArgs)
             {
-                // todo: 增加卡片伤害动画
+                PlayAnimation(this, args, callback);
             }
         }
 
@@ -140,7 +142,7 @@ namespace TouhouHeartstone.Frontend.View
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (cardVM.Board.IsSelf && drawed)
+            if (cardVM?.Board?.IsSelf == true && drawed)
             {
                 GetComponent<CardHighlight>()?.SetHighlight(true);
             }
@@ -148,7 +150,7 @@ namespace TouhouHeartstone.Frontend.View
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (cardVM.Board.IsSelf && drawed)
+            if (cardVM?.Board?.IsSelf == true && drawed)
             {
                 GetComponent<CardHighlight>()?.SetHighlight(false);
             }
@@ -156,7 +158,7 @@ namespace TouhouHeartstone.Frontend.View
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (cardVM.Board.IsSelf && drawed)
+            if (cardVM?.Board?.IsSelf == true && drawed)
             {
                 checker.PointerDown(Time.time);
             }
@@ -164,7 +166,7 @@ namespace TouhouHeartstone.Frontend.View
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            if (cardVM.Board.IsSelf && drawed)
+            if (cardVM?.Board?.IsSelf == true && drawed)
             {
                 checker.PointerUp();
             }
