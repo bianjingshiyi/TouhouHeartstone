@@ -156,6 +156,13 @@ namespace TouhouHeartstone
             else
                 return new Pile[0];
         }
+        public static implicit operator Card[] (Pile pile)
+        {
+            if (pile != null)
+                return pile.cardList.ToArray();
+            else
+                return new Card[0];
+        }
     }
     public enum RegionType
     {

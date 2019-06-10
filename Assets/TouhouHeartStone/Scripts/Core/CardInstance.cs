@@ -2,6 +2,7 @@
 
 namespace TouhouHeartstone
 {
+    [Obsolete]
     [Serializable]
     public struct CardInstance
     {
@@ -12,7 +13,7 @@ namespace TouhouHeartstone
             this.instanceId = instanceId;
             this.cardId = cardId;
         }
-        public static implicit operator CardInstance[](CardInstance instance)
+        public static implicit operator CardInstance[] (CardInstance instance)
         {
             return new CardInstance[] { instance };
         }

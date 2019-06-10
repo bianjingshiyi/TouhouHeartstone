@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TouhouHeartstone.Backend
 {
-    static partial class HeartstoneExtension
+    public static partial class HeartstoneExtension
     {
         public static void setMaxGem(this CardEngine engine, Player player, int value)
         {
