@@ -1,5 +1,4 @@
 ﻿using System;
-using TouhouHeartstone.Frontend.ViewModel;
 using UnityEngine;
 
 namespace TouhouHeartstone.Frontend.View.Animation
@@ -16,20 +15,6 @@ namespace TouhouHeartstone.Frontend.View.Animation
             instance.gameObject.SetActive(true);
             instance.Show(arg.Value);
 
-            callback?.Invoke(this, null);
-        }
-    }
-
-    public class OnDeath : CardAnimation
-    {
-        public override string AnimationName => "OnDeath";
-
-        public override void PlayAnimation(object sender, EventArgs args, GenericAction callback)
-        {
-            var vm = Card.GetComponentInParent<CardViewModel>();
-            GameObject.Destroy(Card);
-            if (vm != null)
-                GameObject.Destroy(vm.gameObject);
             callback?.Invoke(this, null);
         }
     }
