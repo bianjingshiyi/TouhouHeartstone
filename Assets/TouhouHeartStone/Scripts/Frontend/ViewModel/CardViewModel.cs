@@ -130,7 +130,10 @@ namespace TouhouHeartstone.Frontend.ViewModel
 
         [SerializeField]
         BoardController _board;
-        public BoardController board
+        /// <summary>
+        /// 关联的用户桌面
+        /// </summary>
+        public BoardController Board
         {
             get
             {

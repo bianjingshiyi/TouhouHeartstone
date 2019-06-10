@@ -6,6 +6,7 @@ using TouhouHeartstone.Frontend.ViewModel;
 using UnityEngine.EventSystems;
 using TouhouHeartstone.Frontend.Model;
 using TouhouHeartstone.Frontend.View.Animation;
+using IGensoukyo.Utilities;
 
 namespace TouhouHeartstone.Frontend.View
 {
@@ -77,14 +78,15 @@ namespace TouhouHeartstone.Frontend.View
             {
                 var arg = args as OnAttackEventArgs;
                 UberDebug.LogChannel(this, "Frontend", "ServantView收到攻击事件");
-                var targetServant = cardVM.board.Deck.GetCardByRID(arg.TargetRID);
+                var targetServant = cardVM.Board.Deck.GetCardByRID(arg.TargetRID);
 
                 PlayAnimation("ServantAttack", new ServantAttackEventArgs(
-                    cardVM.Index, 
-                    cardVM.board.RetinueCount, 
-                    targetServant.Index, 
-                    targetServant.board.RetinueCount)
-                    ,callback);
+                    cardVM.Index,
+                    cardVM.Board.ServantCount,
+                    targetServant.Index,
+                    targetServant.Board.ServantCount, 
+                    cardVM.Board.IsSelf)
+                    , callback);
             }
 
             if (args is IndexChangeEventArgs && drawed)
@@ -93,7 +95,7 @@ namespace TouhouHeartstone.Frontend.View
                 PlayAnimation(this, new CardAnimationEventArgs()
                 {
                     AnimationName = "RetinueMove",
-                    EventArgs = new CardPositionEventArgs(arg.Count > 0 ? arg.Count : cardVM.board.RetinueCount, arg.Index)
+                    EventArgs = new CardPositionEventArgs(arg.Count > 0 ? arg.Count : cardVM.Board.ServantCount, arg.Index, cardVM.Board.IsSelf)
                 }, callback);
             }
 
@@ -104,7 +106,7 @@ namespace TouhouHeartstone.Frontend.View
                 PlayAnimation(this, new CardAnimationEventArgs()
                 {
                     AnimationName = "RetinueSummon",
-                    EventArgs = new CardPositionEventArgs(cardVM.board.RetinueCount, cardVM.Index)
+                    EventArgs = new CardPositionEventArgs(cardVM.Board.ServantCount, cardVM.Index, cardVM.Board.IsSelf)
                 }, callback);
             }
 
@@ -138,7 +140,7 @@ namespace TouhouHeartstone.Frontend.View
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (cardVM.board.IsSelf && drawed)
+            if (cardVM.Board.IsSelf && drawed)
             {
                 GetComponent<CardHighlight>()?.SetHighlight(true);
             }
@@ -146,7 +148,7 @@ namespace TouhouHeartstone.Frontend.View
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (cardVM.board.IsSelf && drawed)
+            if (cardVM.Board.IsSelf && drawed)
             {
                 GetComponent<CardHighlight>()?.SetHighlight(false);
             }
@@ -154,7 +156,7 @@ namespace TouhouHeartstone.Frontend.View
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (cardVM.board.IsSelf && drawed)
+            if (cardVM.Board.IsSelf && drawed)
             {
                 checker.PointerDown(Time.time);
             }
@@ -162,7 +164,7 @@ namespace TouhouHeartstone.Frontend.View
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            if (cardVM.board.IsSelf && drawed)
+            if (cardVM.Board.IsSelf && drawed)
             {
                 checker.PointerUp();
             }
@@ -185,7 +187,7 @@ namespace TouhouHeartstone.Frontend.View
             {
                 CardViewModel targetCard = eventData.pointerCurrentRaycast.gameObject.GetComponentInParent<CardViewModel>();
                 //有目标，不是自己，并且是别人的。
-                if (targetCard != null && targetCard != cardVM && targetCard.board != cardVM.board)
+                if (targetCard != null && targetCard != cardVM && targetCard.Board != cardVM.Board)
                     targetCircle.gameObject.SetActive(true);
                 else
                     targetCircle.gameObject.SetActive(false);
@@ -201,9 +203,9 @@ namespace TouhouHeartstone.Frontend.View
             {
                 CardViewModel targetCard = eventData.pointerCurrentRaycast.gameObject.GetComponentInParent<CardViewModel>();
                 //有目标，不是自己，并且是别人的。
-                if (targetCard != null && targetCard != cardVM && targetCard.board != cardVM.board)
+                if (targetCard != null && targetCard != cardVM && targetCard.Board != cardVM.Board)
                 {
-                    AutoPlayerCardEventArgs args = new AutoPlayerCardEventArgs("attack", cardVM.board.SelfID, cardVM.RuntimeID, targetCard.RuntimeID);
+                    AutoPlayerCardEventArgs args = new AutoPlayerCardEventArgs("attack", cardVM.Board.SelfID, cardVM.RuntimeID, targetCard.RuntimeID);
                     Debug.Log(targetCard);
                     cardVM.DoAction(args);
                 }

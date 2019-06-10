@@ -47,14 +47,14 @@ namespace TouhouHeartstone.Frontend.View.Animation
                 throw new ArgumentOutOfRangeException($"卡片位置{id}越界（总数{count}）");
         }
 
-        public CardPositionEventArgs(int count, int id, bool opposite)
+        public CardPositionEventArgs(int count, int id, bool selfSide)
         {
             GroupCount = count;
             GroupID = id;
             if (id >= count)
                 throw new ArgumentOutOfRangeException($"卡片位置{id}越界（总数{count}）");
 
-            OppoSide = opposite;
+            SelfSide = selfSide;
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
         /// <summary>
         /// 卡片所属边
         /// </summary>
-        public bool OppoSide;
+        public bool SelfSide;
     }
 
     public class ServantAttackEventArgs : EventArgs
@@ -84,9 +84,9 @@ namespace TouhouHeartstone.Frontend.View.Animation
             TargetServant = target;
         }
 
-        public ServantAttackEventArgs(int selfID, int selfCount, int targetID, int targetCount) :
-            this(new CardPositionEventArgs(selfCount, selfID),
-                new CardPositionEventArgs(targetCount, targetID))
+        public ServantAttackEventArgs(int selfID, int selfCount, int targetID, int targetCount, bool isSelf) :
+            this(new CardPositionEventArgs(selfCount, selfID, isSelf),
+                new CardPositionEventArgs(targetCount, targetID, !isSelf))
         { }
 
     }

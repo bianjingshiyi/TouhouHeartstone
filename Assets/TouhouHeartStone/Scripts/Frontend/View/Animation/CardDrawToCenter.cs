@@ -15,11 +15,10 @@ namespace TouhouHeartstone.Frontend.View.Animation
 
             var gv = Card.GetComponentInParent<GlobalView>();
             var t = gv.CardPositionCalculator.GetThrowCardPosition(arg.GroupID, arg.GroupCount);
-            // todo: 需要做坐标转换
 
             Card.GetOrAddComponent<PositionAnimation>().Play(new Vector3[2]{
                      gv.CardPositionCalculator.StackPosition,
-                     Card.transform.worldToLocalMatrix * t.Position
+                     Card.transform.parent.InverseTransformPoint(t.Position)
                 },
                 new Vector3[2]
                 {
