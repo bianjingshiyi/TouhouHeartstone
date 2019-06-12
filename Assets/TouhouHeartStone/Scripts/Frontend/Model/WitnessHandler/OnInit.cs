@@ -36,7 +36,7 @@ namespace TouhouHeartstone.Frontend.Model.Witness
             deck.SetInitHandcard(initHandCard, initCardsRID);
 
             // 先抽卡再设置deck，防止deck中的被抽走（
-            deck.SetSelfDeck(userCards);
+            deck.SelfBoard.SetDeck(userCards);
 
             return false;
         }

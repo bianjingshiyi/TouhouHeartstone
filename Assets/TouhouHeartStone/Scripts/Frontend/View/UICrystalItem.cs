@@ -6,16 +6,16 @@ namespace TouhouHeartstone.Frontend.View
     public class UICrystalItem : MonoBehaviour
     {
         [SerializeField]
-        Sprite normal;
+        Sprite normal = null;
 
         [SerializeField]
-        Sprite highlight;
+        Sprite highlight = null;
 
         [SerializeField]
-        Sprite used;
+        Sprite used = null;
 
         [SerializeField]
-        Sprite disable;
+        Sprite disable = null;
 
         UnityEngine.UI.Image image;
 

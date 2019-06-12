@@ -246,7 +246,7 @@ namespace TouhouHeartstone.Frontend.View
 
         void setThrowing(bool state)
         {
-            cardVM.DoAction(new PrepareThrowEventArgs(state));
+            cardVM.Board.PrepareThrowCard(cardVM.RuntimeID, state);
         }
 
         void onMouseDrag()

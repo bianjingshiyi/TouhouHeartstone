@@ -57,7 +57,7 @@ namespace IGensoukyo.Utilities
     public class HoverTooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField]
-        float timeThresole;
+        float timeThresole = 1;
 
         float beginTime;
         bool popuped;

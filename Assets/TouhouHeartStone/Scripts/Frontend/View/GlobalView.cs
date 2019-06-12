@@ -16,10 +16,10 @@ namespace TouhouHeartstone.Frontend.View
         public DamageView damagePrefab = null;
 
         [SerializeField]
-        CardImageResources images;
+        CardImageResources images = null;
 
         [SerializeField]
-        CardTextResources texts;
+        CardTextResources texts = null;
 
         public CardImageResource GetCardImageResource(int id) { return GetCardImageResource(id.ToString()); }
         public CardTextResource GetCardTextResource(int id) { return GetCardTextResource(id.ToString()); }

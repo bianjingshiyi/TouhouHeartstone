@@ -7,19 +7,19 @@ namespace TouhouHeartstone.Frontend.View
     public class CardPositionCalculator : MonoBehaviour
     {
         [SerializeField]
-        RectTransform deckRect;
+        RectTransform deckRect = null;
 
         [SerializeField]
-        Transform selfServantRoot;
+        Transform selfServantRoot = null;
 
         [SerializeField]
-        Transform oppoServantRoot;
+        Transform oppoServantRoot = null;
 
         [SerializeField]
-        Transform selfHandCardRoot;
+        Transform selfHandCardRoot = null;
 
         [SerializeField]
-        Transform oppoHandCardRoot;
+        Transform oppoHandCardRoot = null;
 
         Vector2 rectSize => deckRect.rect.size;
         Vector2 screenSize

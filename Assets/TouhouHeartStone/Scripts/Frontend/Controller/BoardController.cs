@@ -84,7 +84,7 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <summary>
         /// 抽一张卡
         /// </summary>
-        void DrawCard(CardID cardID, GenericAction callback)
+        public void DrawCard(CardID cardID, GenericAction callback)
         {
             setCallback(cardID, callback);
             drawCardInternal(cardID);
@@ -190,6 +190,29 @@ namespace TouhouHeartstone.Frontend.Controller
             // todo: 设置角色图像
         }
 
+        /// <summary>
+        /// 设置用户卡组
+        /// </summary>
+        /// <param name="cardDIDs"></param>
+        public void SetDeck(int[] cardDIDs)
+        {
+            cardStackLibrary.CardCount = cardDIDs.Length;
+            // todo: 设置实际的卡组
+        }
+
+        /// <summary>
+        /// 设置水晶
+        /// </summary>
+        /// <param name="max"></param>
+        /// <param name="current"></param>
+        public void SetGem(int max, int current)
+        {
+            if (max >= 0)
+                crystalBar.CrystalTotal = max;
+            if (current >= 0)
+                crystalBar.CrystalUsed = crystalBar.CrystalTotal - current;
+        }
+
         #region throw
         /// <summary>
         /// 点击了丢卡按钮
@@ -197,8 +220,8 @@ namespace TouhouHeartstone.Frontend.Controller
         private void onThrow()
         {
             throwCardsInternal(preparingThrowCards.ToArray());
-
-            DoAction(this, new ThrowCardEventArgs(SelfID, preparingThrowCards.Select(c => c.RuntimeID).ToArray()));
+            // 通知core丢卡
+            Deck.Model.ReplaceCards(SelfID, preparingThrowCards.Select(c => c.RuntimeID).ToArray());
             preparingThrowCards.Clear();
         }
 
@@ -290,7 +313,7 @@ namespace TouhouHeartstone.Frontend.Controller
         /// </summary>
         /// <param name="cardRID"></param>
         /// <param name="moveIn"></param>
-        void PrepareThrowCard(int cardRID, bool moveIn)
+        public void PrepareThrowCard(int cardRID, bool moveIn)
         {
             CardViewModel card;
             if (moveIn)
@@ -338,6 +361,22 @@ namespace TouhouHeartstone.Frontend.Controller
                     handCards[i].RecvAction(new IndexChangeEventArgs(i));
             }
         }
+
+        public void ThrowCardsWithReplace(CardID[] oldCards, CardID[] replaceCards, GenericAction callback)
+        {
+            if (replaceCards.Length == 0)
+            {
+                throwCards(replaceCards, callback);
+            }
+            else
+            {
+                throwCards(replaceCards, (a, b) =>
+                {
+                    DrawCard(replaceCards, callback);
+                });
+            }
+        }
+
         #endregion
 
         #region event_handler
@@ -364,13 +403,6 @@ namespace TouhouHeartstone.Frontend.Controller
                 }
             }
 
-            // 准备丢卡
-            if (args is PrepareThrowEventArgs)
-            {
-                var arg = args as PrepareThrowEventArgs;
-                PrepareThrowCard(arg.CardRID, arg.State);
-            }
-
             // 预览随从
             if (args is RetinuePreview)
             {
@@ -391,51 +423,6 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <param name="callback"></param>
         public void RecvAction(EventArgs args, GenericAction callback = null)
         {
-            // 设置水晶的事件
-            if (args is SetGemEventArgs)
-            {
-                var gemArgs = args as SetGemEventArgs;
-                if (gemArgs.MaxGem >= 0)
-                    crystalBar.CrystalTotal = gemArgs.MaxGem;
-                if (gemArgs.CurrentGem >= 0)
-                    crystalBar.CrystalUsed = crystalBar.CrystalTotal - gemArgs.CurrentGem;
-
-                callback?.Invoke(this, null);
-                return;
-            }
-
-            // 丢卡事件
-            if (args is ThrowCardEventArgs)
-            {
-                var arg = args as ThrowCardEventArgs;
-
-                if (arg.NewCards.Length == 0)
-                {
-                    throwCards(arg.Cards, callback);
-                }
-                else
-                {
-                    throwCards(arg.Cards, (a, b) =>
-                    {
-                        DrawCard(arg.NewCards, callback);
-                    });
-                }
-            }
-
-            // 抽卡事件
-            if (args is DrawCardEventArgs)
-            {
-                DrawCard((args as DrawCardEventArgs).Card, callback);
-            }
-
-            // 设置牌库
-            if (args is SetUserDeckEventArgs)
-            {
-                var arg = args as SetUserDeckEventArgs;
-                // todo: 设置牌库
-                cardStackLibrary.CardCount = arg.CardsDID.Length;
-            }
-
             // 设置这个什么玩意来着……没错是随从
             if (args is RetinueSummonEventArgs)
             {

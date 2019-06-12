@@ -13,7 +13,7 @@ namespace TouhouHeartstone.Frontend.View
         Animator animator => GetComponent<Animator>();
 
         [SerializeField]
-        string animateName;
+        string animateName = "";
 
 
         GenericAction playCallback;
