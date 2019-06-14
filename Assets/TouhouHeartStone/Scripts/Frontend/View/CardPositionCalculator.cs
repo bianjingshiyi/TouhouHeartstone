@@ -158,15 +158,5 @@ namespace TouhouHeartstone.Frontend.View
             center.x += (i - (count - 1) / 2f) * retinueSpacing;
             return new PositionWithRotation() { Position = center };
         }
-
-        public PositionWithRotation GetOppositeRetinuePosition(int i, int count)
-        {
-            var a = GetRetinuePosition(i, count);
-            a.Position.x = rectSize.x - a.Position.x;
-            a.Position.y = rectSize.y - a.Position.y;
-
-            return a;
-        }
-
     }
 }

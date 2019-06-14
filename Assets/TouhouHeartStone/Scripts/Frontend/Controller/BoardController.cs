@@ -89,7 +89,7 @@ namespace TouhouHeartstone.Frontend.Controller
             setCallback(cardID, callback);
             drawCardInternal(cardID);
 
-            reArrangeHandCards();
+            ReArrangeHandCards();
         }
 
         private void setCallback(CardID cardID, GenericAction callback)
@@ -121,7 +121,7 @@ namespace TouhouHeartstone.Frontend.Controller
                 }
                 drawCardInternal(cards[i]);
             }
-            reArrangeHandCards();
+            ReArrangeHandCards();
         }
 
         /// <summary>
@@ -133,13 +133,18 @@ namespace TouhouHeartstone.Frontend.Controller
             if (cards.Contains(card))
             {
                 if (handCards.Contains(card))
+                {
                     handCards.Remove(card);
+                    ReArrangeHandCards();
+                }
                 if (servants.Contains(card))
+                {
                     servants.Remove(card);
+                    reArrangeServants();
+                }
                 if (preparingThrowCards.Contains(card))
                     preparingThrowCards.Remove(card);
             }
-            reArrangeHandCards();
         }
 
         /// <summary>
@@ -248,7 +253,7 @@ namespace TouhouHeartstone.Frontend.Controller
             throwCardsInternal(throwList.ToArray(), callback);
             if (throwList.Count > 0)
             {
-                reArrangeHandCards();
+                ReArrangeHandCards();
             }
         }
 
@@ -349,10 +354,13 @@ namespace TouhouHeartstone.Frontend.Controller
                 preparingThrowCards[i].Index = i;
                 preparingThrowCards[i].RecvAction(new IndexChangeEventArgs(i));
             }
-            reArrangeHandCards();
+            ReArrangeHandCards();
         }
 
-        private void reArrangeHandCards()
+        /// <summary>
+        /// 重新排列手牌
+        /// </summary>
+        public void ReArrangeHandCards()
         {
             for (int i = 0; i < handCards.Count; i++)
             {
@@ -374,6 +382,24 @@ namespace TouhouHeartstone.Frontend.Controller
                 {
                     DrawCard(replaceCards, callback);
                 });
+            }
+        }
+
+        /// <summary>
+        /// 从手牌上移除一张卡并进行重排
+        /// （但不移除全体牌库的卡）
+        /// </summary>
+        /// <remarks>
+        /// 这个方法通常是用于在用卡的时候销毁这张卡的手牌引用。若其为随从卡，则需要加以判断
+        /// </remarks>
+        /// <param name="rid"></param>
+        public void RemoveHandCard(int rid)
+        {
+            var card = GetCardByRID(rid);
+            if (card != null && handCards.Contains(card))
+            {
+                handCards.Remove(card);
+                ReArrangeHandCards();
             }
         }
 
@@ -462,15 +488,17 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <param name="arg"></param>
         void servantSummon(RetinueSummonEventArgs arg)
         {
-            var cards = handCards.Where(c => c.RuntimeID == arg.CardRID);
-            if (cards.Count() == 1)
+            var card = GetCardByRID(arg.CardRID);
+            if (card != null)
             {
-                var card = cards.First();
-                handCards.Remove(card);
-                servants.Insert(arg.Position, card);
+                if (handCards.Contains(card))
+                    handCards.Remove(card);
+                if (!servants.Contains(card))
+                    servants.Insert(arg.Position, card);
+
                 moveCard(card, CardPos.Servant);
 
-                reArrangeHandCards();
+                ReArrangeHandCards();
                 reArrangeServants();
             }
             else
