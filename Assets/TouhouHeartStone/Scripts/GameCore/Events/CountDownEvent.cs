@@ -15,7 +15,7 @@ namespace TouhouHeartstone.Backend
         {
             Thread.Sleep((int)time * 1000);
             //强制结束回合
-            engine.doEvent(new TimeOutEvent());
+            engine.doEvent(new TimeOutEvent(player));
             engine.turnEnd(player);
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
