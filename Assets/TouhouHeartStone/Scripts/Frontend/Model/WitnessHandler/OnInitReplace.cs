@@ -18,8 +18,7 @@ namespace TouhouHeartstone.Frontend.Model.Witness
             if (cardsDID == null)
                 cardsDID = new int[cardsRID.Length];
 
-            var args = new ThrowCardEventArgs(player, originalRID) { NewCards = CardID.ToCardIDs(cardsDID, cardsRID) };
-            deck.RecvEvent(args, callback);
+            deck.GetUserBoard(player).ThrowCardsWithReplace(CardID.ToCardIDs(originalRID), CardID.ToCardIDs(cardsDID, cardsRID), callback);
 
             return true;
         }

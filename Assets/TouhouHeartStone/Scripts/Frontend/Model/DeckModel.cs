@@ -12,7 +12,7 @@ namespace TouhouHeartstone.Frontend.Model
         GameModel gm;
 
         [SerializeField]
-        PrivacyProtectorViewModel protector;
+        PrivacyProtectorViewModel protector = null;
 
         [SerializeField]
         bool hotSeatMode = true;
@@ -93,11 +93,6 @@ namespace TouhouHeartstone.Frontend.Model
             {
                 gm.Game.turnEnd((args as RoundEventArgs).PlayerID);
             }
-            else if (args is ThrowCardEventArgs)
-            {
-                var t = args as ThrowCardEventArgs;
-                initReplace(t.PlayerID, t.Cards.Select(e => e.CardRID).ToArray());
-            }
         }
 
         /// <summary>
@@ -110,7 +105,8 @@ namespace TouhouHeartstone.Frontend.Model
             switchPrepare(arg1, arg2);
         }
 
-        void initReplace(int playerID, int[] cards)
+
+        public void ReplaceCards(int playerID, int[] cards)
         {
             // 热座模式下，先按添加播放，全部换牌完毕后再按游戏顺序播放
             if (hotSeatMode)

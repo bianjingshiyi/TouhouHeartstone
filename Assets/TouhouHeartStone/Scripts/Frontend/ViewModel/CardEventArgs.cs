@@ -36,6 +36,7 @@ namespace TouhouHeartstone.Frontend.Model
     /// <summary>
     /// 设置水晶事件
     /// </summary>
+    [Obsolete]
     public class SetGemEventArgs : EventArgs, IPlayerEventArgs
     {
         public int PlayerID { get; set; }
@@ -67,6 +68,7 @@ namespace TouhouHeartstone.Frontend.Model
     /// <summary>
     /// 丢卡事件
     /// </summary>
+    [Obsolete]
     public class ThrowCardEventArgs : EventArgs, IPlayerEventArgs
     {
         public int PlayerID { get; set; }
@@ -97,42 +99,6 @@ namespace TouhouHeartstone.Frontend.Model
         {
             Cards = cards;
         }
-    }
-
-    /// <summary>
-    /// 准备丢卡事件
-    /// </summary>
-    public class PrepareThrowEventArgs : EventArgs, ICardEventArgs
-    {
-        public int CardDID { get; set; }
-        public int CardRID { get; set; }
-
-        public bool State { get; }
-
-        public PrepareThrowEventArgs(bool state)
-        {
-            State = state;
-        }
-    }
-
-    /// <summary>
-    /// 抽卡事件
-    /// </summary>
-    public class DrawCardEventArgs : EventArgs, IPlayerEventArgs
-    {
-        public int PlayerID { get ; set ; }
-
-        public CardID Card { get; set; }
-    }
-
-    /// <summary>
-    /// 设置用户牌堆事件
-    /// </summary>
-    public class SetUserDeckEventArgs : EventArgs, IPlayerEventArgs
-    {
-        public int PlayerID { get; set; }
-
-        public int[] CardsDID { get; set; }
     }
 
     /// <summary>

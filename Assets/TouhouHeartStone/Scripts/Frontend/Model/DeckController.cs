@@ -16,7 +16,7 @@ namespace TouhouHeartstone.Frontend.Model
     public class DeckController : MonoBehaviour, IFrontend
     {
         [SerializeField]
-        CommonDeckController common;
+        CommonDeckController common = null;
 
         public CommonDeckController CommonDeck => common;
 
@@ -26,7 +26,7 @@ namespace TouhouHeartstone.Frontend.Model
         BoardController[] users = new BoardController[2];
 
         DeckModel _model;
-        DeckModel Model
+        public DeckModel Model
         {
             get
             {
@@ -149,15 +149,6 @@ namespace TouhouHeartstone.Frontend.Model
             }
         }
 
-        /// <summary>
-        /// 设置自己的卡牌库
-        /// </summary>
-        /// <param name="cards"></param>
-        public void SetSelfDeck(int[] cards)
-        {
-            RecvEvent(new SetUserDeckEventArgs() { PlayerID = selfID, CardsDID = cards });
-        }
-
         private void Awake()
         {
             common.OnRoundendBtnClick += OnRoundendBtnClick;
@@ -238,6 +229,21 @@ namespace TouhouHeartstone.Frontend.Model
             }
             return null;
         }
+
+        /// <summary>
+        /// 获取指定用户
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <returns></returns>
+        public BoardController GetUserBoard(int playerID)
+        {
+            return users[playerID];
+        }
+
+        /// <summary>
+        /// 自己的桌面
+        /// </summary>
+        public BoardController SelfBoard => users[selfID];
 
         public void RecvEvent(EventArgs args, GenericAction callback = null)
         {

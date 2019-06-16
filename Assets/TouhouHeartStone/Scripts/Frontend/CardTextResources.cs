@@ -10,7 +10,7 @@ namespace TouhouHeartstone.Frontend
         string fallbackID = "invalid";
 
         [SerializeField]
-        CardTextResource[] cardTexts;
+        CardTextResource[] cardTexts = new CardTextResource[0];
 
         public CardTextResource Get(string id, string lang)
         {

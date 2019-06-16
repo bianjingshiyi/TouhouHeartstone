@@ -6,12 +6,10 @@
 
         protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback = null)
         {
-            var args = new SetGemEventArgs();
-            args.MaxGem = witness.getVar<int>("value");
-            args.PlayerID = witness.getVar<int>("playerIndex");
-
-            deck.RecvEvent(args, callback);
-            return true;
+            var gem = witness.getVar<int>("value");
+            var PlayerID = witness.getVar<int>("playerIndex");
+            deck.GetUserBoard(PlayerID).SetGem(-1, gem);
+            return false;
         }
     }
 }

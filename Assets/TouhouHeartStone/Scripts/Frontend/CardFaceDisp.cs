@@ -13,7 +13,7 @@ namespace TouhouHeartstone.Frontend
     public class CardImageResource: ICardResource, Ii18n
     {
         [SerializeField]
-        string id;
+        string id = "";
 
         /// <summary>
         /// 资源对应ID
@@ -21,7 +21,7 @@ namespace TouhouHeartstone.Frontend
         public string ID => id;
 
         [SerializeField]
-        string lang;
+        string lang = "";
 
         /// <summary>
         /// 资源对应语言
@@ -29,7 +29,7 @@ namespace TouhouHeartstone.Frontend
         public string Lang => lang;
 
         [SerializeField]
-        Sprite mainSprite;
+        Sprite mainSprite = null;
 
         /// <summary>
         /// 主（中心）图像
@@ -37,7 +37,7 @@ namespace TouhouHeartstone.Frontend
         public Sprite SpriteMain => mainSprite;
 
         [SerializeField]
-        Sprite bkgSprite;
+        Sprite bkgSprite = null;
 
         /// <summary>
         /// 卡片背景图像
@@ -45,7 +45,7 @@ namespace TouhouHeartstone.Frontend
         public Sprite SpriteBkg => bkgSprite;
 
         [SerializeField]
-        Sprite ribbonSprite;
+        Sprite ribbonSprite = null;
 
         /// <summary>
         /// 卡片装饰图像
@@ -60,17 +60,17 @@ namespace TouhouHeartstone.Frontend
     public class CardTextResource : ICardResource, Ii18n
     {
         [SerializeField]
-        string id;
+        string id = "";
 
         public string ID => id;
 
         [SerializeField]
-        string lang;
+        string lang = "";
 
         public string Lang => lang;
 
         [SerializeField]
-        string name;
+        string name = "";
 
         /// <summary>
         /// 卡片主标题文字
@@ -78,7 +78,7 @@ namespace TouhouHeartstone.Frontend
         public string Name => name;
 
         [SerializeField]
-        string desc;
+        string desc = "";
 
         /// <summary>
         /// 卡片描述文字
@@ -86,7 +86,7 @@ namespace TouhouHeartstone.Frontend
         public string Description => desc;
 
         [SerializeField]
-        string type;
+        string type = "";
 
         /// <summary>
         /// 卡片种类文字

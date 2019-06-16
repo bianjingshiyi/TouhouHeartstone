@@ -12,7 +12,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
         protected override CardAnimationEventArgs[] createEventArgInner(object sender, EventArgs args)
         {
             return new CardAnimationEventArgs[2] {
-                new CardAnimationEventArgs(){ AnimationName = "DrawToCenter", EventArgs = new CardPositionEventArgs(1, 0) },
+                new CardAnimationEventArgs(){ AnimationName = "DrawToCenter", EventArgs = new CardPositionEventArgs(1, 0, (args as CardPositionEventArgs).SelfSide) },
                 new CardAnimationEventArgs(){ AnimationName = "CardToHand", EventArgs = args }
             };
         }

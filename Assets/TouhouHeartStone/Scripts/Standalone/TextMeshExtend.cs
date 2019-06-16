@@ -38,7 +38,7 @@ namespace IGensoukyo.Utilities
         float sizePrescaler = 100;
 
         [SerializeField]
-        int sortingOrder;
+        int sortingOrder = 0;
 
         [SerializeField]
         string sortingLayer = "Default";

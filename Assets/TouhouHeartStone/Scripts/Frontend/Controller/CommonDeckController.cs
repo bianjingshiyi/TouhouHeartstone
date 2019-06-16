@@ -11,16 +11,16 @@ namespace TouhouHeartstone.Frontend.Controller
     public class CommonDeckController : MonoBehaviour
     {
         [SerializeField]
-        WeatherViewModel weather;
+        WeatherViewModel weather = null;
 
         [SerializeField]
-        RoundEndViewModel roundEnd;
+        RoundEndViewModel roundEnd = null;
 
         [SerializeField]
-        AnimatorPlayer roundStart;
+        AnimatorPlayer roundStart = null;
 
         [SerializeField]
-        ThrowCardViewModel throwCard;
+        ThrowCardViewModel throwCard = null;
 
         private void Start()
         {
@@ -28,6 +28,8 @@ namespace TouhouHeartstone.Frontend.Controller
             throwCard.OnThrow += ThrowCard_OnThrow;
             roundEnd.RoundEndEvent += OnRoundend;
             TimeRemain = 1;
+
+            weather.WeatherSprite = null;
         }
 
         public float TimeRemain

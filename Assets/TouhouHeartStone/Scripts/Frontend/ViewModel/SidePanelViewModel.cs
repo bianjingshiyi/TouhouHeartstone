@@ -11,7 +11,7 @@ namespace TouhouHeartstone.Frontend.ViewModel
     public class SidePanelViewModel :MonoBehaviour, INotifyPropertyChanged
     {
         [SerializeField]
-        float width;
+        float width = 200;
 
         bool collapse;
 
