@@ -11,9 +11,12 @@ namespace TouhouHeartstone.Frontend.View.Animation
         {
             var arg = Utilities.CheckType<CardPositionEventArgs>(args);
             var gv = Card.GetComponentInParent<GlobalView>();
+
+            var pg = gv.CardPositionCalculator.GetRetinuePosition(arg.GroupID, arg.GroupCount, arg.SelfSide, true);
+
             Card.GetOrAddComponent<PositionAnimation>().Play(new PositionWithRotation[] {
                 Card.transform.GetLocalPWR(),
-                Card.transform.GlobalToLocal(gv.CardPositionCalculator.GetRetinuePosition(arg.GroupID, arg.GroupCount, arg.SelfSide, true))}, callback);
+                Card.transform.GlobalToLocal(pg)}, callback);
         }
     }
 }

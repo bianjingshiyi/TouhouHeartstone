@@ -10,16 +10,16 @@ namespace TouhouHeartstone.Frontend.View
         RectTransform deckRect = null;
 
         [SerializeField]
-        Transform selfServantRoot = null;
+        RectTransform selfServantRoot = null;
 
         [SerializeField]
-        Transform oppoServantRoot = null;
+        RectTransform oppoServantRoot = null;
 
         [SerializeField]
-        Transform selfHandCardRoot = null;
+        RectTransform selfHandCardRoot = null;
 
         [SerializeField]
-        Transform oppoHandCardRoot = null;
+        RectTransform oppoHandCardRoot = null;
 
         Vector2 rectSize => deckRect.rect.size;
         Vector2 screenSize
@@ -157,6 +157,11 @@ namespace TouhouHeartstone.Frontend.View
             center.y *= 0.8f;
             center.x += (i - (count - 1) / 2f) * retinueSpacing;
             return new PositionWithRotation() { Position = center };
+        }
+
+        public void Awake()
+        {
+            Debug.Log(selfServantRoot.position);
         }
     }
 }
