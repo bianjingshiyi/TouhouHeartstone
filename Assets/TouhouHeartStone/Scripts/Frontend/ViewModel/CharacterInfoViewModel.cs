@@ -13,20 +13,16 @@ namespace TouhouHeartstone.Frontend.ViewModel
     [Binding]
     public class CharacterInfoViewModel : MonoBehaviour, INotifyPropertyChanged
     {
-        private Sprite _CharacterImage;
+        [SerializeField]
+        CardViewModel innerCard = null;
 
-        [Binding]
-        public Sprite CharacterImage
+        public CardViewModel InnerCard => innerCard;
+
+        private void Awake()
         {
-            get { return _CharacterImage; }
-            set { _CharacterImage = value; NotifyPropertyChange("CharacterImage"); }
+            if (innerCard == null)
+                innerCard = GetComponent<CardViewModel>();
         }
-
-        [Binding]
-        public int HP => _Character == null ? 0 : _Character.HP;
-
-        [Binding]
-        public int Atk => _Character == null ? 0 : _Character.Atk;
 
         [Binding]
         public int Defence => _Character == null ? 0 : _Character.Defence;
@@ -56,6 +52,10 @@ namespace TouhouHeartstone.Frontend.ViewModel
 
         void notifyPropChangeInner(object sender, PropertyChangedEventArgs e)
         {
+            if (e.PropertyName == "HP")
+                innerCard.CardSpec.HP = _Character.HP;
+            else if (e.PropertyName == "Atk")
+                innerCard.CardSpec.Atk = _Character.Atk;
             PropertyChanged?.Invoke(this, e);
         }
 

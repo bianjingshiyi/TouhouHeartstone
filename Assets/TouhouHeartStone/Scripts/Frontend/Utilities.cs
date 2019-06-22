@@ -17,6 +17,22 @@ namespace TouhouHeartstone.Frontend
         }
     }
 
+    public static class ArrayExtension
+    {
+        public static string GetString<T>(this T[] array)
+        {
+            int len = array.Length;
+            string str = "";
+
+            for (int i = 0; i < len; i++)
+            {
+                if (i > 0) str += ", ";
+                str += array[i].ToString();
+            }
+            return str;
+        }
+    }
+
     /// <summary>
     /// 参数类型错误
     /// </summary>

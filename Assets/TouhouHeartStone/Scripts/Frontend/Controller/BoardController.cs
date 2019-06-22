@@ -192,7 +192,8 @@ namespace TouhouHeartstone.Frontend.Controller
             SelfID = id;
             IsSelf = isSelf;
 
-            // todo: 设置角色图像
+            characterInfo.InnerCard.CardID = character.CardDID;
+            characterInfo.InnerCard.RuntimeID = character.CardRID;
         }
 
         /// <summary>
