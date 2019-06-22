@@ -21,15 +21,6 @@ namespace TouhouHeartstone.Frontend.View
         [SerializeField]
         RectTransform _targetCircle = null;
         DragInputChecker checker = new DragInputChecker();
-        [Obsolete("请使用CardVM.board替代")]
-        Controller.BoardController board
-        {
-            get
-            {
-                _board = _board ?? GetComponentInParent<Controller.BoardController>();
-                return _board;
-            }
-        }
         public CardViewModel cardVM
         {
             get

@@ -25,8 +25,7 @@ namespace TouhouHeartstone.Frontend.ViewModel
                 if (_Character == null)
                 {
                     _Character = value;
-                    NotifyPropertyChange("HP");
-                    NotifyPropertyChange("Atk");
+                    CardSpec = new CardSpecification() { HP = _Character.HP, Atk = _Character.Atk };
                     NotifyPropertyChange("Defence");
                 }
                 else
