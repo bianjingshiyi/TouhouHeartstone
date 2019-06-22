@@ -11,10 +11,10 @@ namespace TouhouHeartstone.Frontend.View.Animation
             var arg = Utilities.CheckType<ServantAttackEventArgs>(args);
             var gv = Card.GetComponentInParent<GlobalView>();
 
-            var posA = gv.CardPositionCalculator.GetRetinuePosition(arg.SelfServant.GroupID, arg.SelfServant.GroupCount, arg.SelfServant.SelfSide);
-            var posB = gv.CardPositionCalculator.GetRetinuePosition(arg.TargetServant.GroupID, arg.TargetServant.GroupCount, arg.TargetServant.SelfSide, true);
+            var posA = gv.CardPositionCalculator.GetPOV(arg.SelfServant);
+            var posB = gv.CardPositionCalculator.GetPOV(arg.TargetServant);
 
-            var testPa = Card.transform.GlobalToLocal(gv.CardPositionCalculator.GetRetinuePosition(arg.SelfServant.GroupID, arg.SelfServant.GroupCount, arg.SelfServant.SelfSide,true));
+            var testPa = Card.transform.GlobalToLocal(gv.CardPositionCalculator.GetPOV(arg.SelfServant, true));
             DebugUtils.Log((posA.Position - testPa.Position).ToString());
 
             posB = Card.transform.GlobalToLocal(posB);

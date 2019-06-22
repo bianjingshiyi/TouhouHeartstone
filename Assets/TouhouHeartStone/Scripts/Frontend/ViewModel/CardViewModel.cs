@@ -145,7 +145,7 @@ namespace TouhouHeartstone.Frontend.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void NotifyPropertyChange(string propertyName)
+        protected void NotifyPropertyChange(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

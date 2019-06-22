@@ -38,5 +38,11 @@ namespace TouhouHeartstone.Frontend.View
     {
         public Vector3 Position;
         public Vector3 Rotation;
+        public PositionWithRotation(Vector3 pos, Vector3 rot)
+        {
+            Position = pos;
+            Rotation = rot;
+        }
+        public PositionWithRotation(Vector3 pos) : this(pos, Vector3.zero) { }
     }
 }

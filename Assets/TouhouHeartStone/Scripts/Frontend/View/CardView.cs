@@ -194,7 +194,7 @@ namespace TouhouHeartstone.Frontend.View
                         var pos = 0;
                         for (pos = 0; pos < cnt; pos++)
                         {
-                            var p = calc.GetRetinuePosition(pos, cnt);
+                            var p = calc.GetServantPosition(pos, cnt);
                             if (transform.localPosition.x < p.Position.x)
                                 break;
                         }

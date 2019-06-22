@@ -11,19 +11,8 @@ namespace TouhouHeartstone.Frontend.ViewModel
     /// 包括角色的数据和外观等。
     /// </summary>
     [Binding]
-    public class CharacterInfoViewModel : MonoBehaviour, INotifyPropertyChanged
+    public class CharacterInfoViewModel : CardViewModel
     {
-        [SerializeField]
-        CardViewModel innerCard = null;
-
-        public CardViewModel InnerCard => innerCard;
-
-        private void Awake()
-        {
-            if (innerCard == null)
-                innerCard = GetComponent<CardViewModel>();
-        }
-
         [Binding]
         public int Defence => _Character == null ? 0 : _Character.Defence;
 
@@ -53,20 +42,10 @@ namespace TouhouHeartstone.Frontend.ViewModel
         void notifyPropChangeInner(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "HP")
-                innerCard.CardSpec.HP = _Character.HP;
+                CardSpec.HP = _Character.HP;
             else if (e.PropertyName == "Atk")
-                innerCard.CardSpec.Atk = _Character.Atk;
-            PropertyChanged?.Invoke(this, e);
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// 通知 Property 改变
-        /// </summary>
-        void NotifyPropertyChange(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+                CardSpec.Atk = _Character.Atk;
+            NotifyPropertyChange(e.PropertyName);
         }
     }
 

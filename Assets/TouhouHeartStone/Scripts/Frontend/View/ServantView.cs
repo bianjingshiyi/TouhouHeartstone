@@ -78,17 +78,29 @@ namespace TouhouHeartstone.Frontend.View
             {
                 var arg = args as OnAttackEventArgs;
                 UberDebug.LogChannel(this, "Frontend", "ServantView收到攻击事件");
+                callback += (a, b) => { UberDebug.LogChannel("Frontend", "ServantAttack动画播放完毕"); };
+
                 var targetServant = cardVM.Board.Deck.GetCardByRID(arg.TargetRID);
-
-                callback += (a,b) => { UberDebug.LogChannel("Frontend", "ServantAttack动画播放完毕"); };
-
-                PlayAnimation("ServantAttack", new ServantAttackEventArgs(
-                    cardVM.Index,
-                    cardVM.Board.ServantCount,
-                    targetServant.Index,
-                    targetServant.Board.ServantCount, 
-                    cardVM.Board.IsSelf)
-                    , callback);
+                if (targetServant != null)
+                {
+                    ObjectPositionEventArgs target;
+                    if (targetServant is CharacterInfoViewModel)
+                    {
+                        target = new SpecialCardPositionEventArgs(SpecialCardPositionEventArgs.CardType.MasterCard, !cardVM.Board.IsSelf);
+                    }
+                    else
+                    {
+                        target = new CardPositionEventArgs(cardVM.Board.ServantCount, cardVM.Index, !cardVM.Board.IsSelf);
+                    }
+                    PlayAnimation("ServantAttack", new ServantAttackEventArgs(
+                        new CardPositionEventArgs(cardVM.Board.ServantCount, cardVM.Index, cardVM.Board.IsSelf),
+                        target)
+                        , callback);
+                }
+                else
+                {
+                    throw new NullReferenceException($"没有找到rid为{arg.TargetRID}的卡");
+                }
             }
 
             if (args is IndexChangeEventArgs && drawed)

@@ -192,8 +192,8 @@ namespace TouhouHeartstone.Frontend.Controller
             SelfID = id;
             IsSelf = isSelf;
 
-            characterInfo.InnerCard.CardID = character.CardDID;
-            characterInfo.InnerCard.RuntimeID = character.CardRID;
+            characterInfo.CardID = character.CardDID;
+            characterInfo.RuntimeID = character.CardRID;
         }
 
         /// <summary>
@@ -550,6 +550,9 @@ namespace TouhouHeartstone.Frontend.Controller
         /// <returns></returns>
         public CardViewModel GetCardByRID(int rid)
         {
+            if (characterInfo.RuntimeID == rid)
+                return characterInfo;
+
             var card = cards.Where(e => e.RuntimeID == rid);
             if (card.Count() > 0)
                 return card.First();

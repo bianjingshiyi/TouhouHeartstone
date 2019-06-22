@@ -14,7 +14,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
             var gv = Card.GetComponentInParent<GlobalView>();
 
             Card.gameObject.SetActive(true);
-            var pos = gv.CardPositionCalculator.GetRetinuePosition(arg.GroupID, arg.GroupCount);
+            var pos = gv.CardPositionCalculator.GetServantPosition(arg.GroupID, arg.GroupCount);
             Card.GetOrAddComponent<PositionAnimation>().Play(new Vector3[2]
             {
                 pos.Position,
@@ -35,7 +35,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
             var arg = Utilities.CheckType<CardPositionEventArgs>(args);
             var gv = Card.GetComponentInParent<GlobalView>();
 
-            var pos = gv.CardPositionCalculator.GetRetinuePosition(arg.GroupID, arg.GroupCount);
+            var pos = gv.CardPositionCalculator.GetServantPosition(arg.GroupID, arg.GroupCount);
             Card.GetOrAddComponent<PositionAnimation>().Play(new Vector3[2]
             {
                 Card.transform.localPosition,

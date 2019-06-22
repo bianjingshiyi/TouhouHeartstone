@@ -1,5 +1,5 @@
 ﻿using System;
-
+using TouhouHeartstone.Frontend.View.Animation;
 using UnityEngine;
 
 namespace TouhouHeartstone.Frontend.View
@@ -21,6 +21,12 @@ namespace TouhouHeartstone.Frontend.View
         [SerializeField]
         RectTransform oppoHandCardRoot = null;
 
+        [SerializeField]
+        RectTransform selfMasterCard = null;
+
+        [SerializeField]
+        RectTransform oppoMasterCard = null;
+
         Vector2 rectSize => deckRect.rect.size;
         Vector2 screenSize
         {
@@ -38,7 +44,7 @@ namespace TouhouHeartstone.Frontend.View
         /// <summary>
         /// 两张屏幕中间的牌之间的距离
         /// </summary>
-        float cardCenterSpacing => rectSize.y * 0.2f;
+        float cardCenterSpacing => screenSize.y * 0.2f;
 
         /// <summary>
         /// 手牌的基础高度
@@ -139,13 +145,41 @@ namespace TouhouHeartstone.Frontend.View
 
         float retinueSpacing => rectSize.y * 0.15f;
 
+        public PositionWithRotation GetPOV(ObjectPositionEventArgs pos, bool global = false)
+        {
+            if (pos is CardPositionEventArgs)
+            {
+                return GetPOV(pos as CardPositionEventArgs);
+            }
+            if (pos is SpecialCardPositionEventArgs)
+            {
+                return GetPOV(pos as SpecialCardPositionEventArgs);
+            }
+            throw new InvalidCastException();
+        }
+
+        public PositionWithRotation GetPOV(CardPositionEventArgs pos, bool global = false)
+        {
+            return GetServantPosition(pos.GroupID, pos.GroupCount, pos.SelfSide, global);
+        }
+
+        public PositionWithRotation GetPOV(SpecialCardPositionEventArgs pos)
+        {
+            switch (pos.Type)
+            {
+                case SpecialCardPositionEventArgs.CardType.MasterCard:
+                    return new PositionWithRotation(pos.SelfSide ? selfMasterCard.position : oppoMasterCard.position);
+            }
+            throw new InvalidCastException();
+        }
+
         /// <summary>
         /// 获取随从位置坐标
         /// </summary>
         /// <param name="i"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public PositionWithRotation GetRetinuePosition(int i, int count, bool self = true, bool global = false)
+        public PositionWithRotation GetServantPosition(int i, int count, bool self = true, bool global = false)
         {
             if (i >= count)
                 throw new ArgumentOutOfRangeException($"argument i({i}) > count({count})");
