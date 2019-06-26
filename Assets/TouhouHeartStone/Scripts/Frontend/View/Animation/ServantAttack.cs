@@ -12,7 +12,7 @@ namespace TouhouHeartstone.Frontend.View.Animation
             var gv = Card.GetComponentInParent<GlobalView>();
 
             var posA = gv.CardPositionCalculator.GetPOV(arg.SelfServant);
-            var posB = gv.CardPositionCalculator.GetPOV(arg.TargetServant);
+            var posB = gv.CardPositionCalculator.GetPOV(arg.TargetServant, true);
 
             var testPa = Card.transform.GlobalToLocal(gv.CardPositionCalculator.GetPOV(arg.SelfServant, true));
             DebugUtils.Log((posA.Position - testPa.Position).ToString());

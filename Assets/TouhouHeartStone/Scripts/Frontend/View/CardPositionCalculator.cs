@@ -113,27 +113,29 @@ namespace TouhouHeartstone.Frontend.View
                 throw new ArgumentOutOfRangeException($"argument i({i}) > count({count})");
 
             Vector3 basePos = Vector3.zero;
+            float factor = 1;
             if (global)
             {
                 basePos = self ? selfHandCardRoot.position : oppoHandCardRoot.position;
+                factor = screenSize.y / rectSize.y;
             }
 
             if (count <= 3)
             {
-                basePos.x += (i - (count - 1) / 2f) * cardHandSpacing;
+                basePos.x += (i - (count - 1) / 2f) * cardHandSpacing * factor;
 
                 return new PositionWithRotation() { Position = basePos, Rotation = Vector3.zero };
             }
             else
             {
                 int sign = self ? 1 : -1;
-                var totalWidth = maxHandWidth + cardHandSpacing * 0.25f * (count - 3);
+                var totalWidth = maxHandWidth + cardHandSpacing * 0.25f * (count - 3) * factor;
                 var bt = (count - 1);
                 var step = totalWidth / bt;
                 var deg = ((bt / 2f) - i) * 10 * sign;
 
-                basePos.x += (step * i - totalWidth / 2) + cardHalfHeight * Mathf.Sin(deg * Mathf.Deg2Rad) * sign;
-                basePos.y -= cardHalfHeight * (1 - Mathf.Cos(deg * Mathf.Deg2Rad)) * 3 * sign;
+                basePos.x += (step * i - totalWidth / 2) + cardHalfHeight * Mathf.Sin(deg * Mathf.Deg2Rad) * sign * factor;
+                basePos.y -= cardHalfHeight * (1 - Mathf.Cos(deg * Mathf.Deg2Rad)) * 3 * sign * factor;
 
                 var rot = new Vector3();
                 rot.z = deg;
@@ -149,7 +151,7 @@ namespace TouhouHeartstone.Frontend.View
         {
             if (pos is CardPositionEventArgs)
             {
-                return GetPOV(pos as CardPositionEventArgs);
+                return GetPOV(pos as CardPositionEventArgs, global);
             }
             if (pos is SpecialCardPositionEventArgs)
             {
@@ -185,11 +187,15 @@ namespace TouhouHeartstone.Frontend.View
                 throw new ArgumentOutOfRangeException($"argument i({i}) > count({count})");
 
             Vector3 center = Vector3.zero;
+            float factor = 1;
             if (global)
+            {
                 center = self ? selfServantRoot.position : oppoServantRoot.position;
+                factor = screenSize.y / rectSize.y;
+            }
 
-            center.y *= 0.8f;
-            center.x += (i - (count - 1) / 2f) * retinueSpacing;
+            // center.y *= 0.8f;
+            center.x += (i - (count - 1) / 2f) * retinueSpacing * factor;
             return new PositionWithRotation() { Position = center };
         }
 
