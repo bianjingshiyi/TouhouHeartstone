@@ -177,10 +177,13 @@ namespace TouhouHeartstone.Frontend.View
 
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
-            //激活箭头
-            targetArrow.gameObject.SetActive(true);
-            targetArrow.sizeDelta = new Vector2(targetArrow.sizeDelta.x, Vector3.Distance(Input.mousePosition, targetArrow.position) - 1);
-            targetArrow.up = Input.mousePosition - targetArrow.position;
+            // 仅在己方激活箭头
+            if (cardVM.Board.IsSelf)
+            {
+                targetArrow.gameObject.SetActive(true);
+                targetArrow.sizeDelta = new Vector2(targetArrow.sizeDelta.x, Vector3.Distance(Input.mousePosition, targetArrow.position) - 1);
+                targetArrow.up = Input.mousePosition - targetArrow.position;
+            }
         }
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
@@ -204,7 +207,7 @@ namespace TouhouHeartstone.Frontend.View
             targetArrow.gameObject.SetActive(false);
             targetCircle.gameObject.SetActive(false);
             //如果在目标上，发布攻击命令
-            if (eventData.pointerCurrentRaycast.gameObject != null)
+            if (eventData.pointerCurrentRaycast.gameObject != null && cardVM.Board.IsSelf)
             {
                 CardViewModel targetCard = eventData.pointerCurrentRaycast.gameObject.GetComponentInParent<CardViewModel>();
                 //有目标，不是自己，并且是别人的。
