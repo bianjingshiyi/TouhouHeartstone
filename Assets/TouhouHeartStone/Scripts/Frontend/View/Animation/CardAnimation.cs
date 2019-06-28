@@ -28,25 +28,35 @@ namespace TouhouHeartstone.Frontend.View.Animation
         /// <param name="callback"></param>
         public abstract void PlayAnimation(object sender, EventArgs args, GenericAction callback);
     }
+    
+    /// <summary>
+    /// 物体的位置参数
+    /// </summary>
+    public class ObjectPositionEventArgs : EventArgs { }
 
+    public class SpecialCardPositionEventArgs : ObjectPositionEventArgs
+    {
+        public enum CardType
+        {
+            MasterCard,
+            //...
+        }
+
+        public CardType Type { get; }
+        public bool SelfSide { get; }
+
+        public SpecialCardPositionEventArgs(CardType type, bool side)
+        {
+            this.Type = type;
+            this.SelfSide = side;
+        }
+    }
 
     /// <summary>
     /// 卡片位置的参数
     /// </summary>
-    public class CardPositionEventArgs : System.EventArgs
+    public class CardPositionEventArgs : ObjectPositionEventArgs
     {
-        [Obsolete("使用带参数版")]
-        public CardPositionEventArgs() { }
-
-        [Obsolete("使用带边的版本")]
-        public CardPositionEventArgs(int count, int id)
-        {
-            GroupCount = count;
-            GroupID = id;
-            if (id >= count)
-                throw new ArgumentOutOfRangeException($"卡片位置{id}越界（总数{count}）");
-        }
-
         public CardPositionEventArgs(int count, int id, bool selfSide)
         {
             GroupCount = count;
@@ -75,10 +85,10 @@ namespace TouhouHeartstone.Frontend.View.Animation
 
     public class ServantAttackEventArgs : EventArgs
     {
-        public CardPositionEventArgs SelfServant { get; }
-        public CardPositionEventArgs TargetServant { get; }
+        public ObjectPositionEventArgs SelfServant { get; }
+        public ObjectPositionEventArgs TargetServant { get; }
 
-        public ServantAttackEventArgs(CardPositionEventArgs self, CardPositionEventArgs target)
+        public ServantAttackEventArgs(ObjectPositionEventArgs self, ObjectPositionEventArgs target)
         {
             SelfServant = self;
             TargetServant = target;

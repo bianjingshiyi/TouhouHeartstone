@@ -29,4 +29,20 @@ namespace TouhouHeartstone.Frontend.View.Animation
                 }, callback);
         }
     }
+
+
+    public static class TransformExtension
+    {
+        public static PositionWithRotation GetLocalPWR(this Transform tr)
+        {
+            return new PositionWithRotation() { Position = tr.localPosition, Rotation = tr.localRotation.eulerAngles };
+        }
+
+        public static PositionWithRotation GlobalToLocal(this Transform tr, PositionWithRotation pwr)
+        {
+            pwr.Position = tr.parent.InverseTransformPoint(pwr.Position);
+            pwr.Rotation = tr.parent.InverseTransformDirection(pwr.Rotation);
+            return pwr;
+        }
+    }
 }

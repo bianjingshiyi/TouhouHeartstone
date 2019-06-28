@@ -7,7 +7,8 @@
         protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback = null)
         {
             var player = witness.getVar<int>("playerIndex");
-            deck.TurnStart(player);
+            deck.CommonDeck.RoundStart(deck.selfID == player);
+
             return false;
         }
     }

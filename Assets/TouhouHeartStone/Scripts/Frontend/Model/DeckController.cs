@@ -175,15 +175,6 @@ namespace TouhouHeartstone.Frontend.Model
         }
 
         /// <summary>
-        /// 回合开始
-        /// </summary>
-        /// <param name="playerID"></param>
-        public void TurnStart(int playerID)
-        {
-            common.RoundStart(playerID == selfID);
-        }
-
-        /// <summary>
         /// 当前回合结束事件
         /// param1: 当前回合PID, param2: 下一回合PID
         /// </summary>

@@ -18,7 +18,7 @@ namespace TouhouHeartstone.Frontend.View
     /// </summary>
     public class CardView : AnimationPlayerBase, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
     {
-        CardViewModel cardVM;
+        public CardViewModel cardVM { get; internal set; }
 
         RectTransform rectTransform => GetComponent<RectTransform>();
 
@@ -46,7 +46,7 @@ namespace TouhouHeartstone.Frontend.View
             }
         }
 
-        void destroy()
+        public void Destroy()
         {
             Destroy(gameObject);
             OnDestroy();
@@ -76,9 +76,7 @@ namespace TouhouHeartstone.Frontend.View
 
         private void onUse(UseCardEventArgs arg1, GenericAction arg2)
         {
-            // todo: 使用的动画
-            destroy();
-            arg2?.Invoke(this, null);
+            PlayAnimation("UseCard", arg1, arg2);
         }
 
         bool drawed = false;
@@ -196,7 +194,7 @@ namespace TouhouHeartstone.Frontend.View
                         var pos = 0;
                         for (pos = 0; pos < cnt; pos++)
                         {
-                            var p = calc.GetRetinuePosition(pos, cnt);
+                            var p = calc.GetServantPosition(pos, cnt);
                             if (transform.localPosition.x < p.Position.x)
                                 break;
                         }

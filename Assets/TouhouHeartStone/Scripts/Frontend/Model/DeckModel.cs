@@ -105,7 +105,11 @@ namespace TouhouHeartstone.Frontend.Model
             switchPrepare(arg1, arg2);
         }
 
-
+        /// <summary>
+        /// 替换卡
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="cards"></param>
         public void ReplaceCards(int playerID, int[] cards)
         {
             // 热座模式下，先按添加播放，全部换牌完毕后再按游戏顺序播放
@@ -118,6 +122,7 @@ namespace TouhouHeartstone.Frontend.Model
                 }
                 switchPrepare(playerID, to);
             }
+            UberDebug.LogDebug($"用户{playerID}替换卡牌{cards.GetString()}");
             gm.Game.initReplace(playerID, cards);
         }
 

@@ -129,6 +129,11 @@ namespace TouhouHeartstone.Frontend
     /// </summary>
     public class CardSpecification : INotifyPropertyChanged
     {
+        public CardSpecification(PropertyChangedEventHandler handler = null)
+        {
+            PropertyChanged += handler;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>

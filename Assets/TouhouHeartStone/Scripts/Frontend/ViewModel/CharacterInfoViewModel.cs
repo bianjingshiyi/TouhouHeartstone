@@ -11,23 +11,8 @@ namespace TouhouHeartstone.Frontend.ViewModel
     /// 包括角色的数据和外观等。
     /// </summary>
     [Binding]
-    public class CharacterInfoViewModel : MonoBehaviour, INotifyPropertyChanged
+    public class CharacterInfoViewModel : CardViewModel
     {
-        private Sprite _CharacterImage;
-
-        [Binding]
-        public Sprite CharacterImage
-        {
-            get { return _CharacterImage; }
-            set { _CharacterImage = value; NotifyPropertyChange("CharacterImage"); }
-        }
-
-        [Binding]
-        public int HP => _Character == null ? 0 : _Character.HP;
-
-        [Binding]
-        public int Atk => _Character == null ? 0 : _Character.Atk;
-
         [Binding]
         public int Defence => _Character == null ? 0 : _Character.Defence;
 
@@ -40,8 +25,7 @@ namespace TouhouHeartstone.Frontend.ViewModel
                 if (_Character == null)
                 {
                     _Character = value;
-                    NotifyPropertyChange("HP");
-                    NotifyPropertyChange("Atk");
+                    CardSpec = new CardSpecification() { HP = _Character.HP, Atk = _Character.Atk };
                     NotifyPropertyChange("Defence");
                 }
                 else
@@ -56,17 +40,11 @@ namespace TouhouHeartstone.Frontend.ViewModel
 
         void notifyPropChangeInner(object sender, PropertyChangedEventArgs e)
         {
-            PropertyChanged?.Invoke(this, e);
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// 通知 Property 改变
-        /// </summary>
-        void NotifyPropertyChange(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (e.PropertyName == "HP")
+                CardSpec.HP = _Character.HP;
+            else if (e.PropertyName == "Atk")
+                CardSpec.Atk = _Character.Atk;
+            NotifyPropertyChange(e.PropertyName);
         }
     }
 

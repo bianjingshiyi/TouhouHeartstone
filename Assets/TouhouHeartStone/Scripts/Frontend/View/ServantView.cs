@@ -21,15 +21,6 @@ namespace TouhouHeartstone.Frontend.View
         [SerializeField]
         RectTransform _targetCircle = null;
         DragInputChecker checker = new DragInputChecker();
-        [Obsolete("请使用CardVM.board替代")]
-        Controller.BoardController board
-        {
-            get
-            {
-                _board = _board ?? GetComponentInParent<Controller.BoardController>();
-                return _board;
-            }
-        }
         public CardViewModel cardVM
         {
             get
@@ -78,17 +69,29 @@ namespace TouhouHeartstone.Frontend.View
             {
                 var arg = args as OnAttackEventArgs;
                 UberDebug.LogChannel(this, "Frontend", "ServantView收到攻击事件");
+                callback += (a, b) => { UberDebug.LogChannel("Frontend", "ServantAttack动画播放完毕"); };
+
                 var targetServant = cardVM.Board.Deck.GetCardByRID(arg.TargetRID);
-
-                callback += (a,b) => { UberDebug.LogChannel("Frontend", "ServantAttack动画播放完毕"); };
-
-                PlayAnimation("ServantAttack", new ServantAttackEventArgs(
-                    cardVM.Index,
-                    cardVM.Board.ServantCount,
-                    targetServant.Index,
-                    targetServant.Board.ServantCount, 
-                    cardVM.Board.IsSelf)
-                    , callback);
+                if (targetServant != null)
+                {
+                    ObjectPositionEventArgs target;
+                    if (targetServant is CharacterInfoViewModel)
+                    {
+                        target = new SpecialCardPositionEventArgs(SpecialCardPositionEventArgs.CardType.MasterCard, !cardVM.Board.IsSelf);
+                    }
+                    else
+                    {
+                        target = new CardPositionEventArgs(cardVM.Board.ServantCount, cardVM.Index, !cardVM.Board.IsSelf);
+                    }
+                    PlayAnimation("ServantAttack", new ServantAttackEventArgs(
+                        new CardPositionEventArgs(cardVM.Board.ServantCount, cardVM.Index, cardVM.Board.IsSelf),
+                        target)
+                        , callback);
+                }
+                else
+                {
+                    throw new NullReferenceException($"没有找到rid为{arg.TargetRID}的卡");
+                }
             }
 
             if (args is IndexChangeEventArgs && drawed)
@@ -174,10 +177,13 @@ namespace TouhouHeartstone.Frontend.View
 
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
-            //激活箭头
-            targetArrow.gameObject.SetActive(true);
-            targetArrow.sizeDelta = new Vector2(targetArrow.sizeDelta.x, Vector3.Distance(Input.mousePosition, targetArrow.position) - 1);
-            targetArrow.up = Input.mousePosition - targetArrow.position;
+            // 仅在己方激活箭头
+            if (cardVM.Board.IsSelf)
+            {
+                targetArrow.gameObject.SetActive(true);
+                targetArrow.sizeDelta = new Vector2(targetArrow.sizeDelta.x, Vector3.Distance(Input.mousePosition, targetArrow.position) - 1);
+                targetArrow.up = Input.mousePosition - targetArrow.position;
+            }
         }
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
@@ -201,7 +207,7 @@ namespace TouhouHeartstone.Frontend.View
             targetArrow.gameObject.SetActive(false);
             targetCircle.gameObject.SetActive(false);
             //如果在目标上，发布攻击命令
-            if (eventData.pointerCurrentRaycast.gameObject != null)
+            if (eventData.pointerCurrentRaycast.gameObject != null && cardVM.Board.IsSelf)
             {
                 CardViewModel targetCard = eventData.pointerCurrentRaycast.gameObject.GetComponentInParent<CardViewModel>();
                 //有目标，不是自己，并且是别人的。

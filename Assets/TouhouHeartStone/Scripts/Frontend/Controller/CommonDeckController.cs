@@ -20,6 +20,12 @@ namespace TouhouHeartstone.Frontend.Controller
         AnimatorPlayer roundStart = null;
 
         [SerializeField]
+        AnimatorPlayer roundWin = null;
+
+        [SerializeField]
+        AnimatorPlayer roundFail = null;
+
+        [SerializeField]
         ThrowCardViewModel throwCard = null;
 
         private void Start()
@@ -62,6 +68,14 @@ namespace TouhouHeartstone.Frontend.Controller
             {
                 roundStart?.Play();
             }
+        }
+
+        public void GameEnd(bool win, GenericAction callback = null)
+        {
+            if (win)
+                roundWin.Play(callback);
+            else
+                roundFail.Play(callback);
         }
 
         public void RoundEnd()

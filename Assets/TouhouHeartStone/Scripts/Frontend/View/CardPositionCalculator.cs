@@ -1,5 +1,5 @@
 ﻿using System;
-
+using TouhouHeartstone.Frontend.View.Animation;
 using UnityEngine;
 
 namespace TouhouHeartstone.Frontend.View
@@ -10,16 +10,22 @@ namespace TouhouHeartstone.Frontend.View
         RectTransform deckRect = null;
 
         [SerializeField]
-        Transform selfServantRoot = null;
+        RectTransform selfServantRoot = null;
 
         [SerializeField]
-        Transform oppoServantRoot = null;
+        RectTransform oppoServantRoot = null;
 
         [SerializeField]
-        Transform selfHandCardRoot = null;
+        RectTransform selfHandCardRoot = null;
 
         [SerializeField]
-        Transform oppoHandCardRoot = null;
+        RectTransform oppoHandCardRoot = null;
+
+        [SerializeField]
+        RectTransform selfMasterCard = null;
+
+        [SerializeField]
+        RectTransform oppoMasterCard = null;
 
         Vector2 rectSize => deckRect.rect.size;
         Vector2 screenSize
@@ -38,7 +44,7 @@ namespace TouhouHeartstone.Frontend.View
         /// <summary>
         /// 两张屏幕中间的牌之间的距离
         /// </summary>
-        float cardCenterSpacing => rectSize.y * 0.2f;
+        float cardCenterSpacing => screenSize.y * 0.2f;
 
         /// <summary>
         /// 手牌的基础高度
@@ -107,27 +113,29 @@ namespace TouhouHeartstone.Frontend.View
                 throw new ArgumentOutOfRangeException($"argument i({i}) > count({count})");
 
             Vector3 basePos = Vector3.zero;
+            float factor = 1;
             if (global)
             {
                 basePos = self ? selfHandCardRoot.position : oppoHandCardRoot.position;
+                factor = screenSize.y / rectSize.y;
             }
 
             if (count <= 3)
             {
-                basePos.x += (i - (count - 1) / 2f) * cardHandSpacing;
+                basePos.x += (i - (count - 1) / 2f) * cardHandSpacing * factor;
 
                 return new PositionWithRotation() { Position = basePos, Rotation = Vector3.zero };
             }
             else
             {
                 int sign = self ? 1 : -1;
-                var totalWidth = maxHandWidth + cardHandSpacing * 0.25f * (count - 3);
+                var totalWidth = maxHandWidth + cardHandSpacing * 0.25f * (count - 3) * factor;
                 var bt = (count - 1);
                 var step = totalWidth / bt;
                 var deg = ((bt / 2f) - i) * 10 * sign;
 
-                basePos.x += (step * i - totalWidth / 2) + cardHalfHeight * Mathf.Sin(deg * Mathf.Deg2Rad) * sign;
-                basePos.y -= cardHalfHeight * (1 - Mathf.Cos(deg * Mathf.Deg2Rad)) * 3 * sign;
+                basePos.x += (step * i - totalWidth / 2) + cardHalfHeight * Mathf.Sin(deg * Mathf.Deg2Rad) * sign * factor;
+                basePos.y -= cardHalfHeight * (1 - Mathf.Cos(deg * Mathf.Deg2Rad)) * 3 * sign * factor;
 
                 var rot = new Vector3();
                 rot.z = deg;
@@ -139,34 +147,61 @@ namespace TouhouHeartstone.Frontend.View
 
         float retinueSpacing => rectSize.y * 0.15f;
 
+        public PositionWithRotation GetPOV(ObjectPositionEventArgs pos, bool global = false)
+        {
+            if (pos is CardPositionEventArgs)
+            {
+                return GetPOV(pos as CardPositionEventArgs, global);
+            }
+            if (pos is SpecialCardPositionEventArgs)
+            {
+                return GetPOV(pos as SpecialCardPositionEventArgs);
+            }
+            throw new InvalidCastException();
+        }
+
+        public PositionWithRotation GetPOV(CardPositionEventArgs pos, bool global = false)
+        {
+            return GetServantPosition(pos.GroupID, pos.GroupCount, pos.SelfSide, global);
+        }
+
+        public PositionWithRotation GetPOV(SpecialCardPositionEventArgs pos)
+        {
+            switch (pos.Type)
+            {
+                case SpecialCardPositionEventArgs.CardType.MasterCard:
+                    return new PositionWithRotation(pos.SelfSide ? selfMasterCard.position : oppoMasterCard.position);
+            }
+            throw new InvalidCastException();
+        }
+
         /// <summary>
         /// 获取随从位置坐标
         /// </summary>
         /// <param name="i"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public PositionWithRotation GetRetinuePosition(int i, int count, bool self = true, bool global = false)
+        public PositionWithRotation GetServantPosition(int i, int count, bool self = true, bool global = false)
         {
             if (i >= count)
                 throw new ArgumentOutOfRangeException($"argument i({i}) > count({count})");
 
             Vector3 center = Vector3.zero;
+            float factor = 1;
             if (global)
+            {
                 center = self ? selfServantRoot.position : oppoServantRoot.position;
+                factor = screenSize.y / rectSize.y;
+            }
 
-            center.y *= 0.8f;
-            center.x += (i - (count - 1) / 2f) * retinueSpacing;
+            // center.y *= 0.8f;
+            center.x += (i - (count - 1) / 2f) * retinueSpacing * factor;
             return new PositionWithRotation() { Position = center };
         }
 
-        public PositionWithRotation GetOppositeRetinuePosition(int i, int count)
+        public void Awake()
         {
-            var a = GetRetinuePosition(i, count);
-            a.Position.x = rectSize.x - a.Position.x;
-            a.Position.y = rectSize.y - a.Position.y;
-
-            return a;
+            Debug.Log(selfServantRoot.position);
         }
-
     }
 }
