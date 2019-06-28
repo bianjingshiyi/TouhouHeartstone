@@ -2,17 +2,22 @@
 using System.Linq;
 using System.Collections.Generic;
 
+using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+
 namespace TouhouHeartstone
 {
     [Serializable]
     public class CardEngine
     {
-        public CardEngine(Rule rule, int randomSeed)
+        public IGameEnvironment env { get; }
+        public Rule rule { get; }
+        public CardEngine(IGameEnvironment env, Rule rule, int randomSeed)
         {
+            this.env = env;
             this.rule = rule;
             random = new Random(randomSeed);
         }
-        public Rule rule { get; }
         public Card[] moveCard(Player player, string pileName, Card[] cards, Player targetPlayer, string targetPileName, int position)
         {
             MoveCardEvent e = new MoveCardEvent(player, pileName, cards, targetPlayer, targetPileName, position);

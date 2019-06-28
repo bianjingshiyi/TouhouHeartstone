@@ -21,7 +21,7 @@
                 ServantCardDefine define = card.define as ServantCardDefine;
                 //随从卡，将卡置入战场
                 engine.summon(player, card, targetPosition);
-                foreach (Effect effect in define.getEffects())
+                foreach (Effect effect in define.effects)
                 {
                     if (card.pile.name == effect.pile && effect.trigger == "onUse")
                         effect.execute(engine, player, card, targetCard);

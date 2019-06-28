@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
 
 using TouhouHeartstone.Backend.Builtin;
@@ -13,16 +14,48 @@ namespace TouhouHeartstone.Backend
     public class HeartStoneRule : Rule
     {
         public override CardPool pool { get; } = null;
-        public HeartStoneRule()
+        public HeartStoneRule(IGameEnvironment env)
         {
-            List<CardDefine> cardList = new List<CardDefine>();
-            cardList.AddRange(typeof(HeartStoneRule).Assembly.GetTypes().
-                              Where(t => { return !t.IsAbstract && t.IsSubclassOf(typeof(CardDefine)); }).
+            pool = new CardPool();
+            //加载卡池
+            //加载内置卡池
+            Dictionary<int, CardDefine> cards = typeof(HeartStoneRule).Assembly.GetTypes().
+                              Where(t =>
+                              {
+                                  return !t.IsAbstract && t.IsSubclassOf(typeof(CardDefine)) &&
+                                         (t.GetConstructor(new Type[0]) != null ||
+                                          t.GetConstructor(new Type[] { typeof(IGameEnvironment) }) != null);
+                              }).
                               Select(t =>
                               {
-                                  return t.GetConstructor(new Type[0]).Invoke(new object[0]) as CardDefine;
-                              }));
-            pool = new CardPool(cardList.ToArray());
+                                  ConstructorInfo constructor = t.GetConstructor(new Type[0]);
+                                  if (constructor != null)
+                                      return constructor.Invoke(new object[0]) as CardDefine;
+                                  else
+                                  {
+                                      constructor = t.GetConstructor(new Type[] { typeof(IGameEnvironment) });
+                                      return constructor.Invoke(new object[] { env }) as CardDefine;
+                                  }
+                              }).ToDictionary(d =>
+                              {
+                                  return d.id;
+                              });
+            //加载外置卡池
+            if (env != null)
+            {
+                foreach (string path in env.getFiles("Cards", "*.thcd"))
+                {
+                    using (TextReader reader = env.getFileReader(path))
+                    {
+                        GeneratedCardDefine card = CardFileHelper.read(reader);
+                        if (cards.ContainsKey(card.id))
+                            throw new ArgumentException("存在重复的卡片定义id" + card.id);
+                        else
+                            cards.Add(card.id, card);
+                    }
+                }
+            }
+            pool = new CardPool(cards.Values.ToArray());
         }
         public override void beforeEvent(CardEngine game, Event e)
         {

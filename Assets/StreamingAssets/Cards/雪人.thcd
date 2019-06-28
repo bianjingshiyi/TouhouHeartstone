@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Card id="105" type="2">
+  <cost>4</cost>
+  <attack>4</attack>
+  <life>5</life>
+</Card>

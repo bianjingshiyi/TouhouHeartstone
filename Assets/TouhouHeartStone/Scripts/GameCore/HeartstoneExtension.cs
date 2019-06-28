@@ -70,7 +70,9 @@ namespace TouhouHeartstone.Backend
         }
         public static void createToken(this CardEngine engine, Player player, CardDefine define, int position)
         {
-            engine.doEvent(new SummonEvent(player, new Card(engine, define), position));
+            Card card = new Card(engine, define);
+            engine.allocateRID(card);
+            engine.doEvent(new SummonEvent(player, card, position));
         }
         public static void damage(this CardEngine engine, Card card, int amount)
         {

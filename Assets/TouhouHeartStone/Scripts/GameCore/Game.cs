@@ -6,9 +6,9 @@ namespace TouhouHeartstone.Backend
 {
     public class Game
     {
-        public Game()
+        public Game(IGameEnvironment env)
         {
-            engine = new CardEngine(new HeartStoneRule(), (int)DateTime.Now.ToBinary());
+            engine = new CardEngine(env, new HeartStoneRule(env), (int)DateTime.Now.ToBinary());
             engine.afterEvent += afterEvent;
         }
         public CardEngine engine { get; }

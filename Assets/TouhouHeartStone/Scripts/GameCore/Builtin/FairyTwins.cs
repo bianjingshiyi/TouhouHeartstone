@@ -1,7 +1,17 @@
-﻿namespace TouhouHeartstone.Backend.Builtin
+﻿using System.Threading;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+
+namespace TouhouHeartstone.Backend.Builtin
 {
     public class FairyTwins : ServantCardDefine
     {
+        public FairyTwins(IGameEnvironment env)
+        {
+            effects = new Effect[]
+            {
+                new GeneratedEffect(env,"Field","onUse","TouhouHeartstone.Backend.HeartstoneExtension.createToken(engine, player, card.define, player[\"Field\"].indexOf(card) + 1);")
+            };
+        }
         public override int id
         {
             get { return 2; }
@@ -22,24 +32,6 @@
         {
             get { return 2; }
         }
-        public override Effect[] getEffects()
-        {
-            return new Effect[] { new OnUseEffect() };
-        }
-        class OnUseEffect : Effect
-        {
-            public override string pile
-            {
-                get { return "Field"; }
-            }
-            public override string trigger
-            {
-                get { return "onUse"; }
-            }
-            public override void execute(CardEngine engine, Player player, Card card, Card[] targetCards)
-            {
-                engine.createToken(player, card.define, player["Field"].indexOf(card) + 1);
-            }
-        }
+        public override Effect[] effects { get; }
     }
 }

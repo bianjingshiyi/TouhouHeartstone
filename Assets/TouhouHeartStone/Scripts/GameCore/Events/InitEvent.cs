@@ -24,7 +24,7 @@ namespace TouhouHeartstone.Backend
             Card[] masterCards = sortedPlayers.Select(p => { return p["Master"][0]; }).ToArray();
             foreach (Card card in masterCards)
             {
-                card.setProp("life", 30);
+                card.setProp("life", 10);
                 engine.allocateRID(card);
             }
             Card[] skillCards = sortedPlayers.Select(p => { return p["Skill"][0]; }).ToArray();
