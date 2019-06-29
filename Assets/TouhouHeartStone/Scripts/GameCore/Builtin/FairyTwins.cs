@@ -9,7 +9,8 @@ namespace TouhouHeartstone.Backend.Builtin
         {
             effects = new Effect[]
             {
-                new GeneratedEffect(env,"Field","onUse","TouhouHeartstone.Backend.HeartstoneExtension.createToken(engine, player, card.define, player[\"Field\"].indexOf(card) + 1);")
+                new GeneratedEffect("Field","onUse",
+                "TouhouHeartstone.Backend.GameExtensions.createToken(engine, player, card.define, player[\"Field\"].indexOf(card) + 1);")
             };
         }
         public override int id

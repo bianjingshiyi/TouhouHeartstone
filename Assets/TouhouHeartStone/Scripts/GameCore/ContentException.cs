@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TouhouHeartstone.Backend.Builtin
+namespace TouhouHeartstone.Backend
 {
     class ContentException : Exception
     {

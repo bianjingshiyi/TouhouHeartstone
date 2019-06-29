@@ -5,7 +5,7 @@ namespace TouhouHeartstone
 {
     public interface IGameEnvironment
     {
-        Script createScript(string script);
+        void runScript(string script, EffectGlobals globals);
         string[] getFiles(string path, string searchPattern);
         TextReader getFileReader(string path);
     }

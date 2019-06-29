@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using System.Linq;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -111,6 +112,37 @@ namespace TouhouHeartstone.Backend
                     _card.setProp("attack", EditorGUILayout.IntField("attack", _card.getProp<int>("attack")));
                     _card.setProp("life", EditorGUILayout.IntField("life", _card.getProp<int>("life")));
                 }
+                List<GeneratedEffect> effectList = new List<GeneratedEffect>(_card.getProp<Effect[]>("effects") != null ? _card.getProp<Effect[]>("effects").Cast<GeneratedEffect>() : new GeneratedEffect[0]);
+                //绘制已有的效果
+                for (int i = 0; i < effectList.Count; i++)
+                {
+                    GeneratedEffect effect = effectList[i];
+                    effect.setPile(EditorGUILayout.TextField(effect.pile));
+                    effect.setTrigger(EditorGUILayout.TextField(effect.trigger));
+                    effect.setScript(EditorGUILayout.TextArea(effect.script));
+                    //删除效果
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("");
+                    if (GUILayout.Button("删除效果", GUILayout.Width(200)))
+                    {
+                        effectList.RemoveAt(i);
+                        i--;
+                    }
+                    GUILayout.EndHorizontal();
+                }
+                foreach (GeneratedEffect effect in effectList)
+                {
+                }
+                //添加新效果按钮
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("");
+                if (GUILayout.Button("新增效果", GUILayout.Width(200)))
+                    effectList.Add(new GeneratedEffect("Field", "onUse", ""));
+                GUILayout.EndHorizontal();
+                if (effectList.Count > 0)
+                    _card.setProp("effects", effectList.Cast<GeneratedEffect>().ToArray());
+                else
+                    _card.setProp<Effect[]>("effects", null);
             }
         }
         GeneratedCardDefine _card = null;

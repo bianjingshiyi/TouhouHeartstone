@@ -11,29 +11,6 @@ namespace TouhouHeartstone
         {
             this.eventName = eventName;
         }
-        /// <summary>
-        /// 以前序优先的方式遍历整个结构并执行参数动作。参数动作的返回值表示是否已经对该节点完成了处理，如果返回值为真，则放弃对该节点的子节点的遍历。
-        /// </summary>
-        /// <param name="action"></param>
-        [Obsolete("foreachDo方法被废弃")]
-        public void foreachDo(Func<EventWitness, bool> action)
-        {
-            for (int i = 0; i < before.Count; i++)
-            {
-                before[i].foreachDo(action);
-            }
-            if (!action(this))
-            {
-                for (int i = 0; i < child.Count; i++)
-                {
-                    child[i].foreachDo(action);
-                }
-            }
-            for (int i = 0; i < after.Count; i++)
-            {
-                after[i].foreachDo(action);
-            }
-        }
         public void setParent(EventWitness value)
         {
             if (parent != null)
@@ -94,18 +71,6 @@ namespace TouhouHeartstone
         public void setVar<T>(string varName, T value)
         {
             dicVar[varName] = value;
-        }
-        [Obsolete("因为索引器的类型并不严谨，请使用getVar与setVar作为替代。")]
-        public object this[string varName]
-        {
-            get { return dicVar.ContainsKey(varName) ? dicVar[varName] : null; }
-            set
-            {
-                if (dicVar.ContainsKey(varName))
-                    dicVar[varName] = varName;
-                else
-                    dicVar.Add(varName, value);
-            }
         }
         public int number { get; set; }
         public string eventName { get; }

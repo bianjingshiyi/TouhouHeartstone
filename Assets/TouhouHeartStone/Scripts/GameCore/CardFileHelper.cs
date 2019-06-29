@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -29,6 +31,18 @@ namespace TouhouHeartstone.Backend
                 card.setProp("id", Convert.ToInt32(doc["Card"].GetAttribute("id")));
             if (doc["Card"].HasAttribute("type"))
                 card.setProp("type", Convert.ToInt32(doc["Card"].GetAttribute("type")));
+            List<Effect> effectList = new List<Effect>();
+            for (int i = 0; i < doc["Card"].ChildNodes.Count; i++)
+            {
+                XmlElement child = doc["Card"].ChildNodes[i] as XmlElement;
+                if (child != null && child.Name == "Effect")
+                {
+                    if (child.HasAttribute("pile") && child.HasAttribute("trigger"))
+                        effectList.Add(new GeneratedEffect(child.GetAttribute("pile"), child.GetAttribute("trigger"), child.InnerText));
+                }
+            }
+            if (effectList.Count > 0)
+                card.setProp("effects", effectList.ToArray());
             if (card.type == CardType.servant)
             {
                 if (doc["Card"].HasAttribute("cost"))
@@ -60,6 +74,15 @@ namespace TouhouHeartstone.Backend
             XmlElement cardEle = doc.CreateElement("Card");
             cardEle.SetAttribute("id", card.id.ToString());
             cardEle.SetAttribute("type", ((int)card.type).ToString());
+            GeneratedEffect[] effects = card.getProp<Effect[]>("effects") as GeneratedEffect[];
+            for (int i = 0; i < effects.Length; i++)
+            {
+                XmlElement effectEle = doc.CreateElement("Effect");
+                effectEle.SetAttribute("pile", effects[i].pile);
+                effectEle.SetAttribute("trigger", effects[i].trigger);
+                effectEle.InnerText = effects[i].script;
+                cardEle.AppendChild(effectEle);
+            }
             if (card.type == CardType.servant)
             {
                 XmlElement propEle = doc.CreateElement("cost");

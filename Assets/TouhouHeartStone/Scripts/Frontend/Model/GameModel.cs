@@ -15,10 +15,6 @@ namespace TouhouHeartstone.Frontend.Model
     }
     class UnityGameEnv : IGameEnvironment
     {
-        public Script createScript(string script)
-        {
-            return CSharpScript.Create(script, ScriptOptions.Default.AddReferences(typeof(HeartStoneRule).Assembly, Assembly.LoadFile("D:/Software/UnityXD/Unity2018.3/Editor/Data/MonoBleedingEdge/lib/mono/unityjit/Facades/netstandard.dll")), typeof(EffectGlobals));
-        }
         public TextReader getFileReader(string path)
         {
             return new StreamReader(File.Open(path, FileMode.Open));
@@ -26,6 +22,12 @@ namespace TouhouHeartstone.Frontend.Model
         public string[] getFiles(string path, string searchPattern)
         {
             return Directory.GetFiles(Application.streamingAssetsPath + "/" + path, searchPattern);
+        }
+        public void runScript(string script, EffectGlobals globals)
+        {
+            CSharpScript.RunAsync(script, ScriptOptions.Default.AddReferences(
+                                          typeof(HeartStoneRule).Assembly,
+                                          Assembly.LoadFile("D:/Software/UnityXD/Unity2018.3/Editor/Data/MonoBleedingEdge/lib/mono/unityjit/Facades/netstandard.dll")), globals, typeof(EffectGlobals));
         }
     }
 }
