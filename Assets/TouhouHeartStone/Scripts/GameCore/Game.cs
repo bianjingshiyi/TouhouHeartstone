@@ -31,6 +31,7 @@ namespace TouhouHeartstone.Backend
                 new Pile("Deck",cards),
                 new Pile("Init"),
                 new Pile("Hand"),
+                new Pile("Warp"),
                 new Pile("Field"),
                 new Pile("Grave")
             });
@@ -73,7 +74,7 @@ namespace TouhouHeartstone.Backend
                 return;
             }
             Card card = player["Hand"].First(c => { return c.getRID() == cardRID; });
-            if (player.getProp<int>("gem") < (card.define as ICost).cost)
+            if (player.getProp<int>("gem") < card.define.getProp<int>("cost"))
             {
                 EventWitness witness = new UseWitness();
                 witness.setVar("error", true);

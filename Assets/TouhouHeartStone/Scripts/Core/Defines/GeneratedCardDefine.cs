@@ -25,5 +25,9 @@ namespace TouhouHeartstone
         {
             get { return (CardDefineType)getProp<int>("type"); }
         }
+        public override Effect[] effects
+        {
+            get { return getProp<Effect[]>("effects"); }
+        }
     }
 }

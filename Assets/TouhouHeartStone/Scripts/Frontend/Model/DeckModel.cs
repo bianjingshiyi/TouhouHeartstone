@@ -63,7 +63,7 @@ namespace TouhouHeartstone.Frontend.Model
         void AddPlayer()
         {
             var item = SpawnItem();
-            gm.Game.addPlayer(item, new int[] { 1000, 2, 2, 2, 2, 2, 2, 2 });
+            gm.Game.addPlayer(item, new int[] { 1000, 111, 111, 111, 111, 111, 111, 111 });
             item.selfID = ItemCount - 1;
             item.gameObject.name = $"Deck{item.selfID}";
             item.OnDeckAction += onDeckAction;

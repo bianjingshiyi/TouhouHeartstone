@@ -14,5 +14,6 @@
         {
             get { return 2000; }
         }
+        public override Effect[] effects { get; } = new Effect[0];
     }
 }

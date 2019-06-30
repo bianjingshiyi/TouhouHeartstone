@@ -5,6 +5,21 @@ namespace TouhouHeartstone
 {
     public partial class CardEngine
     {
+        public Card getRandomEnemy(Player player)
+        {
+            Card[] enemies = getAllEnemies(player);
+            return enemies[randomInt(0, enemies.Length - 1)];
+        }
+        public Card[] getAllEnemies(Player player)
+        {
+            List<Card> enemyList = new List<Card>();
+            foreach (Player opponent in getPlayers().Where(p => { return p != player; }))
+            {
+                enemyList.AddRange(opponent["Master"]);
+                enemyList.AddRange(opponent["Field"]);
+            }
+            return enemyList.ToArray();
+        }
         public void setMaxGem(Player player, int value)
         {
             doEvent(new MaxGemChangeEvent(player, value));

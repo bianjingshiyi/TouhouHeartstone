@@ -11,7 +11,7 @@
         {
             //抽牌
             card = player["Deck"].top;
-            engine.moveCard(player, "Deck", card, player, "Hand", player["Hand"].count);
+            player["Deck"].moveTo(card, player["Hand"], player["Hand"].count);
             engine.allocateRID(card);
         }
         public Card card { get; private set; } = null;

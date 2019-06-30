@@ -19,14 +19,14 @@ namespace TouhouHeartstone
         {
             //先把卡牌放回牌库
             int[] cardsIndex = originCards.Select(c => { return player["Init"].indexOf(c); }).ToArray();
-            engine.moveCard(player, "Init", originCards, player, "Deck", 0);
+            player["Init"].moveTo(originCards, player["Deck"], 0);
             //然后洗牌
             player["Deck"].shuffle(engine);
             //最后再抽相同数量的卡并替换
             replacedCards = player["Deck"][player["Deck"].count - originCards.Length, player["Deck"].count - 1];
             for (int i = 0; i < replacedCards.Length; i++)
             {
-                engine.moveCard(player, "Deck", replacedCards[i], player, "Init", cardsIndex[i]);
+                player["Deck"].moveTo(replacedCards[i], player["Init"], cardsIndex[i]);
             }
             engine.allocateRID(replacedCards);
         }

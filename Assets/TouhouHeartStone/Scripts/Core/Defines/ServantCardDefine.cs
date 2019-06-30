@@ -5,7 +5,6 @@
         public abstract int cost { get; }
         public abstract int attack { get; }
         public abstract int life { get; }
-        public abstract Effect[] effects { get; }
         public abstract int category { get; }
         public override T getProp<T>(string propName)
         {

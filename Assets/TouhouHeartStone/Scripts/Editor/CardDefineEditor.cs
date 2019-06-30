@@ -113,6 +113,7 @@ namespace TouhouHeartstone.Backend
                     _card.setProp("life", EditorGUILayout.IntField("life", _card.getProp<int>("life")));
                 }
                 //效果
+                GUILayout.Label("效果");
                 _effectScrollPosition = GUILayout.BeginScrollView(_effectScrollPosition);
                 List<GeneratedEffect> effectList = new List<GeneratedEffect>(_card.getProp<Effect[]>("effects") != null ? _card.getProp<Effect[]>("effects").Cast<GeneratedEffect>() : new GeneratedEffect[0]);
                 //绘制已有的效果
@@ -121,7 +122,7 @@ namespace TouhouHeartstone.Backend
                     GeneratedEffect effect = effectList[i];
                     effect.setPile(EditorGUILayout.TextField(effect.pile));
                     effect.setTrigger(EditorGUILayout.TextField(effect.trigger));
-                    effect.setScript(EditorGUILayout.TextArea(effect.script));
+                    effect.setScript(GUILayout.TextArea(effect.script));
                     //删除效果
                     GUILayout.BeginHorizontal();
                     GUILayout.Label("");

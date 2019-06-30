@@ -17,22 +17,23 @@ namespace TouhouHeartstone
         Card[] targetCards { get; }
         public override void execute(CardEngine engine)
         {
-            engine.setGem(player, player.getProp<int>("gem") - (card.define as ICost).cost);
-            if (card.define is ServantCardDefine)
+            engine.setGem(player, player.getProp<int>("gem") - card.define.getProp<int>("cost"));
+            if (card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.servant))
             {
-                ServantCardDefine define = card.define as ServantCardDefine;
                 //随从卡，将卡置入战场
                 engine.summon(player, card, targetPosition);
-                foreach (Effect effect in define.effects)
-                {
-                    if (card.pile.name == effect.pile && effect.trigger == "onUse")
-                        effect.execute(engine, player, card, targetCards);
-                }
+                Effect effect = card.define.effects.FirstOrDefault(e => { return card.pile.name == e.pile && e.trigger == "onUse"; });
+                if (effect != null)
+                    effect.execute(engine, player, card, targetCards);
             }
-            else if (card.define is SpellCardDefine)
+            else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.spell))
             {
                 //法术卡，释放效果然后丢进墓地
-                player["Hand"].moveTo(card, player["Grave"], player["Grave"].count);
+                player["Hand"].moveTo(card, player["Warp"], player["Warp"].count);
+                Effect effect = card.define.effects.FirstOrDefault(e => { return card.pile.name == e.pile && e.trigger == "onUse"; });
+                if (effect != null)
+                    effect.execute(engine, player, card, targetCards);
+                player["Warp"].moveTo(card, player["Grave"], player["Grave"].count);
             }
         }
         public override EventWitness getWitness(CardEngine engine, Player player)

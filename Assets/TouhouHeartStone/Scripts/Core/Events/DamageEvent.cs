@@ -25,7 +25,8 @@ namespace TouhouHeartstone
                 if (cards[i].getProp<int>("life") <= 0)
                     deathList.Add(cards[i]);
             }
-            engine.doEvent(new DeathEvent(deathList.ToArray()));
+            if (deathList.Count > 0)
+                engine.doEvent(new DeathEvent(deathList.ToArray()));
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {

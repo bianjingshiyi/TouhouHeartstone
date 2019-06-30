@@ -3,6 +3,7 @@
     public abstract class CardDefine
     {
         public abstract int id { get; }
+        public abstract Effect[] effects { get; }
         public object this[string propName]
         {
             get { return getProp<object>(propName); }

@@ -23,12 +23,6 @@ namespace TouhouHeartstone
             globals.engine = this;
             env.runScript(script, globals);
         }
-        public Card[] moveCard(Player player, string pileName, Card[] cards, Player targetPlayer, string targetPileName, int position)
-        {
-            MoveCardEvent e = new MoveCardEvent(player, pileName, cards, targetPlayer, targetPileName, position);
-            doEvent(e);
-            return e.cards;
-        }
         public T getProp<T>(string varName)
         {
             if (dicVar.ContainsKey(varName) && dicVar[varName] is T)

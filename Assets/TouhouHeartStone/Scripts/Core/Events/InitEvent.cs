@@ -37,7 +37,7 @@ namespace TouhouHeartstone
             {
                 int count = i == 0 ? 3 : 4;
                 Card[] cards = sortedPlayers[i]["Deck"][sortedPlayers[i]["Deck"].count - count, sortedPlayers[i]["Deck"].count - 1];
-                engine.moveCard(sortedPlayers[i], "Deck", cards, sortedPlayers[i], "Init", 0);
+                sortedPlayers[i]["Deck"].moveTo(cards, sortedPlayers[i]["Init"], 0);
                 engine.allocateRID(cards);
             }
         }

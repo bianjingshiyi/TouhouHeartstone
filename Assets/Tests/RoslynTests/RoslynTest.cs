@@ -24,7 +24,6 @@ namespace Tests
     {
         private void Start()
         {
-
             Debug.Log(typeof(object).Assembly.Location);
             CSharpScript.RunAsync("Tests.Test.test();", ScriptOptions.Default.AddReferences(typeof(Test).Assembly).AddReferences(Assembly.LoadFile("D:/Software/UnityXD/Unity2018.3/Editor/Data/MonoBleedingEdge/lib/mono/unityjit/Facades/netstandard.dll")));
             //CSharpScript.RunAsync("Tests.Test obj = new Tests.Test();obj.ToString();", ScriptOptions.Default.AddReferences(typeof(Test).Assembly).AddReferences("netstandard"));
