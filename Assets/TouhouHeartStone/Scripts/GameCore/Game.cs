@@ -42,7 +42,7 @@ namespace TouhouHeartstone.Backend
         /// </summary>
         public void init()
         {
-            engine.doEvent(new InitEvent());
+            engine.init();
         }
         /// <summary>
         /// 
@@ -52,7 +52,7 @@ namespace TouhouHeartstone.Backend
         public void initReplace(int playerIndex, int[] cardsRID)
         {
             Player player = engine.getPlayerAt(playerIndex);
-            engine.doEvent(new InitReplaceEvent(player, cardsRID.Select(id => { return player["Init"].First(c => { return c.getRID() == id; }); }).ToArray()));
+            engine.initReplace(player, cardsRID.Select(id => { return player["Init"].First(c => { return c.getRID() == id; }); }).ToArray());
         }
         /// <summary>
         /// 
@@ -61,7 +61,7 @@ namespace TouhouHeartstone.Backend
         /// <param name="cardRID"></param>
         /// <param name="targetPosition"></param>
         /// <param name="targetCardRID"></param>
-        public void use(int playerIndex, int cardRID, int targetPosition, int targetCardRID)
+        public void use(int playerIndex, int cardRID, int targetPosition, int[] targetCardsRID)
         {
             Player player = engine.getPlayerAt(playerIndex);
             if (engine.getProp<Player>("currentPlayer") != player)
@@ -81,8 +81,8 @@ namespace TouhouHeartstone.Backend
                 sendWitness(witness);
                 return;
             }
-            Card targetCard = targetCardRID > -1 ? engine.getCards().First(c => { return c.getRID() == targetCardRID; }) : null;
-            engine.doEvent(new UseEvent(player, card, targetPosition, targetCard));
+            Card[] targetCards = targetCardsRID.Select(targetCardRID => { return targetCardRID > -1 ? engine.getCards().First(c => { return c.getRID() == targetCardRID; }) : null; }).ToArray();
+            engine.use(player, card, targetPosition, targetCards);
         }
         public void attack(int playerIndex, int cardRID, int targetCardRID)
         {
@@ -121,7 +121,7 @@ namespace TouhouHeartstone.Backend
                 sendWitness(witness);
                 return;
             }
-            engine.doEvent(new AttackEvent(player, card, targetCard));
+            engine.attack(player, card, targetCard);
         }
         public void turnEnd(int playerIndex)
         {

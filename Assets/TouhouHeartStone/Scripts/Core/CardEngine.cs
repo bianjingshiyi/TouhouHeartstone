@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 namespace TouhouHeartstone
 {
     [Serializable]
-    public class CardEngine
+    public partial class CardEngine
     {
         public IGameEnvironment env { get; }
         public Rule rule { get; }

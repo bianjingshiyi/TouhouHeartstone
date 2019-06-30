@@ -10,7 +10,7 @@
             int cardRID = witness.getVar<int>("cardRID");
             int cardDID = witness.getVar<int>("cardDID");
             int targetPosition = witness.getVar<int>("targetPosition");
-            int targetCardRID = witness.getVar<int>("targetCardRID");
+            int targetCardRID = witness.getVar<int[]>("targetCardsRID").Length < 1 ? -1 : witness.getVar<int[]>("targetCardsRID")[0];
 
             UseCardEventArgs args;
             if (targetPosition == -1)

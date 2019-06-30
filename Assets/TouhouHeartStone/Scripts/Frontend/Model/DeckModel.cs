@@ -163,7 +163,7 @@ namespace TouhouHeartstone.Frontend.Model
                 position = arg.Position;
                 target = arg.TargetCardRuntimeID;
             }
-            gm.Game.use(args.PlayerID, args.CardRID, position, target);
+            gm.Game.use(args.PlayerID, args.CardRID, position, new int[] { target });
         }
     }
 }

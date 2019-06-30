@@ -63,30 +63,29 @@ namespace TouhouHeartstone.Backend
         public override void afterEvent(CardEngine engine, Event e)
         {
             Player[] sortedPlayers = engine.getProp<Player[]>("sortedPlayers");
-            if (e is InitReplaceEvent)
+            if (e.name is "onInitReplace")
             {
-                InitReplaceEvent E = e as InitReplaceEvent;
                 //玩家准备完毕
-                E.player.setProp("prepared", true);
+                e.getVar<Player>("player").setProp("prepared", true);
                 //判断是否所有玩家都准备完毕
                 if (engine.getPlayers().All(p => { return p.getProp<bool>("prepared"); }))
                 {
                     //对战开始
-                    engine.doEvent(new StartEvent());
+                    engine.start();
                 }
             }
-            else if (e is StartEvent)
+            else if (e.name == "onStart")
             {
-                engine.doEvent(new TurnStartEvent(sortedPlayers[0]));
+                engine.turnStart(sortedPlayers[0]);
             }
-            else if (e is TurnEndEvent)
+            else if (e.name == "onTurnEnd")
             {
                 int index = Array.IndexOf(sortedPlayers, engine.getProp<Player>("currentPlayer"));
                 index++;
                 if (index >= sortedPlayers.Length)
                     index = 0;
                 Player nextPlayer = sortedPlayers[index];
-                engine.doEvent(new TurnStartEvent(nextPlayer));
+                engine.turnStart(nextPlayer);
             }
         }
     }

@@ -106,12 +106,14 @@ namespace TouhouHeartstone.Backend
             {
                 _card.setProp("id", EditorGUILayout.IntField("id", _card.id));
                 _card.setProp("type", Convert.ToInt32(EditorGUILayout.EnumPopup("type", _card.type)));
-                if (_card.type == CardType.servant)
+                if (_card.type == CardDefineType.servant)
                 {
                     _card.setProp("cost", EditorGUILayout.IntField("cost", _card.getProp<int>("cost")));
                     _card.setProp("attack", EditorGUILayout.IntField("attack", _card.getProp<int>("attack")));
                     _card.setProp("life", EditorGUILayout.IntField("life", _card.getProp<int>("life")));
                 }
+                //效果
+                _effectScrollPosition = GUILayout.BeginScrollView(_effectScrollPosition);
                 List<GeneratedEffect> effectList = new List<GeneratedEffect>(_card.getProp<Effect[]>("effects") != null ? _card.getProp<Effect[]>("effects").Cast<GeneratedEffect>() : new GeneratedEffect[0]);
                 //绘制已有的效果
                 for (int i = 0; i < effectList.Count; i++)
@@ -123,7 +125,7 @@ namespace TouhouHeartstone.Backend
                     //删除效果
                     GUILayout.BeginHorizontal();
                     GUILayout.Label("");
-                    if (GUILayout.Button("删除效果", GUILayout.Width(200)))
+                    if (GUILayout.Button("删除效果", GUILayout.Width(100)))
                     {
                         effectList.RemoveAt(i);
                         i--;
@@ -136,15 +138,17 @@ namespace TouhouHeartstone.Backend
                 //添加新效果按钮
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("");
-                if (GUILayout.Button("新增效果", GUILayout.Width(200)))
+                if (GUILayout.Button("新增效果", GUILayout.Width(100)))
                     effectList.Add(new GeneratedEffect("Field", "onUse", ""));
                 GUILayout.EndHorizontal();
                 if (effectList.Count > 0)
                     _card.setProp("effects", effectList.Cast<GeneratedEffect>().ToArray());
                 else
                     _card.setProp<Effect[]>("effects", null);
+                GUILayout.EndScrollView();
             }
         }
+        Vector2 _effectScrollPosition;
         GeneratedCardDefine _card = null;
     }
 }
