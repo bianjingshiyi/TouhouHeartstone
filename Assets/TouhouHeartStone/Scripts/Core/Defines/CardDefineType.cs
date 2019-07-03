@@ -5,6 +5,7 @@
         unknow,
         master,
         servant,
-        spell
+        spell,
+        skill
     }
 }

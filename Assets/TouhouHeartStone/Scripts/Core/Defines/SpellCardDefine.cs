@@ -2,6 +2,10 @@
 {
     public abstract class SpellCardDefine : CardDefine
     {
+        public override CardDefineType type
+        {
+            get { return CardDefineType.spell; }
+        }
         public abstract int cost { get; }
         public abstract int category { get; }
         public override T getProp<T>(string propName)

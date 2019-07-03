@@ -2,6 +2,10 @@
 {
     public abstract class ServantCardDefine : CardDefine, ICost
     {
+        public override CardDefineType type
+        {
+            get { return CardDefineType.servant; }
+        }
         public abstract int cost { get; }
         public abstract int attack { get; }
         public abstract int life { get; }

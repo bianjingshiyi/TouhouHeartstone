@@ -20,7 +20,7 @@ namespace TouhouHeartstone
             {
                 Card[] cards = new Card[2];
                 int[] amounts = new int[2];
-                if (card.getRID() < targetCard.getRID())
+                if (card.id < targetCard.id)
                 {
                     cards[0] = card;
                     amounts[0] = targetCard.getProp<int>("attack");
@@ -45,8 +45,8 @@ namespace TouhouHeartstone
         {
             EventWitness witness = new AttackWitness();
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
-            witness.setVar("cardRID", card.getRID());
-            witness.setVar("targetCardRID", targetCard.getRID());
+            witness.setVar("cardRID", card.id);
+            witness.setVar("targetCardRID", targetCard.id);
             return witness;
         }
     }

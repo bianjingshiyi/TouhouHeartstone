@@ -6,6 +6,8 @@ namespace TouhouHeartstone
     [Serializable]
     public class Card
     {
+        public int id { get; internal set; } = 0;
+        public Pile pile { get; internal set; } = null;
         public Card(CardEngine game, CardDefine define)
         {
             if (define != null)
@@ -13,7 +15,6 @@ namespace TouhouHeartstone
             else
                 throw new ArgumentNullException(nameof(define));
         }
-        public Pile pile { get; internal set; } = null;
         public void setProp(string propName, PropertyChangeType changeType, string value)
         {
             if (changeType == PropertyChangeType.set)
@@ -50,7 +51,7 @@ namespace TouhouHeartstone
         public CardDefine define { get; }
         public override string ToString()
         {
-            return "Card(" + this.getRID() + ")<" + define.id + ">";
+            return "Card(" + id + ")<" + define.id + ">";
         }
         public static implicit operator Card[] (Card card)
         {

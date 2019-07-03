@@ -34,21 +34,21 @@ namespace TouhouHeartstone
                 replacedCards[i].pile = player["Init"];
                 player["Init"][cardsIndex[i]] = replacedCards[i];
             }
-            engine.allocateRID(replacedCards);
+            engine.registerCards(replacedCards);
         }
         Card[] replacedCards { get; set; }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
             EventWitness witness = new InitReplaceWitness();
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
-            witness.setVar("originCardsRID", originCards.Select(c => { return c.getRID(); }).ToArray());
+            witness.setVar("originCardsRID", originCards.Select(c => { return c.id; }).ToArray());
             if (player == this.player)
             {
                 //自己
                 witness.setVar("replacedCardsDID", replacedCards.Select(c => { return c.define.id; }).ToArray());
             }
             //其他玩家
-            witness.setVar("replacedCardsRID", replacedCards.Select(c => { return c.getRID(); }).ToArray());
+            witness.setVar("replacedCardsRID", replacedCards.Select(c => { return c.id; }).ToArray());
             return witness;
         }
     }

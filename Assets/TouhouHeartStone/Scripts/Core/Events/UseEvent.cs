@@ -40,10 +40,10 @@ namespace TouhouHeartstone
         {
             EventWitness witness = new UseWitness();
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
-            witness.setVar("cardRID", card.getRID());
+            witness.setVar("cardRID", card.id);
             witness.setVar("cardDID", card.define.id);
             witness.setVar("targetPosition", targetPosition);
-            witness.setVar("targetCardsRID", targetCards.Select(targetCard => { return targetCard != null ? targetCard.getRID() : -1; }).ToArray());
+            witness.setVar("targetCardsRID", targetCards.Select(targetCard => { return targetCard != null ? targetCard.id : -1; }).ToArray());
             return witness;
         }
     }

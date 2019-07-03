@@ -63,33 +63,6 @@ namespace TouhouHeartstone
         {
             doEvent(new BurnEvent(player, card));
         }
-        public int allocateRID(Card card)
-        {
-            Dictionary<int, Card> dicRIDCard = getProp<Dictionary<int, Card>>("dicRIDCard");
-            if (dicRIDCard == null)
-            {
-                dicRIDCard = new Dictionary<int, Card>();
-                setProp("dicRIDCard", dicRIDCard);
-            }
-            setProp("RID", getProp<int>("RID") + 1);
-            card.setProp("RID", getProp<int>("RID"));
-            dicRIDCard.Add(getProp<int>("RID"), card);
-            return card.getProp<int>("RID");
-        }
-        public int[] allocateRID(Card[] cards)
-        {
-            return cards.Select(c => { return allocateRID(c); }).ToArray();
-        }
-        public Card getCard(int rid)
-        {
-            Dictionary<int, Card> dicRIDCard = getProp<Dictionary<int, Card>>("dicRIDCard");
-            if (dicRIDCard == null)
-            {
-                dicRIDCard = new Dictionary<int, Card>();
-                setProp("dicRIDCard", dicRIDCard);
-            }
-            return dicRIDCard[rid];
-        }
         public void summon(Player player, CardDefine define, int position = -1)
         {
             summon(player, new Card(this, define), position < 0 ? player["Field"].count : position);
@@ -101,7 +74,7 @@ namespace TouhouHeartstone
         public void createToken(Player player, CardDefine define, int position)
         {
             Card card = new Card(this, define);
-            allocateRID(card);
+            registerCard(card);
             doEvent(new SummonEvent(player, card, position));
         }
         public void damage(Card card, int amount)
@@ -119,17 +92,6 @@ namespace TouhouHeartstone
         public void turnEnd(Player player)
         {
             doEvent(new TurnEndEvent(player));
-        }
-    }
-    public static class CardExtensions
-    {
-        public static int getRID(this Card card)
-        {
-            return card.getProp<int>("RID");
-        }
-        public static int[] getRID(this Card[] cards)
-        {
-            return cards.Select(c => { return c.getRID(); }).ToArray();
         }
     }
 }

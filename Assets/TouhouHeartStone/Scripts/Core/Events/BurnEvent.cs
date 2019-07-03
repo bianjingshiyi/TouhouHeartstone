@@ -12,13 +12,13 @@
         public override void execute(CardEngine engine)
         {
             player["Deck"].moveTo(card, player["Grave"], player["Grave"].count);
-            engine.allocateRID(card);
+            engine.registerCard(card);
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {
             EventWitness witness = new BurnWitness();
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
-            witness.setVar("cardRID", card.getRID());
+            witness.setVar("cardRID", card.id);
             witness.setVar("cardDID", card.define.id);
             return witness;
         }

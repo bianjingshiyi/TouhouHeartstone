@@ -55,14 +55,23 @@ namespace TouhouHeartstone
                 dicVar[propName] = getProp<string>(propName) + propName;
         }
         internal Dictionary<string, object> dicVar { get; } = new Dictionary<string, object>();
-        internal int registerCard(Card card)
+        public int registerCard(Card card)
         {
-            dicCard.Add(dicCard.Count, card);
-            return dicCard.Count - 1;
+            dicCard.Add(dicCard.Count + 1, card);
+            card.id = dicCard.Count;
+            return card.id;
         }
-        public Card[] getCards()
+        public int[] registerCards(Card[] cards)
         {
-            return dicCard.Values.ToArray();
+            return cards.Select(c => { return registerCard(c); }).ToArray();
+        }
+        public Card getCard(int id)
+        {
+            return dicCard[id];
+        }
+        public Card[] getCards(int[] id)
+        {
+            return id.Select(i => { return dicCard[i]; }).ToArray();
         }
         Dictionary<int, Card> dicCard { get; } = new Dictionary<int, Card>();
         public Player getPlayerAt(int playerIndex)

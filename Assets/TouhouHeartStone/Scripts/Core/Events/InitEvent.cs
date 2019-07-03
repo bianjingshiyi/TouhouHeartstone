@@ -25,12 +25,12 @@ namespace TouhouHeartstone
             foreach (Card card in masterCards)
             {
                 card.setProp("life", 10);
-                engine.allocateRID(card);
+                engine.registerCard(card);
             }
             Card[] skillCards = sortedPlayers.Select(p => { return p["Skill"][0]; }).ToArray();
             foreach (Card card in skillCards)
             {
-                engine.allocateRID(card);
+                engine.registerCard(card);
             }
             //抽初始卡牌
             for (int i = 0; i < sortedPlayers.Length; i++)
@@ -38,7 +38,7 @@ namespace TouhouHeartstone
                 int count = i == 0 ? 3 : 4;
                 Card[] cards = sortedPlayers[i]["Deck"][sortedPlayers[i]["Deck"].count - count, sortedPlayers[i]["Deck"].count - 1];
                 sortedPlayers[i]["Deck"].moveTo(cards, sortedPlayers[i]["Init"], 0);
-                engine.allocateRID(cards);
+                engine.registerCards(cards);
             }
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
@@ -53,7 +53,7 @@ namespace TouhouHeartstone
             //然后是玩家的先后行动顺序
             witness.setVar("sortedPlayersIndex", engine.getProp<Player[]>("sortedPlayers").Select(p => { return engine.getPlayerIndex(p); }).ToArray());
             //接着是初始手牌
-            witness.setVar("initCardsRID", engine.getPlayers().Select(p => { return p["Init"].Select(c => { return c.getRID(); }).ToArray(); }).ToArray());
+            witness.setVar("initCardsRID", engine.getPlayers().Select(p => { return p["Init"].Select(c => { return c.id; }).ToArray(); }).ToArray());
             witness.setVar("initCardsDID", player["Init"].Select(e => { return e.define.id; }).ToArray());
             //剩余卡组
             witness.setVar("deck", player["Deck"].OrderBy(c => { return c.define.id; }).Select(c => { return c.define.id; }).ToArray());

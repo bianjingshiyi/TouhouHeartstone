@@ -25,7 +25,7 @@
         {
             EventWitness witness = new SummonWitness();
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
-            witness.setVar("cardRID", card.getRID());
+            witness.setVar("cardRID", card.id);
             witness.setVar("cardDID", card.define.id);
             witness.setVar("position", position);
             return witness;

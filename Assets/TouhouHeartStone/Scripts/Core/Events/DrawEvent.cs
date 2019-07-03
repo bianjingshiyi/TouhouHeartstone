@@ -12,7 +12,7 @@
             //抽牌
             card = player["Deck"].top;
             player["Deck"].moveTo(card, player["Hand"], player["Hand"].count);
-            engine.allocateRID(card);
+            engine.registerCard(card);
         }
         public Card card { get; private set; } = null;
         public override EventWitness getWitness(CardEngine engine, Player player)
@@ -21,7 +21,7 @@
             witness.setVar("playerIndex", engine.getPlayerIndex(this.player));
             if (player == this.player)
                 witness.setVar("cardDID", card.define.id);
-            witness.setVar("cardRID", card.getRID());
+            witness.setVar("cardRID", card.id);
             return witness;
         }
     }

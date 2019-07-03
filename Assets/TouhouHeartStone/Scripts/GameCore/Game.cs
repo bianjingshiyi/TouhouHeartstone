@@ -53,7 +53,7 @@ namespace TouhouHeartstone.Backend
         public void initReplace(int playerIndex, int[] cardsRID)
         {
             Player player = engine.getPlayerAt(playerIndex);
-            engine.initReplace(player, cardsRID.Select(id => { return player["Init"].First(c => { return c.getRID() == id; }); }).ToArray());
+            engine.initReplace(player, cardsRID.Select(id => { return player["Init"].First(c => { return c.id == id; }); }).ToArray());
         }
         /// <summary>
         /// 
@@ -73,7 +73,7 @@ namespace TouhouHeartstone.Backend
                 sendWitness(witness);
                 return;
             }
-            Card card = player["Hand"].First(c => { return c.getRID() == cardRID; });
+            Card card = player["Hand"].First(c => { return c.id == cardRID; });
             if (player.getProp<int>("gem") < card.define.getProp<int>("cost"))
             {
                 EventWitness witness = new UseWitness();
@@ -82,7 +82,7 @@ namespace TouhouHeartstone.Backend
                 sendWitness(witness);
                 return;
             }
-            Card[] targetCards = targetCardsRID.Select(targetCardRID => { return targetCardRID > -1 ? engine.getCards().First(c => { return c.getRID() == targetCardRID; }) : null; }).ToArray();
+            Card[] targetCards = targetCardsRID.Select(targetCardRID => { return targetCardRID > -1 ? engine.getCard(targetCardRID) : null; }).ToArray();
             engine.use(player, card, targetPosition, targetCards);
         }
         public void attack(int playerIndex, int cardRID, int targetCardRID)
@@ -96,7 +96,7 @@ namespace TouhouHeartstone.Backend
                 sendWitness(witness);
                 return;
             }
-            Card card = engine.getCards().First(c => { return c.getRID() == cardRID; });
+            Card card = engine.getCard(cardRID);
             if (!card.getProp<bool>("isReady"))
             {
                 EventWitness witness = new AttackWitness();
@@ -113,7 +113,7 @@ namespace TouhouHeartstone.Backend
                 sendWitness(witness);
                 return;
             }
-            Card targetCard = engine.getCards().First(c => { return c.getRID() == targetCardRID; });
+            Card targetCard = engine.getCard(targetCardRID);
             if (targetCard.pile.owner["Field"].Any(c => { return c.getProp<bool>("taunt"); }) && targetCard.getProp<bool>("taunt") == false)
             {
                 EventWitness witness = new AttackWitness();
