@@ -8,13 +8,12 @@ namespace TouhouHeartstone
     {
         public Card(CardEngine game, CardDefine define)
         {
-            id = game.registerCard(this);
             if (define != null)
                 this.define = define;
             else
                 throw new ArgumentNullException(nameof(define));
         }
-        public Pile pile { get; set; } = null;
+        public Pile pile { get; internal set; } = null;
         public void setProp(string propName, PropertyChangeType changeType, string value)
         {
             if (changeType == PropertyChangeType.set)
@@ -48,12 +47,10 @@ namespace TouhouHeartstone
                 return default(T);
         }
         internal Dictionary<string, object> dicProp { get; } = new Dictionary<string, object>();
-        public int id { get; } = -1;
         public CardDefine define { get; }
-        public CardInstance instance { get; protected set; }
         public override string ToString()
         {
-            return "Card(" + id + ")<" + define.id + ">";
+            return "Card(" + this.getRID() + ")<" + define.id + ">";
         }
         public static implicit operator Card[] (Card card)
         {

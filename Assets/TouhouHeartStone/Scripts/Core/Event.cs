@@ -47,19 +47,19 @@ namespace TouhouHeartstone
         {
             return dicVar.Keys.ToArray();
         }
-        public T getVar<T>(string varName)
+        public T getProp<T>(string varName)
         {
             if (dicVar.ContainsKey(varName) && dicVar[varName] is T)
                 return (T)dicVar[varName];
             else
                 return default(T);
         }
-        public void setVar<T>(string varName, T value)
+        public void setProp<T>(string propName, T value)
         {
-            if (dicVar.ContainsKey(varName))
-                dicVar[varName] = value;
+            if (dicVar.ContainsKey(propName))
+                dicVar[propName] = value;
             else
-                dicVar.Add(varName, value);
+                dicVar.Add(propName, value);
         }
         public object this[string varName]
         {

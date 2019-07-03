@@ -13,7 +13,10 @@
         int position { get; }
         public override void execute(CardEngine engine)
         {
-            player["Hand"].moveTo(card, player["Field"], position);
+            if (card.pile != null)
+                card.pile.moveTo(card, player["Field"], position);
+            else
+                player["Field"].insert(card, position);
             card.setProp("life", (card.define as ServantCardDefine).life);
             card.setProp("attack", (card.define as ServantCardDefine).attack);
             card.setProp("isReady", false);

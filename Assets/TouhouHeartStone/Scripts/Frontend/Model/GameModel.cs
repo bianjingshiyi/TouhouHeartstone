@@ -27,7 +27,7 @@ namespace TouhouHeartstone.Frontend.Model
         {
             CSharpScript.RunAsync(script, ScriptOptions.Default.AddReferences(
                                           typeof(HeartStoneRule).Assembly,
-                                          Assembly.LoadFile("D:/Software/UnityXD/Unity2018.3/Editor/Data/MonoBleedingEdge/lib/mono/unityjit/Facades/netstandard.dll")), globals, typeof(EffectGlobals));
+                                          Assembly.LoadFile(UnityEditor.EditorApplication.applicationContentsPath + "/MonoBleedingEdge/lib/mono/unityjit/Facades/netstandard.dll")), globals, typeof(EffectGlobals));
         }
     }
 }

@@ -26,6 +26,27 @@ namespace TouhouHeartstone
         }
         public Player owner { get; set; } = null;
         public string name { get; } = null;
+        /// <summary>
+        /// 将一张不属于任何牌堆的卡牌插入该牌堆。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="position"></param>
+        internal void insert(Card card, int position)
+        {
+            if (card.pile == null)
+            {
+                card.pile = this;
+                cardList.Insert(position, card);
+            }
+            else
+                throw new InvalidOperationException(card + "已经属于Pile[" + card.pile.name + "]");
+        }
+        /// <summary>
+        /// 将位于该牌堆中的一张牌移动到其他的牌堆中。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="targetPile"></param>
+        /// <param name="position"></param>
         public void moveTo(Card card, Pile targetPile, int position)
         {
             if (cardList.Remove(card))
@@ -47,60 +68,22 @@ namespace TouhouHeartstone
             }
             targetPile.cardList.InsertRange(position, removedCardList);
         }
-        public void shuffle(CardEngine game)
+        internal void remove(Card card)
         {
-            Card[] shuffleArray = new Card[cardList.Count];
-            int currentIndex = 0;
-            while (cardList.Count > 0)
+            if (cardList.Remove(card))
             {
-                int index = game.randomInt(0, cardList.Count - 1);
-                shuffleArray[currentIndex] = cardList[index];
-                cardList.RemoveAt(index);
-                currentIndex++;
+                card.pile = null;
             }
-            cardList.AddRange(shuffleArray);
         }
-        public Card[] getCards()
+        public void shuffle(CardEngine engine)
         {
-            return cardList.ToArray();
-        }
-        /// <summary>
-        /// 获取左边或者底端的卡牌。注意如果没有足够的卡牌的话，返回的卡牌数量会比参数更少。
-        /// </summary>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        public Card[] getBottomOrLeft(int count)
-        {
-            if (count <= this.count)
+            for (int i = 0; i < cardList.Count; i++)
             {
-                Card[] cards = new Card[count];
-                for (int i = 0; i < cards.Length; i++)
-                {
-                    cards[i] = cardList[i];
-                }
-                return cards;
+                int index = engine.randomInt(i, cardList.Count - 1);
+                Card card = cardList[i];
+                cardList[i] = cardList[index];
+                cardList[index] = card;
             }
-            else
-                return cardList.ToArray();
-        }
-        /// <summary>
-        /// 获取右边或者顶端的卡牌。注意如果没有足够的卡牌的话，返回的卡牌数量会比参数更少。
-        /// </summary>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        public Card[] getTopOrRight(int count)
-        {
-            if (count <= this.count)
-            {
-                Card[] cards = new Card[count];
-                for (int i = 0; i < cards.Length; i++)
-                {
-                    cards[i] = cardList[this.count - count + i];
-                }
-                return cards;
-            }
-            else
-                return cardList.ToArray();
         }
         public Card top
         {
@@ -121,12 +104,10 @@ namespace TouhouHeartstone
         }
         public Card this[int index]
         {
-            get
+            get { return cardList[index]; }
+            internal set
             {
-                if (0 <= index && index < cardList.Count)
-                    return cardList[index];
-                else
-                    return null;
+                cardList[index] = value;
             }
         }
         public Card[] this[int startIndex, int endIndex]
@@ -134,6 +115,13 @@ namespace TouhouHeartstone
             get
             {
                 return cardList.GetRange(startIndex, endIndex - startIndex + 1).ToArray();
+            }
+            internal set
+            {
+                for (int i = 0; i < value.Length; i++)
+                {
+                    cardList[startIndex + i] = value[i];
+                }
             }
         }
         public IEnumerator<Card> GetEnumerator()

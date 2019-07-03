@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Card id="114" type="3">
+  <Effect pile="Warp" trigger="onUse">engine.damage(engine.getCharacters(c =&gt; { return c.pile.owner != player &amp;&amp; c.pile.name == "Master"; }), 4);</Effect>
+  <cost>0</cost>
+</Card>

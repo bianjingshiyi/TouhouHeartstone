@@ -45,16 +45,16 @@ namespace TouhouHeartstone.Backend
                 card.setProp("effects", effectList.ToArray());
             if (card.type == CardDefineType.servant)
             {
-                if (doc["Card"].HasAttribute("cost"))
+                if (doc["Card"]["cost"] != null)
                     card.setProp("cost", Convert.ToInt32(doc["Card"]["cost"].InnerText));
-                if (doc["Card"].HasAttribute("attack"))
+                if (doc["Card"]["attack"] != null)
                     card.setProp("attack", Convert.ToInt32(doc["Card"]["attack"].InnerText));
-                if (doc["Card"].HasAttribute("life"))
+                if (doc["Card"]["life"] != null)
                     card.setProp("life", Convert.ToInt32(doc["Card"]["life"].InnerText));
             }
             else if (card.type == CardDefineType.spell)
             {
-                if (doc["Card"].HasAttribute("cost"))
+                if (doc["Card"]["cost"] != null)
                     card.setProp("cost", Convert.ToInt32(doc["Card"]["cost"].InnerText));
             }
             return card;
@@ -74,15 +74,6 @@ namespace TouhouHeartstone.Backend
             XmlElement cardEle = doc.CreateElement("Card");
             cardEle.SetAttribute("id", card.id.ToString());
             cardEle.SetAttribute("type", ((int)card.type).ToString());
-            GeneratedEffect[] effects = card.getProp<Effect[]>("effects") as GeneratedEffect[];
-            for (int i = 0; i < effects.Length; i++)
-            {
-                XmlElement effectEle = doc.CreateElement("Effect");
-                effectEle.SetAttribute("pile", effects[i].pile);
-                effectEle.SetAttribute("trigger", effects[i].trigger);
-                effectEle.InnerText = effects[i].script;
-                cardEle.AppendChild(effectEle);
-            }
             if (card.type == CardDefineType.servant)
             {
                 XmlElement propEle = doc.CreateElement("cost");
@@ -100,6 +91,15 @@ namespace TouhouHeartstone.Backend
                 XmlElement propEle = doc.CreateElement("cost");
                 propEle.InnerText = card.getProp<int>("cost").ToString();
                 cardEle.AppendChild(propEle);
+            }
+            GeneratedEffect[] effects = card.getProp<Effect[]>("effects") as GeneratedEffect[];
+            for (int i = 0; i < effects.Length; i++)
+            {
+                XmlElement effectEle = doc.CreateElement("Effect");
+                effectEle.SetAttribute("pile", effects[i].pile);
+                effectEle.SetAttribute("trigger", effects[i].trigger);
+                effectEle.InnerText = effects[i].script;
+                cardEle.AppendChild(effectEle);
             }
             doc.AppendChild(cardEle);
 

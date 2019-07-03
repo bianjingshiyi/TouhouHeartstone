@@ -16,6 +16,8 @@
                 player.setProp("maxGem", 0);
             else if (player.getProp<int>("maxGem") > 10)
                 player.setProp("maxGem", 10);
+            if (player.getProp<int>("gem") > player.getProp<int>("maxGem"))
+                player.setProp("gem", player.getProp<int>("maxGem"));
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {

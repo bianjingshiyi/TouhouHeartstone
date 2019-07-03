@@ -14,6 +14,7 @@ namespace TouhouHeartstone.Backend
         [MenuItem("Window/TouhouHeartstone/CardDefineEditor")]
         public static void open()
         {
+            Debug.Log(EditorApplication.applicationContentsPath);
             GetWindow<CardDefineEditorWindow>("CardDefine");
         }
         private void OnGUI()
@@ -59,8 +60,7 @@ namespace TouhouHeartstone.Backend
                 {
                     if (GUILayout.Button(file.Name.Substring(0, file.Name.Length - 5), GUI.skin.label))
                     {
-                        _currentPath = file.FullName;
-                        _card = CardFileHelper.readFromFile(_currentPath);
+                        loadFile(file.FullName);
                     }
                 }
                 GUILayout.EndVertical();
@@ -84,7 +84,16 @@ namespace TouhouHeartstone.Backend
             {
                 saveAsFile();
             }
+            if (GUILayout.Button("删除"))
+            {
+                deleteFile();
+            }
             GUILayout.EndHorizontal();
+        }
+        private void loadFile(string path)
+        {
+            _currentPath = path;
+            _card = CardFileHelper.readFromFile(_currentPath);
         }
         private void saveFile()
         {
@@ -98,6 +107,14 @@ namespace TouhouHeartstone.Backend
             _currentPath = EditorUtility.SaveFilePanel(string.Empty, string.IsNullOrEmpty(_currentPath) ? Application.streamingAssetsPath : _currentPath, "New Card", "thcd");
             if (!string.IsNullOrEmpty(_currentPath))
                 CardFileHelper.writeToFile(_currentPath, _card);
+        }
+        private void deleteFile()
+        {
+            if (!string.IsNullOrEmpty(_currentPath))
+            {
+                File.Delete(_currentPath);
+                _card = null;
+            }
         }
         string _currentPath = string.Empty;
         void drawCardEditor()

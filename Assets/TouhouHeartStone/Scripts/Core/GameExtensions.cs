@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace TouhouHeartstone
@@ -19,6 +20,24 @@ namespace TouhouHeartstone
                 enemyList.AddRange(opponent["Field"]);
             }
             return enemyList.ToArray();
+        }
+        public Card[] getCharacters(Func<Card, bool> filter = null)
+        {
+            List<Card> charList = new List<Card>();
+            foreach (Player player in getPlayers())
+            {
+                if (filter != null)
+                {
+                    charList.AddRange(player["Master"].Where(filter));
+                    charList.AddRange(player["Field"].Where(filter));
+                }
+                else
+                {
+                    charList.AddRange(player["Master"]);
+                    charList.AddRange(player["Field"]);
+                }
+            }
+            return charList.ToArray();
         }
         public void setMaxGem(Player player, int value)
         {
@@ -71,9 +90,13 @@ namespace TouhouHeartstone
             }
             return dicRIDCard[rid];
         }
-        public void summon(Player player, Card card, int position)
+        public void summon(Player player, CardDefine define, int position = -1)
         {
-            doEvent(new SummonEvent(player, card, position));
+            summon(player, new Card(this, define), position < 0 ? player["Field"].count : position);
+        }
+        public void summon(Player player, Card card, int position = -1)
+        {
+            doEvent(new SummonEvent(player, card, position < 0 ? player["Field"].count : position));
         }
         public void createToken(Player player, CardDefine define, int position)
         {
@@ -84,6 +107,10 @@ namespace TouhouHeartstone
         public void damage(Card card, int amount)
         {
             doEvent(new DamageEvent(card, new int[] { amount }));
+        }
+        public void damage(Card[] cards, int amount)
+        {
+            doEvent(new DamageEvent(cards, cards.Select(c => { return amount; }).ToArray()));
         }
         public void damage(Card[] cards, int[] amounts)
         {

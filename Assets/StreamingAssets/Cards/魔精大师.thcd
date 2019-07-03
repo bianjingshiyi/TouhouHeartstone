@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Card id="107" type="2">
+  <Effect pile="Field" trigger="onUse">foreach (var targetPlayer in engine.getPlayers())
+{
+    engine.setMaxGem(targetPlayer, 5);
+}</Effect>
+  <cost>6</cost>
+  <attack>5</attack>
+  <life>5</life>
+</Card>
