@@ -161,7 +161,8 @@ namespace TouhouHeartstone.Frontend.Model
         void UseCard(UseCardEventArgs args)
         {
             UberDebug.LogDebugChannel("Frontend", $"玩家{args.PlayerID}使用卡牌{args.CardRID}，{args}");
-            int position = -1, target = 0;
+            int position = -1;
+            int[] target = new int[0];
             if (args is UseCardWithPositionArgs)
             {
                 position = (args as UseCardWithPositionArgs).Position;
@@ -177,7 +178,7 @@ namespace TouhouHeartstone.Frontend.Model
                 position = arg.Position;
                 target = arg.TargetCardRuntimeID;
             }
-            gm.Game.use(args.PlayerID, args.CardRID, position, new int[] { target });
+            gm.Game.use(args.PlayerID, args.CardRID, position, target);
         }
     }
 }

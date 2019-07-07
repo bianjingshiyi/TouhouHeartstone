@@ -10,6 +10,7 @@ namespace TouhouHeartstone.Frontend
     /// 卡片图像资源类
     /// </summary>
     [Serializable]
+    [System.Obsolete("使用CardAppearResouces替代")]
     public class CardImageResource: ICardResource, Ii18n
     {
         [SerializeField]
@@ -57,6 +58,7 @@ namespace TouhouHeartstone.Frontend
     /// 卡片文本资源类
     /// </summary>
     [Serializable]
+    [System.Obsolete("使用CardAppearResouces替代")]
     public class CardTextResource : ICardResource, Ii18n
     {
         [SerializeField]

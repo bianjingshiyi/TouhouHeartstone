@@ -15,22 +15,21 @@ namespace TouhouHeartstone.Frontend.ViewModel
     public class CardViewModel : MonoBehaviour, INotifyPropertyChanged
     {
         #region cardface
-        CardImageResource imageResource = new CardImageResource();
-        public CardImageResource ImageResource
+        private CardAppearResouces _CardAppearence = new CardAppearResouces();
+        public CardAppearResouces CardAppearence
         {
-            get
-            {
-                return imageResource;
-            }
+            get { return _CardAppearence; }
             protected set
             {
-                imageResource = value;
+                _CardAppearence = value;
                 NotifyPropertyChange("SpriteMain");
                 NotifyPropertyChange("SpriteBkg");
                 NotifyPropertyChange("SpriteRibbon");
+                NotifyPropertyChange("NameText");
+                NotifyPropertyChange("DescText");
+                NotifyPropertyChange("TypeText");
             }
         }
-
 
         private CardType _CardType;
         public CardType CardType
@@ -50,8 +49,7 @@ namespace TouhouHeartstone.Frontend.ViewModel
             {
                 _CardID = value;
                 var gv = GetComponentInParent<GlobalView>();
-                ImageResource = gv.GetCardImageResource(_CardID);
-                TextResource = gv.GetCardTextResource(_CardID);
+                CardAppearence = gv.GetCardAppearence(_CardID);
                 _CardType = CardType.PositionArg;
             }
         }
@@ -67,33 +65,20 @@ namespace TouhouHeartstone.Frontend.ViewModel
         }
 
         [Binding]
-        public Sprite SpriteMain => ImageResource.SpriteMain;
+        public Sprite SpriteMain => CardAppearence.MainSprite;
 
         [Binding]
-        public Sprite SpriteBkg => ImageResource.SpriteBkg;
+        public Sprite SpriteBkg => CardAppearence.BkgSprite;
 
         [Binding]
-        public Sprite SpriteRibbon => ImageResource.SpriteRibbon;
-
-        CardTextResource textResource = new CardTextResource();
-        public CardTextResource TextResource
-        {
-            get { return textResource; }
-            protected set
-            {
-                textResource = value;
-                NotifyPropertyChange("NameText");
-                NotifyPropertyChange("DescText");
-                NotifyPropertyChange("TypeText");
-            }
-        }
+        public Sprite SpriteRibbon => CardAppearence.RibbonSprite;
 
         [Binding]
-        public string NameText => textResource.Name;
+        public string NameText => CardAppearence.Name;
         [Binding]
-        public string DescText => textResource.Description;
+        public string DescText => CardAppearence.Description;
         [Binding]
-        public string TypeText => textResource.Type;
+        public string TypeText => CardAppearence.Type;
         #endregion
 
         #region carddata

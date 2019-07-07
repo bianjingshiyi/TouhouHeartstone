@@ -3,6 +3,7 @@ using System.Linq;
 
 namespace TouhouHeartstone.Frontend
 {
+    [System.Obsolete("使用CardAppearResouces替代")]
     [CreateAssetMenu(menuName = "IGSK/CardImageResLibrary")]
     public class CardImageResources : ScriptableObject
     {

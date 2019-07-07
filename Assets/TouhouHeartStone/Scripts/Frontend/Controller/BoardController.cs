@@ -490,22 +490,20 @@ namespace TouhouHeartstone.Frontend.Controller
         void servantSummon(RetinueSummonEventArgs arg)
         {
             var card = GetCardByRID(arg.CardRID);
-            if (card != null)
+            if (card == null)
             {
-                if (handCards.Contains(card))
-                    handCards.Remove(card);
-                if (!servants.Contains(card))
-                    servants.Insert(arg.Position, card);
-
-                moveCard(card, CardPos.Servant);
-
-                ReArrangeHandCards();
-                reArrangeServants();
+                card = drawCardInternal(new CardID(arg.CardDID, arg.CardRID));
             }
-            else
-            {
-                UberDebug.LogWarningChannel("Frontend", "没找到对应的卡片");
-            }
+
+            if (handCards.Contains(card))
+                handCards.Remove(card);
+            if (!servants.Contains(card))
+                servants.Insert(arg.Position, card);
+
+            moveCard(card, CardPos.Servant);
+
+            ReArrangeHandCards();
+            reArrangeServants();
         }
 
         /// <summary>

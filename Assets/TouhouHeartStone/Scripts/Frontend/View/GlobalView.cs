@@ -16,23 +16,38 @@ namespace TouhouHeartstone.Frontend.View
         public DamageView damagePrefab = null;
 
         [SerializeField]
+        CardAppearResourcesLoader AppearResLoader = null;
+
+        [System.Obsolete("使用CardAppearResouces替代")]
+        [SerializeField]
         CardImageResources images = null;
 
+        [System.Obsolete("使用CardAppearResouces替代")]
         [SerializeField]
         CardTextResources texts = null;
 
+        [System.Obsolete("使用CardAppearResouces替代")]
         public CardImageResource GetCardImageResource(int id) { return GetCardImageResource(id.ToString()); }
+        [System.Obsolete("使用CardAppearResouces替代")]
         public CardTextResource GetCardTextResource(int id) { return GetCardTextResource(id.ToString()); }
 
+        [System.Obsolete("使用CardAppearResouces替代")]
         public CardImageResource GetCardImageResource(string id)
         {
             return images.Get(id, "zh-CN");
         }
-
+        [System.Obsolete("使用CardAppearResouces替代")]
         public CardTextResource GetCardTextResource(string id)
         {
             return texts.Get(id, "zh-CN");
         }
+
+        public CardAppearResouces GetCardAppearence(string id)
+        {
+            return AppearResLoader.Get(id, "zh-Hans");
+        }
+
+        public CardAppearResouces GetCardAppearence(int id) { return GetCardAppearence(id.ToString()); }
     }
     public struct PositionWithRotation
     {

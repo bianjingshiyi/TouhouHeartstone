@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Deck>
+  <DeckName>测试卡组</DeckName>
+  <DeckID>TestCard</DeckID>
+  <AuthorName>Jim Jiang</AuthorName>
+  <AuthorMail>jim@lotlab.org</AuthorMail>
+  <Description>测试用卡组</Description>
+  <Version>0.0.1</Version>
+  <DefaultLang>zh-Hans</DefaultLang>
+  <APIVersion>0</APIVersion>
+  <Lang>en,zh-Hans</Lang>
+  <Cards>
+    <Card>
+      <CardAppearID>Cirno</CardAppearID>
+      <CardDefineID>1</CardDefineID>
+      <CardItem Lang="zh-Hans">
+        <Name>琪露诺</Name>
+        <Description>1</Description>
+        <Classification>妖精</Classification>
+        <MainImage>TestCard/Cirno_zh-Hans_Main.jpg</MainImage>
+        <FaceImage></FaceImage>
+        <DecorationImage></DecorationImage>
+      </CardItem>
+    </Card>
+    <Card>
+      <CardAppearID>Doge</CardAppearID>
+      <CardDefineID>2</CardDefineID>
+      <CardItem Lang="zh-Hans">
+        <Name>Doge</Name>
+        <Description>神烦的狗</Description>
+        <Classification>狗</Classification>
+        <MainImage>TestCard/Doge_zh-Hans_Main.png</MainImage>
+        <FaceImage></FaceImage>
+        <DecorationImage></DecorationImage>
+      </CardItem>
+    </Card>
+	<Card>
+      <CardAppearID>invalid</CardAppearID>
+      <CardDefineID>invalid</CardDefineID>
+      <CardItem Lang="zh-Hans">
+        <Name>不存在的卡片</Name>
+        <Description>不存在的卡片</Description>
+        <Classification>不存在的卡片</Classification>
+        <MainImage>TestCard/Cirno_zh-Hans_Main.jpg</MainImage>
+        <FaceImage></FaceImage>
+        <DecorationImage></DecorationImage>
+      </CardItem>
+    </Card>
+  </Cards>
+</Deck>
