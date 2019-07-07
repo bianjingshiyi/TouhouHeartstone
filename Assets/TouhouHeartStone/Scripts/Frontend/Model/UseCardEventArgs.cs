@@ -15,8 +15,8 @@ namespace TouhouHeartstone.Frontend.Model
     }
     public class UseCardWithTargetArgs : UseCardEventArgs
     {
-        public int TargetCardRuntimeID { get; }
-        public UseCardWithTargetArgs(int runtimeID)
+        public int[] TargetCardRuntimeID { get; } = new int[0];
+        public UseCardWithTargetArgs(int[] runtimeID)
         {
             TargetCardRuntimeID = runtimeID;
         }
@@ -42,8 +42,8 @@ namespace TouhouHeartstone.Frontend.Model
     public class UseCardWithTargetPositionArgs : UseCardEventArgs
     {
         public int Position { get; }
-        public int TargetCardRuntimeID { get; }
-        public UseCardWithTargetPositionArgs(int position, int runtimeID)
+        public int[] TargetCardRuntimeID { get; } = new int[0];
+        public UseCardWithTargetPositionArgs(int position, int[] runtimeID)
         {
             TargetCardRuntimeID = runtimeID;
             Position = position;
