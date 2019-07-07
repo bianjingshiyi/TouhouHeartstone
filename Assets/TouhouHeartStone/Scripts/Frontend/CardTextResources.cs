@@ -4,6 +4,7 @@ using System.Linq;
 namespace TouhouHeartstone.Frontend
 {
     [CreateAssetMenu(menuName = "IGSK/CardTextResLibrary")]
+    [System.Obsolete("使用CardAppearResouces替代")]
     public class CardTextResources : ScriptableObject
     {
         string fallbackLang = "en-US";
