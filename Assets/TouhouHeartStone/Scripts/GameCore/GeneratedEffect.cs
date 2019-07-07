@@ -42,7 +42,7 @@ namespace TouhouHeartstone.Backend
         {
             try
             {
-                engine.runScript(script, new EffectGlobals() { player = player, card = card, targetCards = targetCards });
+                engine.runScript(script, new EffectGlobals() { engine = engine, player = player, card = card, targetCards = targetCards });
             }
             catch (Exception e)
             {

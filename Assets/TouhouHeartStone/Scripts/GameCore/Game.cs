@@ -6,12 +6,14 @@ namespace TouhouHeartstone.Backend
 {
     public class Game
     {
-        public Game(IGameEnvironment env)
+        public CardEngine engine { get; }
+        Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
+        public Game(IGameEnvironment env, bool shuffle = true)
         {
             engine = new CardEngine(env, new HeartStoneRule(env), (int)DateTime.Now.ToBinary());
+            engine.setProp("shuffle", shuffle);
             engine.afterEvent += afterEvent;
         }
-        public CardEngine engine { get; }
         /// <summary>
         /// 添加玩家
         /// </summary>
@@ -147,6 +149,12 @@ namespace TouhouHeartstone.Backend
         {
             return cardsRID.Select(rid => { return getCardDID(rid); }).ToArray();
         }
+        public int[] getUseTargets(int cardRID)
+        {
+            Card card = engine.getCard(cardRID);
+            Effect onUseEffect = card.define.effects?.FirstOrDefault(e => { return e.trigger == "onUse"; });
+            return new int[0];
+        }
         private void afterEvent(Event @event)
         {
             if (@event.parent == null)
@@ -198,6 +206,5 @@ namespace TouhouHeartstone.Backend
                 return wlist.ToArray();
             }
         }
-        Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
     }
 }

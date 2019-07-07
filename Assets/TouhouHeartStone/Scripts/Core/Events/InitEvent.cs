@@ -32,9 +32,11 @@ namespace TouhouHeartstone
             {
                 engine.registerCard(card);
             }
-            //抽初始卡牌
+            //洗牌，然后抽初始卡牌
             for (int i = 0; i < sortedPlayers.Length; i++)
             {
+                if (engine.getProp<bool>("shuffle"))
+                    sortedPlayers[i]["Deck"].shuffle(engine);
                 int count = i == 0 ? 3 : 4;
                 Card[] cards = sortedPlayers[i]["Deck"][sortedPlayers[i]["Deck"].count - count, sortedPlayers[i]["Deck"].count - 1];
                 sortedPlayers[i]["Deck"].moveTo(cards, sortedPlayers[i]["Init"], 0);

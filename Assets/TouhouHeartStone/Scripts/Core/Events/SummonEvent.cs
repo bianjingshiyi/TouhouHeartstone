@@ -17,9 +17,18 @@
                 card.pile.moveTo(card, player["Field"], position);
             else
                 player["Field"].insert(card, position);
-            card.setProp("life", (card.define as ServantCardDefine).life);
-            card.setProp("attack", (card.define as ServantCardDefine).attack);
-            card.setProp("isReady", false);
+            if (card.define is ServantCardDefine)
+            {
+                card.setProp("life", (card.define as ServantCardDefine).life);
+                card.setProp("attack", (card.define as ServantCardDefine).attack);
+                card.setProp("isReady", false);
+            }
+            else if (card.define is GeneratedCardDefine)
+            {
+                card.setProp("life", card.define.getProp<int>("life"));
+                card.setProp("attack", card.define.getProp<int>("attack"));
+                card.setProp("isReady", false);
+            }
         }
         public override EventWitness getWitness(CardEngine engine, Player player)
         {

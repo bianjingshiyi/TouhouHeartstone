@@ -22,17 +22,23 @@ namespace TouhouHeartstone
             {
                 //随从卡，将卡置入战场
                 engine.summon(player, card, targetPosition);
-                Effect effect = card.define.effects.FirstOrDefault(e => { return card.pile.name == e.pile && e.trigger == "onUse"; });
-                if (effect != null)
-                    effect.execute(engine, player, card, targetCards);
+                if (card.define.effects != null && card.define.effects.Length > 0)
+                {
+                    Effect effect = card.define.effects.FirstOrDefault(e => { return card.pile.name == e.pile && e.trigger == "onUse"; });
+                    if (effect != null)
+                        effect.execute(engine, player, card, targetCards);
+                }
             }
             else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.spell))
             {
                 //法术卡，释放效果然后丢进墓地
                 player["Hand"].moveTo(card, player["Warp"], player["Warp"].count);
-                Effect effect = card.define.effects.FirstOrDefault(e => { return card.pile.name == e.pile && e.trigger == "onUse"; });
-                if (effect != null)
-                    effect.execute(engine, player, card, targetCards);
+                if (card.define.effects != null && card.define.effects.Length > 0)
+                {
+                    Effect effect = card.define.effects.FirstOrDefault(e => { return card.pile.name == e.pile && e.trigger == "onUse"; });
+                    if (effect != null)
+                        effect.execute(engine, player, card, targetCards);
+                }
                 player["Warp"].moveTo(card, player["Grave"], player["Grave"].count);
             }
         }

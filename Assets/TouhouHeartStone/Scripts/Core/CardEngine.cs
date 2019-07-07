@@ -20,7 +20,6 @@ namespace TouhouHeartstone
         }
         public void runScript(string script, EffectGlobals globals)
         {
-            globals.engine = this;
             env.runScript(script, globals);
         }
         public T getProp<T>(string varName)
