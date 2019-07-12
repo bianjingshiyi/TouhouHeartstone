@@ -14,6 +14,14 @@
         /// </summary>
         public abstract string trigger { get; }
         /// <summary>
+        /// 检查效果目标是否合法
+        /// </summary>
+        /// <param name="engine"></param>
+        /// <param name="card"></param>
+        /// <param name="targetCards"></param>
+        /// <returns></returns>
+        public abstract bool checkTarget(CardEngine engine, Player player, Card card, Card[] targetCards);
+        /// <summary>
         /// 执行效果
         /// </summary>
         /// <param name="engine"></param>

@@ -149,11 +149,21 @@ namespace TouhouHeartstone.Backend
         {
             return cardsRID.Select(rid => { return getCardDID(rid); }).ToArray();
         }
-        public int[] getUseTargets(int cardRID)
+        public bool checkTarget(int cardRID, string effectName, int targetCardRID)
         {
             Card card = engine.getCard(cardRID);
-            Effect onUseEffect = card.define.effects?.FirstOrDefault(e => { return e.trigger == "onUse"; });
-            return new int[0];
+            Card targetCard = engine.getCard(targetCardRID);
+            Effect onUseEffect = card.define.effects?.FirstOrDefault(e => { return e.trigger == effectName; });
+            return onUseEffect.checkTarget(engine, card.pile.owner, card, targetCard);
+        }
+        public int[] getTargets(int cardRID, string effectName)
+        {
+            Card card = engine.getCard(cardRID);
+            Effect onUseEffect = card.define.effects?.FirstOrDefault(e => { return e.trigger == effectName; });
+            if (onUseEffect != null)
+                return engine.getCharacters(c => { return onUseEffect.checkTarget(engine, card.pile.owner, card, c); }).Select(c => { return c.id; }).ToArray();
+            else
+                return new int[0];
         }
         private void afterEvent(Event @event)
         {

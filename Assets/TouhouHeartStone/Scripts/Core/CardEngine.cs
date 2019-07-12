@@ -18,9 +18,13 @@ namespace TouhouHeartstone
             this.rule = rule;
             random = new Random(randomSeed);
         }
-        public void runScript(string script, EffectGlobals globals)
+        public T runFunc<T>(string script, EffectGlobals globals)
         {
-            env.runScript(script, globals);
+            return env.runFunc<T>(script, globals);
+        }
+        public void runAction(string script, EffectGlobals globals)
+        {
+            env.runAction(script, globals);
         }
         public T getProp<T>(string varName)
         {

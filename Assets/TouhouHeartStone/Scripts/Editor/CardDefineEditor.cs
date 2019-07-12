@@ -139,7 +139,8 @@ namespace TouhouHeartstone.Backend
                     GeneratedEffect effect = effectList[i];
                     effect.setPile(EditorGUILayout.TextField(effect.pile));
                     effect.setTrigger(EditorGUILayout.TextField(effect.trigger));
-                    effect.setScript(GUILayout.TextArea(effect.script));
+                    effect.setFilterScript(GUILayout.TextArea(effect.filterScript));
+                    effect.setActionScript(GUILayout.TextArea(effect.actionScript));
                     //删除效果
                     GUILayout.BeginHorizontal();
                     GUILayout.Label("");
@@ -157,7 +158,7 @@ namespace TouhouHeartstone.Backend
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("");
                 if (GUILayout.Button("新增效果", GUILayout.Width(100)))
-                    effectList.Add(new GeneratedEffect("Field", "onUse", ""));
+                    effectList.Add(new GeneratedEffect("Field", "onUse", "", ""));
                 GUILayout.EndHorizontal();
                 if (effectList.Count > 0)
                     _card.setProp("effects", effectList.Cast<GeneratedEffect>().ToArray());

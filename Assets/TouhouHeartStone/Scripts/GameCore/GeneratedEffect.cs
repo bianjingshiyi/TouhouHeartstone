@@ -7,13 +7,6 @@ namespace TouhouHeartstone.Backend
     {
         string _pile;
         string _trigger;
-        string _script;
-        public GeneratedEffect(string pile, string trigger, string script)
-        {
-            _pile = pile;
-            _trigger = trigger;
-            _script = script;
-        }
         public override string pile
         {
             get { return _pile; }
@@ -22,9 +15,14 @@ namespace TouhouHeartstone.Backend
         {
             get { return _trigger; }
         }
-        public string script
+        public string filterScript { get; private set; }
+        public string actionScript { get; private set; }
+        public GeneratedEffect(string pile, string trigger, string filterScript, string actionScript)
         {
-            get { return _script; }
+            _pile = pile;
+            _trigger = trigger;
+            this.filterScript = filterScript;
+            this.actionScript = actionScript;
         }
         public void setPile(string pile)
         {
@@ -34,15 +32,32 @@ namespace TouhouHeartstone.Backend
         {
             _trigger = trigger;
         }
-        public void setScript(string script)
+        public void setFilterScript(string script)
         {
-            _script = script;
+            filterScript = script;
+        }
+        public void setActionScript(string script)
+        {
+            actionScript = script;
+        }
+        public override bool checkTarget(CardEngine engine, Player player, Card card, Card[] targetCards)
+        {
+            if (string.IsNullOrEmpty(filterScript))
+                return true;
+            try
+            {
+                return engine.runFunc<bool>(filterScript, new EffectGlobals() { engine = engine, player = player, card = card, targetCards = targetCards });
+            }
+            catch (Exception e)
+            {
+                throw new ContentException("卡片" + card.define + "的" + trigger + "效果执行失败：\n" + e.ToString());
+            }
         }
         public override void execute(CardEngine engine, Player player, Card card, Card[] targetCards)
         {
             try
             {
-                engine.runScript(script, new EffectGlobals() { engine = engine, player = player, card = card, targetCards = targetCards });
+                engine.runAction(actionScript, new EffectGlobals() { engine = engine, player = player, card = card, targetCards = targetCards });
             }
             catch (Exception e)
             {

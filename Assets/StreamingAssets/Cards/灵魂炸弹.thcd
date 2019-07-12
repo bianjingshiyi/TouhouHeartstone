@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Card id="112" type="3">
+  <cost>1</cost>
+  <Effect pile="Warp" trigger="onUse">
+    <Check>return targetCards[0].pile.owner != player &amp;&amp; targetCards[0].define.type == TouhouHeartstone.CardDefineType.servant;</Check>
+    <Action>engine.damage(player["Master"][0], 4);
+engine.damage(targetCards[0], 4);</Action>
+  </Effect>
+</Card>

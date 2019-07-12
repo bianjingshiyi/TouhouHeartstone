@@ -23,11 +23,19 @@ namespace TouhouHeartstone.Frontend.Model
         {
             return Directory.GetFiles(Application.streamingAssetsPath + "/" + path, searchPattern);
         }
-        public void runScript(string script, EffectGlobals globals)
+
+        public void runAction(string script, EffectGlobals globals)
         {
             CSharpScript.RunAsync(script, ScriptOptions.Default.AddReferences(
+                                             typeof(HeartStoneRule).Assembly,
+                                             Assembly.LoadFile(UnityEditor.EditorApplication.applicationContentsPath + "/MonoBleedingEdge/lib/mono/unityjit/Facades/netstandard.dll")), globals, typeof(EffectGlobals));
+        }
+
+        public T runFunc<T>(string script, EffectGlobals globals)
+        {
+            return CSharpScript.EvaluateAsync<T>(script, ScriptOptions.Default.AddReferences(
                                           typeof(HeartStoneRule).Assembly,
-                                          Assembly.LoadFile(UnityEditor.EditorApplication.applicationContentsPath + "/MonoBleedingEdge/lib/mono/unityjit/Facades/netstandard.dll")), globals, typeof(EffectGlobals));
+                                          Assembly.LoadFile(UnityEditor.EditorApplication.applicationContentsPath + "/MonoBleedingEdge/lib/mono/unityjit/Facades/netstandard.dll")), globals, typeof(EffectGlobals)).Result;
         }
     }
 }

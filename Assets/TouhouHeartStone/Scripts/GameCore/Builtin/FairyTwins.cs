@@ -10,6 +10,7 @@ namespace TouhouHeartstone.Backend.Builtin
             effects = new Effect[]
             {
                 new GeneratedEffect("Field","onUse",
+                "return true",
                 "engine.createToken(player, card.define, player[\"Field\"].indexOf(card) + 1);")
             };
         }

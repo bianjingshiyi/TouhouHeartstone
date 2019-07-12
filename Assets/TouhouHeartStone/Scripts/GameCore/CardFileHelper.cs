@@ -38,7 +38,19 @@ namespace TouhouHeartstone.Backend
                 if (child != null && child.Name == "Effect")
                 {
                     if (child.HasAttribute("pile") && child.HasAttribute("trigger"))
-                        effectList.Add(new GeneratedEffect(child.GetAttribute("pile"), child.GetAttribute("trigger"), child.InnerText));
+                    {
+                        XmlElement actionElement = child["Action"];
+                        if (actionElement != null)
+                        {
+                            XmlElement checkElement = child["Check"];
+                            if (checkElement != null)
+                                effectList.Add(new GeneratedEffect(child.GetAttribute("pile"), child.GetAttribute("trigger"), checkElement.InnerText, actionElement.InnerText));
+                            else
+                                effectList.Add(new GeneratedEffect(child.GetAttribute("pile"), child.GetAttribute("trigger"), "return true;", actionElement.InnerText));
+                        }
+                        else
+                            effectList.Add(new GeneratedEffect(child.GetAttribute("pile"), child.GetAttribute("trigger"), null, child.InnerText));
+                    }
                 }
             }
             if (effectList.Count > 0)
@@ -98,7 +110,18 @@ namespace TouhouHeartstone.Backend
                 XmlElement effectEle = doc.CreateElement("Effect");
                 effectEle.SetAttribute("pile", effects[i].pile);
                 effectEle.SetAttribute("trigger", effects[i].trigger);
-                effectEle.InnerText = effects[i].script;
+                if (!string.IsNullOrEmpty(effects[i].actionScript))
+                {
+                    if (!string.IsNullOrEmpty(effects[i].filterScript))
+                    {
+                        XmlElement checkElement = doc.CreateElement("Check");
+                        checkElement.InnerText = effects[i].filterScript;
+                        effectEle.AppendChild(checkElement);
+                    }
+                    XmlElement actionElement = doc.CreateElement("Action");
+                    actionElement.InnerText = effects[i].actionScript;
+                    effectEle.AppendChild(actionElement);
+                }
                 cardEle.AppendChild(effectEle);
             }
             doc.AppendChild(cardEle);
