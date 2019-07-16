@@ -16,5 +16,6 @@
             else
                 return default(T);
         }
+        public abstract string isUsable(CardEngine engine, Player player, Card card);
     }
 }

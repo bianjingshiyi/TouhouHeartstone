@@ -121,6 +121,7 @@ namespace TouhouHeartstone.Backend
         {
             if (_card != null)
             {
+                //ID，类型
                 _card.setProp("id", EditorGUILayout.IntField("id", _card.id));
                 _card.setProp("type", Convert.ToInt32(EditorGUILayout.EnumPopup("type", _card.type)));
                 if (_card.type == CardDefineType.servant)
@@ -129,6 +130,13 @@ namespace TouhouHeartstone.Backend
                     _card.setProp("attack", EditorGUILayout.IntField("attack", _card.getProp<int>("attack")));
                     _card.setProp("life", EditorGUILayout.IntField("life", _card.getProp<int>("life")));
                 }
+                else if (_card.type == CardDefineType.spell)
+                {
+                    _card.setProp("cost", EditorGUILayout.IntField("cost", _card.getProp<int>("cost")));
+                }
+                //条件
+                GUILayout.Label("使用条件");
+                _card.setProp("condition", GUILayout.TextArea(_card.getProp<string>("condition")));
                 //效果
                 GUILayout.Label("效果");
                 _effectScrollPosition = GUILayout.BeginScrollView(_effectScrollPosition);
@@ -137,9 +145,11 @@ namespace TouhouHeartstone.Backend
                 for (int i = 0; i < effectList.Count; i++)
                 {
                     GeneratedEffect effect = effectList[i];
-                    effect.setPile(EditorGUILayout.TextField(effect.pile));
-                    effect.setTrigger(EditorGUILayout.TextField(effect.trigger));
+                    effect.setPile(EditorGUILayout.TextField("触发范围", effect.pile));
+                    effect.setTrigger(EditorGUILayout.TextField("触发时机", effect.trigger));
+                    GUILayout.Label("触发条件");
                     effect.setFilterScript(GUILayout.TextArea(effect.filterScript));
+                    GUILayout.Label("触发效果");
                     effect.setActionScript(GUILayout.TextArea(effect.actionScript));
                     //删除效果
                     GUILayout.BeginHorizontal();

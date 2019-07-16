@@ -15,5 +15,9 @@
             else
                 return base.getProp<T>(propName);
         }
+        public override string isUsable(CardEngine engine, Player player, Card card)
+        {
+            return null;
+        }
     }
 }

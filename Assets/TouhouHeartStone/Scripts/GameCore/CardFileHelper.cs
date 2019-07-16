@@ -27,10 +27,16 @@ namespace TouhouHeartstone.Backend
             doc.Load(reader);
 
             GeneratedCardDefine card = new GeneratedCardDefine();
+            //ID与类型
             if (doc["Card"].HasAttribute("id"))
                 card.setProp("id", Convert.ToInt32(doc["Card"].GetAttribute("id")));
             if (doc["Card"].HasAttribute("type"))
                 card.setProp("type", Convert.ToInt32(doc["Card"].GetAttribute("type")));
+            //条件
+            XmlElement conditionElement = doc["Card"]["Condition"];
+            if (conditionElement != null)
+                card.setProp("condition", conditionElement.InnerText);
+            //效果
             List<Effect> effectList = new List<Effect>();
             for (int i = 0; i < doc["Card"].ChildNodes.Count; i++)
             {
@@ -55,6 +61,7 @@ namespace TouhouHeartstone.Backend
             }
             if (effectList.Count > 0)
                 card.setProp("effects", effectList.ToArray());
+            //属性
             if (card.type == CardDefineType.servant)
             {
                 if (doc["Card"]["cost"] != null)
@@ -84,8 +91,10 @@ namespace TouhouHeartstone.Backend
 
             doc.CreateXmlDeclaration("1.0", "UTF-8", string.Empty);
             XmlElement cardEle = doc.CreateElement("Card");
+            //ID与类型
             cardEle.SetAttribute("id", card.id.ToString());
             cardEle.SetAttribute("type", ((int)card.type).ToString());
+            //属性
             if (card.type == CardDefineType.servant)
             {
                 XmlElement propEle = doc.CreateElement("cost");
@@ -104,25 +113,33 @@ namespace TouhouHeartstone.Backend
                 propEle.InnerText = card.getProp<int>("cost").ToString();
                 cardEle.AppendChild(propEle);
             }
+            //使用条件
+            XmlElement conditionElement = doc.CreateElement("Condition");
+            conditionElement.InnerText = card.getProp<string>("condition");
+            cardEle.AppendChild(conditionElement);
+            //效果
             GeneratedEffect[] effects = card.getProp<Effect[]>("effects") as GeneratedEffect[];
-            for (int i = 0; i < effects.Length; i++)
+            if (effects != null)
             {
-                XmlElement effectEle = doc.CreateElement("Effect");
-                effectEle.SetAttribute("pile", effects[i].pile);
-                effectEle.SetAttribute("trigger", effects[i].trigger);
-                if (!string.IsNullOrEmpty(effects[i].actionScript))
+                for (int i = 0; i < effects.Length; i++)
                 {
-                    if (!string.IsNullOrEmpty(effects[i].filterScript))
+                    XmlElement effectEle = doc.CreateElement("Effect");
+                    effectEle.SetAttribute("pile", effects[i].pile);
+                    effectEle.SetAttribute("trigger", effects[i].trigger);
+                    if (!string.IsNullOrEmpty(effects[i].actionScript))
                     {
-                        XmlElement checkElement = doc.CreateElement("Check");
-                        checkElement.InnerText = effects[i].filterScript;
-                        effectEle.AppendChild(checkElement);
+                        if (!string.IsNullOrEmpty(effects[i].filterScript))
+                        {
+                            XmlElement checkElement = doc.CreateElement("Check");
+                            checkElement.InnerText = effects[i].filterScript;
+                            effectEle.AppendChild(checkElement);
+                        }
+                        XmlElement actionElement = doc.CreateElement("Action");
+                        actionElement.InnerText = effects[i].actionScript;
+                        effectEle.AppendChild(actionElement);
                     }
-                    XmlElement actionElement = doc.CreateElement("Action");
-                    actionElement.InnerText = effects[i].actionScript;
-                    effectEle.AppendChild(actionElement);
+                    cardEle.AppendChild(effectEle);
                 }
-                cardEle.AppendChild(effectEle);
             }
             doc.AppendChild(cardEle);
 
