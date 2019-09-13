@@ -6,11 +6,11 @@ namespace TouhouHeartstone.Backend
 {
     public class Game
     {
-        public CardEngine engine { get; }
+        public HeartstoneCardEngine engine { get; }
         Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
         public Game(IGameEnvironment env, bool shuffle = true, params CardDefine[] cards)
         {
-            engine = new CardEngine(env, new HeartStoneRule(env), (int)DateTime.Now.ToBinary());
+            engine = new HeartstoneCardEngine(env, new HeartStoneRule(env), (int)DateTime.Now.ToBinary());
             engine.setProp("shuffle", shuffle);
             engine.afterEvent += afterEvent;
         }

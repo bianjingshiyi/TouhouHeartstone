@@ -79,12 +79,12 @@ namespace TouhouHeartstone.Backend
                 if (engine.getPlayers().All(p => { return p.getProp<bool>("prepared"); }))
                 {
                     //对战开始
-                    engine.start();
+                    (engine as HeartstoneCardEngine).start();
                 }
             }
             else if (e.name == "onStart")
             {
-                engine.turnStart(sortedPlayers[0]);
+                (engine as HeartstoneCardEngine).turnStart(sortedPlayers[0]);
             }
             else if (e.name == "onTurnEnd")
             {
@@ -93,7 +93,7 @@ namespace TouhouHeartstone.Backend
                 if (index >= sortedPlayers.Length)
                     index = 0;
                 Player nextPlayer = sortedPlayers[index];
-                engine.turnStart(nextPlayer);
+                (engine as HeartstoneCardEngine).turnStart(nextPlayer);
             }
         }
     }
