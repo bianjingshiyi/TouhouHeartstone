@@ -8,7 +8,7 @@ namespace TouhouHeartstone.Backend
     {
         public CardEngine engine { get; }
         Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
-        public Game(IGameEnvironment env, bool shuffle = true)
+        public Game(IGameEnvironment env, bool shuffle = true, params CardDefine[] cards)
         {
             engine = new CardEngine(env, new HeartStoneRule(env), (int)DateTime.Now.ToBinary());
             engine.setProp("shuffle", shuffle);

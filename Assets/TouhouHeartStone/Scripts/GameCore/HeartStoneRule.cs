@@ -14,12 +14,12 @@ namespace TouhouHeartstone.Backend
     public class HeartStoneRule : Rule
     {
         public override CardPool pool { get; } = null;
-        public HeartStoneRule(IGameEnvironment env)
+        public HeartStoneRule(IGameEnvironment env, params CardDefine[] cards)
         {
             pool = new CardPool();
             //加载卡池
             //加载内置卡池
-            Dictionary<int, CardDefine> cards = typeof(HeartStoneRule).Assembly.GetTypes().
+            Dictionary<int, CardDefine> dicCards = typeof(HeartStoneRule).Assembly.GetTypes().
                               Where(t =>
                               {
                                   return !t.IsAbstract && t.IsSubclassOf(typeof(CardDefine)) &&
@@ -40,6 +40,14 @@ namespace TouhouHeartstone.Backend
                               {
                                   return d.id;
                               });
+            //加载参数卡池
+            for (int i = 0; i < cards.Length; i++)
+            {
+                if (!dicCards.ContainsKey(cards[i].id))
+                    dicCards.Add(cards[i].id, cards[i]);
+                else
+                    throw new ArgumentException("存在重复的卡片定义id" + cards[i].id);
+            }
             //加载外置卡池
             if (env != null)
             {
@@ -48,14 +56,14 @@ namespace TouhouHeartstone.Backend
                     using (TextReader reader = env.getFileReader(path))
                     {
                         GeneratedCardDefine card = CardFileHelper.read(reader);
-                        if (cards.ContainsKey(card.id))
+                        if (dicCards.ContainsKey(card.id))
                             throw new ArgumentException("存在重复的卡片定义id" + card.id);
                         else
-                            cards.Add(card.id, card);
+                            dicCards.Add(card.id, card);
                     }
                 }
             }
-            pool = new CardPool(cards.Values.ToArray());
+            pool = new CardPool(dicCards.Values.ToArray());
         }
         public override void beforeEvent(CardEngine game, Event e)
         {

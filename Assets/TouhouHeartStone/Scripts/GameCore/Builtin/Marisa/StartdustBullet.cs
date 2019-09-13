@@ -1,18 +1,14 @@
 ﻿namespace TouhouHeartstone.Backend.Builtin
 {
-    public class Marisa : MasterCardDefine
+    public class StartdustBullet : SkillCardDefine
     {
         public override int id
         {
-            get { return 2000; }
-        }
-        public override int skillID
-        {
             get { return 2001; }
         }
-        public override int category
+        public override int cost
         {
-            get { return 2000; }
+            get { return 2; }
         }
         public override Effect[] effects { get; } = new Effect[0];
     }

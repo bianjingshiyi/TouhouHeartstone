@@ -6,6 +6,48 @@ namespace TouhouHeartstone
 {
     public partial class CardEngine
     {
+        public void addBuff(Card[] cards, string[] propNames, int[] changeTypes, int[] values)
+        {
+            foreach (Card card in cards)
+            {
+                PropertyModifier[] modifiers = new PropertyModifier[propNames.Length];
+                for (int i = 0; i < modifiers.Length; i++)
+                {
+                    modifiers[i] = new PropertyModifier(propNames[i], (PropertyChangeType)changeTypes[i], values[i]);
+                }
+                card.addBuff(new GeneratedBuff(modifiers));
+            }
+        }
+        public void addBuff(Card[] cards, string propName, int changeType, int value)
+        {
+            foreach (Card card in cards)
+            {
+                card.addBuff(new GeneratedBuff(new PropertyModifier(propName, (PropertyChangeType)changeType, value)));
+            }
+        }
+        public readonly int PropertyChangeType_set = 0;
+        public readonly int PropertyChangeType_add = 1;
+        public Card[] getNearbyCards(Card card)
+        {
+            if (card.pile.count > 2)
+            {
+                if (card.pile.indexOf(card) == 0)
+                    return new Card[] { card.pile[1] };
+                else if (card.pile.indexOf(card) == card.pile.count - 1)
+                    return new Card[] { card.pile[card.pile.count - 2] };
+                else
+                    return new Card[] { card.pile[card.pile.indexOf(card) - 1], card.pile[card.pile.indexOf(card) + 1] };
+            }
+            else if (card.pile.count > 1)
+            {
+                if (card.pile.indexOf(card) == 0)
+                    return new Card[] { card.pile[1] };
+                else
+                    return new Card[] { card.pile[0] };
+            }
+            else
+                return new Card[0];
+        }
         public Card getRandomEnemy(Player player)
         {
             Card[] enemies = getAllEnemies(player);

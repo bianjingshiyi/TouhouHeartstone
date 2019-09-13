@@ -170,9 +170,4 @@ namespace TouhouHeartstone
         before,
         after
     }
-    public enum PropertyChangeType
-    {
-        set,
-        add
-    }
 }
