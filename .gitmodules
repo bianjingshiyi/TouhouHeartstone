@@ -1,3 +1,6 @@
 [submodule "Assets/Plugins/UberLogger"]
 	path = Assets/Plugins/UberLogger
 	url = https://code.lotlab.org/IGensokyo/UberLogger-fork.git
+[submodule "Assets/Plugins/TouhouCardEngine"]
+	path = Assets/Plugins/TouhouCardEngine
+	url = https://github.com/bianjingshiyi/TouhouCardEngine.git
