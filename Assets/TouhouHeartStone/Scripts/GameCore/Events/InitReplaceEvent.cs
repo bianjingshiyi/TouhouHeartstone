@@ -21,8 +21,7 @@ namespace TouhouHeartstone
             int[] cardsIndex = originCards.Select(c => { return player["Init"].indexOf(c); }).ToArray();
             foreach (Card card in originCards)
             {
-                card.pile = null;
-                player["Deck"].insert(card, player["Deck"].count);
+                player["Init"].moveTo(card, player["Deck"], player["Deck"].count);
             }
             //然后洗牌
             player["Deck"].shuffle(engine);
