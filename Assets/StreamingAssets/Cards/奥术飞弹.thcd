@@ -3,5 +3,5 @@
   <Effect pile="Warp" trigger="onUse">engine.damage(engine.getRandomEnemy(player), 1);
 engine.damage(engine.getRandomEnemy(player), 1);
 engine.damage(engine.getRandomEnemy(player), 1);</Effect>
-  <cost>0</cost>
+  <cost>1</cost>
 </Card>
