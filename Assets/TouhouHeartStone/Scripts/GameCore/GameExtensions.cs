@@ -110,7 +110,7 @@ namespace TouhouHeartstone
         }
         public void summon(Player player, CardDefine define, int position = -1)
         {
-            summon(player, new Card(this, define), position < 0 ? player["Field"].count : position);
+            summon(player, new Card(define), position < 0 ? player["Field"].count : position);
         }
         public void summon(Player player, Card card, int position = -1)
         {
@@ -118,7 +118,7 @@ namespace TouhouHeartstone
         }
         public void createToken(Player player, CardDefine define, int position)
         {
-            Card card = new Card(this, define);
+            Card card = new Card(define);
             registerCard(card);
             doEvent(new SummonEvent(player, card, position));
         }

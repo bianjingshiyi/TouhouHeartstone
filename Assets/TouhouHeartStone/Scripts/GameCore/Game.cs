@@ -47,12 +47,12 @@ namespace TouhouHeartstone.Backend
             Card[] cards = new Card[deck.Length - 1];
             for (int i = 0; i < cards.Length; i++)
             {
-                cards[i] = new Card(engine, engine.rule.pool[deck[i + 1]]);
+                cards[i] = new Card(engine.rule.pool[deck[i + 1]]);
             }
             Player player = new Player(engine, new Pile[]
             {
-                new Pile("Master",new Card(engine,engine.rule.pool[deck[0]])),
-                new Pile("Skill",new Card(engine,engine.rule.pool[(engine.rule.pool[deck[0]] as MasterCardDefine).skillID])),
+                new Pile("Master",new Card(engine.rule.pool[deck[0]])),
+                new Pile("Skill",new Card(engine.rule.pool[(engine.rule.pool[deck[0]] as MasterCardDefine).skillID])),
                 new Pile("Deck",cards),
                 new Pile("Init"),
                 new Pile("Hand"),
