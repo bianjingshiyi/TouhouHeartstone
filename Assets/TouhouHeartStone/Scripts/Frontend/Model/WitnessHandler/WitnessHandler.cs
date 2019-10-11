@@ -1,4 +1,6 @@
-﻿using TouhouHeartstone.Backend;
+﻿using TouhouCardEngine;
+using TouhouHeartstone;
+
 namespace TouhouHeartstone.Frontend.Model.Witness
 {
     public abstract class WitnessHandler

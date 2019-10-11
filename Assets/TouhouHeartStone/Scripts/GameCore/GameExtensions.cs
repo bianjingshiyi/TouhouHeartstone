@@ -2,14 +2,16 @@
 using System.Linq;
 using System.Collections.Generic;
 
+using TouhouCardEngine;
+
 namespace TouhouHeartstone
 {
-    public partial class HeartstoneCardEngine : CardEngine
+    public static partial class CardEngineExtension /*HeartstoneCardEngine : CardEngine*/
     {
-        public HeartstoneCardEngine(IGameEnvironment env, Rule rule, int randomSeed) : base(env, rule, randomSeed)
-        {
-        }
-        public void addBuff(Card[] cards, string[] propNames, int[] changeTypes, int[] values)
+        //public HeartstoneCardEngine(IGameEnvironment env, Rule rule, int randomSeed) : base(env, rule, randomSeed)
+        //{
+        //}
+        public static void addBuff(this CardEngine engine, Card[] cards, string[] propNames, int[] changeTypes, int[] values)
         {
             foreach (Card card in cards)
             {
@@ -21,16 +23,16 @@ namespace TouhouHeartstone
                 card.addBuff(new GeneratedBuff(modifiers));
             }
         }
-        public void addBuff(Card[] cards, string propName, int changeType, int value)
+        public static void addBuff(this CardEngine engine, Card[] cards, string propName, int changeType, int value)
         {
             foreach (Card card in cards)
             {
                 card.addBuff(new GeneratedBuff(new PropertyModifier(propName, (PropertyChangeType)changeType, value)));
             }
         }
-        public readonly int PropertyChangeType_set = 0;
-        public readonly int PropertyChangeType_add = 1;
-        public Card[] getNearbyCards(Card card)
+        public static readonly int PropertyChangeType_set = 0;
+        public static readonly int PropertyChangeType_add = 1;
+        public static Card[] getNearbyCards(this CardEngine engine, Card card)
         {
             if (card.pile.count > 2)
             {
@@ -51,25 +53,25 @@ namespace TouhouHeartstone
             else
                 return new Card[0];
         }
-        public Card getRandomEnemy(Player player)
+        public static Card getRandomEnemy(this CardEngine engine, Player player)
         {
-            Card[] enemies = getAllEnemies(player);
-            return enemies[randomInt(0, enemies.Length - 1)];
+            Card[] enemies = engine.getAllEnemies(player);
+            return enemies[engine.randomInt(0, enemies.Length - 1)];
         }
-        public Card[] getAllEnemies(Player player)
+        public static Card[] getAllEnemies(this CardEngine engine, Player player)
         {
             List<Card> enemyList = new List<Card>();
-            foreach (Player opponent in getPlayers().Where(p => { return p != player; }))
+            foreach (Player opponent in engine.getPlayers().Where(p => { return p != player; }))
             {
                 enemyList.AddRange(opponent["Master"]);
                 enemyList.AddRange(opponent["Field"]);
             }
             return enemyList.ToArray();
         }
-        public Card[] getCharacters(Func<Card, bool> filter = null)
+        public static Card[] getCharacters(this CardEngine engine, Func<Card, bool> filter = null)
         {
             List<Card> charList = new List<Card>();
-            foreach (Player player in getPlayers())
+            foreach (Player player in engine.getPlayers())
             {
                 if (filter != null)
                 {
@@ -84,59 +86,59 @@ namespace TouhouHeartstone
             }
             return charList.ToArray();
         }
-        public void setMaxGem(Player player, int value)
+        public static void setMaxGem(this CardEngine engine, Player player, int value)
         {
-            doEvent(new MaxGemChangeEvent(player, value));
+            engine.doEvent(new MaxGemChangeEvent(player, value));
         }
-        public void setGem(Player player, int value)
+        public static void setGem(this CardEngine engine, Player player, int value)
         {
-            doEvent(new GemChangeEvent(player, value));
+            engine.doEvent(new GemChangeEvent(player, value));
         }
-        public void draw(Player player)
+        public static void draw(this CardEngine engine, Player player)
         {
             if (player["Deck"].count > 0)
             {
                 if (player["Hand"].count > 9)
-                    burn(player, player["Deck"].top);
+                    engine.burn(player, player["Deck"].top);
                 else
-                    doEvent(new DrawEvent(player));
+                    engine.doEvent(new DrawEvent(player));
             }
             else
-                doEvent(new TiredEvent(player));
+                engine.doEvent(new TiredEvent(player));
         }
-        public void burn(Player player, Card card)
+        public static void burn(this CardEngine engine, Player player, Card card)
         {
-            doEvent(new BurnEvent(player, card));
+            engine.doEvent(new BurnEvent(player, card));
         }
-        public void summon(Player player, CardDefine define, int position = -1)
+        public static void summon(this CardEngine engine, Player player, CardDefine define, int position = -1)
         {
-            summon(player, new Card(define), position < 0 ? player["Field"].count : position);
+            engine.summon(player, new Card(define), position < 0 ? player["Field"].count : position);
         }
-        public void summon(Player player, Card card, int position = -1)
+        public static void summon(this CardEngine engine, Player player, Card card, int position = -1)
         {
-            doEvent(new SummonEvent(player, card, position < 0 ? player["Field"].count : position));
+            engine.doEvent(new SummonEvent(player, card, position < 0 ? player["Field"].count : position));
         }
-        public void createToken(Player player, CardDefine define, int position)
+        public static void createToken(this CardEngine engine, Player player, CardDefine define, int position)
         {
             Card card = new Card(define);
-            registerCard(card);
-            doEvent(new SummonEvent(player, card, position));
+            engine.registerCard(card);
+            engine.doEvent(new SummonEvent(player, card, position));
         }
-        public void damage(Card card, int amount)
+        public static void damage(this CardEngine engine, Card card, int amount)
         {
-            doEvent(new DamageEvent(card, new int[] { amount }));
+            engine.doEvent(new DamageEvent(card, new int[] { amount }));
         }
-        public void damage(Card[] cards, int amount)
+        public static void damage(this CardEngine engine, Card[] cards, int amount)
         {
-            doEvent(new DamageEvent(cards, cards.Select(c => { return amount; }).ToArray()));
+            engine.doEvent(new DamageEvent(cards, cards.Select(c => { return amount; }).ToArray()));
         }
-        public void damage(Card[] cards, int[] amounts)
+        public static void damage(this CardEngine engine, Card[] cards, int[] amounts)
         {
-            doEvent(new DamageEvent(cards, amounts));
+            engine.doEvent(new DamageEvent(cards, amounts));
         }
-        public void turnEnd(Player player)
+        public static void turnEnd(this CardEngine engine, Player player)
         {
-            doEvent(new TurnEndEvent(player));
+            engine.doEvent(new TurnEndEvent(player));
         }
     }
 }

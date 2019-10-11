@@ -7,6 +7,8 @@ using System.IO;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 
+using TouhouCardEngine;
+
 namespace TouhouHeartstone.Frontend.Model
 {
     public class GameModel : MonoBehaviour

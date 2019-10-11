@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using TouhouHeartstone.Frontend.Model.Witness;
 
+using TouhouCardEngine;
+
 namespace TouhouHeartstone.Frontend.Model
 {
     class EventWitnessExecutor

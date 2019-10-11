@@ -1,4 +1,6 @@
-﻿namespace TouhouHeartstone.Frontend.Model.Witness
+﻿using TouhouCardEngine;
+
+namespace TouhouHeartstone.Frontend.Model.Witness
 {
     public class OnTurnEnd : WitnessHandler
     {

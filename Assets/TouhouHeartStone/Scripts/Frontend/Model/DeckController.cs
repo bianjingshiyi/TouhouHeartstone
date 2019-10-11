@@ -8,6 +8,9 @@ using System;
 using IGensoukyo.Utilities;
 using TouhouHeartstone.Frontend.ViewModel;
 
+using TouhouCardEngine;
+using TouhouHeartstone.Backend;
+
 namespace TouhouHeartstone.Frontend.Model
 {
     /// <summary>

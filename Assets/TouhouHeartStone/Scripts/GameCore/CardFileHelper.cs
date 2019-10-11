@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
-namespace TouhouHeartstone.Backend
+using TouhouCardEngine;
+
+namespace TouhouHeartstone
 {
     public static class CardFileHelper
     {

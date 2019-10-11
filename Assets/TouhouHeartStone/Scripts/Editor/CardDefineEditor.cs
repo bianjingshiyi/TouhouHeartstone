@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace TouhouHeartstone.Backend
+using TouhouCardEngine;
+
+namespace TouhouHeartstone
 {
     class CardDefineEditorWindow : EditorWindow
     {

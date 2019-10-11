@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 
+using TouhouCardEngine;
+
 namespace TouhouHeartstone.Backend.Builtin
 {
     public class FairyTwins : ServantCardDefine

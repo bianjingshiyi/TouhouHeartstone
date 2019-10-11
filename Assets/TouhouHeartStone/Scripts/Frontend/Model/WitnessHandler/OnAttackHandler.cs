@@ -1,4 +1,5 @@
-﻿using TouhouHeartstone.Backend;
+﻿using TouhouCardEngine;
+
 namespace TouhouHeartstone.Frontend.Model.Witness
 {
     class OnAttackHandler : WitnessHandler

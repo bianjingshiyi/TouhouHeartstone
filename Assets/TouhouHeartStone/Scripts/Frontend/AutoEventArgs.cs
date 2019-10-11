@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TouhouCardEngine;
 
 namespace TouhouHeartstone.Frontend
 {

@@ -2,15 +2,17 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace TouhouHeartstone.Backend
+using TouhouCardEngine;
+
+namespace TouhouHeartstone
 {
     public class Game
     {
-        public HeartstoneCardEngine engine { get; }
+        public CardEngine engine { get; }
         Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
         public Game(IGameEnvironment env, bool shuffle = true, params CardDefine[] cards)
         {
-            engine = new HeartstoneCardEngine(env, new HeartStoneRule(env), (int)DateTime.Now.ToBinary());
+            engine = new CardEngine(env, new HeartStoneRule(env), (int)DateTime.Now.ToBinary());
             engine.setProp("shuffle", shuffle);
             engine.afterEvent += afterEvent;
         }
