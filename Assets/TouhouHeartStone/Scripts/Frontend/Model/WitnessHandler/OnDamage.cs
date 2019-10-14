@@ -1,6 +1,8 @@
 ﻿using TouhouHeartstone.Backend;
 using TouhouHeartstone.Frontend.View.Animation;
 
+using TouhouCardEngine;
+
 namespace TouhouHeartstone.Frontend.Model.Witness
 {
     public class OnDamage : WitnessHandler

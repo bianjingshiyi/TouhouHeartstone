@@ -1,4 +1,6 @@
-﻿namespace TouhouHeartstone.Frontend
+﻿using TouhouCardEngine;
+
+namespace TouhouHeartstone.Frontend
 {
     class AutoPlayerCardEventArgs : AutoEventArgs, IPlayerEventArgs, ICardEventArgs
     {

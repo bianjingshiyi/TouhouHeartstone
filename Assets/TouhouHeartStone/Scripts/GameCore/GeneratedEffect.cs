@@ -1,7 +1,9 @@
 ﻿using System;
 using Microsoft.CodeAnalysis.Scripting;
 
-namespace TouhouHeartstone.Backend
+using TouhouCardEngine;
+
+namespace TouhouHeartstone
 {
     public class GeneratedEffect : Effect
     {

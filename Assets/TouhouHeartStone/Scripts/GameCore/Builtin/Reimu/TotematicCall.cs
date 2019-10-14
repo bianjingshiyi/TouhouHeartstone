@@ -1,4 +1,6 @@
-﻿namespace TouhouHeartstone.Backend.Builtin
+﻿using TouhouCardEngine;
+
+namespace TouhouHeartstone.Backend.Builtin
 {
     public class TotematicCall : SkillCardDefine
     {

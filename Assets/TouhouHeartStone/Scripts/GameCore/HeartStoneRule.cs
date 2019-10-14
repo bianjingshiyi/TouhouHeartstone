@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 
-using TouhouHeartstone.Backend.Builtin;
+using TouhouCardEngine;
 
-namespace TouhouHeartstone.Backend
+namespace TouhouHeartstone
 {
     /// <summary>
     /// 这个炉石规则是测试用的。
@@ -79,12 +79,12 @@ namespace TouhouHeartstone.Backend
                 if (engine.getPlayers().All(p => { return p.getProp<bool>("prepared"); }))
                 {
                     //对战开始
-                    (engine as HeartstoneCardEngine).start();
+                    engine.start();
                 }
             }
             else if (e.name == "onStart")
             {
-                (engine as HeartstoneCardEngine).turnStart(sortedPlayers[0]);
+                engine.turnStart(sortedPlayers[0]);
             }
             else if (e.name == "onTurnEnd")
             {
@@ -93,7 +93,7 @@ namespace TouhouHeartstone.Backend
                 if (index >= sortedPlayers.Length)
                     index = 0;
                 Player nextPlayer = sortedPlayers[index];
-                (engine as HeartstoneCardEngine).turnStart(nextPlayer);
+                engine.turnStart(nextPlayer);
             }
         }
     }

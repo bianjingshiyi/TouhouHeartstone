@@ -1,6 +1,8 @@
 ﻿using IGensoukyo.Utilities;
 using System;
 
+using TouhouCardEngine;
+
 namespace TouhouHeartstone.Frontend.Model.Witness
 {
     public class OnInit : WitnessHandler
