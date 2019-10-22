@@ -10,10 +10,7 @@ namespace TouhouHeartstone.Backend.Builtin
 {
     public class BudFairy : ServantCardDefine
     {
-        public override int id
-        {
-            get { return 1; }
-        }
+        public override int id { get; set; } = 1;
         public override int cost
         {
             get { return 0; }

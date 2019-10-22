@@ -16,6 +16,10 @@ namespace TouhouHeartstone
             engine.setProp("shuffle", shuffle);
             engine.afterEvent += afterEvent;
         }
+        public int registerCardDefine(CardDefine define)
+        {
+            return engine.rule.pool.register(define);
+        }
         public int[] getUsableCards(int playerIndex)
         {
             return engine.getPlayerAt(playerIndex)["Hand"].Concat(engine.getPlayerAt(playerIndex)["Skill"]).

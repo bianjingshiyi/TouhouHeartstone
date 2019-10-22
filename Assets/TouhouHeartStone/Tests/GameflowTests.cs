@@ -10,6 +10,44 @@ using TouhouHeartstone;
 
 namespace Tests
 {
+    public class TestCardsTest
+    {
+        [Test]
+        public void normalServantTest()
+        {
+            //绝望了，凭什么我要为CardID头疼呀？自动分配自动分配！
+            Game game = new Game(new UnitTestGameEnv(), false);
+
+            int sd1 = game.registerCardDefine(new TestServantDefine(0, 1, 1));
+            TestFrontend[] frontends = new TestFrontend[2];
+            frontends[0] = new TestFrontend();
+            frontends[1] = new TestFrontend();
+            game.addPlayer(frontends[0], new int[] { 1000, sd1, sd1, sd1, sd1, sd1, sd1, sd1, sd1, sd1, sd1 });
+            game.addPlayer(frontends[1], new int[] { 2000, sd1, sd1, sd1, sd1, sd1, sd1, sd1, sd1, sd1, sd1 });
+            game.init();
+        }
+        class TestMasterDefine : MasterCardDefine
+        {
+        }
+        class TestServantDefine : ServantCardDefine
+        {
+            public override int cost { get; } = 0;
+            public override int attack { get; } = 1;
+            public override int life { get; } = 1;
+            public override int category { get; } = 0;
+            public override int id { get; set; } = 0;
+            public override Effect[] effects { get; } = new Effect[0];
+            public TestServantDefine(int cost, int attack, int life, int category = 0, params Effect[] effects)
+            {
+                this.cost = cost;
+                this.attack = attack;
+                this.life = life;
+                this.category = category;
+                this.id = id;
+                this.effects = effects;
+            }
+        }
+    }
     public class GameflowTests
     {
         [Test]

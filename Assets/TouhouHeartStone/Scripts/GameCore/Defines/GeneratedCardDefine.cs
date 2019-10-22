@@ -22,6 +22,7 @@ namespace TouhouHeartstone
         public override int id
         {
             get { return getProp<int>("id"); }
+            set { setProp("id", value); }
         }
         public override CardDefineType type
         {

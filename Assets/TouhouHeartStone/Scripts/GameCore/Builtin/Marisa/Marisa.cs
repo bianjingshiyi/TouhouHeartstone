@@ -8,7 +8,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get { return 1; } }
         public override int life { get { return 2; } }
         public override int category { get { return 2000; } }
-        public override int id { get { return 2002; } }
+        public override int id { get; set; } = 2002;
         public override Effect[] effects
         {
             get
@@ -22,10 +22,7 @@ namespace TouhouHeartstone.Builtin
     }
     public class Marisa : MasterCardDefine
     {
-        public override int id
-        {
-            get { return 2000; }
-        }
+        public override int id { get; set; } = 2000;
         public override int skillID
         {
             get { return 2001; }

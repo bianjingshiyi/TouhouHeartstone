@@ -4,10 +4,7 @@ namespace TouhouHeartstone.Builtin
 {
     public class Reimu : MasterCardDefine
     {
-        public override int id
-        {
-            get { return 1000; }
-        }
+        public override int id { get; set; } = 1000;
         public override int skillID
         {
             get { return 1001; }

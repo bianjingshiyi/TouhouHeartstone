@@ -16,10 +16,7 @@ namespace TouhouHeartstone.Backend.Builtin
                 "engine.createToken(player, card.define, player[\"Field\"].indexOf(card) + 1);")
             };
         }
-        public override int id
-        {
-            get { return 2; }
-        }
+        public override int id { get; set; } = 2;
         public override int cost
         {
             get { return 1; }
