@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
 
 using TouhouCardEngine;
 
@@ -28,10 +27,6 @@ namespace TouhouHeartstone.Backend.Builtin
         public override int life
         {
             get { return 1; }
-        }
-        public override int category
-        {
-            get { return 2; }
         }
         public override Effect[] effects { get; }
     }

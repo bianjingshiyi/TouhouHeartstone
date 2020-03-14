@@ -86,38 +86,10 @@ namespace TouhouHeartstone
         //    }
         //    return charList.ToArray();
         //}
-        public static void setMaxGem(this CardEngine engine, Player player, int value)
-        {
-            engine.doEvent(new MaxGemChangeEvent(player, value));
-        }
-        public static void setGem(this CardEngine engine, Player player, int value)
-        {
-            engine.doEvent(new GemChangeEvent(player, value));
-        }
-        public static void draw(this CardEngine engine, Player player)
-        {
-            if (player["Deck"].count > 0)
-            {
-                if (player["Hand"].count > 9)
-                    engine.burn(player, player["Deck"].top);
-                else
-                    engine.doEvent(new DrawEvent(player));
-            }
-            else
-                engine.doEvent(new TiredEvent(player));
-        }
-        public static void burn(this CardEngine engine, Player player, Card card)
-        {
-            engine.doEvent(new BurnEvent(player, card));
-        }
         //public static void summon(this CardEngine engine, Player player, CardDefine define, int position = -1)
         //{
         //    engine.summon(player, new Card(define), position < 0 ? player["Field"].count : position);
         //}
-        public static void summon(this CardEngine engine, Player player, Card card, int position = -1)
-        {
-            engine.doEvent(new SummonEvent(player, card, position < 0 ? player["Field"].count : position));
-        }
         //public static void createToken(this CardEngine engine, Player player, CardDefine define, int position)
         //{
         //    Card card = new Card(define);
@@ -135,10 +107,6 @@ namespace TouhouHeartstone
         public static void damage(this CardEngine engine, Card[] cards, int[] amounts)
         {
             engine.doEvent(new DamageEvent(cards, amounts));
-        }
-        public static void turnEnd(this CardEngine engine, Player player)
-        {
-            engine.doEvent(new TurnEndEvent(player));
         }
     }
 }

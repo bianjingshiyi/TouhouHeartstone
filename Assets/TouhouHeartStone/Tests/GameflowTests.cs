@@ -4,9 +4,11 @@ using System.Threading;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-
+using System.Linq;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
+using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -15,187 +17,168 @@ namespace Tests
         [Test]
         public void initTest()
         {
-            Game game = new Game(new UnitTestGameEnv());
-            TestFrontend[] frontends = new TestFrontend[2];
-            frontends[0] = new TestFrontend();
-            frontends[1] = new TestFrontend();
-            game.addPlayer(frontends[0], new int[] { 1000, 1, 1, 1, 1, 1 });
-            game.addPlayer(frontends[1], new int[] { 2000, 1, 1, 1, 1, 1 });
+            TaskExceptionHandler.register();
+            THHGame game = new THHGame(new TestMaster(), new TestSkill(), new TestServant())
+            {
+                triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>()
+            };
+            game.createPlayer("玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
+            game.createPlayer("玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
+            List<IEventArg> eventList = new List<IEventArg>();
+            game.triggers.onEventAfter += arg =>
+            {
+                eventList.Add(arg);
+            };
+
             game.init();
 
-            Assert.AreEqual(1, frontends[0].witnessList.Count);
-            EventWitness witness = frontends[0].witnessList[0];
-            Assert.AreEqual("onInit", witness.eventName);
-            Assert.AreEqual(1000, witness.getVar<int[]>("masterCardsDID")[0]);
-            Assert.AreEqual(2000, witness.getVar<int[]>("masterCardsDID")[1]);
-            Assert.AreEqual(2, witness.getVar<int[]>("sortedPlayersIndex").Length);
-            bool isFirstPlayer = witness.getVar<int[]>("sortedPlayersIndex")[0] == 0;
-            Assert.AreEqual(2, witness.getVar<int[][]>("initCardsRID").Length);
-            Assert.AreEqual(isFirstPlayer ? 3 : 4, witness.getVar<int[][]>("initCardsRID")[0].Length);
-            Assert.AreEqual(isFirstPlayer ? 3 : 4, witness.getVar<int[]>("initCardsDID").Length);
-            Assert.AreEqual(isFirstPlayer ? 2 : 1, witness.getVar<int[]>("deck").Length);
-            Assert.AreEqual(1, frontends[1].witnessList.Count);
-            witness = frontends[1].witnessList[0];
-            Assert.AreEqual("onInit", witness.eventName);
-            Assert.AreEqual(1000, witness.getVar<int[]>("masterCardsDID")[0]);
-            Assert.AreEqual(2000, witness.getVar<int[]>("masterCardsDID")[1]);
-            Assert.AreEqual(2, witness.getVar<int[]>("sortedPlayersIndex").Length);
-            isFirstPlayer = witness.getVar<int[]>("sortedPlayersIndex")[0] == 1;
-            Assert.AreEqual(2, witness.getVar<int[][]>("initCardsRID").Length);
-            Assert.AreEqual(isFirstPlayer ? 3 : 4, witness.getVar<int[][]>("initCardsRID")[1].Length);
-            Assert.AreEqual(isFirstPlayer ? 3 : 4, witness.getVar<int[]>("initCardsDID").Length);
-            Assert.AreEqual(isFirstPlayer ? 2 : 1, witness.getVar<int[]>("deck").Length);
+            Assert.AreEqual(1, eventList.Count);
+            THHGame.InitEventArg initEvent = eventList[0] as THHGame.InitEventArg;
+            Assert.IsInstanceOf<THHGame.InitEventArg>(eventList[0]);
+            Assert.AreEqual(TestMaster.ID, game.players[0].master.define.id);
+            Assert.AreEqual(30, game.players[0].master.getLife());
+            Assert.AreEqual(TestMaster.ID, game.players[1].master.define.id);
+            Assert.AreEqual(30, game.players[1].master.getLife());
+            Assert.AreEqual(2, game.sortedPlayers.Length);
+            bool isFirstPlayer = game.getPlayerIndex(game.sortedPlayers[0]) == 0;
+            Assert.AreEqual(isFirstPlayer ? 3 : 4, game.players[0].init.count);
+            Assert.AreEqual(isFirstPlayer ? 4 : 3, game.players[1].init.count);
         }
         [Test]
         public void initReplaceTest()
         {
-            Game game = new Game(new UnitTestGameEnv());
-            TestFrontend[] frontends = new TestFrontend[2];
-            frontends[0] = new TestFrontend();
-            frontends[1] = new TestFrontend();
-            game.addPlayer(frontends[0], new int[] { 1000, 1, 1, 1, 1, 1 });
-            game.addPlayer(frontends[1], new int[] { 2000, 1, 1, 1, 1, 1 });
+            TaskExceptionHandler.register();
+            THHGame game = new THHGame(new TestMaster(), new TestSkill(), new TestServant())
+            {
+                triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>()
+            };
+            game.createPlayer("玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
+            game.createPlayer("玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
+            List<IEventArg> eventList = new List<IEventArg>();
+            game.triggers.onEventAfter += arg =>
+            {
+                eventList.Add(arg);
+            };
+
             game.init();
-            int p0c0 = frontends[0].witnessList[0].getVar<int[][]>("initCardsRID")[0][0];
-            game.initReplace(0, new int[] { p0c0 });
-            int p1c0 = frontends[1].witnessList[0].getVar<int[][]>("initCardsRID")[1][0];
-            int p1c1 = frontends[1].witnessList[0].getVar<int[][]>("initCardsRID")[1][1];
-            game.initReplace(1, new int[] { p1c0, p1c1 });
-
-            Assert.AreEqual(5, frontends[0].witnessList.Count);
-            EventWitness witness = frontends[0].witnessList[1];
-            Assert.AreEqual("onInitReplace", witness.eventName);
-            Assert.AreEqual(0, witness.getVar<int>("playerIndex"));
-            Assert.AreEqual(1, witness.getVar<int[]>("replacedCardsRID").Length);
-            witness = frontends[0].witnessList[2];
-            Assert.AreEqual("onInitReplace", witness.eventName);
-            Assert.AreEqual(1, witness.getVar<int>("playerIndex"));
-            Assert.AreEqual(2, witness.getVar<int[]>("replacedCardsRID").Length);
-            witness = frontends[0].witnessList[3];
-            Assert.AreEqual("onStart", witness.eventName);
+            _ = game.players[0].initReplace(game, game.players[0].init[0]);
+            _ = game.players[1].initReplace(game, game.players[1].init[0, 1]);
+            //替换手牌
+            Assert.AreEqual(8, game.triggers.getRecordedEvents().Length);
+            THHPlayer.InitReplaceEventArg initReplace = game.triggers.getRecordedEvents()[1] as THHPlayer.InitReplaceEventArg;
+            Assert.NotNull(initReplace);
+            Assert.AreEqual(game.players[0], initReplace.player);
+            Assert.AreEqual(1, initReplace.replacedCards.Length);
+            initReplace = game.triggers.getRecordedEvents()[2] as THHPlayer.InitReplaceEventArg;
+            Assert.NotNull(initReplace);
+            Assert.AreEqual(game.players[1], initReplace.player);
+            Assert.AreEqual(2, initReplace.replacedCards.Length);
+            //游戏开始
+            THHGame.StartEventArg start = game.triggers.getRecordedEvents()[3] as THHGame.StartEventArg;
+            Assert.NotNull(start);
             //玩家回合开始
-            witness = frontends[0].witnessList[4];
-            Assert.AreEqual("onTurnStart", witness.eventName);
-            int firstPlayerIndex = frontends[0].witnessList[0].getVar<int[]>("sortedPlayersIndex")[0];
-            Assert.AreEqual(firstPlayerIndex, witness.getVar<int>("playerIndex"));
+            THHGame.TurnStartEventArg turnStart = game.triggers.getRecordedEvents()[4] as THHGame.TurnStartEventArg;
+            Assert.NotNull(turnStart);
+            Assert.AreEqual(game.sortedPlayers[0], turnStart.player);
             //增加法力水晶并充满
-            Assert.AreEqual("onMaxGemChange", witness.child[0].eventName);
-            Assert.AreEqual(1, witness.child[0].getVar<int>("value"));
-            Assert.AreEqual("onGemChange", witness.child[1].eventName);
-            Assert.AreEqual(1, witness.child[1].getVar<int>("value"));
+            THHPlayer.SetMaxGemEventArg setMaxGem = game.triggers.getRecordedEvents()[5] as THHPlayer.SetMaxGemEventArg;
+            Assert.NotNull(setMaxGem);
+            Assert.AreEqual(1, setMaxGem.value);
+            THHPlayer.SetGemEventArg setGem = game.triggers.getRecordedEvents()[6] as THHPlayer.SetGemEventArg;
+            Assert.NotNull(setGem);
+            Assert.AreEqual(1, setGem.value);
             //抽一张卡
-            Assert.AreEqual("onDraw", witness.child[2].eventName);
-            Assert.AreEqual(firstPlayerIndex, witness.child[2].getVar<int>("playerIndex"));
-
-            Assert.AreEqual(5, frontends[1].witnessList.Count);
-            witness = frontends[1].witnessList[1];
-            Assert.AreEqual("onInitReplace", witness.eventName);
-            Assert.AreEqual(0, witness.getVar<int>("playerIndex"));
-            Assert.AreEqual(1, witness.getVar<int[]>("replacedCardsRID").Length);
-            witness = frontends[1].witnessList[2];
-            Assert.AreEqual("onInitReplace", witness.eventName);
-            Assert.AreEqual(1, witness.getVar<int>("playerIndex"));
-            Assert.AreEqual(2, witness.getVar<int[]>("replacedCardsRID").Length);
-            witness = frontends[1].witnessList[3];
-            Assert.AreEqual("onStart", witness.eventName);
-            //玩家回合开始
-            witness = frontends[1].witnessList[4];
-            Assert.AreEqual("onTurnStart", witness.eventName);
-            Assert.AreEqual(firstPlayerIndex, witness.getVar<int>("playerIndex"));
-            //增加法力水晶并充满
-            Assert.AreEqual("onMaxGemChange", witness.child[0].eventName);
-            Assert.AreEqual(1, witness.child[0].getVar<int>("value"));
-            Assert.AreEqual("onGemChange", witness.child[1].eventName);
-            Assert.AreEqual(1, witness.child[1].getVar<int>("value"));
-            //抽一张卡
-            Assert.AreEqual("onDraw", witness.child[2].eventName);
-            Assert.AreEqual(firstPlayerIndex, witness.child[2].getVar<int>("playerIndex"));
+            THHPlayer.DrawEventArg draw = game.triggers.getRecordedEvents()[7] as THHPlayer.DrawEventArg;
+            Assert.NotNull(draw);
+            Assert.AreEqual(game.sortedPlayers[0], draw.player);
         }
         [Test]
         public void useTest()
         {
-            Game game = new Game(new UnitTestGameEnv());
-            TestFrontend[] frontends = new TestFrontend[2];
-            frontends[0] = new TestFrontend();
-            frontends[1] = new TestFrontend();
-            game.addPlayer(frontends[0], new int[] { 1000, 1, 1, 1, 1, 1 });
-            game.addPlayer(frontends[1], new int[] { 2000, 1, 1, 1, 1, 1 });
+            TaskExceptionHandler.register();
+            THHGame game = new THHGame(new TestMaster(), new TestSkill(), new TestServant())
+            {
+                triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>()
+            };
+            game.createPlayer("玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
+            game.createPlayer("玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
+            List<IEventArg> eventList = new List<IEventArg>();
+            game.triggers.onEventAfter += arg =>
+            {
+                eventList.Add(arg);
+            };
+
             game.init();
-            int firstPlayerIndex = frontends[0].witnessList[0].getVar<int[]>("sortedPlayersIndex")[0];
-            game.initReplace(0, new int[0]);
-            game.initReplace(1, new int[0]);
-            int p0c0 = frontends[0].witnessList[0].getVar<int[][]>("initCardsRID")[firstPlayerIndex][0];
-            game.use(firstPlayerIndex, p0c0, 0, new int[0]);
+            _ = game.players[0].initReplace(game);
+            _ = game.players[1].initReplace(game);
+            _ = game.sortedPlayers[0].tryUse(game, game.sortedPlayers[0].hand[0], 0);
 
-            EventWitness witness = frontends[0].witnessList.Find(e => { return e.eventName == "onUse"; });
-            Assert.IsNotNull(witness);
-            Assert.AreEqual(firstPlayerIndex, witness.getVar<int>("playerIndex"));
-            Assert.AreEqual(p0c0, witness.getVar<int>("cardRID"));
-            Assert.AreEqual(1, witness.getVar<int>("cardDID"));
-            Assert.AreEqual(0, witness.getVar<int>("targetPosition"));
-            Assert.AreEqual(0, witness.getVar<int[]>("targetCardsRID").Length);
-            Assert.AreEqual("onGemChange", witness.child[0].eventName);
-            Assert.AreEqual(1, witness.child[0].getVar<int>("value"));
-            Assert.AreEqual("onSummon", witness.child[1].eventName);
-            Assert.AreEqual(firstPlayerIndex, witness.child[1].getVar<int>("playerIndex"));
-            Assert.AreEqual(1, witness.child[1].getVar<int>("cardDID"));
-            Assert.AreEqual(0, witness.child[1].getVar<int>("position"));
-
-            witness = frontends[1].witnessList.Find(e => { return e.eventName == "onUse"; });
-            Assert.IsNotNull(witness);
-            Assert.AreEqual(firstPlayerIndex, witness.getVar<int>("playerIndex"));
-            Assert.AreEqual(p0c0, witness.getVar<int>("cardRID"));
-            Assert.AreEqual(1, witness.getVar<int>("cardDID"));
-            Assert.AreEqual(0, witness.getVar<int>("targetPosition"));
-            Assert.AreEqual(0, witness.getVar<int[]>("targetCardsRID").Length);
-            Assert.AreEqual("onGemChange", witness.child[0].eventName);
-            Assert.AreEqual(1, witness.child[0].getVar<int>("value"));
-            Assert.AreEqual("onSummon", witness.child[1].eventName);
-            Assert.AreEqual(firstPlayerIndex, witness.child[1].getVar<int>("playerIndex"));
-            Assert.AreEqual(1, witness.child[1].getVar<int>("cardDID"));
-            Assert.AreEqual(0, witness.child[1].getVar<int>("position"));
+            THHPlayer.UseEventArg use = eventList.FirstOrDefault(e => e is THHPlayer.UseEventArg) as THHPlayer.UseEventArg;
+            Assert.NotNull(use);
+            Assert.AreEqual(game.sortedPlayers[0], use.player);
+            Assert.AreEqual(game.sortedPlayers[0].field[0], use.card);
+            Assert.AreEqual(TestServant.ID, use.card.define.id);
+            Assert.AreEqual(0, use.position);
+            Assert.AreEqual(0, use.targets.Length);
+            THHPlayer.SetGemEventArg setGem = eventList.LastOrDefault(e => e is THHPlayer.SetGemEventArg) as THHPlayer.SetGemEventArg;
+            Assert.AreEqual(0, setGem.value);
+            THHPlayer.SummonEventArg summon = eventList.LastOrDefault(e => e is THHPlayer.SummonEventArg) as THHPlayer.SummonEventArg;
+            Assert.NotNull(summon);
+            Assert.AreEqual(game.sortedPlayers[0], summon.player);
+            Assert.AreEqual(TestServant.ID, summon.card.define.id);
+            Assert.AreEqual(0, summon.position);
         }
         [Test]
         public void turnEndTest()
         {
-            Game game = new Game(new UnitTestGameEnv());
-            TestFrontend[] frontends = new TestFrontend[2];
-            frontends[0] = new TestFrontend();
-            frontends[1] = new TestFrontend();
-            game.addPlayer(frontends[0], new int[] { 1000, 1, 1, 1, 1, 1 });
-            game.addPlayer(frontends[1], new int[] { 2000, 1, 1, 1, 1, 1 });
-            game.init();
-            int firstPlayerIndex = frontends[0].witnessList[0].getVar<int[]>("sortedPlayersIndex")[0];
-            int secondPlayerIndex = frontends[0].witnessList[0].getVar<int[]>("sortedPlayersIndex")[1];
-            game.initReplace(0, new int[0]);
-            game.initReplace(1, new int[0]);
-            game.turnEnd(firstPlayerIndex);
+            TaskExceptionHandler.register();
+            THHGame game = new THHGame(new TestMaster(), new TestSkill(), new TestServant())
+            {
+                triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>()
+            };
+            game.createPlayer("玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
+            game.createPlayer("玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
+            List<IEventArg> eventList = new List<IEventArg>();
+            game.triggers.onEventAfter += arg =>
+            {
+                eventList.Add(arg);
+            };
 
-            EventWitness witness = frontends[0].witnessList.Find(e => { return e.eventName == "onTurnEnd"; });
-            Assert.IsNotNull(witness);
-            Assert.AreEqual(firstPlayerIndex, witness.getVar<int>("playerIndex"));
-            witness = frontends[0].witnessList[frontends[0].witnessList.IndexOf(witness) + 1];
-            Assert.AreEqual("onTurnStart", witness.eventName);
-            Assert.AreEqual(secondPlayerIndex, witness.getVar<int>("playerIndex"));
+            game.init();
+            _ = game.players[0].initReplace(game);
+            _ = game.players[1].initReplace(game);
+            game.turnEnd(game.sortedPlayers[0]);
+
+            THHGame.TurnEndEventArg turnEnd = eventList.LastOrDefault(e => e is THHGame.TurnEndEventArg) as THHGame.TurnEndEventArg;
+            Assert.NotNull(turnEnd);
+            Assert.AreEqual(game.sortedPlayers[0], turnEnd.player);
+            THHGame.TurnStartEventArg turnStart = eventList.LastOrDefault(e => e is THHGame.TurnStartEventArg) as THHGame.TurnStartEventArg;
+            Assert.NotNull(turnStart);
+            Assert.AreEqual(game.sortedPlayers[1], turnStart.player);
         }
         [Test]
         public void burnTest()
         {
-            Game game = new Game(new UnitTestGameEnv());
-            TestFrontend[] frontends = new TestFrontend[2];
-            frontends[0] = new TestFrontend();
-            frontends[1] = new TestFrontend();
-            game.addPlayer(frontends[0], new int[] { 1000, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
-            game.addPlayer(frontends[1], new int[] { 2000, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
+            TaskExceptionHandler.register();
+            THHGame game = new THHGame(new TestMaster(), new TestSkill(), new TestServant())
+            {
+                triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>()
+            };
+            game.createPlayer("玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
+            game.createPlayer("玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
+            List<IEventArg> eventList = new List<IEventArg>();
+            game.triggers.onEventAfter += arg =>
+            {
+                eventList.Add(arg);
+            };
+
             game.init();
-            int firstPlayerIndex = frontends[0].witnessList[0].getVar<int[]>("sortedPlayersIndex")[0];
-            int secondPlayerIndex = frontends[0].witnessList[0].getVar<int[]>("sortedPlayersIndex")[1];
-            game.initReplace(0, new int[0]);
-            game.initReplace(1, new int[0]);
+            _ = game.players[0].initReplace(game);
+            _ = game.players[1].initReplace(game);
             for (int i = 0; i < 7; i++)
             {
-                game.turnEnd(firstPlayerIndex);
-                game.turnEnd(secondPlayerIndex);
+                game.turnEnd(game.sortedPlayers[0]);
+                game.turnEnd(game.sortedPlayers[1]);
             }
 
             EventWitness witness = frontends[0].witnessList[frontends[0].witnessList.Count - 1].child[2];
@@ -207,7 +190,7 @@ namespace Tests
         [Test]
         public void tiredTest()
         {
-            Game game = new Game(new UnitTestGameEnv());
+            THHGame game = new THHGame(new UnitTestGameEnv());
             TestFrontend[] frontends = new TestFrontend[2];
             frontends[0] = new TestFrontend();
             frontends[1] = new TestFrontend();
@@ -234,7 +217,7 @@ namespace Tests
         [Test]
         public void attackTest()
         {
-            Game game = new Game(new UnitTestGameEnv());
+            THHGame game = new THHGame(new UnitTestGameEnv());
             TestFrontend[] frontends = new TestFrontend[2];
             frontends[0] = new TestFrontend();
             frontends[1] = new TestFrontend();
@@ -271,7 +254,7 @@ namespace Tests
         [Test]
         public void winTest()
         {
-            Game game = new Game(new UnitTestGameEnv());
+            THHGame game = new THHGame(new UnitTestGameEnv());
             TestFrontend[] frontends = new TestFrontend[2];
             frontends[0] = new TestFrontend();
             frontends[1] = new TestFrontend();
@@ -303,5 +286,54 @@ namespace Tests
             Assert.AreEqual(1, witness.getVar<int[]>("winnerPlayersIndex").Length);
             Assert.AreEqual(firstPlayerIndex, witness.getVar<int[]>("winnerPlayersIndex")[0]);
         }
+    }
+    static class TaskExceptionHandler
+    {
+        static bool registered { get; set; } = false;
+        public static void register()
+        {
+            if (!registered)
+            {
+                TaskScheduler.UnobservedTaskException += (sender, obj) =>
+                {
+                    if (obj.Exception.InnerExceptions != null && obj.Exception.InnerExceptions.Count > 1)
+                    {
+                        foreach (var exception in obj.Exception.InnerExceptions)
+                        {
+                            Debug.LogError(exception);
+                        }
+                    }
+                    else if (obj.Exception.InnerException != null)
+                        Debug.LogError(obj.Exception.InnerException);
+                    else
+                        Debug.LogError(obj.Exception);
+                    obj.SetObserved();
+                };
+                registered = true;
+            }
+        }
+    }
+    class TestMaster : MasterCardDefine
+    {
+        public const int ID = 0x00100000;
+        public override int id { get; set; } = ID;
+        public override int skillID { get; } = TestSkill.ID;
+        public override Effect[] effects { get; } = new Effect[0];
+    }
+    class TestSkill : SkillCardDefine
+    {
+        public const int ID = 0x00110000;
+        public override int id { get; set; } = ID;
+        public override int cost { get; } = 2;
+        public override Effect[] effects { get; } = new Effect[0];
+    }
+    class TestServant : ServantCardDefine
+    {
+        public const int ID = 0x00110001;
+        public override int id { get; set; } = ID;
+        public override int cost { get; } = 1;
+        public override int attack { get; } = 2;
+        public override int life { get; } = 2;
+        public override Effect[] effects { get; } = new Effect[0];
     }
 }

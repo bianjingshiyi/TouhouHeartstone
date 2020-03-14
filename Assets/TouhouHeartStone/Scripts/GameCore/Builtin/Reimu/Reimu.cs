@@ -9,10 +9,6 @@ namespace TouhouHeartstone.Builtin
         {
             get { return 1001; }
         }
-        public override int category
-        {
-            get { return 1000; }
-        }
         public override Effect[] effects { get; } = new Effect[0];
     }
 }

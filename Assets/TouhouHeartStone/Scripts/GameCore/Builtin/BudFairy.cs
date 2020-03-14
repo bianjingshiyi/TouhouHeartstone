@@ -23,10 +23,6 @@ namespace TouhouHeartstone.Backend.Builtin
         {
             get { return 1; }
         }
-        public override int category
-        {
-            get { return 2; }
-        }
         public override Effect[] effects { get; }
     }
 }
