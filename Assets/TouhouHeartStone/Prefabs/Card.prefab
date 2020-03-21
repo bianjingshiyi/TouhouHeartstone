@@ -687,6 +687,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5953344439004416454}
   - component: {fileID: 1275909309033477684}
+  - component: {fileID: 1195777761491610246}
   m_Layer: 5
   m_Name: Card
   m_TagString: Untagged
@@ -729,6 +730,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AspectMode: 2
   m_AspectRatio: 0.6809422
+--- !u!114 &1195777761491610246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5953344439004416449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06d38b045a3394a49a33a117a4378554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ui: {fileID: 0}
+  _initStates: []
+  _CardBackImage: {fileID: 525013306416142025}
+  _CardFaceImage: {fileID: 5128425384752950024}
+  _CostImage: {fileID: 5097161601411480962}
+  _Text: {fileID: 4007178058542726368}
+  _Mask: {fileID: 4413013968147032452}
+  _Image: {fileID: 6724395705441483877}
+  _NameImage: {fileID: 2474701039403046571}
+  _NameText: {fileID: 5938416541120205926}
+  _DescImage: {fileID: 6139174855355914367}
+  _DescText: {fileID: 3032609579816535311}
+  _AttackImage: {fileID: 4330351273059460096}
+  _Attack_Text: {fileID: 1047749266610431877}
+  _LifeImage: {fileID: 3150914282767060518}
+  _Life_Text: {fileID: 5432785901372521821}
 --- !u!1 &6035748399700320819
 GameObject:
   m_ObjectHideFlags: 0

@@ -104,8 +104,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7552501258077180534}
   - component: {fileID: 7552501258077180533}
+  - component: {fileID: 7019960628220374399}
   m_Layer: 5
-  m_Name: Master_Self
+  m_Name: Master
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -148,6 +149,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _board: {fileID: 0}
+--- !u!114 &7019960628220374399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7552501258077180535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 267b25be52242064a8c54433a9c97b60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ui: {fileID: 0}
+  _initStates: []
+  _Mask: {fileID: 7552501258627038251}
+  _Image: {fileID: 7552501258534462119}
+  _FrameImage: {fileID: 7552501258643873164}
+  _AtkImage: {fileID: 7552501258647209238}
+  _AtkText: {fileID: 7552501259284052182}
+  _HpImage: {fileID: 7552501258202321409}
+  _HpText: {fileID: 7552501257686591094}
+  _ArmorImage: {fileID: 7552501259074735385}
+  _DefenceText: {fileID: 7552501259472621982}
 --- !u!1 &7552501258202321411
 GameObject:
   m_ObjectHideFlags: 0
@@ -648,7 +672,7 @@ GameObject:
   - component: {fileID: 7552501259284052182}
   - component: {fileID: 7552501259284052183}
   m_Layer: 5
-  m_Name: AtkText
+  m_Name: AttackText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

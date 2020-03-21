@@ -246,7 +246,7 @@ GameObject:
   - component: {fileID: 434557654365780059}
   - component: {fileID: 434557654365780058}
   m_Layer: 5
-  m_Name: AtkText
+  m_Name: CostText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -320,6 +320,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 434557654737351543}
+  - component: {fileID: 2243096023947547386}
   m_Layer: 5
   m_Name: Skill
   m_TagString: Untagged
@@ -349,6 +350,25 @@ RectTransform:
   m_AnchoredPosition: {x: 215, y: -102}
   m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2243096023947547386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 434557654737351542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7970f4312106a2b45b66d8a334c6b4cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ui: {fileID: 0}
+  _initStates: []
+  _Mask: {fileID: 434557652962893678}
+  _Image: {fileID: 434557653138975224}
+  _FrameImage: {fileID: 434557653808379024}
+  _CostImage: {fileID: 434557654802033961}
+  _CostText: {fileID: 0}
 --- !u!1 &434557654802033963
 GameObject:
   m_ObjectHideFlags: 0

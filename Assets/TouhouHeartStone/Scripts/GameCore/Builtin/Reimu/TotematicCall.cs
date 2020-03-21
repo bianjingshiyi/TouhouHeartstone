@@ -1,6 +1,6 @@
 ﻿using TouhouCardEngine;
 
-namespace TouhouHeartstone.Backend.Builtin
+namespace TouhouHeartstone.Builtin
 {
     public class TotematicCall : SkillCardDefine
     {

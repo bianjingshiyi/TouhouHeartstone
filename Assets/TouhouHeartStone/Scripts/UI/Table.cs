@@ -5,10 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using TouhouHeartstone;
 
-namespace TouhouHeartstone.UI
+namespace UI
 {
-    class Table : MonoBehaviour
+    partial class Table
     {
+        public void setGame(THHGame game)
+        {
+
+        }
+        protected void Update()
+        {
+            
+        }
     }
 }

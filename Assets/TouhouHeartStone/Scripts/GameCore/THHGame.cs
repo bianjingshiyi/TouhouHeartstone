@@ -136,7 +136,7 @@ namespace TouhouHeartstone
             {
                 logger.log("Debug", "游戏初始化");
                 //决定玩家行动顺序
-                if (option.sortedPlayers == null)
+                if (option.sortedPlayers == null || option.sortedPlayers.Length != players.Length)
                 {
                     List<THHPlayer> remainedList = new List<THHPlayer>(players);
                     THHPlayer[] sortedPlayers = new THHPlayer[remainedList.Count];
