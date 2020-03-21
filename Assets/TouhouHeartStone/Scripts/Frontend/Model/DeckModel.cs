@@ -137,7 +137,7 @@ namespace TouhouHeartstone.Frontend.Model
                 switchPrepare(playerID, to);
             }
             UberDebug.LogDebug($"用户{playerID}替换卡牌{cards.GetString()}");
-            gm.Game.initReplace(playerID, cards);
+            //gm.Game.initReplace(playerID, cards);
         }
 
         /// <summary>

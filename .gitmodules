@@ -4,3 +4,6 @@
 [submodule "Assets/Plugins/TouhouCardEngine"]
 	path = Assets/Plugins/TouhouCardEngine
 	url = https://github.com/bianjingshiyi/TouhouCardEngine.git
+[submodule "Assets/Plugins/BJSYGameCore"]
+	path = Assets/Plugins/BJSYGameCore
+	url = https://github.com/bianjingshiyi/BJSYGameCore.git

@@ -9,6 +9,8 @@ using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using System.Threading.Tasks;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Tests
 {
@@ -17,8 +19,7 @@ namespace Tests
         [Test]
         public void initTest()
         {
-            List<IEventArg> eventList = new List<IEventArg>();
-            initStandardGame(out var game, eventList);
+            THHGame game = initStandardGame();
 
             _ = game.init();
 
@@ -32,29 +33,31 @@ namespace Tests
             bool isFirstPlayer = game.getPlayerIndex(game.sortedPlayers[0]) == 0;
             Assert.AreEqual(isFirstPlayer ? 3 : 4, game.players[0].init.count);
             Assert.AreEqual(isFirstPlayer ? 4 : 3, game.players[1].init.count);
+            game.Dispose();
         }
 
-        private static void initStandardGame(out THHGame game, List<IEventArg> eventList, int deckCount = 30)
+        private static THHGame initStandardGame(string name = null, int deckCount = 30, int[] playersId = null, GameOption option = null)
         {
             TaskExceptionHandler.register();
-            game = new THHGame(new TestMaster(), new TestSkill(), new TestServant())
+            THHGame game = new THHGame(option != null ? option : GameOption.Default, new TestMaster(), new TestSkill(), new TestServant())
             {
+                answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>(),
-                logger = new UnityLogger()
+                logger = new UnityLogger(name)
             };
-            game.createPlayer("玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), deckCount));
-            game.createPlayer("玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), deckCount));
-            game.triggers.onEventAfter += arg =>
+            if (playersId == null)
+                playersId = new int[] { 1, 2 };
+            foreach (int pid in playersId)
             {
-                eventList.Add(arg);
-            };
+                game.createPlayer(pid, "玩家" + pid, game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), deckCount));
+            }
+            return game;
         }
 
         [Test]
         public void initReplaceTest()
         {
-            List<IEventArg> eventList = new List<IEventArg>();
-            initStandardGame(out var game, eventList);
+            THHGame game = initStandardGame();
 
             _ = game.init();
             _ = game.players[0].initReplace(game, game.players[0].init[0]);
@@ -87,56 +90,75 @@ namespace Tests
             THHPlayer.DrawEventArg draw = game.triggers.getRecordedEvents()[7] as THHPlayer.DrawEventArg;
             Assert.NotNull(draw);
             Assert.AreEqual(game.sortedPlayers[0], draw.player);
+            game.Dispose();
+        }
+        [UnityTest]
+        public IEnumerator initReplaceTimeoutTest()
+        {
+            THHGame game = initStandardGame(option: new GameOption()
+            {
+                timeout = 5
+            });
+            bool isTimeout = false;
+            game.onTimeout += onTimeout;
+            void onTimeout()
+            {
+                isTimeout = true;
+            }
+            _ = game.init();
+            yield return new WaitForSeconds(5.5f);
+
+            Assert.True(isTimeout);
+            game.Dispose();
         }
         [Test]
         public void useTest()
         {
-            List<IEventArg> eventList = new List<IEventArg>();
-            initStandardGame(out var game, eventList);
+            THHGame game = initStandardGame();
 
             _ = game.init();
             _ = game.players[0].initReplace(game);
             _ = game.players[1].initReplace(game);
             _ = game.sortedPlayers[0].tryUse(game, game.sortedPlayers[0].hand[0], 0);
 
-            THHPlayer.UseEventArg use = eventList.FirstOrDefault(e => e is THHPlayer.UseEventArg) as THHPlayer.UseEventArg;
+            THHPlayer.UseEventArg use = game.triggers.getRecordedEvents().FirstOrDefault(e => e is THHPlayer.UseEventArg) as THHPlayer.UseEventArg;
             Assert.NotNull(use);
             Assert.AreEqual(game.sortedPlayers[0], use.player);
             Assert.AreEqual(game.sortedPlayers[0].field[0], use.card);
             Assert.AreEqual(TestServant.ID, use.card.define.id);
             Assert.AreEqual(0, use.position);
             Assert.AreEqual(0, use.targets.Length);
-            THHPlayer.SetGemEventArg setGem = eventList.LastOrDefault(e => e is THHPlayer.SetGemEventArg) as THHPlayer.SetGemEventArg;
+            THHPlayer.SetGemEventArg setGem = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.SetGemEventArg) as THHPlayer.SetGemEventArg;
             Assert.AreEqual(0, setGem.value);
-            THHPlayer.SummonEventArg summon = eventList.LastOrDefault(e => e is THHPlayer.SummonEventArg) as THHPlayer.SummonEventArg;
+            THHPlayer.SummonEventArg summon = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.SummonEventArg) as THHPlayer.SummonEventArg;
             Assert.NotNull(summon);
             Assert.AreEqual(game.sortedPlayers[0], summon.player);
             Assert.AreEqual(TestServant.ID, summon.card.define.id);
             Assert.AreEqual(0, summon.position);
+            game.Dispose();
         }
         [Test]
         public void turnEndTest()
         {
-            List<IEventArg> eventList = new List<IEventArg>();
-            initStandardGame(out var game, eventList);
+            THHGame game = initStandardGame();
 
             _ = game.init();
             _ = game.players[0].initReplace(game);
             _ = game.players[1].initReplace(game);
             _ = game.turnEnd(game.sortedPlayers[0]);
 
-            THHGame.TurnEndEventArg turnEnd = eventList.LastOrDefault(e => e is THHGame.TurnEndEventArg) as THHGame.TurnEndEventArg;
+            THHGame.TurnEndEventArg turnEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.TurnEndEventArg) as THHGame.TurnEndEventArg;
             Assert.NotNull(turnEnd);
             Assert.AreEqual(game.sortedPlayers[0], turnEnd.player);
-            THHGame.TurnStartEventArg turnStart = eventList.LastOrDefault(e => e is THHGame.TurnStartEventArg) as THHGame.TurnStartEventArg;
+            THHGame.TurnStartEventArg turnStart = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.TurnStartEventArg) as THHGame.TurnStartEventArg;
             Assert.NotNull(turnStart);
             Assert.AreEqual(game.sortedPlayers[1], turnStart.player);
+            game.Dispose();
         }
         [Test]
         public void burnTest()
         {
-            List<IEventArg> eventList = new List<IEventArg>();
-            initStandardGame(out var game, eventList);
+            THHGame game = initStandardGame();
 
             _ = game.init();
             _ = game.players[0].initReplace(game);
@@ -147,16 +169,16 @@ namespace Tests
                 _ = game.turnEnd(game.sortedPlayers[1]);
             }
 
-            THHPlayer.BurnEventArg burn = eventList.LastOrDefault(e => e is THHPlayer.BurnEventArg) as THHPlayer.BurnEventArg;
+            THHPlayer.BurnEventArg burn = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.BurnEventArg) as THHPlayer.BurnEventArg;
             Assert.NotNull(burn);
             Assert.AreEqual(game.sortedPlayers[0], burn.player);
             Assert.AreEqual(game.sortedPlayers[0].grave[0], burn.card);
+            game.Dispose();
         }
         [Test]
         public void fatigueTest()
         {
-            List<IEventArg> eventList = new List<IEventArg>();
-            initStandardGame(out var game, eventList, 10);
+            THHGame game = initStandardGame(deckCount: 10);
 
             _ = game.init();
             _ = game.players[0].initReplace(game);
@@ -166,19 +188,20 @@ namespace Tests
                 _ = game.turnEnd(game.sortedPlayers[0]);
                 _ = game.turnEnd(game.sortedPlayers[1]);
             }
-            THHPlayer.FatigueEventArg fatigue = eventList.LastOrDefault(e => e is THHPlayer.FatigueEventArg) as THHPlayer.FatigueEventArg;
+            THHPlayer.FatigueEventArg fatigue = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.FatigueEventArg) as THHPlayer.FatigueEventArg;
             Assert.NotNull(fatigue);
             Assert.AreEqual(game.sortedPlayers[0], fatigue.player);
-            THHCard.DamageEventArg damage = eventList.LastOrDefault(e => e is THHCard.DamageEventArg) as THHCard.DamageEventArg;
+            THHCard.DamageEventArg damage = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DamageEventArg) as THHCard.DamageEventArg;
             Assert.NotNull(damage);
             Assert.AreEqual(game.sortedPlayers[0].master, damage.cards[0]);
             Assert.AreEqual(1, damage.value);
+
+            game.Dispose();
         }
         [Test]
         public void attackTest()
         {
-            List<IEventArg> eventList = new List<IEventArg>();
-            initStandardGame(out var game, eventList, 30);
+            THHGame game = initStandardGame();
 
             _ = game.init();
             _ = game.players[0].initReplace(game);
@@ -190,7 +213,7 @@ namespace Tests
             _ = game.turnEnd(game.sortedPlayers[1]);
             _ = game.sortedPlayers[0].field[0].tryAttack(game, game.sortedPlayers[1].field[0]);
 
-            THHCard.AttackEventArg attack = eventList.LastOrDefault(e => e is THHCard.AttackEventArg) as THHCard.AttackEventArg;
+            THHCard.AttackEventArg attack = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.AttackEventArg) as THHCard.AttackEventArg;
             Assert.NotNull(attack);
             THHCard.DamageEventArg d1 = attack.children[0] as THHCard.DamageEventArg;
             Assert.NotNull(d1);
@@ -201,12 +224,13 @@ namespace Tests
             THHCard.DeathEventArg d3 = attack.children[2] as THHCard.DeathEventArg;
             Assert.NotNull(d3);
             Assert.AreEqual(2, d3.cards.Length);
+
+            game.Dispose();
         }
         [Test]
         public void winTest()
         {
-            List<IEventArg> eventList = new List<IEventArg>();
-            initStandardGame(out var game, eventList, 30);
+            THHGame game = initStandardGame();
             _ = game.init();
             _ = game.players[0].initReplace(game);
             _ = game.players[1].initReplace(game);
@@ -225,6 +249,72 @@ namespace Tests
             Assert.NotNull(death);
             THHGame.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.GameEndEventArg) as THHGame.GameEndEventArg;
             Assert.AreEqual(game.sortedPlayers[0], gameEnd.winners[0]);
+            game.Dispose();
+        }
+        [UnityTest]
+        public IEnumerator closeTest()
+        {
+            THHGame game = initStandardGame(option: new GameOption()
+            {
+                timeout = 5
+            });
+            _ = game.init();
+            bool isTimeout = false;
+            game.onTimeout += onTimeout;
+            void onTimeout()
+            {
+                isTimeout = true;
+            }
+            game.close();
+            yield return new WaitForSeconds(5.5f);
+
+            Assert.False(isTimeout);
+
+            game.close();
+        }
+        [UnityTest]
+        public IEnumerator remoteGameflowTest()
+        {
+            THHGame g1 = initStandardGame(name: "客户端0", playersId: new int[] { 0, 1 }, option: new GameOption()
+            {
+                sortedPlayers = new int[] { 0, 1 }
+            });
+            HostManager host = new GameObject(nameof(HostManager)).AddComponent<HostManager>();
+            host.logger = g1.logger;
+            host.start();
+            ClientManager c1 = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
+            c1.logger = g1.logger;
+            c1.start();
+            _ = c1.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
+            (g1.answers as AnswerManager).client = c1;
+
+            THHGame g2 = initStandardGame(name: "客户端1", playersId: new int[] { 0, 1 }, option: new GameOption()
+            {
+                sortedPlayers = new int[] { 0, 1 }
+            });
+            ClientManager c2 = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
+            c2.logger = g2.logger;
+            c2.start();
+            _ = c2.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
+            (g2.answers as AnswerManager).client = c2;
+            yield return new WaitForSeconds(.5f);
+
+            _ = g1.init();
+            _ = g2.init();
+            g1.players[0].cmdInitReplace(g1.answers, g1.players[0].init[0, 1]);
+            g2.players[1].cmdInitReplace(g2.answers);
+            yield return new WaitForSeconds(.5f);
+            g1.players[0].cmdUse(g1.answers, g1.players[0].hand[0], 0);
+            yield return new WaitForSeconds(.5f);
+            g1.players[0].cmdTurnEnd(g1.answers);
+            yield return new WaitForSeconds(.5f);
+            g2.players[1].cmdTurnEnd(g2.answers);
+            yield return new WaitForSeconds(.5f);
+            g1.players[0].cmdAttack(g1.answers, g1.players[0].field[0], g1.players[1].master);
+            yield return new WaitForSeconds(.5f);
+
+            g1.Dispose();
+            g2.Dispose();
         }
     }
     static class TaskExceptionHandler

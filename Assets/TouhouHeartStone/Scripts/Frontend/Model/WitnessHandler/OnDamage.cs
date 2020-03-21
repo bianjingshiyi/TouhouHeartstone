@@ -11,13 +11,13 @@ namespace TouhouHeartstone.Frontend.Model.Witness
 
         protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback = null)
         {
-            var wit = Utilities.CheckType<DamageWitness>(witness);
-            for (int i = 0; i < wit.cardsRID.Length; i++)
-            {
-                var card = deck.GetCardByRID(wit.cardsRID[i]);
-                card.RecvAction(new CardAnimationEventArgs("OnDamage", new IntEventArgs(-wit.amounts[i])));
-                card.CardSpec.HP -= wit.amounts[i];
-            }
+            //var wit = Utilities.CheckType<DamageWitness>(witness);
+            //for (int i = 0; i < wit.cardsRID.Length; i++)
+            //{
+            //    var card = deck.GetCardByRID(wit.cardsRID[i]);
+            //    card.RecvAction(new CardAnimationEventArgs("OnDamage", new IntEventArgs(-wit.amounts[i])));
+            //    card.CardSpec.HP -= wit.amounts[i];
+            //}
             // 这个事件不block
             return false;
         }
@@ -29,12 +29,12 @@ namespace TouhouHeartstone.Frontend.Model.Witness
 
         protected override bool witnessSuccessHandler(EventWitness witness, DeckController deck, GenericAction callback = null)
         {
-            var wit = Utilities.CheckType<DeathWitness>(witness);
-            for (int i = 0; i < wit.cardsRID.Length; i++)
-            {
-                var card = deck.GetCardByRID(wit.cardsRID[i]);
-                card.RecvAction(new CardAnimationEventArgs("OnDeath"));
-            }
+            //var wit = Utilities.CheckType<DeathWitness>(witness);
+            //for (int i = 0; i < wit.cardsRID.Length; i++)
+            //{
+            //    var card = deck.GetCardByRID(wit.cardsRID[i]);
+            //    card.RecvAction(new CardAnimationEventArgs("OnDeath"));
+            //}
             return false; // 不block
         }
     }
