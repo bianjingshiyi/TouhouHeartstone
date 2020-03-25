@@ -368,7 +368,7 @@ MonoBehaviour:
   _Image: {fileID: 434557653138975224}
   _FrameImage: {fileID: 434557653808379024}
   _CostImage: {fileID: 434557654802033961}
-  _CostText: {fileID: 0}
+  _CostText: {fileID: 434557654365780058}
 --- !u!1 &434557654802033963
 GameObject:
   m_ObjectHideFlags: 0

@@ -54,7 +54,7 @@ namespace TouhouHeartstone.Frontend.Model
             AddPlayer();
             AddPlayer();
 
-            gm.Game.init();
+            gm.Game.run();
         }
 
         /// <summary>

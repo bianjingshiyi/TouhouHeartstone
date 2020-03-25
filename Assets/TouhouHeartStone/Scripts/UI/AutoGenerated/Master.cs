@@ -33,7 +33,7 @@ namespace UI
             this._HpImage = this.transform.Find("Hp").GetComponent<Image>();
             this._HpText = this.transform.Find("Hp").Find("HpText").GetComponent<Text>();
             this._ArmorImage = this.transform.Find("Armor").GetComponent<Image>();
-            this._DefenceText = this.transform.Find("Armor").Find("DefenceText").GetComponent<Text>();
+            this._ArmorText = this.transform.Find("Armor").Find("ArmorText").GetComponent<Text>();
         }
         [SerializeField()]
         private Mask _Mask;
@@ -140,16 +140,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _DefenceText;
-        public Text DefenceText
+        private Text _ArmorText;
+        public Text ArmorText
         {
             get
             {
-                if ((this._DefenceText == null))
+                if ((this._ArmorText == null))
                 {
-                    this._DefenceText = this.transform.Find("Armor").Find("DefenceText").GetComponent<Text>();
+                    this._ArmorText = this.transform.Find("Armor").Find("ArmorText").GetComponent<Text>();
                 }
-                return this._DefenceText;
+                return this._ArmorText;
             }
         }
         partial void onAwake();

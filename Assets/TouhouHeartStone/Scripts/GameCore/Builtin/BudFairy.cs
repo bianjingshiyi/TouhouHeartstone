@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 using TouhouCardEngine;
-
-namespace TouhouHeartstone.Backend.Builtin
+using TouhouCardEngine.Interfaces;
+namespace TouhouHeartstone.Builtin
 {
     public class BudFairy : ServantCardDefine
     {
@@ -23,6 +23,6 @@ namespace TouhouHeartstone.Backend.Builtin
         {
             get { return 1; }
         }
-        public override Effect[] effects { get; }
+        public override IEffect[] effects { get; }
     }
 }

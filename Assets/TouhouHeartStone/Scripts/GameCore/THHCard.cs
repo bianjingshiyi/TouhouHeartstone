@@ -15,6 +15,14 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(nameof(ServantCardDefine.attack));
         }
+        public static int getLife(this Card card)
+        {
+            return card.getProp<int>(nameof(ServantCardDefine.life));
+        }
+        public static int getArmor(this Card card)
+        {
+            return card.getProp<int>("armor");
+        }
         public static int getCurrentLife(this Card card)
         {
             return card.getProp<int>("currentLife");
@@ -42,6 +50,22 @@ namespace TouhouHeartstone
         public static int getMaxAttackTimes(this Card card)
         {
             return 1;
+        }
+        public static bool isUsed(this Card card)
+        {
+            return card.getProp<bool>("isUsed");
+        }
+        public static void setUsed(this Card card, bool value)
+        {
+            card.setProp("isUsed", value);
+        }
+        public static bool isTaunt(this Card card)
+        {
+            return card.getProp<bool>("taunt");
+        }
+        public static void setTaunt(this Card card, bool value)
+        {
+            card.setProp("taunt", value);
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, Card target)
         {

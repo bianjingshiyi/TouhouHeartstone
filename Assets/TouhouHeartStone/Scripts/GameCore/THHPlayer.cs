@@ -35,25 +35,15 @@ namespace TouhouHeartstone
             grave = new Pile("Grave");
             pileList.Add(grave);
         }
-        public async Task initReplace(THHGame game, params Card[] cards)
+        internal async Task initReplace(THHGame game, params Card[] cards)
         {
-            if (isPrepared)
-                throw new AlreadyPreparedException(this);
             await game.triggers.doEvent(new InitReplaceEventArg() { player = this, cards = cards }, arg =>
             {
                 arg.replacedCards = arg.player.init.replaceByRandom(game, arg.cards, arg.player.deck);
-                //玩家准备完毕
-                arg.player.isPrepared = true;
                 game.logger.log(arg.player + "替换卡牌：" + string.Join("，", arg.cards.Select(c => c.ToString())) + "=>"
                     + string.Join("，", arg.replacedCards.Select(c => c.ToString())));
                 return Task.CompletedTask;
             });
-            //判断是否所有玩家都准备完毕
-            if (game.players.All(p => { return p.isPrepared; }))
-            {
-                //对战开始
-                await game.start();
-            }
         }
         public class InitReplaceEventArg : EventArg
         {
@@ -159,19 +149,27 @@ namespace TouhouHeartstone
                 if (gem < card.getCost())
                     return false;
             }
+            else if (card.define is SkillCardDefine skill)
+            {
+                if (card.isUsed())//已经用过了
+                    return false;
+                if (gem < card.getCost())//费用不够
+                    return false;
+            }
             else
             {
                 return false;//不知道是什么卡
             }
+            card.setUsed(true);
             await setGem(game, gem - card.getCost());
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>
             {
                 game.logger.log(arg.player + "使用" + arg.card);
-                if (card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.servant))
+                if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.servant))
                 {
                     //随从卡，将卡置入战场
-                    await trySummon(game, arg.player.hand, arg.card, arg.position);
-                    Effect effect = arg.card.define.getEffectOn<BattleCryEventArg>();
+                    await tryMove(game, arg.player.hand, arg.card, arg.position);
+                    IEffect effect = arg.card.define.getEffectOn<BattleCryEventArg>(game.triggers);
                     if (effect != null)
                     {
                         await game.triggers.doEvent(new BattleCryEventArg() { player = arg.player, card = arg.card, effect = effect, targets = arg.targets }, arg2 =>
@@ -179,6 +177,11 @@ namespace TouhouHeartstone
                             return arg2.effect.execute(game, arg2.player, arg2.card, new object[0], arg2.targets);
                         });
                     }
+                }
+                else if (card.define is SkillCardDefine)
+                {
+                    IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    await effect.execute(game, arg.player, arg.card, new object[0], arg.targets);
                 }
                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.spell))
                 {
@@ -202,21 +205,34 @@ namespace TouhouHeartstone
             public int position;
             public Card[] targets;
         }
+        public class ActiveEventArg : EventArg
+        {
+        }
         public class BattleCryEventArg : EventArg
         {
             public THHPlayer player;
             public Card card;
-            public Effect effect;
+            public IEffect effect;
             public Card[] targets;
         }
-        public async Task<bool> trySummon(THHGame game, Pile from, Card card, int position)
+        public async Task<bool> tryMove(THHGame game, Pile from, Card card, int position)
         {
             if (field.count >= field.maxCount)//没位置了
                 return false;
-            await game.triggers.doEvent(new SummonEventArg() { player = this, from = from, card = card, position = position }, arg =>
+            await game.triggers.doEvent(new MoveEventArg() { player = this, from = from, card = card, position = position }, arg =>
             {
-                game.logger.log(arg.player + "从" + arg.from + "召唤" + arg.card + "，位于" + arg.position);
-                arg.from.moveTo(arg.card, arg.player.field, arg.position);
+                THHPlayer player = arg.player;
+                from = arg.from;
+                card = arg.card;
+                position = arg.position;
+                if (from != null)
+                    game.logger.log(arg.player + "将" + arg.card + "从" + arg.from + "置入战场，位于" + arg.position);
+                else
+                    game.logger.log(arg.player + "将" + arg.card + "置入战场，位于" + arg.position);
+                if (from != null)
+                    from.moveTo(arg.card, arg.player.field, arg.position);
+                else
+                    player.field.insert(card, position);
                 if (card.define is ServantCardDefine servant)
                 {
                     card.setCurrentLife(servant.life);
@@ -226,39 +242,63 @@ namespace TouhouHeartstone
             });
             return true;
         }
-        public class SummonEventArg : EventArg
+        public class MoveEventArg : EventArg
         {
             public THHPlayer player;
             public Pile from;
             public Card card;
             public int position;
         }
-        #region Command
-        public void cmdInitReplace(IAnswerManager manager, params Card[] cards)
+        public async Task<bool> createToken(THHGame game, CardDefine define, int position)
         {
-            manager.unaskedAnswer(id, new InitReplaceResponse()
+            if (field.count >= field.maxCount)
+                return false;
+            await game.triggers.doEvent(new CreateTokenEventArg() { player = this, define = define, position = position }, async arg =>
+            {
+                THHPlayer player = arg.player;
+                define = arg.define;
+                position = arg.position;
+                if (field.count >= field.maxCount)
+                    return;
+                game.logger.log(player + "召唤" + define.GetType().Name + "位于" + position);
+                arg.card = game.createCard(define);
+                await tryMove(game, null, arg.card, position);
+            });
+            return true;
+        }
+        public class CreateTokenEventArg : EventArg
+        {
+            public THHPlayer player;
+            public CardDefine define;
+            public int position;
+            public Card card;
+        }
+        #region Command
+        public void cmdInitReplace(THHGame game, params Card[] cards)
+        {
+            game.answers.answer(id, new InitReplaceResponse()
             {
                 cardsId = cards.Select(c => c.id).ToArray()
             });
         }
-        public void cmdUse(IAnswerManager manager, Card card, int position, params Card[] targets)
+        public void cmdUse(THHGame game, Card card, int position, params Card[] targets)
         {
-            manager.unaskedAnswer(id, new UseResponse()
+            game.answers.answer(id, new UseResponse()
             {
                 cardId = card.id,
                 position = position,
                 targetsId = targets.Select(c => c.id).ToArray()
             });
         }
-        public void cmdTurnEnd(IAnswerManager manager)
+        public void cmdTurnEnd(THHGame game)
         {
-            manager.unaskedAnswer(id, new TurnEndResponse()
+            game.answers.answer(id, new TurnEndResponse()
             {
             });
         }
-        public void cmdAttack(IAnswerManager manager, Card card, Card target)
+        public void cmdAttack(THHGame game, Card card, Card target)
         {
-            manager.unaskedAnswer(id, new AttackResponse()
+            game.answers.answer(id, new AttackResponse()
             {
                 cardId = card.id,
                 targetId = target.id

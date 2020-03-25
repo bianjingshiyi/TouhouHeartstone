@@ -297,9 +297,9 @@ MonoBehaviour:
   _Image: {fileID: 7368762269767551752}
   _FrameImage: {fileID: 7368762270740186328}
   _AttackImage: {fileID: 7368762270283885302}
-  _Text: {fileID: 0}
+  _AttackText: {fileID: 7368762268913619491}
   _DurabilityImage: {fileID: 7368762269333698099}
-  _Durability_Text: {fileID: 0}
+  _DurabilityText: {fileID: 7368762271023128855}
 --- !u!1 &7368762269767551758
 GameObject:
   m_ObjectHideFlags: 0

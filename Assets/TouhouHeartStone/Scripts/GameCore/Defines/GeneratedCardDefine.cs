@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 using TouhouCardEngine;
-
+using TouhouCardEngine.Interfaces;
 namespace TouhouHeartstone
 {
     public class GeneratedCardDefine : CardDefine
@@ -35,7 +35,7 @@ namespace TouhouHeartstone
                 return null;
             return engine.runFunc<string>(script, new EffectGlobals() { engine = engine, player = player, card = card, targetCards = null });
         }
-        public override Effect[] effects
+        public override IEffect[] effects
         {
             get { return getProp<Effect[]>("effects"); }
         }

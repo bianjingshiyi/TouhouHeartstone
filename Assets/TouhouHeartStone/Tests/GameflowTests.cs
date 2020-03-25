@@ -12,16 +12,45 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 
+using TouhouHeartstone.Builtin;
+
 namespace Tests
 {
+    public static class TestGameflow
+    {
+        public static THHGame initStandardGame(string name = null, int deckCount = 30, int[] playersId = null, GameOption option = null)
+        {
+            return initStandardGame(name, playersId,
+                Enumerable.Repeat(new TestMaster(), 2).ToArray(),
+                Enumerable.Repeat(Enumerable.Repeat(new TestServant(), deckCount).ToArray(), 2).ToArray(),
+                option);
+        }
+        public static THHGame initStandardGame(string name, int[] playersId, MasterCardDefine[] masters, CardDefine[][] decks, GameOption option)
+        {
+            TaskExceptionHandler.register();
+            THHGame game = new THHGame(option != null ? option : GameOption.Default, BuiltinCards.getCardDefines())
+            {
+                answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
+                triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>(),
+                logger = new UnityLogger(name)
+            };
+            if (playersId == null)
+                playersId = new int[] { 1, 2 };
+            for (int i = 0; i < playersId.Length; i++)
+            {
+                game.createPlayer(playersId[i], "玩家" + playersId[i], masters[i], decks[i]);
+            }
+            return game;
+        }
+    }
     public class GameflowTests
     {
         [Test]
         public void initTest()
         {
-            THHGame game = initStandardGame();
+            THHGame game = TestGameflow.initStandardGame();
 
-            _ = game.init();
+            _ = game.run();
 
             THHGame.InitEventArg init = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.InitEventArg) as THHGame.InitEventArg;
             Assert.NotNull(init);
@@ -35,33 +64,14 @@ namespace Tests
             Assert.AreEqual(isFirstPlayer ? 4 : 3, game.players[1].init.count);
             game.Dispose();
         }
-
-        private static THHGame initStandardGame(string name = null, int deckCount = 30, int[] playersId = null, GameOption option = null)
-        {
-            TaskExceptionHandler.register();
-            THHGame game = new THHGame(option != null ? option : GameOption.Default, new TestMaster(), new TestSkill(), new TestServant())
-            {
-                answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
-                triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>(),
-                logger = new UnityLogger(name)
-            };
-            if (playersId == null)
-                playersId = new int[] { 1, 2 };
-            foreach (int pid in playersId)
-            {
-                game.createPlayer(pid, "玩家" + pid, game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), deckCount));
-            }
-            return game;
-        }
-
         [Test]
         public void initReplaceTest()
         {
-            THHGame game = initStandardGame();
+            THHGame game = TestGameflow.initStandardGame();
 
-            _ = game.init();
-            _ = game.players[0].initReplace(game, game.players[0].init[0]);
-            _ = game.players[1].initReplace(game, game.players[1].init[0, 1]);
+            _ = game.run();
+            game.players[0].cmdInitReplace(game, game.players[0].init[0]);
+            game.players[1].cmdInitReplace(game, game.players[1].init[0, 1]);
             //替换手牌
             Assert.AreEqual(8, game.triggers.getRecordedEvents().Length);
             THHPlayer.InitReplaceEventArg initReplace = game.triggers.getRecordedEvents()[1] as THHPlayer.InitReplaceEventArg;
@@ -92,34 +102,15 @@ namespace Tests
             Assert.AreEqual(game.sortedPlayers[0], draw.player);
             game.Dispose();
         }
-        [UnityTest]
-        public IEnumerator initReplaceTimeoutTest()
-        {
-            THHGame game = initStandardGame(option: new GameOption()
-            {
-                timeout = 5
-            });
-            bool isTimeout = false;
-            game.onTimeout += onTimeout;
-            void onTimeout()
-            {
-                isTimeout = true;
-            }
-            _ = game.init();
-            yield return new WaitForSeconds(5.5f);
-
-            Assert.True(isTimeout);
-            game.Dispose();
-        }
         [Test]
         public void useTest()
         {
-            THHGame game = initStandardGame();
+            THHGame game = TestGameflow.initStandardGame();
 
-            _ = game.init();
-            _ = game.players[0].initReplace(game);
-            _ = game.players[1].initReplace(game);
-            _ = game.sortedPlayers[0].tryUse(game, game.sortedPlayers[0].hand[0], 0);
+            _ = game.run();
+            game.players[0].cmdInitReplace(game);
+            game.players[1].cmdInitReplace(game);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
 
             THHPlayer.UseEventArg use = game.triggers.getRecordedEvents().FirstOrDefault(e => e is THHPlayer.UseEventArg) as THHPlayer.UseEventArg;
             Assert.NotNull(use);
@@ -130,7 +121,7 @@ namespace Tests
             Assert.AreEqual(0, use.targets.Length);
             THHPlayer.SetGemEventArg setGem = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.SetGemEventArg) as THHPlayer.SetGemEventArg;
             Assert.AreEqual(0, setGem.value);
-            THHPlayer.SummonEventArg summon = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.SummonEventArg) as THHPlayer.SummonEventArg;
+            THHPlayer.MoveEventArg summon = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.MoveEventArg) as THHPlayer.MoveEventArg;
             Assert.NotNull(summon);
             Assert.AreEqual(game.sortedPlayers[0], summon.player);
             Assert.AreEqual(TestServant.ID, summon.card.define.id);
@@ -140,12 +131,12 @@ namespace Tests
         [Test]
         public void turnEndTest()
         {
-            THHGame game = initStandardGame();
+            THHGame game = TestGameflow.initStandardGame();
 
-            _ = game.init();
-            _ = game.players[0].initReplace(game);
-            _ = game.players[1].initReplace(game);
-            _ = game.turnEnd(game.sortedPlayers[0]);
+            _ = game.run();
+            game.players[0].cmdInitReplace(game);
+            game.players[1].cmdInitReplace(game);
+            game.sortedPlayers[0].cmdTurnEnd(game);
 
             THHGame.TurnEndEventArg turnEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.TurnEndEventArg) as THHGame.TurnEndEventArg;
             Assert.NotNull(turnEnd);
@@ -158,15 +149,15 @@ namespace Tests
         [Test]
         public void burnTest()
         {
-            THHGame game = initStandardGame();
+            THHGame game = TestGameflow.initStandardGame();
 
-            _ = game.init();
-            _ = game.players[0].initReplace(game);
-            _ = game.players[1].initReplace(game);
+            _ = game.run();
+            game.players[0].cmdInitReplace(game);
+            game.players[1].cmdInitReplace(game);
             for (int i = 0; i < 7; i++)
             {
-                _ = game.turnEnd(game.sortedPlayers[0]);
-                _ = game.turnEnd(game.sortedPlayers[1]);
+                game.sortedPlayers[0].cmdTurnEnd(game);
+                game.sortedPlayers[1].cmdTurnEnd(game);
             }
 
             THHPlayer.BurnEventArg burn = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.BurnEventArg) as THHPlayer.BurnEventArg;
@@ -178,15 +169,15 @@ namespace Tests
         [Test]
         public void fatigueTest()
         {
-            THHGame game = initStandardGame(deckCount: 10);
+            THHGame game = TestGameflow.initStandardGame(deckCount: 10);
 
-            _ = game.init();
-            _ = game.players[0].initReplace(game);
-            _ = game.players[1].initReplace(game);
+            _ = game.run();
+            game.players[0].cmdInitReplace(game);
+            game.players[1].cmdInitReplace(game);
             for (int i = 0; i < 7; i++)
             {
-                _ = game.turnEnd(game.sortedPlayers[0]);
-                _ = game.turnEnd(game.sortedPlayers[1]);
+                game.sortedPlayers[0].cmdTurnEnd(game);
+                game.sortedPlayers[1].cmdTurnEnd(game);
             }
             THHPlayer.FatigueEventArg fatigue = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.FatigueEventArg) as THHPlayer.FatigueEventArg;
             Assert.NotNull(fatigue);
@@ -201,17 +192,17 @@ namespace Tests
         [Test]
         public void attackTest()
         {
-            THHGame game = initStandardGame();
+            THHGame game = TestGameflow.initStandardGame();
 
-            _ = game.init();
-            _ = game.players[0].initReplace(game);
-            _ = game.players[1].initReplace(game);
+            _ = game.run();
+            game.players[0].cmdInitReplace(game);
+            game.players[1].cmdInitReplace(game);
 
-            _ = game.sortedPlayers[0].tryUse(game, game.sortedPlayers[0].hand[0], 0);
-            _ = game.turnEnd(game.sortedPlayers[0]);
-            _ = game.sortedPlayers[1].tryUse(game, game.sortedPlayers[1].hand[0], 0);
-            _ = game.turnEnd(game.sortedPlayers[1]);
-            _ = game.sortedPlayers[0].field[0].tryAttack(game, game.sortedPlayers[1].field[0]);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 0);
+            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].field[0]);
 
             THHCard.AttackEventArg attack = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.AttackEventArg) as THHCard.AttackEventArg;
             Assert.NotNull(attack);
@@ -230,16 +221,16 @@ namespace Tests
         [Test]
         public void winTest()
         {
-            THHGame game = initStandardGame();
-            _ = game.init();
-            _ = game.players[0].initReplace(game);
-            _ = game.players[1].initReplace(game);
-            _ = game.sortedPlayers[0].tryUse(game, game.sortedPlayers[0].hand[0], 0);
+            THHGame game = TestGameflow.initStandardGame();
+            _ = game.run();
+            game.players[0].cmdInitReplace(game);
+            game.players[1].cmdInitReplace(game);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
             for (int i = 0; i < 15; i++)
             {
-                _ = game.turnEnd(game.sortedPlayers[0]);
-                _ = game.turnEnd(game.sortedPlayers[1]);
-                _ = game.sortedPlayers[0].field[0].tryAttack(game, game.sortedPlayers[1].master);
+                game.sortedPlayers[0].cmdTurnEnd(game);
+                game.sortedPlayers[1].cmdTurnEnd(game);
+                game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].master);
             }
             THHCard.AttackEventArg attack = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.AttackEventArg) as THHCard.AttackEventArg;
             Assert.NotNull(attack);
@@ -254,28 +245,20 @@ namespace Tests
         [UnityTest]
         public IEnumerator closeTest()
         {
-            THHGame game = initStandardGame(option: new GameOption()
+            THHGame game = TestGameflow.initStandardGame(option: new GameOption()
             {
                 timeout = 5
             });
-            _ = game.init();
-            bool isTimeout = false;
-            game.onTimeout += onTimeout;
-            void onTimeout()
-            {
-                isTimeout = true;
-            }
+            Task task = game.run();
             game.close();
             yield return new WaitForSeconds(5.5f);
 
-            Assert.False(isTimeout);
-
-            game.close();
+            Assert.True(task.IsCanceled);
         }
         [UnityTest]
         public IEnumerator remoteGameflowTest()
         {
-            THHGame g1 = initStandardGame(name: "客户端0", playersId: new int[] { 0, 1 }, option: new GameOption()
+            THHGame g1 = TestGameflow.initStandardGame(name: "客户端0", playersId: new int[] { 0, 1 }, option: new GameOption()
             {
                 sortedPlayers = new int[] { 0, 1 }
             });
@@ -288,7 +271,7 @@ namespace Tests
             _ = c1.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
             (g1.answers as AnswerManager).client = c1;
 
-            THHGame g2 = initStandardGame(name: "客户端1", playersId: new int[] { 0, 1 }, option: new GameOption()
+            THHGame g2 = TestGameflow.initStandardGame(name: "客户端1", playersId: new int[] { 0, 1 }, option: new GameOption()
             {
                 sortedPlayers = new int[] { 0, 1 }
             });
@@ -299,18 +282,18 @@ namespace Tests
             (g2.answers as AnswerManager).client = c2;
             yield return new WaitForSeconds(.5f);
 
-            _ = g1.init();
-            _ = g2.init();
-            g1.players[0].cmdInitReplace(g1.answers, g1.players[0].init[0, 1]);
-            g2.players[1].cmdInitReplace(g2.answers);
+            _ = g1.run();
+            _ = g2.run();
+            g1.players[0].cmdInitReplace(g1, g1.players[0].init[0, 1]);
+            g2.players[1].cmdInitReplace(g2);
             yield return new WaitForSeconds(.5f);
-            g1.players[0].cmdUse(g1.answers, g1.players[0].hand[0], 0);
+            g1.players[0].cmdUse(g1, g1.players[0].hand[0], 0);
             yield return new WaitForSeconds(.5f);
-            g1.players[0].cmdTurnEnd(g1.answers);
+            g1.players[0].cmdTurnEnd(g1);
             yield return new WaitForSeconds(.5f);
-            g2.players[1].cmdTurnEnd(g2.answers);
+            g2.players[1].cmdTurnEnd(g2);
             yield return new WaitForSeconds(.5f);
-            g1.players[0].cmdAttack(g1.answers, g1.players[0].field[0], g1.players[1].master);
+            g1.players[0].cmdAttack(g1, g1.players[0].field[0], g1.players[1].master);
             yield return new WaitForSeconds(.5f);
 
             g1.Dispose();
@@ -347,15 +330,16 @@ namespace Tests
     {
         public const int ID = 0x00100000;
         public override int id { get; set; } = ID;
+        public override int life { get; } = 30;
         public override int skillID { get; } = TestSkill.ID;
-        public override Effect[] effects { get; } = new Effect[0];
+        public override IEffect[] effects { get; } = new Effect[0];
     }
     class TestSkill : SkillCardDefine
     {
         public const int ID = 0x00110000;
         public override int id { get; set; } = ID;
         public override int cost { get; } = 2;
-        public override Effect[] effects { get; } = new Effect[0];
+        public override IEffect[] effects { get; } = new Effect[0];
     }
     class TestServant : ServantCardDefine
     {
@@ -364,6 +348,6 @@ namespace Tests
         public override int cost { get; } = 1;
         public override int attack { get; } = 2;
         public override int life { get; } = 2;
-        public override Effect[] effects { get; } = new Effect[0];
+        public override IEffect[] effects { get; } = new Effect[0];
     }
 }

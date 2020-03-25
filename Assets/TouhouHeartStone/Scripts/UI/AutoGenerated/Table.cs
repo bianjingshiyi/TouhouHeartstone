@@ -27,8 +27,8 @@ namespace UI
         {
             this.m_as_Image = this.GetComponent<Image>();
             this._FieldsImage = this.transform.Find("Fields").GetComponent<Image>();
-            this._EnemyField = this.transform.Find("Fields").Find("EnemyField").GetComponent<Field>();
-            this._SelfField = this.transform.Find("Fields").Find("SelfField").GetComponent<Field>();
+            this._EnemyFieldList = this.transform.Find("Fields").Find("EnemyField").GetComponent<FieldList>();
+            this._SelfFieldList = this.transform.Find("Fields").Find("SelfField").GetComponent<FieldList>();
             this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
             this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
             this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
@@ -46,6 +46,7 @@ namespace UI
             this._EnemyGraveDeck = this.transform.Find("EnemyGrave").GetComponent<Deck>();
             this._EnemySkill = this.transform.Find("EnemySkill").GetComponent<Skill>();
             this._EnemyItem = this.transform.Find("EnemyItem").GetComponent<Item>();
+            this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -74,29 +75,29 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Field _EnemyField;
-        public Field EnemyField
+        private FieldList _EnemyFieldList;
+        public FieldList EnemyFieldList
         {
             get
             {
-                if ((this._EnemyField == null))
+                if ((this._EnemyFieldList == null))
                 {
-                    this._EnemyField = this.transform.Find("Fields").Find("EnemyField").GetComponent<Field>();
+                    this._EnemyFieldList = this.transform.Find("Fields").Find("EnemyField").GetComponent<FieldList>();
                 }
-                return this._EnemyField;
+                return this._EnemyFieldList;
             }
         }
         [SerializeField()]
-        private Field _SelfField;
-        public Field SelfField
+        private FieldList _SelfFieldList;
+        public FieldList SelfFieldList
         {
             get
             {
-                if ((this._SelfField == null))
+                if ((this._SelfFieldList == null))
                 {
-                    this._SelfField = this.transform.Find("Fields").Find("SelfField").GetComponent<Field>();
+                    this._SelfFieldList = this.transform.Find("Fields").Find("SelfField").GetComponent<FieldList>();
                 }
-                return this._SelfField;
+                return this._SelfFieldList;
             }
         }
         [SerializeField()]
@@ -318,6 +319,19 @@ namespace UI
                     this._EnemyItem = this.transform.Find("EnemyItem").GetComponent<Item>();
                 }
                 return this._EnemyItem;
+            }
+        }
+        [SerializeField()]
+        private InitReplaceDialog _InitReplaceDialog;
+        public InitReplaceDialog InitReplaceDialog
+        {
+            get
+            {
+                if ((this._InitReplaceDialog == null))
+                {
+                    this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
+                }
+                return this._InitReplaceDialog;
             }
         }
         partial void onAwake();

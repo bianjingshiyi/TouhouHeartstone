@@ -167,11 +167,11 @@ MonoBehaviour:
   _Image: {fileID: 7552501258534462119}
   _FrameImage: {fileID: 7552501258643873164}
   _AtkImage: {fileID: 7552501258647209238}
-  _AtkText: {fileID: 7552501259284052182}
+  _AttackText: {fileID: 7552501259284052182}
   _HpImage: {fileID: 7552501258202321409}
   _HpText: {fileID: 7552501257686591094}
   _ArmorImage: {fileID: 7552501259074735385}
-  _DefenceText: {fileID: 7552501259472621982}
+  _ArmorText: {fileID: 7552501259472621982}
 --- !u!1 &7552501258202321411
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,7 +311,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5657c25c31a1fd64a87663c7399fd40e, type: 3}
+  m_Sprite: {fileID: -8675862210698346708, guid: 5657c25c31a1fd64a87663c7399fd40e,
+    type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -766,7 +767,7 @@ GameObject:
   - component: {fileID: 7552501259472621982}
   - component: {fileID: 7552501259472621983}
   m_Layer: 5
-  m_Name: DefenceText
+  m_Name: ArmorText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

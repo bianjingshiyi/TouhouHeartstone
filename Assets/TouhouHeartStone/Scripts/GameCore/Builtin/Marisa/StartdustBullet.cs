@@ -1,5 +1,5 @@
 ﻿using TouhouCardEngine;
-
+using TouhouCardEngine.Interfaces;
 namespace TouhouHeartstone.Builtin
 {
     public class StartdustBullet : SkillCardDefine
@@ -9,6 +9,6 @@ namespace TouhouHeartstone.Builtin
         {
             get { return 2; }
         }
-        public override Effect[] effects { get; } = new Effect[0];
+        public override IEffect[] effects { get; } = new IEffect[0];
     }
 }

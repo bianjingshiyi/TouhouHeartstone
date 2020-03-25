@@ -60,34 +60,14 @@ namespace TouhouHeartstone
                 index = 0;
             return sortedPlayers[index];
         }
-        #endregion
-        #region AskAndAnswer
-        public override void onAnswer(IResponse response)
+        /// <summary>
+        /// 获取玩家的对手。
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        public THHPlayer getOpponent(THHPlayer player)
         {
-            base.onAnswer(response);
-            THHPlayer player = getPlayer(response.playerId);
-            switch (response)
-            {
-                case InitReplaceResponse initReplace:
-                    _ = player.initReplace(this, getCards(initReplace.cardsId));
-                    break;
-                case UseResponse use:
-                    Card card = getCard(use.cardId);
-                    Card[] targets = getCards(use.targetsId);
-                    _ = player.tryUse(this, card, use.position, targets);
-                    break;
-                case TurnEndResponse _:
-                    _ = turnEnd(player);
-                    break;
-                case AttackResponse attack:
-                    card = getCard(attack.cardId);
-                    Card target = getCard(attack.targetId);
-                    _ = card.tryAttack(this, target);
-                    break;
-                default:
-                    logger.log("Warning", "未处理的响应：" + response);
-                    break;
-            }
+            return players.FirstOrDefault(p => p != player);
         }
         #endregion
         public int registerCardDefine(CardDefine define)
@@ -128,10 +108,42 @@ namespace TouhouHeartstone
         }
         #region Gameflow
         /// <summary>
-        /// 游戏初始化
+        /// 运行游戏
         /// </summary>
-        public async Task init()
+        /// <returns>游戏运行的Task</returns>
+        public Task run()
         {
+            cts = new CancellationTokenSource();
+            Task task = Task.Run(gameflow, cts.Token);
+            return task;
+        }
+        CancellationTokenSource cts { get; set; } = null;
+        private async Task gameflow()
+        {
+            await init();
+            foreach (var result in await answers.askAll(sortedPlayers.Select(p => p.id).ToArray(), new InitReplaceRequest()
+            {
+            }, option.timeout))
+            {
+                THHPlayer player = getPlayer(result.Key);
+                await player.initReplace(this, getCards((result.Value as InitReplaceResponse).cardsId));
+            }
+            await start();
+            currentPlayer = sortedPlayers[0];
+            for (int i = 0; i < 100; i++)
+            {
+                await turnStart(currentPlayer);
+                await turnLoop(currentPlayer);
+                await turnEnd(currentPlayer);
+                currentPlayer = getPlayerForNextTurn(currentPlayer);
+            }
+            await gameEnd(new THHPlayer[0]);
+        }
+
+        internal async Task init()
+        {
+            if (cts == null || cts.IsCancellationRequested)
+                return;
             await triggers.doEvent(new InitEventArg(), arg =>
             {
                 logger.log("Debug", "游戏初始化");
@@ -169,21 +181,15 @@ namespace TouhouHeartstone
                 //    + "初始卡牌：" + string.Join("；", sortedPlayers.Select(p => string.Join("、", p.init.Select(c => c.ToString())))));
                 return Task.CompletedTask;
             });
-            startTimeout(option.timeout, async () =>
-            {
-                foreach (THHPlayer player in players.Where(p => !p.isPrepared))
-                {
-                    await player.initReplace(this);
-                }
-            });
         }
         public class InitEventArg : EventArg
         {
         }
         public THHPlayer[] sortedPlayers { get; private set; }
-        public async Task start()
+        internal async Task start()
         {
-            cancelTimeout();
+            if (cts == null || cts.IsCancellationRequested)
+                return;
             await triggers.doEvent(new StartEventArg(), arg =>
             {
                 logger.log("Debug", "游戏开始");
@@ -193,7 +199,6 @@ namespace TouhouHeartstone
                 }
                 return Task.CompletedTask;
             });
-            await turnStart(sortedPlayers[0]);
         }
         public class StartEventArg : EventArg
         {
@@ -201,15 +206,18 @@ namespace TouhouHeartstone
         public THHPlayer currentPlayer { get; private set; }
         async Task turnStart(THHPlayer player)
         {
+            if (cts == null || cts.IsCancellationRequested)
+                return;
             await triggers.doEvent(new TurnStartEventArg() { player = player }, async arg =>
             {
                 logger.log("Debug", arg.player + "的回合开始");
                 //玩家的最大能量加1但是不超过10，充满玩家的能量。
-                currentPlayer = arg.player;
                 await arg.player.setMaxGem(this, arg.player.maxGem + 1);
                 await arg.player.setGem(this, arg.player.maxGem);
                 //抽一张牌
                 await arg.player.draw(this);
+                //重置技能
+                player.skill.setUsed(false);
                 //使随从可以攻击
                 foreach (Card card in player.field)
                 {
@@ -217,27 +225,46 @@ namespace TouhouHeartstone
                     card.setAttackTimes(0);
                 }
             });
-            startTimeout(option.timeout, async () =>
-            {
-                await turnEnd(currentPlayer);
-            });
         }
         public class TurnStartEventArg : EventArg
         {
             public THHPlayer player;
         }
+        async Task turnLoop(THHPlayer player)
+        {
+            if (cts == null || cts.IsCancellationRequested)
+                return;
+            for (int i = 0; i < 100; i++)
+            {
+                if (cts == null || cts.IsCancellationRequested)
+                    return;
+                switch (await answers.ask(player.id, new FreeActRequest(), option.timeout))
+                {
+                    case UseResponse use:
+                        Card card = getCard(use.cardId);
+                        Card[] targets = getCards(use.targetsId);
+                        if (!await player.tryUse(this, card, use.position, targets))
+                            logger.log("Warning", "使用" + card + "失败");
+                            break;
+                    case AttackResponse attack:
+                        card = getCard(attack.cardId);
+                        Card target = getCard(attack.targetId);
+                        await card.tryAttack(this, target);
+                        break;
+                    case TurnEndResponse _:
+                        return;
+                }
+            }
+        }
         public async Task turnEnd(THHPlayer player)
         {
-            if (currentPlayer != player)
-                throw new NotYourTurnException(player);
+            if (cts == null || cts.IsCancellationRequested)
+                return;
             await triggers.doEvent(new TurnEndEventArg() { player = player }, arg =>
             {
                 logger.log("Debug", currentPlayer + "回合结束");
-                currentPlayer = null;
                 return Task.CompletedTask;
             });
-            cancelTimeout();
-            await turnStart(getPlayerForNextTurn(player));
         }
         public class TurnEndEventArg : EventArg
         {
@@ -270,10 +297,14 @@ namespace TouhouHeartstone
             //TODO:死亡结算顺序。
             return deathList.ToArray().die(this, deathOwnerList.ToArray());
         }
-        public Task gameEnd(THHPlayer[] winners)
+        internal async Task gameEnd(THHPlayer[] winners)
         {
+            if (cts == null || cts.IsCancellationRequested)
+                return;
             logger.log("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
-            return triggers.doEvent(new GameEndEventArg() { winners = winners });
+            await triggers.doEvent(new GameEndEventArg() { winners = winners });
+            answers.cancelAll();
+            cts = null;
         }
         public class GameEndEventArg : EventArg
         {
@@ -281,32 +312,12 @@ namespace TouhouHeartstone
         }
         public void close()
         {
-            cancelTimeout();
-        }
-        #endregion
-        #region Timeout
-        CancellationTokenSource timeoutCTS { get; set; } = null;
-        private void startTimeout(float sec, Action onTimeout)
-        {
-            timeoutCTS = new CancellationTokenSource();
-            _ = Task.Run(async () =>
+            answers.cancelAll();
+            if (cts != null)
             {
-                await Task.Delay((int)(sec * 1000));
-                if (timeoutCTS == null || timeoutCTS.IsCancellationRequested)
-                    return;
-                logger.log("Debug", currentPlayer + "超时");
-                this.onTimeout?.Invoke();
-                onTimeout?.Invoke();
-            }, timeoutCTS.Token);
-        }
-        public event Action onTimeout;
-        private void cancelTimeout()
-        {
-            if (timeoutCTS == null)
-                return;
-            timeoutCTS.Cancel();
-            timeoutCTS.Dispose();
-            timeoutCTS = null;
+                cts.Cancel();
+                cts = null;
+            }
         }
         #endregion
         [Obsolete]
@@ -367,7 +378,6 @@ namespace TouhouHeartstone
                 return wlist.ToArray();
             }
         }
-
         public void Dispose()
         {
             close();

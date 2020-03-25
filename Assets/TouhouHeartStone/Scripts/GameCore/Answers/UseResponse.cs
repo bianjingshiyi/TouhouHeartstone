@@ -8,10 +8,4 @@ namespace TouhouHeartstone
         public int position { get; set; }
         public int[] targetsId { get; set; }
     }
-    [Serializable]
-    public class AttackResponse : Response
-    {
-        public int cardId { get; set; }
-        public int targetId { get; set; }
-    }
 }
