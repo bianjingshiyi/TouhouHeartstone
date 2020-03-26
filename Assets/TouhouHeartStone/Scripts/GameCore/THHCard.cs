@@ -61,15 +61,25 @@ namespace TouhouHeartstone
         }
         public static bool isTaunt(this Card card)
         {
-            return card.getProp<bool>("taunt");
+            return card.getProp<bool>(Keyword.TAUNT);
         }
         public static void setTaunt(this Card card, bool value)
         {
-            card.setProp("taunt", value);
+            card.setProp(Keyword.TAUNT, value);
+        }
+        public static bool isCharge(this Card card)
+        {
+            return card.getProp<bool>(Keyword.CHARGE);
+        }
+        public static void setCharge(this Card card, bool value)
+        {
+            card.setProp(Keyword.CHARGE, value);
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, Card target)
         {
-            if (card.getAttackTimes() >= card.getMaxAttackTimes())
+            if (!card.isReady())//还没准备好
+                return false;
+            if (card.getAttackTimes() >= card.getMaxAttackTimes())//已经攻击过了
                 return false;
             await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
             {
@@ -109,6 +119,40 @@ namespace TouhouHeartstone
             public Card[] cards;
             public int value;
         }
+        public static async Task heal(IEnumerable<Card> cards, THHGame game, int value)
+        {
+            foreach (Card card in cards)
+            {
+                await card.heal(game, value);
+            }
+        }
+        public static async Task heal(this Card card, THHGame game, int value)
+        {
+            if (card.getCurrentLife() >= card.getLife())
+                return;
+            await game.triggers.doEvent(new HealEventArg() { card = card, value = value }, arg =>
+            {
+                card = arg.card;
+                value = arg.value;
+                if (card.getCurrentLife() + value < card.getLife())
+                {
+                    card.setCurrentLife(card.getCurrentLife() + value);
+                    game.logger.log(card + "恢复" + value + "点生命值，生命值=>" + card.getCurrentLife());
+                }
+                else
+                {
+                    int healedValue = card.getLife() - card.getCurrentLife();
+                    card.setCurrentLife(card.getLife());
+                    game.logger.log(card + "恢复" + healedValue + "点生命值，生命值=>" + card.getCurrentLife());
+                }
+                return Task.CompletedTask;
+            });
+        }
+        public class HealEventArg : EventArg
+        {
+            public Card card;
+            public int value;
+        }
         public static async Task die(this Card[] cards, THHGame game, THHPlayer[] players)
         {
             List<THHPlayer> remainPlayerList = new List<THHPlayer>(game.players);
@@ -144,6 +188,7 @@ namespace TouhouHeartstone
         public class DeathEventArg : EventArg
         {
             public Card[] cards;
+            public int position;
         }
     }
 }

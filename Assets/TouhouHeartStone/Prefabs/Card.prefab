@@ -557,10 +557,10 @@ RectTransform:
   m_Father: {fileID: 9037425591615100612}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.14}
-  m_SizeDelta: {x: 150, y: 200}
+  m_AnchorMin: {x: 0.26428932, y: 0.2878587}
+  m_AnchorMax: {x: 0.73572344, y: 0.7164241}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8495323006171332856
 CanvasRenderer:
@@ -615,7 +615,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3639996476798694622
 RectTransform:
   m_ObjectHideFlags: 0
@@ -822,8 +822,8 @@ MonoBehaviour:
   _initStates:
   - IsFaceup/False
   _CardBackImage: {fileID: 525013306416142025}
-  _Image_1: {fileID: 0}
-  _Image_2: {fileID: 0}
+  _Image_1: {fileID: 7196694411468133037}
+  _Image_2: {fileID: 8135484192158716678}
   _CardFaceImage: {fileID: 5128425384752950024}
   _CostImage: {fileID: 5097161601411480962}
   _CostText: {fileID: 4007178058542726368}
@@ -1280,10 +1280,10 @@ RectTransform:
   m_Father: {fileID: 9037425591615100612}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.031433962, y: 0.021423984}
+  m_AnchorMax: {x: 0.968566, y: 0.978576}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -20, y: -20}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5135283115882836400
 CanvasRenderer:

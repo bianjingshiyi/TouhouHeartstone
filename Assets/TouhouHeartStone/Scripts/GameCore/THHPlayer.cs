@@ -168,13 +168,13 @@ namespace TouhouHeartstone
                 if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.servant))
                 {
                     //随从卡，将卡置入战场
-                    await tryMove(game, arg.player.hand, arg.card, arg.position);
+                    await tryPutIntoField(game, arg.player.hand, arg.card, arg.position);
                     IEffect effect = arg.card.define.getEffectOn<BattleCryEventArg>(game.triggers);
                     if (effect != null)
                     {
                         await game.triggers.doEvent(new BattleCryEventArg() { player = arg.player, card = arg.card, effect = effect, targets = arg.targets }, arg2 =>
                         {
-                            return arg2.effect.execute(game, arg2.player, arg2.card, new object[0], arg2.targets);
+                            return arg2.effect.execute(game, arg2.player, arg2.card, new object[] { arg2 }, arg2.targets);
                         });
                     }
                 }
@@ -215,7 +215,7 @@ namespace TouhouHeartstone
             public IEffect effect;
             public Card[] targets;
         }
-        public async Task<bool> tryMove(THHGame game, Pile from, Card card, int position)
+        public async Task<bool> tryPutIntoField(THHGame game, Pile from, Card card, int position)
         {
             if (field.count >= field.maxCount)//没位置了
                 return false;
@@ -236,7 +236,7 @@ namespace TouhouHeartstone
                 if (card.define is ServantCardDefine servant)
                 {
                     card.setCurrentLife(servant.life);
-                    card.setReady(false);
+                    card.setReady(card.isCharge());
                 }
                 return Task.CompletedTask;
             });
@@ -262,7 +262,7 @@ namespace TouhouHeartstone
                     return;
                 game.logger.log(player + "召唤" + define.GetType().Name + "位于" + position);
                 arg.card = game.createCard(define);
-                await tryMove(game, null, arg.card, position);
+                await tryPutIntoField(game, null, arg.card, position);
             });
             return true;
         }

@@ -9,7 +9,7 @@ using TouhouHeartstone.Builtin;
 
 namespace Tests
 {
-    public class BuiltinCardTests
+    public class ReimuCardTests
     {
         [UnityTest]
         public IEnumerator reimuSkillTest()
@@ -19,11 +19,11 @@ namespace Tests
                 Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
                 new GameOption() { });
             game.run();
-
             yield return new WaitForSeconds(.1f);
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
             yield return new WaitForSeconds(.1f);
+
             game.sortedPlayers[0].cmdTurnEnd(game);
             yield return new WaitForSeconds(.1f);
             game.sortedPlayers[1].cmdTurnEnd(game);

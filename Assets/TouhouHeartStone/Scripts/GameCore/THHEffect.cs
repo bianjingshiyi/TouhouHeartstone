@@ -62,4 +62,67 @@ namespace TouhouHeartstone
             this.onExecute = onExecute;
         }
     }
+    public class THHEffectBefore<T> : THHEffect where T : IEventArg
+    {
+        public new delegate bool CheckConditionDelegate(THHGame game, THHPlayer player, Card card, T eventArg);
+        public new delegate Task ExecuteDelegate(THHGame game, THHPlayer player, Card card, T eventArg);
+        public THHEffectBefore(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
+            base(new Before<T>(), pile, (game, player, card, vars) =>
+            {
+                if (onCheckCondition != null)
+                    return onCheckCondition.Invoke(game, player, card, (T)vars[0]);
+                else
+                    return true;
+            }, onCheckTarget, (game, player, card, vars, targets) =>
+            {
+                if (onExecute != null)
+                    return onExecute.Invoke(game, player, card, (T)vars[0]);
+                else
+                    return Task.CompletedTask;
+            })
+        {
+        }
+    }
+    public class THHEffect<T> : THHEffect where T : IEventArg
+    {
+        public new delegate bool CheckConditionDelegate(THHGame game, THHPlayer player, Card card, T eventArg);
+        public new delegate Task ExecuteDelegate(THHGame game, THHPlayer player, Card card, T eventArg, object[] targets);
+        public THHEffect(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
+            base(new On<T>(), pile, (game, player, card, vars) =>
+            {
+                if (onCheckCondition != null)
+                    return onCheckCondition.Invoke(game, player, card, (T)vars[0]);
+                else
+                    return true;
+            }, onCheckTarget, (game, player, card, vars, targets) =>
+            {
+                if (onExecute != null && vars.Length > 0 && vars[0] is T t)
+                    return onExecute.Invoke(game, player, card, t, targets);
+                else
+                    return Task.CompletedTask;
+            })
+        {
+        }
+    }
+    public class THHEffectAfter<T> : THHEffect where T : IEventArg
+    {
+        public new delegate bool CheckConditionDelegate(THHGame game, THHPlayer player, Card card, T eventArg);
+        public new delegate Task ExecuteDelegate(THHGame game, THHPlayer player, Card card, T eventArg);
+        public THHEffectAfter(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
+            base(new After<T>(), pile, (game, player, card, vars) =>
+            {
+                if (onCheckCondition != null)
+                    return onCheckCondition.Invoke(game, player, card, (T)vars[0]);
+                else
+                    return true;
+            }, onCheckTarget, (game, player, card, vars, targets) =>
+            {
+                if (onExecute != null)
+                    return onExecute.Invoke(game, player, card, (T)vars[0]);
+                else
+                    return Task.CompletedTask;
+            })
+        {
+        }
+    }
 }

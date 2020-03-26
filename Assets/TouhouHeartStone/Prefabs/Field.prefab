@@ -58,6 +58,8 @@ MonoBehaviour:
   m_ChildAlignment: 4
   _averageSpacing: 0
   _spacing: 20
+  _forceChildExpandWidth: 0
+  _forceChildExpandHeight: 0
   _preferredSize: {x: 0, y: 0}
   _overflowType: 1
 --- !u!114 &522930649822286134

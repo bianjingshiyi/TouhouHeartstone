@@ -70,6 +70,30 @@ namespace TouhouHeartstone
             return players.FirstOrDefault(p => p != player);
         }
         #endregion
+        #region Card
+        public override Card createCard(CardDefine define)
+        {
+            Card card = base.createCard(define);
+            if (define is ServantCardDefine servant)
+            {
+                foreach (string keyword in servant.keywords)
+                {
+                    switch (keyword)
+                    {
+                        case Keyword.TAUNT:
+                            card.setTaunt(true);
+                            break;
+                        case Keyword.CHARGE:
+                            card.setCharge(true);
+                            break;
+                        default:
+                            throw new UnknowKeywordException("未知关键词" + keyword);
+                    }
+                }
+            }
+            return card;
+        }
+        #endregion
         public int registerCardDefine(CardDefine define)
         {
             return engine.rule.pool.register(define);
@@ -245,7 +269,7 @@ namespace TouhouHeartstone
                         Card[] targets = getCards(use.targetsId);
                         if (!await player.tryUse(this, card, use.position, targets))
                             logger.log("Warning", "使用" + card + "失败");
-                            break;
+                        break;
                     case AttackResponse attack:
                         card = getCard(attack.cardId);
                         Card target = getCard(attack.targetId);
@@ -416,6 +440,16 @@ namespace TouhouHeartstone
         public AlreadyPreparedException(string message) : base(message) { }
         public AlreadyPreparedException(string message, Exception inner) : base(message, inner) { }
         protected AlreadyPreparedException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
+    [Serializable]
+    public class UnknowKeywordException : Exception
+    {
+        public UnknowKeywordException() { }
+        public UnknowKeywordException(string message) : base(message) { }
+        public UnknowKeywordException(string message, Exception inner) : base(message, inner) { }
+        protected UnknowKeywordException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }

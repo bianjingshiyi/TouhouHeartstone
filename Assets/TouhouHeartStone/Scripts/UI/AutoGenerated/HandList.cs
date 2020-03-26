@@ -15,7 +15,7 @@ namespace UI
     using UnityEngine.UI;
     using BJSYGameCore.UI;
     
-    public partial class HandList : UIList<Card>
+    public partial class HandList : UIList<HandListItem>
     {
         protected override void Awake()
         {
@@ -26,8 +26,22 @@ namespace UI
         }
         public void autoBind()
         {
+            this.m_as_Button = this.GetComponent<Button>();
             this.m_as_ListLayoutGroup = this.GetComponent<ListLayoutGroup>();
-            this.defaultItem = this.transform.Find("Card (1)").GetComponent<Card>();
+            this.defaultItem = this.transform.Find("HandListItem").GetComponent<HandListItem>();
+        }
+        [SerializeField()]
+        private Button m_as_Button;
+        public Button asButton
+        {
+            get
+            {
+                if ((this.m_as_Button == null))
+                {
+                    this.m_as_Button = this.GetComponent<Button>();
+                }
+                return this.m_as_Button;
+            }
         }
         [SerializeField()]
         private ListLayoutGroup m_as_ListLayoutGroup;
@@ -42,9 +56,9 @@ namespace UI
                 return this.m_as_ListLayoutGroup;
             }
         }
-        protected override Card getDefaultItem()
+        protected override HandListItem getDefaultItem()
         {
-            return this.transform.Find("Card (1)").GetComponent<Card>();
+            return this.transform.Find("HandListItem").GetComponent<HandListItem>();
         }
         partial void onAwake();
     }

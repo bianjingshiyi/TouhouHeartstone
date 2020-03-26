@@ -11,6 +11,24 @@ using TouhouCardEngine.Interfaces;
 
 namespace UI
 {
+    partial class HandList
+    {
+        public bool isExpanded
+        {
+            get { return animator.GetBool("IsExpanded"); }
+            private set { animator.SetBool("IsExpanded", value); }
+        }
+        public void expand()
+        {
+            display();
+            isExpanded = true;
+        }
+        public void shrink()
+        {
+            display();
+            isExpanded = false;
+        }
+    }
     partial class Table
     {
         [SerializeField]
@@ -27,6 +45,13 @@ namespace UI
             }
 
             InitReplaceDialog.hide();
+            SelfHandList.asButton.onClick.AddListener(() =>
+            {
+                if (SelfHandList.isExpanded)
+                    SelfHandList.shrink();
+                else
+                    SelfHandList.expand();
+            });
         }
         public void setGame(THHGame game, THHPlayer player)
         {
@@ -37,7 +62,18 @@ namespace UI
             if (game != null)
             {
             }
+            if (player != null)
+            {
+                TurnEndButton.onClick.RemoveAllListeners();
+            }
             this.player = player;
+            if (player != null)
+            {
+                TurnEndButton.onClick.AddListener(() =>
+                {
+                    player.cmdTurnEnd(game);
+                });
+            }
         }
         protected void Update()
         {
@@ -55,11 +91,26 @@ namespace UI
             else
                 SelfSkill.hide();
             SelfGem.Text.text = player.gem.ToString();
-            SelfHandList.updateItems(player.hand, (item, card) => item.card == card, (item, card) =>
+            SelfHandList.updateItems(player.hand, (item, card) => item.Card.card == card, (item, card) =>
+            {
+                item.Card.update(card, getSkin(card));
+            });
+            SelfHandList.sortItems((a, b) => player.hand.indexOf(a.Card.card) - player.hand.indexOf(b.Card.card));
+            SelfFieldList.updateItems(player.field, (item, card) => item.card == card, (item, card) =>
             {
                 item.update(card, getSkin(card));
             });
-            SelfHandList.sortItems((a, b) => player.hand.indexOf(a.card) - player.hand.indexOf(b.card));
+            SelfFieldList.sortItems((a, b) => player.field.indexOf(a.card) - player.field.indexOf(b.card));
+            if (game.currentPlayer == player)
+            {
+                TurnEndButton.interactable = true;
+                TurnEndButton.GetComponent<Image>().color = Color.white;
+            }
+            else
+            {
+                TurnEndButton.interactable = false;
+                TurnEndButton.GetComponent<Image>().color = Color.gray;
+            }
 
             IRequest request = game.answers.getLastRequest(player.id);
             if (request is InitReplaceRequest initReplace)
@@ -110,9 +161,9 @@ namespace UI
             else
                 EnemySkill.hide();
             EnemyGem.Text.text = opponent.gem.ToString();
-            EnemyHandList.updateItems(opponent.hand, (item, card) => item.card == card, (item, card) =>
+            EnemyHandList.updateItems(opponent.hand, (item, card) => item.Card.card == card, (item, card) =>
             {
-                item.update(card, null);
+                item.Card.update(card, null);
             });
         }
         CardSkinData getSkin(TouhouCardEngine.Card card)
