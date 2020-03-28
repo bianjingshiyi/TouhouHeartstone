@@ -61,6 +61,33 @@ namespace TouhouHeartstone
             this.onCheckTarget = onCheckTarget;
             this.onExecute = onExecute;
         }
+        public virtual void register(IGame game, ICard card)
+        {
+            foreach (TriggerTime time in triggers)
+            {
+                Trigger trigger = new Trigger(args =>
+                {
+                    if ((this as IEffect).checkCondition(game, null, card, args))
+                        return (this as IEffect).execute(game, null, card, args, new object[0]);
+                    else
+                        return Task.CompletedTask;
+                });
+                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                card.setProp(effectName, trigger);
+                game.logger.log("Effect", card + "注册效果" + effectName);
+                game.triggers.register(time.getEventName(game.triggers), trigger);
+            }
+        }
+        public virtual void unregister(IGame game, ICard card)
+        {
+            foreach (TriggerTime time in triggers)
+            {
+                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                Trigger trigger = card.getProp<Trigger>(effectName);
+                game.logger.log("Effect", card + "注销效果" + effectName);
+                game.triggers.remove(trigger);
+            }
+        }
     }
     public class THHEffectBefore<T> : THHEffect where T : IEventArg
     {
@@ -69,18 +96,45 @@ namespace TouhouHeartstone
         public THHEffectBefore(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
             base(new Before<T>(), pile, (game, player, card, vars) =>
             {
-                if (onCheckCondition != null)
-                    return onCheckCondition.Invoke(game, player, card, (T)vars[0]);
+                if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                    return onCheckCondition.Invoke(game, player, card, t);
                 else
                     return true;
             }, onCheckTarget, (game, player, card, vars, targets) =>
             {
-                if (onExecute != null)
-                    return onExecute.Invoke(game, player, card, (T)vars[0]);
+                if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                    return onExecute.Invoke(game, player, card, t);
                 else
                     return Task.CompletedTask;
             })
         {
+        }
+        public override void register(IGame game, ICard card)
+        {
+            foreach (TriggerTime time in triggers)
+            {
+                Trigger<T> trigger = new Trigger<T>(arg =>
+                {
+                    if ((this as IEffect).checkCondition(game, null, card, new object[] { arg }))
+                        return (this as IEffect).execute(game, null, card, new object[] { arg }, new object[0]);
+                    else
+                        return Task.CompletedTask;
+                });
+                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                card.setProp(effectName, trigger);
+                game.logger.log("Effect", card + "注册效果" + effectName);
+                game.triggers.registerBefore(trigger);
+            }
+        }
+        public override void unregister(IGame game, ICard card)
+        {
+            foreach (TriggerTime time in triggers)
+            {
+                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                Trigger<T> trigger = card.getProp<Trigger<T>>(effectName);
+                game.logger.log("Effect", card + "注销效果" + effectName);
+                game.triggers.removeBefore(trigger);
+            }
         }
     }
     public class THHEffect<T> : THHEffect where T : IEventArg
@@ -111,18 +165,45 @@ namespace TouhouHeartstone
         public THHEffectAfter(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
             base(new After<T>(), pile, (game, player, card, vars) =>
             {
-                if (onCheckCondition != null)
-                    return onCheckCondition.Invoke(game, player, card, (T)vars[0]);
+                if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                    return onCheckCondition.Invoke(game, player, card, t);
                 else
                     return true;
             }, onCheckTarget, (game, player, card, vars, targets) =>
             {
-                if (onExecute != null)
-                    return onExecute.Invoke(game, player, card, (T)vars[0]);
+                if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                    return onExecute.Invoke(game, player, card, t);
                 else
                     return Task.CompletedTask;
             })
         {
+        }
+        public override void register(IGame game, ICard card)
+        {
+            foreach (TriggerTime time in triggers)
+            {
+                Trigger<T> trigger = new Trigger<T>(arg =>
+                {
+                    if ((this as IEffect).checkCondition(game, null, card, new object[] { arg }))
+                        return (this as IEffect).execute(game, null, card, new object[] { arg }, new object[0]);
+                    else
+                        return Task.CompletedTask;
+                });
+                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                card.setProp(effectName, trigger);
+                game.logger.log("Effect", card + "注册效果" + effectName);
+                game.triggers.registerAfter(trigger);
+            }
+        }
+        public override void unregister(IGame game, ICard card)
+        {
+            foreach (TriggerTime time in triggers)
+            {
+                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                Trigger<T> trigger = card.getProp<Trigger<T>>(effectName);
+                game.logger.log("Effect", card + "注销效果" + effectName);
+                game.triggers.removeAfter(trigger);
+            }
         }
     }
 }

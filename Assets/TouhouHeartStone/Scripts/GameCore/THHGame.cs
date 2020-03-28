@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using UberLogger;
 
 namespace TouhouHeartstone
 {
@@ -199,7 +200,7 @@ namespace TouhouHeartstone
                         sortedPlayers[i].deck.shuffle(this);
                     int count = i == 0 ? 3 : 4;
                     Card[] cards = sortedPlayers[i].deck[sortedPlayers[i].deck.count - count, sortedPlayers[i].deck.count - 1];
-                    sortedPlayers[i].deck.moveTo(cards, sortedPlayers[i].init, 0);
+                    sortedPlayers[i].deck.moveTo(this, cards, sortedPlayers[i].init, 0);
                 }
                 //logger.log("Debug", "游戏初始化，玩家行动顺序：" + string.Join("、", sortedPlayers.Select(p => p.ToString())) + "，"
                 //    + "初始卡牌：" + string.Join("；", sortedPlayers.Select(p => string.Join("、", p.init.Select(c => c.ToString())))));
@@ -219,7 +220,7 @@ namespace TouhouHeartstone
                 logger.log("Debug", "游戏开始");
                 foreach (THHPlayer player in sortedPlayers)
                 {
-                    player.init.moveTo(player.init[0, player.init.count - 1], player.hand, 0);
+                    player.init.moveTo(this, player.init[0, player.init.count - 1], player.hand, 0);
                 }
                 return Task.CompletedTask;
             });
@@ -300,26 +301,33 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public Task updateDeath()
         {
-            List<Card> deathList = new List<Card>();
-            List<THHPlayer> deathOwnerList = new List<THHPlayer>();
+            Dictionary<Card, THHCard.DeathEventArg.Info> deathDic = new Dictionary<Card, THHCard.DeathEventArg.Info>();
             foreach (THHPlayer player in players)
             {
                 if (player.master.getCurrentLife() <= 0)
                 {
-                    deathList.Add(player.master);
-                    deathOwnerList.Add(player);
+                    deathDic.Add(player.master, new THHCard.DeathEventArg.Info()
+                    {
+                        card = player.master,
+                        player = player,
+                        position = 0
+                    });
                 }
                 foreach (Card card in player.field)
                 {
                     if (card.getCurrentLife() <= 0)
                     {
-                        deathList.Add(card);
-                        deathOwnerList.Add(player);
+                        deathDic.Add(card, new THHCard.DeathEventArg.Info()
+                        {
+                            card = card,
+                            player = player,
+                            position = player.field.indexOf(card)
+                        });
                     }
                 }
             }
-            //TODO:死亡结算顺序。
-            return deathList.ToArray().die(this, deathOwnerList.ToArray());
+            logger.log("结算" + string.Join("，", deathDic.Keys) + "的死亡");
+            return deathDic.Keys.die(this, deathDic);
         }
         internal async Task gameEnd(THHPlayer[] winners)
         {
@@ -344,20 +352,6 @@ namespace TouhouHeartstone
             }
         }
         #endregion
-        [Obsolete]
-        public void use(int playerIndex, int cardRID, int targetPosition, int[] targetCardsRID)
-        {
-            throw new NotImplementedException();
-        }
-        [Obsolete]
-        public void attack(int playerIndex, int cardRID, int targetCardRID)
-        {
-            throw new NotImplementedException();
-        }
-        public void turnEnd(int playerIndex)
-        {
-            throw new NotImplementedException();
-        }
         private void afterEvent(Event @event)
         {
             if (@event.parent == null)

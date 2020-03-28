@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using TouhouHeartstone;
+using BJSYGameCore;
 using TouhouCardEngine.Interfaces;
 
 namespace UI
@@ -22,11 +23,21 @@ namespace UI
         {
             display();
             isExpanded = true;
+            Table table = GetComponentInParent<Table>();
+            table.BlockerButton.gameObject.SetActive(true);
+            table.BlockerButton.GetComponent<RectTransform>().SetSiblingIndex(rectTransform.GetSiblingIndex() - 1);
+            table.BlockerButton.onClick.RemoveAllListeners();
+            table.BlockerButton.onClick.AddListener(() =>
+            {
+                shrink();
+            });
         }
         public void shrink()
         {
             display();
             isExpanded = false;
+            Table table = GetComponentInParent<Table>();
+            table.BlockerButton.gameObject.SetActive(false);
         }
     }
     partial class Table
@@ -77,6 +88,16 @@ namespace UI
         }
         protected void Update()
         {
+            if (_tipTimer.isExpired())
+            {
+                _tipTimer.reset();
+                TipText.gameObject.SetActive(false);
+            }
+            else if (_tipTimer.isStarted)
+            {
+                TipText.color = new Color(TipText.color.r, TipText.color.g, TipText.color.b, 1/*_tipTimer.getRemainedTime() / _tipTimer.duration*/);
+            }
+
             if (game == null)
                 return;
 
@@ -91,7 +112,7 @@ namespace UI
             else
                 SelfSkill.hide();
             SelfGem.Text.text = player.gem.ToString();
-            SelfHandList.updateItems(player.hand, (item, card) => item.Card.card == card, (item, card) =>
+            SelfHandList.updateItems(player.hand.ToArray(), (item, card) => item.Card.card == card, (item, card) =>
             {
                 item.Card.update(card, getSkin(card));
             });
@@ -161,14 +182,23 @@ namespace UI
             else
                 EnemySkill.hide();
             EnemyGem.Text.text = opponent.gem.ToString();
-            EnemyHandList.updateItems(opponent.hand, (item, card) => item.Card.card == card, (item, card) =>
+            EnemyHandList.updateItems(opponent.hand.ToArray(), (item, card) => item.Card.card == card, (item, card) =>
             {
                 item.Card.update(card, null);
             });
+            EnemyHandList.sortItems((a, b) => opponent.hand.indexOf(a.Card.card) - opponent.hand.indexOf(b.Card.card));
         }
         CardSkinData getSkin(TouhouCardEngine.Card card)
         {
             return skinDic.ContainsKey(card.define.id) ? skinDic[card.define.id] : null;
+        }
+        [SerializeField]
+        Timer _tipTimer = new Timer();
+        public void showTip(string tip)
+        {
+            TipText.gameObject.SetActive(true);
+            TipText.text = tip;
+            _tipTimer.start();
         }
     }
 }

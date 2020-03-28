@@ -21,18 +21,18 @@ namespace TouhouHeartstone
         public THHPlayer(THHGame game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck) : base(id, name)
         {
             this.master = game.createCard(master);
-            pileList.Add(new Pile("Master", new Card[] { this.master }, 1));
+            pileList.Add(new Pile(game, "Master", new Card[] { this.master }, 1));
             skill = game.createCardById(master.skillID);
-            pileList.Add(new Pile("Skill", new Card[] { skill }, 1));
-            this.deck = new Pile("Deck", deck.Select(d => game.createCard(d)).ToArray());
+            pileList.Add(new Pile(game, "Skill", new Card[] { skill }, 1));
+            this.deck = new Pile(game, "Deck", deck.Select(d => game.createCard(d)).ToArray());
             pileList.Add(this.deck);
-            init = new Pile("Init", maxCount: 4);
+            init = new Pile(game, "Init", maxCount: 4);
             pileList.Add(init);
-            hand = new Pile("Hand", maxCount: 10);
+            hand = new Pile(game, "Hand", maxCount: 10);
             pileList.Add(hand);
-            field = new Pile("Field", maxCount: 7);
+            field = new Pile(game, "Field", maxCount: 7);
             pileList.Add(field);
-            grave = new Pile("Grave");
+            grave = new Pile(game, "Grave");
             pileList.Add(grave);
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
@@ -105,7 +105,7 @@ namespace TouhouHeartstone
                 return game.triggers.doEvent(new BurnEventArg() { player = this }, arg =>
                 {
                     arg.card = arg.player.deck.top;
-                    arg.player.deck.moveTo(arg.card, arg.player.grave, arg.player.grave.count);
+                    arg.player.deck.moveTo(game, arg.card, arg.player.grave, arg.player.grave.count);
                     game.logger.log(arg.player + "的手牌已经满了，" + arg.card + "被送入墓地");
                     return Task.CompletedTask;
                 });
@@ -115,7 +115,7 @@ namespace TouhouHeartstone
                 return game.triggers.doEvent(new DrawEventArg() { player = this }, arg =>
                 {
                     arg.card = arg.player.deck.top;
-                    arg.player.deck.moveTo(arg.card, arg.player.hand, arg.player.hand.count);
+                    arg.player.deck.moveTo(game, arg.card, arg.player.hand, arg.player.hand.count);
                     game.logger.log(arg.player + "抽" + arg.card);
                     return Task.CompletedTask;
                 });
@@ -137,29 +137,8 @@ namespace TouhouHeartstone
         }
         public async Task<bool> tryUse(THHGame game, Card card, int position, params Card[] targets)
         {
-            if (game.currentPlayer != this)//不是你的回合
+            if (!card.isUsable(game, this, out _))
                 return false;
-            if (card.define is ServantCardDefine servant)
-            {
-                if (gem < card.getCost())//费用不够
-                    return false;
-            }
-            else if (card.define is SpellCardDefine spell)
-            {
-                if (gem < card.getCost())
-                    return false;
-            }
-            else if (card.define is SkillCardDefine skill)
-            {
-                if (card.isUsed())//已经用过了
-                    return false;
-                if (gem < card.getCost())//费用不够
-                    return false;
-            }
-            else
-            {
-                return false;//不知道是什么卡
-            }
             card.setUsed(true);
             await setGem(game, gem - card.getCost());
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>
@@ -230,9 +209,9 @@ namespace TouhouHeartstone
                 else
                     game.logger.log(arg.player + "将" + arg.card + "置入战场，位于" + arg.position);
                 if (from != null)
-                    from.moveTo(arg.card, arg.player.field, arg.position);
+                    from.moveTo(game, arg.card, arg.player.field, arg.position);
                 else
-                    player.field.insert(card, position);
+                    player.field.insert(game, card, position);
                 if (card.define is ServantCardDefine servant)
                 {
                     card.setCurrentLife(servant.life);

@@ -75,6 +75,50 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.CHARGE, value);
         }
+        public static bool isUsable(this Card card, THHGame game, THHPlayer player, out string info)
+        {
+            if (game.currentPlayer != player)//不是你的回合
+            {
+                info = "这不是你的回合";
+                return false;
+            }
+            if (card.define is ServantCardDefine servant)
+            {
+                if (player.gem < card.getCost())//费用不够
+                {
+                    info = "你没有足够的法力值";
+                    return false;
+                }
+            }
+            else if (card.define is SpellCardDefine spell)
+            {
+                if (player.gem < card.getCost())
+                {
+                    info = "你没有足够的法力值";
+                    return false;
+                }
+            }
+            else if (card.define is SkillCardDefine skill)
+            {
+                if (card.isUsed())//已经用过了
+                {
+                    info = "你已经使用过技能了";
+                    return false;
+                }
+                if (player.gem < card.getCost())//费用不够
+                {
+                    info = "你没有足够的法力值";
+                    return false;
+                }
+            }
+            else
+            {
+                info = "这是一张未知的卡牌";
+                return false;//不知道是什么卡
+            }
+            info = null;
+            return true;
+        }
         public static async Task<bool> tryAttack(this Card card, THHGame game, Card target)
         {
             if (!card.isReady())//还没准备好
@@ -89,8 +133,8 @@ namespace TouhouHeartstone
                     await arg.target.damage(game, arg.card.getAttack());
                 if (arg.target.getAttack() > 0)
                     await arg.card.damage(game, arg.target.getAttack());
-                await game.updateDeath();
             });
+            await game.updateDeath();
             return true;
         }
         public class AttackEventArg : EventArg
@@ -153,17 +197,22 @@ namespace TouhouHeartstone
             public Card card;
             public int value;
         }
-        public static async Task die(this Card[] cards, THHGame game, THHPlayer[] players)
+        public static Task die(this Card card, THHGame game, DeathEventArg.Info info)
+        {
+            return die(new Card[] { card }, game, new Dictionary<Card, DeathEventArg.Info>() { { card, info } });
+        }
+        public static async Task die(this IEnumerable<Card> cards, THHGame game, Dictionary<Card, DeathEventArg.Info> infoDic)
         {
             List<THHPlayer> remainPlayerList = new List<THHPlayer>(game.players);
-            await game.triggers.doEvent(new DeathEventArg() { cards = cards }, arg =>
+            await game.triggers.doEvent(new DeathEventArg() { infoDic = infoDic }, arg =>
             {
-                for (int i = 0; i < arg.cards.Length; i++)
+                infoDic = arg.infoDic;
+                foreach (var pair in infoDic)
                 {
-                    Card card = arg.cards[i];
-                    if (!players.Any(p => p.field.Contains(card) || p.master == card))//已经不在战场上了，没法死
+                    Card card = pair.Key;
+                    if (!game.players.Any(p => p.field.Contains(card) || p.master == card))
                         continue;
-                    THHPlayer player = players.FirstOrDefault(p => p.master == card);
+                    THHPlayer player = game.players.FirstOrDefault(p => p.master == card);
                     if (player != null)
                     {
                         remainPlayerList.Remove(player);
@@ -171,7 +220,7 @@ namespace TouhouHeartstone
                     }
                     else
                     {
-                        players[i].field.moveTo(card, players[i].grave);
+                        pair.Value.player.field.moveTo(game, card, pair.Value.player.grave);
                         game.logger.log(card + "阵亡");
                     }
                 }
@@ -187,8 +236,13 @@ namespace TouhouHeartstone
         }
         public class DeathEventArg : EventArg
         {
-            public Card[] cards;
-            public int position;
+            public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
+            public class Info
+            {
+                public THHPlayer player;
+                public Card card;
+                public int position;
+            }
         }
     }
 }

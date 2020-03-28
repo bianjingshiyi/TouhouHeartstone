@@ -27,19 +27,31 @@ namespace Tests
         }
         public static THHGame initStandardGame(string name, int[] playersId, MasterCardDefine[] masters, CardDefine[][] decks, GameOption option)
         {
+            THHGame game = initGameWithoutPlayers(name, option);
+            if (playersId == null)
+                playersId = new int[] { 1, 2 };
+            if (masters == null)
+                masters = Enumerable.Repeat(game.getCardDefine<TestMaster>(), playersId.Length).ToArray();
+            if (decks == null)
+                decks = Enumerable.Repeat(Enumerable.Repeat(game.getCardDefine<TestServant>(), 30).ToArray(), playersId.Length).ToArray();
+            if (option == null)
+                option = GameOption.Default;
+            for (int i = 0; i < playersId.Length; i++)
+            {
+                game.createPlayer(playersId[i], "玩家" + playersId[i], masters[i], decks[i]);
+            }
+            return game;
+        }
+        public static THHGame initGameWithoutPlayers(string name, GameOption option)
+        {
             TaskExceptionHandler.register();
             THHGame game = new THHGame(option != null ? option : GameOption.Default, BuiltinCards.getCardDefines())
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>(),
-                logger = new UnityLogger(name)
+                logger = new ULogger()
             };
-            if (playersId == null)
-                playersId = new int[] { 1, 2 };
-            for (int i = 0; i < playersId.Length; i++)
-            {
-                game.createPlayer(playersId[i], "玩家" + playersId[i], masters[i], decks[i]);
-            }
+            (game.triggers as TriggerManager).logger = game.logger;
             return game;
         }
     }
@@ -214,7 +226,7 @@ namespace Tests
             Assert.AreEqual(2, d2.value);
             THHCard.DeathEventArg d3 = attack.children[2] as THHCard.DeathEventArg;
             Assert.NotNull(d3);
-            Assert.AreEqual(2, d3.cards.Length);
+            Assert.AreEqual(2, d3.infoDic.Count);
 
             game.Dispose();
         }
@@ -299,6 +311,24 @@ namespace Tests
             g1.Dispose();
             g2.Dispose();
         }
+        [UnityTest]
+        public IEnumerator effectRegisterTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, GameOption.Default);
+            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant_TurnEndEffect>(), 30));
+            game.createPlayer(2, "玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant_TurnEndEffect>(), 30));
+            _ = game.run();
+            yield return new WaitForSeconds(.1f);
+            game.players[0].cmdInitReplace(game);
+            game.players[1].cmdInitReplace(game);
+            yield return new WaitForSeconds(.1f);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            yield return new WaitForSeconds(.1f);
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            yield return new WaitForSeconds(.1f);
+
+            Assert.True(game.sortedPlayers[0].field[0].getProp<bool>("TestResult"));
+        }
     }
     static class TaskExceptionHandler
     {
@@ -309,6 +339,8 @@ namespace Tests
             {
                 TaskScheduler.UnobservedTaskException += (sender, obj) =>
                 {
+                    if (obj == null)
+                        return;
                     if (obj.Exception.InnerExceptions != null && obj.Exception.InnerExceptions.Count > 1)
                     {
                         foreach (var exception in obj.Exception.InnerExceptions)
@@ -316,7 +348,7 @@ namespace Tests
                             Debug.LogError(exception);
                         }
                     }
-                    else if (obj.Exception.InnerException != null)
+                    else if (obj.Exception != null && obj.Exception.InnerException != null)
                         Debug.LogError(obj.Exception.InnerException);
                     else
                         Debug.LogError(obj.Exception);
@@ -349,5 +381,27 @@ namespace Tests
         public override int attack { get; } = 2;
         public override int life { get; } = 2;
         public override IEffect[] effects { get; } = new Effect[0];
+    }
+    class TestServant_TurnEndEffect : ServantCardDefine
+    {
+        public const int ID = 0x00110002;
+        public override int id { get; set; } = ID;
+        public override int cost { get; } = 1;
+        public override int attack { get; } = 1;
+        public override int life { get; } = 2;
+        public override IEffect[] effects { get; } = new IEffect[]
+        {
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            {
+                return true;
+            },(game,player,card,targets)=>
+            {
+                return true;
+            },(game,player,card,arg)=>
+            {
+                card.setProp("TestResult",true);
+                return Task.CompletedTask;
+            })
+        };
     }
 }

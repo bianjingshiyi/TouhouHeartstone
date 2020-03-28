@@ -32,13 +32,6 @@ namespace UI
             this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
             this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
             this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
-            this._SelfDeck = this.transform.Find("SelfDeck").GetComponent<Deck>();
-            this._SelfGraveDeck = this.transform.Find("SelfGrave").GetComponent<Deck>();
-            this._SelfMaster = this.transform.Find("SelfMaster").GetComponent<Master>();
-            this._SelfSkill = this.transform.Find("SelfSkill").GetComponent<Skill>();
-            this._SelfItem = this.transform.Find("SelfItem").GetComponent<Item>();
-            this._SelfGem = this.transform.Find("SelfGem").GetComponent<Gem>();
-            this._SelfHandList = this.transform.Find("SelfHand").GetComponent<HandList>();
             this._EnemyHandList = this.transform.Find("EnemyHand").GetComponent<HandList>();
             this._EnemyGem = this.transform.Find("EnemyGem").GetComponent<Gem>();
             this._EnemyMaster = this.transform.Find("EnemyMaster").GetComponent<Master>();
@@ -46,7 +39,16 @@ namespace UI
             this._EnemyGraveDeck = this.transform.Find("EnemyGrave").GetComponent<Deck>();
             this._EnemySkill = this.transform.Find("EnemySkill").GetComponent<Skill>();
             this._EnemyItem = this.transform.Find("EnemyItem").GetComponent<Item>();
+            this._SelfDeck = this.transform.Find("SelfDeck").GetComponent<Deck>();
+            this._SelfGraveDeck = this.transform.Find("SelfGrave").GetComponent<Deck>();
+            this._SelfMaster = this.transform.Find("SelfMaster").GetComponent<Master>();
+            this._SelfSkill = this.transform.Find("SelfSkill").GetComponent<Skill>();
+            this._SelfItem = this.transform.Find("SelfItem").GetComponent<Item>();
+            this._SelfGem = this.transform.Find("SelfGem").GetComponent<Gem>();
+            this._BlockerButton = this.transform.Find("Blocker").GetComponent<Button>();
+            this._SelfHandList = this.transform.Find("SelfHand").GetComponent<HandList>();
             this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
+            this._TipText = this.transform.Find("TipText").GetComponent<Text>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -137,97 +139,6 @@ namespace UI
                     this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
                 }
                 return this._TimeoutSlider;
-            }
-        }
-        [SerializeField()]
-        private Deck _SelfDeck;
-        public Deck SelfDeck
-        {
-            get
-            {
-                if ((this._SelfDeck == null))
-                {
-                    this._SelfDeck = this.transform.Find("SelfDeck").GetComponent<Deck>();
-                }
-                return this._SelfDeck;
-            }
-        }
-        [SerializeField()]
-        private Deck _SelfGraveDeck;
-        public Deck SelfGraveDeck
-        {
-            get
-            {
-                if ((this._SelfGraveDeck == null))
-                {
-                    this._SelfGraveDeck = this.transform.Find("SelfGrave").GetComponent<Deck>();
-                }
-                return this._SelfGraveDeck;
-            }
-        }
-        [SerializeField()]
-        private Master _SelfMaster;
-        public Master SelfMaster
-        {
-            get
-            {
-                if ((this._SelfMaster == null))
-                {
-                    this._SelfMaster = this.transform.Find("SelfMaster").GetComponent<Master>();
-                }
-                return this._SelfMaster;
-            }
-        }
-        [SerializeField()]
-        private Skill _SelfSkill;
-        public Skill SelfSkill
-        {
-            get
-            {
-                if ((this._SelfSkill == null))
-                {
-                    this._SelfSkill = this.transform.Find("SelfSkill").GetComponent<Skill>();
-                }
-                return this._SelfSkill;
-            }
-        }
-        [SerializeField()]
-        private Item _SelfItem;
-        public Item SelfItem
-        {
-            get
-            {
-                if ((this._SelfItem == null))
-                {
-                    this._SelfItem = this.transform.Find("SelfItem").GetComponent<Item>();
-                }
-                return this._SelfItem;
-            }
-        }
-        [SerializeField()]
-        private Gem _SelfGem;
-        public Gem SelfGem
-        {
-            get
-            {
-                if ((this._SelfGem == null))
-                {
-                    this._SelfGem = this.transform.Find("SelfGem").GetComponent<Gem>();
-                }
-                return this._SelfGem;
-            }
-        }
-        [SerializeField()]
-        private HandList _SelfHandList;
-        public HandList SelfHandList
-        {
-            get
-            {
-                if ((this._SelfHandList == null))
-                {
-                    this._SelfHandList = this.transform.Find("SelfHand").GetComponent<HandList>();
-                }
-                return this._SelfHandList;
             }
         }
         [SerializeField()]
@@ -322,6 +233,110 @@ namespace UI
             }
         }
         [SerializeField()]
+        private Deck _SelfDeck;
+        public Deck SelfDeck
+        {
+            get
+            {
+                if ((this._SelfDeck == null))
+                {
+                    this._SelfDeck = this.transform.Find("SelfDeck").GetComponent<Deck>();
+                }
+                return this._SelfDeck;
+            }
+        }
+        [SerializeField()]
+        private Deck _SelfGraveDeck;
+        public Deck SelfGraveDeck
+        {
+            get
+            {
+                if ((this._SelfGraveDeck == null))
+                {
+                    this._SelfGraveDeck = this.transform.Find("SelfGrave").GetComponent<Deck>();
+                }
+                return this._SelfGraveDeck;
+            }
+        }
+        [SerializeField()]
+        private Master _SelfMaster;
+        public Master SelfMaster
+        {
+            get
+            {
+                if ((this._SelfMaster == null))
+                {
+                    this._SelfMaster = this.transform.Find("SelfMaster").GetComponent<Master>();
+                }
+                return this._SelfMaster;
+            }
+        }
+        [SerializeField()]
+        private Skill _SelfSkill;
+        public Skill SelfSkill
+        {
+            get
+            {
+                if ((this._SelfSkill == null))
+                {
+                    this._SelfSkill = this.transform.Find("SelfSkill").GetComponent<Skill>();
+                }
+                return this._SelfSkill;
+            }
+        }
+        [SerializeField()]
+        private Item _SelfItem;
+        public Item SelfItem
+        {
+            get
+            {
+                if ((this._SelfItem == null))
+                {
+                    this._SelfItem = this.transform.Find("SelfItem").GetComponent<Item>();
+                }
+                return this._SelfItem;
+            }
+        }
+        [SerializeField()]
+        private Gem _SelfGem;
+        public Gem SelfGem
+        {
+            get
+            {
+                if ((this._SelfGem == null))
+                {
+                    this._SelfGem = this.transform.Find("SelfGem").GetComponent<Gem>();
+                }
+                return this._SelfGem;
+            }
+        }
+        [SerializeField()]
+        private Button _BlockerButton;
+        public Button BlockerButton
+        {
+            get
+            {
+                if ((this._BlockerButton == null))
+                {
+                    this._BlockerButton = this.transform.Find("Blocker").GetComponent<Button>();
+                }
+                return this._BlockerButton;
+            }
+        }
+        [SerializeField()]
+        private HandList _SelfHandList;
+        public HandList SelfHandList
+        {
+            get
+            {
+                if ((this._SelfHandList == null))
+                {
+                    this._SelfHandList = this.transform.Find("SelfHand").GetComponent<HandList>();
+                }
+                return this._SelfHandList;
+            }
+        }
+        [SerializeField()]
         private InitReplaceDialog _InitReplaceDialog;
         public InitReplaceDialog InitReplaceDialog
         {
@@ -332,6 +347,19 @@ namespace UI
                     this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
                 }
                 return this._InitReplaceDialog;
+            }
+        }
+        [SerializeField()]
+        private Text _TipText;
+        public Text TipText
+        {
+            get
+            {
+                if ((this._TipText == null))
+                {
+                    this._TipText = this.transform.Find("TipText").GetComponent<Text>();
+                }
+                return this._TipText;
             }
         }
         partial void onAwake();

@@ -70,13 +70,13 @@ namespace TouhouHeartstone.Builtin
         {
             new THHEffectAfter<THHCard.DeathEventArg>(PileName.GRAVE,(game,player,card,arg)=>
             {
-                return arg.cards.Contains(card);
+                return arg.infoDic.Any(p=>p.Key==card);
             },(game,player,card,targets)=>
             {
                 return true;
             },async (game,player,card,arg)=>
             {
-                await player.createToken(game,game.getCardDefine<LostSpecter>(),arg.position);
+                await arg.infoDic[card].player.createToken(game,game.getCardDefine<LostSpecter>(),arg.infoDic[card].position);
             })
         };
     }

@@ -96,8 +96,8 @@ namespace TouhouHeartstone.Frontend.Model
             if (args is AutoPlayerCardEventArgs)
             {
                 AutoPlayerCardEventArgs gArgs = args as AutoPlayerCardEventArgs;
-                if (gArgs.eventName == "attack")
-                    gm.Game.attack(gArgs.getProp<int>("playerIndex"), gArgs.getProp<int>("cardRID"), gArgs.getProp<int>("targetCardRID"));
+                //if (gArgs.eventName == "attack")
+                //    gm.Game.attack(gArgs.getProp<int>("playerIndex"), gArgs.getProp<int>("cardRID"), gArgs.getProp<int>("targetCardRID"));
             }
             else if (args is UseCardEventArgs)
             {
@@ -105,7 +105,7 @@ namespace TouhouHeartstone.Frontend.Model
             }
             else if (args is RoundEventArgs)
             {
-                gm.Game.turnEnd((args as RoundEventArgs).PlayerID);
+                //gm.Game.turnEnd((args as RoundEventArgs).PlayerID);
             }
         }
 
@@ -178,7 +178,7 @@ namespace TouhouHeartstone.Frontend.Model
                 position = arg.Position;
                 target = arg.TargetCardRuntimeID;
             }
-            gm.Game.use(args.PlayerID, args.CardRID, position, target);
+            //gm.Game.use(args.PlayerID, args.CardRID, position, target);
         }
     }
 }

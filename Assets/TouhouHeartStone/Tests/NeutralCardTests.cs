@@ -120,6 +120,7 @@ namespace Tests
             game.sortedPlayers[1].cmdTurnEnd(game);
             yield return new WaitForSeconds(.1f);
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].field[0]);
+            yield return new WaitForSeconds(.1f);
 
             Assert.AreEqual(1, game.sortedPlayers[0].field.count);
             Assert.AreEqual(1, game.sortedPlayers[1].field.count);
