@@ -171,7 +171,6 @@ namespace TouhouHeartstone
                 return;
             await triggers.doEvent(new InitEventArg(), arg =>
             {
-                logger.log("Debug", "游戏初始化");
                 //决定玩家行动顺序
                 if (option.sortedPlayers == null || option.sortedPlayers.Length != players.Length)
                 {
@@ -199,11 +198,11 @@ namespace TouhouHeartstone
                     if (option.shuffle)
                         sortedPlayers[i].deck.shuffle(this);
                     int count = i == 0 ? 3 : 4;
-                    Card[] cards = sortedPlayers[i].deck[sortedPlayers[i].deck.count - count, sortedPlayers[i].deck.count - 1];
+                    var cards = sortedPlayers[i].deck[sortedPlayers[i].deck.count - count, sortedPlayers[i].deck.count - 1].Reverse();
                     sortedPlayers[i].deck.moveTo(this, cards, sortedPlayers[i].init, 0);
                 }
-                //logger.log("Debug", "游戏初始化，玩家行动顺序：" + string.Join("、", sortedPlayers.Select(p => p.ToString())) + "，"
-                //    + "初始卡牌：" + string.Join("；", sortedPlayers.Select(p => string.Join("、", p.init.Select(c => c.ToString())))));
+                logger.log("Debug", "游戏初始化，玩家行动顺序：" + string.Join("、", sortedPlayers.Select(p => p.ToString())) + "，"
+                    + "初始卡牌：" + string.Join("；", sortedPlayers.Select(p => string.Join("、", p.init.Select(c => c.ToString())))));
                 return Task.CompletedTask;
             });
         }

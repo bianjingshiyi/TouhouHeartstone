@@ -1628,7 +1628,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &466793699
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1662,17 +1662,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 40
+    m_FontSize: 60
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 3
-    m_MaxSize: 40
+    m_MaxSize: 60
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -2786,9 +2786,10 @@ MonoBehaviour:
   _SelfSkill: {fileID: 929692231}
   _SelfItem: {fileID: 249011635}
   _SelfGem: {fileID: 18907200}
-  _BlockerButton: {fileID: 0}
+  _BlockerButton: {fileID: 748446641}
   _SelfHandList: {fileID: 2432038108468695176}
   _InitReplaceDialog: {fileID: 203521522}
+  _TipText: {fileID: 0}
   _skins:
   - _id: 8193
     _cardName: "\u9C81\u83BD\u7684\u5996\u7CBE"
@@ -2811,6 +2812,9 @@ MonoBehaviour:
     _cardName: "\u661F\u5C51\u9B54\u5F39"
     _image: {fileID: 21300000, guid: 3be03946d2ae2294c9596dfe2bbebaa4, type: 3}
     _desc: 
+  _tipTimer:
+    startTime: -1
+    duration: 1
 --- !u!1001 &1031994274
 PrefabInstance:
   m_ObjectHideFlags: 0

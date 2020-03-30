@@ -143,6 +143,8 @@ namespace TouhouHeartstone
             await setGem(game, gem - card.getCost());
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>
             {
+                THHPlayer player = arg.player;
+                card = arg.card;
                 game.logger.log(arg.player + "使用" + arg.card);
                 if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.servant))
                 {
@@ -165,16 +167,16 @@ namespace TouhouHeartstone
                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.spell))
                 {
                     //法术卡，释放效果然后丢进墓地
-                    //player["Hand"].moveTo(card, player["Warp"], player["Warp"].count);
-                    //if (card.define.effects != null && card.define.effects.Length > 0)
-                    //{
-                    //    Effect effect = card.define.effects.FirstOrDefault(e => { return card.pile.name == e.pile && e.trigger == "onUse"; });
-                    //    if (effect != null)
-                    //        effect.execute(engine, player, card, targetCards);
-                    //}
-                    //player["Warp"].moveTo(card, player["Grave"], player["Grave"].count);
+                    player.hand.remove(game, card);
+                    IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    if (effect != null)
+                    {
+                        await effect.execute(game, player, card, new object[] { new ActiveEventArg() { player = player } }, new object[0]);
+                    }
+                    player.grave.add(game, card);
                 }
             });
+            await game.updateDeath();
             return true;
         }
         public class UseEventArg : EventArg
@@ -186,6 +188,7 @@ namespace TouhouHeartstone
         }
         public class ActiveEventArg : EventArg
         {
+            public THHPlayer player;
         }
         public class BattleCryEventArg : EventArg
         {
@@ -251,6 +254,15 @@ namespace TouhouHeartstone
             public CardDefine define;
             public int position;
             public Card card;
+        }
+        public int getSpellDamage(int baseDamage)
+        {
+            int result = baseDamage;
+            foreach (var card in field)
+            {
+                result += card.getSpellDamage();
+            }
+            return result;
         }
         #region Command
         public void cmdInitReplace(THHGame game, params Card[] cards)

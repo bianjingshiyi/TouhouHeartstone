@@ -13,6 +13,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; } = 1;
         public override int attack { get; } = 1;
         public override int life { get; } = 1;
+        public override string[] tags { get; } = new string[] { CardTag.FAIRY };
         public override string[] keywords { get; } = new string[] { Keyword.CHARGE };
         public override IEffect[] effects { get; } = new Effect[0];
     }
@@ -91,6 +92,18 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; } = 5;
         public override int attack { get; } = 4;
         public override int life { get; } = 3;
+        public override string[] keywords { get; } = new string[0];
+        public override IEffect[] effects { get; } = new IEffect[0];
+    }
+    public class DrizzleFairy : ServantCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x006;
+        public override int id { get; set; } = ID;
+        public override int cost { get; } = 1;
+        public override int attack { get; } = 1;
+        public override int life { get; } = 2;
+        public override int spellDamage { get; } = 1;
+        public override string[] tags { get; } = new string[] { CardTag.FAIRY };
         public override string[] keywords { get; } = new string[0];
         public override IEffect[] effects { get; } = new IEffect[0];
     }

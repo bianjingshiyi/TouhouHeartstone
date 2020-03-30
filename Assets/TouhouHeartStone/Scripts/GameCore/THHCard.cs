@@ -75,6 +75,10 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.CHARGE, value);
         }
+        public static int getSpellDamage(this Card card)
+        {
+            return card.getProp<int>(nameof(ServantCardDefine.spellDamage));
+        }
         public static bool isUsable(this Card card, THHGame game, THHPlayer player, out string info)
         {
             if (game.currentPlayer != player)//不是你的回合
@@ -146,9 +150,9 @@ namespace TouhouHeartstone
         {
             return damage(new Card[] { card }, game, value);
         }
-        public static async Task damage(this Card[] cards, THHGame game, int value)
+        public static async Task damage(this IEnumerable<Card> cards, THHGame game, int value)
         {
-            await game.triggers.doEvent(new DamageEventArg() { cards = cards, value = value }, arg =>
+            await game.triggers.doEvent(new DamageEventArg() { cards = cards.ToArray(), value = value }, arg =>
             {
                 foreach (Card card in arg.cards)
                 {

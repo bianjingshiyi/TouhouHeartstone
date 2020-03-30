@@ -16,6 +16,7 @@ namespace TouhouHeartstone
         public abstract int attack { get; }
         public abstract int life { get; }
         public virtual int spellDamage { get; } = 0;
+        public virtual string[] tags { get; } = new string[0];
         /// <summary>
         /// 关键词
         /// </summary>
