@@ -145,19 +145,26 @@ namespace TouhouHeartstone
             {
                 THHPlayer player = arg.player;
                 card = arg.card;
+                targets = arg.targets;
                 game.logger.log(arg.player + "使用" + arg.card);
                 if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.servant))
                 {
                     //随从卡，将卡置入战场
                     await tryPutIntoField(game, arg.player.hand, arg.card, arg.position);
-                    IEffect effect = arg.card.define.getEffectOn<BattleCryEventArg>(game.triggers);
+                    IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
                     if (effect != null)
-                    {
-                        await game.triggers.doEvent(new BattleCryEventArg() { player = arg.player, card = arg.card, effect = effect, targets = arg.targets }, arg2 =>
+                        await effect.execute(game, player, card, new object[] { new ActiveEventArg()
                         {
-                            return arg2.effect.execute(game, arg2.player, arg2.card, new object[] { arg2 }, arg2.targets);
-                        });
-                    }
+                            player = player
+                        } }, targets);
+                    //IEffect effect = arg.card.define.getEffectOn<BattleCryEventArg>(game.triggers);
+                    //if (effect != null)
+                    //{
+                    //    await game.triggers.doEvent(new BattleCryEventArg() { player = arg.player, card = arg.card, effect = effect, targets = arg.targets }, arg2 =>
+                    //    {
+                    //        return arg2.effect.execute(game, arg2.player, arg2.card, new object[] { arg2 }, arg2.targets);
+                    //    });
+                    //}
                 }
                 else if (card.define is SkillCardDefine)
                 {
@@ -169,10 +176,7 @@ namespace TouhouHeartstone
                     //法术卡，释放效果然后丢进墓地
                     player.hand.remove(game, card);
                     IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    if (effect != null)
-                    {
-                        await effect.execute(game, player, card, new object[] { new ActiveEventArg() { player = player } }, new object[0]);
-                    }
+                    await effect.execute(game, player, card, new object[] { new ActiveEventArg() { player = player } }, targets);
                     player.grave.add(game, card);
                 }
             });

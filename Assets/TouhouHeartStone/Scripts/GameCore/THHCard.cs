@@ -13,11 +13,22 @@ namespace TouhouHeartstone
         }
         public static int getAttack(this Card card)
         {
-            return card.getProp<int>(nameof(ServantCardDefine.attack));
+            int result = card.getProp<int>(nameof(ServantCardDefine.attack));
+            if (result < 0)
+                result = 0;
+            return result;
+        }
+        public static void setAttack(this Card card, int value)
+        {
+            card.setProp(nameof(ServantCardDefine.attack), value);
         }
         public static int getLife(this Card card)
         {
             return card.getProp<int>(nameof(ServantCardDefine.life));
+        }
+        public static void setLife(this Card card, int value)
+        {
+            card.setProp(nameof(ServantCardDefine.life), value);
         }
         public static int getArmor(this Card card)
         {
@@ -169,37 +180,51 @@ namespace TouhouHeartstone
         }
         public static async Task heal(IEnumerable<Card> cards, THHGame game, int value)
         {
-            foreach (Card card in cards)
-            {
-                await card.heal(game, value);
-            }
-        }
-        public static async Task heal(this Card card, THHGame game, int value)
-        {
-            if (card.getCurrentLife() >= card.getLife())
+            cards = cards.Where(c => c.getCurrentLife() < c.getLife());
+            if (cards.Count() < 1)
                 return;
-            await game.triggers.doEvent(new HealEventArg() { card = card, value = value }, arg =>
+            await game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(), value = value }, arg =>
             {
-                card = arg.card;
+                cards = arg.cards;
                 value = arg.value;
-                if (card.getCurrentLife() + value < card.getLife())
+                foreach (Card card in cards)
                 {
-                    card.setCurrentLife(card.getCurrentLife() + value);
-                    game.logger.log(card + "恢复" + value + "点生命值，生命值=>" + card.getCurrentLife());
-                }
-                else
-                {
-                    int healedValue = card.getLife() - card.getCurrentLife();
-                    card.setCurrentLife(card.getLife());
-                    game.logger.log(card + "恢复" + healedValue + "点生命值，生命值=>" + card.getCurrentLife());
+                    if (card.getCurrentLife() + value < card.getLife())
+                    {
+                        card.setCurrentLife(card.getCurrentLife() + value);
+                        arg.infoDic.Add(card, new HealEventArg.Info()
+                        {
+                            healedValue = value
+                        });
+                        game.logger.log(card + "恢复" + value + "点生命值，生命值=>" + card.getCurrentLife());
+                    }
+                    else
+                    {
+                        int healedValue = card.getLife() - card.getCurrentLife();
+                        card.setCurrentLife(card.getLife());
+                        arg.infoDic.Add(card, new HealEventArg.Info()
+                        {
+                            healedValue = healedValue
+                        });
+                        game.logger.log(card + "恢复" + healedValue + "点生命值，生命值=>" + card.getCurrentLife());
+                    }
                 }
                 return Task.CompletedTask;
             });
         }
+        public static async Task heal(this Card card, THHGame game, int value)
+        {
+            await heal(new Card[] { card }, game, value);
+        }
         public class HealEventArg : EventArg
         {
-            public Card card;
+            public Card[] cards;
             public int value;
+            public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
+            public class Info
+            {
+                public int healedValue;
+            }
         }
         public static Task die(this Card card, THHGame game, DeathEventArg.Info info)
         {

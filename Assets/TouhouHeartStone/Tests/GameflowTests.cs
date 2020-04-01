@@ -404,4 +404,68 @@ namespace Tests
             })
         };
     }
+    class TestServant_ZeroAttack : ServantCardDefine
+    {
+        public const int ID = 0x00110003;
+        public override int id { get; set; } = ID;
+        public override int cost { get; } = 1;
+        public override int attack { get; } = 0;
+        public override int life { get; } = 4;
+        public override IEffect[] effects { get; } = new IEffect[]
+        {
+        };
+    }
+    class TestServant_Reverse : ServantCardDefine
+    {
+        public const int ID = 0x00110004;
+        public override int id { get; set; } = ID;
+        public override int cost { get; } = 2;
+        public override int attack { get; } = 2;
+        public override int life { get; } = 2;
+        public override IEffect[] effects { get; } = new IEffect[]
+        {
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,player,card,arg)=>
+            {
+                return true;
+            },(game,player,card,targets)=>
+            {
+                return true;
+            },(game,player,card,arg,targets)=>
+            {
+                return Task.CompletedTask;
+            })
+        };
+    }
+    class TestServant_Buff : ServantCardDefine
+    {
+        public const int ID = 0x00110005;
+        public override int id { get; set; } = ID;
+        public override int cost { get; } = 1;
+        public override int attack { get; } = 1;
+        public override int life { get; } = 1;
+        public override IEffect[] effects { get; } = new IEffect[]
+        {
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,player,card,arg)=>
+            {
+                return true;
+            },(game,player,card,targets)=>
+            {
+                return true;
+            },(game,player,card,arg,targets)=>
+            {
+                card.addBuff(game,new TestBuff());
+                return Task.CompletedTask;
+            })
+        };
+        class TestBuff : Buff
+        {
+            public const int ID = 0x001;
+            public override int id { get; } = ID;
+            public override PropModifier[] modifiers { get; } = new PropModifier[]
+            {
+                new AttackModifier(1),
+                new LifeModifier(1)
+            };
+        }
+    }
 }

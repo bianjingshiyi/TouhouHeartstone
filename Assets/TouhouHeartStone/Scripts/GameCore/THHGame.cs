@@ -325,8 +325,13 @@ namespace TouhouHeartstone
                     }
                 }
             }
-            logger.log("结算" + string.Join("，", deathDic.Keys) + "的死亡");
-            return deathDic.Keys.die(this, deathDic);
+            if (deathDic.Count > 0)
+            {
+                logger.log("结算" + string.Join("，", deathDic.Keys) + "的死亡");
+                return deathDic.Keys.die(this, deathDic);
+            }
+            else
+                return Task.CompletedTask;
         }
         internal async Task gameEnd(THHPlayer[] winners)
         {
