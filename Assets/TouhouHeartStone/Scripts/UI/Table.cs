@@ -47,11 +47,16 @@ namespace UI
             }
             if (player != null)
             {
+                SelfSkill.asButton.onClick.RemoveAllListeners();
                 TurnEndButton.onClick.RemoveAllListeners();
             }
             this.player = player;
             if (player != null)
             {
+                SelfSkill.asButton.onClick.AddListener(() =>
+                {
+                    player.cmdUse(game, SelfSkill.card, 0);
+                });
                 TurnEndButton.onClick.AddListener(() =>
                 {
                     player.cmdTurnEnd(game);
@@ -78,7 +83,7 @@ namespace UI
             SelfMaster.update(player.master, getSkin(player.master));
             if (player.skill != null)
             {
-                SelfSkill.update(player.skill, getSkin(player.skill));
+                SelfSkill.update(game, player, player, player.skill, getSkin(player.skill));
                 SelfSkill.display();
             }
             else
@@ -148,7 +153,7 @@ namespace UI
             EnemyMaster.update(opponent.master, getSkin(opponent.master));
             if (opponent.skill != null)
             {
-                EnemySkill.update(opponent.skill, getSkin(opponent.skill));
+                EnemySkill.update(game, player, opponent, opponent.skill, getSkin(opponent.skill));
                 EnemySkill.display();
             }
             else
@@ -160,7 +165,7 @@ namespace UI
             });
             EnemyHandList.sortItems((a, b) => opponent.hand.indexOf(a.Card.card) - opponent.hand.indexOf(b.Card.card));
         }
-        CardSkinData getSkin(TouhouCardEngine.Card card)
+        public CardSkinData getSkin(TouhouCardEngine.Card card)
         {
             return skinDic.ContainsKey(card.define.id) ? skinDic[card.define.id] : null;
         }

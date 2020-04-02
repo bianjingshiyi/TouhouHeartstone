@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 namespace TouhouHeartstone.Builtin
@@ -15,7 +16,7 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; } = 1;
         public override string[] tags { get; } = new string[] { CardTag.FAIRY };
         public override string[] keywords { get; } = new string[] { Keyword.CHARGE };
-        public override IEffect[] effects { get; } = new Effect[0];
+        public override IEffect[] effects { get; } = new IEffect[0];
     }
     /// <summary>
     /// 人类村落守卫，325，嘲讽

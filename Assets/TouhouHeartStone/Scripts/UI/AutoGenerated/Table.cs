@@ -49,6 +49,7 @@ namespace UI
             this._SelfHandList = this.transform.Find("SelfHand").GetComponent<HandList>();
             this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
             this._TipText = this.transform.Find("TipText").GetComponent<Text>();
+            this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -360,6 +361,19 @@ namespace UI
                     this._TipText = this.transform.Find("TipText").GetComponent<Text>();
                 }
                 return this._TipText;
+            }
+        }
+        [SerializeField()]
+        private Card _LargeCard;
+        public Card LargeCard
+        {
+            get
+            {
+                if ((this._LargeCard == null))
+                {
+                    this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
+                }
+                return this._LargeCard;
             }
         }
         partial void onAwake();

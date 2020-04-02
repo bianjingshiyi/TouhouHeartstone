@@ -62,6 +62,11 @@ namespace TouhouHeartstone
         {
             return 1;
         }
+        /// <summary>
+        /// 技能是否已经使用过？
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
         public static bool isUsed(this Card card)
         {
             return card.getProp<bool>("isUsed");

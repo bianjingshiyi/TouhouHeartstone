@@ -26,10 +26,7 @@ namespace Game
         }
         private void Start()
         {
-            game = new THHGame(_option,
-            new Reimu(), new TotematicCall(),
-            new Marisa(), new StartdustBullet(),
-            new RashFairy())
+            game = new THHGame(_option, BuiltinCards.getCardDefines())
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),

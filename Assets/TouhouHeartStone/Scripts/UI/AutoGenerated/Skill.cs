@@ -29,8 +29,10 @@ namespace UI
             this._Mask = this.transform.Find("Mask").GetComponent<Mask>();
             this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
             this._FrameImage = this.transform.Find("Frame").GetComponent<Image>();
+            this._Frame_Image = this.transform.Find("Frame").Find("Image").GetComponent<Image>();
             this._CostImage = this.transform.Find("Cost").GetComponent<Image>();
             this._CostText = this.transform.Find("Cost").Find("CostText").GetComponent<Text>();
+            this._BackImage = this.transform.Find("Back").GetComponent<Image>();
         }
         [SerializeField()]
         private Button m_as_Button;
@@ -85,6 +87,19 @@ namespace UI
             }
         }
         [SerializeField()]
+        private Image _Frame_Image;
+        public Image Frame_Image
+        {
+            get
+            {
+                if ((this._Frame_Image == null))
+                {
+                    this._Frame_Image = this.transform.Find("Frame").Find("Image").GetComponent<Image>();
+                }
+                return this._Frame_Image;
+            }
+        }
+        [SerializeField()]
         private Image _CostImage;
         public Image CostImage
         {
@@ -110,6 +125,51 @@ namespace UI
                 return this._CostText;
             }
         }
+        [SerializeField()]
+        private Image _BackImage;
+        public Image BackImage
+        {
+            get
+            {
+                if ((this._BackImage == null))
+                {
+                    this._BackImage = this.transform.Find("Back").GetComponent<Image>();
+                }
+                return this._BackImage;
+            }
+        }
         partial void onAwake();
+        public enum IsUsable
+        {
+            False,
+            True,
+        }
+        public IsUsable IsUsableController
+        {
+            get
+            {
+                return ((IsUsable)(Enum.Parse(typeof(IsUsable), this.getController("IsUsable", Enum.GetNames(typeof(IsUsable))))));
+            }
+            set
+            {
+                this.setController("IsUsable", Enum.GetName(typeof(IsUsable), value));
+            }
+        }
+        public enum IsUsed
+        {
+            False,
+            True,
+        }
+        public IsUsed IsUsedController
+        {
+            get
+            {
+                return ((IsUsed)(Enum.Parse(typeof(IsUsed), this.getController("IsUsed", Enum.GetNames(typeof(IsUsed))))));
+            }
+            set
+            {
+                this.setController("IsUsed", Enum.GetName(typeof(IsUsed), value));
+            }
+        }
     }
 }

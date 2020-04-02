@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
@@ -237,6 +238,10 @@ namespace TouhouHeartstone
         }
         public async Task<bool> createToken(THHGame game, CardDefine define, int position)
         {
+            if (game == null)
+                throw new ArgumentNullException(nameof(game));
+            if (define == null)
+                throw new ArgumentNullException(nameof(define));
             if (field.count >= field.maxCount)
                 return false;
             await game.triggers.doEvent(new CreateTokenEventArg() { player = this, define = define, position = position }, async arg =>
