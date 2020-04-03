@@ -63,6 +63,34 @@ namespace TouhouHeartstone
             return 1;
         }
         /// <summary>
+        /// 这个角色能否进行攻击？
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public static bool canAttack(this Card card)
+        {
+            if (!card.isReady())//还没准备好
+                return false;
+            if (card.getAttackTimes() >= card.getMaxAttackTimes())//已经攻击过了
+                return false;
+            return true;
+        }
+        /// <summary>
+        /// 这个角色能否对目标进行攻击？
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static bool isAttackable(this Card card, THHGame game, THHPlayer player, Card target)
+        {
+            if (target == game.getOpponent(player).master || game.getOpponent(player).field.Contains(target))
+                return true;
+            else
+                return false;
+        }
+        /// <summary>
         /// 技能是否已经使用过？
         /// </summary>
         /// <param name="card"></param>
@@ -141,9 +169,7 @@ namespace TouhouHeartstone
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, Card target)
         {
-            if (!card.isReady())//还没准备好
-                return false;
-            if (card.getAttackTimes() >= card.getMaxAttackTimes())//已经攻击过了
+            if (!card.canAttack())
                 return false;
             await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
             {

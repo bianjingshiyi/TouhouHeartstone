@@ -40,10 +40,12 @@ namespace UI
         {
             if (game != null)
             {
+                //game.triggers.onEventAfter -= Triggers_onEventAfter;
             }
             this.game = game;
             if (game != null)
             {
+                //game.triggers.onEventAfter += Triggers_onEventAfter;
             }
             if (player != null)
             {
@@ -94,11 +96,11 @@ namespace UI
                 item.Card.update(card, getSkin(card));
             });
             SelfHandList.sortItems((a, b) => player.hand.indexOf(a.Card.card) - player.hand.indexOf(b.Card.card));
-            SelfFieldList.updateItems(player.field, (item, card) => item.card == card, (item, card) =>
-            {
-                item.update(card, getSkin(card));
-            });
-            SelfFieldList.sortItems((a, b) => player.field.indexOf(a.card) - player.field.indexOf(b.card));
+            //SelfFieldList.updateItems(player.field, (item, card) => item.card == card, (item, card) =>
+            //{
+            //    item.update(card, getSkin(card));
+            //});
+            //SelfFieldList.sortItems((a, b) => player.field.indexOf(a.card) - player.field.indexOf(b.card));
             if (game.currentPlayer == player)
             {
                 TurnEndButton.interactable = true;
@@ -127,11 +129,11 @@ namespace UI
                 item.Card.update(card, null);
             });
             EnemyHandList.sortItems((a, b) => opponent.hand.indexOf(a.Card.card) - opponent.hand.indexOf(b.Card.card));
-            EnemyFieldList.updateItems(opponent.field, (item, card) => item.card == card, (item, card) =>
-            {
-                item.update(card, getSkin(card));
-            });
-            EnemyFieldList.sortItems((a, b) => opponent.field.indexOf(a.card) - opponent.field.indexOf(b.card));
+            //EnemyFieldList.updateItems(opponent.field, (item, card) => item.card == card, (item, card) =>
+            //{
+            //    item.update(card, getSkin(card));
+            //});
+            //EnemyFieldList.sortItems((a, b) => opponent.field.indexOf(a.card) - opponent.field.indexOf(b.card));
 
             IRequest request = game.answers.getLastRequest(player.id);
             if (request is InitReplaceRequest initReplace)

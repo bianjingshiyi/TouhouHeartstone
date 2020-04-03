@@ -31,14 +31,18 @@ namespace UI
                         //放置随从
                         if (Card.card.define is ServantCardDefine)
                         {
-                            list.addChild(table.ServantPlaceHolder);
-                            var children = list.getChildren();
+                            table.SelfFieldList.addChild(table.ServantPlaceHolder);
+                            var children = table.SelfFieldList.getChildren();
                             int index = 0;
                             for (int i = 0; i < children.Length; i++)
                             {
-                                if (children[i].transform.position.x > eventData.position.x)
+                                Debug.Log(children[i].gameObject.name + ":" + children[i].transform.position.x + ":" + eventData.position.x);
+                                if (children[i].transform.position.x < eventData.position.x)
+                                {
                                     index = i + 1;
+                                }
                             }
+                            Debug.Log("设置Index为" + index);
                             table.ServantPlaceHolder.rectTransform.SetSiblingIndex(index);
                             table.ServantPlaceHolder.display();
                         }
