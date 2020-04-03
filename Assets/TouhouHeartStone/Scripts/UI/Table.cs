@@ -110,6 +110,29 @@ namespace UI
                 TurnEndButton.GetComponent<Image>().color = Color.gray;
             }
 
+            THHPlayer opponent = game.getOpponent(player);
+            if (opponent == null)
+                return;
+            EnemyMaster.update(opponent.master, getSkin(opponent.master));
+            if (opponent.skill != null)
+            {
+                EnemySkill.update(game, player, opponent, opponent.skill, getSkin(opponent.skill));
+                EnemySkill.display();
+            }
+            else
+                EnemySkill.hide();
+            EnemyGem.Text.text = opponent.gem.ToString();
+            EnemyHandList.updateItems(opponent.hand.ToArray(), (item, card) => item.Card.card == card, (item, card) =>
+            {
+                item.Card.update(card, null);
+            });
+            EnemyHandList.sortItems((a, b) => opponent.hand.indexOf(a.Card.card) - opponent.hand.indexOf(b.Card.card));
+            EnemyFieldList.updateItems(opponent.field, (item, card) => item.card == card, (item, card) =>
+            {
+                item.update(card, getSkin(card));
+            });
+            EnemyFieldList.sortItems((a, b) => opponent.field.indexOf(a.card) - opponent.field.indexOf(b.card));
+
             IRequest request = game.answers.getLastRequest(player.id);
             if (request is InitReplaceRequest initReplace)
             {
@@ -146,24 +169,6 @@ namespace UI
             {
                 InitReplaceDialog.hide();
             }
-
-            THHPlayer opponent = game.getOpponent(player);
-            if (opponent == null)
-                return;
-            EnemyMaster.update(opponent.master, getSkin(opponent.master));
-            if (opponent.skill != null)
-            {
-                EnemySkill.update(game, player, opponent, opponent.skill, getSkin(opponent.skill));
-                EnemySkill.display();
-            }
-            else
-                EnemySkill.hide();
-            EnemyGem.Text.text = opponent.gem.ToString();
-            EnemyHandList.updateItems(opponent.hand.ToArray(), (item, card) => item.Card.card == card, (item, card) =>
-            {
-                item.Card.update(card, null);
-            });
-            EnemyHandList.sortItems((a, b) => opponent.hand.indexOf(a.Card.card) - opponent.hand.indexOf(b.Card.card));
         }
         public CardSkinData getSkin(TouhouCardEngine.Card card)
         {

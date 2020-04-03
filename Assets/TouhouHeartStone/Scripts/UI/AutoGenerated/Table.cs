@@ -32,6 +32,7 @@ namespace UI
             this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
             this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
             this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
+            this._ServantPlaceHolder = this.transform.Find("Fields").Find("ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
             this._EnemyHandList = this.transform.Find("EnemyHand").GetComponent<HandList>();
             this._EnemyGem = this.transform.Find("EnemyGem").GetComponent<Gem>();
             this._EnemyMaster = this.transform.Find("EnemyMaster").GetComponent<Master>();
@@ -140,6 +141,19 @@ namespace UI
                     this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
                 }
                 return this._TimeoutSlider;
+            }
+        }
+        [SerializeField()]
+        private ServantPlaceHolder _ServantPlaceHolder;
+        public ServantPlaceHolder ServantPlaceHolder
+        {
+            get
+            {
+                if ((this._ServantPlaceHolder == null))
+                {
+                    this._ServantPlaceHolder = this.transform.Find("Fields").Find("ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
+                }
+                return this._ServantPlaceHolder;
             }
         }
         [SerializeField()]
