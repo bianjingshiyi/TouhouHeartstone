@@ -33,8 +33,8 @@ namespace Game
                 logger = new UnityLogger()
             };
             (game.answers as AnswerManager).game = game;
-            THHPlayer localPlayer = game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat<CardDefine>(game.getCardDefine<RashFairy>(), 30));
-            THHPlayer aiPlayer = game.createPlayer(2, "玩家2", game.getCardDefine<Reimu>(), Enumerable.Repeat<CardDefine>(game.getCardDefine<RashFairy>(), 30));
+            THHPlayer localPlayer = game.createPlayer(1, "本地玩家", game.getCardDefine<Reimu>(), Enumerable.Repeat<CardDefine>(game.getCardDefine<RashFairy>(), 30));
+            THHPlayer aiPlayer = game.createPlayer(2, "AI", game.getCardDefine<Reimu>(), Enumerable.Repeat<CardDefine>(game.getCardDefine<RashFairy>(), 30));
             //本地玩家用UI
             _table.setGame(game, localPlayer);
             //AI玩家用AI

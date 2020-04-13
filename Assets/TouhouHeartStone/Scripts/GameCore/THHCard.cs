@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
-
+using TouhouCardEngine.Interfaces;
 namespace TouhouHeartstone
 {
     public static class THHCard
@@ -166,6 +166,24 @@ namespace TouhouHeartstone
             }
             info = null;
             return true;
+        }
+        public static Card[] getAvaliableTargets(this Card card, THHGame game)
+        {
+            IEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            if (effect == null)
+                return null;
+            List<Card> targetList = new List<Card>();
+            foreach (THHPlayer player in game.players)
+            {
+                if (effect.checkTarget(game, null, card, new object[] { player.master }))
+                    targetList.Add(player.master);
+                foreach (Card servant in player.field)
+                {
+                    if (effect.checkTarget(game, null, card, new object[] { servant }))
+                        targetList.Add(servant);
+                }
+            }
+            return targetList.ToArray();
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, Card target)
         {

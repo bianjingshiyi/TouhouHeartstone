@@ -13,10 +13,10 @@ namespace UI
 
             Image.sprite = skin.image;
             HpText.text = card.getCurrentLife().ToString();
-            if (card.getCurrentLife() == card.getLife())
-                HpText.color = Color.white;
-            else
-                HpText.color = Color.red;
+            //if (card.getCurrentLife() == card.getLife())
+            //    HpText.color = Color.white;
+            //else
+            //    HpText.color = Color.red;
             if (card.getAttack() > 0)
             {
                 AttackText.text = card.getAttack().ToString();

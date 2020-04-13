@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7552501257686591096}
   - component: {fileID: 7552501257686591093}
   - component: {fileID: 7552501257686591094}
-  - component: {fileID: 7552501257686591095}
   m_Layer: 5
   m_Name: HpText
   m_TagString: Untagged
@@ -78,22 +77,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 3
---- !u!114 &7552501257686591095
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7552501257686591097}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1670825535, guid: 94f5ecf3c8f5a394b91a889848c86e7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  viewAdapterTypeName: UnityWeld.Binding.Adapters.IntToStringAdapter
-  viewAdapterOptions: {fileID: 0}
-  viewModelPropertyName: TouhouHeartstone.Frontend.ViewModel.CharacterInfoViewModel.HP
-  viewPropertyName: UnityEngine.UI.Text.text
 --- !u!1 &7552501258077180535
 GameObject:
   m_ObjectHideFlags: 0
@@ -119,7 +102,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7552501258077180535}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -172,6 +155,7 @@ MonoBehaviour:
   _HpText: {fileID: 7552501257686591094}
   _ArmorImage: {fileID: 7552501259074735385}
   _ArmorText: {fileID: 7552501259472621982}
+  _attackThreshold: 50
 --- !u!1 &7552501258202321411
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,7 +267,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 42.74005}
+  m_SizeDelta: {x: 0, y: 83.33334}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7552501258534462118
 CanvasRenderer:
@@ -671,7 +655,6 @@ GameObject:
   - component: {fileID: 7552501259284052184}
   - component: {fileID: 7552501259284052181}
   - component: {fileID: 7552501259284052182}
-  - component: {fileID: 7552501259284052183}
   m_Layer: 5
   m_Name: AttackText
   m_TagString: Untagged
@@ -738,22 +721,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 3
---- !u!114 &7552501259284052183
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7552501259284052185}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1670825535, guid: 94f5ecf3c8f5a394b91a889848c86e7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  viewAdapterTypeName: UnityWeld.Binding.Adapters.IntToStringAdapter
-  viewAdapterOptions: {fileID: 0}
-  viewModelPropertyName: TouhouHeartstone.Frontend.ViewModel.CharacterInfoViewModel.Atk
-  viewPropertyName: UnityEngine.UI.Text.text
 --- !u!1 &7552501259472621953
 GameObject:
   m_ObjectHideFlags: 0

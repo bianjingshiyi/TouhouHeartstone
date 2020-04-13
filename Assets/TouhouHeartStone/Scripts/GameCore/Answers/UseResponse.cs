@@ -6,6 +6,6 @@ namespace TouhouHeartstone
     {
         public int cardId { get; set; }
         public int position { get; set; }
-        public int[] targetsId { get; set; }
+        public int[] targetsId { get; set; } = new int[0];
     }
 }

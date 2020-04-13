@@ -21,7 +21,10 @@ namespace UI
                 Card.rectTransform.position = eventData.position;
                 HandList list = GetComponentInParent<HandList>();
                 if (list.rectTransform.rect.Contains(list.rectTransform.InverseTransformPoint(eventData.position)))
+                {
                     Card.rectTransform.localScale = Vector3.one;
+                    removePlaceHolder();
+                }
                 else
                 {
                     Table table = GetComponentInParent<Table>();
@@ -36,19 +39,21 @@ namespace UI
                             int index = 0;
                             for (int i = 0; i < children.Length; i++)
                             {
+                                if (children[i] == table.ServantPlaceHolder)
+                                    continue;
                                 Debug.Log(children[i].gameObject.name + ":" + children[i].transform.position.x + ":" + eventData.position.x);
                                 if (children[i].transform.position.x < eventData.position.x)
                                 {
                                     index = i + 1;
                                 }
                             }
-                            Debug.Log("设置Index为" + index);
+                            //Debug.Log("设置Index为" + index);
                             table.ServantPlaceHolder.rectTransform.SetSiblingIndex(index);
                             table.ServantPlaceHolder.display();
                         }
                         else
                         {
-                            removePlaceHolder(table);
+                            removePlaceHolder();
                         }
                     }
                     else
@@ -56,15 +61,20 @@ namespace UI
                         Card.rectTransform.localScale = Vector3.one;
                         Card.rectTransform.localPosition = Vector2.zero;
                         table.showTip(info);
+                        removePlaceHolder();
                     }
                 }
             }
             else
+            {
                 Card.rectTransform.localPosition = Vector2.zero;
+                removePlaceHolder();
+            }
         }
 
-        private static void removePlaceHolder(Table table)
+        private void removePlaceHolder()
         {
+            Table table = GetComponentInParent<Table>();
             table.addChild(table.ServantPlaceHolder);
             table.ServantPlaceHolder.hide();
         }
@@ -89,6 +99,7 @@ namespace UI
                     table.showTip(info);
                 }
             }
+            removePlaceHolder();
         }
     }
 }

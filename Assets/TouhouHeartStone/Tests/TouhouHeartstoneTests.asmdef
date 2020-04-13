@@ -5,7 +5,8 @@
         "UnityEditor.TestRunner",
         "TouhouCardEngine",
         "TouhouHeartstone",
-        "Plugins"
+        "Plugins",
+        "Game"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

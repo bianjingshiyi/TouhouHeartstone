@@ -1,0 +1,18 @@
+{
+    "name": "Game",
+    "references": [
+        "GUID:8d127f57985fd644ca5546f1641c002f",
+        "GUID:2c739507fed9dc24e913037d070aa4a6",
+        "GUID:f442f5613a5123d4aac2450609bd288a",
+        "GUID:e8c1681e1339373419eabe5626d9809b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

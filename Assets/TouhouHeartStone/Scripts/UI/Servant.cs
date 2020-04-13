@@ -7,52 +7,49 @@ namespace UI
     partial class Servant : IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         public TouhouCardEngine.Card card { get; private set; }
-        public void update(TouhouCardEngine.Card card, CardSkinData skin)
+        public void update(THHPlayer player, TouhouCardEngine.Card card, CardSkinData skin)
         {
             this.card = card;
 
+            Table table = GetComponentInParent<Table>();
             if (skin != null)
             {
                 Image.sprite = skin.image;
             }
+            if (table.player == player && card.canAttack())
+                CanAttackController = CanAttack.True;
+            else
+                CanAttackController = CanAttack.False;
         }
         [SerializeField]
-        float _attackThreshold = 50;
+        float _attackThreshold = 70;
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
             if (!card.canAttack())
                 return;
-            //拉动距离也应该有一个阈值
-            if (Vector2.Distance(rectTransform.position, eventData.position) > _attackThreshold)
-            {
-                //播放一个变大的动画？
-                rectTransform.localScale = Vector3.one * 1.1f;
-                //创建指针
-            }
-            else
-            {
-                rectTransform.localScale = Vector3.one;
-            }
         }
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
             if (!card.canAttack())
                 return;
             Table table = GetComponentInParent<Table>();
-            //移动指针
-            //高亮标记所有敌人
-            THHPlayer opponent = table.game.getOpponent(table.player);
-            if (card.isAttackable(table.game, table.player, opponent.master))
+            //拉动距离也应该有一个阈值
+            if (Vector2.Distance(rectTransform.position, eventData.position) > _attackThreshold)
             {
-
-            }
-            else
-            {
-
-            }
-            foreach (var servant in table.EnemyFieldList)
-            {
-                if (card.isAttackable(table.game, table.player, servant.card))
+                //播放一个变大的动画？
+                rectTransform.localScale = Vector3.one * 1.1f;
+                //显示指针
+                table.AttackArrowImage.display();
+                table.AttackArrowImage.rectTransform.position = rectTransform.position;
+                //移动指针
+                table.AttackArrowImage.rectTransform.eulerAngles = new Vector3(0, 0,
+                    Vector2.Angle(rectTransform.position, eventData.position));
+                table.AttackArrowImage.rectTransform.sizeDelta = new Vector2(
+                    table.AttackArrowImage.rectTransform.sizeDelta.x,
+                    Vector2.Distance(rectTransform.position, eventData.position));
+                //高亮标记所有敌人
+                THHPlayer opponent = table.game.getOpponent(table.player);
+                if (card.isAttackable(table.game, table.player, opponent.master))
                 {
 
                 }
@@ -60,6 +57,21 @@ namespace UI
                 {
 
                 }
+                foreach (var servant in table.EnemyFieldList)
+                {
+                    if (card.isAttackable(table.game, table.player, servant.card))
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
+            else
+            {
+                rectTransform.localScale = Vector3.one;
             }
         }
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)

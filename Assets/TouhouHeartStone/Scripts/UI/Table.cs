@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,17 +34,20 @@ namespace UI
                 else
                     SelfHandList.expand();
             });
+            AttackArrowImage.gameObject.SetActive(false);
         }
         public void setGame(THHGame game, THHPlayer player)
         {
             if (game != null)
             {
-                //game.triggers.onEventAfter -= Triggers_onEventAfter;
+                game.triggers.onEventBefore -= onEventBefore;
+                game.triggers.onEventAfter -= onEventAfter;
             }
             this.game = game;
             if (game != null)
             {
-                //game.triggers.onEventAfter += Triggers_onEventAfter;
+                game.triggers.onEventBefore += onEventBefore;
+                game.triggers.onEventAfter += onEventAfter;
             }
             if (player != null)
             {
@@ -64,6 +66,30 @@ namespace UI
                     player.cmdTurnEnd(game);
                 });
             }
+        }
+        [SerializeField]
+        List<Animation> _animationQueue = new List<Animation>();
+        private void onEventBefore(IEventArg arg)
+        {
+            switch (arg)
+            {
+                case THHPlayer.MoveEventArg move:
+                    _animationQueue.Add(new MoveServantAnimation(move));
+                    break;
+                //case THHPlayer.CreateTokenEventArg createToken:
+                //    _animationQueue.Add(new CreateTokenAnimation(createToken));
+                //    break;
+                case THHCard.DeathEventArg death:
+                    _animationQueue.Add(new DeathAnimation(death));
+                    break;
+                default:
+                    //game.logger?.log("UI", "被忽略的事件结束：" + obj);
+                    break;
+            }
+        }
+        private void onEventAfter(IEventArg arg)
+        {
+
         }
         protected void Update()
         {
@@ -170,6 +196,15 @@ namespace UI
             else
             {
                 InitReplaceDialog.hide();
+            }
+
+            if (_animationQueue.Count > 0)
+            {
+                Animation animation = _animationQueue[0];
+                if (animation.update(this))
+                {
+                    _animationQueue.RemoveAt(0);
+                }
             }
         }
         public CardSkinData getSkin(TouhouCardEngine.Card card)

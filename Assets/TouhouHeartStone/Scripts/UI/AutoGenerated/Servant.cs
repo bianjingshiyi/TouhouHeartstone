@@ -26,8 +26,13 @@ namespace UI
         public void autoBind()
         {
             this.m_as_Image = this.GetComponent<Image>();
+            this._HighlightImage = this.transform.Find("Highlight").GetComponent<Image>();
             this._Mask = this.transform.Find("Mask").GetComponent<Mask>();
             this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
+            this._HpImage = this.transform.Find("Hp").GetComponent<Image>();
+            this._HpText = this.transform.Find("Hp").Find("HpText").GetComponent<Text>();
+            this._AtkImage = this.transform.Find("Atk").GetComponent<Image>();
+            this._AttackText = this.transform.Find("Atk").Find("AttackText").GetComponent<Text>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -40,6 +45,19 @@ namespace UI
                     this.m_as_Image = this.GetComponent<Image>();
                 }
                 return this.m_as_Image;
+            }
+        }
+        [SerializeField()]
+        private Image _HighlightImage;
+        public Image HighlightImage
+        {
+            get
+            {
+                if ((this._HighlightImage == null))
+                {
+                    this._HighlightImage = this.transform.Find("Highlight").GetComponent<Image>();
+                }
+                return this._HighlightImage;
             }
         }
         [SerializeField()]
@@ -68,6 +86,74 @@ namespace UI
                 return this._Image;
             }
         }
+        [SerializeField()]
+        private Image _HpImage;
+        public Image HpImage
+        {
+            get
+            {
+                if ((this._HpImage == null))
+                {
+                    this._HpImage = this.transform.Find("Hp").GetComponent<Image>();
+                }
+                return this._HpImage;
+            }
+        }
+        [SerializeField()]
+        private Text _HpText;
+        public Text HpText
+        {
+            get
+            {
+                if ((this._HpText == null))
+                {
+                    this._HpText = this.transform.Find("Hp").Find("HpText").GetComponent<Text>();
+                }
+                return this._HpText;
+            }
+        }
+        [SerializeField()]
+        private Image _AtkImage;
+        public Image AtkImage
+        {
+            get
+            {
+                if ((this._AtkImage == null))
+                {
+                    this._AtkImage = this.transform.Find("Atk").GetComponent<Image>();
+                }
+                return this._AtkImage;
+            }
+        }
+        [SerializeField()]
+        private Text _AttackText;
+        public Text AttackText
+        {
+            get
+            {
+                if ((this._AttackText == null))
+                {
+                    this._AttackText = this.transform.Find("Atk").Find("AttackText").GetComponent<Text>();
+                }
+                return this._AttackText;
+            }
+        }
         partial void onAwake();
+        public enum CanAttack
+        {
+            False,
+            True,
+        }
+        public CanAttack CanAttackController
+        {
+            get
+            {
+                return ((CanAttack)(Enum.Parse(typeof(CanAttack), this.getController("CanAttack", Enum.GetNames(typeof(CanAttack))))));
+            }
+            set
+            {
+                this.setController("CanAttack", Enum.GetName(typeof(CanAttack), value));
+            }
+        }
     }
 }

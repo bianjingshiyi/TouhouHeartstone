@@ -27,12 +27,13 @@ namespace UI
         {
             this.m_as_Image = this.GetComponent<Image>();
             this._FieldsImage = this.transform.Find("Fields").GetComponent<Image>();
-            this._EnemyFieldList = this.transform.Find("Fields").Find("EnemyField").GetComponent<FieldList>();
+            this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
             this._SelfFieldList = this.transform.Find("Fields").Find("SelfField").GetComponent<FieldList>();
             this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
-            this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
+            this._EnemyFieldList = this.transform.Find("Fields").Find("EnemyField").GetComponent<FieldList>();
             this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
             this._ServantPlaceHolder = this.transform.Find("Fields").Find("ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
+            this._AttackArrowImage = this.transform.Find("Fields").Find("AttackArrow").GetComponent<Image>();
             this._EnemyHandList = this.transform.Find("EnemyHand").GetComponent<HandList>();
             this._EnemyGem = this.transform.Find("EnemyGem").GetComponent<Gem>();
             this._EnemyMaster = this.transform.Find("EnemyMaster").GetComponent<Master>();
@@ -79,16 +80,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private FieldList _EnemyFieldList;
-        public FieldList EnemyFieldList
+        private Button _TurnEndButton;
+        public Button TurnEndButton
         {
             get
             {
-                if ((this._EnemyFieldList == null))
+                if ((this._TurnEndButton == null))
                 {
-                    this._EnemyFieldList = this.transform.Find("Fields").Find("EnemyField").GetComponent<FieldList>();
+                    this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
                 }
-                return this._EnemyFieldList;
+                return this._TurnEndButton;
             }
         }
         [SerializeField()]
@@ -118,16 +119,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Button _TurnEndButton;
-        public Button TurnEndButton
+        private FieldList _EnemyFieldList;
+        public FieldList EnemyFieldList
         {
             get
             {
-                if ((this._TurnEndButton == null))
+                if ((this._EnemyFieldList == null))
                 {
-                    this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
+                    this._EnemyFieldList = this.transform.Find("Fields").Find("EnemyField").GetComponent<FieldList>();
                 }
-                return this._TurnEndButton;
+                return this._EnemyFieldList;
             }
         }
         [SerializeField()]
@@ -154,6 +155,19 @@ namespace UI
                     this._ServantPlaceHolder = this.transform.Find("Fields").Find("ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
                 }
                 return this._ServantPlaceHolder;
+            }
+        }
+        [SerializeField()]
+        private Image _AttackArrowImage;
+        public Image AttackArrowImage
+        {
+            get
+            {
+                if ((this._AttackArrowImage == null))
+                {
+                    this._AttackArrowImage = this.transform.Find("Fields").Find("AttackArrow").GetComponent<Image>();
+                }
+                return this._AttackArrowImage;
             }
         }
         [SerializeField()]

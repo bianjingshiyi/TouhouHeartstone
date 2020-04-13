@@ -13,9 +13,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Xml.Serialization;
-
 using TouhouHeartstone.Builtin;
-
 namespace Tests
 {
     public static class TestGameflow

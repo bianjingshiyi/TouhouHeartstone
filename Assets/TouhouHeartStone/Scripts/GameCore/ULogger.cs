@@ -2,6 +2,10 @@
 {
     public class ULogger : TouhouCardEngine.Interfaces.ILogger
     {
+        public ULogger()
+        {
+            log("ULogger Init");
+        }
         public void log(string msg)
         {
             UberDebug.Log(msg);
