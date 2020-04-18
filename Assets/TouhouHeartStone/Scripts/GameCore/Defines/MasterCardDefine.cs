@@ -4,10 +4,7 @@ namespace TouhouHeartstone
 {
     public abstract class MasterCardDefine : CardDefine
     {
-        public override CardDefineType type
-        {
-            get { return CardDefineType.master; }
-        }
+        public override CardDefineType type { get; set; } = CardDefineType.master;
         public abstract int life { get; }
         public abstract int skillID { get; }
         public override T getProp<T>(string propName)

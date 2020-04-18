@@ -16,8 +16,7 @@ namespace TouhouHeartstone
         [MenuItem("Window/TouhouHeartstone/CardDefineEditor")]
         public static void open()
         {
-            Debug.Log(EditorApplication.applicationContentsPath);
-            GetWindow<CardDefineEditorWindow>("CardDefine");
+            GetWindow<CardDefineEditorWindow>("CardDefineEditor");
         }
         private void OnGUI()
         {

@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TouhouHeartstone;
+using BJSYGameCore.UI;
 namespace UI
 {
     partial class HandListItem : IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -34,15 +35,15 @@ namespace UI
                         //放置随从
                         if (Card.card.define is ServantCardDefine)
                         {
-                            table.SelfFieldList.addChild(table.ServantPlaceHolder);
-                            var children = table.SelfFieldList.getChildren();
+                            table.SelfFieldList.addChild(table.ServantPlaceHolder.rectTransform);
+                            RectTransform[] children = table.SelfFieldList.getChildren();
                             int index = 0;
                             for (int i = 0; i < children.Length; i++)
                             {
                                 if (children[i] == table.ServantPlaceHolder)
                                     continue;
-                                Debug.Log(children[i].gameObject.name + ":" + children[i].transform.position.x + ":" + eventData.position.x);
-                                if (children[i].transform.position.x < eventData.position.x)
+                                Debug.Log(children[i].gameObject.name + ":" + children[i].position.x + ":" + eventData.position.x);
+                                if (children[i].position.x < eventData.position.x)
                                 {
                                     index = i + 1;
                                 }
@@ -75,7 +76,7 @@ namespace UI
         private void removePlaceHolder()
         {
             Table table = GetComponentInParent<Table>();
-            table.addChild(table.ServantPlaceHolder);
+            table.addChild(table.ServantPlaceHolder.rectTransform);
             table.ServantPlaceHolder.hide();
         }
 

@@ -4,10 +4,7 @@ namespace TouhouHeartstone
 {
     public abstract class ServantCardDefine : CardDefine, ICost
     {
-        public override CardDefineType type
-        {
-            get { return CardDefineType.servant; }
-        }
+        public override CardDefineType type { get; set; } = CardDefineType.servant;
         /// <summary>
         /// 是否是衍生物？
         /// </summary>
@@ -31,6 +28,12 @@ namespace TouhouHeartstone
                 return (T)(object)life;
             else if (propName == nameof(spellDamage))
                 return (T)(object)spellDamage;
+            else if (propName == nameof(isToken))
+                return (T)(object)isToken;
+            else if (propName == nameof(tags))
+                return (T)(object)tags;
+            else if (propName == nameof(keywords))
+                return (T)(object)keywords;
             else
                 return base.getProp<T>(propName);
         }

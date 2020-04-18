@@ -4,10 +4,7 @@ namespace TouhouHeartstone
 {
     public abstract class SpellCardDefine : CardDefine
     {
-        public override CardDefineType type
-        {
-            get { return CardDefineType.spell; }
-        }
+        public override CardDefineType type { get; set; } = CardDefineType.spell;
         public abstract int cost { get; }
         public override T getProp<T>(string propName)
         {

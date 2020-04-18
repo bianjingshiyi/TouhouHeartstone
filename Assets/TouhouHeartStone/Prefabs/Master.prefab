@@ -241,8 +241,7 @@ GameObject:
   - component: {fileID: 7552501258534462122}
   - component: {fileID: 7552501258534462118}
   - component: {fileID: 7552501258534462119}
-  - component: {fileID: 7552501258534462120}
-  - component: {fileID: 7552501258534462121}
+  - component: {fileID: 1819174700}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -264,10 +263,10 @@ RectTransform:
   m_Father: {fileID: 7552501258627038252}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 83.33334}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7552501258534462118
 CanvasRenderer:
@@ -298,7 +297,7 @@ MonoBehaviour:
   m_Sprite: {fileID: -8675862210698346708, guid: 5657c25c31a1fd64a87663c7399fd40e,
     type: 3}
   m_Type: 0
-  m_PreserveAspect: 1
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -306,7 +305,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7552501258534462120
+--- !u!114 &1819174700
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -315,26 +314,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7552501258534462123}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1670825535, guid: 94f5ecf3c8f5a394b91a889848c86e7f, type: 3}
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewAdapterTypeName: 
-  viewAdapterOptions: {fileID: 0}
-  viewModelPropertyName: TouhouHeartstone.Frontend.ViewModel.CharacterInfoViewModel.SpriteMain
-  viewPropertyName: UnityEngine.UI.Image.sprite
---- !u!114 &7552501258534462121
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7552501258534462123}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6f130e66a759a643ad2c6c4b6194a8d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CurrentSize: {x: 250, y: 250}
+  m_AspectMode: 2
+  m_AspectRatio: 1
 --- !u!1 &7552501258627038253
 GameObject:
   m_ObjectHideFlags: 0
@@ -371,7 +355,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000061035156, y: -0.000015258789}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7552501258627038249

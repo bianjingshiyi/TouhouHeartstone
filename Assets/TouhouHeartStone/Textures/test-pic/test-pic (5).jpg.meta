@@ -104,10 +104,10 @@ TextureImporter:
       name: test-pic (5)_0
       rect:
         serializedVersion: 2
-        x: 19
-        y: 0
-        width: 375
-        height: 500
+        x: 0
+        y: 73
+        width: 427
+        height: 427
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

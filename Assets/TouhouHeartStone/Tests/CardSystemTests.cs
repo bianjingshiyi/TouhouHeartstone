@@ -5,7 +5,6 @@ using UnityEngine.TestTools;
 using System.Linq;
 using TouhouHeartstone;
 using TouhouCardEngine;
-
 namespace Tests
 {
     public class CardSystemTests

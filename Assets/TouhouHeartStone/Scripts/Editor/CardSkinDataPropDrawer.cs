@@ -81,7 +81,7 @@ namespace TouhouHeartstone
         {
             if (_cardDefines == null)
             {
-                _cardDefines = BuiltinCards.getCardDefines();
+                _cardDefines = CardHelper.getCardDefines();
             }
             return _cardDefines;
         }

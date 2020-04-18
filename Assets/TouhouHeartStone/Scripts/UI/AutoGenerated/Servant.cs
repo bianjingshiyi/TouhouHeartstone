@@ -25,27 +25,14 @@ namespace UI
         }
         public void autoBind()
         {
-            this.m_as_Image = this.GetComponent<Image>();
-            this._HighlightImage = this.transform.Find("Highlight").GetComponent<Image>();
-            this._Mask = this.transform.Find("Mask").GetComponent<Mask>();
-            this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
-            this._HpImage = this.transform.Find("Hp").GetComponent<Image>();
-            this._HpText = this.transform.Find("Hp").Find("HpText").GetComponent<Text>();
-            this._AtkImage = this.transform.Find("Atk").GetComponent<Image>();
-            this._AttackText = this.transform.Find("Atk").Find("AttackText").GetComponent<Text>();
-        }
-        [SerializeField()]
-        private Image m_as_Image;
-        public Image asImage
-        {
-            get
-            {
-                if ((this.m_as_Image == null))
-                {
-                    this.m_as_Image = this.GetComponent<Image>();
-                }
-                return this.m_as_Image;
-            }
+            this._HighlightImage = this.transform.Find("Root").Find("Highlight").GetComponent<Image>();
+            this._BackgroundImage = this.transform.Find("Root").Find("Background").GetComponent<Image>();
+            this._Mask = this.transform.Find("Root").Find("Mask").GetComponent<Mask>();
+            this._Image = this.transform.Find("Root").Find("Mask").Find("Image").GetComponent<Image>();
+            this._HpImage = this.transform.Find("Root").Find("Hp").GetComponent<Image>();
+            this._HpText = this.transform.Find("Root").Find("Hp").Find("HpText").GetComponent<Text>();
+            this._AtkImage = this.transform.Find("Root").Find("Atk").GetComponent<Image>();
+            this._AttackText = this.transform.Find("Root").Find("Atk").Find("AttackText").GetComponent<Text>();
         }
         [SerializeField()]
         private Image _HighlightImage;
@@ -55,9 +42,22 @@ namespace UI
             {
                 if ((this._HighlightImage == null))
                 {
-                    this._HighlightImage = this.transform.Find("Highlight").GetComponent<Image>();
+                    this._HighlightImage = this.transform.Find("Root").Find("Highlight").GetComponent<Image>();
                 }
                 return this._HighlightImage;
+            }
+        }
+        [SerializeField()]
+        private Image _BackgroundImage;
+        public Image BackgroundImage
+        {
+            get
+            {
+                if ((this._BackgroundImage == null))
+                {
+                    this._BackgroundImage = this.transform.Find("Root").Find("Background").GetComponent<Image>();
+                }
+                return this._BackgroundImage;
             }
         }
         [SerializeField()]
@@ -68,7 +68,7 @@ namespace UI
             {
                 if ((this._Mask == null))
                 {
-                    this._Mask = this.transform.Find("Mask").GetComponent<Mask>();
+                    this._Mask = this.transform.Find("Root").Find("Mask").GetComponent<Mask>();
                 }
                 return this._Mask;
             }
@@ -81,7 +81,7 @@ namespace UI
             {
                 if ((this._Image == null))
                 {
-                    this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
+                    this._Image = this.transform.Find("Root").Find("Mask").Find("Image").GetComponent<Image>();
                 }
                 return this._Image;
             }
@@ -94,7 +94,7 @@ namespace UI
             {
                 if ((this._HpImage == null))
                 {
-                    this._HpImage = this.transform.Find("Hp").GetComponent<Image>();
+                    this._HpImage = this.transform.Find("Root").Find("Hp").GetComponent<Image>();
                 }
                 return this._HpImage;
             }
@@ -107,7 +107,7 @@ namespace UI
             {
                 if ((this._HpText == null))
                 {
-                    this._HpText = this.transform.Find("Hp").Find("HpText").GetComponent<Text>();
+                    this._HpText = this.transform.Find("Root").Find("Hp").Find("HpText").GetComponent<Text>();
                 }
                 return this._HpText;
             }
@@ -120,7 +120,7 @@ namespace UI
             {
                 if ((this._AtkImage == null))
                 {
-                    this._AtkImage = this.transform.Find("Atk").GetComponent<Image>();
+                    this._AtkImage = this.transform.Find("Root").Find("Atk").GetComponent<Image>();
                 }
                 return this._AtkImage;
             }
@@ -133,7 +133,7 @@ namespace UI
             {
                 if ((this._AttackText == null))
                 {
-                    this._AttackText = this.transform.Find("Atk").Find("AttackText").GetComponent<Text>();
+                    this._AttackText = this.transform.Find("Root").Find("Atk").Find("AttackText").GetComponent<Text>();
                 }
                 return this._AttackText;
             }

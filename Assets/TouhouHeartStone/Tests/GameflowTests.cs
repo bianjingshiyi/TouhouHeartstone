@@ -45,7 +45,7 @@ namespace Tests
         public static THHGame initGameWithoutPlayers(string name, GameOption option)
         {
             TaskExceptionHandler.register();
-            THHGame game = new THHGame(option != null ? option : GameOption.Default, BuiltinCards.getCardDefines())
+            THHGame game = new THHGame(option != null ? option : GameOption.Default, CardHelper.getCardDefines())
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>(),

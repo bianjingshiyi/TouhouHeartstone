@@ -7,6 +7,7 @@ namespace TouhouHeartstone
 {
     public class GeneratedCardDefine : CardDefine
     {
+        public override int id { get; set; } = 0;
         Dictionary<string, object> dicProp { get; } = new Dictionary<string, object>();
         public void setProp<T>(string propName, T value)
         {
@@ -19,15 +20,7 @@ namespace TouhouHeartstone
             else
                 return default;
         }
-        public override int id
-        {
-            get { return getProp<int>("id"); }
-            set { setProp("id", value); }
-        }
-        public override CardDefineType type
-        {
-            get { return (CardDefineType)getProp<int>("type"); }
-        }
+        public override CardDefineType type { get; set; }
         public override string isUsable(CardEngine engine, Player player, Card card)
         {
             string script = getProp<string>("condition");

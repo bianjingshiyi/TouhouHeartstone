@@ -1,5 +1,5 @@
 ﻿using TouhouHeartstone;
-
+using BJSYGameCore.UI;
 namespace UI
 {
     class MoveServantAnimation : Animation<THHPlayer.MoveEventArg>
