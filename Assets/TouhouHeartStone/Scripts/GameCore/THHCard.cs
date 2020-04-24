@@ -11,7 +11,18 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(nameof(ServantCardDefine.cost));
         }
+        public static int getCost(this CardDefine card)
+        {
+            return card.getProp<int>(nameof(ServantCardDefine.cost));
+        }
         public static int getAttack(this Card card)
+        {
+            int result = card.getProp<int>(nameof(ServantCardDefine.attack));
+            if (result < 0)
+                result = 0;
+            return result;
+        }
+        public static int getAttack(this CardDefine card)
         {
             int result = card.getProp<int>(nameof(ServantCardDefine.attack));
             if (result < 0)
@@ -23,6 +34,10 @@ namespace TouhouHeartstone
             card.setProp(nameof(ServantCardDefine.attack), value);
         }
         public static int getLife(this Card card)
+        {
+            return card.getProp<int>(nameof(ServantCardDefine.life));
+        }
+        public static int getLife(this CardDefine card)
         {
             return card.getProp<int>(nameof(ServantCardDefine.life));
         }
@@ -69,6 +84,8 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool canAttack(this Card card)
         {
+            if (card.getAttack() <= 0)//没有攻击力
+                return false;
             if (!card.isReady())//还没准备好
                 return false;
             if (card.getAttackTimes() >= card.getMaxAttackTimes())//已经攻击过了
@@ -83,12 +100,20 @@ namespace TouhouHeartstone
         /// <param name="player"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public static bool isAttackable(this Card card, THHGame game, THHPlayer player, Card target)
+        public static bool isAttackable(this Card card, THHGame game, THHPlayer player, Card target, out string tip)
         {
-            if (target == game.getOpponent(player).master || game.getOpponent(player).field.Contains(target))
-                return true;
-            else
+            if (target == player.master || player.field.Contains(target))
+            {
+                tip = "你不能攻击友方角色";
                 return false;
+            }
+            if (game.getOpponent(player).field.Any(c => c.isTaunt()) && !target.isTaunt())
+            {
+                tip = "你必须先攻击具有嘲讽的随从";
+                return false;
+            }
+            tip = null;
+            return true;
         }
         /// <summary>
         /// 技能是否已经使用过？

@@ -1,4 +1,5 @@
-﻿using UnityEngine.EventSystems;
+﻿using System;
+using UnityEngine.EventSystems;
 using UnityEngine;
 using TouhouHeartstone;
 
@@ -25,9 +26,9 @@ namespace UI
             AttackText.text = card.getAttack().ToString();
             HpText.text = card.getCurrentLife().ToString();
             if (table.player == player && table.game.currentPlayer == player && card.canAttack())
-                CanAttackController = CanAttack.True;
+                HighlightController = Highlight.Green;
             else
-                CanAttackController = CanAttack.False;
+                HighlightController = Highlight.None;
         }
         [SerializeField]
         float _attackThreshold = 70;
@@ -41,6 +42,8 @@ namespace UI
             if (!card.canAttack())
                 return;
             Table table = GetComponentInParent<Table>();
+            if (card.owner != table.player)//不是你的卡。
+                return;
             //拉动距离也应该有一个阈值
             if (Vector2.Distance(rectTransform.position, eventData.position) > _attackThreshold)
             {
@@ -56,33 +59,38 @@ namespace UI
                 table.AttackArrowImage.rectTransform.sizeDelta = new Vector2(
                     table.AttackArrowImage.rectTransform.sizeDelta.x,
                     Vector2.Distance(rectTransform.position, eventData.position) / GetComponentInParent<Canvas>().transform.localScale.y);
-                //高亮标记所有敌人
-                THHPlayer opponent = table.game.getOpponent(table.player);
-                if (card.isAttackable(table.game, table.player, opponent.master))
-                {
-
-                }
-                else
-                {
-
-                }
-                foreach (var servant in table.EnemyFieldList)
-                {
-                    if (card.isAttackable(table.game, table.player, servant.card))
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-                }
+                //高亮标记所有目标
+                //highlightAllTargets(target => card.isAttackable(table.game, table.player, target));
             }
             else
             {
                 cancelAttack(table);
             }
         }
+
+        private void highlightAllTargets(Func<TouhouCardEngine.Card, bool> filter, bool isGreen = true)
+        {
+            Table table = GetComponentInParent<Table>();
+            table.EnemyMaster.HighlightController =
+                    filter != null && filter(table.EnemyMaster.card) ?
+                    isGreen ? Master.Highlight.Green : Master.Highlight.Yellow : Master.Highlight.None;
+            table.SelfMaster.HighlightController =
+                    filter != null && filter(table.SelfMaster.card) ?
+                    isGreen ? Master.Highlight.Green : Master.Highlight.Yellow : Master.Highlight.None;
+            foreach (var servant in table.EnemyFieldList)
+            {
+                servant.HighlightController =
+                        filter != null && filter(servant.card) ?
+                        isGreen ? Highlight.Green : Highlight.Yellow : Highlight.None;
+            }
+            foreach (var servant in table.SelfFieldList)
+            {
+                servant.HighlightController =
+                        filter != null && filter(servant.card) ?
+                        isGreen ? Highlight.Green : Highlight.Yellow : Highlight.None;
+            }
+        }
+
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
             if (!card.canAttack())
@@ -93,17 +101,21 @@ namespace UI
             {
                 if (eventData.pointerCurrentRaycast.gameObject.GetComponentInParent<Servant>() is Servant targetServant)
                 {
-                    if (card.isAttackable(table.game, table.player, targetServant.card))
+                    if (card.isAttackable(table.game, table.player, targetServant.card, out var tip))
                     {
                         table.player.cmdAttack(table.game, card, targetServant.card);
                     }
+                    else
+                        table.showTip(tip);
                 }
                 else if (eventData.pointerCurrentRaycast.gameObject.GetComponentInParent<Master>() is Master targetMaster)
                 {
-                    if (card.isAttackable(table.game, table.player, targetMaster.card))
+                    if (card.isAttackable(table.game, table.player, targetMaster.card, out var tip))
                     {
                         table.player.cmdAttack(table.game, card, targetMaster.card);
                     }
+                    else
+                        table.showTip(tip);
                 }
             }
             //取消选中和攻击
@@ -113,6 +125,7 @@ namespace UI
         {
             rectTransform.localScale = Vector3.one;
             table.AttackArrowImage.hide();
+            //highlightAllTargets(null);
         }
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {

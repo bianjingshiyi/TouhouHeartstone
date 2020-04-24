@@ -10,23 +10,21 @@ namespace TouhouHeartstone
     {
         public static CardDefine[] getCardDefines()
         {
-            List<CardDefine> cardList = new List<CardDefine>();
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                cardList.AddRange(getCardDefines(assembly));
-            }
-            return cardList.ToArray();
+            return getCardDefines(AppDomain.CurrentDomain.GetAssemblies());
         }
-        public static CardDefine[] getCardDefines(Assembly assembly)
+        public static CardDefine[] getCardDefines(Assembly[] assemblies)
         {
             List<CardDefine> cardList = new List<CardDefine>();
-            foreach (Type type in assembly.GetTypes().Where(t => t.IsSubclassOf(typeof(CardDefine)) && !t.IsAbstract))
+            foreach (Assembly assembly in assemblies)
             {
-                ConstructorInfo constructor = type.GetConstructor(new Type[0]);
-                if (constructor != null)
+                foreach (Type type in assembly.GetTypes().Where(t => t.IsSubclassOf(typeof(CardDefine)) && !t.IsAbstract && t != typeof(GeneratedCardDefine)))
                 {
-                    if (constructor.Invoke(new object[0]) is CardDefine define)
-                        cardList.Add(define);
+                    ConstructorInfo constructor = type.GetConstructor(new Type[0]);
+                    if (constructor != null)
+                    {
+                        if (constructor.Invoke(new object[0]) is CardDefine define)
+                            cardList.Add(define);
+                    }
                 }
             }
             return cardList.ToArray();

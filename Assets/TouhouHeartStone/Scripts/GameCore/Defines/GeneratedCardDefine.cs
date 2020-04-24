@@ -9,8 +9,10 @@ namespace TouhouHeartstone
     {
         public override int id { get; set; } = 0;
         Dictionary<string, object> dicProp { get; } = new Dictionary<string, object>();
-        public void setProp<T>(string propName, T value)
+        public override void setProp<T>(string propName, T value)
         {
+            if (propName == nameof(CardDefine.id))
+                id = (int)(object)value;
             dicProp[propName] = value;
         }
         public override T getProp<T>(string propName)
@@ -30,7 +32,8 @@ namespace TouhouHeartstone
         }
         public override IEffect[] effects
         {
-            get { return getProp<Effect[]>("effects"); }
+            get { return getProp<Effect[]>(nameof(CardDefine.effects)); }
+            set { setProp(nameof(CardDefine.effects), value); }
         }
     }
 }

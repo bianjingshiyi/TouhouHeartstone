@@ -1,5 +1,5 @@
 ﻿using TouhouHeartstone;
-
+using TouhouCardEngine;
 namespace UI
 {
     partial class Card
@@ -16,12 +16,23 @@ namespace UI
             if (skin != null)
             {
                 Image.sprite = skin.image;
-                NameText.text = skin.cardName;
+                NameText.text = skin.name;
                 DescText.text = skin.desc;
                 IsFaceupController = IsFaceup.True;
             }
             else
                 IsFaceupController = IsFaceup.False;
+        }
+        public void update(CardDefine card, CardSkinData skin)
+        {
+            CostText.text = card.getCost().ToString();
+            AttackText.text = card.getAttack().ToString();
+            LifeText.text = card.getLife().ToString();
+
+            Image.sprite = skin.image;
+            NameText.text = skin.name;
+            DescText.text = skin.desc;
+            IsFaceupController = IsFaceup.True;
         }
     }
 }

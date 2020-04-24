@@ -50,7 +50,7 @@ namespace TouhouHeartstone
                 //GUI.Box(new Rect(position.x + position.width - 128, position.y, 128, 128), imageProp.objectReferenceValue == null ? null : (imageProp.objectReferenceValue as Sprite).texture);
                 position.y += 128;
                 //name
-                SerializedProperty nameProp = property.FindPropertyRelative("_" + nameof(CardSkinData.cardName));
+                SerializedProperty nameProp = property.FindPropertyRelative("_" + nameof(CardSkinData.name));
                 position.height = EditorGUIUtility.singleLineHeight;
                 EditorGUI.PropertyField(position, nameProp);
                 position.y += EditorGUIUtility.singleLineHeight;

@@ -17,6 +17,8 @@ namespace TouhouHeartstone
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             int index = Array.FindIndex(getCardDefines(), c => c.id == property.intValue) + 1;
+            if (label.text.StartsWith("Element", StringComparison.OrdinalIgnoreCase))
+                label.text = getCardDefines()[index].GetType().Name;
             index = EditorGUI.Popup(position, label, index, new GUIContent[] { new GUIContent("None") }
                 .Concat(getCardDefines().Select(c => new GUIContent(c.GetType().Name))).ToArray());
             property.intValue = index == 0 ? -1 : getCardDefines()[index - 1].id;

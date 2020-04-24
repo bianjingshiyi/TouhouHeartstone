@@ -11,7 +11,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int life { get; } = 30;
         public override int skillID { get; } = WindStopMiracle.ID;
-        public override IEffect[] effects { get; } = new Effect[0];
+        public override IEffect[] effects { get; set; } = new Effect[0];
     }
     /// <summary>
     /// 风止奇迹：治愈2点生命值。
@@ -20,11 +20,8 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Sanae.ID | CardCategory.SKILL | 0x000;
         public override int id { get; set; } = ID;
-        public override int cost
-        {
-            get { return 2; }
-        }
-        public override IEffect[] effects { get; } = new IEffect[]
+        public override int cost { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffect(new On<THHPlayer.ActiveEventArg>(),PileName.SKILL,(game,player,card,vars)=>
             {

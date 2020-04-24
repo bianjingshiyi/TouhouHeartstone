@@ -5,14 +5,15 @@ using UnityEngine;
 using TouhouHeartstone;
 using TouhouCardEngine;
 using UI;
+using System.Reflection;
 using ExcelLibrary.SpreadSheet;
 namespace Game
 {
     static class CardImporter
     {
-        public static CardDefine[] GetCardDefines(Dictionary<Workbook, string> workbooks, out CardSkinData[] skins)
+        public static CardDefine[] GetCardDefines(Assembly[] assemblies, Dictionary<Workbook, string> workbooks, out CardSkinData[] skins)
         {
-            List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines());
+            List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies));
             List<CardSkinData> skinList = new List<CardSkinData>();
             foreach (var pBook in workbooks)
             {
@@ -58,13 +59,15 @@ namespace Game
             card.setProp(nameof(ServantCardDefine.tags), sheet.Cells[row, tagsIndex].StringValue.Split(','));
             int keywordsIndex = findColIndex(sheet, "Keywords");
             card.setProp(nameof(ServantCardDefine.keywords), sheet.Cells[row, keywordsIndex].StringValue.Split(','));
+            int isTokenIndex = findColIndex(sheet, "IsToken");
+            card.setProp(nameof(ServantCardDefine.isToken), sheet.Cells[row, isTokenIndex].Value);
+
             skin = new CardSkinData()
             {
                 id = card.id
             };
-
             int imageIndex = findColIndex(sheet, "Image");
-            string imagePath = "Textures/砰砰博士.png" /*sheet.Cells[row, imageIndex].StringValue*/;
+            string imagePath = sheet.Cells[row, imageIndex].StringValue;
             if (File.Exists(dir + "/" + imagePath))
             {
                 using (FileStream stream = new FileStream(dir + "/" + imagePath, FileMode.Open))
@@ -89,9 +92,21 @@ namespace Game
                     skin.image = sprite;
                 }
             }
+            else if (File.Exists(Application.streamingAssetsPath + "/" + "Textures/砰砰博士.png"))
+            {
+                using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/" + "Textures/砰砰博士.png", FileMode.Open))
+                {
+                    Texture2D texture = new Texture2D(512, 512);
+                    byte[] bytes = new byte[stream.Length];
+                    stream.Read(bytes, 0, (int)stream.Length);
+                    texture.LoadImage(bytes);
+                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
+                    skin.image = sprite;
+                }
+            }
 
             int nameIndex = findColIndex(sheet, "Name");
-            skin.cardName = sheet.Cells[row, nameIndex].StringValue;
+            skin.name = sheet.Cells[row, nameIndex].StringValue;
             int descIndex = findColIndex(sheet, "Desc");
             skin.desc = sheet.Cells[row, descIndex].StringValue;
             return card;

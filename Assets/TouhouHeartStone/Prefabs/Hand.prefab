@@ -58,6 +58,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
+  _layoutType: 0
   _averageSpacing: 1
   _spacing: 0
   _forceChildExpandWidth: 0
@@ -205,6 +206,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6001511411601767101}
     m_Modifications:
+    - target: {fileID: 2976694557532219890, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5953344439004416449, guid: 92b5566bce81a774fb9bb22f1b342b2e,
         type: 3}
       propertyPath: m_Name

@@ -42,7 +42,6 @@ namespace UI
                             {
                                 if (children[i] == table.ServantPlaceHolder)
                                     continue;
-                                Debug.Log(children[i].gameObject.name + ":" + children[i].position.x + ":" + eventData.position.x);
                                 if (children[i].position.x < eventData.position.x)
                                 {
                                     index = i + 1;

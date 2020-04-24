@@ -32,14 +32,7 @@ namespace UI
             else
                 ArmorText.enabled = false;
 
-            if (card.canAttack())
-            {
-
-            }
-            else
-            {
-
-            }
+            HighlightController = card.canAttack() ? Highlight.Green : Highlight.None;
         }
         [SerializeField]
         float _attackThreshold = 50;
@@ -67,26 +60,26 @@ namespace UI
             Table table = GetComponentInParent<Table>();
             //移动指针
             //高亮标记所有敌人
-            THHPlayer opponent = table.game.getOpponent(table.player);
-            if (card.isAttackable(table.game, table.player, opponent.master))
-            {
+            //THHPlayer opponent = table.game.getOpponent(table.player);
+            //if (card.isAttackable(table.game, table.player, opponent.master))
+            //{
 
-            }
-            else
-            {
+            //}
+            //else
+            //{
 
-            }
-            foreach (var servant in table.EnemyFieldList)
-            {
-                if (card.isAttackable(table.game, table.player, servant.card))
-                {
+            //}
+            //foreach (var servant in table.EnemyFieldList)
+            //{
+            //    if (card.isAttackable(table.game, table.player, servant.card))
+            //    {
 
-                }
-                else
-                {
+            //    }
+            //    else
+            //    {
 
-                }
-            }
+            //    }
+            //}
         }
 
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
@@ -98,12 +91,13 @@ namespace UI
                 eventData.pointerCurrentRaycast.gameObject.GetComponent<Servant>() is Servant target)
             {
                 Table table = GetComponentInParent<Table>();
-                if (card.isAttackable(table.game, table.player, target.card))
+                if (card.isAttackable(table.game, table.player, target.card, out var tip))
                 {
                     table.player.cmdAttack(table.game, card, target.card);
                 }
                 else
                 {
+                    table.showTip(tip);
                     //取消选中和攻击
                     rectTransform.localScale = Vector3.one;
                 }

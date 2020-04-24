@@ -22,19 +22,19 @@ namespace TouhouHeartstone
         public THHPlayer(THHGame game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck) : base(id, name)
         {
             this.master = game.createCard(master);
-            pileList.Add(new Pile(game, "Master", new Card[] { this.master }, 1));
+            addPile(new Pile(game, "Master", new Card[] { this.master }, 1));
             skill = game.createCardById(master.skillID);
-            pileList.Add(new Pile(game, "Skill", new Card[] { skill }, 1));
+            addPile(new Pile(game, "Skill", new Card[] { skill }, 1));
             this.deck = new Pile(game, "Deck", deck.Select(d => game.createCard(d)).ToArray());
-            pileList.Add(this.deck);
+            addPile(this.deck);
             init = new Pile(game, "Init", maxCount: 4);
-            pileList.Add(init);
+            addPile(init);
             hand = new Pile(game, "Hand", maxCount: 10);
-            pileList.Add(hand);
+            addPile(hand);
             field = new Pile(game, "Field", maxCount: 7);
-            pileList.Add(field);
+            addPile(field);
             grave = new Pile(game, "Grave");
-            pileList.Add(grave);
+            addPile(grave);
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
         {

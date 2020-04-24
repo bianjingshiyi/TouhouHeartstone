@@ -12,6 +12,7 @@ using TouhouHeartstone.Builtin;
 using UI;
 using ExcelLibrary;
 using ExcelLibrary.SpreadSheet;
+using Game;
 namespace TouhouHeartstone
 {
     class CardDefineExporterWindow : EditorWindow
@@ -24,7 +25,7 @@ namespace TouhouHeartstone
         [SerializeField]
         List<string> _selectedAssemblyNameList = new List<string>();
         [SerializeField]
-        Table _table;
+        CardManager _manager;
         [SerializeField]
         Vector2 _scroll;
         [SerializeField]
@@ -42,7 +43,7 @@ namespace TouhouHeartstone
                 bool isSelected = _selectedAssemblyNameList.Contains(name);
                 if (isSelected)
                 {
-                    cardList.AddRange(CardHelper.getCardDefines(assembly));
+                    cardList.AddRange(CardHelper.getCardDefines(new Assembly[] { assembly }));
                 }
                 menu.AddItem(new GUIContent(name), isSelected, () =>
                 {
@@ -56,7 +57,7 @@ namespace TouhouHeartstone
             {
                 menu.DropDown(GUILayoutUtility.GetLastRect());
             }
-            _table = EditorGUILayout.ObjectField("Table", _table, typeof(Table), true) as Table;
+            _manager = EditorGUILayout.ObjectField("Table", _manager, typeof(CardManager), true) as CardManager;
             _scroll = EditorGUILayout.BeginScrollView(_scroll, GUILayout.Width(512), GUILayout.Height(512));
             foreach (var card in cardList)
             {
@@ -76,6 +77,8 @@ namespace TouhouHeartstone
         }
         private void exportAsExcel(List<CardDefine> cardList)
         {
+            _manager.Load();
+
             _templatePath = EditorUtility.OpenFilePanel("选择模板文件",
                 File.Exists(_templatePath) ? Path.GetDirectoryName(_templatePath) : Application.dataPath, "xls");
             if (File.Exists(_templatePath))
@@ -106,44 +109,61 @@ namespace TouhouHeartstone
         }
         void saveCardToExcel(CardDefine card, Worksheet sheet)
         {
-            int row = sheet.Cells.Rows.Count;
             int idIndex = findColIndex(sheet, "ID");
-            sheet.Cells[row, idIndex] = new Cell(card.id);
+            int rowIndex = sheet.Cells.Rows.Count;
+            foreach (var pRow in sheet.Cells.Rows)
+            {
+                if (numberToInt(pRow.Value.GetCell(idIndex).Value) == card.id)
+                    rowIndex = pRow.Key;
+            }
+
+            sheet.Cells[rowIndex, idIndex] = new Cell(card.id);
             int typeIndex = findColIndex(sheet, "Type");
             if (card is ServantCardDefine)
-                sheet.Cells[row, typeIndex] = new Cell("Servant");
+                sheet.Cells[rowIndex, typeIndex] = new Cell("Servant");
             else if (card is MasterCardDefine)
-                sheet.Cells[row, typeIndex] = new Cell("Master");
+                sheet.Cells[rowIndex, typeIndex] = new Cell("Master");
             else if (card is SkillCardDefine)
-                sheet.Cells[row, typeIndex] = new Cell("Skill");
+                sheet.Cells[rowIndex, typeIndex] = new Cell("Skill");
             else if (card is SpellCardDefine)
-                sheet.Cells[row, typeIndex] = new Cell("Spell");
+                sheet.Cells[rowIndex, typeIndex] = new Cell("Spell");
             int costIndex = findColIndex(sheet, "Cost");
-            sheet.Cells[row, costIndex] = new Cell(card.getProp<int>("cost"));
+            sheet.Cells[rowIndex, costIndex] = new Cell(card.getProp<int>("cost"));
             int attackIndex = findColIndex(sheet, "Attack");
-            sheet.Cells[row, attackIndex] = new Cell(card.getProp<int>("attack"));
+            sheet.Cells[rowIndex, attackIndex] = new Cell(card.getProp<int>("attack"));
             int lifeIndex = findColIndex(sheet, "Life");
-            sheet.Cells[row, lifeIndex] = new Cell(card.getProp<int>("life"));
+            sheet.Cells[rowIndex, lifeIndex] = new Cell(card.getProp<int>("life"));
             int tagsIndex = findColIndex(sheet, "Tags");
             if (card.getProp<string[]>("tags") is string[] tags)
-                sheet.Cells[row, tagsIndex] = new Cell(string.Join(",", tags));
+                sheet.Cells[rowIndex, tagsIndex] = new Cell(string.Join(",", tags));
             else
-                sheet.Cells[row, tagsIndex] = new Cell(null);
+                sheet.Cells[rowIndex, tagsIndex] = new Cell(null);
             int keywordsIndex = findColIndex(sheet, "Keywords");
             if (card.getProp<string[]>("keywords") is string[] keywords)
-                sheet.Cells[row, keywordsIndex] = new Cell(string.Join(",", keywords));
+                sheet.Cells[rowIndex, keywordsIndex] = new Cell(string.Join(",", keywords));
             else
-                sheet.Cells[row, keywordsIndex] = new Cell(null);
-            if (_table != null)
+                sheet.Cells[rowIndex, keywordsIndex] = new Cell(null);
+            if (_manager != null)
             {
-                var skin = _table.getSkin(card);
+                var skin = _manager.GetCardSkin(card.id);
                 int imageIndex = findColIndex(sheet, "Image");
-                sheet.Cells[row, imageIndex] = new Cell(skin == null ? null : skin.image != null ? skin.image.name + ".png" : null);
+                sheet.Cells[rowIndex, imageIndex] = new Cell(skin == null ? null : skin.image != null ? skin.image.name + ".png" : null);
                 int nameIndex = findColIndex(sheet, "Name");
-                sheet.Cells[row, nameIndex] = new Cell(skin == null ? card.GetType().Name : skin.cardName);
+                sheet.Cells[rowIndex, nameIndex] = new Cell(skin == null ? card.GetType().Name : skin.name);
                 int descIndex = findColIndex(sheet, "Desc");
-                sheet.Cells[row, descIndex] = new Cell(skin == null ? null : skin.desc);
+                sheet.Cells[rowIndex, descIndex] = new Cell(skin == null ? null : skin.desc);
             }
+        }
+        static int numberToInt(object value)
+        {
+            if (value is double d)
+                return (int)d;
+            else if (value is int i)
+                return i;
+            else if (value is float f)
+                return (int)f;
+            else
+                return 0;
         }
         int findColIndex(Worksheet worksheet, string name)
         {
@@ -205,11 +225,11 @@ namespace TouhouHeartstone
                 xml["Card"]["Keywords"].InnerText = string.Join(",", keywords);
             else
                 xml["Card"]["Keywords"].InnerText = null;
-            if (_table != null)
+            if (_manager != null)
             {
-                var skin = _table.getSkin(card);
+                var skin = _manager.GetCardSkin(card.id);
                 xml["Card"]["Skin"]["Image"].InnerText = skin == null ? null : skin.image != null ? skin.image.name + ".png" : null;
-                xml["Card"]["Skin"]["Name"].InnerText = skin == null ? card.GetType().Name : skin.cardName;
+                xml["Card"]["Skin"]["Name"].InnerText = skin == null ? card.GetType().Name : skin.name;
                 xml["Card"]["Skin"]["Desc"].InnerText = skin == null ? null : skin.desc;
             }
         }

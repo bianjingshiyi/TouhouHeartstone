@@ -275,10 +275,6 @@ namespace Tests
             }
             THHCard.AttackEventArg attack = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.AttackEventArg) as THHCard.AttackEventArg;
             Assert.NotNull(attack);
-            THHCard.DamageEventArg damage = attack.children[0] as THHCard.DamageEventArg;
-            Assert.NotNull(damage);
-            THHCard.DeathEventArg death = attack.children[1] as THHCard.DeathEventArg;
-            Assert.NotNull(death);
             THHGame.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.GameEndEventArg) as THHGame.GameEndEventArg;
             Assert.AreEqual(game.sortedPlayers[0], gameEnd.winners[0]);
             game.Dispose();
@@ -358,16 +354,6 @@ namespace Tests
 
             Assert.True(game.sortedPlayers[0].field[0].getProp<bool>("TestResult"));
         }
-        [Test]
-        public void xmlSerializeTest()
-        {
-            RashFairy define = new RashFairy();
-            using (StreamWriter writer = new StreamWriter(Application.streamingAssetsPath + "/" + define.GetType().Name + ".xml"))
-            {
-                XmlSerializer serializer = new XmlSerializer(typeof(RashFairy));
-                serializer.Serialize(writer, define);
-            }
-        }
     }
     static class TaskExceptionHandler
     {
@@ -403,32 +389,32 @@ namespace Tests
         public override int id { get; set; } = ID;
         public override int life { get; } = 30;
         public override int skillID { get; } = TestSkill.ID;
-        public override IEffect[] effects { get; } = new Effect[0];
+        public override IEffect[] effects { get; set; } = new Effect[0];
     }
     class TestSkill : SkillCardDefine
     {
         public const int ID = 0x00110000;
         public override int id { get; set; } = ID;
-        public override int cost { get; } = 2;
-        public override IEffect[] effects { get; } = new Effect[0];
+        public override int cost { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new Effect[0];
     }
     class TestServant : ServantCardDefine
     {
         public const int ID = 0x00110001;
         public override int id { get; set; } = ID;
-        public override int cost { get; } = 1;
-        public override int attack { get; } = 2;
-        public override int life { get; } = 2;
-        public override IEffect[] effects { get; } = new Effect[0];
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new Effect[0];
     }
     class TestServant_TurnEndEffect : ServantCardDefine
     {
         public const int ID = 0x00110002;
         public override int id { get; set; } = ID;
-        public override int cost { get; } = 1;
-        public override int attack { get; } = 1;
-        public override int life { get; } = 2;
-        public override IEffect[] effects { get; } = new IEffect[]
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,player,card,arg)=>
             {
@@ -447,10 +433,10 @@ namespace Tests
     {
         public const int ID = 0x00110003;
         public override int id { get; set; } = ID;
-        public override int cost { get; } = 1;
-        public override int attack { get; } = 0;
-        public override int life { get; } = 4;
-        public override IEffect[] effects { get; } = new IEffect[]
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 0;
+        public override int life { get; set; } = 4;
+        public override IEffect[] effects { get; set; } = new IEffect[]
         {
         };
     }
@@ -458,10 +444,10 @@ namespace Tests
     {
         public const int ID = 0x00110004;
         public override int id { get; set; } = ID;
-        public override int cost { get; } = 2;
-        public override int attack { get; } = 2;
-        public override int life { get; } = 2;
-        public override IEffect[] effects { get; } = new IEffect[]
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,player,card,arg)=>
             {
@@ -479,10 +465,10 @@ namespace Tests
     {
         public const int ID = 0x00110005;
         public override int id { get; set; } = ID;
-        public override int cost { get; } = 1;
-        public override int attack { get; } = 1;
-        public override int life { get; } = 1;
-        public override IEffect[] effects { get; } = new IEffect[]
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,player,card,arg)=>
             {

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,68 +13,69 @@ using UI;
 using ExcelLibrary.SpreadSheet;
 namespace Game
 {
-    class GameManager : Manager
+    public class GameManager : Manager
     {
         [SerializeField]
         GameOption _option = new GameOption();
         [SerializeField]
-        Table _table = null;
+        Main _ui;
         public THHGame game { get; private set; } = null;
         Task gameTask { get; set; } = null;
         protected override void onAwake()
         {
             base.onAwake();
+            _ui = this.findInstance<Main>();
+            _ui.game = this;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
         }
-        [SerializeField]
-        string[] _externalCardPaths = new string[0];
         [CardDefineID]
         [SerializeField]
-        int _master;
-        [CardDefineID]
-        [SerializeField]
-        int[] _deck;
+        int[] _deck = new int[31];
+        public int[] deck
+        {
+            get { return _deck; }
+            set { _deck = value; }
+        }
+        public CardManager cards
+        {
+            get { return getManager<CardManager>(); }
+        }
         private void Start()
         {
-            Dictionary<Workbook, string> workbooks = new Dictionary<Workbook, string>();
-            foreach (var path in _externalCardPaths)
-            {
-                if (Directory.Exists(Application.streamingAssetsPath + "/" + path))
-                {
-                    foreach (var filePath in Directory.GetFiles(Application.streamingAssetsPath + "/" + path, "*.xls", SearchOption.AllDirectories))
-                    {
-                        using (FileStream stream = new FileStream(filePath, FileMode.Open))
-                        {
-                            workbooks.Add(Workbook.Load(stream), filePath);
-                        }
-                    }
-                }
-                else if (File.Exists(Application.streamingAssetsPath + "/" + path))
-                {
-                    using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/" + path, FileMode.Open))
-                    {
-                        workbooks.Add(Workbook.Load(stream), Application.streamingAssetsPath + "/" + path);
-                    }
-                }
-            }
-            CardDefine[] cards = CardImporter.GetCardDefines(workbooks, out var skins);
-            _table.addSkins(skins);
-            game = new THHGame(_option, cards)
+
+        }
+        public void startGame()
+        {
+            game = new THHGame(_option, getManager<CardManager>().GetCardDefines())
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
                 logger = new UnityLogger()
             };
             (game.answers as AnswerManager).game = game;
-            THHPlayer localPlayer = game.createPlayer(1, "本地玩家", game.getCardDefine(_master) as MasterCardDefine,
-                _deck.Select(id => game.getCardDefine(id)));
-            THHPlayer aiPlayer = game.createPlayer(2, "AI", game.getCardDefine(_master) as MasterCardDefine,
-                _deck.Select(id => game.getCardDefine(id)));
+#if !UNITY_EDITOR
+            tryLoadDeckFromPrefs();
+#endif
+            THHPlayer localPlayer = game.createPlayer(1, "本地玩家", game.getCardDefine(_deck[0]) as MasterCardDefine,
+                _deck.Skip(1).Select(id => game.getCardDefine(id)));
+            THHPlayer aiPlayer = game.createPlayer(2, "AI", game.getCardDefine(_deck[0]) as MasterCardDefine,
+                _deck.Skip(1).Select(id => game.getCardDefine(id)));
             //本地玩家用UI
-            _table.setGame(game, localPlayer);
+            _ui.display(_ui.Table);
+            _ui.Table.setGame(game, localPlayer);
             //AI玩家用AI
             new AI(game, aiPlayer);
             gameTask = game.run();
+        }
+        void tryLoadDeckFromPrefs()
+        {
+            if (!PlayerPrefs.HasKey("DeckCount"))
+                return;
+            int count = PlayerPrefs.GetInt("DeckCount");
+            for (int i = 1; i < count; i++)
+            {
+                _deck[i] = PlayerPrefs.GetInt("Deck" + i);
+            }
         }
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {

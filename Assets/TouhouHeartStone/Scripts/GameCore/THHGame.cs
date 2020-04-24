@@ -79,6 +79,8 @@ namespace TouhouHeartstone
             {
                 foreach (string keyword in servant.keywords)
                 {
+                    if (string.IsNullOrEmpty(keyword))
+                        continue;
                     switch (keyword)
                     {
                         case Keyword.TAUNT:

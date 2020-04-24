@@ -11,12 +11,12 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x001;
         public override int id { get; set; } = ID;
-        public override int cost { get; } = 1;
-        public override int attack { get; } = 1;
-        public override int life { get; } = 1;
-        public override string[] tags { get; } = new string[] { CardTag.FAIRY };
-        public override string[] keywords { get; } = new string[] { Keyword.CHARGE };
-        public override IEffect[] effects { get; } = new IEffect[0];
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] keywords { get; set; } = new string[] { Keyword.CHARGE };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
     }
     /// <summary>
     /// 人类村落守卫，325，嘲讽
@@ -25,11 +25,11 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x002;
         public override int id { get; set; } = ID;
-        public override int cost { get; } = 3;
-        public override int attack { get; } = 2;
-        public override int life { get; } = 4;
-        public override string[] keywords { get; } = new string[] { Keyword.TAUNT };
-        public override IEffect[] effects { get; } = new IEffect[0];
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 4;
+        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
     }
     /// <summary>
     /// 铁炮猎人 中立普通卡 322 战吼：造成2点伤害
@@ -38,13 +38,13 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x003;
         public override int id { get; set; } = ID;
-        public override int cost { get; } = 3;
-        public override int attack { get; } = 2;
-        public override int life { get; } = 2;
-        public override string[] keywords { get; } = new string[0];
-        public override IEffect[] effects { get; } = new IEffect[]
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.BattleCryEventArg>(PileName.FIELD,(game,player,card,vars)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,vars)=>
             {
                 return true;
             },(game,player,card,targets)=>
@@ -64,11 +64,11 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x004;
         public override int id { get; set; } = ID;
-        public override int cost { get; } = 5;
-        public override int attack { get; } = 4;
-        public override int life { get; } = 1;
-        public override string[] keywords { get; } = new string[0];
-        public override IEffect[] effects { get; } = new IEffect[]
+        public override int cost { get; set; } = 5;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectAfter<THHCard.DeathEventArg>(PileName.GRAVE,(game,player,card,arg)=>
             {
@@ -89,23 +89,23 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x005;
         public override int id { get; set; } = ID;
-        public override bool isToken { get; } = true;
-        public override int cost { get; } = 5;
-        public override int attack { get; } = 4;
-        public override int life { get; } = 3;
-        public override string[] keywords { get; } = new string[0];
-        public override IEffect[] effects { get; } = new IEffect[0];
+        public override bool isToken { get; set; } = true;
+        public override int cost { get; set; } = 5;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 3;
+        public override string[] keywords { get; set; } = new string[0];
+        public override IEffect[] effects { get; set; } = new IEffect[0];
     }
     public class DrizzleFairy : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x006;
         public override int id { get; set; } = ID;
-        public override int cost { get; } = 1;
-        public override int attack { get; } = 1;
-        public override int life { get; } = 2;
-        public override int spellDamage { get; } = 1;
-        public override string[] tags { get; } = new string[] { CardTag.FAIRY };
-        public override string[] keywords { get; } = new string[0];
-        public override IEffect[] effects { get; } = new IEffect[0];
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 2;
+        public override int spellDamage { get; set; } = 1;
+        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] keywords { get; set; } = new string[0];
+        public override IEffect[] effects { get; set; } = new IEffect[0];
     }
 }

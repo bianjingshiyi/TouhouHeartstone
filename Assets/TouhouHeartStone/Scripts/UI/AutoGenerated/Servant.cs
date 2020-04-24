@@ -139,20 +139,21 @@ namespace UI
             }
         }
         partial void onAwake();
-        public enum CanAttack
+        public enum Highlight
         {
-            False,
-            True,
+            None,
+            Green,
+            Yellow,
         }
-        public CanAttack CanAttackController
+        public Highlight HighlightController
         {
             get
             {
-                return ((CanAttack)(Enum.Parse(typeof(CanAttack), this.getController("CanAttack", Enum.GetNames(typeof(CanAttack))))));
+                return ((Highlight)(Enum.Parse(typeof(Highlight), this.getController("Highlight", Enum.GetNames(typeof(Highlight))))));
             }
             set
             {
-                this.setController("CanAttack", Enum.GetName(typeof(CanAttack), value));
+                this.setController("Highlight", Enum.GetName(typeof(Highlight), value));
             }
         }
     }

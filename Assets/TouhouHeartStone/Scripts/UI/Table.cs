@@ -11,40 +11,15 @@ using BJSYGameCore;
 using TouhouCardEngine.Interfaces;
 using BJSYGameCore.UI;
 using TouhouCardEngine;
+using Game;
 namespace UI
 {
     partial class Table
     {
-        [SerializeField]
-        CardSkinData[] _skins = new CardSkinData[0];
         public THHGame game { get; private set; } = null;
         public THHPlayer player { get; private set; } = null;
-        Dictionary<int, CardSkinData> skinDic { get; } = new Dictionary<int, CardSkinData>();
-        [SerializeField]
-        string _defaultImagePath;
-        [SerializeField]
-        Sprite _defaultImage;
         partial void onAwake()
         {
-            if (File.Exists(Application.streamingAssetsPath + "/" + _defaultImagePath))
-            {
-                using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/" + _defaultImagePath, FileMode.Open))
-                {
-                    Texture2D texture = new Texture2D(512, 512);
-                    byte[] bytes = new byte[stream.Length];
-                    stream.Read(bytes, 0, (int)stream.Length);
-                    texture.LoadImage(bytes);
-                    _defaultImage = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
-                }
-            }
-            skinDic.Clear();
-            foreach (CardSkinData skin in _skins)
-            {
-                if (skin.image == null)
-                    skin.image = _defaultImage;
-                skinDic.Add(skin.id, skin);
-            }
-
             InitReplaceDialog.hide();
             SelfHandList.asButton.onClick.AddListener(() =>
             {
@@ -230,34 +205,18 @@ namespace UI
         #region Skin
         public CardSkinData getSkin(TouhouCardEngine.Card card)
         {
-            return skinDic.ContainsKey(card.define.id) ? skinDic[card.define.id] : null;
+            return getSkin(card.define);
         }
         public CardSkinData getSkin(CardDefine define)
         {
-            if (skinDic.Count != _skins.Length)
-            {
-                skinDic.Clear();
-                foreach (CardSkinData skin in _skins)
-                {
-                    skin.image = _defaultImage;
-                    skinDic.Add(skin.id, skin);
-                }
-            }
-            return skinDic.ContainsKey(define.id) ? skinDic[define.id] : null;
+            return parent.game.getManager<CardManager>().GetCardSkin(define.id);
         }
         public void addSkins(CardSkinData[] skins)
         {
-            foreach (var skin in _skins)
-            {
-                if (!skinDic.ContainsKey(skin.id))
-                    skinDic.Add(skin.id, skin);
-            }
             foreach (var skin in skins)
             {
-                if (!skinDic.ContainsKey(skin.id))
-                    skinDic.Add(skin.id, skin);
+                parent.game.getManager<CardManager>().AddCardSkinTemp(skin);
             }
-            _skins = skinDic.Values.ToArray();
         }
         #endregion
         [SerializeField]

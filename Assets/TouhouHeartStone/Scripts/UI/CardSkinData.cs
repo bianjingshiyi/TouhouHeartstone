@@ -14,11 +14,11 @@ namespace UI
             set { _id = value; }
         }
         [SerializeField]
-        string _cardName;
-        public string cardName
+        string _name;
+        public string name
         {
-            get { return _cardName; }
-            set { _cardName = value; }
+            get { return _name; }
+            set { _name = value; }
         }
         [SerializeField]
         Sprite _image;
@@ -36,7 +36,7 @@ namespace UI
         }
         public override string ToString()
         {
-            return cardName + "<" + id + ">:" + desc;
+            return name + "<" + id + ">";
         }
     }
 }

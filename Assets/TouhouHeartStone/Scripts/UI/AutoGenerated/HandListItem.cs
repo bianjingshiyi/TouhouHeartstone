@@ -27,12 +27,12 @@ namespace UI
         {
             this._Card = this.transform.Find("Card").GetComponent<Card>();
         }
-        private Table _parent;
-        public Table parent
+        private Main _parent;
+        public Main parent
         {
             get
             {
-                return this.transform.parent.parent.GetComponent<Table>();
+                return this.transform.parent.parent.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]

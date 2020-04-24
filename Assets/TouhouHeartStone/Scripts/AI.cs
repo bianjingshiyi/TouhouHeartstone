@@ -110,7 +110,7 @@ namespace Game
             if (player.master.canAttack())
             {
                 THHPlayer opponent = game.getOpponent(player);
-                if (player.master.isAttackable(game, player, opponent.master))
+                if (player.master.isAttackable(game, player, opponent.master, out _))
                 {
                     int value = player.master.getAttack() > opponent.master.getCurrentLife() ?
                         opponent.master.getLife() : player.master.getAttack();
@@ -119,7 +119,7 @@ namespace Game
                 }
                 foreach (var target in opponent.field)
                 {
-                    if (!player.master.isAttackable(game, player, target))
+                    if (!player.master.isAttackable(game, player, target, out _))
                         continue;
                     int value = player.master.getAttack() > target.getCurrentLife() ?
                         target.getAttack() + target.getCurrentLife() : player.master.getAttack();
@@ -134,7 +134,7 @@ namespace Game
                 if (!servant.canAttack())
                     continue;
                 THHPlayer opponent = game.getOpponent(player);
-                if (servant.isAttackable(game, player, opponent.master))
+                if (servant.isAttackable(game, player, opponent.master, out _))
                 {
                     int value = servant.getAttack() > opponent.master.getCurrentLife() ?
                         opponent.master.getLife() : servant.getAttack();
@@ -142,7 +142,7 @@ namespace Game
                 }
                 foreach (var target in opponent.field)
                 {
-                    if (!servant.isAttackable(game, player, target))
+                    if (!servant.isAttackable(game, player, target, out _))
                         continue;
                     int value = servant.getAttack() > target.getCurrentLife() ?
                         target.getAttack() + target.getCurrentLife() : servant.getAttack();

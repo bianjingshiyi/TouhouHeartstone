@@ -25,6 +25,7 @@ namespace UI
         }
         public void autoBind()
         {
+            this._HighlightImage = this.transform.Find("Highlight").GetComponent<Image>();
             this._Mask = this.transform.Find("Mask").GetComponent<Mask>();
             this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
             this._FrameImage = this.transform.Find("Frame").GetComponent<Image>();
@@ -34,6 +35,19 @@ namespace UI
             this._HpText = this.transform.Find("Hp").Find("HpText").GetComponent<Text>();
             this._ArmorImage = this.transform.Find("Armor").GetComponent<Image>();
             this._ArmorText = this.transform.Find("Armor").Find("ArmorText").GetComponent<Text>();
+        }
+        [SerializeField()]
+        private Image _HighlightImage;
+        public Image HighlightImage
+        {
+            get
+            {
+                if ((this._HighlightImage == null))
+                {
+                    this._HighlightImage = this.transform.Find("Highlight").GetComponent<Image>();
+                }
+                return this._HighlightImage;
+            }
         }
         [SerializeField()]
         private Mask _Mask;
@@ -153,5 +167,22 @@ namespace UI
             }
         }
         partial void onAwake();
+        public enum Highlight
+        {
+            Green,
+            None,
+            Yellow,
+        }
+        public Highlight HighlightController
+        {
+            get
+            {
+                return ((Highlight)(Enum.Parse(typeof(Highlight), this.getController("Highlight", Enum.GetNames(typeof(Highlight))))));
+            }
+            set
+            {
+                this.setController("Highlight", Enum.GetName(typeof(Highlight), value));
+            }
+        }
     }
 }

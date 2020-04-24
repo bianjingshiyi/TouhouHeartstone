@@ -8,16 +8,16 @@ namespace TouhouHeartstone
         /// <summary>
         /// 是否是衍生物？
         /// </summary>
-        public virtual bool isToken { get; } = false;
-        public abstract int cost { get; }
-        public abstract int attack { get; }
-        public abstract int life { get; }
-        public virtual int spellDamage { get; } = 0;
-        public virtual string[] tags { get; } = new string[0];
+        public virtual bool isToken { get; set; } = false;
+        public abstract int cost { get; set; }
+        public abstract int attack { get; set; }
+        public abstract int life { get; set; }
+        public virtual int spellDamage { get; set; } = 0;
+        public virtual string[] tags { get; set; } = new string[0];
         /// <summary>
         /// 关键词
         /// </summary>
-        public virtual string[] keywords { get; } = new string[0];
+        public virtual string[] keywords { get; set; } = new string[0];
         public override T getProp<T>(string propName)
         {
             if (propName == nameof(cost))
@@ -36,6 +36,25 @@ namespace TouhouHeartstone
                 return (T)(object)keywords;
             else
                 return base.getProp<T>(propName);
+        }
+        public override void setProp<T>(string propName, T value)
+        {
+            if (propName == nameof(cost))
+                cost = (int)(object)value;
+            else if (propName == nameof(attack))
+                attack = (int)(object)value;
+            else if (propName == nameof(life))
+                life = (int)(object)value;
+            else if (propName == nameof(spellDamage))
+                spellDamage = (int)(object)value;
+            else if (propName == nameof(isToken))
+                isToken = value != null ? (bool)(object)value : false;
+            else if (propName == nameof(tags))
+                tags = (string[])(object)value;
+            else if (propName == nameof(keywords))
+                keywords = (string[])(object)value;
+            else
+                base.setProp(propName, value);
         }
         public override string isUsable(CardEngine engine, Player player, Card card)
         {
