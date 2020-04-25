@@ -73,7 +73,7 @@ namespace UI
                     table.AttackArrowImage.rectTransform.sizeDelta.x,
                     Vector2.Distance(rectTransform.position, eventData.position) / GetComponentInParent<Canvas>().transform.localScale.y);
                 //高亮标记所有目标
-                //highlightAllTargets(target => card.isAttackable(table.game, table.player, target));
+                table.selectableTargets = table.getCharacters(table.game.findAllCardsInField(c => card.isAttackable(table.game, table.player, c, out _)));
             }
             else
             {
@@ -138,7 +138,7 @@ namespace UI
         {
             rectTransform.localScale = Vector3.one;
             table.AttackArrowImage.hide();
-            //highlightAllTargets(null);
+            table.selectableTargets = null;
         }
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {

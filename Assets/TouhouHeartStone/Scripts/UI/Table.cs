@@ -256,6 +256,17 @@ namespace UI
                 return getServant(card);
             return master;
         }
+        public UIObject[] getCharacters(TouhouCardEngine.Card[] targets)
+        {
+            return targets.Select(target =>
+            {
+                if (getMaster(target) is Master master)
+                    return master as UIObject;
+                else if (getServant(target) is Servant servant)
+                    return servant as UIObject;
+                throw new ActorNotFoundException(target);
+            }).ToArray();
+        }
         [SerializeField]
         UIObject[] _selectableTargets = null;
         public UIObject[] selectableTargets

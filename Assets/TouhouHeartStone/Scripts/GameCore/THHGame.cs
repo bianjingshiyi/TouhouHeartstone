@@ -96,6 +96,21 @@ namespace TouhouHeartstone
             }
             return card;
         }
+        public Card[] findAllCardsInField(Func<Card, bool> filter)
+        {
+            List<Card> cardList = new List<Card>();
+            foreach (THHPlayer player in players)
+            {
+                if (filter == null || filter.Invoke(player.master))
+                    cardList.Add(player.master);
+                foreach (Card servant in player.field)
+                {
+                    if (filter == null || filter.Invoke(servant))
+                        cardList.Add(servant);
+                }
+            }
+            return cardList.ToArray();
+        }
         #endregion
         public int registerCardDefine(CardDefine define)
         {
