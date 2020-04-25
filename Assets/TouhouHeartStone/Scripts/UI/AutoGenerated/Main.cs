@@ -25,21 +25,21 @@ namespace UI
         }
         public void autoBind()
         {
-            this._Table = this.transform.Find("Table").GetComponent<Table>();
+            this._Game = this.transform.Find("Game").GetComponent<Game>();
             this._Build = this.transform.Find("Build").GetComponent<Build>();
             this._MainMenu = this.transform.Find("MainMenu").GetComponent<MainMenu>();
         }
         [SerializeField()]
-        private Table _Table;
-        public Table Table
+        private Game _Game;
+        public Game Game
         {
             get
             {
-                if ((this._Table == null))
+                if ((this._Game == null))
                 {
-                    this._Table = this.transform.Find("Table").GetComponent<Table>();
+                    this._Game = this.transform.Find("Game").GetComponent<Game>();
                 }
-                return this._Table;
+                return this._Game;
             }
         }
         [SerializeField()]
@@ -71,7 +71,7 @@ namespace UI
         public override UIObject[] getPages()
         {
             return new UIObject[] {
-                    this.Table,
+                    this.Game,
                     this.Build,
                     this.MainMenu};
         }

@@ -58,7 +58,7 @@ namespace UI
         {
             get
             {
-                return this.transform.parent.GetComponent<Main>();
+                return this.transform.parent.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]

@@ -15,7 +15,7 @@ namespace UI
     using UnityEngine.UI;
     using BJSYGameCore.UI;
     
-    public partial class ServantPlaceHolder : UIObject
+    public partial class Game : UIObject
     {
         protected override void Awake()
         {
@@ -25,27 +25,41 @@ namespace UI
         }
         public void autoBind()
         {
-            this._Servant = this.transform.Find("Servant").GetComponent<Servant>();
+            this._Table = this.transform.Find("Table").GetComponent<Table>();
+            this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
         }
         private Main _parent;
         public Main parent
         {
             get
             {
-                return this.transform.parent.parent.parent.parent.GetComponent<Main>();
+                return this.transform.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]
-        private Servant _Servant;
-        public Servant Servant
+        private Table _Table;
+        public Table Table
         {
             get
             {
-                if ((this._Servant == null))
+                if ((this._Table == null))
                 {
-                    this._Servant = this.transform.Find("Servant").GetComponent<Servant>();
+                    this._Table = this.transform.Find("Table").GetComponent<Table>();
                 }
-                return this._Servant;
+                return this._Table;
+            }
+        }
+        [SerializeField()]
+        private Button _QuitButton;
+        public Button QuitButton
+        {
+            get
+            {
+                if ((this._QuitButton == null))
+                {
+                    this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
+                }
+                return this._QuitButton;
             }
         }
         partial void onAwake();

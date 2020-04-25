@@ -80,30 +80,6 @@ namespace UI
                 cancelAttack(table);
             }
         }
-
-        private void highlightAllTargets(Func<TouhouCardEngine.Card, bool> filter, bool isGreen = true)
-        {
-            Table table = GetComponentInParent<Table>();
-            table.EnemyMaster.HighlightController =
-                    filter != null && filter(table.EnemyMaster.card) ?
-                    isGreen ? Master.Highlight.Green : Master.Highlight.Yellow : Master.Highlight.None;
-            table.SelfMaster.HighlightController =
-                    filter != null && filter(table.SelfMaster.card) ?
-                    isGreen ? Master.Highlight.Green : Master.Highlight.Yellow : Master.Highlight.None;
-            foreach (var servant in table.EnemyFieldList)
-            {
-                servant.HighlightController =
-                        filter != null && filter(servant.card) ?
-                        isGreen ? Highlight.Green : Highlight.Yellow : Highlight.None;
-            }
-            foreach (var servant in table.SelfFieldList)
-            {
-                servant.HighlightController =
-                        filter != null && filter(servant.card) ?
-                        isGreen ? Highlight.Green : Highlight.Yellow : Highlight.None;
-            }
-        }
-
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
             if (!card.canAttack())

@@ -175,7 +175,7 @@ namespace UI
                     if (!DragCard.BuildDeckListItem.isDisplaying)
                     {
                         DragCard.BuildDeckListItem.display();
-                        DragCard.BuildDeckListItem.update(DragCard.BuildDeckListItem.card, parent.Table.getSkin(DragCard.BuildDeckListItem.card), 1);
+                        DragCard.BuildDeckListItem.update(DragCard.BuildDeckListItem.card, parent.game.cards.GetCardSkin(DragCard.BuildDeckListItem.card.id), 1);
                     }
                     DragCard.Card.hide();
                 }
@@ -184,7 +184,7 @@ namespace UI
                     if (!DragCard.Card.isDisplaying)
                     {
                         DragCard.Card.display();
-                        DragCard.Card.update(DragCard.BuildDeckListItem.card, parent.Table.getSkin(DragCard.BuildDeckListItem.card));
+                        DragCard.Card.update(DragCard.BuildDeckListItem.card, parent.game.cards.GetCardSkin(DragCard.BuildDeckListItem.card.id));
                     }
                     DragCard.BuildDeckListItem.hide();
                 }
@@ -209,8 +209,8 @@ namespace UI
                 DragCard.Card.display();
                 DragCard.BuildDeckListItem.hide();
             }
-            DragCard.BuildDeckListItem.update(card, parent.Table.getSkin(card), 1);
-            DragCard.Card.update(card, parent.Table.getSkin(card));
+            DragCard.BuildDeckListItem.update(card, parent.game.cards.GetCardSkin(card.id), 1);
+            DragCard.Card.update(card, parent.game.cards.GetCardSkin(card.id));
         }
         public void stopDrag(Vector2 position)
         {

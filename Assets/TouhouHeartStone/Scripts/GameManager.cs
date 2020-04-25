@@ -60,12 +60,23 @@ namespace Game
             THHPlayer aiPlayer = game.createPlayer(2, "AI", game.getCardDefine(_deck[0]) as MasterCardDefine,
                 _deck.Skip(1).Select(id => game.getCardDefine(id)));
             //本地玩家用UI
-            _ui.display(_ui.Table);
-            _ui.Table.setGame(game, localPlayer);
+            _ui.display(_ui.Game);
+            _ui.Game.Table.setGame(game, localPlayer);
             //AI玩家用AI
             new AI(game, aiPlayer);
+            game.triggers.onEventAfter += onEventAfter;
             gameTask = game.run();
         }
+
+        private void onEventAfter(TouhouCardEngine.Interfaces.IEventArg obj)
+        {
+            if (obj is THHGame.GameEndEventArg)
+            {
+                game.Dispose();
+                _ui.display(_ui.MainMenu);
+            }
+        }
+
         void tryLoadDeckFromPrefs()
         {
             if (!PlayerPrefs.HasKey("DeckCount"))
