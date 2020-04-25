@@ -83,6 +83,9 @@ MonoBehaviour:
   _defaultItem: {fileID: 6536533978273380045}
   m_as_Button: {fileID: 404448875391242529}
   m_as_ListLayoutGroup: {fileID: 2432038108976825794}
+  _dragStartPosition: {x: 0, y: 0}
+  _placingCard: {fileID: 0}
+  _isSelectingTarget: 0
 --- !u!95 &9147961611909979847
 Animator:
   serializedVersion: 3

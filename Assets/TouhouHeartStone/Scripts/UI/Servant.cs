@@ -2,7 +2,8 @@
 using UnityEngine.EventSystems;
 using UnityEngine;
 using TouhouHeartstone;
-
+using System.Linq;
+using TouhouCardEngine;
 namespace UI
 {
     partial class Servant : IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -25,10 +26,22 @@ namespace UI
             }
             AttackText.text = card.getAttack().ToString();
             HpText.text = card.getCurrentLife().ToString();
-            if (table.player == player && table.game.currentPlayer == player && card.canAttack())
+
+            if (table.selectableTargets != null && table.selectableTargets.Contains(this))
+                HighlightController = Highlight.Yellow;
+            else if (table.player == player && table.game.currentPlayer == player && card.canAttack())
                 HighlightController = Highlight.Green;
             else
                 HighlightController = Highlight.None;
+        }
+        public void update(CardDefine card, CardSkinData skin)
+        {
+            if (skin != null)
+            {
+                Image.sprite = skin.image;
+            }
+            AttackText.text = card.getAttack().ToString();
+            HpText.text = card.getLife().ToString();
         }
         [SerializeField]
         float _attackThreshold = 70;
@@ -129,6 +142,8 @@ namespace UI
         }
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
+            if (card == null)
+                return;
             displayLargeCard(eventData.position.x < Screen.width / 2);
         }
         private void displayLargeCard(bool isRight)

@@ -210,6 +210,13 @@ namespace TouhouHeartstone
             }
             return targetList.ToArray();
         }
+        public static bool isValidTarget(this Card card, THHGame game, Card target)
+        {
+            IEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            if (effect == null)
+                return false;
+            return effect.checkTarget(game, null, card, new object[] { target });
+        }
         public static async Task<bool> tryAttack(this Card card, THHGame game, Card target)
         {
             if (!card.canAttack())

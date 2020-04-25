@@ -25,6 +25,7 @@ namespace UI
         }
         public void autoBind()
         {
+            this._Servant = this.transform.Find("Servant").GetComponent<Servant>();
         }
         private Main _parent;
         public Main parent
@@ -32,6 +33,19 @@ namespace UI
             get
             {
                 return this.transform.parent.parent.parent.GetComponent<Main>();
+            }
+        }
+        [SerializeField()]
+        private Servant _Servant;
+        public Servant Servant
+        {
+            get
+            {
+                if ((this._Servant == null))
+                {
+                    this._Servant = this.transform.Find("Servant").GetComponent<Servant>();
+                }
+                return this._Servant;
             }
         }
         partial void onAwake();

@@ -53,11 +53,16 @@ namespace UI
             {
                 SelfSkill.asButton.onClick.AddListener(() =>
                 {
+                    if (selectableTargets != null)
+                        return;
                     player.cmdUse(game, SelfSkill.card, 0);
                 });
                 TurnEndButton.onClick.AddListener(() =>
                 {
                     player.cmdTurnEnd(game);
+
+                    SelfHandList.stopPlacing();
+                    selectableTargets = null;
                 });
             }
         }
@@ -105,10 +110,10 @@ namespace UI
 
             if (player == null)
                 return;
-            SelfMaster.update(player.master, getSkin(player.master));
+            SelfMaster.update(this, player, player.master, getSkin(player.master));
             if (player.skill != null)
             {
-                SelfSkill.update(game, player, player, player.skill, getSkin(player.skill));
+                SelfSkill.update(this, player, player, player.skill, getSkin(player.skill));
                 SelfSkill.display();
             }
             else
@@ -116,7 +121,8 @@ namespace UI
             SelfGem.Text.text = player.gem.ToString();
             SelfHandList.updateItems(player.hand.ToArray(), (item, card) => item.Card.card == card, (item, card) =>
             {
-                item.Card.update(card, getSkin(card));
+                if (item.Card.isDisplaying)
+                    item.Card.update(card, getSkin(card));
             });
             SelfHandList.sortItems((a, b) => player.hand.indexOf(a.Card.card) - player.hand.indexOf(b.Card.card));
             foreach (var servant in SelfFieldList)
@@ -137,10 +143,10 @@ namespace UI
             THHPlayer opponent = game.getOpponent(player);
             if (opponent == null)
                 return;
-            EnemyMaster.update(opponent.master, getSkin(opponent.master));
+            EnemyMaster.update(this, opponent, opponent.master, getSkin(opponent.master));
             if (opponent.skill != null)
             {
-                EnemySkill.update(game, player, opponent, opponent.skill, getSkin(opponent.skill));
+                EnemySkill.update(this, player, opponent, opponent.skill, getSkin(opponent.skill));
                 EnemySkill.display();
             }
             else
@@ -211,13 +217,6 @@ namespace UI
         {
             return parent.game.getManager<CardManager>().GetCardSkin(define.id);
         }
-        public void addSkins(CardSkinData[] skins)
-        {
-            foreach (var skin in skins)
-            {
-                parent.game.getManager<CardManager>().AddCardSkinTemp(skin);
-            }
-        }
         #endregion
         [SerializeField]
         Timer _tipTimer = new Timer();
@@ -256,6 +255,13 @@ namespace UI
             if (master == null)
                 return getServant(card);
             return master;
+        }
+        [SerializeField]
+        UIObject[] _selectableTargets = null;
+        public UIObject[] selectableTargets
+        {
+            get { return _selectableTargets; }
+            set { _selectableTargets = value; }
         }
     }
 }

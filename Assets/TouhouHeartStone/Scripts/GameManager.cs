@@ -42,7 +42,9 @@ namespace Game
         }
         private void Start()
         {
-
+#if !UNITY_EDITOR
+            tryLoadDeckFromPrefs();
+#endif
         }
         public void startGame()
         {
@@ -53,9 +55,6 @@ namespace Game
                 logger = new UnityLogger()
             };
             (game.answers as AnswerManager).game = game;
-#if !UNITY_EDITOR
-            tryLoadDeckFromPrefs();
-#endif
             THHPlayer localPlayer = game.createPlayer(1, "本地玩家", game.getCardDefine(_deck[0]) as MasterCardDefine,
                 _deck.Skip(1).Select(id => game.getCardDefine(id)));
             THHPlayer aiPlayer = game.createPlayer(2, "AI", game.getCardDefine(_deck[0]) as MasterCardDefine,

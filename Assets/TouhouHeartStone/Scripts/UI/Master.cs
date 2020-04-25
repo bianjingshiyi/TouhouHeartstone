@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using TouhouHeartstone;
-
+using System.Linq;
 namespace UI
 {
     partial class Master : IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         public TouhouCardEngine.Card card { get; private set; } = null;
-        public void update(TouhouCardEngine.Card card, CardSkinData skin)
+        public void update(Table table, THHPlayer player, TouhouCardEngine.Card card, CardSkinData skin)
         {
             this.card = card;
 
@@ -32,7 +32,12 @@ namespace UI
             else
                 ArmorText.enabled = false;
 
-            HighlightController = card.canAttack() ? Highlight.Green : Highlight.None;
+            if (table.selectableTargets != null && table.selectableTargets.Contains(this))
+                HighlightController = Highlight.Yellow;
+            else if (table.player == player && table.game.currentPlayer == player && card.canAttack())
+                HighlightController = Highlight.Green;
+            else
+                HighlightController = Highlight.None;
         }
         [SerializeField]
         float _attackThreshold = 50;
