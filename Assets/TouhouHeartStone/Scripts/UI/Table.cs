@@ -31,7 +31,6 @@ namespace UI
         public THHPlayer player { get; private set; } = null;
         partial void onAwake()
         {
-            InitReplaceDialog.hide();
             SelfHandList.asButton.onClick.AddListener(() =>
             {
                 if (SelfHandList.isExpanded)
@@ -39,10 +38,16 @@ namespace UI
                 else
                     SelfHandList.expand();
             });
-            AttackArrowImage.gameObject.SetActive(false);
         }
         public void setGame(THHGame game, THHPlayer player)
         {
+            InitReplaceDialog.hide();
+            AttackArrowImage.gameObject.SetActive(false);
+            SelfHandList.clearItems();
+            SelfFieldList.clearItems();
+            EnemyFieldList.clearItems();
+            EnemyHandList.clearItems();
+
             if (game != null)
             {
                 game.triggers.onEventBefore -= onEventBefore;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouHeartstone.Builtin;
 namespace TouhouHeartstone
 {
     public class THHPlayer : Player
@@ -43,6 +44,11 @@ namespace TouhouHeartstone
                 arg.replacedCards = arg.player.init.replaceByRandom(game, arg.cards, arg.player.deck);
                 game.logger.log(arg.player + "替换卡牌：" + string.Join("，", arg.cards.Select(c => c.ToString())) + "=>"
                     + string.Join("，", arg.replacedCards.Select(c => c.ToString())));
+                if (arg.player != game.sortedPlayers[0])
+                {
+                    arg.player.hand.add(game, game.createCard(game.getCardDefine<LuckyCoin>()));
+                    game.logger.log("由于后手行动" + arg.player + "获得一张幸运币");
+                }
                 return Task.CompletedTask;
             });
         }
@@ -170,7 +176,7 @@ namespace TouhouHeartstone
                 else if (card.define is SkillCardDefine)
                 {
                     IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    await effect.execute(game, arg.player, arg.card, new object[0], arg.targets);
+                    await effect.execute(game, arg.player, arg.card, new object[] { new ActiveEventArg() { player = player } }, arg.targets);
                 }
                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.spell))
                 {

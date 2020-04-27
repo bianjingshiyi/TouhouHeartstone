@@ -11,23 +11,25 @@ namespace UI
 
             Image.sprite = skin.image;
             CostText.text = card.getCost().ToString();
-            if (player == self
-                && card.isUsable(table.game, player, out _)//技能是可用的
-                && table.selectableTargets == null//没有在选择目标
-                )
-            {
-                IsUsableController = IsUsable.True;
-            }
-            else
-            {
-                IsUsableController = IsUsable.False;
-            }
             if (card.isUsed())
             {
                 IsUsedController = IsUsed.True;
             }
             else
                 IsUsedController = IsUsed.False;
+            if (player == self
+                && card.isUsable(table.game, player, out _)//技能是可用的
+                && table.selectableTargets == null//没有在选择目标
+                )
+            {
+                IsUsableController = IsUsable.True;
+                asButton.interactable = true;
+            }
+            else
+            {
+                IsUsableController = IsUsable.False;
+                asButton.interactable = false;
+            }
         }
     }
 }

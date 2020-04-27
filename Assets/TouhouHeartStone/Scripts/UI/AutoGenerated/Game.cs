@@ -25,6 +25,7 @@ namespace UI
         }
         public void autoBind()
         {
+            this._BackgroundImage = this.transform.Find("Background").GetComponent<Image>();
             this._Table = this.transform.Find("Table").GetComponent<Table>();
             this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
         }
@@ -34,6 +35,19 @@ namespace UI
             get
             {
                 return this.transform.parent.GetComponent<Main>();
+            }
+        }
+        [SerializeField()]
+        private Image _BackgroundImage;
+        public Image BackgroundImage
+        {
+            get
+            {
+                if ((this._BackgroundImage == null))
+                {
+                    this._BackgroundImage = this.transform.Find("Background").GetComponent<Image>();
+                }
+                return this._BackgroundImage;
             }
         }
         [SerializeField()]

@@ -9,6 +9,14 @@ using TouhouHeartstone.Builtin;
 
 namespace Tests
 {
+    public class HelloWorldTests
+    {
+        [Test]
+        public void newTest()
+        {
+            Debug.Log("HelloWorld");
+        }
+    }
     public class ReimuCardTests
     {
         [UnityTest]

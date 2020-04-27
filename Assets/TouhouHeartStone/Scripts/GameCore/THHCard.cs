@@ -183,6 +183,17 @@ namespace TouhouHeartstone
                     info = "你没有足够的法力值";
                     return false;
                 }
+                if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is IEffect effect && !effect.checkCondition(game, null, card, new object[]
+                    {
+                        new THHPlayer.ActiveEventArg()
+                        {
+                            player = player
+                        }
+                    }))
+                {
+                    info = "技能不可用";
+                    return false;
+                }
             }
             else
             {

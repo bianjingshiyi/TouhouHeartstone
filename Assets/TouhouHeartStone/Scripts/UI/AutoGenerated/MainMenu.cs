@@ -25,8 +25,11 @@ namespace UI
         }
         public void autoBind()
         {
+            this._BackgroundImage = this.transform.Find("BackgroundContainer").Find("Background").GetComponent<Image>();
+            this._ButtonPanelImage = this.transform.Find("ButtonPanel").GetComponent<Image>();
             this._ManMachineButton = this.transform.Find("ManMachineButton").GetComponent<Button>();
             this._BuildButton = this.transform.Find("BuildButton").GetComponent<Button>();
+            this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
         }
         private Main _parent;
         public Main parent
@@ -34,6 +37,32 @@ namespace UI
             get
             {
                 return this.transform.parent.GetComponent<Main>();
+            }
+        }
+        [SerializeField()]
+        private Image _BackgroundImage;
+        public Image BackgroundImage
+        {
+            get
+            {
+                if ((this._BackgroundImage == null))
+                {
+                    this._BackgroundImage = this.transform.Find("BackgroundContainer").Find("Background").GetComponent<Image>();
+                }
+                return this._BackgroundImage;
+            }
+        }
+        [SerializeField()]
+        private Image _ButtonPanelImage;
+        public Image ButtonPanelImage
+        {
+            get
+            {
+                if ((this._ButtonPanelImage == null))
+                {
+                    this._ButtonPanelImage = this.transform.Find("ButtonPanel").GetComponent<Image>();
+                }
+                return this._ButtonPanelImage;
             }
         }
         [SerializeField()]
@@ -60,6 +89,19 @@ namespace UI
                     this._BuildButton = this.transform.Find("BuildButton").GetComponent<Button>();
                 }
                 return this._BuildButton;
+            }
+        }
+        [SerializeField()]
+        private Button _QuitButton;
+        public Button QuitButton
+        {
+            get
+            {
+                if ((this._QuitButton == null))
+                {
+                    this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
+                }
+                return this._QuitButton;
             }
         }
         partial void onAwake();

@@ -95,11 +95,12 @@ namespace UI
                                     {
                                         if (placingCard.card.getAvaliableTargets(table.game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
                                         {
-                                            //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
-                                            _isSelectingTarget = true;
-                                            placingCard.hide();
+                                            //随从站场预览
                                             table.ServantPlaceHolder.Servant.display();
                                             table.ServantPlaceHolder.Servant.update(placingCard.card.define, table.getSkin(placingCard.card));
+                                            //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
+                                            placingCard.hide();
+                                            _isSelectingTarget = true;
                                             table.selectableTargets = targets.Select(target =>
                                             {
                                                 if (table.getMaster(target) is Master master)
@@ -114,6 +115,42 @@ namespace UI
                                         {
                                             //使用无目标随从牌
                                             table.player.cmdUse(table.game, placingCard.card, index);
+                                            stopPlacing();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //无法使用随从牌
+                                        table.showTip(info);
+                                        stopPlacing();
+                                    }
+                                }
+                            }
+                            else if (placingCard.card.define is SpellCardDefine)
+                            {
+                                if (input.GetMouseButtonUp(0))
+                                {
+                                    if (placingCard.card.isUsable(table.game, table.player, out info))
+                                    {
+                                        if (placingCard.card.getAvaliableTargets(table.game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
+                                        {
+                                            //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
+                                            placingCard.hide();
+                                            _isSelectingTarget = true;
+                                            table.selectableTargets = targets.Select(target =>
+                                            {
+                                                if (table.getMaster(target) is Master master)
+                                                    return master as UIObject;
+                                                else if (table.getServant(target) is Servant servant)
+                                                    return servant as UIObject;
+                                                throw new ActorNotFoundException(target);
+                                            }).ToArray();
+                                            shrink();
+                                        }
+                                        else
+                                        {
+                                            //使用无目标随从牌
+                                            table.player.cmdUse(table.game, placingCard.card, 0);
                                             stopPlacing();
                                         }
                                     }

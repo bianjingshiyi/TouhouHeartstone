@@ -22,7 +22,10 @@ namespace UI
         {
             if (!_isDragging)
                 return;
+            Table table = GetComponentInParent<Table>();
             HandList handlist = GetComponentInParent<HandList>();
+            if (handlist == table.EnemyHandList)
+                return;
             if (Vector2.Distance(_startDragPosition, eventData.position) > _dragThreshold)
             {
                 if (handlist.placingCard == null)

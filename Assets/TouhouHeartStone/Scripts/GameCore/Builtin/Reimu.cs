@@ -20,9 +20,9 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect(new On<THHPlayer.ActiveEventArg>(),"Skill",(game,player,card,vars)=>
+            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,player,card,arg)=>
             {
-                return player.field.count<player.field.maxCount;
+                return arg.player.field.count<arg.player.field.maxCount;
             },(game,player,card,targets)=>
             {
                 return true;

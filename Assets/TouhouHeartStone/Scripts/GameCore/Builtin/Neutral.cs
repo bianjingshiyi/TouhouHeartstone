@@ -108,4 +108,23 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
+    public class LuckyCoin : SpellCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SPELL | 0x007;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.HAND,(game,player,card,arg)=>
+            {
+                return true;
+            },(game,player,card,targets)=>
+            {
+                return true;
+            },async (game,player,card,arg,targets)=>
+            {
+                await arg.player.setGem(game,arg.player.gem + 1);
+            })
+        };
+    }
 }

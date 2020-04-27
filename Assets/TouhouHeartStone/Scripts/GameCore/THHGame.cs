@@ -112,33 +112,6 @@ namespace TouhouHeartstone
             return cardList.ToArray();
         }
         #endregion
-        public int registerCardDefine(CardDefine define)
-        {
-            return engine.rule.pool.register(define);
-        }
-        public int[] getUsableCards(int playerIndex)
-        {
-            return engine.getPlayerAt(playerIndex)["Hand"].Concat(engine.getPlayerAt(playerIndex)["Skill"]).
-                   Where(c => { return string.IsNullOrEmpty(isUsable(c)); }).
-                   Select(c => { return c.id; }).ToArray();
-        }
-        public string isUsable(int rid)
-        {
-            return isUsable(engine.getCard(rid));
-        }
-        private string isUsable(Card card)
-        {
-            Player player = card.pile.owner;
-            //通用规则
-            if (player.getProp<int>("gem") < card.define.getProp<int>("cost"))//法力值不足不能用
-                return "Unusable_NotEnoughGem";
-            //if ((card.define.type == CardDefineType.spell ||
-            //     card.define.type == CardDefineType.skill) &&
-            //     getTargets(rid, "onUse").Length < 1)//法术，技能卡没有合适的目标不可以用
-            //    return "Unusable_NoValidTarget";
-            //卡片自己的规则
-            return card.define.isUsable(engine, player, card);
-        }
         /// <summary>
         /// 添加玩家
         /// </summary>
