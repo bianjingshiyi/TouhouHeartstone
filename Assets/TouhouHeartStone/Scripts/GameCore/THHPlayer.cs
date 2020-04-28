@@ -65,8 +65,8 @@ namespace TouhouHeartstone
                 arg.player.gem = arg.value;
                 if (arg.player.gem < 0)
                     arg.player.gem = 0;
-                if (arg.player.gem > arg.player.maxGem)
-                    arg.player.gem = arg.player.maxGem;
+                if (arg.player.gem > 10)
+                    arg.player.gem = 10;
                 game.logger.log(arg.player + "的法力水晶变为" + arg.player.gem);
                 return Task.CompletedTask;
             });
@@ -153,17 +153,14 @@ namespace TouhouHeartstone
                 THHPlayer player = arg.player;
                 card = arg.card;
                 targets = arg.targets;
-                game.logger.log(arg.player + "使用" + arg.card);
+                game.logger.log(arg.player + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
                 if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.servant))
                 {
                     //随从卡，将卡置入战场
                     await tryPutIntoField(game, arg.player.hand, arg.card, arg.position);
                     IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
                     if (effect != null)
-                        await effect.execute(game, player, card, new object[] { new ActiveEventArg()
-                        {
-                            player = player
-                        } }, targets);
+                        await effect.execute(game, player, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
                     //IEffect effect = arg.card.define.getEffectOn<BattleCryEventArg>(game.triggers);
                     //if (effect != null)
                     //{
@@ -176,14 +173,14 @@ namespace TouhouHeartstone
                 else if (card.define is SkillCardDefine)
                 {
                     IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    await effect.execute(game, arg.player, arg.card, new object[] { new ActiveEventArg() { player = player } }, arg.targets);
+                    await effect.execute(game, arg.player, arg.card, new object[] { new ActiveEventArg(player, card, targets) }, arg.targets);
                 }
                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.spell))
                 {
                     //法术卡，释放效果然后丢进墓地
                     player.hand.remove(game, card);
                     IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    await effect.execute(game, player, card, new object[] { new ActiveEventArg() { player = player } }, targets);
+                    await effect.execute(game, player, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
                     player.grave.add(game, card);
                 }
             });
@@ -200,6 +197,14 @@ namespace TouhouHeartstone
         public class ActiveEventArg : EventArg
         {
             public THHPlayer player;
+            public Card card;
+            public object[] targets;
+            public ActiveEventArg(THHPlayer player, Card card, object[] targets)
+            {
+                this.player = player;
+                this.card = card;
+                this.targets = targets;
+            }
         }
         public class BattleCryEventArg : EventArg
         {

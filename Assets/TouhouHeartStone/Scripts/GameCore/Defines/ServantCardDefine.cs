@@ -1,8 +1,7 @@
 ﻿using TouhouCardEngine;
-
 namespace TouhouHeartstone
 {
-    public abstract class ServantCardDefine : CardDefine, ICost
+    public abstract class ServantCardDefine : CardDefine
     {
         public override CardDefineType type { get; set; } = CardDefineType.servant;
         /// <summary>

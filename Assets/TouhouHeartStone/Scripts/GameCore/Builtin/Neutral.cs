@@ -120,7 +120,7 @@ namespace TouhouHeartstone.Builtin
                 return true;
             },(game,player,card,targets)=>
             {
-                return true;
+                return false;
             },async (game,player,card,arg,targets)=>
             {
                 await arg.player.setGem(game,arg.player.gem + 1);

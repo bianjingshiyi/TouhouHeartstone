@@ -10,8 +10,16 @@ namespace UI
             this.card = card;
 
             CostText.text = card.getCost().ToString();
-            AttackText.text = card.getAttack().ToString();
-            LifeText.text = card.getLife().ToString();
+            if (card.define.type == CardDefineType.servant)
+            {
+                TypeController = Type.Servant;
+                AttackText.text = card.getAttack().ToString();
+                LifeText.text = card.getLife().ToString();
+            }
+            else
+            {
+                TypeController = Type.Spell;
+            }
 
             if (skin != null)
             {

@@ -11,20 +11,10 @@ using BJSYGameCore;
 using TouhouCardEngine.Interfaces;
 using BJSYGameCore.UI;
 using TouhouCardEngine;
+using TouhouHeartstone.Builtin;
 using Game;
 namespace UI
 {
-    partial class Game
-    {
-        partial void onAwake()
-        {
-            QuitButton.onClick.AddListener(() =>
-            {
-                parent.game.game.Dispose();
-                parent.display(parent.MainMenu);
-            });
-        }
-    }
     partial class Table
     {
         public THHGame game { get; private set; } = null;
@@ -100,11 +90,21 @@ namespace UI
                 case THHCard.DeathEventArg death:
                     _animationQueue.Add(new DeathAnimation(death));
                     break;
+                case THHPlayer.ActiveEventArg active:
+                    if (active.card.define == game.getCardDefine<RifleHunter>())
+                    {
+                        Servant servant = getServant(active.card);
+                        UIObject target = getCharacter(active.targets[0] as TouhouCardEngine.Card);
+                        _animationQueue.Add(new ProjectileAnimation(Instantiate(_defaultProjectile, servant.rectTransform.position, Quaternion.identity, getChild("Fields")), target));
+                    }
+                    break;
                 default:
                     //game.logger?.log("UI", "被忽略的事件结束：" + obj);
                     break;
             }
         }
+        [SerializeField]
+        Projectile _defaultProjectile;
         private void onEventAfter(IEventArg arg)
         {
 

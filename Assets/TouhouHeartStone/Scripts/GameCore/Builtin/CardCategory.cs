@@ -9,6 +9,7 @@
         public const int SKILL = 0x00001000;
         public const int SERVANT = 0x00002000;
         public const int SPELL = 0x00003000;
+        public const int ITEM = 0x00004000;
         public const int CHARACTER_NEUTRAL = 0x00000000;
     }
 }

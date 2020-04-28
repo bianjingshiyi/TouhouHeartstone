@@ -407,5 +407,21 @@ namespace UI
                 this.setController("IsFaceup", Enum.GetName(typeof(IsFaceup), value));
             }
         }
+        public enum Type
+        {
+            Servant,
+            Spell,
+        }
+        public Type TypeController
+        {
+            get
+            {
+                return ((Type)(Enum.Parse(typeof(Type), this.getController("Type", Enum.GetNames(typeof(Type))))));
+            }
+            set
+            {
+                this.setController("Type", Enum.GetName(typeof(Type), value));
+            }
+        }
     }
 }

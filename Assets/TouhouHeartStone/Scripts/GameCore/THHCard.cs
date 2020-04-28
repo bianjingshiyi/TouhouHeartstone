@@ -185,10 +185,7 @@ namespace TouhouHeartstone
                 }
                 if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is IEffect effect && !effect.checkCondition(game, null, card, new object[]
                     {
-                        new THHPlayer.ActiveEventArg()
-                        {
-                            player = player
-                        }
+                        new THHPlayer.ActiveEventArg(player,card,new object[0])
                     }))
                 {
                     info = "技能不可用";
