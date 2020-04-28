@@ -35,5 +35,9 @@ namespace TouhouHeartstone
             get { return getProp<Effect[]>(nameof(CardDefine.effects)); }
             set { setProp(nameof(CardDefine.effects), value); }
         }
+        public override string ToString()
+        {
+            return "Generated<" + id + ">";
+        }
     }
 }

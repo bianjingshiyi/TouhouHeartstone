@@ -387,8 +387,8 @@ namespace Tests
     {
         public const int ID = 0x00100000;
         public override int id { get; set; } = ID;
-        public override int life { get; } = 30;
-        public override int skillID { get; } = TestSkill.ID;
+        public override int life { get; set; } = 30;
+        public override int skillID { get; set; } = TestSkill.ID;
         public override IEffect[] effects { get; set; } = new Effect[0];
     }
     class TestSkill : SkillCardDefine

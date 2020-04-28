@@ -27,7 +27,9 @@ namespace Game
                         int id = numberToInt(pRow.Value.GetCell(idIndex).Value);
                         CardDefine card = cardList.FirstOrDefault(c => c.id == id);
                         card = readCardDefine(card, pBook.Value, worksheet, pRow.Key, out var skin);
+                        cardList.Add(card);
                         skinList.Add(skin);
+                        Debug.Log("读取Excel卡片" + card + "，皮肤：" + skin);
                     }
                 }
             }

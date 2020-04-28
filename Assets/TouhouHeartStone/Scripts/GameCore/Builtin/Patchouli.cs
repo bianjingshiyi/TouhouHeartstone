@@ -3,7 +3,7 @@ namespace TouhouHeartstone.Builtin
 {
     public class Patchouli : MasterCardDefine
     {
-        public const int ID = 0x00300000 | CardCategory.MASTER | 0x000;
+        public const int ID = 0x00400000 | CardCategory.MASTER | 0x000;
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = KnowledgeTap.ID;

@@ -9,8 +9,8 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = 0x00300000 | CardCategory.MASTER | 0x000;
         public override int id { get; set; } = ID;
-        public override int life { get; } = 30;
-        public override int skillID { get; } = WindStopMiracle.ID;
+        public override int life { get; set; } = 30;
+        public override int skillID { get; set; } = WindStopMiracle.ID;
         public override IEffect[] effects { get; set; } = new Effect[0];
     }
     /// <summary>

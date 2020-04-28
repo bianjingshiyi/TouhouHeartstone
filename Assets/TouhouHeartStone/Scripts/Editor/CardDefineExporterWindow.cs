@@ -127,6 +127,8 @@ namespace TouhouHeartstone
                 sheet.Cells[rowIndex, typeIndex] = new Cell("Skill");
             else if (card is SpellCardDefine)
                 sheet.Cells[rowIndex, typeIndex] = new Cell("Spell");
+            else if (card is ItemCardDefine)
+                sheet.Cells[rowIndex, typeIndex] = new Cell("Item");
             int costIndex = findColIndex(sheet, "Cost");
             sheet.Cells[rowIndex, costIndex] = new Cell(card.getProp<int>("cost"));
             int attackIndex = findColIndex(sheet, "Attack");
