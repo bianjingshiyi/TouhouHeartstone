@@ -91,12 +91,12 @@ namespace UI
                     _animationQueue.Add(new DeathAnimation(death));
                     break;
                 case THHPlayer.ActiveEventArg active:
-                    if (active.card.define == game.getCardDefine<RifleHunter>())
-                    {
-                        Servant servant = getServant(active.card);
-                        UIObject target = getCharacter(active.targets[0] as TouhouCardEngine.Card);
-                        _animationQueue.Add(new ProjectileAnimation(Instantiate(_defaultProjectile, servant.rectTransform.position, Quaternion.identity, getChild("Fields")), target));
-                    }
+                    //if (active.card.define == game.getCardDefine<RifleHunter>())
+                    //{
+                    //    Servant servant = getServant(active.card);
+                    //    UIObject target = getCharacter(active.targets[0] as TouhouCardEngine.Card);
+                    //    _animationQueue.Add(new ProjectileAnimation(Instantiate(_defaultProjectile, servant.rectTransform.position, Quaternion.identity, getChild("Fields")), target));
+                    //}
                     break;
                 default:
                     //game.logger?.log("UI", "被忽略的事件结束：" + obj);

@@ -4,11 +4,7 @@ namespace TouhouHeartstone
 {
     public abstract class ItemCardDefine : CardDefine
     {
-        public override CardDefineType type
-        {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
-        }
+        public override string type { get; set; } = CardDefineType.ITEM;
         public virtual bool isToken { get; set; } = false;
         public abstract int cost { get; set; }
         public abstract int attack { get; set; }

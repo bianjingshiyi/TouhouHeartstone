@@ -43,14 +43,7 @@ namespace Game
             int idIndex = findColIndex(sheet, "ID");
             card.id = numberToInt(sheet.Cells[row, idIndex].Value);
             int typeIndex = findColIndex(sheet, "Type");
-            if (sheet.Cells[row, typeIndex].StringValue == "Servant")
-                card.type = CardDefineType.servant;
-            else if (sheet.Cells[row, typeIndex].StringValue == "Spell")
-                card.type = CardDefineType.spell;
-            else if (sheet.Cells[row, typeIndex].StringValue == "Master")
-                card.type = CardDefineType.master;
-            else if (sheet.Cells[row, typeIndex].StringValue == "Skill")
-                card.type = CardDefineType.skill;
+            card.type = sheet.Cells[row, typeIndex].StringValue;
             int costIndex = findColIndex(sheet, "Cost");
             card.setProp(nameof(ServantCardDefine.cost), numberToInt(sheet.Cells[row, costIndex].Value));
             int attackIndex = findColIndex(sheet, "Attack");

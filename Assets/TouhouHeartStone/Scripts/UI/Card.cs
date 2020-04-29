@@ -10,7 +10,7 @@ namespace UI
             this.card = card;
 
             CostText.text = card.getCost().ToString();
-            if (card.define.type == CardDefineType.servant)
+            if (card.define.type == CardDefineType.SERVANT)
             {
                 TypeController = Type.Servant;
                 AttackText.text = card.getAttack().ToString();

@@ -81,7 +81,7 @@ namespace UI
             }
             else if (c is GeneratedCardDefine generated)
             {
-                if (generated.type == CardDefineType.servant)
+                if (generated.type != CardDefineType.SERVANT)
                     return false;
                 if (generated.getProp<bool>(nameof(ServantCardDefine.isToken)))
                     return false;

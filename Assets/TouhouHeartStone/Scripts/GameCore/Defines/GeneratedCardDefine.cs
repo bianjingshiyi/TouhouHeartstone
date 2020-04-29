@@ -22,7 +22,7 @@ namespace TouhouHeartstone
             else
                 return default;
         }
-        public override CardDefineType type { get; set; }
+        public override string type { get; set; }
         public override string isUsable(CardEngine engine, Player player, Card card)
         {
             string script = getProp<string>("condition");

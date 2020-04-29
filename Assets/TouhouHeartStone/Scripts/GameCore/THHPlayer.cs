@@ -154,7 +154,7 @@ namespace TouhouHeartstone
                 card = arg.card;
                 targets = arg.targets;
                 game.logger.log(arg.player + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
-                if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.servant))
+                if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.SERVANT))
                 {
                     //随从卡，将卡置入战场
                     await tryPutIntoField(game, arg.player.hand, arg.card, arg.position);
@@ -175,7 +175,7 @@ namespace TouhouHeartstone
                     IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
                     await effect.execute(game, arg.player, arg.card, new object[] { new ActiveEventArg(player, card, targets) }, arg.targets);
                 }
-                else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.spell))
+                else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.SPELL))
                 {
                     //法术卡，释放效果然后丢进墓地
                     player.hand.remove(game, card);

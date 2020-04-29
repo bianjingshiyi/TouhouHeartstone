@@ -4976,7 +4976,8 @@ MonoBehaviour:
   _InitReplaceDialog: {fileID: 203521522}
   _TipText: {fileID: 466793700}
   _LargeCard: {fileID: 336116705}
-  _defaultProjectile: {fileID: 0}
+  _defaultProjectile: {fileID: 3622927314571081998, guid: 126ef8e97874d134a8fd0e8ffa1dd7a8,
+    type: 3}
   _tipTimer:
     startTime: -1
     duration: 1
