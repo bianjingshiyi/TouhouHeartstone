@@ -304,7 +304,7 @@ namespace Tests
             host.logger = g1.logger;
             host.start();
             ClientManager c1 = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
-            //c1.logger = g1.logger;
+            c1.logger = g1.logger;
             c1.start();
             _ = c1.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
             (g1.answers as AnswerManager).client = c1;
@@ -322,7 +322,9 @@ namespace Tests
 
             _ = g1.run();
             _ = g2.run();
+            yield return new WaitForSeconds(.5f);
             g1.players[0].cmdInitReplace(g1, g1.players[0].init[0, 1]);
+            yield return new WaitForSeconds(.5f);
             g2.players[1].cmdInitReplace(g2);
             yield return new WaitForSeconds(.5f);
             g1.players[0].cmdUse(g1, g1.players[0].hand[0], 0);
