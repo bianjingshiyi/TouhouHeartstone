@@ -123,6 +123,13 @@ namespace UI
 
             if (game == null)
                 return;
+            if (game.turnTimer != null && game.turnTimer.remainedTime <= 15)
+            {
+                TimeoutSlider.display();
+                TimeoutSlider.value = game.turnTimer.remainedTime / 15;
+            }
+            else
+                TimeoutSlider.hide();
 
             if (player == null)
                 return;

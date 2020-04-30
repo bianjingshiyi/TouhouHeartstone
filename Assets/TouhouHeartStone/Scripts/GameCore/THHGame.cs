@@ -137,7 +137,7 @@ namespace TouhouHeartstone
             await init();
             Dictionary<int, IResponse> initReplaceResponses = await answers.askAll(sortedPlayers.Select(p => p.id).ToArray(), new InitReplaceRequest()
             {
-            }, option.timeout);
+            }, option.timeoutForInitReplace);
             foreach (var result in initReplaceResponses)
             {
                 THHPlayer player = getPlayer(result.Key);
@@ -240,7 +240,16 @@ namespace TouhouHeartstone
                 }
             });
             //倒计时75秒
+            turnTimer = time.startTimer(75);
+            turnTimer.onExpired += onTurnTimeout;
         }
+        public ITimer turnTimer { get; set; } = null;
+        private void onTurnTimeout()
+        {
+            logger.log("Debug", currentPlayer + "回合超时");
+            answers.cancel(answers.getRequests(currentPlayer.id));
+        }
+
         public class TurnStartEventArg : EventArg
         {
             public THHPlayer player;
@@ -253,7 +262,8 @@ namespace TouhouHeartstone
             {
                 if (!isRunning)
                     return;
-                switch (await answers.ask(player.id, new FreeActRequest(), option.timeout))
+                IResponse response = await answers.ask(player.id, new FreeActRequest(), option.timeoutForTurn * 2);
+                switch (response)
                 {
                     case UseResponse use:
                         Card card = getCard(use.cardId);
@@ -280,6 +290,8 @@ namespace TouhouHeartstone
                 logger.log("Debug", currentPlayer + "回合结束");
                 return Task.CompletedTask;
             });
+            time.cancel(turnTimer);
+            turnTimer = null;
         }
         public class TurnEndEventArg : EventArg
         {
@@ -398,7 +410,8 @@ namespace TouhouHeartstone
         public int randomSeed = 0;
         public int[] sortedPlayers = null;
         public bool shuffle = true;
-        public float timeout = 30;
+        public float timeoutForInitReplace = 30;
+        public float timeoutForTurn = 75;
     }
 
     [Serializable]

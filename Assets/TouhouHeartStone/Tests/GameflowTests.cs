@@ -49,6 +49,7 @@ namespace Tests
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>(),
+                time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
                 logger = new ULogger()
             };
             (game.triggers as TriggerManager).logger = game.logger;
@@ -284,7 +285,7 @@ namespace Tests
         {
             THHGame game = TestGameflow.initStandardGame(option: new GameOption()
             {
-                timeout = 5
+                timeoutForInitReplace = 5
             });
             Task task = game.run();
             game.close();

@@ -52,6 +52,7 @@ namespace Game
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
+                time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
                 logger = new UnityLogger()
             };
             (game.answers as AnswerManager).game = game;
