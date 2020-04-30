@@ -235,7 +235,7 @@ namespace UI
         }
         #endregion
         [SerializeField]
-        Timer _tipTimer = new Timer();
+        BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer();
         public void showTip(string tip)
         {
             TipText.gameObject.SetActive(true);

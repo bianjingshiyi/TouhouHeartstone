@@ -290,7 +290,7 @@ namespace Tests
             game.close();
             yield return new WaitForSeconds(5.5f);
 
-            Assert.True(task.IsCanceled);
+            Assert.False(game.isRunning);
         }
         [UnityTest]
         public IEnumerator remoteGameflowTest()
@@ -303,7 +303,7 @@ namespace Tests
             host.logger = g1.logger;
             host.start();
             ClientManager c1 = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
-            c1.logger = g1.logger;
+            //c1.logger = g1.logger;
             c1.start();
             _ = c1.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
             (g1.answers as AnswerManager).client = c1;

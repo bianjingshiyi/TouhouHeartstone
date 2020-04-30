@@ -122,23 +122,23 @@ namespace TouhouHeartstone
             throw new NotImplementedException();
         }
         #region Gameflow
+        public bool isRunning { get; private set; } = false;
         /// <summary>
         /// 运行游戏
         /// </summary>
         /// <returns>游戏运行的Task</returns>
         public Task run()
         {
-            cts = new CancellationTokenSource();
-            Task task = Task.Run(gameflow, cts.Token);
-            return task;
+            isRunning = true;
+            return gameflow();
         }
-        CancellationTokenSource cts { get; set; } = null;
         private async Task gameflow()
         {
             await init();
-            foreach (var result in await answers.askAll(sortedPlayers.Select(p => p.id).ToArray(), new InitReplaceRequest()
+            Dictionary<int, IResponse> initReplaceResponses = await answers.askAll(sortedPlayers.Select(p => p.id).ToArray(), new InitReplaceRequest()
             {
-            }, option.timeout))
+            }, option.timeout);
+            foreach (var result in initReplaceResponses)
             {
                 THHPlayer player = getPlayer(result.Key);
                 await player.initReplace(this, getCards((result.Value as InitReplaceResponse).cardsId));
@@ -157,7 +157,7 @@ namespace TouhouHeartstone
 
         internal async Task init()
         {
-            if (cts == null || cts.IsCancellationRequested)
+            if (!isRunning)
                 return;
             await triggers.doEvent(new InitEventArg(), arg =>
             {
@@ -202,7 +202,7 @@ namespace TouhouHeartstone
         public THHPlayer[] sortedPlayers { get; private set; }
         internal async Task start()
         {
-            if (cts == null || cts.IsCancellationRequested)
+            if (!isRunning)
                 return;
             await triggers.doEvent(new StartEventArg(), arg =>
             {
@@ -220,7 +220,7 @@ namespace TouhouHeartstone
         public THHPlayer currentPlayer { get; private set; }
         async Task turnStart(THHPlayer player)
         {
-            if (cts == null || cts.IsCancellationRequested)
+            if (!isRunning)
                 return;
             await triggers.doEvent(new TurnStartEventArg() { player = player }, async arg =>
             {
@@ -239,6 +239,7 @@ namespace TouhouHeartstone
                     card.setAttackTimes(0);
                 }
             });
+            //倒计时75秒
         }
         public class TurnStartEventArg : EventArg
         {
@@ -246,11 +247,11 @@ namespace TouhouHeartstone
         }
         async Task turnLoop(THHPlayer player)
         {
-            if (cts == null || cts.IsCancellationRequested)
+            if (!isRunning)
                 return;
             for (int i = 0; i < 100; i++)
             {
-                if (cts == null || cts.IsCancellationRequested)
+                if (!isRunning)
                     return;
                 switch (await answers.ask(player.id, new FreeActRequest(), option.timeout))
                 {
@@ -272,7 +273,7 @@ namespace TouhouHeartstone
         }
         public async Task turnEnd(THHPlayer player)
         {
-            if (cts == null || cts.IsCancellationRequested)
+            if (!isRunning)
                 return;
             await triggers.doEvent(new TurnEndEventArg() { player = player }, arg =>
             {
@@ -325,12 +326,11 @@ namespace TouhouHeartstone
         }
         internal async Task gameEnd(THHPlayer[] winners)
         {
-            if (cts == null || cts.IsCancellationRequested)
+            if (!isRunning)
                 return;
             logger.log("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
             await triggers.doEvent(new GameEndEventArg() { winners = winners });
-            answers.cancelAll();
-            cts = null;
+            close();
         }
         public class GameEndEventArg : EventArg
         {
@@ -338,12 +338,8 @@ namespace TouhouHeartstone
         }
         public void close()
         {
+            isRunning = false;
             answers.cancelAll();
-            if (cts != null)
-            {
-                cts.Cancel();
-                cts = null;
-            }
         }
         #endregion
         private void afterEvent(Event @event)

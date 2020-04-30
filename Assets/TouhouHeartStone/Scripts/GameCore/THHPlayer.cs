@@ -39,7 +39,8 @@ namespace TouhouHeartstone
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
         {
-            await game.triggers.doEvent(new InitReplaceEventArg() { player = this, cards = cards }, arg =>
+            await game.triggers.doEvent(new InitReplaceEventArg() { player = this, cards = cards }, onInitReplace);
+            Task onInitReplace(InitReplaceEventArg arg)
             {
                 arg.replacedCards = arg.player.init.replaceByRandom(game, arg.cards, arg.player.deck);
                 game.logger.log(arg.player + "替换卡牌：" + string.Join("，", arg.cards.Select(c => c.ToString())) + "=>"
@@ -50,7 +51,7 @@ namespace TouhouHeartstone
                     game.logger.log("由于后手行动" + arg.player + "获得一张幸运币");
                 }
                 return Task.CompletedTask;
-            });
+            }
         }
         public class InitReplaceEventArg : EventArg
         {

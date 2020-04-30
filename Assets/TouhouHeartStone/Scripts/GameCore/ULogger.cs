@@ -6,12 +6,17 @@
         {
             log("ULogger Init");
         }
+        public bool enable { get; set; } = true;
         public void log(string msg)
         {
+            if (!enable)
+                return;
             UberDebug.Log(msg);
         }
         public void log(string channel, string msg)
         {
+            if (!enable)
+                return;
             if (channel == "Debug")
                 UberDebug.Log(msg);
             else if (channel == "Warning")
