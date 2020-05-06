@@ -9,21 +9,18 @@ namespace Tests
 {
     public class CardSystemTests
     {
-        [UnityTest]
-        public IEnumerator buffTest()
+        [Test]
+        public void buffTest()
         {
             THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
             Enumerable.Repeat(new TestMaster(), 2).ToArray(),
             Enumerable.Repeat(Enumerable.Repeat(new TestServant_Buff(), 30).ToArray(), 2).ToArray(),
             new GameOption() { });
             game.run();
-            yield return new WaitForSeconds(.2f);
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
-            yield return new WaitForSeconds(.1f);
 
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
-            yield return new WaitForSeconds(.1f);
 
             Assert.AreEqual(2, game.sortedPlayers[0].field[0].getAttack());
             Assert.AreEqual(2, game.sortedPlayers[0].field[0].getLife());
