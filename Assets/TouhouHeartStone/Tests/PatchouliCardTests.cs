@@ -27,11 +27,12 @@ namespace Tests
 
             int preHand = game.sortedPlayers[1].hand.count;
             int preDeck = game.sortedPlayers[1].deck.count;
-            int preLife = game.sortedPlayers[1].master.getLife();
+            int preLife = game.sortedPlayers[1].master.getCurrentLife();
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 0, game.sortedPlayers[1].master);
+
             Assert.AreEqual(1, game.sortedPlayers[1].hand.count - preHand);
             Assert.AreEqual(-1, game.sortedPlayers[1].deck.count - preDeck);
-            Assert.AreEqual(-2, game.sortedPlayers[1].master.getLife() - preLife);
+            Assert.AreEqual(-2, game.sortedPlayers[1].master.getCurrentLife() - preLife);
             
             
 
