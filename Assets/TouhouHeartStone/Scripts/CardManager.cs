@@ -57,22 +57,31 @@ namespace Game
             Dictionary<Workbook, string> workbooks = new Dictionary<Workbook, string>();
             foreach (var path in _externalCardPaths)
             {
-                if (Directory.Exists(Application.streamingAssetsPath + "/" + path))
+                try
                 {
-                    foreach (var filePath in Directory.GetFiles(Application.streamingAssetsPath + "/" + path, "*.xls", SearchOption.AllDirectories))
+                    if (Directory.Exists(Application.streamingAssetsPath + "/" + path))
                     {
-                        using (FileStream stream = new FileStream(filePath, FileMode.Open))
+                        foreach (var filePath in Directory.GetFiles(Application.streamingAssetsPath + "/" + path, "*.xls", SearchOption.AllDirectories))
                         {
-                            workbooks.Add(Workbook.Load(stream), filePath);
+                            using (FileStream stream = new FileStream(filePath, FileMode.Open))
+                            {
+                                workbooks.Add(Workbook.Load(stream), filePath);
+                            }
                         }
                     }
-                }
-                else if (File.Exists(Application.streamingAssetsPath + "/" + path))
-                {
-                    using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/" + path, FileMode.Open))
+                    else if (File.Exists(Application.streamingAssetsPath + "/" + path))
                     {
-                        workbooks.Add(Workbook.Load(stream), Application.streamingAssetsPath + "/" + path);
+                        using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/" + path, FileMode.Open))
+                        {
+                            workbooks.Add(Workbook.Load(stream), Application.streamingAssetsPath + "/" + path);
+                        }
                     }
+                    else
+                        UberDebug.LogError("读取外部卡牌文件" + path + "失败，无法找到该文件。");
+                }
+                catch (Exception e)
+                {
+                    UberDebug.LogError("读取外部卡牌文件" + path + "失败，发生异常：" + e);
                 }
             }
             var cards = CardImporter.GetCardDefines(AppDomain.CurrentDomain.GetAssemblies(), workbooks, out var skins);

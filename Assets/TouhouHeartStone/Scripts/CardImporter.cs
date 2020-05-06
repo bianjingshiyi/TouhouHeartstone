@@ -23,7 +23,6 @@ namespace Game
                 {
                     if (pRow.Key != 0)
                     {
-                        //Debug.Log(pRow.Value.GetCell(idIndex).Value.GetType().FullName);
                         int id = numberToInt(pRow.Value.GetCell(idIndex).Value);
                         CardDefine card = cardList.FirstOrDefault(c => c.id == id);
                         card = readCardDefine(card, pBook.Value, worksheet, pRow.Key, out var skin);
