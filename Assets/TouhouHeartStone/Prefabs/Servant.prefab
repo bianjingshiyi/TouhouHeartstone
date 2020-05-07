@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2470481776497400553}
   - component: {fileID: 4225699940084520048}
-  - component: {fileID: 8421896083332883272}
   - component: {fileID: 163705352615757087}
   m_Layer: 5
   m_Name: Servant
@@ -89,22 +88,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _attackThreshold: 70
---- !u!111 &8421896083332883272
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2470481776497400558}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 0}
-  m_Animations:
-  - {fileID: 7400000, guid: 9e0af06301868a64cbac53951aaaf0b7, type: 2}
-  m_WrapMode: 0
-  m_PlayAutomatically: 0
-  m_AnimatePhysics: 0
-  m_CullingType: 0
 --- !u!95 &163705352615757087
 Animator:
   serializedVersion: 3

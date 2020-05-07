@@ -91,13 +91,13 @@ namespace UI
                     _animationQueue.Add(new DeathAnimation(death));
                     break;
                 case THHPlayer.ActiveEventArg active:
-                    //foreach (var target in active.targets)
-                    //{
-                    //    if (target is TouhouCardEngine.Card card)
-                    //    {
-                    //        _animationQueue.Add(new SelectTargetAnimation(active));
-                    //    }
-                    //}
+                    foreach (var target in active.targets)
+                    {
+                        if (target is TouhouCardEngine.Card card)
+                        {
+                            _animationQueue.Add(new SelectTargetAnimation(active));
+                        }
+                    }
                     break;
                 default:
                     //game.logger?.log("UI", "被忽略的事件结束：" + obj);

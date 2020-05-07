@@ -161,7 +161,14 @@ namespace TouhouHeartstone
                     await tryPutIntoField(game, arg.player.hand, arg.card, arg.position);
                     IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
                     if (effect != null)
-                        await effect.execute(game, player, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    {
+                        ActiveEventArg active = new ActiveEventArg(player, card, targets);
+                        await game.triggers.doEvent(active, activeLogic);
+                        async Task activeLogic(ActiveEventArg eventArg)
+                        {
+                            await effect.execute(game, player, card, new object[] { eventArg }, targets);
+                        }
+                    }
                     //IEffect effect = arg.card.define.getEffectOn<BattleCryEventArg>(game.triggers);
                     //if (effect != null)
                     //{
