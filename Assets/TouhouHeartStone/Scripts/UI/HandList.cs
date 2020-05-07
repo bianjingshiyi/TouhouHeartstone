@@ -73,21 +73,21 @@ namespace UI
                             placingCard.rectTransform.localScale = Vector3.one * .4f / rectTransform.localScale.y;
                             if (placingCard.card.define is ServantCardDefine)
                             {
+                                table.SelfFieldList.addChild(table.ServantPlaceHolder.rectTransform);
+                                table.ServantPlaceHolder.display();
                                 var servants = table.SelfFieldList.getItems();
                                 int index = 0;
                                 if (servants.Length > 0)
                                 {
-                                    //需要选择空位，添加占位
-                                    table.SelfFieldList.addChild(table.ServantPlaceHolder.rectTransform);
+                                    //需要选择空位，计算空位
                                     for (int i = 0; i < servants.Length; i++)
                                     {
                                         if (servants[i].rectTransform.position.x < input.mousePosition.x)
                                             index = i + 1;
                                     }
                                     table.ServantPlaceHolder.rectTransform.SetSiblingIndex(index);
-                                    table.ServantPlaceHolder.display();
-                                    defaultItem.rectTransform.SetAsFirstSibling();
                                 }
+                                defaultItem.rectTransform.SetAsFirstSibling();
                                 if (input.GetMouseButtonUp(0))
                                 {
                                     //松开鼠标，确认使用随从牌
@@ -98,6 +98,7 @@ namespace UI
                                             //随从站场预览
                                             table.ServantPlaceHolder.Servant.display();
                                             table.ServantPlaceHolder.Servant.update(placingCard.card.define, table.getSkin(placingCard.card));
+                                            _placingIndex = index;
                                             //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                                             placingCard.hide();
                                             _isSelectingTarget = true;
@@ -177,7 +178,7 @@ namespace UI
                             {
                                 if (placingCard.card.isValidTarget(table.game, master.card))
                                 {
-                                    table.player.cmdUse(table.game, placingCard.card, table.ServantPlaceHolder.transform.GetSiblingIndex(), master.card);
+                                    table.player.cmdUse(table.game, placingCard.card, _placingIndex, master.card);
                                 }
                                 else
                                 {
@@ -189,7 +190,7 @@ namespace UI
                             {
                                 if (placingCard.card.isValidTarget(table.game, servant.card))
                                 {
-                                    table.player.cmdUse(table.game, placingCard.card, table.ServantPlaceHolder.transform.GetSiblingIndex(), servant.card);
+                                    table.player.cmdUse(table.game, placingCard.card, _placingIndex, servant.card);
                                 }
                                 else
                                 {
@@ -211,6 +212,8 @@ namespace UI
         {
             get { return _placingCard; }
         }
+        [SerializeField]
+        int _placingIndex = -1;
         [SerializeField]
         bool _isSelectingTarget = false;
         public void startPlacing(Vector2 startPosition, Card card)

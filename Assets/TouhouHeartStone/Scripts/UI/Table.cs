@@ -91,11 +91,12 @@ namespace UI
                     _animationQueue.Add(new DeathAnimation(death));
                     break;
                 case THHPlayer.ActiveEventArg active:
-                    //if (active.card.define == game.getCardDefine<RifleHunter>())
+                    //foreach (var target in active.targets)
                     //{
-                    //    Servant servant = getServant(active.card);
-                    //    UIObject target = getCharacter(active.targets[0] as TouhouCardEngine.Card);
-                    //    _animationQueue.Add(new ProjectileAnimation(Instantiate(_defaultProjectile, servant.rectTransform.position, Quaternion.identity, getChild("Fields")), target));
+                    //    if (target is TouhouCardEngine.Card card)
+                    //    {
+                    //        _animationQueue.Add(new SelectTargetAnimation(active));
+                    //    }
                     //}
                     break;
                 default:

@@ -218,7 +218,8 @@ namespace TouhouHeartstone
         {
             if (field.count >= field.maxCount)//没位置了
                 return false;
-            await game.triggers.doEvent(new MoveEventArg() { player = this, from = from, card = card, position = position }, arg =>
+            await game.triggers.doEvent(new MoveEventArg() { player = this, from = from, card = card, position = position }, logic);
+            Task logic(MoveEventArg arg)
             {
                 THHPlayer player = arg.player;
                 from = arg.from;
@@ -238,7 +239,7 @@ namespace TouhouHeartstone
                     card.setReady(card.isCharge());
                 }
                 return Task.CompletedTask;
-            });
+            }
             return true;
         }
         public class MoveEventArg : EventArg
