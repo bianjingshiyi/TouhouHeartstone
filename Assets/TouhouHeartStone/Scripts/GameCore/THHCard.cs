@@ -112,6 +112,11 @@ namespace TouhouHeartstone
                 tip = "你必须先攻击具有嘲讽的随从";
                 return false;
             }
+            if (target.getCurrentLife() <= 0)
+            {
+                tip = "目标随从已经死亡";
+                return false;
+            }
             tip = null;
             return true;
         }
