@@ -5,10 +5,8 @@ namespace UI
 {
     class DeathAnimation : Animation<THHCard.DeathEventArg>
     {
-        public override THHCard.DeathEventArg eventArg { get; }
-        public DeathAnimation(THHCard.DeathEventArg eventArg)
+        public DeathAnimation(THHCard.DeathEventArg eventArg) : base(eventArg)
         {
-            this.eventArg = eventArg;
         }
         public override bool update(Table table)
         {

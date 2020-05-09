@@ -33,6 +33,10 @@ namespace UI
             this._HpText = this.transform.Find("Root").Find("Hp").Find("HpText").GetComponent<Text>();
             this._AtkImage = this.transform.Find("Root").Find("Atk").GetComponent<Image>();
             this._AttackText = this.transform.Find("Root").Find("Atk").Find("AttackText").GetComponent<Text>();
+            this._DamageImage = this.transform.Find("DamageImage").GetComponent<Image>();
+            this._DamageText = this.transform.Find("DamageImage").Find("DamageText").GetComponent<Text>();
+            this._HealImage = this.transform.Find("HealImage").GetComponent<Image>();
+            this._HealText = this.transform.Find("HealImage").Find("HealText").GetComponent<Text>();
         }
         [SerializeField()]
         private Image _HighlightImage;
@@ -136,6 +140,58 @@ namespace UI
                     this._AttackText = this.transform.Find("Root").Find("Atk").Find("AttackText").GetComponent<Text>();
                 }
                 return this._AttackText;
+            }
+        }
+        [SerializeField()]
+        private Image _DamageImage;
+        public Image DamageImage
+        {
+            get
+            {
+                if ((this._DamageImage == null))
+                {
+                    this._DamageImage = this.transform.Find("DamageImage").GetComponent<Image>();
+                }
+                return this._DamageImage;
+            }
+        }
+        [SerializeField()]
+        private Text _DamageText;
+        public Text DamageText
+        {
+            get
+            {
+                if ((this._DamageText == null))
+                {
+                    this._DamageText = this.transform.Find("DamageImage").Find("DamageText").GetComponent<Text>();
+                }
+                return this._DamageText;
+            }
+        }
+        [SerializeField()]
+        private Image _HealImage;
+        public Image HealImage
+        {
+            get
+            {
+                if ((this._HealImage == null))
+                {
+                    this._HealImage = this.transform.Find("HealImage").GetComponent<Image>();
+                }
+                return this._HealImage;
+            }
+        }
+        [SerializeField()]
+        private Text _HealText;
+        public Text HealText
+        {
+            get
+            {
+                if ((this._HealText == null))
+                {
+                    this._HealText = this.transform.Find("HealImage").Find("HealText").GetComponent<Text>();
+                }
+                return this._HealText;
             }
         }
         partial void onAwake();

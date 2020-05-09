@@ -28,6 +28,7 @@ namespace UI
             this._MaskImage = this.transform.Find("MaskImage").GetComponent<Image>();
             this._Mask = this.transform.Find("Mask").GetComponent<Mask>();
             this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
+            this._FadeImage = this.transform.Find("Fade").GetComponent<Image>();
             this._Text = this.transform.Find("Text").GetComponent<Text>();
             this._NumText = this.transform.Find("NumText").GetComponent<Text>();
         }
@@ -68,6 +69,19 @@ namespace UI
                     this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
                 }
                 return this._Image;
+            }
+        }
+        [SerializeField()]
+        private Image _FadeImage;
+        public Image FadeImage
+        {
+            get
+            {
+                if ((this._FadeImage == null))
+                {
+                    this._FadeImage = this.transform.Find("Fade").GetComponent<Image>();
+                }
+                return this._FadeImage;
             }
         }
         [SerializeField()]

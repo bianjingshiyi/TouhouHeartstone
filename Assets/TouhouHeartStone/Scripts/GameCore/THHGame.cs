@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using UberLogger;
-
+using TouhouHeartstone.Builtin;
 namespace TouhouHeartstone
 {
     public class THHGame : CardEngine, IDisposable
@@ -210,6 +210,11 @@ namespace TouhouHeartstone
                 foreach (THHPlayer player in sortedPlayers)
                 {
                     player.init.moveTo(this, player.init[0, player.init.count - 1], player.hand, 0);
+                    if (player != sortedPlayers[0])
+                    {
+                        player.hand.add(this, createCard(getCardDefine<LuckyCoin>()));
+                        logger.log("由于后手行动" + player + "获得一张幸运币");
+                    }
                 }
                 return Task.CompletedTask;
             });

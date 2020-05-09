@@ -56,6 +56,22 @@ namespace Game
                 logger = new UnityLogger()
             };
             (game.answers as AnswerManager).game = game;
+
+            //检查卡组合法性
+            if (game.getCardDefine(_deck[0]) == null)
+            {
+                UberDebug.LogError("非法角色ID" + _deck[0] + "被替换为灵梦");
+                _deck[0] = game.getCardDefine<Reimu>().id;
+            }
+            for (int i = 1; i < _deck.Length; i++)
+            {
+                if (game.getCardDefine(_deck[i]) == null)
+                {
+                    UberDebug.LogError("非法随从ID" + _deck[i] + "被替换为小野菊");
+                    _deck[i] = game.getCardDefine<RashFairy>().id;
+                }
+            }
+
             THHPlayer localPlayer = game.createPlayer(1, "本地玩家", game.getCardDefine(_deck[0]) as MasterCardDefine,
                 _deck.Skip(1).Select(id => game.getCardDefine(id)));
             THHPlayer aiPlayer = game.createPlayer(2, "AI", game.getCardDefine(_deck[0]) as MasterCardDefine,

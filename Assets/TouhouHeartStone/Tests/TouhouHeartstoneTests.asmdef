@@ -6,7 +6,8 @@
         "TouhouCardEngine",
         "TouhouHeartstone",
         "Plugins",
-        "Game"
+        "Game",
+        "BJSYGameCore"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

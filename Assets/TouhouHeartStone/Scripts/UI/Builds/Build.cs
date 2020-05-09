@@ -41,7 +41,7 @@ namespace UI
             MasterButton.setSprite(masterSkin.image);
             MasterNameText.text = masterSkin.name;
             BuildDeckList.clearItems();
-            foreach (var cards in deck.Skip(1).Select(id => cards.First(c => c.id == id)).GroupBy(c => c.id))
+            foreach (var cards in deck.Skip(1).Select(id => cards.FirstOrDefault(c => c.id == id)).Where(c => c != null).GroupBy(c => c.id))
             {
                 var item = BuildDeckList.addItem();
                 var skin = parent.game.cards.GetCardSkin(cards.First().id);
@@ -72,8 +72,11 @@ namespace UI
         {
             if (c.id == 0)
                 return false;
-            if (!(c is ServantCardDefine) && !(c is GeneratedCardDefine))
-                return false;
+            if (!(c is SpellCardDefine))
+            {
+                if (!(c is ServantCardDefine) && !(c is GeneratedCardDefine))
+                    return false;
+            }
             if (c is ServantCardDefine servant)
             {
                 if (servant.isToken)

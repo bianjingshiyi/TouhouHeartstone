@@ -4,10 +4,8 @@ namespace UI
 {
     class MoveServantAnimation : Animation<THHPlayer.MoveEventArg>
     {
-        public override THHPlayer.MoveEventArg eventArg { get; }
-        public MoveServantAnimation(THHPlayer.MoveEventArg eventArg) : base()
+        public MoveServantAnimation(THHPlayer.MoveEventArg eventArg) : base(eventArg)
         {
-            this.eventArg = eventArg;
         }
         public override bool update(Table table)
         {

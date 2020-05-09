@@ -1,5 +1,6 @@
 ﻿using TouhouHeartstone;
 using TouhouCardEngine;
+using UnityEngine;
 namespace UI
 {
     partial class Card
@@ -41,6 +42,18 @@ namespace UI
             NameText.text = skin.name;
             DescText.text = skin.desc;
             IsFaceupController = IsFaceup.True;
+        }
+        [SerializeField]
+        AnimationCurve _useCurve = new AnimationCurve();
+        public AnimationCurve useCurve
+        {
+            get { return _useCurve; }
+        }
+        [SerializeField]
+        AnimationCurve _drawCurve = new AnimationCurve();
+        public AnimationCurve drawCurve
+        {
+            get { return _drawCurve; }
         }
     }
 }

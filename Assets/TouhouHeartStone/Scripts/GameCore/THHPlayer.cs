@@ -45,11 +45,6 @@ namespace TouhouHeartstone
                 arg.replacedCards = arg.player.init.replaceByRandom(game, arg.cards, arg.player.deck);
                 game.logger.log(arg.player + "替换卡牌：" + string.Join("，", arg.cards.Select(c => c.ToString())) + "=>"
                     + string.Join("，", arg.replacedCards.Select(c => c.ToString())));
-                if (arg.player != game.sortedPlayers[0])
-                {
-                    arg.player.hand.add(game, game.createCard(game.getCardDefine<LuckyCoin>()));
-                    game.logger.log("由于后手行动" + arg.player + "获得一张幸运币");
-                }
                 return Task.CompletedTask;
             }
         }
@@ -161,7 +156,14 @@ namespace TouhouHeartstone
                     await tryPutIntoField(game, arg.player.hand, arg.card, arg.position);
                     IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
                     if (effect != null)
-                        await effect.execute(game, player, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    {
+                        ActiveEventArg active = new ActiveEventArg(player, card, targets);
+                        await game.triggers.doEvent(active, activeLogic);
+                        async Task activeLogic(ActiveEventArg eventArg)
+                        {
+                            await effect.execute(game, player, card, new object[] { eventArg }, targets);
+                        }
+                    }
                     //IEffect effect = arg.card.define.getEffectOn<BattleCryEventArg>(game.triggers);
                     //if (effect != null)
                     //{
@@ -207,18 +209,12 @@ namespace TouhouHeartstone
                 this.targets = targets;
             }
         }
-        public class BattleCryEventArg : EventArg
-        {
-            public THHPlayer player;
-            public Card card;
-            public IEffect effect;
-            public Card[] targets;
-        }
         public async Task<bool> tryPutIntoField(THHGame game, Pile from, Card card, int position)
         {
             if (field.count >= field.maxCount)//没位置了
                 return false;
-            await game.triggers.doEvent(new MoveEventArg() { player = this, from = from, card = card, position = position }, arg =>
+            await game.triggers.doEvent(new MoveEventArg() { player = this, from = from, card = card, position = position }, logic);
+            Task logic(MoveEventArg arg)
             {
                 THHPlayer player = arg.player;
                 from = arg.from;
@@ -238,7 +234,7 @@ namespace TouhouHeartstone
                     card.setReady(card.isCharge());
                 }
                 return Task.CompletedTask;
-            });
+            }
             return true;
         }
         public class MoveEventArg : EventArg

@@ -40,7 +40,7 @@ namespace UI
             BaseInputModule module = eventSystem.currentInputModule;
             var input = module.input;
             Table table = GetComponentInParent<Table>();
-            if (placingCard != null)
+            if (_isPlacing)
             {
                 if (!_isSelectingTarget)
                 {
@@ -53,7 +53,7 @@ namespace UI
                         if (input.GetMouseButtonUp(0))
                         {
                             //如果松开，停止拖拽
-                            stopPlacing();
+                            stopPlacing(true);
                         }
                         //移除随从占位
                         removePlaceHolder();
@@ -65,7 +65,7 @@ namespace UI
                         {
                             //卡牌不可用，停止拖拽并提示
                             table.showTip(info);
-                            stopPlacing();
+                            stopPlacing(true);
                         }
                         else
                         {
@@ -73,21 +73,21 @@ namespace UI
                             placingCard.rectTransform.localScale = Vector3.one * .4f / rectTransform.localScale.y;
                             if (placingCard.card.define is ServantCardDefine)
                             {
+                                table.SelfFieldList.addChild(table.ServantPlaceHolder.rectTransform);
+                                table.ServantPlaceHolder.display();
                                 var servants = table.SelfFieldList.getItems();
                                 int index = 0;
                                 if (servants.Length > 0)
                                 {
-                                    //需要选择空位，添加占位
-                                    table.SelfFieldList.addChild(table.ServantPlaceHolder.rectTransform);
+                                    //需要选择空位，计算空位
                                     for (int i = 0; i < servants.Length; i++)
                                     {
                                         if (servants[i].rectTransform.position.x < input.mousePosition.x)
                                             index = i + 1;
                                     }
                                     table.ServantPlaceHolder.rectTransform.SetSiblingIndex(index);
-                                    table.ServantPlaceHolder.display();
-                                    defaultItem.rectTransform.SetAsFirstSibling();
                                 }
+                                defaultItem.rectTransform.SetAsFirstSibling();
                                 if (input.GetMouseButtonUp(0))
                                 {
                                     //松开鼠标，确认使用随从牌
@@ -98,6 +98,7 @@ namespace UI
                                             //随从站场预览
                                             table.ServantPlaceHolder.Servant.display();
                                             table.ServantPlaceHolder.Servant.update(placingCard.card.define, table.getSkin(placingCard.card));
+                                            _placingIndex = index;
                                             //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                                             placingCard.hide();
                                             _isSelectingTarget = true;
@@ -115,14 +116,14 @@ namespace UI
                                         {
                                             //使用无目标随从牌
                                             table.player.cmdUse(table.game, placingCard.card, index);
-                                            stopPlacing();
+                                            stopPlacing(false);
                                         }
                                     }
                                     else
                                     {
                                         //无法使用随从牌
                                         table.showTip(info);
-                                        stopPlacing();
+                                        stopPlacing(true);
                                     }
                                 }
                             }
@@ -134,7 +135,7 @@ namespace UI
                                     {
                                         if (placingCard.card.getAvaliableTargets(table.game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
                                         {
-                                            //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
+                                            //进入选择目标状态，高亮可以选择的目标
                                             placingCard.hide();
                                             _isSelectingTarget = true;
                                             table.selectableTargets = targets.Select(target =>
@@ -151,14 +152,14 @@ namespace UI
                                         {
                                             //使用无目标随从牌
                                             table.player.cmdUse(table.game, placingCard.card, 0);
-                                            stopPlacing();
+                                            stopPlacing(false);
                                         }
                                     }
                                     else
                                     {
                                         //无法使用随从牌
                                         table.showTip(info);
-                                        stopPlacing();
+                                        stopPlacing(true);
                                     }
                                 }
                             }
@@ -177,11 +178,13 @@ namespace UI
                             {
                                 if (placingCard.card.isValidTarget(table.game, master.card))
                                 {
-                                    table.player.cmdUse(table.game, placingCard.card, table.ServantPlaceHolder.transform.GetSiblingIndex(), master.card);
+                                    table.player.cmdUse(table.game, placingCard.card, _placingIndex, master.card);
+                                    stopPlacing(false);
                                 }
                                 else
                                 {
                                     table.showTip("这不是一个有效的目标！");
+                                    stopPlacing(true);
                                 }
                                 break;
                             }
@@ -189,20 +192,23 @@ namespace UI
                             {
                                 if (placingCard.card.isValidTarget(table.game, servant.card))
                                 {
-                                    table.player.cmdUse(table.game, placingCard.card, table.ServantPlaceHolder.transform.GetSiblingIndex(), servant.card);
+                                    table.player.cmdUse(table.game, placingCard.card, _placingIndex, servant.card);
+                                    stopPlacing(false);
                                 }
                                 else
                                 {
                                     table.showTip("这不是一个有效的目标！");
+                                    stopPlacing(true);
                                 }
                                 break;
                             }
                         }
-                        stopPlacing();
                     }
                 }
             }
         }
+        [SerializeField]
+        bool _isPlacing = false;
         [SerializeField]
         Vector2 _dragStartPosition;
         [SerializeField]
@@ -212,15 +218,18 @@ namespace UI
             get { return _placingCard; }
         }
         [SerializeField]
+        int _placingIndex = -1;
+        [SerializeField]
         bool _isSelectingTarget = false;
         public void startPlacing(Vector2 startPosition, Card card)
         {
+            _isPlacing = true;
             _dragStartPosition = startPosition;
             _placingCard = card;
         }
-        public void stopPlacing()
+        public void stopPlacing(bool resetPlacingCard)
         {
-            if (_placingCard != null)
+            if (resetPlacingCard && _placingCard != null)
             {
                 placingCard.display();
                 placingCard.rectTransform.localScale = Vector3.one;
@@ -228,6 +237,7 @@ namespace UI
                 _placingCard = null;
                 _dragStartPosition = Vector2.zero;
             }
+            _isPlacing = false;
             removePlaceHolder();
             Table table = GetComponentInParent<Table>();
             _isSelectingTarget = false;

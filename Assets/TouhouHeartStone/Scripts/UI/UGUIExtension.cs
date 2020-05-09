@@ -33,5 +33,13 @@ namespace UI
         {
             button.GetComponentInChildren<Image>().sprite = value;
         }
+        public static float getAlpha(this Graphic graphic)
+        {
+            return graphic.color.a;
+        }
+        public static void setAlpha(this Graphic graphic, float value)
+        {
+            graphic.color = new Color(graphic.color.r, graphic.color.g, graphic.color.b, value);
+        }
     }
 }

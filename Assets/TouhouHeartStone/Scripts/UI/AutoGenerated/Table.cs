@@ -52,6 +52,9 @@ namespace UI
             this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
             this._TipText = this.transform.Find("TipText").GetComponent<Text>();
             this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
+            this._Fatigue = this.transform.Find("Fatigue").GetComponent<Fatigue>();
+            this._TurnTipImage = this.transform.Find("TurnTipImage").GetComponent<Image>();
+            this._TurnTipText = this.transform.Find("TurnTipImage").Find("TurnTipText").GetComponent<Text>();
         }
         private Main _parent;
         public Main parent
@@ -410,6 +413,45 @@ namespace UI
                     this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
                 }
                 return this._LargeCard;
+            }
+        }
+        [SerializeField()]
+        private Fatigue _Fatigue;
+        public Fatigue Fatigue
+        {
+            get
+            {
+                if ((this._Fatigue == null))
+                {
+                    this._Fatigue = this.transform.Find("Fatigue").GetComponent<Fatigue>();
+                }
+                return this._Fatigue;
+            }
+        }
+        [SerializeField()]
+        private Image _TurnTipImage;
+        public Image TurnTipImage
+        {
+            get
+            {
+                if ((this._TurnTipImage == null))
+                {
+                    this._TurnTipImage = this.transform.Find("TurnTipImage").GetComponent<Image>();
+                }
+                return this._TurnTipImage;
+            }
+        }
+        [SerializeField()]
+        private Text _TurnTipText;
+        public Text TurnTipText
+        {
+            get
+            {
+                if ((this._TurnTipText == null))
+                {
+                    this._TurnTipText = this.transform.Find("TurnTipImage").Find("TurnTipText").GetComponent<Text>();
+                }
+                return this._TurnTipText;
             }
         }
         partial void onAwake();
