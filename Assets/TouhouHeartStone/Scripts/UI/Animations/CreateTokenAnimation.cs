@@ -1,13 +1,10 @@
 ﻿using TouhouHeartstone;
-
 namespace UI
 {
     class CreateTokenAnimation : Animation<THHPlayer.CreateTokenEventArg>
     {
-        public override THHPlayer.CreateTokenEventArg eventArg { get; }
-        public CreateTokenAnimation(THHPlayer.CreateTokenEventArg eventArg)
+        public CreateTokenAnimation(THHPlayer.CreateTokenEventArg eventArg) : base(eventArg)
         {
-            this.eventArg = eventArg;
         }
         public override bool update(Table table)
         {

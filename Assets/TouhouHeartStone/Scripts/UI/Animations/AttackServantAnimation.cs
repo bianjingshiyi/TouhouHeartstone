@@ -21,10 +21,8 @@ namespace UI
     }
     class AttackServantAnimation : Animation<THHCard.AttackEventArg>
     {
-        public override THHCard.AttackEventArg eventArg { get; }
-        public AttackServantAnimation(THHCard.AttackEventArg eventArg)
+        public AttackServantAnimation(THHCard.AttackEventArg eventArg) : base(eventArg)
         {
-            this.eventArg = eventArg;
         }
         Timer _timer1 = new Timer() { duration = .5f };
         Timer _timer2 = new Timer() { duration = .5f };

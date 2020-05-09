@@ -224,6 +224,7 @@ MonoBehaviour:
   _MaskImage: {fileID: 25190990280592440}
   _Mask: {fileID: 25190989714330576}
   _Image: {fileID: 25190988681029314}
+  _FadeImage: {fileID: 531099542642601169}
   _Text: {fileID: 25190989359045375}
   _NumText: {fileID: 4172961047040976276}
   _dragStartPosition: {x: 0, y: 0}

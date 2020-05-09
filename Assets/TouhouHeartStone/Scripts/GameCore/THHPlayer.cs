@@ -45,11 +45,6 @@ namespace TouhouHeartstone
                 arg.replacedCards = arg.player.init.replaceByRandom(game, arg.cards, arg.player.deck);
                 game.logger.log(arg.player + "替换卡牌：" + string.Join("，", arg.cards.Select(c => c.ToString())) + "=>"
                     + string.Join("，", arg.replacedCards.Select(c => c.ToString())));
-                if (arg.player != game.sortedPlayers[0])
-                {
-                    arg.player.hand.add(game, game.createCard(game.getCardDefine<LuckyCoin>()));
-                    game.logger.log("由于后手行动" + arg.player + "获得一张幸运币");
-                }
                 return Task.CompletedTask;
             }
         }
@@ -213,13 +208,6 @@ namespace TouhouHeartstone
                 this.card = card;
                 this.targets = targets;
             }
-        }
-        public class BattleCryEventArg : EventArg
-        {
-            public THHPlayer player;
-            public Card card;
-            public IEffect effect;
-            public Card[] targets;
         }
         public async Task<bool> tryPutIntoField(THHGame game, Pile from, Card card, int position)
         {
