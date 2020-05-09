@@ -25,16 +25,11 @@ namespace TouhouHeartstone.Builtin
                 return true;
             },(game,player,card,targets)=>
             {
-                if(targets[0] is Card target)
-                    return true;
                 return false;
-            },async (game,player,card,vars,targets)=>
+            },async (game,player,card,arg,targets)=>
             {
-                if(targets[0] is Card target)
-                {
-                    await target.damage(game,2);
-                    await player.draw(game);
-                }
+                await arg.player.master.damage(game, 2);
+                await arg.player.draw(game);
             })
         };
     }
@@ -56,6 +51,7 @@ namespace TouhouHeartstone.Builtin
                 return false;
             },async (game,player,card,arg,targets)=>
             {
+                
             })
         };
     }
