@@ -1,4 +1,5 @@
-﻿using TouhouCardEngine.Interfaces;
+﻿using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 namespace TouhouHeartstone.Builtin
 {
     public class Patchouli : MasterCardDefine
@@ -25,8 +26,10 @@ namespace TouhouHeartstone.Builtin
             },(game,player,card,targets)=>
             {
                 return false;
-            },async (game,player,card,vars,targets)=>
+            },async (game,player,card,arg,targets)=>
             {
+                await arg.player.master.damage(game, 2);
+                await arg.player.draw(game);
             })
         };
     }
@@ -48,6 +51,7 @@ namespace TouhouHeartstone.Builtin
                 return false;
             },async (game,player,card,arg,targets)=>
             {
+                
             })
         };
     }
