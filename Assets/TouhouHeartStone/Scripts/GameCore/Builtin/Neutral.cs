@@ -128,7 +128,10 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
-    public class SuddenStrikeServant : ServantCardDefine
+    /// <summary>
+    /// 一个会突袭的随从
+    /// </summary>
+    public class RushServant : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x008;
         public override int id { get; set; } = ID;
@@ -136,25 +139,14 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
-        public override string[] keywords { get; set; } = new string[] {};
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-             new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,vars)=>
-            {
-                return true;
-            },(game,player,card,targets)=>
-            {
-                if(targets[0] is Card target && target != player.master)
-                    return true;
-                return false;
-            },async (game,player,card,vars,targets)=>
-            {
-                card.setReady(true);
-            })
-        };
+        public override string[] keywords { get; set; } = new string[] { Keyword.RUSH };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
     }
 
-    public class HolyShieldServant : ServantCardDefine
+    /// <summary>
+    /// 一个会圣盾的随从
+    /// </summary>
+    public class ShieldServant : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x009;
         public override int id { get; set; } = ID;
@@ -162,10 +154,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
-        public override string[] keywords { get; set; } = new string[0];
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-
-        };
+        public override string[] keywords { get; set; } = new string[] { Keyword.SHIELD };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
     }
 }
