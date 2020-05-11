@@ -24,7 +24,9 @@ namespace UI
                 return;
             Table table = GetComponentInParent<Table>();
             HandList handlist = GetComponentInParent<HandList>();
-            if (handlist == table.EnemyHandList)
+            if (handlist == table.EnemyHandList)//你不能用对方的手牌
+                return;
+            if (!table.canControl)//不是你的回合
                 return;
             if (Vector2.Distance(_startDragPosition, eventData.position) > _dragThreshold)
             {

@@ -107,7 +107,7 @@ namespace Game
                     }
                 }
             }
-            if (player.master.canAttack())
+            if (player.master.canAttack(game, player))
             {
                 THHPlayer opponent = game.getOpponent(player);
                 if (player.master.isAttackable(game, player, opponent.master, out _))
@@ -131,7 +131,7 @@ namespace Game
             }
             foreach (var servant in player.field)
             {
-                if (!servant.canAttack())
+                if (!servant.canAttack(game, player))
                     continue;
                 THHPlayer opponent = game.getOpponent(player);
                 if (servant.isAttackable(game, player, opponent.master, out _))

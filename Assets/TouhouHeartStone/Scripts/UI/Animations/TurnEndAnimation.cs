@@ -8,6 +8,7 @@ namespace UI
         }
         public override bool update(Table table)
         {
+            table.canControl = false;
             return true;
         }
     }

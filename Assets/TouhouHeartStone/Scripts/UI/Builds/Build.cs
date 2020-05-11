@@ -72,11 +72,12 @@ namespace UI
         {
             if (c.id == 0)
                 return false;
-            if (!(c is SpellCardDefine))
-            {
-                if (!(c is ServantCardDefine) && !(c is GeneratedCardDefine))
-                    return false;
-            }
+            //if (!(c is SpellCardDefine))
+            //{
+                
+            //}
+            if (!(c is ServantCardDefine) && !(c is GeneratedCardDefine))
+                return false;
             if (c is ServantCardDefine servant)
             {
                 if (servant.isToken)

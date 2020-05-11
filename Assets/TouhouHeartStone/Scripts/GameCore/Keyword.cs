@@ -10,5 +10,13 @@
         /// 冲锋
         /// </summary>
         public const string CHARGE = "charge";
+        /// <summary>
+        /// 突袭
+        /// </summary>
+        public const string RUSH = "rush";
+        /// <summary>
+        /// 圣盾
+        /// </summary>
+        public const string SHIELD = "shield";
     }
 }

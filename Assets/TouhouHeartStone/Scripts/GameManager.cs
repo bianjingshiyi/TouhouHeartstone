@@ -46,6 +46,19 @@ namespace Game
             tryLoadDeckFromPrefs();
 #endif
         }
+        private void Update()
+        {
+            if (gameTask != null)
+            {
+                if (!game.isRunning || gameTask.IsCompleted || gameTask.IsCanceled || gameTask.IsFaulted)
+                {
+                    game.Dispose();
+                    game = null;
+                    gameTask = null;
+                    _ui.display(_ui.MainMenu);
+                }
+            }
+        }
         public void startGame()
         {
             game = new THHGame(_option, getManager<CardManager>().GetCardDefines())
@@ -90,6 +103,8 @@ namespace Game
             if (obj is THHGame.GameEndEventArg)
             {
                 game.Dispose();
+                game = null;
+                gameTask = null;
                 _ui.display(_ui.MainMenu);
             }
         }

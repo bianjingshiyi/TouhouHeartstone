@@ -231,7 +231,7 @@ namespace TouhouHeartstone
                 if (card.define is ServantCardDefine servant)
                 {
                     card.setCurrentLife(servant.life);
-                    card.setReady(card.isCharge());
+                    card.setReady(false);
                 }
                 return Task.CompletedTask;
             }
