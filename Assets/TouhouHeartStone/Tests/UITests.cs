@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using TouhouHeartstone;
 using UI;
+using UnityEngine;
 namespace Tests
 {
     public class UITests
@@ -10,8 +11,10 @@ namespace Tests
         {
             Table table = new Table();
             table.initAnim();
-            var anim = table.getAnim(new THHGame.InitEventArg());
-            Assert.NotNull(anim);
+            Assert.NotNull(table.getAnim(new THHGame.InitEventArg()));
+            UI.Animation fatigueAnim = table.getAnim(new THHPlayer.FatigueEventArg());
+            Assert.NotNull(fatigueAnim);
+            Debug.Log(fatigueAnim);
         }
     }
 }

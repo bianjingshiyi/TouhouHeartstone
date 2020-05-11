@@ -192,6 +192,13 @@ namespace UI
             }
         }
         [SerializeField]
+        bool _canControl = true;
+        public bool canControl
+        {
+            get { return _canControl; }
+            set { _canControl = value; }
+        }
+        [SerializeField]
         Projectile _defaultProjectile;
         private void onEventAfter(IEventArg arg)
         {
@@ -234,7 +241,7 @@ namespace UI
             {
                 servant.update(player, servant.card, getSkin(servant.card));
             }
-            if (game.currentPlayer == player)
+            if (canControl)
             {
                 TurnEndButton.interactable = true;
                 TurnEndButton.GetComponent<Image>().color = Color.white;

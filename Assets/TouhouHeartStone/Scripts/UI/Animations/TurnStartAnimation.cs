@@ -15,9 +15,15 @@ namespace UI
             {
                 table.TurnTipImage.display();
                 if (eventArg.player == table.player)
+                {
                     table.TurnTipText.text = "你的回合";
+                    table.canControl = true;
+                }
                 else
+                {
                     table.TurnTipText.text = "对手的回合";
+                    table.canControl = false;
+                }
                 table.TurnTipImage.GetComponent<Animator>().Play("Display");
                 _timer.start();
             }

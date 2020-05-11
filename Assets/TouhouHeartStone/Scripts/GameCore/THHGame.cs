@@ -89,6 +89,12 @@ namespace TouhouHeartstone
                         case Keyword.CHARGE:
                             card.setCharge(true);
                             break;
+                        case Keyword.RUSH:
+                            card.setRush(true);
+                            break;
+                        case Keyword.SHIELD:
+                            card.setShield(true);
+                            break;
                         default:
                             throw new UnknowKeywordException("未知关键词" + keyword);
                     }
@@ -279,7 +285,7 @@ namespace TouhouHeartstone
                     case AttackResponse attack:
                         card = getCard(attack.cardId);
                         Card target = getCard(attack.targetId);
-                        await card.tryAttack(this, target);
+                        await card.tryAttack(this, player, target);
                         break;
                     case TurnEndResponse _:
                         return;

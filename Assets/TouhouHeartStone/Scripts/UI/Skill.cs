@@ -20,6 +20,7 @@ namespace UI
             if (player == self
                 && card.isUsable(table.game, player, out _)//技能是可用的
                 && table.selectableTargets == null//没有在选择目标
+                && table.canControl//是自己的回合
                 )
             {
                 IsUsableController = IsUsable.True;

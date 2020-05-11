@@ -82,11 +82,14 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public static bool canAttack(this Card card)
+        public static bool canAttack(this Card card, THHGame game, THHPlayer player)
         {
             if (card.getAttack() <= 0)//没有攻击力
                 return false;
-            if (!card.isReady())//还没准备好
+            if (!card.isReady()//还没准备好
+                && !card.isCharge()//且没有冲锋
+                && !(card.isRush() && game.getOpponent(player).field.Any(c => card.isAttackable(game, player, c, out _)))//且并非有突袭且有可以攻击的敌方随从
+                )
                 return false;
             if (card.getAttackTimes() >= card.getMaxAttackTimes())//已经攻击过了
                 return false;
@@ -107,14 +110,19 @@ namespace TouhouHeartstone
                 tip = "你不能攻击友方角色";
                 return false;
             }
+            if (target.getCurrentLife() <= 0)
+            {
+                tip = "目标随从已经死亡";
+                return false;
+            }
             if (game.getOpponent(player).field.Any(c => c.isTaunt()) && !target.isTaunt())
             {
                 tip = "你必须先攻击具有嘲讽的随从";
                 return false;
             }
-            if (target.getCurrentLife() <= 0)
+            if (card.isRush() && !card.isReady() && game.players.Any(p => p.master == target) && !card.isCharge())
             {
-                tip = "目标随从已经死亡";
+                tip = "具有突袭的随从在没有准备好的情况下不能攻击敌方英雄";//除非你具有冲锋
                 return false;
             }
             tip = null;
@@ -149,6 +157,22 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.CHARGE, value);
         }
+        public static bool isRush(this Card card)
+        {
+            return card.getProp<bool>(Keyword.RUSH);
+        }
+        public static void setRush(this Card card, bool value)
+        {
+            card.setProp(Keyword.RUSH, value);
+        }
+        public static bool isShield(this Card card)
+        {
+            return card.getProp<bool>(Keyword.SHIELD);
+        }
+        public static void setShield(this Card card, bool value)
+        {
+            card.setProp(Keyword.SHIELD, value);
+        }
         public static int getSpellDamage(this Card card)
         {
             return card.getProp<int>(nameof(ServantCardDefine.spellDamage));
@@ -165,6 +189,11 @@ namespace TouhouHeartstone
                 if (player.gem < card.getCost())//费用不够
                 {
                     info = "你没有足够的法力值";
+                    return false;
+                }
+                if (player.field.count >= player.field.maxCount)
+                {
+                    info = "你无法将更多的随从置入战场";
                     return false;
                 }
             }
@@ -230,9 +259,9 @@ namespace TouhouHeartstone
                 return false;
             return effect.checkTarget(game, null, card, new object[] { target });
         }
-        public static async Task<bool> tryAttack(this Card card, THHGame game, Card target)
+        public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
-            if (!card.canAttack())
+            if (!card.canAttack(game, player))
                 return false;
             await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
             {
@@ -259,10 +288,28 @@ namespace TouhouHeartstone
         {
             await game.triggers.doEvent(new DamageEventArg() { cards = cards.ToArray(), value = value }, arg =>
             {
+                cards = arg.cards;
+                value = arg.value;
                 foreach (Card card in arg.cards)
                 {
-                    card.setCurrentLife(card.getCurrentLife() - arg.value);
-                    game.logger.log(card + "受到" + arg.value + "点伤害，生命值=>" + card.getCurrentLife());
+                    if (card.isShield())
+                    {
+                        card.setShield(false);
+                        arg.infoDic.Add(card, new DamageEventArg.Info()
+                        {
+                            damagedValue = 0
+                        });
+                        game.logger.log(card + "受到伤害，失去圣盾");
+                    }
+                    else
+                    {
+                        card.setCurrentLife(card.getCurrentLife() - arg.value);
+                        arg.infoDic.Add(card, new DamageEventArg.Info()
+                        {
+                            damagedValue = value
+                        });
+                        game.logger.log(card + "受到" + arg.value + "点伤害，生命值=>" + card.getCurrentLife());
+                    }
                 }
                 return Task.CompletedTask;
             });
@@ -271,6 +318,11 @@ namespace TouhouHeartstone
         {
             public Card[] cards;
             public int value;
+            public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
+            public class Info
+            {
+                public int damagedValue;
+            }
         }
         public static async Task heal(IEnumerable<Card> cards, THHGame game, int value)
         {

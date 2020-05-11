@@ -42,6 +42,11 @@ namespace UI
             Table table = GetComponentInParent<Table>();
             if (_isPlacing)
             {
+                if (!table.canControl)
+                {
+                    stopPlacing(true);
+                    return;
+                }
                 if (!_isSelectingTarget)
                 {
                     //拖拽卡片

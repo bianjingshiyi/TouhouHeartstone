@@ -29,10 +29,12 @@ namespace UI
 
             if (table.selectableTargets != null && table.selectableTargets.Contains(this))
                 HighlightController = Highlight.Yellow;
-            else if (table.player == player && table.game.currentPlayer == player && card.canAttack())
+            else if (table.player == player && table.game.currentPlayer == player && card.canAttack(table.game, player))
                 HighlightController = Highlight.Green;
             else
                 HighlightController = Highlight.None;
+            getChild("Root").getChild("Taunt").gameObject.SetActive(card.isTaunt());
+            getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
         }
         public void update(CardDefine card, CardSkinData skin)
         {
@@ -47,15 +49,15 @@ namespace UI
         float _attackThreshold = 70;
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
-            if (!card.canAttack())
-                return;
         }
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
-            if (!card.canAttack())
-                return;
             Table table = GetComponentInParent<Table>();
-            if (card.owner != table.player)//不是你的卡。
+            if (!table.canControl)//不是你的回合
+                return;
+            if (card.owner != table.player)//不是你的卡
+                return;
+            if (!card.canAttack(table.game, table.player))
                 return;
             //拉动距离也应该有一个阈值
             if (Vector2.Distance(rectTransform.position, eventData.position) > _attackThreshold)
@@ -82,9 +84,13 @@ namespace UI
         }
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
-            if (!card.canAttack())
-                return;
             Table table = GetComponentInParent<Table>();
+            if (!table.canControl)//不是你的回合
+                return;
+            if (card.owner != table.player)//不是你的卡
+                return;
+            if (!card.canAttack(table.game, table.player))//不能攻击
+                return;
             //如果在随从上面
             if (eventData.pointerCurrentRaycast.gameObject != null)
             {
