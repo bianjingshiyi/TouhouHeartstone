@@ -127,4 +127,34 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+
+    /// <summary>
+    /// 一个会突袭的随从
+    /// </summary>
+    public class RushServant : ServantCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x008;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] keywords { get; set; } = new string[] { Keyword.RUSH };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+
+    /// <summary>
+    /// 一个会圣盾的随从
+    /// </summary>
+    public class ShieldServant : ServantCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x009;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] keywords { get; set; } = new string[] { Keyword.SHIELD };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
 }
