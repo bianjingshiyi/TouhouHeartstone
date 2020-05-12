@@ -163,7 +163,7 @@ namespace UI
                 //    _animationQueue.Add(new CreateTokenAnimation(createToken));
                 //    break;
                 case THHCard.AttackEventArg attack:
-                    _animationQueue.Add(new AttackServantAnimation(attack));
+                    _animationQueue.Add(new ServantAttackAnimation(attack));
                     break;
                 case THHCard.DamageEventArg damage:
                     _animationQueue.Add(new DamageAnimation(damage));
@@ -228,7 +228,6 @@ namespace UI
 
             if (player == null)
                 return;
-            SelfMaster.update(this, player, player.master, getSkin(player.master));
             if (player.skill != null)
             {
                 SelfSkill.update(this, player, player, player.skill, getSkin(player.skill));
@@ -237,10 +236,6 @@ namespace UI
             else
                 SelfSkill.hide();
             SelfGem.Text.text = player.gem.ToString();
-            foreach (var servant in SelfFieldList)
-            {
-                servant.update(player, servant.card, getSkin(servant.card));
-            }
             if (canControl)
             {
                 TurnEndButton.interactable = true;
@@ -255,7 +250,6 @@ namespace UI
             THHPlayer opponent = game.getOpponent(player);
             if (opponent == null)
                 return;
-            EnemyMaster.update(this, opponent, opponent.master, getSkin(opponent.master));
             if (opponent.skill != null)
             {
                 EnemySkill.update(this, player, opponent, opponent.skill, getSkin(opponent.skill));
@@ -264,10 +258,6 @@ namespace UI
             else
                 EnemySkill.hide();
             EnemyGem.Text.text = opponent.gem.ToString();
-            foreach (var servant in EnemyFieldList)
-            {
-                servant.update(opponent, servant.card, getSkin(servant.card));
-            }
 
             IRequest request = game.answers.getLastRequest(player.id);
             if (request is InitReplaceRequest initReplace)

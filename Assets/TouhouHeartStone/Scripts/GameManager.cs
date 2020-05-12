@@ -123,5 +123,11 @@ namespace Game
         {
             Debug.LogError(e);
         }
+        protected void OnGUI()
+        {
+#if UNITY_EDITOR
+            Time.timeScale = GUILayout.HorizontalSlider(Time.timeScale, 0, 1, GUILayout.Width(200));
+#endif
+        }
     }
 }

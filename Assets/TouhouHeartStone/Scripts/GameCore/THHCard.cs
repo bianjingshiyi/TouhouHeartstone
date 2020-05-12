@@ -299,7 +299,8 @@ namespace TouhouHeartstone
                         card.setShield(false);
                         arg.infoDic.Add(card, new DamageEventArg.Info()
                         {
-                            damagedValue = 0
+                            damagedValue = 0,
+                            currentLife = card.getCurrentLife()
                         });
                         game.logger.log(card + "受到伤害，失去圣盾");
                     }
@@ -308,7 +309,8 @@ namespace TouhouHeartstone
                         card.setCurrentLife(card.getCurrentLife() - arg.value);
                         arg.infoDic.Add(card, new DamageEventArg.Info()
                         {
-                            damagedValue = value
+                            damagedValue = value,
+                            currentLife = card.getCurrentLife()
                         });
                         game.logger.log(card + "受到" + arg.value + "点伤害，生命值=>" + card.getCurrentLife());
                     }
@@ -324,6 +326,7 @@ namespace TouhouHeartstone
             public class Info
             {
                 public int damagedValue;
+                public int currentLife;
             }
         }
         public static async Task heal(IEnumerable<Card> cards, THHGame game, int value)

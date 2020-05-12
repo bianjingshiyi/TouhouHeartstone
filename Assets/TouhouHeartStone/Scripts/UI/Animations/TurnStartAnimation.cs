@@ -25,6 +25,14 @@ namespace UI
                     table.canControl = false;
                 }
                 table.TurnTipImage.GetComponent<Animator>().Play("Display");
+                foreach (var servant in table.SelfFieldList)
+                {
+                    servant.update(table.player, servant.card, table.getSkin(servant.card));
+                }
+                foreach (var servant in table.EnemyFieldList)
+                {
+                    servant.update(table.game.getOpponent(table.player), servant.card, table.getSkin(servant.card));
+                }
                 _timer.start();
             }
             if (!_timer.isExpired())
