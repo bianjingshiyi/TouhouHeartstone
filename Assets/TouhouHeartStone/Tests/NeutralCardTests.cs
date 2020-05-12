@@ -146,9 +146,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<DrizzleFairy>() as CardDefine, 29)
+            game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 29)
             .Concat(Enumerable.Repeat(game.getCardDefine<RushServant>(), 1)));
-            game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<DrizzleFairy>() as CardDefine, 29)
+            game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 29)
             .Concat(Enumerable.Repeat(game.getCardDefine<RushServant>(), 1)));
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
@@ -167,7 +167,7 @@ namespace Tests
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].master);
             Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife());
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].field[0]);
-            Assert.AreEqual(0, game.sortedPlayers[1].field.count);
+            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife());
         }
     }
 }
