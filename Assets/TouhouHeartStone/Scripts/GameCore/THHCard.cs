@@ -263,6 +263,8 @@ namespace TouhouHeartstone
         {
             if (!card.canAttack(game, player))
                 return false;
+            if (!card.isAttackable(game, player, target, out _))
+                return false;
             await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
             {
                 game.logger.log(arg.card + "攻击" + arg.target);
