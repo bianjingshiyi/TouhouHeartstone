@@ -125,6 +125,11 @@ namespace TouhouHeartstone
                 tip = "具有突袭的随从在没有准备好的情况下不能攻击敌方英雄";//除非你具有冲锋
                 return false;
             }
+            if(target.isStealth())
+            {
+                tip = "无法攻击潜行的目标";
+                return false;
+            }
             tip = null;
             return true;
         }
@@ -172,6 +177,14 @@ namespace TouhouHeartstone
         public static void setShield(this Card card, bool value)
         {
             card.setProp(Keyword.SHIELD, value);
+        }
+        public static bool isStealth(this Card card)
+        {
+            return card.getProp<bool>(Keyword.STEALTH);
+        }
+        public static void setStealth(this Card card, bool value)
+        {
+            card.setProp(Keyword.STEALTH, value);
         }
         public static int getSpellDamage(this Card card)
         {
