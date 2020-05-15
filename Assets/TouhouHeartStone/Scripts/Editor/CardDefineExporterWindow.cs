@@ -149,7 +149,7 @@ namespace TouhouHeartstone
             {
                 var skin = _manager.GetCardSkin(card.id);
                 int imageIndex = findColIndex(sheet, "Image");
-                sheet.Cells[rowIndex, imageIndex] = new Cell(skin == null ? null : skin.image != null ? skin.image.name + ".png" : null);
+                sheet.Cells[rowIndex, imageIndex] = new Cell(skin == null ? sheet.Cells[rowIndex, imageIndex].StringValue : (skin.image != null && !string.IsNullOrEmpty(skin.image.name) ? (skin.image.name + ".png") : sheet.Cells[rowIndex, imageIndex].StringValue));
                 int nameIndex = findColIndex(sheet, "Name");
                 sheet.Cells[rowIndex, nameIndex] = new Cell(skin == null ? card.GetType().Name : skin.name);
                 int descIndex = findColIndex(sheet, "Desc");

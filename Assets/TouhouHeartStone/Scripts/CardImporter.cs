@@ -26,9 +26,17 @@ namespace Game
                         int id = numberToInt(pRow.Value.GetCell(idIndex).Value);
                         CardDefine card = cardList.FirstOrDefault(c => c.id == id);
                         card = readCardDefine(card, pBook.Value, worksheet, pRow.Key, out var skin);
-                        cardList.Add(card);
-                        skinList.Add(skin);
-                        Debug.Log("读取Excel卡片" + card + "，皮肤：" + skin);
+                        if (card == null)
+                        {
+                            cardList.RemoveAll(c => c.id == id);
+                            Debug.Log("忽略卡片" + id);
+                        }
+                        else
+                        {
+                            cardList.Add(card);
+                            skinList.Add(skin);
+                            Debug.Log("读取Excel卡片" + card + "，皮肤：" + skin);
+                        }
                     }
                 }
             }
@@ -55,6 +63,12 @@ namespace Game
             card.setProp(nameof(ServantCardDefine.keywords), sheet.Cells[row, keywordsIndex].StringValue.Split(','));
             int isTokenIndex = findColIndex(sheet, "IsToken");
             card.setProp(nameof(ServantCardDefine.isToken), sheet.Cells[row, isTokenIndex].Value);
+            int ignoreIndex = findColIndex(sheet, "Ignore");
+            if (sheet.Cells[row, ignoreIndex].Value is bool b && b)
+            {
+                skin = null;
+                return null;
+            }
 
             skin = new CardSkinData()
             {
