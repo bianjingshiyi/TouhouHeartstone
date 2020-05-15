@@ -97,6 +97,9 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
+    /// <summary>
+    /// 梅雨元凶 法强+1
+    /// </summary>
     public class DrizzleFairy : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x006;
@@ -128,6 +131,9 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+    /// <summary>
+    /// 炎之妖精 战吼：对一个随机敌方随从造成1点伤害
+    /// </summary>
     public class FlameFairy : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x008;
@@ -154,6 +160,9 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+    /// <summary>
+    /// 桑尼·缪尔可 潜行
+    /// </summary>
     public class SunnyMilk : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x009;
@@ -165,6 +174,9 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
+    /// <summary>
+    /// 露娜·查尔德 战吼：使一个随从获得潜行
+    /// </summary>
     public class LunaChild : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x010;
@@ -191,6 +203,9 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+    /// <summary>
+    /// 斯塔·萨菲亚 如果你的战场上同时存在桑尼·缪尔可和露娜·查尔德，则你的所有随从获得潜行
+    /// </summary>
     public class StarSphere : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x011;
@@ -204,6 +219,9 @@ namespace TouhouHeartstone.Builtin
             //TODO:潜行光环
         };
     }
+    /// <summary>
+    /// 酒之妖精 战吼：将一个友方随从置入你的手牌
+    /// </summary>
     public class BeerFairy : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x012;
@@ -232,6 +250,9 @@ namespace TouhouHeartstone.Builtin
             //})
         };
     }
+    /// <summary>
+    /// 太阳花领军 你的其他妖精的攻击力+2
+    /// </summary>
     public class SunflowerWarleader : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x013;
@@ -260,6 +281,9 @@ namespace TouhouHeartstone.Builtin
             //})
         };
     }
+    /// <summary>
+    /// 琪露诺 战吼：随机冰冻3个角色（包括自己！）
+    /// </summary>
     public class Cirno : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x014;
@@ -285,6 +309,9 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+    /// <summary>
+    /// 大妖精 冲锋，亡语：你的对手获得一个法力水晶
+    /// </summary>
     public class Daiyousei : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x015;
@@ -310,6 +337,9 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+    /// <summary>
+    /// 琪露诺（冰瀑） 战吼：冰冻目标随从两侧的随从
+    /// </summary>
     public class Cirno_IceFall : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x016;
@@ -337,6 +367,9 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+    /// <summary>
+    /// 克劳恩皮丝 战吼：所有随从的攻击力+2
+    /// </summary>
     public class Clownpiece : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x017;
@@ -371,6 +404,9 @@ namespace TouhouHeartstone.Builtin
             new AttackModifier(2)
         };
     }
+    /// <summary>
+    /// 森之妖精 每当一个妖精阵亡后，花费-1
+    /// </summary>
     public class ForestFairy : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x018;
@@ -396,6 +432,9 @@ namespace TouhouHeartstone.Builtin
             //})
         };
     }
+    /// <summary>
+    /// 爱塔尼媞·拉尔瓦 战吼：使一个妖精获得剧毒
+    /// </summary>
     public class EternityLarva : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x019;
@@ -411,7 +450,7 @@ namespace TouhouHeartstone.Builtin
                 return true;
             },(game,player,card,targets)=>
             {
-                if(targets[0] is Card target && target.pile.name == PileName.FIELD)
+                if(targets[0] is Card target && target.pile.name == PileName.FIELD && target.hasTag(CardTag.FAIRY))
                     return true;
                 return false;
             },async (game,player,card,arg,targets)=>
@@ -423,6 +462,9 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+    /// <summary>
+    /// 莉莉·怀特 战吼：你和你的对手的英雄恢复4点生命值，抽2张牌
+    /// </summary>
     public class LilyWhite : ServantCardDefine
     {
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x020;

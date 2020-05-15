@@ -190,6 +190,10 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(nameof(ServantCardDefine.spellDamage));
         }
+        public static bool hasTag(this Card card, string tag)
+        {
+            return card.getProp<string[]>(nameof(ServantCardDefine.tags)).Contains(tag);
+        }
         public static bool isUsable(this Card card, THHGame game, THHPlayer player, out string info)
         {
             if (game.currentPlayer != player)//不是你的回合

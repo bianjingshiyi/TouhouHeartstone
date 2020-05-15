@@ -102,6 +102,7 @@ namespace TouhouHeartstone
                             throw new UnknowKeywordException("未知关键词" + keyword);
                     }
                 }
+                card.setProp(nameof(ServantCardDefine.tags), servant.tags);
             }
             return card;
         }
