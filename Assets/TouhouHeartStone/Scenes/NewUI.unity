@@ -5198,6 +5198,7 @@ MonoBehaviour:
   _Fatigue: {fileID: 0}
   _TurnTipImage: {fileID: 1885641971}
   _TurnTipText: {fileID: 444814208}
+  _canControl: 1
   _defaultProjectile: {fileID: 3622927314571081998, guid: 126ef8e97874d134a8fd0e8ffa1dd7a8,
     type: 3}
   _tipTimer:
