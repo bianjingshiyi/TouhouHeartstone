@@ -159,6 +159,21 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
+    /// 会潜行的随从
+    /// </summary>
+    public class StealthServant : ServantCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x00B;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 3;
+        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] keywords { get; set; } = new string[] { Keyword.STEALTH };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+
+    /// <summary>
     /// 一只白板的挨打用随从
     /// </summary>
     public class DefaultServant : ServantCardDefine
