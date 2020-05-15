@@ -120,6 +120,28 @@ namespace TouhouHeartstone
             }
             return cardList.ToArray();
         }
+        public Card[] getAllCharacters()
+        {
+            List<Card> cardList = new List<Card>();
+            foreach (var player in players)
+            {
+                cardList.Add(player.master);
+                cardList.AddRange(player.field);
+            }
+            return cardList.ToArray();
+        }
+        public Card[] getAllServants()
+        {
+            IEnumerable<Card> e = null;
+            foreach (var player in players)
+            {
+                if (e == null)
+                    e = player.field;
+                else
+                    e = e.Concat(player.field);
+            }
+            return e.ToArray();
+        }
         #endregion
         /// <summary>
         /// 添加玩家

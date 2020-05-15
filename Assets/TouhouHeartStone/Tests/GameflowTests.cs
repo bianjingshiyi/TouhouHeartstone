@@ -357,6 +357,26 @@ namespace Tests
 
             Assert.True(game.sortedPlayers[0].field[0].getProp<bool>("TestResult"));
         }
+        [Test]
+        public void attackSelfTest()
+        {
+            THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
+            Enumerable.Repeat(new Reimu(), 2).ToArray(),
+            Enumerable.Repeat(Enumerable.Repeat(new DefaultServant(), 30).ToArray(), 2).ToArray(),
+            new GameOption() { });
+            game.run();
+            game.sortedPlayers[0].cmdInitReplace(game);
+            game.sortedPlayers[1].cmdInitReplace(game);
+
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
+            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[0].master);
+            Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife());
+            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[0].field[1]);
+            Assert.AreEqual(7, game.sortedPlayers[0].field[1].getCurrentLife());
+        }
     }
     static class TaskExceptionHandler
     {
@@ -495,5 +515,61 @@ namespace Tests
                 new LifeModifier(1)
             };
         }
+    }
+    /// <summary>
+    /// 一个会突袭的随从
+    /// </summary>
+    public class RushServant : ServantCardDefine
+    {
+        public const int ID = 0x00110006;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] tags { get; set; } = new string[0];
+        public override string[] keywords { get; set; } = new string[] { Keyword.RUSH };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+    /// <summary>
+    /// 一个会圣盾的随从
+    /// </summary>
+    public class ShieldServant : ServantCardDefine
+    {
+        public const int ID = 0x00110007;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] tags { get; set; } = new string[0];
+        public override string[] keywords { get; set; } = new string[] { Keyword.SHIELD };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+    /// <summary>
+    /// 会潜行的随从
+    /// </summary>
+    public class StealthServant : ServantCardDefine
+    {
+        public const int ID = 0x00110008;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 3;
+        public override string[] tags { get; set; } = new string[0];
+        public override string[] keywords { get; set; } = new string[] { Keyword.STEALTH };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+    /// <summary>
+    /// 一只白板的挨打用随从
+    /// </summary>
+    public class DefaultServant : ServantCardDefine
+    {
+        public const int ID = 0x00110009;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 7;
+        public override string[] tags { get; set; } = new string[0];
+        public override string[] keywords { get; set; } = new string[0];
+        public override IEffect[] effects { get; set; } = new IEffect[0];
     }
 }

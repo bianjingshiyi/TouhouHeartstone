@@ -125,7 +125,7 @@ namespace TouhouHeartstone
                 tip = "具有突袭的随从在没有准备好的情况下不能攻击敌方英雄";//除非你具有冲锋
                 return false;
             }
-            if(target.isStealth())
+            if (target.isStealth())
             {
                 tip = "无法攻击潜行的目标";
                 return false;
@@ -275,9 +275,15 @@ namespace TouhouHeartstone
         public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
             if (!card.canAttack(game, player))
+            {
+                game.logger.log(card + "无法进行攻击");
                 return false;
-            if (!card.isAttackable(game, player, target, out _))
+            }
+            if (!card.isAttackable(game, player, target, out var reason))
+            {
+                game.logger.log(card + "无法攻击" + target + "，因为" + reason);
                 return false;
+            }
             await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
             {
                 game.logger.log(arg.card + "攻击" + arg.target);
@@ -342,7 +348,7 @@ namespace TouhouHeartstone
                 public int currentLife;
             }
         }
-        public static async Task heal(IEnumerable<Card> cards, THHGame game, int value)
+        public static async Task heal(this IEnumerable<Card> cards, THHGame game, int value)
         {
             cards = cards.Where(c => c.getCurrentLife() < c.getLife());
             if (cards.Count() < 1)
@@ -436,6 +442,17 @@ namespace TouhouHeartstone
                 public Card card;
                 public int position;
             }
+        }
+        public static Card[] getNearbyCards(this Card card)
+        {
+            if (card.pile == null || card.pile.count < 2)
+                return new Card[0];
+            int index = card.pile.indexOf(card);
+            if (index == 0 && card.pile.count > 1)
+                return new Card[] { card.pile[1] };
+            if (index == card.pile.count - 1 && card.pile.count > 1)
+                return new Card[] { card.pile[card.pile.count - 2] };
+            return new Card[] { card.pile[index - 1], card.pile[index + 1] };
         }
     }
 }
