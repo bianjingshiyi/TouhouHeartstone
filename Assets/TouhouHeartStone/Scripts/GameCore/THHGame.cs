@@ -95,6 +95,9 @@ namespace TouhouHeartstone
                         case Keyword.SHIELD:
                             card.setShield(true);
                             break;
+                        case Keyword.STEALTH:
+                            card.setStealth(true);
+                            break;
                         default:
                             throw new UnknowKeywordException("未知关键词" + keyword);
                     }

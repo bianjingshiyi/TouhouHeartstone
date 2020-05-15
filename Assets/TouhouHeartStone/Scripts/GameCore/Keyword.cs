@@ -18,5 +18,9 @@
         /// 圣盾
         /// </summary>
         public const string SHIELD = "shield";
+        /// <summary>
+        /// 潜行
+        /// </summary>
+        public const string STEALTH = "stealth";
     }
 }
