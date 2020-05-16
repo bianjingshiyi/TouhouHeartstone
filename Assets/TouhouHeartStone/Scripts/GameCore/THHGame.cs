@@ -289,6 +289,8 @@ namespace TouhouHeartstone
                         card = getCard(attack.cardId);
                         Card target = getCard(attack.targetId);
                         await card.tryAttack(this, player, target);
+                        if (card.isStealth())
+                            card.setStealth(false);
                         break;
                     case TurnEndResponse _:
                         return;
