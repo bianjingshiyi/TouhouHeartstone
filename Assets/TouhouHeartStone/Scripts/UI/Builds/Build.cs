@@ -74,7 +74,8 @@ namespace UI
                 return false;
             //if (!(c is SpellCardDefine))
             //{
-                
+            //    if (!(c is ServantCardDefine) && !(c is GeneratedCardDefine))
+            //        return false;
             //}
             if (!(c is ServantCardDefine) && !(c is GeneratedCardDefine))
                 return false;

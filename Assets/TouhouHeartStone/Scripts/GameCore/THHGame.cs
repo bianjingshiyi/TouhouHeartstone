@@ -66,7 +66,7 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public THHPlayer getOpponent(THHPlayer player)
+        public THHPlayer getOpponent(Player player)
         {
             return players.FirstOrDefault(p => p != player);
         }
@@ -142,6 +142,11 @@ namespace TouhouHeartstone
                     e = e.Concat(player.field);
             }
             return e.ToArray();
+        }
+        public Card[] getAllEnemies(THHPlayer player)
+        {
+            THHPlayer opponent = getOpponent(player);
+            return opponent.field.Concat(new Card[] { opponent.master }).ToArray();
         }
         #endregion
         /// <summary>

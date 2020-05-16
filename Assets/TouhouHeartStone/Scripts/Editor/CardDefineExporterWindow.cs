@@ -151,9 +151,9 @@ namespace TouhouHeartstone
                 int imageIndex = findColIndex(sheet, "Image");
                 sheet.Cells[rowIndex, imageIndex] = new Cell(skin == null ? sheet.Cells[rowIndex, imageIndex].StringValue : (skin.image != null && !string.IsNullOrEmpty(skin.image.name) ? (skin.image.name + ".png") : sheet.Cells[rowIndex, imageIndex].StringValue));
                 int nameIndex = findColIndex(sheet, "Name");
-                sheet.Cells[rowIndex, nameIndex] = new Cell(skin == null ? card.GetType().Name : skin.name);
+                sheet.Cells[rowIndex, nameIndex] = new Cell(skin == null ? (!string.IsNullOrEmpty(sheet.Cells[rowIndex, nameIndex].StringValue) ? sheet.Cells[rowIndex, nameIndex].StringValue : card.GetType().Name) : skin.name);
                 int descIndex = findColIndex(sheet, "Desc");
-                sheet.Cells[rowIndex, descIndex] = new Cell(skin == null ? null : skin.desc);
+                sheet.Cells[rowIndex, descIndex] = new Cell(skin == null ? sheet.Cells[rowIndex, descIndex].StringValue : skin.desc);
             }
         }
         static int numberToInt(object value)

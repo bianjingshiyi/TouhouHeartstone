@@ -15,7 +15,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class KnowledgeTap : SkillCardDefine
     {
-        public const int ID = Patchouli.ID | CardCategory.SKILL | 0x001;
+        public const int ID = Patchouli.ID | CardCategory.SKILL | 0x000;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
