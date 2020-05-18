@@ -161,7 +161,7 @@ namespace TouhouHeartstone
                         await game.triggers.doEvent(active, activeLogic);
                         async Task activeLogic(ActiveEventArg eventArg)
                         {
-                            await effect.execute(game, player, card, new object[] { eventArg }, targets);
+                            await effect.execute(game, card, new object[] { eventArg }, targets);
                         }
                     }
                     //IEffect effect = arg.card.define.getEffectOn<BattleCryEventArg>(game.triggers);
@@ -176,14 +176,14 @@ namespace TouhouHeartstone
                 else if (card.define is SkillCardDefine)
                 {
                     IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    await effect.execute(game, arg.player, arg.card, new object[] { new ActiveEventArg(player, card, targets) }, arg.targets);
+                    await effect.execute(game, arg.card, new object[] { new ActiveEventArg(player, card, targets) }, arg.targets);
                 }
                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.SPELL))
                 {
                     //法术卡，释放效果然后丢进墓地
                     player.hand.remove(game, card);
                     IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    await effect.execute(game, player, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    await effect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
                     player.grave.add(game, card);
                 }
             });

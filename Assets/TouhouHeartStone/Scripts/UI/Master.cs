@@ -34,7 +34,7 @@ namespace UI
 
             if (table.selectableTargets != null && table.selectableTargets.Contains(this))
                 HighlightController = Highlight.Yellow;
-            else if (table.player == player && table.game.currentPlayer == player && card.canAttack(table.game, player))
+            else if (table.player == player && table.game.currentPlayer == player && card.canAttack(table.game))
                 HighlightController = Highlight.Green;
             else
                 HighlightController = Highlight.None;

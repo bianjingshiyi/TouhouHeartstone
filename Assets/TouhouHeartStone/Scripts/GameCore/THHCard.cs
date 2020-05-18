@@ -7,6 +7,10 @@ namespace TouhouHeartstone
 {
     public static class THHCard
     {
+        public static THHPlayer getOwner(this Card card)
+        {
+            return card.owner as THHPlayer;
+        }
         public static int getCost(this Card card)
         {
             return card.getProp<int>(nameof(ServantCardDefine.cost));
@@ -82,13 +86,13 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public static bool canAttack(this Card card, THHGame game, THHPlayer player)
+        public static bool canAttack(this Card card, THHGame game)
         {
             if (card.getAttack() <= 0)//没有攻击力
                 return false;
             if (!card.isReady()//还没准备好
                 && !card.isCharge()//且没有冲锋
-                && !(card.isRush() && game.getOpponent(player).field.Any(c => card.isAttackable(game, player, c, out _)))//且并非有突袭且有可以攻击的敌方随从
+                && !(card.isRush() && game.getOpponent(card.getOwner()).field.Any(c => card.isAttackable(game, card.getOwner(), c, out _)))//且并非有突袭且有可以攻击的敌方随从
                 )
                 return false;
             if (card.getAttackTimes() >= card.getMaxAttackTimes())//已经攻击过了
@@ -234,7 +238,7 @@ namespace TouhouHeartstone
                     info = "你没有足够的法力值";
                     return false;
                 }
-                if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is IEffect effect && !effect.checkCondition(game, null, card, new object[]
+                if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is IEffect effect && !effect.checkCondition(game, card, new object[]
                     {
                         new THHPlayer.ActiveEventArg(player,card,new object[0])
                     }))
@@ -278,7 +282,7 @@ namespace TouhouHeartstone
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
-            if (!card.canAttack(game, player))
+            if (!card.canAttack(game))
             {
                 game.logger.log(card + "无法进行攻击");
                 return false;

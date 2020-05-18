@@ -20,28 +20,28 @@ namespace TouhouHeartstone
         public string[] piles { get; }
         public delegate bool CheckConditionDelegate(THHGame game, THHPlayer player, Card card, object[] vars);
         CheckConditionDelegate onCheckCondition { get; }
-        bool IEffect.checkCondition(IGame game, IPlayer player, ICard card, object[] vars)
+        bool IEffect.checkCondition(IGame game, ICard card, object[] vars)
         {
             if (onCheckCondition != null)
-                return onCheckCondition.Invoke(game as THHGame, player as THHPlayer, card as Card, vars);
+                return onCheckCondition.Invoke(game as THHGame, null, card as Card, vars);
             else
                 return true;
         }
         public delegate bool CheckTargetDelegate(THHGame game, THHPlayer player, Card card, object[] targets);
         CheckTargetDelegate onCheckTarget { get; }
-        bool IEffect.checkTarget(IGame game, IPlayer player, ICard card, object[] targets)
+        bool IEffect.checkTarget(IGame game, ICard card, object[] vars, object[] targets)
         {
             if (onCheckTarget != null)
-                return onCheckTarget.Invoke(game as THHGame, player as THHPlayer, card as Card, targets);
+                return onCheckTarget.Invoke(game as THHGame, null, card as Card, targets);
             else
                 return true;
         }
         public delegate Task ExecuteDelegate(THHGame game, THHPlayer player, Card card, object[] vars, object[] targets);
         ExecuteDelegate onExecute { get; }
-        Task IEffect.execute(IGame game, IPlayer player, ICard card, object[] vars, object[] targets)
+        Task IEffect.execute(IGame game, ICard card, object[] vars, object[] targets)
         {
             if (onExecute != null)
-                return onExecute.Invoke(game as THHGame, player as THHPlayer, card as Card, vars, targets);
+                return onExecute.Invoke(game as THHGame, null, card as Card, vars, targets);
             else
                 return Task.CompletedTask;
         }
@@ -67,8 +67,8 @@ namespace TouhouHeartstone
             {
                 Trigger trigger = new Trigger(args =>
                 {
-                    if ((this as IEffect).checkCondition(game, null, card, args))
-                        return (this as IEffect).execute(game, null, card, args, new object[0]);
+                    if ((this as IEffect).checkCondition(game, card, args))
+                        return (this as IEffect).execute(game, card, args, new object[0]);
                     else
                         return Task.CompletedTask;
                 });
@@ -115,8 +115,8 @@ namespace TouhouHeartstone
             {
                 Trigger<T> trigger = new Trigger<T>(arg =>
                 {
-                    if ((this as IEffect).checkCondition(game, null, card, new object[] { arg }))
-                        return (this as IEffect).execute(game, null, card, new object[] { arg }, new object[0]);
+                    if ((this as IEffect).checkCondition(game, card, new object[] { arg }))
+                        return (this as IEffect).execute(game, card, new object[] { arg }, new object[0]);
                     else
                         return Task.CompletedTask;
                 });
@@ -184,8 +184,8 @@ namespace TouhouHeartstone
             {
                 Trigger<T> trigger = new Trigger<T>(arg =>
                 {
-                    if ((this as IEffect).checkCondition(game, null, card, new object[] { arg }))
-                        return (this as IEffect).execute(game, null, card, new object[] { arg }, new object[0]);
+                    if ((this as IEffect).checkCondition(game, card, new object[] { arg }))
+                        return (this as IEffect).execute(game, card, new object[] { arg }, new object[0]);
                     else
                         return Task.CompletedTask;
                 });

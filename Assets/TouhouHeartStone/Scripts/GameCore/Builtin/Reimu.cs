@@ -26,7 +26,7 @@ namespace TouhouHeartstone.Builtin
             },(game,player,card,targets)=>
             {
                 return true;
-            },async (game,player,card,vars,targets)=>
+            },async (game,player,card,arg,targets)=>
             {
                 CardDefine[] totemDefines = new CardDefine[]
                 {
@@ -35,18 +35,18 @@ namespace TouhouHeartstone.Builtin
                     game.getCardDefine<ManaTotem>(),
                     game.getCardDefine<TauntTotem>()
                 };
-                if(totemDefines.All(d=>player.field.Any(c=>c.define==d)) ||//场上四种类型的图腾都有
-                    !totemDefines.Any(d=>player.field.Any(c=>c.define==d)))//或者都没有
+                if(totemDefines.All(d=>arg.player.field.Any(c=>c.define==d)) ||//场上四种类型的图腾都有
+                    !totemDefines.Any(d=>arg.player.field.Any(c=>c.define==d)))//或者都没有
                 {
                     //随便召唤一种类型的图腾
                     CardDefine totemDefine = totemDefines[game.randomInt(0,3)];
-                    await player.createToken(game,totemDefine,player.field.count);
+                    await arg.player.createToken(game,totemDefine,arg.player.field.count);
                 }
                 else
                 {
                     //召唤一种场上没有的图腾
-                    CardDefine totemDefine = totemDefines.Where(d=>!player.field.Any(c=>c.define==d)).shuffle(game).First();
-                    await player.createToken(game,totemDefine,player.field.count);
+                    CardDefine totemDefine = totemDefines.Where(d=>!arg.player.field.Any(c=>c.define==d)).shuffle(game).First();
+                    await arg.player.createToken(game,totemDefine,arg.player.field.count);
                 }
             })
         };

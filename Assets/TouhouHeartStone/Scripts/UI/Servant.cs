@@ -29,7 +29,7 @@ namespace UI
 
             if (table.selectableTargets != null && table.selectableTargets.Contains(this))
                 HighlightController = Highlight.Yellow;
-            else if (table.player == player && table.game.currentPlayer == player && card.canAttack(table.game, player))
+            else if (table.player == player && table.game.currentPlayer == player && card.canAttack(table.game))
                 HighlightController = Highlight.Green;
             else
                 HighlightController = Highlight.None;
@@ -57,7 +57,7 @@ namespace UI
                 return;
             if (card.owner != table.player)//不是你的卡
                 return;
-            if (!card.canAttack(table.game, table.player))
+            if (!card.canAttack(table.game))
                 return;
             //拉动距离也应该有一个阈值
             if (Vector2.Distance(rectTransform.position, eventData.position) > _attackThreshold)
@@ -89,7 +89,7 @@ namespace UI
                 return;
             if (card.owner != table.player)//不是你的卡
                 return;
-            if (!card.canAttack(table.game, table.player))//不能攻击
+            if (!card.canAttack(table.game))//不能攻击
                 return;
             //如果在随从上面
             if (eventData.pointerCurrentRaycast.gameObject != null)
