@@ -525,7 +525,7 @@ namespace Tests
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 1;
+        public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[0];
         public override string[] keywords { get; set; } = new string[] { Keyword.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[0];
@@ -539,7 +539,7 @@ namespace Tests
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 1;
+        public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[0];
         public override string[] keywords { get; set; } = new string[] { Keyword.SHIELD };
         public override IEffect[] effects { get; set; } = new IEffect[0];
@@ -558,12 +558,42 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[] { Keyword.STEALTH };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
+
+    /// <summary>
+    /// 会吸血的随从
+    /// </summary>
+    public class SuckingServant : ServantCardDefine
+    {
+        public const int ID = 0x00110009;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 3;
+        public override string[] tags { get; set; } = new string[] { };
+        public override string[] keywords { get; set; } = new string[] { };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+
+    /// <summary>
+    /// 剧毒随从
+    /// </summary>
+    public class PoisonServant : ServantCardDefine
+    {
+        public const int ID = 0x0011000A;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 3;
+        public override string[] tags { get; set; } = new string[] { };
+        public override string[] keywords { get; set; } = new string[] { };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
     /// <summary>
     /// 一只白板的挨打用随从
     /// </summary>
     public class DefaultServant : ServantCardDefine
     {
-        public const int ID = 0x00110009;
+        public const int ID = 0x0011FFFF;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;

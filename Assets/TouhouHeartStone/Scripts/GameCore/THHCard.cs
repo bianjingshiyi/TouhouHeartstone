@@ -297,6 +297,8 @@ namespace TouhouHeartstone
                 if (arg.target.getAttack() > 0)
                     await arg.card.damage(game, arg.target.getAttack());
             });
+            if (card.isStealth())
+                card.setStealth(false);
             await game.updateDeath();
             return true;
         }
