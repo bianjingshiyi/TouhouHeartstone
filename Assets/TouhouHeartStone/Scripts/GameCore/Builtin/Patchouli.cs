@@ -20,13 +20,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 await arg.player.master.damage(game, 2);
                 await arg.player.draw(game);
@@ -43,13 +43,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 
             })

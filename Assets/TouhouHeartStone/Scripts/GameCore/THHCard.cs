@@ -15,6 +15,10 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(nameof(ServantCardDefine.cost));
         }
+        public static void setCost(this Card card,int value)
+        {
+            card.setProp(nameof(ServantCardDefine.cost), value);
+        }
         public static int getCost(this CardDefine card)
         {
             return card.getProp<int>(nameof(ServantCardDefine.cost));
@@ -194,6 +198,10 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(nameof(ServantCardDefine.spellDamage));
         }
+        public static void setSpellDamage(this Card card ,int value)
+        {
+            card.setProp(nameof(ServantCardDefine.spellDamage), value);
+        }
         public static bool hasTag(this Card card, string tag)
         {
             return card.getProp<string[]>(nameof(ServantCardDefine.tags)).Contains(tag);
@@ -238,7 +246,7 @@ namespace TouhouHeartstone
                     info = "你没有足够的法力值";
                     return false;
                 }
-                if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is IEffect effect && !effect.checkCondition(game, card, new object[]
+                if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is IActiveEffect effect && !effect.checkCondition(game, card, new object[]
                     {
                         new THHPlayer.ActiveEventArg(player,card,new object[0])
                     }))
@@ -257,7 +265,7 @@ namespace TouhouHeartstone
         }
         public static Card[] getAvaliableTargets(this Card card, THHGame game)
         {
-            IEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            IActiveEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) as IActiveEffect;
             if (effect == null)
                 return null;
             List<Card> targetList = new List<Card>();
@@ -275,7 +283,7 @@ namespace TouhouHeartstone
         }
         public static bool isValidTarget(this Card card, THHGame game, Card target)
         {
-            IEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            IActiveEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) as IActiveEffect;
             if (effect == null)
                 return false;
             return effect.checkTarget(game, null, card, new object[] { target });

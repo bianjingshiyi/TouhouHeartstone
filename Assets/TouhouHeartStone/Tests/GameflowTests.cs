@@ -439,13 +439,13 @@ namespace Tests
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return true;
-            },(game,player,card,arg)=>
+            },(game,card,arg)=>
             {
                 card.setProp("TestResult",true);
                 return Task.CompletedTask;
@@ -472,13 +472,13 @@ namespace Tests
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return true;
-            },(game,player,card,arg,targets)=>
+            },(game,card,arg,targets)=>
             {
                 return Task.CompletedTask;
             })
@@ -493,13 +493,13 @@ namespace Tests
         public override int life { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return true;
-            },(game,player,card,arg,targets)=>
+            },(game,card,arg,targets)=>
             {
                 card.addBuff(game,new TestBuff());
                 return Task.CompletedTask;
@@ -601,5 +601,55 @@ namespace Tests
         public override string[] tags { get; set; } = new string[0];
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+    public class MountainGaint : ServantCardDefine
+    {
+        public const int ID = 0x0011000B;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 12;
+        public override int attack { get; set; } = 8;
+        public override int life { get; set; } = 8;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new CostFixer()
+        };
+        class CostFixer : IEffect
+        {
+            public string[] events => throw new System.NotImplementedException();
+            public string[] piles { get; } = new string[] { PileName.HAND };
+            public bool checkCondition(IGame game, ICard card, object[] vars)
+            {
+                throw new System.NotImplementedException();
+            }
+            public bool checkTarget(IGame game, ICard card, object[] vars, object[] targets)
+            {
+                throw new System.NotImplementedException();
+            }
+            public Task execute(IGame game, ICard card, object[] vars, object[] targets)
+            {
+                throw new System.NotImplementedException();
+            }
+            public string[] getEvents(ITriggerManager manager)
+            {
+                return new string[0];
+            }
+            CostModifier _modifier = new CostModifier();
+            public void register(IGame game, ICard card)
+            {
+                card.addModifier(game, _modifier);
+            }
+            public void unregister(IGame game, ICard card)
+            {
+                card.removeModifier(game, _modifier);
+            }
+            class CostModifier : PropModifier<int>
+            {
+                public override string propName { get; } = nameof(ServantCardDefine.cost);
+                public override int calc(Card card, int value)
+                {
+                    return value - card.getOwner().hand.count + 1;
+                }
+            }
+        }
     }
 }

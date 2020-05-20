@@ -75,8 +75,16 @@ namespace TouhouHeartstone
         public override Card createCard(CardDefine define)
         {
             Card card = base.createCard(define);
-            if (define is ServantCardDefine servant)
+            if (define is MasterCardDefine master)
             {
+                card.setLife(master.life);
+            }
+            else if (define is ServantCardDefine servant)
+            {
+                card.setCost(servant.cost);
+                card.setAttack(servant.attack);
+                card.setLife(servant.life);
+                card.setSpellDamage(servant.spellDamage);
                 foreach (string keyword in servant.keywords)
                 {
                     if (string.IsNullOrEmpty(keyword))

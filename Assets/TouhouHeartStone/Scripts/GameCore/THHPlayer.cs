@@ -154,7 +154,7 @@ namespace TouhouHeartstone
                 {
                     //随从卡，将卡置入战场
                     await tryPutIntoField(game, arg.player.hand, arg.card, arg.position);
-                    IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
                     if (effect != null)
                     {
                         ActiveEventArg active = new ActiveEventArg(player, card, targets);
@@ -175,14 +175,14 @@ namespace TouhouHeartstone
                 }
                 else if (card.define is SkillCardDefine)
                 {
-                    IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
                     await effect.execute(game, arg.card, new object[] { new ActiveEventArg(player, card, targets) }, arg.targets);
                 }
                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.SPELL))
                 {
                     //法术卡，释放效果然后丢进墓地
                     player.hand.remove(game, card);
-                    IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
                     await effect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
                     player.grave.add(game, card);
                 }

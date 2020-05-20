@@ -20,13 +20,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,card,arg)=>
             {
                 return arg.player.field.count<arg.player.field.maxCount;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return true;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 CardDefine[] totemDefines = new CardDefine[]
                 {
@@ -61,17 +61,17 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
             {
-                if(arg.player!=player)//不是自己的回合
+                if(arg.player!=game.currentPlayer)//不是自己的回合
                     return false;
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
-                return true;
-            },async (game,player,card,arg)=>
+                return false;
+            },async (game,card,arg)=>
             {
-                await THHCard.heal(player.field,game,1);
+                await THHCard.heal(arg.player.field,game,1);
             })
         };
     }
@@ -117,13 +117,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return true;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 THHPlayer opponent = game.getOpponent(arg.player);
                 if(opponent.field.count<4)

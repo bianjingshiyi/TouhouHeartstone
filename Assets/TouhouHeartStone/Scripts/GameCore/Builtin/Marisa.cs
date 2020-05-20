@@ -27,15 +27,15 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 5;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 if(targets[0] is Card target && (target.pile.name == PileName.MASTER || target.pile.name == PileName.FIELD))
                     return true;
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
                     await target.damage(game, arg.player.getSpellDamage(7));
@@ -63,13 +63,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 for (int i = 0; i < arg.player.getSpellDamage(4); i++)
                 {
@@ -124,15 +124,15 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 if(targets[0] is Card target && target.pile == game.getOpponent(card.owner).field)
                     return true;
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
                     await target.damage(game,arg.player.getSpellDamage(2));
@@ -153,15 +153,15 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 if(targets[0] is Card target && target.pile.name == PileName.FIELD)
                     return true;
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
                 {
