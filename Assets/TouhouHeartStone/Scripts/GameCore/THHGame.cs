@@ -98,6 +98,12 @@ namespace TouhouHeartstone
                         case Keyword.STEALTH:
                             card.setStealth(true);
                             break;
+                        case Keyword.DRAIN:
+                            card.setDrain(true);
+                            break;
+                        case Keyword.POISONOUS:
+                            card.setPoisonous(true);
+                            break;
                         default:
                             throw new UnknowKeywordException("未知关键词" + keyword);
                     }

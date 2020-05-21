@@ -186,6 +186,22 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.STEALTH, value);
         }
+        public static bool isDrain(this Card card)
+        {
+            return card.getProp<bool>(Keyword.DRAIN);
+        }
+        public static void setDrain(this Card card, bool value)
+        {
+            card.setProp(Keyword.DRAIN, value);
+        }
+        public static bool isPoisonous(this Card card)
+        {
+            return card.getProp<bool>(Keyword.POISONOUS);
+        }
+        public static void setPoisonous(this Card card, bool value)
+        {
+            card.setProp(Keyword.POISONOUS, value);
+        }
         public static int getSpellDamage(this Card card)
         {
             return card.getProp<int>(nameof(ServantCardDefine.spellDamage));
@@ -296,6 +312,14 @@ namespace TouhouHeartstone
                     await arg.target.damage(game, arg.card.getAttack());
                 if (arg.target.getAttack() > 0)
                     await arg.card.damage(game, arg.target.getAttack());
+                if (arg.card.isDrain())
+                    await player.master.heal(game, arg.card.getAttack());
+                if (arg.target.isDrain())
+                    await (arg.target.owner as THHPlayer).master.heal(game, arg.target.getAttack());
+                if (arg.card.isPoisonous() && arg.target.owner != null)
+                    await arg.target.damage(game, arg.target.getCurrentLife());
+                if (arg.target.isPoisonous() && arg.card != player.master)
+                    await arg.card.damage(game, arg.card.getCurrentLife());
             });
             if (card.isStealth())
                 card.setStealth(false);

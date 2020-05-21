@@ -87,6 +87,59 @@ namespace Tests
             Assert.AreEqual(1, game.sortedPlayers[0].field[1].getCurrentLife());    //变为非潜行状态后可以被攻击
         }
 
+        /// <summary>
+        /// 吸血测试
+        /// </summary>
+        [Test]
+        public void DrainTest()
+        {
+            THHGame game = GameInitWithoutPlayer<DefaultServant, DrainServant>(29, 1);
+            AfterXRound(game, 1);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[1], 0);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
+            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].master);
+            Assert.AreEqual(29, game.sortedPlayers[1].master.getCurrentLife());  //被攻击后血量减少1
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].master);
+            Assert.AreEqual(29, game.sortedPlayers[1].master.getCurrentLife());  //不会吸血的随从攻击后，master没有回血
+            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[1], game.sortedPlayers[0].field[1]);
+            Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife());  //会吸血的随从攻击后，master回血
+            Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife());  //攻击吸血随从，敌方master回血
+            
+        }
+
+        /// <summary>
+        /// 剧毒测试
+        /// </summary>
+        [Test]
+        public void PoisonousTest()
+        {
+            THHGame game = GameInitWithoutPlayer<DefaultServant, PoisonousServant>(29, 1);
+            AfterXRound(game, 1);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[1], 0);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
+            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].field[1]);
+            Assert.AreEqual(0, game.sortedPlayers[0].field.count);      //攻击剧毒随从，自身死亡
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].field[0]);
+            Assert.AreEqual(6, game.sortedPlayers[0].field[0].getCurrentLife());    //没有剧毒的随从攻击，受到伤害，不会即死
+            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[1], game.sortedPlayers[0].field[0]);
+            Assert.AreEqual(0, game.sortedPlayers[0].field.count);      //有剧毒的随从攻击敌方随从，随从死亡
+            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            Assert.True(game.sortedPlayers[1].field[1].isPoisonous());
+            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[1], game.sortedPlayers[0].master);
+            Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife());     //剧毒随从攻击master，master受到伤害，不会即死
+
+        }
 
         /// <summary>
         /// 攻击自己的测试
