@@ -104,6 +104,9 @@ namespace TouhouHeartstone
                         case Keyword.POISONOUS:
                             card.setPoisonous(true);
                             break;
+                        case Keyword.MAGICIMMUNE:
+                            card.setMagicImmune(true);
+                            break;
                         default:
                             throw new UnknowKeywordException("未知关键词" + keyword);
                     }

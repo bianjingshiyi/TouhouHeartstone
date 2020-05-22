@@ -30,5 +30,9 @@
         /// 剧毒
         /// </summary>
         public const string POISONOUS = "poisonous";
+        /// <summary>
+        /// 魔免
+        /// </summary>
+        public const string MAGICIMMUNE = "MagicImmune";
     }
 }

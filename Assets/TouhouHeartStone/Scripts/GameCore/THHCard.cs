@@ -202,6 +202,15 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.POISONOUS, value);
         }
+        public static bool isMagicImmune(this Card card)
+        {
+            return card.getProp<bool>(Keyword.MAGICIMMUNE);
+        }
+        public static void setMagicImmune(this Card card, bool value)
+        {
+            card.setProp(Keyword.MAGICIMMUNE, value);
+        }
+
         public static int getSpellDamage(this Card card)
         {
             return card.getProp<int>(nameof(ServantCardDefine.spellDamage));
@@ -317,9 +326,32 @@ namespace TouhouHeartstone
                 if (arg.target.isDrain())
                     await (arg.target.owner as THHPlayer).master.heal(game, arg.target.getAttack());
                 if (arg.card.isPoisonous() && arg.target.owner != null)
-                    await arg.target.damage(game, arg.target.getCurrentLife());
+                {
+                    DamageEventArg damage = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DamageEventArg) as THHCard.DamageEventArg;
+                    //剧毒角色造成伤害后，对方死亡
+                    if (damage.value > 0)
+                    {
+                        await arg.target.die(game, new DeathEventArg.Info()
+                        {
+                            card = target,
+                            player = (THHPlayer)arg.target.owner,
+                            position = player.field.indexOf(card)
+                        });
+                    }
+                }
                 if (arg.target.isPoisonous() && arg.card != player.master)
-                    await arg.card.damage(game, arg.card.getCurrentLife());
+                {
+                    DamageEventArg damage = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DamageEventArg) as THHCard.DamageEventArg;
+                    if (damage.value > 0)
+                    {
+                        await arg.card.die(game, new DeathEventArg.Info()
+                        {
+                            card = card,
+                            player = player,
+                            position = player.field.indexOf(card)
+                        });
+                    }
+                }
             });
             if (card.isStealth())
                 card.setStealth(false);

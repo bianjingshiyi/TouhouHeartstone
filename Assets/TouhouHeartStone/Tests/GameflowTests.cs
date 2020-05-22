@@ -588,6 +588,22 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[] { Keyword.POISONOUS };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
+
+    /// <summary>
+    /// 魔免随从
+    /// </summary>
+    public class MaginImmuneServant : ServantCardDefine
+    {
+        public const int ID = 0x0011000B;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 3;
+        public override string[] tags { get; set; } = new string[] { };
+        public override string[] keywords { get; set; } = new string[] { Keyword.MAGICIMMUNE };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+
     /// <summary>
     /// 一只白板的挨打用随从
     /// </summary>
