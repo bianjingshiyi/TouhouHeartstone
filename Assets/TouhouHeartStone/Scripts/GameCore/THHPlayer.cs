@@ -142,7 +142,8 @@ namespace TouhouHeartstone
         {
             if (!card.isUsable(game, this, out _))
                 return false;
-            card.setUsed(true);
+            if (card.define is SkillCardDefine)
+                card.setUsed(true);
             await setGem(game, gem - card.getCost());
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>
             {

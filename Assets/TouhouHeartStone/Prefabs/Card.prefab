@@ -1111,7 +1111,7 @@ MonoBehaviour:
   _CardBackImage: {fileID: 525013306416142025}
   _Image_1: {fileID: 7196694411468133037}
   _Image_2: {fileID: 8135484192158716678}
-  _CardFaceImage: {fileID: 0}
+  _ShadowImage: {fileID: 1949518328878013980}
   _Mask: {fileID: 4413013968147032452}
   _Image: {fileID: 6724395705441483877}
   _NameImage: {fileID: 2474701039403046571}
@@ -1124,6 +1124,7 @@ MonoBehaviour:
   _Field_1_Text: {fileID: 8172764454329253917}
   _Field_2Image: {fileID: 6060246562726479904}
   _Field_2_Text: {fileID: 1410725578647136871}
+  _BorderImage: {fileID: 4064673707873042981}
   _CardFace_Image: {fileID: 1229200602832887063}
   _CostImage: {fileID: 4550978094851211482}
   _Cost_CostImage: {fileID: 5097161601411480962}

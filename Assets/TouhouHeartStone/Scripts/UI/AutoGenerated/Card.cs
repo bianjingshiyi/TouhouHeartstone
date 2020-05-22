@@ -28,7 +28,7 @@ namespace UI
             this._CardBackImage = this.transform.Find("CardBack").GetComponent<Image>();
             this._Image_1 = this.transform.Find("CardBack").Find("Image_1").GetComponent<Image>();
             this._Image_2 = this.transform.Find("CardBack").Find("Image_2").GetComponent<Image>();
-            this._CardFaceImage = this.transform.Find("CardFace").GetComponent<Image>();
+            this._ShadowImage = this.transform.Find("CardFace").Find("Shadow").GetComponent<Image>();
             this._Mask = this.transform.Find("CardFace").Find("Mask").GetComponent<Mask>();
             this._Image = this.transform.Find("CardFace").Find("Mask").Find("Image").GetComponent<Image>();
             this._NameImage = this.transform.Find("CardFace").Find("Mask").Find("Name").GetComponent<Image>();
@@ -41,6 +41,7 @@ namespace UI
             this._Field_1_Text = this.transform.Find("CardFace").Find("Mask").Find("Desc").Find("Field (1)").Find("Text").GetComponent<Text>();
             this._Field_2Image = this.transform.Find("CardFace").Find("Mask").Find("Desc").Find("Field (2)").GetComponent<Image>();
             this._Field_2_Text = this.transform.Find("CardFace").Find("Mask").Find("Desc").Find("Field (2)").Find("Text").GetComponent<Text>();
+            this._BorderImage = this.transform.Find("CardFace").Find("Border").GetComponent<Image>();
             this._CardFace_Image = this.transform.Find("CardFace").Find("Image").GetComponent<Image>();
             this._CostImage = this.transform.Find("CardFace").Find("Cost").GetComponent<Image>();
             this._Cost_CostImage = this.transform.Find("CardFace").Find("Cost").Find("Cost").GetComponent<Image>();
@@ -92,16 +93,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _CardFaceImage;
-        public Image CardFaceImage
+        private Image _ShadowImage;
+        public Image ShadowImage
         {
             get
             {
-                if ((this._CardFaceImage == null))
+                if ((this._ShadowImage == null))
                 {
-                    this._CardFaceImage = this.transform.Find("CardFace").GetComponent<Image>();
+                    this._ShadowImage = this.transform.Find("CardFace").Find("Shadow").GetComponent<Image>();
                 }
-                return this._CardFaceImage;
+                return this._ShadowImage;
             }
         }
         [SerializeField()]
@@ -258,6 +259,19 @@ namespace UI
                     this._Field_2_Text = this.transform.Find("CardFace").Find("Mask").Find("Desc").Find("Field (2)").Find("Text").GetComponent<Text>();
                 }
                 return this._Field_2_Text;
+            }
+        }
+        [SerializeField()]
+        private Image _BorderImage;
+        public Image BorderImage
+        {
+            get
+            {
+                if ((this._BorderImage == null))
+                {
+                    this._BorderImage = this.transform.Find("CardFace").Find("Border").GetComponent<Image>();
+                }
+                return this._BorderImage;
             }
         }
         [SerializeField()]

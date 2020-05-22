@@ -17,6 +17,14 @@ namespace UI
         {
             ui.gameObject.SetActive(false);
         }
+        public static void display(this RectTransform transform)
+        {
+            transform.gameObject.SetActive(true);
+        }
+        public static void hide(this RectTransform transform)
+        {
+            transform.gameObject.SetActive(false);
+        }
         public static string getText(this Button button)
         {
             return button.GetComponentInChildren<Text>(true).text;

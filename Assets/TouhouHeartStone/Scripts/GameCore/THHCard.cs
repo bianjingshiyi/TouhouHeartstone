@@ -15,7 +15,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(nameof(ServantCardDefine.cost));
         }
-        public static void setCost(this Card card,int value)
+        public static void setCost(this Card card, int value)
         {
             card.setProp(nameof(ServantCardDefine.cost), value);
         }
@@ -150,6 +150,11 @@ namespace TouhouHeartstone
         {
             return card.getProp<bool>("isUsed");
         }
+        /// <summary>
+        /// 设置技能是否使用过。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="value"></param>
         public static void setUsed(this Card card, bool value)
         {
             card.setProp("isUsed", value);
@@ -198,7 +203,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(nameof(ServantCardDefine.spellDamage));
         }
-        public static void setSpellDamage(this Card card ,int value)
+        public static void setSpellDamage(this Card card, int value)
         {
             card.setProp(nameof(ServantCardDefine.spellDamage), value);
         }
@@ -211,6 +216,11 @@ namespace TouhouHeartstone
             if (game.currentPlayer != player)//不是你的回合
             {
                 info = "这不是你的回合";
+                return false;
+            }
+            if (card.getOwner() != player)
+            {
+                info = "你不能使用不属于你的卡牌";
                 return false;
             }
             if (card.define is ServantCardDefine servant)

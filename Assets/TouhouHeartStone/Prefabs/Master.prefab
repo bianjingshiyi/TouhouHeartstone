@@ -463,6 +463,10 @@ MonoBehaviour:
   _HpText: {fileID: 7552501257686591094}
   _ArmorImage: {fileID: 7552501259074735385}
   _ArmorText: {fileID: 7552501259472621982}
+  _DamageImage: {fileID: 3232850691898934302}
+  _DamageText: {fileID: 8911003165737062234}
+  _HealImage: {fileID: 8792442376026923327}
+  _HealText: {fileID: 2445753624763639741}
   _attackThreshold: 50
 --- !u!95 &2712425241954072648
 Animator:

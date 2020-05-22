@@ -6,7 +6,7 @@ using System.Linq;
 using TouhouCardEngine;
 namespace UI
 {
-    partial class Servant : IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+    partial class Servant : IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
     {
         public TouhouCardEngine.Card card { get; private set; }
         [SerializeField]
@@ -146,6 +146,12 @@ namespace UI
         {
             Table table = GetComponentInParent<Table>();
             table.LargeCard.hide();
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            Table table = GetComponentInParent<Table>();
+            table.onClickServant(this, eventData);
         }
     }
 }

@@ -98,37 +98,68 @@ namespace UI
         {
             DeckCountText.text = BuildDeckList.getItems().Select(i => i.count).Sum() + "/30";
 
-            if (DragCard.isDisplaying)
+            //if (DragCard.isDisplaying)
+            //{
+            //    var input = EventSystem.current.currentInputModule.input;
+            //    DragCard.transform.position = input.mousePosition;
+            //    Vector2 position = input.mousePosition;
+            //    if (DeckViewScroll.GetComponent<RectTransform>().rect.Contains(DeckViewScroll.GetComponent<RectTransform>().InverseTransformPoint(position)))
+            //    {
+            //        if (!DragCard.BuildDeckListItem.isDisplaying)
+            //        {
+            //            DragCard.BuildDeckListItem.display();
+            //            DragCard.BuildDeckListItem.update(DragCard.BuildDeckListItem.card, parent.game.cards.GetCardSkin(DragCard.BuildDeckListItem.card.id), 1);
+            //        }
+            //        DragCard.Card.hide();
+            //    }
+            //    else
+            //    {
+            //        if (!DragCard.Card.isDisplaying)
+            //        {
+            //            DragCard.Card.display();
+            //            DragCard.Card.update(DragCard.BuildDeckListItem.card, parent.game.cards.GetCardSkin(DragCard.BuildDeckListItem.card.id));
+            //        }
+            //        DragCard.BuildDeckListItem.hide();
+            //    }
+            //    if (input.GetMouseButtonUp(0))
+            //    {
+            //        //停止拖拽
+            //        stopDrag(position);
+            //    }
+            //}
+        }
+        public void onDragCardItem(BuildCardListItem item, PointerEventData pointer)
+        {
+            onDragItem(item.card, pointer.position);
+        }
+        public void onDragDeckItem(BuildDeckListItem item, PointerEventData pointer)
+        {
+            onDragItem(item.card, pointer.position);
+        }
+        public void onReleaseCardItem(BuildCardListItem item, PointerEventData pointer)
+        {
+            DragCard.hide();
+            Vector3 localPosition = DeckViewScroll.GetComponent<RectTransform>().InverseTransformPoint(pointer.position);
+            if (DeckViewScroll.GetComponent<RectTransform>().rect.Contains(localPosition))
             {
-                var input = EventSystem.current.currentInputModule.input;
-                DragCard.transform.position = input.mousePosition;
-                Vector2 position = input.mousePosition;
-                if (DeckViewScroll.GetComponent<RectTransform>().rect.Contains(DeckViewScroll.GetComponent<RectTransform>().InverseTransformPoint(position)))
-                {
-                    if (!DragCard.BuildDeckListItem.isDisplaying)
-                    {
-                        DragCard.BuildDeckListItem.display();
-                        DragCard.BuildDeckListItem.update(DragCard.BuildDeckListItem.card, parent.game.cards.GetCardSkin(DragCard.BuildDeckListItem.card.id), 1);
-                    }
-                    DragCard.Card.hide();
-                }
-                else
-                {
-                    if (!DragCard.Card.isDisplaying)
-                    {
-                        DragCard.Card.display();
-                        DragCard.Card.update(DragCard.BuildDeckListItem.card, parent.game.cards.GetCardSkin(DragCard.BuildDeckListItem.card.id));
-                    }
-                    DragCard.BuildDeckListItem.hide();
-                }
-                if (input.GetMouseButtonUp(0))
-                {
-                    //停止拖拽
-                    stopDrag(position);
-                }
+                onReleaseItem();
             }
         }
-        public void startDrag(CardDefine card, Vector2 position)
+        public void onReleaseDeckItem(BuildDeckListItem item, PointerEventData pointer)
+        {
+            DragCard.hide();
+            Vector3 localPosition = DeckViewScroll.GetComponent<RectTransform>().InverseTransformPoint(pointer.position);
+            if (DeckViewScroll.GetComponent<RectTransform>().rect.Contains(localPosition))
+            {
+                onReleaseItem();
+            }
+            else
+            {
+                if (item.count < 1)
+                    BuildDeckList.removeItem(item);
+            }
+        }
+        void onDragItem(CardDefine card, Vector2 position)
         {
             DragCard.display();
             DragCard.rectTransform.position = position;
@@ -145,20 +176,20 @@ namespace UI
             DragCard.BuildDeckListItem.update(card, parent.game.cards.GetCardSkin(card.id), 1);
             DragCard.Card.update(card, parent.game.cards.GetCardSkin(card.id));
         }
-        public void stopDrag(Vector2 position)
+        private void onReleaseItem()
         {
-            DragCard.hide();
-            Vector3 localPosition = DeckViewScroll.GetComponent<RectTransform>().InverseTransformPoint(position);
-            if (!DeckViewScroll.GetComponent<RectTransform>().rect.Contains(localPosition))
-                return;
             if (BuildDeckList.Select(i => i.count).Sum() >= 30)
             {
-                //你不能带更多的卡牌
+                //最多30张牌
                 return;
             }
-            var item = BuildDeckList.getItems().FirstOrDefault(i => i.card == DragCard.BuildDeckListItem.card);
-            if (item != null)
-                item.count++;
+            var deckItem = BuildDeckList.getItems().FirstOrDefault(i => i.card == DragCard.BuildDeckListItem.card);
+            if (deckItem != null)
+            {
+                deckItem.count++;
+                deckItem.getChild("Root").display();
+                deckItem.rectTransform.sizeDelta = BuildDeckList.defaultItem.rectTransform.sizeDelta;
+            }
             else
             {
                 var newItem = BuildDeckList.addItem();
