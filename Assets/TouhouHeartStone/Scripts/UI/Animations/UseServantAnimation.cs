@@ -17,16 +17,19 @@ namespace UI
         {
             if (eventArg.player == table.player)
             {
-                Card card = table.SelfHandList.placingCard;
-                if (!_timer.isStarted)
+                if (!table.ServantPlaceHolder.Servant.isDisplaying)
                 {
-                    _startPosition = card.rectTransform.position;
-                    _timer.start();
+                    Card card = table.usingHand.Card;
+                    if (!_timer.isStarted)
+                    {
+                        _startPosition = card.rectTransform.position;
+                        _timer.start();
+                    }
+                    card.rectTransform.position = Vector3.Lerp(_startPosition, table.ServantPlaceHolder.rectTransform.position, card.useCurve.Evaluate(_timer.progress));
+                    if (!_timer.isExpired())
+                        return false;
                 }
-                card.rectTransform.position = Vector3.Lerp(_startPosition, table.ServantPlaceHolder.rectTransform.position, card.useCurve.Evaluate(_timer.progress));
-                if (!_timer.isExpired())
-                    return false;
-                table.SelfHandList.removeItem(table.SelfHandList.placingCard.GetComponentInParent<HandListItem>());
+                table.SelfHandList.removeItem(table.usingHand.Card.GetComponentInParent<HandListItem>());
                 table.addChild(table.ServantPlaceHolder.rectTransform);
                 table.ServantPlaceHolder.hide();
             }
@@ -35,19 +38,22 @@ namespace UI
                 var hand = table.EnemyHandList.FirstOrDefault(i => i.Card.card == eventArg.card);
                 if (hand == null)
                     throw new ActorNotFoundException(eventArg.card);
-                //敌方使用随从
-                if (!_timer.isStarted)
+                if (!table.ServantPlaceHolder.Servant.isDisplaying)
                 {
-                    table.EnemyFieldList.addChild(table.ServantPlaceHolder.rectTransform);
-                    table.EnemyFieldList.defaultItem.rectTransform.SetAsFirstSibling();
-                    table.ServantPlaceHolder.rectTransform.SetSiblingIndex(eventArg.position + 1);
-                    table.ServantPlaceHolder.display();
-                    _startPosition = hand.Card.rectTransform.position;
-                    _timer.start();
+                    //敌方使用随从
+                    if (!_timer.isStarted)
+                    {
+                        table.EnemyFieldList.addChild(table.ServantPlaceHolder.rectTransform);
+                        table.EnemyFieldList.defaultItem.rectTransform.SetAsFirstSibling();
+                        table.ServantPlaceHolder.rectTransform.SetSiblingIndex(eventArg.position + 1);
+                        table.ServantPlaceHolder.display();
+                        _startPosition = hand.Card.rectTransform.position;
+                        _timer.start();
+                    }
+                    hand.Card.rectTransform.position = Vector3.Lerp(_startPosition, table.ServantPlaceHolder.rectTransform.position, hand.Card.useCurve.Evaluate(_timer.progress));
+                    if (!_timer.isExpired())
+                        return false;
                 }
-                hand.Card.rectTransform.position = Vector3.Lerp(_startPosition, table.ServantPlaceHolder.rectTransform.position, hand.Card.useCurve.Evaluate(_timer.progress));
-                if (!_timer.isExpired())
-                    return false;
                 table.EnemyHandList.removeItem(hand);
                 table.addChild(table.ServantPlaceHolder.rectTransform);
                 table.ServantPlaceHolder.hide();

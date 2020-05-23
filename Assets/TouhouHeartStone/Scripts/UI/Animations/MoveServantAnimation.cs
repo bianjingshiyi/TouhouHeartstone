@@ -12,13 +12,15 @@ namespace UI
             if (eventArg.player == table.player)
             {
                 var item = table.SelfFieldList.addItem();
-                item.rectTransform.SetSiblingIndex(eventArg.position);
+                table.SelfFieldList.defaultItem.rectTransform.SetAsFirstSibling();
+                item.rectTransform.SetSiblingIndex(eventArg.position + 1);
                 item.update(eventArg.player, eventArg.card, table.getSkin(eventArg.card));
             }
             else
             {
                 var item = table.EnemyFieldList.addItem();
-                item.rectTransform.SetSiblingIndex(eventArg.position);
+                table.EnemyFieldList.defaultItem.rectTransform.SetAsFirstSibling();
+                item.rectTransform.SetSiblingIndex(eventArg.position + 1);
                 item.update(eventArg.player, eventArg.card, table.getSkin(eventArg.card));
             }
             return true;

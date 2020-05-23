@@ -116,7 +116,8 @@ namespace UI
                 {
                     player.cmdTurnEnd(game);
 
-                    SelfHandList.stopPlacing(true);
+                    //SelfHandList.stopPlacing(true);
+                    resetUse(true, true);
                     selectableTargets = null;
                 });
             }
@@ -324,33 +325,33 @@ namespace UI
         }
         public void onClickMaster(Master master, PointerEventData pointer)
         {
-            if (_isSelectingTarget)
+            if (isSelectingTarget)
             {
                 if (_usingCard.isValidTarget(game, master.card))
                 {
                     player.cmdUse(game, _usingCard, _usingPosition, master.card);
-                    resetUse(false);
+                    resetUse(false, false);
                 }
                 else
                 {
                     showTip("这不是一个有效的目标！");
-                    resetUse(true);
+                    resetUse(true, true);
                 }
             }
         }
         public void onClickServant(Servant servant, PointerEventData pointer)
         {
-            if (_isSelectingTarget)
+            if (isSelectingTarget)
             {
                 if (_usingCard.isValidTarget(game, servant.card))
                 {
                     player.cmdUse(game, _usingCard, _usingPosition, servant.card);
-                    resetUse(false);
+                    resetUse(false, false);
                 }
                 else
                 {
                     showTip("这不是一个有效的目标！");
-                    resetUse(true);
+                    resetUse(true, true);
                 }
             }
         }
@@ -367,24 +368,34 @@ namespace UI
         #region Use
         [SerializeField]
         HandListItem _usingHand;
+        public HandListItem usingHand
+        {
+            get { return _usingHand; }
+            set { _usingHand = value; }
+        }
         TouhouCardEngine.Card _usingCard;
         [SerializeField]
         int _usingPosition;
         [SerializeField]
         bool _isSelectingTarget = false;
+        public bool isSelectingTarget
+        {
+            get { return _isSelectingTarget; }
+            set { _isSelectingTarget = value; }
+        }
         public void onDragHand(HandListItem item, PointerEventData pointer)
         {
             if (item.GetComponentInParent<HandList>() != SelfHandList)//你不能用别人的卡
                 return;
+            usingHand = item;
             if (!canControl)//不是你的回合
             {
-                onReleaseHand(item, pointer);
+                resetUse(true, true);
                 return;
             }
             //拖拽卡片
-            _usingHand = item;
             item.Card.rectTransform.position = pointer.position;
-            if (SelfHandList.rectTransform.rect.Contains(rectTransform.InverseTransformPoint(pointer.position)))
+            if (SelfHandList.rectTransform.rect.Contains(SelfHandList.rectTransform.InverseTransformPoint(pointer.position)))
             {
                 //如果移动回手牌区域，恢复正常大小
                 item.Card.rectTransform.localScale = Vector3.one;
@@ -398,7 +409,7 @@ namespace UI
                 {
                     //卡牌不可用，停止拖拽并提示
                     showTip(info);
-                    resetUse(true);
+                    resetUse(true, true);
                 }
                 else
                 {
@@ -407,6 +418,7 @@ namespace UI
                     if (item.Card.card.define is ServantCardDefine)
                     {
                         SelfFieldList.defaultItem.rectTransform.SetAsFirstSibling();
+                        ServantPlaceHolder.rectTransform.sizeDelta = SelfFieldList.defaultItem.rectTransform.sizeDelta;
                         SelfFieldList.addChild(ServantPlaceHolder.rectTransform);
                         ServantPlaceHolder.display();
                         var servants = SelfFieldList.getItems();
@@ -419,7 +431,7 @@ namespace UI
                                 if (servants[i].rectTransform.position.x < pointer.position.x)
                                     index = i + 1;
                             }
-                            ServantPlaceHolder.rectTransform.SetSiblingIndex(index);
+                            ServantPlaceHolder.rectTransform.SetSiblingIndex(index + 1);
                         }
                     }
                 }
@@ -430,12 +442,15 @@ namespace UI
             if (item.GetComponentInParent<HandList>() != SelfHandList)//你不能用别人的卡
                 return;
             if (!canControl)//不是你的回合，不生效
+            {
+                resetUse(true, true);
                 return;
-            _usingHand = item;
-            if (SelfHandList.rectTransform.rect.Contains(rectTransform.InverseTransformPoint(pointer.position)))
+            }
+            usingHand = item;
+            if (SelfHandList.rectTransform.rect.Contains(SelfHandList.rectTransform.InverseTransformPoint(pointer.position)))
             {
                 //如果松开，取消使用
-                resetUse(true);
+                resetUse(true, true);
             }
             else
             {
@@ -443,9 +458,9 @@ namespace UI
                 {
                     //卡牌不可用
                     showTip(info);
-                    resetUse(true);
+                    resetUse(true, true);
                 }
-                if (item.Card.card.define is ServantCardDefine)
+                else if (item.Card.card.define is ServantCardDefine)
                 {
                     //松开鼠标，确认使用随从牌
                     var servants = SelfFieldList.getItems();
@@ -458,14 +473,18 @@ namespace UI
                             if (servants[i].rectTransform.position.x < pointer.position.x)
                                 index = i + 1;
                         }
-                        ServantPlaceHolder.rectTransform.SetSiblingIndex(index);
+                        ServantPlaceHolder.rectTransform.SetSiblingIndex(index + 1);
                     }
                     if (item.Card.card.getAvaliableTargets(game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
                     {
+                        _usingCard = item.Card.card;
                         _usingPosition = index;
                         //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                         item.Card.hide();
-                        _isSelectingTarget = true;
+                        //显示占位随从
+                        ServantPlaceHolder.Servant.display();
+                        ServantPlaceHolder.Servant.update(item.Card.card.define, getSkin(item.Card.card));
+                        isSelectingTarget = true;
                         selectableTargets = targets.Select(target =>
                         {
                             if (getMaster(target) is Master master)
@@ -480,7 +499,7 @@ namespace UI
                     {
                         //使用无目标随从牌
                         player.cmdUse(game, item.Card.card, index);
-                        resetUse(false);
+                        resetUse(false, false);
                     }
                 }
                 else if (item.Card.card.define is SpellCardDefine)
@@ -489,7 +508,7 @@ namespace UI
                     {
                         //进入选择目标状态，高亮可以选择的目标
                         item.Card.hide();
-                        _isSelectingTarget = true;
+                        isSelectingTarget = true;
                         selectableTargets = targets.Select(target =>
                         {
                             if (getMaster(target) is Master master)
@@ -504,21 +523,22 @@ namespace UI
                     {
                         //使用无目标随从牌
                         player.cmdUse(game, item.Card.card, 0);
-                        resetUse(false);
+                        resetUse(false, false);
                     }
                 }
             }
         }
-        private void resetUse(bool resetItem)
+        private void resetUse(bool resetItem, bool resetPlaceHolder)
         {
-            if (_usingHand != null && resetItem)
+            if (usingHand != null && resetItem)
             {
-                _usingHand.Card.display();
-                _usingHand.Card.rectTransform.localScale = Vector3.one;
-                _usingHand.Card.rectTransform.localPosition = Vector2.zero;
+                usingHand.Card.display();
+                usingHand.Card.rectTransform.localScale = Vector3.one;
+                usingHand.Card.rectTransform.localPosition = Vector2.zero;
             }
-            hideServantPlaceHolder();
-            _isSelectingTarget = false;
+            if (resetPlaceHolder)
+                hideServantPlaceHolder();
+            isSelectingTarget = false;
             selectableTargets = null;
         }
         private void hideServantPlaceHolder()

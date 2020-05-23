@@ -17,7 +17,7 @@ namespace UI
         {
             if (eventArg.player == table.player)
             {
-                table.SelfHandList.removeItem(table.SelfHandList.placingCard.GetComponentInParent<HandListItem>());
+                table.SelfHandList.removeItem(table.usingHand.Card.GetComponentInParent<HandListItem>());
             }
             else
             {
