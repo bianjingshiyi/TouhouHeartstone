@@ -28,7 +28,7 @@ namespace TouhouHeartstone.Builtin
                 return false;
             },async (game,card,arg,targets)=>
             {
-                await arg.player.master.damage(game, 2);
+                await arg.player.master.damage(game,card, 2);
                 await arg.player.draw(game);
             })
         };

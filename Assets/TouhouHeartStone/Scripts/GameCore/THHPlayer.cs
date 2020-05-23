@@ -100,7 +100,7 @@ namespace TouhouHeartstone
                 {
                     arg.player.fatigue++;
                     game.logger.log(arg.player + "已经没有卡牌了，当前疲劳值：" + arg.player.fatigue);
-                    return arg.player.master.damage(game, arg.player.fatigue);
+                    return arg.player.master.damage(game, null, arg.player.fatigue);
                 });
             }
             else if (hand.count >= hand.maxCount)

@@ -38,7 +38,7 @@ namespace TouhouHeartstone.Builtin
             },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
-                    await target.damage(game, arg.player.getSpellDamage(7));
+                    await target.damage(game,card, arg.player.getSpellDamage(7));
             })
         };
     }
@@ -73,7 +73,7 @@ namespace TouhouHeartstone.Builtin
             {
                 for (int i = 0; i < arg.player.getSpellDamage(4); i++)
                 {
-                    await game.getAllEnemies(arg.player).randomTake(game,1).damage(game,1);
+                    await game.getAllEnemies(arg.player).randomTake(game,1).damage(game,card,1);
                 }
             })
         };
@@ -135,7 +135,7 @@ namespace TouhouHeartstone.Builtin
             },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
-                    await target.damage(game,arg.player.getSpellDamage(2));
+                    await target.damage(game,card,arg.player.getSpellDamage(2));
                 for (int i = 0; i < 2; i++)
                 {
                     await arg.player.draw(game);

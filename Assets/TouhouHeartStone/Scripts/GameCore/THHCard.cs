@@ -315,12 +315,10 @@ namespace TouhouHeartstone
                 game.logger.log(arg.card + "攻击" + arg.target);
                 arg.card.setAttackTimes(arg.card.getAttackTimes() + 1);
                 if (arg.card.getAttack() > 0)
-                    await arg.target.damage(game, arg.card.getAttack());
+                    await arg.target.damage(game, arg.card, arg.card.getAttack());
                 if (arg.target.getAttack() > 0)
-                    await arg.card.damage(game, arg.target.getAttack());
+                    await arg.card.damage(game, arg.target, arg.target.getAttack());
             });
-            if (card.isStealth())
-                card.setStealth(false);
             await game.updateDeath();
             return true;
         }
@@ -329,16 +327,19 @@ namespace TouhouHeartstone
             public Card card;
             public Card target;
         }
-        public static Task damage(this Card card, THHGame game, int value)
+        public static Task damage(this Card card, THHGame game, Card source, int value)
         {
-            return damage(new Card[] { card }, game, value);
+            return damage(new Card[] { card }, game, source, value);
         }
-        public static async Task damage(this IEnumerable<Card> cards, THHGame game, int value)
+        public static async Task damage(this IEnumerable<Card> cards, THHGame game, Card source, int value)
         {
-            await game.triggers.doEvent(new DamageEventArg() { cards = cards.ToArray(), value = value }, arg =>
+            await game.triggers.doEvent(new DamageEventArg() { cards = cards.ToArray(), source = source, value = value }, arg =>
             {
                 cards = arg.cards;
+                source = arg.source;
                 value = arg.value;
+                if (source != null && source.isStealth())
+                    source.setStealth(false);
                 foreach (Card card in arg.cards)
                 {
                     if (card.isShield())
@@ -368,6 +369,7 @@ namespace TouhouHeartstone
         public class DamageEventArg : EventArg
         {
             public Card[] cards;
+            public Card source;
             public int value;
             public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
             public class Info

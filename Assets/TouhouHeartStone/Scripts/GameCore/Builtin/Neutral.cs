@@ -54,7 +54,7 @@ namespace TouhouHeartstone.Builtin
             },async (game,card,vars,targets)=>
             {
                 Card target = targets[0] as Card;
-                await target.damage(game,2);
+                await target.damage(game,card,2);
             })
         };
     }
@@ -155,7 +155,7 @@ namespace TouhouHeartstone.Builtin
                 THHPlayer opponent = game.getOpponent(arg.player);
                 if(opponent.field.count>0)
                 {
-                    await opponent.field.randomTake(game,1).damage(game,1);
+                    await opponent.field.randomTake(game,1).damage(game,card,1);
                 }
             })
         };
