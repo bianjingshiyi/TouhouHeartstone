@@ -113,12 +113,15 @@ Shader "THH/Circle"
 				float2 uv023 = IN.texcoord.xy * float2( 1,1 ) + float2( 0,0 );
 				float temp_output_4_0_g20 = step( distance( uv023 , float2( 0.5,0.5 ) ) , 0.5 );
 				float4 appendResult5_g20 = (float4(temp_output_4_0_g20 , temp_output_4_0_g20 , temp_output_4_0_g20 , temp_output_4_0_g20));
-				float4 break14_g26 = appendResult5_g20;
-				float temp_output_17_0_g26 = _BlurRange;
-				float clampResult22_g26 = clamp( ( ( distance( uv023 , float2( 0.5,0.5 ) ) / 0.5 ) - ( 1.0 - temp_output_17_0_g26 ) ) , 0.0 , 1.0 );
-				float4 appendResult15_g26 = (float4(break14_g26.r , break14_g26.g , break14_g26.b , ( break14_g26.a * ( 1.0 - (0.0 + (clampResult22_g26 - 0.0) * (1.0 - 0.0) / (temp_output_17_0_g26 - 0.0)) ) )));
+				float4 break14_g32 = appendResult5_g20;
+				float temp_output_27_0_g32 = ( 1.0 - _BlurRange );
+				float temp_output_28_0_g32 = ( ( 1.0 - ( distance( uv023 , float2( 0.5,0.5 ) ) / 0.5 ) ) + temp_output_27_0_g32 );
+				float clampResult29_g32 = clamp( temp_output_28_0_g32 , 0.0 , 1.0 );
+				float clampResult35_g32 = clamp( ( (0.0 + (clampResult29_g32 - temp_output_27_0_g32) * (1.0 - 0.0) / (1.0 - temp_output_27_0_g32)) + step( 1.0 , temp_output_28_0_g32 ) ) , 0.0 , 1.0 );
+				float temp_output_16_0_g32 = ( break14_g32.a * clampResult35_g32 );
+				float4 appendResult15_g32 = (float4(break14_g32.r , break14_g32.g , break14_g32.b , ( temp_output_16_0_g32 * temp_output_16_0_g32 )));
 				
-				half4 color = ( appendResult15_g26 * IN.color * _Color );
+				half4 color = ( appendResult15_g32 * IN.color * _Color );
 				
 				#ifdef UNITY_UI_CLIP_RECT
                 color.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
@@ -139,23 +142,23 @@ Shader "THH/Circle"
 }
 /*ASEBEGIN
 Version=17000
--25;601;1685;1125;1699.179;506.5646;1;True;False
-Node;AmplifyShaderEditor.CommentaryNode;19;-1642.128,-275.392;Float;False;976.9738;451.511;Base;6;17;16;9;23;56;62;;1,1,1,1;0;0
+-294;687;1395;762;3466.017;933.3394;3.503786;True;False
+Node;AmplifyShaderEditor.CommentaryNode;19;-1642.128,-275.392;Float;False;976.9738;451.511;Base;5;17;16;9;23;56;;1,1,1,1;0;0
 Node;AmplifyShaderEditor.TextureCoordinatesNode;23;-1563.8,-218.9595;Float;True;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.RangedFloatNode;63;-1347.595,-367.4453;Float;False;Property;_BlurRange;BlurRange;0;0;Create;True;0;0;False;0;0;1;0;1;0;1;FLOAT;0
 Node;AmplifyShaderEditor.FunctionNode;56;-1320.159,-215.5915;Float;True;CreateTexCircle;-1;;20;09b09404724526f4196cf0e6daaa6d34;0;1;1;FLOAT2;0,0;False;1;COLOR;0
-Node;AmplifyShaderEditor.RangedFloatNode;63;-1347.595,-367.4453;Float;False;Property;_BlurRange;BlurRange;0;0;Create;True;0;0;False;0;0;0;0;1;0;1;FLOAT;0
 Node;AmplifyShaderEditor.VertexColorNode;16;-1337.037,14.6801;Float;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.TemplateShaderPropertyNode;17;-1069.738,-39.27136;Float;False;0;0;_Color;Shader;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.FunctionNode;62;-1088.576,-217.3596;Float;False;ColorBulr;-1;;26;146070b85406dbe41b9a1cc8aef18a4b;0;3;17;FLOAT;1;False;8;COLOR;1,1,1,1;False;1;FLOAT2;0,0;False;1;COLOR;0
+Node;AmplifyShaderEditor.FunctionNode;69;-1098.576,-229.3596;Float;False;ColorBulr;-1;;32;146070b85406dbe41b9a1cc8aef18a4b;0;3;17;FLOAT;0.91;False;8;COLOR;1,1,1,1;False;1;FLOAT2;0,0;False;1;COLOR;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;9;-885.2326,-216.8138;Float;True;3;3;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;2;COLOR;0,0,0,0;False;1;COLOR;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;36;617.213,-206.7634;Float;False;True;2;Float;ASEMaterialInspector;0;4;THH/Circle;5056123faa0c79b47ab6ad7e8bf059a4;True;Default;0;0;Default;2;True;2;5;False;-1;10;False;-1;0;1;False;-1;0;False;-1;False;False;True;2;False;-1;True;True;True;True;True;0;True;-9;True;True;0;True;-5;255;True;-8;255;True;-7;0;True;-4;0;True;-6;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;True;2;False;-1;True;0;False;-1;False;True;5;Queue=Transparent=Queue=0;IgnoreProjector=True;RenderType=Transparent=RenderType;PreviewType=Plane;CanUseSpriteAtlas=True;False;0;False;False;False;False;False;False;False;False;False;False;True;2;0;;0;0;Standard;0;0;1;True;False;2;0;FLOAT4;0,0,0,0;False;1;FLOAT3;0,0,0;False;0
 WireConnection;56;1;23;0
-WireConnection;62;17;63;0
-WireConnection;62;8;56;0
-WireConnection;62;1;23;0
-WireConnection;9;0;62;0
+WireConnection;69;17;63;0
+WireConnection;69;8;56;0
+WireConnection;69;1;23;0
+WireConnection;9;0;69;0
 WireConnection;9;1;16;0
 WireConnection;9;2;17;0
 WireConnection;36;0;9;0
 ASEEND*/
-//CHKSM=45A6F359BA6CF00A11CE198F698DEA6082B1A1E0
+//CHKSM=599746D48BCD2D02C99226BE420390E746FE0DAF

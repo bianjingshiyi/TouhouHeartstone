@@ -43,15 +43,12 @@ namespace UI
             this._Field_2_Text = this.transform.Find("CardFace").Find("Mask").Find("Desc").Find("Field (2)").Find("Text").GetComponent<Text>();
             this._BorderImage = this.transform.Find("CardFace").Find("Border").GetComponent<Image>();
             this._CardFace_Image = this.transform.Find("CardFace").Find("Image").GetComponent<Image>();
-            this._CostImage = this.transform.Find("CardFace").Find("Cost").GetComponent<Image>();
-            this._Cost_CostImage = this.transform.Find("CardFace").Find("Cost").Find("Cost").GetComponent<Image>();
-            this._CostText = this.transform.Find("CardFace").Find("Cost").Find("Cost").Find("CostText").GetComponent<Text>();
-            this._AttackImage = this.transform.Find("CardFace").Find("Attack").GetComponent<Image>();
-            this._Attack_AttackImage = this.transform.Find("CardFace").Find("Attack").Find("Attack").GetComponent<Image>();
-            this._AttackText = this.transform.Find("CardFace").Find("Attack").Find("Attack").Find("AttackText").GetComponent<Text>();
-            this._LifeImage = this.transform.Find("CardFace").Find("Life").GetComponent<Image>();
-            this._Life_LifeImage = this.transform.Find("CardFace").Find("Life").Find("Life").GetComponent<Image>();
-            this._LifeText = this.transform.Find("CardFace").Find("Life").Find("Life").Find("LifeText").GetComponent<Text>();
+            this._CostImage = this.transform.Find("CardFace").Find("CostImage").GetComponent<Image>();
+            this._CostText = this.transform.Find("CardFace").Find("CostText").GetComponent<Text>();
+            this._AttackImage = this.transform.Find("CardFace").Find("AttackImage").GetComponent<Image>();
+            this._AttackText = this.transform.Find("CardFace").Find("AttackText").GetComponent<Text>();
+            this._LifeImage = this.transform.Find("CardFace").Find("LifeImage").GetComponent<Image>();
+            this._LifeText = this.transform.Find("CardFace").Find("LifeText").GetComponent<Text>();
         }
         [SerializeField()]
         private Image _CardBackImage;
@@ -295,22 +292,9 @@ namespace UI
             {
                 if ((this._CostImage == null))
                 {
-                    this._CostImage = this.transform.Find("CardFace").Find("Cost").GetComponent<Image>();
+                    this._CostImage = this.transform.Find("CardFace").Find("CostImage").GetComponent<Image>();
                 }
                 return this._CostImage;
-            }
-        }
-        [SerializeField()]
-        private Image _Cost_CostImage;
-        public Image Cost_CostImage
-        {
-            get
-            {
-                if ((this._Cost_CostImage == null))
-                {
-                    this._Cost_CostImage = this.transform.Find("CardFace").Find("Cost").Find("Cost").GetComponent<Image>();
-                }
-                return this._Cost_CostImage;
             }
         }
         [SerializeField()]
@@ -321,7 +305,7 @@ namespace UI
             {
                 if ((this._CostText == null))
                 {
-                    this._CostText = this.transform.Find("CardFace").Find("Cost").Find("Cost").Find("CostText").GetComponent<Text>();
+                    this._CostText = this.transform.Find("CardFace").Find("CostText").GetComponent<Text>();
                 }
                 return this._CostText;
             }
@@ -334,22 +318,9 @@ namespace UI
             {
                 if ((this._AttackImage == null))
                 {
-                    this._AttackImage = this.transform.Find("CardFace").Find("Attack").GetComponent<Image>();
+                    this._AttackImage = this.transform.Find("CardFace").Find("AttackImage").GetComponent<Image>();
                 }
                 return this._AttackImage;
-            }
-        }
-        [SerializeField()]
-        private Image _Attack_AttackImage;
-        public Image Attack_AttackImage
-        {
-            get
-            {
-                if ((this._Attack_AttackImage == null))
-                {
-                    this._Attack_AttackImage = this.transform.Find("CardFace").Find("Attack").Find("Attack").GetComponent<Image>();
-                }
-                return this._Attack_AttackImage;
             }
         }
         [SerializeField()]
@@ -360,7 +331,7 @@ namespace UI
             {
                 if ((this._AttackText == null))
                 {
-                    this._AttackText = this.transform.Find("CardFace").Find("Attack").Find("Attack").Find("AttackText").GetComponent<Text>();
+                    this._AttackText = this.transform.Find("CardFace").Find("AttackText").GetComponent<Text>();
                 }
                 return this._AttackText;
             }
@@ -373,22 +344,9 @@ namespace UI
             {
                 if ((this._LifeImage == null))
                 {
-                    this._LifeImage = this.transform.Find("CardFace").Find("Life").GetComponent<Image>();
+                    this._LifeImage = this.transform.Find("CardFace").Find("LifeImage").GetComponent<Image>();
                 }
                 return this._LifeImage;
-            }
-        }
-        [SerializeField()]
-        private Image _Life_LifeImage;
-        public Image Life_LifeImage
-        {
-            get
-            {
-                if ((this._Life_LifeImage == null))
-                {
-                    this._Life_LifeImage = this.transform.Find("CardFace").Find("Life").Find("Life").GetComponent<Image>();
-                }
-                return this._Life_LifeImage;
             }
         }
         [SerializeField()]
@@ -399,7 +357,7 @@ namespace UI
             {
                 if ((this._LifeText == null))
                 {
-                    this._LifeText = this.transform.Find("CardFace").Find("Life").Find("Life").Find("LifeText").GetComponent<Text>();
+                    this._LifeText = this.transform.Find("CardFace").Find("LifeText").GetComponent<Text>();
                 }
                 return this._LifeText;
             }
