@@ -21,16 +21,18 @@ namespace Game
         private ClientManager _client;
         public ClientManager client => _client;
 
-        THHGame _game;
-        THHGame game
+
+        private GameManager _gameManager;
+        public GameManager gameManager
         {
             get
             {
-                if (_game != null) return _game;
-                _game = this.getManager<GameManager>()?.game;
-                return _game;
+                if (_gameManager == null) _gameManager = getManager<GameManager>();
+                return _gameManager; 
             }
         }
+
+        THHGame game => gameManager.game;
 
         protected override void onAwake()
         {
@@ -41,32 +43,53 @@ namespace Game
 
             if (_host == null || _client == null)
             {
-                throw new System.Exception("没有找到HostManager或ClientManager");
+                throw new Exception("没有找到HostManager或ClientManager");
             }
 
-            host.logger = game.logger;
-            client.logger = game.logger;
-            client.onConnected += Host_Client_onConnected;
+            host.onClientConnected += Host_onClientConnected;
+            client.onConnected += Client_onConnected;
 
             var _nw = this.findInstance<NetworkingPage>();
             if (_nw != null)
                 _nw.Networking = this;
         }
 
-        private void Host_Client_onConnected()
+        private void Host_onClientConnected(int peerID)
         {
+            // 主机等待对方加入，对方加入后自己加入
+            if (peerID != client.id)
+            {
+                _ = client.join("127.0.0.1", host.port);
+            }
+        }
+
+        private void Client_onConnected()
+        {
+            // 加入成功后就开启自己的游戏
+            // 主机是在对方连接成功后再连接自己
             game.run();
         }
 
-        public async Task CreateRoom()
+        /// <summary>
+        /// 创建一个房间
+        /// </summary>
+        /// <returns></returns>
+        public void CreateRoom()
         {
+            host.logger = game.logger;
+            client.logger = game.logger;
+
             host.start();
             client.start();
-            await client.join("127.0.0.1", host.port);
 
             (game.answers as AnswerManager).client = client;
         }
 
+        /// <summary>
+        /// 加入一个房间
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns></returns>
         public async Task Connect(string addr)
         {
             int port = host.port;
@@ -84,6 +107,7 @@ namespace Game
             if (uri.Port != 80)
                 port = uri.Port;
 
+            client.logger = game.logger;
             client.start();
             await client.join(address, port);
 

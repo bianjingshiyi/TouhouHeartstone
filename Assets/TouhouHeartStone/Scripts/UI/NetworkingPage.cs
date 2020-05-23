@@ -19,28 +19,25 @@ namespace UI
             LANButton.onClick.AddListener(createLocalRoom);
             WANButton.onClick.AddListener(createRemoteRoom);
 
-            RoomList.networking = this;
-            Remote_RoomList.networking = this;
+            RoomListParent.networking = this;
+            Remote_RoomListParent.networking = this;
         }
 
         private void createRemoteRoom()
         {
             // todo: 向服务器发送房间信息
             StatusText.text = "正在服务器上创建游戏房间";
-            _ = Networking.CreateRoom();
+            Networking.CreateRoom();
         }
 
         private void createLocalRoom()
         {
             StatusText.text = "本地局域网上创建游戏房间";
-            _ = Networking.CreateRoom();
+            Networking.CreateRoom();
         }
-
-
 
         void onDirectLinkBtnClick()
         {
-            // todo: 连接到指定游戏房间
             _ = Networking.Connect(IPFieldInput.text);
         }
     }

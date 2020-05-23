@@ -33,11 +33,19 @@ namespace UI
             this._LANButton = this.transform.Find("ControlPanel").Find("BtnGroup").Find("LAN").GetComponent<Button>();
             this._WANButton = this.transform.Find("ControlPanel").Find("BtnGroup").Find("WAN").GetComponent<Button>();
             this._StatusText = this.transform.Find("ControlPanel").Find("StatusText").GetComponent<Text>();
-            this._RoomListImage = this.transform.Find("RoomList").GetComponent<Image>();
-            this._RoomList = this.transform.Find("RoomList").Find("Local").Find("RoomList").GetComponent<RoomList>();
-            this._Text = this.transform.Find("RoomList").Find("Local").Find("Text").GetComponent<Text>();
-            this._Remote_RoomList = this.transform.Find("RoomList").Find("Remote").Find("RoomList").GetComponent<RoomList>();
-            this._Remote_Text = this.transform.Find("RoomList").Find("Remote").Find("Text").GetComponent<Text>();
+            this._RoomListsImage = this.transform.Find("RoomLists").GetComponent<Image>();
+            this._RoomListParent = this.transform.Find("RoomLists").Find("Local").Find("RoomListParent").GetComponent<RoomList>();
+            this._Text = this.transform.Find("RoomLists").Find("Local").Find("Text").GetComponent<Text>();
+            this._Remote_RoomListParent = this.transform.Find("RoomLists").Find("Remote").Find("RoomListParent").GetComponent<RoomList>();
+            this._Remote_Text = this.transform.Find("RoomLists").Find("Remote").Find("Text").GetComponent<Text>();
+        }
+        private Main _parent;
+        public Main parent
+        {
+            get
+            {
+                return this.transform.parent.GetComponent<Main>();
+            }
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -144,29 +152,29 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _RoomListImage;
-        public Image RoomListImage
+        private Image _RoomListsImage;
+        public Image RoomListsImage
         {
             get
             {
-                if ((this._RoomListImage == null))
+                if ((this._RoomListsImage == null))
                 {
-                    this._RoomListImage = this.transform.Find("RoomList").GetComponent<Image>();
+                    this._RoomListsImage = this.transform.Find("RoomLists").GetComponent<Image>();
                 }
-                return this._RoomListImage;
+                return this._RoomListsImage;
             }
         }
         [SerializeField()]
-        private RoomList _RoomList;
-        public RoomList RoomList
+        private RoomList _RoomListParent;
+        public RoomList RoomListParent
         {
             get
             {
-                if ((this._RoomList == null))
+                if ((this._RoomListParent == null))
                 {
-                    this._RoomList = this.transform.Find("RoomList").Find("Local").Find("RoomList").GetComponent<RoomList>();
+                    this._RoomListParent = this.transform.Find("RoomLists").Find("Local").Find("RoomListParent").GetComponent<RoomList>();
                 }
-                return this._RoomList;
+                return this._RoomListParent;
             }
         }
         [SerializeField()]
@@ -177,22 +185,22 @@ namespace UI
             {
                 if ((this._Text == null))
                 {
-                    this._Text = this.transform.Find("RoomList").Find("Local").Find("Text").GetComponent<Text>();
+                    this._Text = this.transform.Find("RoomLists").Find("Local").Find("Text").GetComponent<Text>();
                 }
                 return this._Text;
             }
         }
         [SerializeField()]
-        private RoomList _Remote_RoomList;
-        public RoomList Remote_RoomList
+        private RoomList _Remote_RoomListParent;
+        public RoomList Remote_RoomListParent
         {
             get
             {
-                if ((this._Remote_RoomList == null))
+                if ((this._Remote_RoomListParent == null))
                 {
-                    this._Remote_RoomList = this.transform.Find("RoomList").Find("Remote").Find("RoomList").GetComponent<RoomList>();
+                    this._Remote_RoomListParent = this.transform.Find("RoomLists").Find("Remote").Find("RoomListParent").GetComponent<RoomList>();
                 }
-                return this._Remote_RoomList;
+                return this._Remote_RoomListParent;
             }
         }
         [SerializeField()]
@@ -203,7 +211,7 @@ namespace UI
             {
                 if ((this._Remote_Text == null))
                 {
-                    this._Remote_Text = this.transform.Find("RoomList").Find("Remote").Find("Text").GetComponent<Text>();
+                    this._Remote_Text = this.transform.Find("RoomLists").Find("Remote").Find("Text").GetComponent<Text>();
                 }
                 return this._Remote_Text;
             }
