@@ -21,6 +21,10 @@ namespace UI
                 UnityEditor.EditorApplication.isPlaying = false;
 #endif
             });
+            NetworkButton.onClick.AddListener(() =>
+            {
+                parent.display(parent.NetworkingPage);
+            });
         }
     }
 }
