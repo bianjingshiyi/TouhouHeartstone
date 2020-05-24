@@ -288,7 +288,7 @@ namespace TouhouHeartstone
                     targetList.Add(player.master);
                 foreach (Card servant in player.field)
                 {
-                    if (effect.checkTarget(game, null, card, new object[] { servant }))
+                    if (effect.checkTarget(game, null, card, new object[] { servant }) && !servant.isMagicImmune())
                         targetList.Add(servant);
                 }
             }

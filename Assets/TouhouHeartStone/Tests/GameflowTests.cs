@@ -556,7 +556,21 @@ namespace Tests
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[0];
         public override string[] keywords { get; set; } = new string[] { Keyword.STEALTH };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            {
+                return true;
+            },(game,player,card,targets)=>
+            {
+                return true;
+            },(game,player,card,arg)=>
+            {
+                game.getPlayerForNextTurn(player).master.damage(game, 1);
+                return Task.CompletedTask;
+            })
+        };
+
     }
 
     /// <summary>
@@ -602,6 +616,67 @@ namespace Tests
         public override string[] tags { get; set; } = new string[] { };
         public override string[] keywords { get; set; } = new string[] { Keyword.MAGICIMMUNE };
         public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+    
+    /// <summary>
+    /// 拥有指定单个敌人攻击的技能的Master
+    /// </summary>
+    public class TestMaster2 : MasterCardDefine
+    {
+        public const int ID = 0x0011000C;
+        public override int id { get; set; } = ID;
+        public override int life { get; set; } = 30;
+        public override int skillID { get; set; } = TestDamageSkill.ID;
+        public override IEffect[] effects { get; set; } = new Effect[0];
+    }
+    class TestDamageSkill : SkillCardDefine
+    {
+        public const int ID = 0x0011000D;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,player,card,arg)=>
+            {
+                return true;
+            },(game,player,card,targets)=>
+            {
+                if(targets[0] is Card target)
+                    return true;
+                return false;
+            },async (game,player,card,arg,targets)=>
+            {
+                if(targets[0] is Card target)
+                    await target.damage(game, 1);
+            })
+        };
+
+    }
+
+    /// <summary>
+    /// 单体指向型攻击的spellcard
+    /// </summary>
+    public class TestSpellCard : SpellCardDefine
+    {
+        public const int ID = 0x0011000E;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,player,card,arg)=>
+            {
+                return true;
+            },(game,player,card,targets)=>
+            {
+                if(targets[0] is Card target)
+                    return true;
+                return false;
+            },async (game,player,card,arg,targets)=>
+            {
+                if(targets[0] is Card target)
+                    await target.damage(game, 1);
+            })
+        };
     }
 
     /// <summary>

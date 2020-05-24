@@ -85,6 +85,11 @@ namespace Tests
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].field[1]);
             Assert.AreEqual(1, game.sortedPlayers[0].field[1].getCurrentLife());    //变为非潜行状态后可以被攻击
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
+            Assert.True(game.sortedPlayers[1].field[1].isStealth());
+            game.sortedPlayers[1].cmdTurnEnd(game);
+            Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife());     //潜行随从在回合结束时对对方master造成伤害
+            Assert.False(game.sortedPlayers[1].field[1].isStealth());               //潜行消失
         }
 
         /// <summary>
@@ -142,29 +147,38 @@ namespace Tests
         }
 
         /// <summary>
-        /// 攻击自己的测试
+        /// 魔免测试
         /// </summary>
         [Test]
-        public void AttackSelf()
+        public void MagicImmuneTest()
         {
-            THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
-            Enumerable.Repeat(new Reimu(), 2).ToArray(),
-            Enumerable.Repeat(Enumerable.Repeat(new DefaultServant(), 30).ToArray(), 2).ToArray(),
-            new GameOption() { });
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getCardDefine<TestSpellCard>(), 2)));
+            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 29)
+            .Concat(Enumerable.Repeat(game.getCardDefine<MaginImmuneServant>(), 1)));
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
+            AfterXRound(game, 1);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[0].master);
-            Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife()); //攻击己方master
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(7, game.sortedPlayers[0].field[1].getCurrentLife());  //攻击己方servant
-
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1, game.sortedPlayers[0].field[1]);
+            Assert.AreEqual(3, game.sortedPlayers[0].field[1]);     //魔免无法被法术指定
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1, game.sortedPlayers[0].field[0]);
+            Assert.AreEqual(6, game.sortedPlayers[0].field[0]);     //没有魔免的可以被法术指定
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 1, game.sortedPlayers[0].field[1]);
+            Assert.AreEqual(3, game.sortedPlayers[0].field[1]);     //魔免无法被技能指定
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 1, game.sortedPlayers[0].field[0]);
+            Assert.AreEqual(6, game.sortedPlayers[0].field[0]);     //没有魔免的可以被技能指定
         }
+
+        
 
         /// <summary>
         /// 从player[0]开始经过x回合
