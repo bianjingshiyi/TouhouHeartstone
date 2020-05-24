@@ -28,6 +28,7 @@ namespace UI
             this._Game = this.transform.Find("Game").GetComponent<Game>();
             this._Build = this.transform.Find("Build").GetComponent<Build>();
             this._MainMenu = this.transform.Find("MainMenu").GetComponent<MainMenu>();
+            this._NetworkingPage = this.transform.Find("NetworkingPage").GetComponent<NetworkingPage>();
         }
         [SerializeField()]
         private Game _Game;
@@ -68,12 +69,26 @@ namespace UI
                 return this._MainMenu;
             }
         }
+        [SerializeField()]
+        private NetworkingPage _NetworkingPage;
+        public NetworkingPage NetworkingPage
+        {
+            get
+            {
+                if ((this._NetworkingPage == null))
+                {
+                    this._NetworkingPage = this.transform.Find("NetworkingPage").GetComponent<NetworkingPage>();
+                }
+                return this._NetworkingPage;
+            }
+        }
         public override UIObject[] getPages()
         {
             return new UIObject[] {
                     this.Game,
                     this.Build,
-                    this.MainMenu};
+                    this.MainMenu,
+                    this.NetworkingPage};
         }
         partial void onAwake();
     }

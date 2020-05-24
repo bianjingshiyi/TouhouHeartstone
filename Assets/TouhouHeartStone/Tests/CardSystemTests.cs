@@ -169,6 +169,31 @@ namespace Tests
             Assert.AreEqual(5, card.getLife());
             Assert.AreEqual(1, card.getCurrentLife());
         }
+        [Test]
+        public void mountainGaintTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<MountainGaint>() as CardDefine, 30));
+            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<MountainGaint>() as CardDefine, 30));
+
+            game.run();
+            game.sortedPlayers[0].cmdInitReplace(game);
+            game.sortedPlayers[1].cmdInitReplace(game);
+
+            while (game.sortedPlayers[0].hand.count < 10)
+            {
+                game.sortedPlayers[0].cmdTurnEnd(game);
+                game.sortedPlayers[1].cmdTurnEnd(game);
+            }
+
+            Assert.AreEqual(3, game.sortedPlayers[0].hand[0].getCost());
+            int gemNow = game.sortedPlayers[0].gem;
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            Assert.AreEqual(gemNow - 3, game.sortedPlayers[0].gem);
+        }
         class TestBuff : Buff
         {
             public override int id { get; } = 0;

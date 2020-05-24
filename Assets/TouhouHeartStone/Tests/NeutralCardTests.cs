@@ -23,7 +23,7 @@ namespace Tests
 
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
             Assert.True(game.sortedPlayers[0].field[0].isCharge());
-            Assert.True(game.sortedPlayers[0].field[0].isReady());
+            Assert.True(game.sortedPlayers[0].field[0].canAttack(game));
         }
         [Test]
         public void humanVillageGuardTest()

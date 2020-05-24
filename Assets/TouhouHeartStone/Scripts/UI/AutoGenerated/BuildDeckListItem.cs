@@ -25,12 +25,12 @@ namespace UI
         }
         public void autoBind()
         {
-            this._MaskImage = this.transform.Find("MaskImage").GetComponent<Image>();
-            this._Mask = this.transform.Find("Mask").GetComponent<Mask>();
-            this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
-            this._FadeImage = this.transform.Find("Fade").GetComponent<Image>();
-            this._Text = this.transform.Find("Text").GetComponent<Text>();
-            this._NumText = this.transform.Find("NumText").GetComponent<Text>();
+            this._MaskImage = this.transform.Find("Root").Find("MaskImage").GetComponent<Image>();
+            this._Mask = this.transform.Find("Root").Find("Mask").GetComponent<Mask>();
+            this._Image = this.transform.Find("Root").Find("Mask").Find("Image").GetComponent<Image>();
+            this._FadeImage = this.transform.Find("Root").Find("Fade").GetComponent<Image>();
+            this._Text = this.transform.Find("Root").Find("Text").GetComponent<Text>();
+            this._NumText = this.transform.Find("Root").Find("NumText").GetComponent<Text>();
         }
         [SerializeField()]
         private Image _MaskImage;
@@ -40,7 +40,7 @@ namespace UI
             {
                 if ((this._MaskImage == null))
                 {
-                    this._MaskImage = this.transform.Find("MaskImage").GetComponent<Image>();
+                    this._MaskImage = this.transform.Find("Root").Find("MaskImage").GetComponent<Image>();
                 }
                 return this._MaskImage;
             }
@@ -53,7 +53,7 @@ namespace UI
             {
                 if ((this._Mask == null))
                 {
-                    this._Mask = this.transform.Find("Mask").GetComponent<Mask>();
+                    this._Mask = this.transform.Find("Root").Find("Mask").GetComponent<Mask>();
                 }
                 return this._Mask;
             }
@@ -66,7 +66,7 @@ namespace UI
             {
                 if ((this._Image == null))
                 {
-                    this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
+                    this._Image = this.transform.Find("Root").Find("Mask").Find("Image").GetComponent<Image>();
                 }
                 return this._Image;
             }
@@ -79,7 +79,7 @@ namespace UI
             {
                 if ((this._FadeImage == null))
                 {
-                    this._FadeImage = this.transform.Find("Fade").GetComponent<Image>();
+                    this._FadeImage = this.transform.Find("Root").Find("Fade").GetComponent<Image>();
                 }
                 return this._FadeImage;
             }
@@ -92,7 +92,7 @@ namespace UI
             {
                 if ((this._Text == null))
                 {
-                    this._Text = this.transform.Find("Text").GetComponent<Text>();
+                    this._Text = this.transform.Find("Root").Find("Text").GetComponent<Text>();
                 }
                 return this._Text;
             }
@@ -105,7 +105,7 @@ namespace UI
             {
                 if ((this._NumText == null))
                 {
-                    this._NumText = this.transform.Find("NumText").GetComponent<Text>();
+                    this._NumText = this.transform.Find("Root").Find("NumText").GetComponent<Text>();
                 }
                 return this._NumText;
             }

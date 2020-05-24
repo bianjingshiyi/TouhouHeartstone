@@ -15,18 +15,18 @@ namespace TouhouHeartstone.Builtin
     }
     public class TotematicCall : SkillCardDefine
     {
-        public const int ID = 1001;
+        public const int ID = Reimu.ID | CardCategory.SKILL | 0x000;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,card,arg)=>
             {
                 return arg.player.field.count<arg.player.field.maxCount;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return true;
-            },async (game,player,card,vars,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 CardDefine[] totemDefines = new CardDefine[]
                 {
@@ -35,18 +35,18 @@ namespace TouhouHeartstone.Builtin
                     game.getCardDefine<ManaTotem>(),
                     game.getCardDefine<TauntTotem>()
                 };
-                if(totemDefines.All(d=>player.field.Any(c=>c.define==d)) ||//场上四种类型的图腾都有
-                    !totemDefines.Any(d=>player.field.Any(c=>c.define==d)))//或者都没有
+                if(totemDefines.All(d=>arg.player.field.Any(c=>c.define==d)) ||//场上四种类型的图腾都有
+                    !totemDefines.Any(d=>arg.player.field.Any(c=>c.define==d)))//或者都没有
                 {
                     //随便召唤一种类型的图腾
                     CardDefine totemDefine = totemDefines[game.randomInt(0,3)];
-                    await player.createToken(game,totemDefine,player.field.count);
+                    await arg.player.createToken(game,totemDefine,arg.player.field.count);
                 }
                 else
                 {
                     //召唤一种场上没有的图腾
-                    CardDefine totemDefine = totemDefines.Where(d=>!player.field.Any(c=>c.define==d)).shuffle(game).First();
-                    await player.createToken(game,totemDefine,player.field.count);
+                    CardDefine totemDefine = totemDefines.Where(d=>!arg.player.field.Any(c=>c.define==d)).shuffle(game).First();
+                    await arg.player.createToken(game,totemDefine,arg.player.field.count);
                 }
             })
         };
@@ -61,17 +61,17 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
             {
-                if(arg.player!=player)//不是自己的回合
+                if(arg.player!=game.currentPlayer)//不是自己的回合
                     return false;
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
-                return true;
-            },async (game,player,card,arg)=>
+                return false;
+            },async (game,card,arg)=>
             {
-                await THHCard.heal(player.field,game,1);
+                await THHCard.heal(arg.player.field,game,1);
             })
         };
     }
@@ -117,19 +117,19 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return true;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 THHPlayer opponent = game.getOpponent(arg.player);
                 if(opponent.field.count<4)
-                    await opponent.field.damage(game, arg.player.getSpellDamage(2));
+                    await opponent.field.damage(game,card, arg.player.getSpellDamage(2));
                 else
-                    await opponent.field.randomTake(game,3).damage(game, arg.player.getSpellDamage(2));
+                    await opponent.field.randomTake(game,3).damage(game,card, arg.player.getSpellDamage(2));
             })
         };
     }

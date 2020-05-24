@@ -7,9 +7,17 @@ namespace TouhouHeartstone
 {
     public static class THHCard
     {
+        public static THHPlayer getOwner(this Card card)
+        {
+            return card.owner as THHPlayer;
+        }
         public static int getCost(this Card card)
         {
             return card.getProp<int>(nameof(ServantCardDefine.cost));
+        }
+        public static void setCost(this Card card, int value)
+        {
+            card.setProp(nameof(ServantCardDefine.cost), value);
         }
         public static int getCost(this CardDefine card)
         {
@@ -82,13 +90,13 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public static bool canAttack(this Card card, THHGame game, THHPlayer player)
+        public static bool canAttack(this Card card, THHGame game)
         {
             if (card.getAttack() <= 0)//没有攻击力
                 return false;
             if (!card.isReady()//还没准备好
                 && !card.isCharge()//且没有冲锋
-                && !(card.isRush() && game.getOpponent(player).field.Any(c => card.isAttackable(game, player, c, out _)))//且并非有突袭且有可以攻击的敌方随从
+                && !(card.isRush() && game.getOpponent(card.getOwner()).field.Any(c => card.isAttackable(game, card.getOwner(), c, out _)))//且并非有突袭且有可以攻击的敌方随从
                 )
                 return false;
             if (card.getAttackTimes() >= card.getMaxAttackTimes())//已经攻击过了
@@ -142,6 +150,11 @@ namespace TouhouHeartstone
         {
             return card.getProp<bool>("isUsed");
         }
+        /// <summary>
+        /// 设置技能是否使用过。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="value"></param>
         public static void setUsed(this Card card, bool value)
         {
             card.setProp("isUsed", value);
@@ -215,6 +228,10 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(nameof(ServantCardDefine.spellDamage));
         }
+        public static void setSpellDamage(this Card card, int value)
+        {
+            card.setProp(nameof(ServantCardDefine.spellDamage), value);
+        }
         public static bool hasTag(this Card card, string tag)
         {
             return card.getProp<string[]>(nameof(ServantCardDefine.tags)).Contains(tag);
@@ -224,6 +241,11 @@ namespace TouhouHeartstone
             if (game.currentPlayer != player)//不是你的回合
             {
                 info = "这不是你的回合";
+                return false;
+            }
+            if (card.getOwner() != player)
+            {
+                info = "你不能使用不属于你的卡牌";
                 return false;
             }
             if (card.define is ServantCardDefine servant)
@@ -259,7 +281,7 @@ namespace TouhouHeartstone
                     info = "你没有足够的法力值";
                     return false;
                 }
-                if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is IEffect effect && !effect.checkCondition(game, null, card, new object[]
+                if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is IActiveEffect effect && !effect.checkCondition(game, card, new object[]
                     {
                         new THHPlayer.ActiveEventArg(player,card,new object[0])
                     }))
@@ -278,7 +300,7 @@ namespace TouhouHeartstone
         }
         public static Card[] getAvaliableTargets(this Card card, THHGame game)
         {
-            IEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            IActiveEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) as IActiveEffect;
             if (effect == null)
                 return null;
             List<Card> targetList = new List<Card>();
@@ -296,14 +318,14 @@ namespace TouhouHeartstone
         }
         public static bool isValidTarget(this Card card, THHGame game, Card target)
         {
-            IEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            IActiveEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) as IActiveEffect;
             if (effect == null)
                 return false;
             return effect.checkTarget(game, null, card, new object[] { target });
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
-            if (!card.canAttack(game, player))
+            if (!card.canAttack(game))
             {
                 game.logger.log(card + "无法进行攻击");
                 return false;
@@ -318,8 +340,9 @@ namespace TouhouHeartstone
                 game.logger.log(arg.card + "攻击" + arg.target);
                 arg.card.setAttackTimes(arg.card.getAttackTimes() + 1);
                 if (arg.card.getAttack() > 0)
-                    await arg.target.damage(game, arg.card.getAttack());
+                    await arg.target.damage(game, arg.card, arg.card.getAttack());
                 if (arg.target.getAttack() > 0)
+
                     await arg.card.damage(game, arg.target.getAttack());
                 if (arg.card.isDrain())
                     await player.master.heal(game, arg.card.getAttack());
@@ -353,8 +376,6 @@ namespace TouhouHeartstone
                     }
                 }
             });
-            if (card.isStealth())
-                card.setStealth(false);
             await game.updateDeath();
             return true;
         }
@@ -363,16 +384,19 @@ namespace TouhouHeartstone
             public Card card;
             public Card target;
         }
-        public static Task damage(this Card card, THHGame game, int value)
+        public static Task damage(this Card card, THHGame game, Card source, int value)
         {
-            return damage(new Card[] { card }, game, value);
+            return damage(new Card[] { card }, game, source, value);
         }
-        public static async Task damage(this IEnumerable<Card> cards, THHGame game, int value)
+        public static async Task damage(this IEnumerable<Card> cards, THHGame game, Card source, int value)
         {
-            await game.triggers.doEvent(new DamageEventArg() { cards = cards.ToArray(), value = value }, arg =>
+            await game.triggers.doEvent(new DamageEventArg() { cards = cards.ToArray(), source = source, value = value }, arg =>
             {
                 cards = arg.cards;
+                source = arg.source;
                 value = arg.value;
+                if (source != null && source.isStealth())
+                    source.setStealth(false);
                 foreach (Card card in arg.cards)
                 {
                     if (card.isShield())
@@ -402,6 +426,7 @@ namespace TouhouHeartstone
         public class DamageEventArg : EventArg
         {
             public Card[] cards;
+            public Card source;
             public int value;
             public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
             public class Info
