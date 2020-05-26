@@ -7,6 +7,7 @@ using TouhouCardEngine;
 using BJSYGameCore;
 using UI;
 using ExcelLibrary.SpreadSheet;
+using System.Threading;
 namespace Game
 {
     public class CardManager : Manager

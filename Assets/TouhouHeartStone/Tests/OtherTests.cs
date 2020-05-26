@@ -2,6 +2,9 @@
 using System.IO;
 using UnityEngine;
 using ExcelLibrary.SpreadSheet;
+using Game;
+using UnityEngine.TestTools;
+using System.Collections;
 namespace Tests
 {
     public class OtherTests
@@ -22,6 +25,17 @@ namespace Tests
                 Debug.Log(workbook.Worksheets[0].Cells[0, 3].Value.GetType().FullName);
                 Assert.AreEqual("string", workbook.Worksheets[0].Cells[0, 3].Value);
             }
+        }
+        [UnityTest]
+        public IEnumerator webRequestExcelTest()
+        {
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            var task = manager.loadExcel("TestExcel.xls", RuntimePlatform.Android);
+            yield return new WaitUntil(() => task.IsCompleted);
+
+            Workbook workbook = task.Result;
+            Assert.NotNull(workbook);
+            Assert.AreEqual("TestContent", workbook.Worksheets[0].Cells[0, 0].StringValue);
         }
     }
 }

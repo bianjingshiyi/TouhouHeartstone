@@ -119,6 +119,13 @@ namespace Game
             skin.desc = sheet.Cells[row, descIndex].StringValue;
             return card;
         }
+        static string fixPath(string path)
+        {
+#if UNITY_ANDROID
+            path.ToLower();
+#endif
+            return path;
+        }
         static int numberToInt(object value)
         {
             if (value is double d)
