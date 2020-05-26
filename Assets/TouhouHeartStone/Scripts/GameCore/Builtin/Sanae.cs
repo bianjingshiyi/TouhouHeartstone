@@ -23,16 +23,16 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect(new On<THHPlayer.ActiveEventArg>(),PileName.SKILL,(game,player,card,vars)=>
+            new THHEffect(new On<THHPlayer.ActiveEventArg>(),PileName.SKILL,(game,card,vars)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 if(targets[0] is Card target && target.getCurrentLife()<target.getLife())
                     return true;
                 return false;
 
-            },async (game,player,card,vars,targets)=>
+            },async (game,card,vars,targets)=>
             {
                 if(targets[0] is Card target)
                     await target.heal(game, 2);

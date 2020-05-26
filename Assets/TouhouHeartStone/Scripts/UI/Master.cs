@@ -4,7 +4,7 @@ using TouhouHeartstone;
 using System.Linq;
 namespace UI
 {
-    partial class Master : IBeginDragHandler, IDragHandler, IEndDragHandler
+    partial class Master : IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
     {
         public TouhouCardEngine.Card card { get; private set; } = null;
         public void update(Table table, THHPlayer player, TouhouCardEngine.Card card, CardSkinData skin)
@@ -34,7 +34,7 @@ namespace UI
 
             if (table.selectableTargets != null && table.selectableTargets.Contains(this))
                 HighlightController = Highlight.Yellow;
-            else if (table.player == player && table.game.currentPlayer == player && card.canAttack(table.game, player))
+            else if (table.player == player && table.game.currentPlayer == player && card.canAttack(table.game))
                 HighlightController = Highlight.Green;
             else
                 HighlightController = Highlight.None;
@@ -85,6 +85,12 @@ namespace UI
             //        rectTransform.localScale = Vector3.one;
             //    }
             //}
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            Table table = GetComponentInParent<Table>();
+            table.onClickMaster(this, eventData);
         }
     }
 }

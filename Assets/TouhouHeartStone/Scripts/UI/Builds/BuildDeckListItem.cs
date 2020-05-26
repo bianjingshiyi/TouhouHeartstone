@@ -17,6 +17,8 @@ namespace UI
         Vector2 _dragStartPosition;
         [SerializeField]
         float _dragThreshold = 50f;
+        [SerializeField]
+        bool _isDragging = false;
         public CardDefine card { get; private set; }
         [SerializeField]
         int _count;
@@ -32,29 +34,38 @@ namespace UI
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
             _dragStartPosition = eventData.position;
+            _isDragging = false;
         }
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
-            Build build = GetComponentInParent<Build>();
-
-            if (!build.DragCard.isDisplaying)
+            if (Vector2.Distance(_dragStartPosition, eventData.position) > _dragThreshold)
             {
-                if (Vector2.Distance(_dragStartPosition, eventData.position) > _dragThreshold)
+                if (!_isDragging)
                 {
-                    //开始拖拽
-                    build.startDrag(card, eventData.position);
                     count--;
-                    //从列表中移除
+                    //从列表中隐藏
                     if (count < 1)
-                        GetComponentInParent<BuildDeckList>().removeItem(this);
+                    {
+                        getChild("Root").hide();
+                        rectTransform.sizeDelta = Vector2.zero;
+                    }
                 }
+                _isDragging = true;
+            }
+            if (_isDragging)
+            {
+                Build build = GetComponentInParent<Build>();
+                build.onDragDeckItem(this, eventData);
             }
         }
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
-            ////结束拖拽
-            //Build build = GetComponentInParent<Build>();
-            //build.stopDrag(eventData.position);
+            if (_isDragging)
+            {
+                //结束拖拽
+                Build build = GetComponentInParent<Build>();
+                build.onReleaseDeckItem(this, eventData);
+            }
             //gameObject.SetActive(true);
         }
     }

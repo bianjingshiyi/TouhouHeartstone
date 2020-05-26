@@ -83,11 +83,6 @@ MonoBehaviour:
   _defaultItem: {fileID: 6536533978273380045}
   m_as_Button: {fileID: 404448875391242529}
   m_as_ListLayoutGroup: {fileID: 2432038108976825794}
-  _isPlacing: 0
-  _dragStartPosition: {x: 0, y: 0}
-  _placingCard: {fileID: 0}
-  _placingIndex: -1
-  _isSelectingTarget: 0
 --- !u!95 &9147961611909979847
 Animator:
   serializedVersion: 3
@@ -202,9 +197,9 @@ MonoBehaviour:
   _ui: {fileID: 0}
   _initStates: []
   _Card: {fileID: 3555614237534435332}
-  _isDragging: 0
   _startDragPosition: {x: 0, y: 0}
   _dragThreshold: 0
+  _isDragging: 0
 --- !u!1001 &2432038109325251202
 PrefabInstance:
   m_ObjectHideFlags: 0

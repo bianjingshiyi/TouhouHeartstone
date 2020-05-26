@@ -100,7 +100,7 @@ namespace TouhouHeartstone
                 {
                     arg.player.fatigue++;
                     game.logger.log(arg.player + "已经没有卡牌了，当前疲劳值：" + arg.player.fatigue);
-                    return arg.player.master.damage(game, arg.player.fatigue);
+                    return arg.player.master.damage(game, null, arg.player.fatigue);
                 });
             }
             else if (hand.count >= hand.maxCount)
@@ -144,8 +144,8 @@ namespace TouhouHeartstone
                 return false;
             if (targets.Length == 1 && targets[0].isMagicImmune())
                 return false;
-
-            card.setUsed(true);
+            if (card.define is SkillCardDefine)
+                card.setUsed(true);
             await setGem(game, gem - card.getCost());
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>
             {
@@ -157,14 +157,14 @@ namespace TouhouHeartstone
                 {
                     //随从卡，将卡置入战场
                     await tryPutIntoField(game, arg.player.hand, arg.card, arg.position);
-                    IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
                     if (effect != null)
                     {
                         ActiveEventArg active = new ActiveEventArg(player, card, targets);
                         await game.triggers.doEvent(active, activeLogic);
                         async Task activeLogic(ActiveEventArg eventArg)
                         {
-                            await effect.execute(game, player, card, new object[] { eventArg }, targets);
+                            await effect.execute(game, card, new object[] { eventArg }, targets);
                         }
                     }
                     //IEffect effect = arg.card.define.getEffectOn<BattleCryEventArg>(game.triggers);
@@ -178,15 +178,15 @@ namespace TouhouHeartstone
                 }
                 else if (card.define is SkillCardDefine)
                 {
-                    IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    await effect.execute(game, arg.player, arg.card, new object[] { new ActiveEventArg(player, card, targets) }, arg.targets);
+                    ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    await effect.execute(game, arg.card, new object[] { new ActiveEventArg(player, card, targets) }, arg.targets);
                 }
                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.SPELL))
                 {
                     //法术卡，释放效果然后丢进墓地
                     player.hand.remove(game, card);
-                    IEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    await effect.execute(game, player, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    await effect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
                     player.grave.add(game, card);
                 }
             });

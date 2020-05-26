@@ -45,16 +45,16 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,vars)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,vars)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return true;
-            },async (game,player,card,vars,targets)=>
+            },async (game,card,vars,targets)=>
             {
                 Card target = targets[0] as Card;
-                await target.damage(game,2);
+                await target.damage(game,card,2);
             })
         };
     }
@@ -71,13 +71,13 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.DeathEventArg>(PileName.GRAVE,(game,player,card,arg)=>
+            new THHEffectAfter<THHCard.DeathEventArg>(PileName.GRAVE,(game,card,arg)=>
             {
                 return arg.infoDic.Any(p=>p.Key==card);
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return true;
-            },async (game,player,card,arg)=>
+            },async (game,card,arg)=>
             {
                 await arg.infoDic[card].player.createToken(game,game.getCardDefine<LostSpecter>(),arg.infoDic[card].position);
             })
@@ -119,13 +119,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 0;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.HAND,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.HAND,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 await arg.player.setGem(game,arg.player.gem + 1);
             })
@@ -144,18 +144,18 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 THHPlayer opponent = game.getOpponent(arg.player);
                 if(opponent.field.count>0)
                 {
-                    await opponent.field.randomTake(game,1).damage(game,1);
+                    await opponent.field.randomTake(game,1).damage(game,card,1);
                 }
             })
         };
@@ -187,15 +187,15 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 if(targets[0] is Card target && target.pile.name == PileName.FIELD)
                     return true;
                 return false;
-            },(game,player,card,arg,targets)=>
+            },(game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
                     target.setStealth(true);
@@ -294,13 +294,13 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 foreach (var character in game.getAllCharacters().randomTake(game,3))
                 {
@@ -323,13 +323,13 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.DeathEventArg>(PileName.GRAVE,(game,player,card,arg)=>
+            new THHEffectAfter<THHCard.DeathEventArg>(PileName.GRAVE,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return false;
-            },async (game,player,card,arg)=>
+            },async (game,card,arg)=>
             {
                 THHPlayer opponent = game.getOpponent(card.owner as THHPlayer);
                 await opponent.setMaxGem(game, opponent.maxGem + 1);
@@ -350,15 +350,15 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 if(targets[0] is Card target && target.pile.name == PileName.FIELD)
                     return true;
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
                 {
@@ -380,13 +380,13 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 foreach (var servant in game.getAllServants())
                 {
@@ -445,15 +445,15 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 if(targets[0] is Card target && target.pile.name == PileName.FIELD && target.hasTag(CardTag.FAIRY))
                     return true;
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
                 {
@@ -475,13 +475,13 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 await game.players.Select(p=>p.master).heal(game,4);
                 foreach (var p in game.players)

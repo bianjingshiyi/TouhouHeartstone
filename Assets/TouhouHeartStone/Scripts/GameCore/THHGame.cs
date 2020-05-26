@@ -66,7 +66,7 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public THHPlayer getOpponent(THHPlayer player)
+        public THHPlayer getOpponent(Player player)
         {
             return players.FirstOrDefault(p => p != player);
         }
@@ -75,8 +75,16 @@ namespace TouhouHeartstone
         public override Card createCard(CardDefine define)
         {
             Card card = base.createCard(define);
-            if (define is ServantCardDefine servant)
+            if (define is MasterCardDefine master)
             {
+                card.setLife(master.life);
+            }
+            else if (define is ServantCardDefine servant)
+            {
+                card.setCost(servant.cost);
+                card.setAttack(servant.attack);
+                card.setLife(servant.life);
+                card.setSpellDamage(servant.spellDamage);
                 foreach (string keyword in servant.keywords)
                 {
                     if (string.IsNullOrEmpty(keyword))
@@ -151,6 +159,11 @@ namespace TouhouHeartstone
                     e = e.Concat(player.field);
             }
             return e.ToArray();
+        }
+        public Card[] getAllEnemies(THHPlayer player)
+        {
+            THHPlayer opponent = getOpponent(player);
+            return opponent.field.Concat(new Card[] { opponent.master }).ToArray();
         }
         #endregion
         /// <summary>

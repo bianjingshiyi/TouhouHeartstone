@@ -36,6 +36,12 @@ namespace UI
             this._HpText = this.transform.Find("Root").Find("Hp").Find("HpText").GetComponent<Text>();
             this._AtkImage = this.transform.Find("Root").Find("Atk").GetComponent<Image>();
             this._AttackText = this.transform.Find("Root").Find("Atk").Find("AttackText").GetComponent<Text>();
+            this._DeathRattleImage = this.transform.Find("Root").Find("DeathRattle").GetComponent<Image>();
+            this._LifeStealImage = this.transform.Find("Root").Find("LifeSteal").GetComponent<Image>();
+            this._PoisionImage = this.transform.Find("Root").Find("Poision").GetComponent<Image>();
+            this._ShieldImage = this.transform.Find("Root").Find("Shield").GetComponent<Image>();
+            this._StealthImage = this.transform.Find("Root").Find("Stealth").GetComponent<Image>();
+            this._FreezeImage = this.transform.Find("Root").Find("Freeze").GetComponent<Image>();
             this._DamageImage = this.transform.Find("Root").Find("DamageImage").GetComponent<Image>();
             this._DamageText = this.transform.Find("Root").Find("DamageImage").Find("DamageText").GetComponent<Text>();
             this._HealImage = this.transform.Find("Root").Find("HealImage").GetComponent<Image>();
@@ -182,6 +188,84 @@ namespace UI
                     this._AttackText = this.transform.Find("Root").Find("Atk").Find("AttackText").GetComponent<Text>();
                 }
                 return this._AttackText;
+            }
+        }
+        [SerializeField()]
+        private Image _DeathRattleImage;
+        public Image DeathRattleImage
+        {
+            get
+            {
+                if ((this._DeathRattleImage == null))
+                {
+                    this._DeathRattleImage = this.transform.Find("Root").Find("DeathRattle").GetComponent<Image>();
+                }
+                return this._DeathRattleImage;
+            }
+        }
+        [SerializeField()]
+        private Image _LifeStealImage;
+        public Image LifeStealImage
+        {
+            get
+            {
+                if ((this._LifeStealImage == null))
+                {
+                    this._LifeStealImage = this.transform.Find("Root").Find("LifeSteal").GetComponent<Image>();
+                }
+                return this._LifeStealImage;
+            }
+        }
+        [SerializeField()]
+        private Image _PoisionImage;
+        public Image PoisionImage
+        {
+            get
+            {
+                if ((this._PoisionImage == null))
+                {
+                    this._PoisionImage = this.transform.Find("Root").Find("Poision").GetComponent<Image>();
+                }
+                return this._PoisionImage;
+            }
+        }
+        [SerializeField()]
+        private Image _ShieldImage;
+        public Image ShieldImage
+        {
+            get
+            {
+                if ((this._ShieldImage == null))
+                {
+                    this._ShieldImage = this.transform.Find("Root").Find("Shield").GetComponent<Image>();
+                }
+                return this._ShieldImage;
+            }
+        }
+        [SerializeField()]
+        private Image _StealthImage;
+        public Image StealthImage
+        {
+            get
+            {
+                if ((this._StealthImage == null))
+                {
+                    this._StealthImage = this.transform.Find("Root").Find("Stealth").GetComponent<Image>();
+                }
+                return this._StealthImage;
+            }
+        }
+        [SerializeField()]
+        private Image _FreezeImage;
+        public Image FreezeImage
+        {
+            get
+            {
+                if ((this._FreezeImage == null))
+                {
+                    this._FreezeImage = this.transform.Find("Root").Find("Freeze").GetComponent<Image>();
+                }
+                return this._FreezeImage;
             }
         }
         [SerializeField()]
