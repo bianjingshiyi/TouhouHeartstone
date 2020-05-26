@@ -997,13 +997,10 @@ MonoBehaviour:
   _BorderImage: {fileID: 4064673707873042981}
   _CardFace_Image: {fileID: 1229200602832887063}
   _CostImage: {fileID: 4550978094851211482}
-  _Cost_CostImage: {fileID: 0}
   _CostText: {fileID: 4007178058542726368}
   _AttackImage: {fileID: 4330351273059460096}
-  _Attack_AttackImage: {fileID: 0}
   _AttackText: {fileID: 4792245178413127297}
   _LifeImage: {fileID: 3150914282767060518}
-  _Life_LifeImage: {fileID: 0}
   _LifeText: {fileID: 1159448046917458983}
   _useCurve:
     serializedVersion: 2

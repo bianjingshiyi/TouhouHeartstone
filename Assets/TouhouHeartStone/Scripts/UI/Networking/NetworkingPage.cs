@@ -19,8 +19,8 @@ namespace UI
             LANButton.onClick.AddListener(createLocalRoom);
             WANButton.onClick.AddListener(createRemoteRoom);
 
-            RoomListParent.networking = this;
-            Remote_RoomListParent.networking = this;
+            LocalRoomScrollView.RoomList.networking = this;
+            RemoteRoomScrollView.RoomList.networking = this;
         }
 
         private void createRemoteRoom()
