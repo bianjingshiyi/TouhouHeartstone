@@ -299,6 +299,8 @@ namespace TouhouHeartstone
             IEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
             if (effect == null)
                 return false;
+            if (target.isMagicImmune())
+                return false;
             return effect.checkTarget(game, null, card, new object[] { target });
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)

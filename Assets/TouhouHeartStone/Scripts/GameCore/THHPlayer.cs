@@ -142,6 +142,9 @@ namespace TouhouHeartstone
         {
             if (!card.isUsable(game, this, out _))
                 return false;
+            if (targets.Length == 1 && targets[0].isMagicImmune())
+                return false;
+
             card.setUsed(true);
             await setGem(game, gem - card.getCost());
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>

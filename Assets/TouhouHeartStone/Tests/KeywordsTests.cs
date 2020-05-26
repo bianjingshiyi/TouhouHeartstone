@@ -169,13 +169,14 @@ namespace Tests
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1, game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(3, game.sortedPlayers[0].field[1]);     //魔免无法被法术指定
+            //Debug.Log(game.sortedPlayers[0].field[1]);
+            Assert.AreEqual(3, game.sortedPlayers[0].field[1].getCurrentLife());     //魔免无法被法术指定
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1, game.sortedPlayers[0].field[0]);
-            Assert.AreEqual(6, game.sortedPlayers[0].field[0]);     //没有魔免的可以被法术指定
+            Assert.AreEqual(6, game.sortedPlayers[0].field[0].getCurrentLife());     //没有魔免的可以被法术指定
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 1, game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(3, game.sortedPlayers[0].field[1]);     //魔免无法被技能指定
+            Assert.AreEqual(3, game.sortedPlayers[0].field[1].getCurrentLife());     //魔免无法被技能指定
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 1, game.sortedPlayers[0].field[0]);
-            Assert.AreEqual(6, game.sortedPlayers[0].field[0]);     //没有魔免的可以被技能指定
+            Assert.AreEqual(5, game.sortedPlayers[0].field[0].getCurrentLife());     //没有魔免的可以被技能指定
         }
 
         
