@@ -121,7 +121,22 @@ namespace Game
         }
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
-            Debug.LogError(e);
+            if (e.Exception != null)
+            {
+                if (e.Exception.InnerException != null)
+                    Debug.LogError(e.Exception.InnerException);
+                else if (e.Exception.InnerExceptions != null)
+                {
+                    foreach (var exception in e.Exception.InnerExceptions)
+                    {
+                        Debug.LogError(exception);
+                    }
+                }
+                else
+                    Debug.LogError(e.Exception);
+            }
+            else
+                Debug.LogError(e);
         }
         protected void OnGUI()
         {

@@ -695,7 +695,7 @@ namespace Tests
     }
     public class MountainGaint : ServantCardDefine
     {
-        public const int ID = 0x0011000B;
+        public const int ID = 0x00110010;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 12;
         public override int attack { get; set; } = 8;
