@@ -10,12 +10,12 @@ namespace UI
         {
             this.card = card;
 
-            CostText.text = card.getCost().ToString();
+            CostPropNumber.asText.text = card.getCost().ToString();
             if (card.define.type == CardDefineType.SERVANT)
             {
                 TypeController = Type.Servant;
-                AttackText.text = card.getAttack().ToString();
-                LifeText.text = card.getLife().ToString();
+                AttackPropNumber.asText.text = card.getAttack().ToString();
+                LifePropNumber.asText.text = card.getLife().ToString();
             }
             else
             {
@@ -34,9 +34,9 @@ namespace UI
         }
         public void update(CardDefine card, CardSkinData skin)
         {
-            CostText.text = card.getCost().ToString();
-            AttackText.text = card.getAttack().ToString();
-            LifeText.text = card.getLife().ToString();
+            CostPropNumber.asText.text = card.getCost().ToString();
+            AttackPropNumber.asText.text = card.getAttack().ToString();
+            LifePropNumber.asText.text = card.getLife().ToString();
 
             Image.sprite = skin.image;
             NameText.text = skin.name;

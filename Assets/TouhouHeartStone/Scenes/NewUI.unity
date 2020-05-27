@@ -842,18 +842,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 29280645}
   m_CullTransparentMesh: 0
---- !u!114 &30625971 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5755041588168047873, guid: 6446fe25e4caa5d47848db50991178de,
-    type: 3}
-  m_PrefabInstance: {fileID: 5421060709678774883}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b617e48256576694e8db16256fff3901, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &45269051
 GameObject:
   m_ObjectHideFlags: 0
@@ -8487,9 +8475,9 @@ MonoBehaviour:
   _WANButton: {fileID: 8048433}
   _StatusText: {fileID: 813359346}
   _RoomListsImage: {fileID: 1384590916}
-  _RoomListParent: {fileID: 30625971}
+  _LocalRoomScrollView: {fileID: 0}
   _Text: {fileID: 482586025}
-  _Remote_RoomListParent: {fileID: 9094115564094109737}
+  _RemoteRoomScrollView: {fileID: 0}
   _Remote_Text: {fileID: 1684083}
 --- !u!1 &1568978516
 GameObject:
@@ -9383,9 +9371,9 @@ MonoBehaviour:
   _initStates: []
   _BackgroundImage: {fileID: 765537073}
   _ButtonPanelImage: {fileID: 933985}
-  _ButtonsVerticalLayoutGroup: {fileID: 0}
+  _ButtonsVerticalLayoutGroup: {fileID: 729623763}
   _ManMachineButton: {fileID: 1678732835}
-  _NetworkButton: {fileID: 0}
+  _NetworkButton: {fileID: 24681090}
   _BuildButton: {fileID: 638246002}
   _QuitButton: {fileID: 1568978518}
 --- !u!1 &1716266319
@@ -11886,7 +11874,7 @@ PrefabInstance:
     - target: {fileID: 5421060709278559628, guid: 6446fe25e4caa5d47848db50991178de,
         type: 3}
       propertyPath: m_Name
-      value: RoomListParent
+      value: LocalRoomScrollView
       objectReference: {fileID: 0}
     - target: {fileID: 5421060709278559635, guid: 6446fe25e4caa5d47848db50991178de,
         type: 3}
@@ -12040,7 +12028,7 @@ PrefabInstance:
     - target: {fileID: 5421060709278559628, guid: 6446fe25e4caa5d47848db50991178de,
         type: 3}
       propertyPath: m_Name
-      value: RoomListParent
+      value: RemoteRoomScrollView
       objectReference: {fileID: 0}
     - target: {fileID: 5421060709278559635, guid: 6446fe25e4caa5d47848db50991178de,
         type: 3}
@@ -12149,15 +12137,3 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6446fe25e4caa5d47848db50991178de, type: 3}
---- !u!114 &9094115564094109737 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5755041588168047873, guid: 6446fe25e4caa5d47848db50991178de,
-    type: 3}
-  m_PrefabInstance: {fileID: 9094115564094109736}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b617e48256576694e8db16256fff3901, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
