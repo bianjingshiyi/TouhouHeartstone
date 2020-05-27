@@ -64,35 +64,128 @@ namespace Tests
         /// <summary>
         /// Android使用WebRequest加载Excel
         /// </summary>
-        [Test]
-        public void loadExcel_Android()
+        [UnityTest]
+        public IEnumerator loadExcel_Android()
         {
+            Workbook workbook = new Workbook();
+            workbook.Worksheets.Add(new Worksheet("TestSheet"));
+            workbook.Worksheets[0].Cells[0, 0] = new Cell("TestContent");
+            const string fileName = "TestExcel.xls";
+            string filePath = Application.streamingAssetsPath + "/" + fileName;
+            using (FileStream stream = new FileStream(filePath, FileMode.Create))
+            {
+                workbook.Save(stream);
+            }
+
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            var task = manager.loadExcel(fileName, RuntimePlatform.Android);
+            yield return new WaitUntil(() => task.IsCompleted);
+            workbook = task.Result;
+
+            Assert.NotNull(workbook);
+            Assert.AreEqual("TestContent", workbook.Worksheets[0].Cells[0, 0].Value);
+
+            File.Delete(filePath);
         }
         /// <summary>
         /// Android加载不存在的Excel抛出异常，需要研究一下WebRequest的异常机制。
         /// </summary>
-        [Test]
-        public void loadExcel_Android_Failed()
+        [UnityTest]
+        public IEnumerator loadExcel_Android_Failed()
         {
+            const string fileName = "SomeNonExistFileName";
+
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            Task<Workbook> task = manager.loadExcel(fileName, RuntimePlatform.Android);
+            yield return new WaitUntil(() => task.IsCompleted);
+            Assert.Throws<FileNotFoundException>(() =>
+            {
+                if (task.Exception != null)
+                {
+                    foreach (var ex in task.Exception.InnerExceptions)
+                    {
+                        throw ex;
+                    }
+                }
+            });
         }
         /// <summary>
         /// 同上，测试用贴图建议放在Test/Resources中，然后在测试的时候在StreamingAssets中新建并复制贴图，用于测试，测完了删掉。
         /// </summary>
-        [Test]
-        public void loadTexture()
+        [UnityTest]
+        public IEnumerator loadTexture()
         {
+            const string fileName = "TestFile.png";
+            string filePath = Application.streamingAssetsPath + "/" + fileName;
+
+            Texture2D tx = new Texture2D(512, 512);
+            File.WriteAllBytes(filePath, tx.EncodeToPNG());
+
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            var task = manager.loadTexture(fileName, RuntimePlatform.WindowsPlayer);
+            yield return new WaitUntil(() => task.IsCompleted);
+
+            var tx_read = task.Result;
+            Assert.AreEqual(tx_read.width, tx.width);
+            Assert.AreEqual(tx_read.height, tx.height);
+
+            File.Delete(filePath);
         }
-        [Test]
-        public void loadTexture_Failed()
+        [UnityTest]
+        public IEnumerator loadTexture_Failed()
         {
+            const string fileName = "SomeNonExistFile.png";
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            Task<Texture2D> task = manager.loadTexture(fileName, RuntimePlatform.WindowsEditor);
+            yield return new WaitUntil(() => task.IsCompleted);
+            Assert.Throws<FileNotFoundException>(() =>
+            {
+                if (task.Exception != null)
+                {
+                    foreach (var ex in task.Exception.InnerExceptions)
+                    {
+                        throw ex;
+                    }
+                }
+            });
         }
-        [Test]
-        public void loadTexture_Android()
+        [UnityTest]
+        public IEnumerator loadTexture_Android()
         {
+            const string fileName = "TestFile.png";
+            string filePath = Application.streamingAssetsPath + "/" + fileName;
+
+            Texture2D tx = new Texture2D(512, 512);
+            File.WriteAllBytes(filePath, tx.EncodeToPNG());
+
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            var task = manager.loadTexture(fileName, RuntimePlatform.Android);
+            yield return new WaitUntil(() => task.IsCompleted);
+
+            var tx_read = task.Result;
+            Assert.AreEqual(tx_read.width, tx.width);
+            Assert.AreEqual(tx_read.height, tx.height);
+
+            File.Delete(filePath);
         }
-        [Test]
-        public void loadTexture_Android_Failed()
+        [UnityTest]
+        public IEnumerator loadTexture_Android_Failed()
         {
+            const string fileName = "SomeNonExistFile.png";
+
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            Task<Texture2D> task = manager.loadTexture(fileName, RuntimePlatform.Android);
+            yield return new WaitUntil(() => task.IsCompleted);
+            Assert.Throws<FileNotFoundException>(() =>
+            {
+                if (task.Exception != null)
+                {
+                    foreach (var ex in task.Exception.InnerExceptions)
+                    {
+                        throw ex;
+                    }
+                }
+            });
         }
     }
 }

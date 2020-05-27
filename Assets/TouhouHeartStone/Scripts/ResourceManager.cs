@@ -4,6 +4,8 @@ using BJSYGameCore;
 using ExcelLibrary.SpreadSheet;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
+using System.Net.Http;
+
 namespace Game
 {
     public class ResourceManager : Manager
@@ -90,7 +92,25 @@ namespace Game
             TaskCompletionSource<byte[]> tcs = new TaskCompletionSource<byte[]>();
             UnityWebRequest.Get(Application.streamingAssetsPath + "/" + path).SendWebRequest().completed += op =>
             {
-                tcs.SetResult((op as UnityWebRequestAsyncOperation).webRequest.downloadHandler.data);
+                var uop = (op as UnityWebRequestAsyncOperation);
+                if (uop.webRequest.isNetworkError)
+                {
+                    tcs.SetException(new HttpRequestException(uop.webRequest.error));
+                    return;
+                }
+                if (uop.webRequest.isHttpError)
+                {
+                    if (uop.webRequest.responseCode == 404)
+                    {
+                        tcs.SetException(new FileNotFoundException());
+                    }
+                    else
+                    {
+                        tcs.SetException(new HttpRequestException(uop.webRequest.error));
+                    }
+                    return;
+                }
+                tcs.SetResult(uop.webRequest.downloadHandler.data);
             };
             return tcs.Task;
         }
