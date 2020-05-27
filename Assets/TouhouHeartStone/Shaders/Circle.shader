@@ -142,7 +142,7 @@ Shader "THH/Circle"
 }
 /*ASEBEGIN
 Version=17000
--294;687;1395;762;3466.017;933.3394;3.503786;True;False
+8;317;1395;756;2752.843;602.2988;2.12481;True;False
 Node;AmplifyShaderEditor.CommentaryNode;19;-1642.128,-275.392;Float;False;976.9738;451.511;Base;5;17;16;9;23;56;;1,1,1,1;0;0
 Node;AmplifyShaderEditor.TextureCoordinatesNode;23;-1563.8,-218.9595;Float;True;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.RangedFloatNode;63;-1347.595,-367.4453;Float;False;Property;_BlurRange;BlurRange;0;0;Create;True;0;0;False;0;0;1;0;1;0;1;FLOAT;0
@@ -161,4 +161,4 @@ WireConnection;9;1;16;0
 WireConnection;9;2;17;0
 WireConnection;36;0;9;0
 ASEEND*/
-//CHKSM=599746D48BCD2D02C99226BE420390E746FE0DAF
+//CHKSM=F038D33B8AD483768CDD005CEED0B6399E244549
