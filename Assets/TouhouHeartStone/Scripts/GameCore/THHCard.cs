@@ -199,6 +199,31 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.STEALTH, value);
         }
+        public static bool isDrain(this Card card)
+        {
+            return card.getProp<bool>(Keyword.DRAIN);
+        }
+        public static void setDrain(this Card card, bool value)
+        {
+            card.setProp(Keyword.DRAIN, value);
+        }
+        public static bool isPoisonous(this Card card)
+        {
+            return card.getProp<bool>(Keyword.POISONOUS);
+        }
+        public static void setPoisonous(this Card card, bool value)
+        {
+            card.setProp(Keyword.POISONOUS, value);
+        }
+        public static bool isMagicImmune(this Card card)
+        {
+            return card.getProp<bool>(Keyword.MAGICIMMUNE);
+        }
+        public static void setMagicImmune(this Card card, bool value)
+        {
+            card.setProp(Keyword.MAGICIMMUNE, value);
+        }
+
         public static int getSpellDamage(this Card card)
         {
             return card.getProp<int>(nameof(ServantCardDefine.spellDamage));
@@ -285,7 +310,7 @@ namespace TouhouHeartstone
                     targetList.Add(player.master);
                 foreach (Card servant in player.field)
                 {
-                    if (effect.checkTarget(game, null, card, new object[] { servant }))
+                    if (effect.checkTarget(game, null, card, new object[] { servant }) && !servant.isMagicImmune())
                         targetList.Add(servant);
                 }
             }
@@ -317,7 +342,39 @@ namespace TouhouHeartstone
                 if (arg.card.getAttack() > 0)
                     await arg.target.damage(game, arg.card, arg.card.getAttack());
                 if (arg.target.getAttack() > 0)
-                    await arg.card.damage(game, arg.target, arg.target.getAttack());
+
+                    await arg.card.damage(game, arg.target.getAttack());
+                if (arg.card.isDrain())
+                    await player.master.heal(game, arg.card.getAttack());
+                if (arg.target.isDrain())
+                    await (arg.target.owner as THHPlayer).master.heal(game, arg.target.getAttack());
+                if (arg.card.isPoisonous() && arg.target.owner != null)
+                {
+                    DamageEventArg damage = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DamageEventArg) as THHCard.DamageEventArg;
+                    //剧毒角色造成伤害后，对方死亡
+                    if (damage.value > 0)
+                    {
+                        await arg.target.die(game, new DeathEventArg.Info()
+                        {
+                            card = target,
+                            player = (THHPlayer)arg.target.owner,
+                            position = player.field.indexOf(card)
+                        });
+                    }
+                }
+                if (arg.target.isPoisonous() && arg.card != player.master)
+                {
+                    DamageEventArg damage = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DamageEventArg) as THHCard.DamageEventArg;
+                    if (damage.value > 0)
+                    {
+                        await arg.card.die(game, new DeathEventArg.Info()
+                        {
+                            card = card,
+                            player = player,
+                            position = player.field.indexOf(card)
+                        });
+                    }
+                }
             });
             await game.updateDeath();
             return true;

@@ -22,5 +22,17 @@
         /// 潜行
         /// </summary>
         public const string STEALTH = "stealth";
+        /// <summary>
+        /// 吸血
+        /// </summary>
+        public const string DRAIN = "drain";
+        /// <summary>
+        /// 剧毒
+        /// </summary>
+        public const string POISONOUS = "poisonous";
+        /// <summary>
+        /// 魔免
+        /// </summary>
+        public const string MAGICIMMUNE = "MagicImmune";
     }
 }
