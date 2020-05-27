@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using TouhouCardEngine;
 using BJSYGameCore;
 using UI;
 using ExcelLibrary.SpreadSheet;
-using System.Threading;
+using System.Threading.Tasks;
 namespace Game
 {
     public class CardManager : Manager
@@ -22,17 +21,8 @@ namespace Game
             {
                 if (_defaultImage == null)
                 {
-                    if (File.Exists(Application.streamingAssetsPath + "/" + _defaultImagePath))
-                    {
-                        using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/" + _defaultImagePath, FileMode.Open))
-                        {
-                            Texture2D texture = new Texture2D(512, 512);
-                            byte[] bytes = new byte[stream.Length];
-                            stream.Read(bytes, 0, (int)stream.Length);
-                            texture.LoadImage(bytes);
-                            _defaultImage = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
-                        }
-                    }
+                    Texture2D texture = getManager<ResourceManager>().loadTexture(_defaultImagePath).Result;
+                    _defaultImage = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
                 }
                 return _defaultImage;
             }
@@ -40,12 +30,12 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
-            Load();
+            _ = Load();
         }
         [SerializeField]
         CardSkinData[] _skins = new CardSkinData[0];
         Dictionary<int, CardSkinData> skinDic { get; } = new Dictionary<int, CardSkinData>();
-        public void Load()
+        public async Task Load()
         {
             skinDic.Clear();
             foreach (CardSkinData skin in _skins)
@@ -60,33 +50,15 @@ namespace Game
             {
                 try
                 {
-                    if (Directory.Exists(Application.streamingAssetsPath + "/" + path))
-                    {
-                        foreach (var filePath in Directory.GetFiles(Application.streamingAssetsPath + "/" + path, "*.xls", SearchOption.AllDirectories))
-                        {
-                            using (FileStream stream = new FileStream(filePath, FileMode.Open))
-                            {
-                                workbooks.Add(Workbook.Load(stream), filePath);
-                            }
-                        }
-                    }
-                    else if (File.Exists(Application.streamingAssetsPath + "/" + path))
-                    {
-                        using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/" + path, FileMode.Open))
-                        {
-                            workbooks.Add(Workbook.Load(stream), Application.streamingAssetsPath + "/" + path);
-                        }
-                    }
-                    else
-                        UberDebug.LogError("读取外部卡牌文件" + path + "失败，无法找到该文件。");
+                    workbooks.Add(await getManager<ResourceManager>().loadExcel(path), path);
                 }
                 catch (Exception e)
                 {
                     UberDebug.LogError("读取外部卡牌文件" + path + "失败，发生异常：" + e);
                 }
             }
-            var cards = CardImporter.GetCardDefines(AppDomain.CurrentDomain.GetAssemblies(), workbooks, out var skins);
-            foreach (CardDefine card in cards)
+            var result = await CardImporter.GetCardDefines(getManager<ResourceManager>(), AppDomain.CurrentDomain.GetAssemblies(), workbooks, defaultImage);
+            foreach (CardDefine card in result.Key)
             {
                 if (defineDic.ContainsKey(card.id))
                 {
@@ -95,7 +67,7 @@ namespace Game
                 }
                 defineDic.Add(card.id, card);
             }
-            foreach (CardSkinData skin in skins)
+            foreach (CardSkinData skin in result.Value)
             {
                 if (skinDic.ContainsKey(skin.id))
                 {
