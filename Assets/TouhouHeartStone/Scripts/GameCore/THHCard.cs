@@ -342,8 +342,7 @@ namespace TouhouHeartstone
                 if (arg.card.getAttack() > 0)
                     await arg.target.damage(game, arg.card, arg.card.getAttack());
                 if (arg.target.getAttack() > 0)
-
-                    await arg.card.damage(game, arg.target.getAttack());
+                    await arg.card.damage(game, arg.target, arg.target.getAttack());
                 if (arg.card.isDrain())
                     await player.master.heal(game, arg.card.getAttack());
                 if (arg.target.isDrain())
