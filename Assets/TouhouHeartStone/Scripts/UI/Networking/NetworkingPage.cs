@@ -38,7 +38,7 @@ namespace UI
 
         void onDirectLinkBtnClick()
         {
-            _ = Networking.Connect(IPFieldInput.text);
+            Networking.Connect(IPFieldInput.text);
         }
     }
 

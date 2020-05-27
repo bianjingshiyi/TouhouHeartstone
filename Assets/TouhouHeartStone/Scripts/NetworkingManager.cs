@@ -67,7 +67,9 @@ namespace Game
         {
             // 加入成功后就开启自己的游戏
             // 主机是在对方连接成功后再连接自己
-            game.run();
+            (game.answers as AnswerManager).client = client;
+            gameManager.displayGameUI(game.getPlayer(1)); // todo: 替换成真实的ID
+            gameManager.gameStart();
         }
 
         /// <summary>
@@ -76,13 +78,14 @@ namespace Game
         /// <returns></returns>
         public void CreateRoom()
         {
-            host.logger = game.logger;
-            client.logger = game.logger;
+            if (game == null)
+                gameManager.createGame();
+
+            host.logger = game?.logger;
+            client.logger = game?.logger;
 
             host.start();
             client.start();
-
-            (game.answers as AnswerManager).client = client;
         }
 
         /// <summary>
@@ -90,8 +93,11 @@ namespace Game
         /// </summary>
         /// <param name="addr"></param>
         /// <returns></returns>
-        public async Task Connect(string addr)
+        public void Connect(string addr)
         {
+            if (game == null)
+                gameManager.createGame();
+
             int port = host.port;
             string address = "";
             var uri = new Uri("http://" + addr);
@@ -107,11 +113,10 @@ namespace Game
             if (uri.Port != 80)
                 port = uri.Port;
 
-            client.logger = game.logger;
+            client.logger = game?.logger;
             client.start();
-            await client.join(address, port);
-
-            (game.answers as AnswerManager).client = client;
+            Debug.Log($"Connect to {address}:{port}...");
+            _ = client.join(address, port);
         }
     }
 }
