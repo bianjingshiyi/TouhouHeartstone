@@ -306,7 +306,7 @@ namespace Tests
             ClientManager c1 = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
             c1.logger = g1.logger;
             c1.start();
-            _ = c1.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
+            Task task = c1.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
             (g1.answers as AnswerManager).client = c1;
 
             THHGame g2 = TestGameflow.initStandardGame(name: "客户端1", playersId: new int[] { 0, 1 }, option: new GameOption()
@@ -316,9 +316,9 @@ namespace Tests
             ClientManager c2 = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
             c2.logger = g2.logger;
             c2.start();
-            _ = c2.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
+            task = c2.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
             (g2.answers as AnswerManager).client = c2;
-            yield return new WaitForSeconds(.5f);
+            yield return new WaitUntil(() => task.IsCompleted);
 
             _ = g1.run();
             _ = g2.run();
