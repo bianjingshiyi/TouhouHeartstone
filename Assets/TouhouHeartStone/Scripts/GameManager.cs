@@ -59,7 +59,46 @@ namespace Game
                 }
             }
         }
+        /// <summary>
+        /// 创建并开始本地游戏
+        /// </summary>
         public void startGame()
+        {
+            createGame();
+
+            THHPlayer localPlayer = game.createPlayer(1, "本地玩家", game.getCardDefine(_deck[0]) as MasterCardDefine,
+                _deck.Skip(1).Select(id => game.getCardDefine(id)));
+            THHPlayer aiPlayer = game.createPlayer(2, "AI", game.getCardDefine(_deck[0]) as MasterCardDefine,
+                _deck.Skip(1).Select(id => game.getCardDefine(id)));
+            displayGameUI(localPlayer);
+            //AI玩家用AI
+            new AI(game, aiPlayer);
+            gameStart();
+        }
+
+        /// <summary>
+        /// 开始一个已经创建的游戏
+        /// </summary>
+        public void gameStart()
+        {
+            game.triggers.onEventAfter += onEventAfter;
+            gameTask = game.run();
+        }
+
+        /// <summary>
+        /// 显示游戏UI，并指定本地玩家
+        /// </summary>
+        /// <param name="localPlayer"></param>
+        public void displayGameUI(THHPlayer localPlayer)
+        {
+            //本地玩家用UI
+            _ui.display(_ui.Game);
+            _ui.Game.Table.setGame(game, localPlayer);
+        }
+        /// <summary>
+        /// 创建游戏
+        /// </summary>
+        public void createGame()
         {
             game = new THHGame(_option, getManager<CardManager>().GetCardDefines())
             {
@@ -84,18 +123,6 @@ namespace Game
                     _deck[i] = game.getCardDefine<RashFairy>().id;
                 }
             }
-
-            THHPlayer localPlayer = game.createPlayer(1, "本地玩家", game.getCardDefine(_deck[0]) as MasterCardDefine,
-                _deck.Skip(1).Select(id => game.getCardDefine(id)));
-            THHPlayer aiPlayer = game.createPlayer(2, "AI", game.getCardDefine(_deck[0]) as MasterCardDefine,
-                _deck.Skip(1).Select(id => game.getCardDefine(id)));
-            //本地玩家用UI
-            _ui.display(_ui.Game);
-            _ui.Game.Table.setGame(game, localPlayer);
-            //AI玩家用AI
-            new AI(game, aiPlayer);
-            game.triggers.onEventAfter += onEventAfter;
-            gameTask = game.run();
         }
 
         private void onEventAfter(TouhouCardEngine.Interfaces.IEventArg obj)
