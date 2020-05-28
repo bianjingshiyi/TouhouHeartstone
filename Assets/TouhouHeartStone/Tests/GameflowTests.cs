@@ -558,15 +558,15 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[] { Keyword.STEALTH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,player,card,arg)=>
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 return true;
-            },(game,player,card,arg)=>
+            },(game,card,arg)=>
             {
-                game.getPlayerForNextTurn(player).master.damage(game, 1);
+                game.getPlayerForNextTurn(arg.player).master.damage(game, card, 1);
                 return Task.CompletedTask;
             })
         };
@@ -614,7 +614,7 @@ namespace Tests
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[] { };
-        public override string[] keywords { get; set; } = new string[] { Keyword.MAGICIMMUNE };
+        public override string[] keywords { get; set; } = new string[] { Keyword.ELUSIVE };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
     
@@ -636,18 +636,18 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 if(targets[0] is Card target)
                     return true;
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
-                    await target.damage(game, 1);
+                    await target.damage(game, arg.player.master, 1);
             })
         };
 
@@ -663,18 +663,18 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,player,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
             {
                 return true;
-            },(game,player,card,targets)=>
+            },(game,card,targets)=>
             {
                 if(targets[0] is Card target)
                     return true;
                 return false;
-            },async (game,player,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
-                    await target.damage(game, 1);
+                    await target.damage(game, card, arg.player.getSpellDamage(1));
             })
         };
     }

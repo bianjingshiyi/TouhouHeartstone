@@ -142,7 +142,7 @@ namespace TouhouHeartstone
         {
             if (!card.isUsable(game, this, out _))
                 return false;
-            if (targets.Length == 1 && targets[0].isMagicImmune())
+            if (targets.Length == 1 && targets[0].isElusive())
                 return false;
             if (card.define is SkillCardDefine)
                 card.setUsed(true);

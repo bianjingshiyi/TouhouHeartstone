@@ -215,13 +215,13 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.POISONOUS, value);
         }
-        public static bool isMagicImmune(this Card card)
+        public static bool isElusive(this Card card)
         {
-            return card.getProp<bool>(Keyword.MAGICIMMUNE);
+            return card.getProp<bool>(Keyword.ELUSIVE);
         }
-        public static void setMagicImmune(this Card card, bool value)
+        public static void setElusive(this Card card, bool value)
         {
-            card.setProp(Keyword.MAGICIMMUNE, value);
+            card.setProp(Keyword.ELUSIVE, value);
         }
 
         public static int getSpellDamage(this Card card)
@@ -310,7 +310,7 @@ namespace TouhouHeartstone
                     targetList.Add(player.master);
                 foreach (Card servant in player.field)
                 {
-                    if (effect.checkTarget(game, null, card, new object[] { servant }) && !servant.isMagicImmune())
+                    if (effect.checkTarget(game, null, card, new object[] { servant }) && !servant.isElusive())
                         targetList.Add(servant);
                 }
             }
@@ -321,8 +321,8 @@ namespace TouhouHeartstone
             IActiveEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) as IActiveEffect;
             if (effect == null)
                 return false;
-            if (target.isMagicImmune())
-                return false;
+            //if (target.isElusive())
+            //    return false;
             return effect.checkTarget(game, null, card, new object[] { target });
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
@@ -344,8 +344,7 @@ namespace TouhouHeartstone
                 if (arg.card.getAttack() > 0)
                     await arg.target.damage(game, arg.card, arg.card.getAttack());
                 if (arg.target.getAttack() > 0)
-
-                    await arg.card.damage(game, arg.target.getAttack());
+                    await arg.card.damage(game, arg.target, arg.target.getAttack());
                 if (arg.card.isDrain())
                     await player.master.heal(game, arg.card.getAttack());
                 if (arg.target.isDrain())
