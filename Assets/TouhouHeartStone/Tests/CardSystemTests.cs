@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using System.Linq;
+using System;
 using TouhouHeartstone;
 using TouhouCardEngine;
 namespace Tests
@@ -179,15 +180,7 @@ namespace Tests
             game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<MountainGaint>() as CardDefine, 30));
             game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<MountainGaint>() as CardDefine, 30));
 
-            game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
-
-            while (game.sortedPlayers[0].hand.count < 10)
-            {
-                game.sortedPlayers[0].cmdTurnEnd(game);
-                game.sortedPlayers[1].cmdTurnEnd(game);
-            }
+            game.skipTurnUntil(() => game.sortedPlayers[0].hand.count < 10);
 
             Assert.AreEqual(3, game.sortedPlayers[0].hand[0].getCost());
             int gemNow = game.sortedPlayers[0].gem;
@@ -201,6 +194,21 @@ namespace Tests
             public TestBuff(params PropModifier[] modifiers)
             {
                 this.modifiers = modifiers;
+            }
+        }
+    }
+    static class TestExtension
+    {
+        public static void skipTurnUntil(this THHGame game, Func<bool> condition)
+        {
+            game.run();
+            game.sortedPlayers[0].cmdInitReplace(game);
+            game.sortedPlayers[1].cmdInitReplace(game);
+
+            while (condition())
+            {
+                game.sortedPlayers[0].cmdTurnEnd(game);
+                game.sortedPlayers[1].cmdTurnEnd(game);
             }
         }
     }

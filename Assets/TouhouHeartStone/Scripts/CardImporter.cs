@@ -1,17 +1,18 @@
-﻿using System.IO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using TouhouHeartstone;
 using TouhouCardEngine;
 using UI;
 using System.Reflection;
+using System.Threading.Tasks;
 using ExcelLibrary.SpreadSheet;
+using System;
 namespace Game
 {
     static class CardImporter
     {
-        public static CardDefine[] GetCardDefines(Assembly[] assemblies, Dictionary<Workbook, string> workbooks, out CardSkinData[] skins)
+        public static async Task<KeyValuePair<CardDefine[], CardSkinData[]>> GetCardDefines(ResourceManager resource, Assembly[] assemblies, Dictionary<Workbook, string> workbooks, Sprite defaultSprite)
         {
             List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies));
             List<CardSkinData> skinList = new List<CardSkinData>();
@@ -25,7 +26,10 @@ namespace Game
                     {
                         int id = numberToInt(pRow.Value.GetCell(idIndex).Value);
                         CardDefine card = cardList.FirstOrDefault(c => c.id == id);
-                        card = readCardDefine(card, pBook.Value, worksheet, pRow.Key, out var skin);
+                        CardSkinData skin;
+                        var pair = await readCardDefine(resource, card, pBook.Value, worksheet, pRow.Key, defaultSprite);
+                        card = pair.Key;
+                        skin = pair.Value;
                         if (card == null)
                         {
                             cardList.RemoveAll(c => c.id == id);
@@ -40,10 +44,9 @@ namespace Game
                     }
                 }
             }
-            skins = skinList.ToArray();
-            return cardList.ToArray();
+            return new KeyValuePair<CardDefine[], CardSkinData[]>(cardList.ToArray(), skinList.ToArray());
         }
-        static CardDefine readCardDefine(CardDefine card, string dir, Worksheet sheet, int row, out CardSkinData skin)
+        static async Task<KeyValuePair<CardDefine, CardSkinData>> readCardDefine(ResourceManager resource, CardDefine card, string dir, Worksheet sheet, int row, Sprite defaultSprite)
         {
             if (card == null)
                 card = new GeneratedCardDefine();
@@ -64,10 +67,11 @@ namespace Game
             int isTokenIndex = findColIndex(sheet, "IsToken");
             card.setProp(nameof(ServantCardDefine.isToken), sheet.Cells[row, isTokenIndex].Value);
             int ignoreIndex = findColIndex(sheet, "Ignore");
+            CardSkinData skin;
             if (sheet.Cells[row, ignoreIndex].Value is bool b && b)
             {
                 skin = null;
-                return null;
+                return new KeyValuePair<CardDefine, CardSkinData>(card, skin);
             }
 
             skin = new CardSkinData()
@@ -76,48 +80,30 @@ namespace Game
             };
             int imageIndex = findColIndex(sheet, "Image");
             string imagePath = sheet.Cells[row, imageIndex].StringValue;
-            if (File.Exists(dir + "/" + imagePath))
+            try
             {
-                using (FileStream stream = new FileStream(dir + "/" + imagePath, FileMode.Open))
-                {
-                    Texture2D texture = new Texture2D(512, 512);
-                    byte[] bytes = new byte[stream.Length];
-                    stream.Read(bytes, 0, (int)stream.Length);
-                    texture.LoadImage(bytes);
-                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
-                    skin.image = sprite;
-                }
+                Texture2D texture = await resource.loadTexture(imagePath);
+                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+                skin.image = sprite;
             }
-            else if (File.Exists(Application.streamingAssetsPath + "/" + imagePath))
+            catch (Exception e)
             {
-                using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/" + imagePath, FileMode.Open))
-                {
-                    Texture2D texture = new Texture2D(512, 512);
-                    byte[] bytes = new byte[stream.Length];
-                    stream.Read(bytes, 0, (int)stream.Length);
-                    texture.LoadImage(bytes);
-                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
-                    skin.image = sprite;
-                }
-            }
-            else if (File.Exists(Application.streamingAssetsPath + "/" + "Textures/砰砰博士.png"))
-            {
-                using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/" + "Textures/砰砰博士.png", FileMode.Open))
-                {
-                    Texture2D texture = new Texture2D(512, 512);
-                    byte[] bytes = new byte[stream.Length];
-                    stream.Read(bytes, 0, (int)stream.Length);
-                    texture.LoadImage(bytes);
-                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
-                    skin.image = sprite;
-                }
+                skin.image = defaultSprite;
+                Debug.LogError("加载贴图" + imagePath + "失败：" + e);
             }
 
             int nameIndex = findColIndex(sheet, "Name");
             skin.name = sheet.Cells[row, nameIndex].StringValue;
             int descIndex = findColIndex(sheet, "Desc");
             skin.desc = sheet.Cells[row, descIndex].StringValue;
-            return card;
+            return new KeyValuePair<CardDefine, CardSkinData>(card, skin);
+        }
+        static string fixPath(string path)
+        {
+#if UNITY_ANDROID
+            path.ToLower();
+#endif
+            return path;
         }
         static int numberToInt(object value)
         {

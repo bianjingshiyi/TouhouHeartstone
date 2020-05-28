@@ -34,9 +34,9 @@ namespace UI
             this._WANButton = this.transform.Find("ControlPanel").Find("BtnGroup").Find("WAN").GetComponent<Button>();
             this._StatusText = this.transform.Find("ControlPanel").Find("StatusText").GetComponent<Text>();
             this._RoomListsImage = this.transform.Find("RoomLists").GetComponent<Image>();
-            this._RoomListParent = this.transform.Find("RoomLists").Find("Local").Find("RoomListParent").GetComponent<RoomList>();
+            this._LocalRoomScrollView = this.transform.Find("RoomLists").Find("Local").Find("LocalRoomScrollView").GetComponent<RoomScrollView>();
             this._Text = this.transform.Find("RoomLists").Find("Local").Find("Text").GetComponent<Text>();
-            this._Remote_RoomListParent = this.transform.Find("RoomLists").Find("Remote").Find("RoomListParent").GetComponent<RoomList>();
+            this._RemoteRoomScrollView = this.transform.Find("RoomLists").Find("Remote").Find("RemoteRoomScrollView").GetComponent<RoomScrollView>();
             this._Remote_Text = this.transform.Find("RoomLists").Find("Remote").Find("Text").GetComponent<Text>();
         }
         private Main _parent;
@@ -165,16 +165,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private RoomList _RoomListParent;
-        public RoomList RoomListParent
+        private RoomScrollView _LocalRoomScrollView;
+        public RoomScrollView LocalRoomScrollView
         {
             get
             {
-                if ((this._RoomListParent == null))
+                if ((this._LocalRoomScrollView == null))
                 {
-                    this._RoomListParent = this.transform.Find("RoomLists").Find("Local").Find("RoomListParent").GetComponent<RoomList>();
+                    this._LocalRoomScrollView = this.transform.Find("RoomLists").Find("Local").Find("LocalRoomScrollView").GetComponent<RoomScrollView>();
                 }
-                return this._RoomListParent;
+                return this._LocalRoomScrollView;
             }
         }
         [SerializeField()]
@@ -191,16 +191,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private RoomList _Remote_RoomListParent;
-        public RoomList Remote_RoomListParent
+        private RoomScrollView _RemoteRoomScrollView;
+        public RoomScrollView RemoteRoomScrollView
         {
             get
             {
-                if ((this._Remote_RoomListParent == null))
+                if ((this._RemoteRoomScrollView == null))
                 {
-                    this._Remote_RoomListParent = this.transform.Find("RoomLists").Find("Remote").Find("RoomListParent").GetComponent<RoomList>();
+                    this._RemoteRoomScrollView = this.transform.Find("RoomLists").Find("Remote").Find("RemoteRoomScrollView").GetComponent<RoomScrollView>();
                 }
-                return this._Remote_RoomListParent;
+                return this._RemoteRoomScrollView;
             }
         }
         [SerializeField()]

@@ -65,7 +65,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - PixelSnap: 0
-    - _BlurRange: 0.01
+    - _BlurRange: 1
     - _Border: 2
     - _BumpScale: 1
     - _ColorMask: 15

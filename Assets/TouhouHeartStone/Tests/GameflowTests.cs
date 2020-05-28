@@ -306,7 +306,7 @@ namespace Tests
             ClientManager c1 = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
             c1.logger = g1.logger;
             c1.start();
-            _ = c1.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
+            Task task = c1.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
             (g1.answers as AnswerManager).client = c1;
 
             THHGame g2 = TestGameflow.initStandardGame(name: "客户端1", playersId: new int[] { 0, 1 }, option: new GameOption()
@@ -316,9 +316,9 @@ namespace Tests
             ClientManager c2 = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
             c2.logger = g2.logger;
             c2.start();
-            _ = c2.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
+            task = c2.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
             (g2.answers as AnswerManager).client = c2;
-            yield return new WaitForSeconds(.5f);
+            yield return new WaitUntil(() => task.IsCompleted);
 
             _ = g1.run();
             _ = g2.run();
@@ -566,6 +566,7 @@ namespace Tests
                 return true;
             },(game,card,arg)=>
             {
+
                 game.getPlayerForNextTurn(arg.player).master.damage(game, card, 1);
                 return Task.CompletedTask;
             })
@@ -617,7 +618,7 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[] { Keyword.ELUSIVE };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
-    
+
     /// <summary>
     /// 拥有指定单个敌人攻击的技能的Master
     /// </summary>
@@ -647,7 +648,7 @@ namespace Tests
             },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
-                    await target.damage(game, arg.player.master, 1);
+                    await target.damage(game,card,1);
             })
         };
 
@@ -695,7 +696,7 @@ namespace Tests
     }
     public class MountainGaint : ServantCardDefine
     {
-        public const int ID = 0x0011000B;
+        public const int ID = 0x00110010;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 12;
         public override int attack { get; set; } = 8;

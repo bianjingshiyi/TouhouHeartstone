@@ -8,7 +8,7 @@ namespace UI
         {
             ManMachineButton.onClick.AddListener(() =>
             {
-                parent.game.startGame();
+                parent.game.startLocalGame();
             });
             BuildButton.onClick.AddListener(() =>
             {
