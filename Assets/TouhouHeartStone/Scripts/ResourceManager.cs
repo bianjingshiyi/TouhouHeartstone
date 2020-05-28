@@ -27,16 +27,50 @@ namespace Game
             switch (platform)
             {
                 case RuntimePlatform.Android:
-                    return loadTextureByWebRequest(path);
+                    return loadTextureByWebRequestWithFallback(path);
                 default:
-                    return loadTextureBySystemIO(path);
+                    return loadTextureBySystemIOWithFallback(path);
             }
+        }
+        public async Task<Texture2D> loadTextureByWebRequestWithFallback(string path)
+        {
+            var task = loadTextureByWebRequest(path);
+            var result = await task;
+            if (task.Exception.InnerException == null) return result;
+
+            string ext = "";
+
+            if (Path.GetExtension(path).ToLower() == "png")
+                ext = "jpg";
+            if (Path.GetExtension(path).ToLower() == "jpg")
+                ext = "png";
+
+            path = Path.ChangeExtension(path, ext);
+            return await loadTextureByWebRequest(path);
         }
         public async Task<Texture2D> loadTextureByWebRequest(string path)
         {
             Texture2D texture = new Texture2D(512, 512);
             texture.LoadImage(await loadBytesByWebRequest(path));
             return texture;
+        }
+        public async Task<Texture2D> loadTextureBySystemIOWithFallback(string path)
+        {
+            try
+            {
+                return await loadTextureBySystemIO(path);
+            } 
+            catch (FileNotFoundException)
+            {
+                string ext = "";
+                if (Path.GetExtension(path).ToLower() == "png")
+                    ext = "jpg";
+                if (Path.GetExtension(path).ToLower() == "jpg")
+                    ext = "png";
+
+                path = Path.ChangeExtension(path, ext);
+                return await loadTextureBySystemIO(path);
+            }
         }
         public async Task<Texture2D> loadTextureBySystemIO(string path)
         {
