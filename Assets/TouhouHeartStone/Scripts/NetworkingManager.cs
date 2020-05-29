@@ -75,7 +75,7 @@ namespace Game
 
             host.start();
             client.start();
-            return client.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
+            return client.join("127.0.0.1", host.port);
         }
         /// <summary>
         /// 加入一个房间
@@ -86,12 +86,12 @@ namespace Game
         {
             initClient();
 
-            int port = host.port;
+            int port = client.port;
             string address = "";
             var uri = new Uri("http://" + addr);
             if (uri.HostNameType == UriHostNameType.Dns)
             {
-                address = Dns.GetHostAddresses(uri.Host).FirstOrDefault(e => e.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)?.ToString();
+                address = Dns.GetHostAddresses(uri.Host).FirstOrDefault(e => e.AddressFamily == AddressFamily.InterNetwork)?.ToString();
             }
             else
             {
