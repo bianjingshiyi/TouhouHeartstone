@@ -26,19 +26,28 @@ namespace UI
         private void createRemoteRoom()
         {
             // todo: 向服务器发送房间信息
-            StatusText.text = "正在服务器上创建游戏房间";
+            StatusText.text = "服务器上创建游戏房间\n127.0.0.1:" + Networking.host.port;
             Networking.CreateRoom();
+
+            RemoteRoomScrollView.RoomList.AddItem("测试本机", "127.0.0.1");
         }
 
         private void createLocalRoom()
         {
-            StatusText.text = "本地局域网上创建游戏房间";
             Networking.CreateRoom();
+            StatusText.text = "本地局域网上创建游戏房间\n127.0.0.1:" + Networking.host.port;
+
+            LocalRoomScrollView.RoomList.AddItem("测试本机", "127.0.0.1");
         }
 
         void onDirectLinkBtnClick()
         {
             Networking.Connect(IPFieldInput.text);
+        }
+
+        public void JoinRoom(string addr)
+        {
+            Networking.Connect(addr);
         }
     }
 
@@ -49,8 +58,17 @@ namespace UI
         void ReloadRoomList()
         {
             // todo: 拉取数据并更新
+        }
+
+        public void AddItem(string name, string addr)
+        {
             var item = addItem();
-            item.setContext();
+            item.setContext(name, addr);
+        }
+
+        public void JoinRoom(string addr)
+        {
+            networking.JoinRoom(addr);
         }
     }
 
@@ -63,12 +81,13 @@ namespace UI
 
         void onJoinClick()
         {
-            // todo: 加入房间
+            parent.JoinRoom(RoomDescText.text);
         }
 
-        public void setContext()
+        public void setContext(string title, string addr)
         {
-            // todo: 设置相关的Context
+            RoomDescText.text = addr;
+            RoomNameText.text = title;
         }
     }
 }
