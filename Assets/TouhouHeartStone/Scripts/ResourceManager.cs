@@ -35,7 +35,8 @@ namespace Game
         public async Task<Texture2D> loadTextureByWebRequest(string path)
         {
             Texture2D texture = new Texture2D(512, 512);
-            texture.LoadImage(await loadBytesByWebRequest(path));
+            byte[] data = await loadBytesByWebRequest(path);
+            texture.LoadImage(data);
             return texture;
         }
         public async Task<Texture2D> loadTextureBySystemIO(string path)

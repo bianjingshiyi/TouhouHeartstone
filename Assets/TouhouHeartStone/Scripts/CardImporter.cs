@@ -70,8 +70,7 @@ namespace Game
             CardSkinData skin;
             if (sheet.Cells[row, ignoreIndex].Value is bool b && b)
             {
-                skin = null;
-                return new KeyValuePair<CardDefine, CardSkinData>(card, skin);
+                return new KeyValuePair<CardDefine, CardSkinData>(null, null);
             }
 
             skin = new CardSkinData()

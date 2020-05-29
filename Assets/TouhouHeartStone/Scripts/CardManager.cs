@@ -7,6 +7,7 @@ using BJSYGameCore;
 using UI;
 using ExcelLibrary.SpreadSheet;
 using System.Threading.Tasks;
+using System.Reflection;
 namespace Game
 {
     public class CardManager : Manager
@@ -15,17 +16,14 @@ namespace Game
         string _defaultImagePath;
         [SerializeField]
         Sprite _defaultImage;
-        Sprite defaultImage
+        async Task<Sprite> getDefaultSprite()
         {
-            get
+            if (_defaultImage == null)
             {
-                if (_defaultImage == null)
-                {
-                    Texture2D texture = getManager<ResourceManager>().loadTexture(_defaultImagePath).Result;
-                    _defaultImage = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
-                }
-                return _defaultImage;
+                Texture2D texture = await getManager<ResourceManager>().loadTexture(_defaultImagePath);
+                _defaultImage = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
             }
+            return _defaultImage;
         }
         protected override void onAwake()
         {
@@ -41,7 +39,7 @@ namespace Game
             foreach (CardSkinData skin in _skins)
             {
                 if (skin.image == null)
-                    skin.image = defaultImage;
+                    skin.image = await getDefaultSprite();
                 skinDic.Add(skin.id, skin);
             }
 
@@ -50,14 +48,16 @@ namespace Game
             {
                 try
                 {
-                    workbooks.Add(await getManager<ResourceManager>().loadExcel(path), path);
+                    Workbook workbook = await getManager<ResourceManager>().loadExcel(path);
+                    workbooks.Add(workbook, path);
                 }
                 catch (Exception e)
                 {
                     UberDebug.LogError("读取外部卡牌文件" + path + "失败，发生异常：" + e);
                 }
             }
-            var result = await CardImporter.GetCardDefines(getManager<ResourceManager>(), AppDomain.CurrentDomain.GetAssemblies(), workbooks, defaultImage);
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var result = await CardImporter.GetCardDefines(getManager<ResourceManager>(), assemblies, workbooks, await getDefaultSprite());
             foreach (CardDefine card in result.Key)
             {
                 if (defineDic.ContainsKey(card.id))
