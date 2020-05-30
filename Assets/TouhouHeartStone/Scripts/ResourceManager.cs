@@ -12,6 +12,8 @@ namespace Game
     {
         public Task<Workbook> loadExcel(string path, RuntimePlatform? platform = null)
         {
+            if (path == null)
+                throw new System.Exception("路径不能为空");
             platform = getPlatform(platform);
             switch (platform)
             {
@@ -23,6 +25,8 @@ namespace Game
         }
         public Task<Texture2D> loadTexture(string path, RuntimePlatform? platform = null)
         {
+            if (path == null)
+                throw new System.Exception("路径不能为空");
             platform = getPlatform(platform);
             switch (platform)
             {
@@ -143,7 +147,7 @@ namespace Game
             filePath = Application.streamingAssetsPath + "/" + path;
             if (File.Exists(filePath))
                 return new FileStream(filePath, FileMode.Open);
-            throw new FileNotFoundException(path);
+            throw new FileNotFoundException("File not found.", path);
         }
         private Task<byte[]> loadBytesByWebRequest(string path)
         {
@@ -160,7 +164,7 @@ namespace Game
                 {
                     if (uop.webRequest.responseCode == 404)
                     {
-                        tcs.SetException(new FileNotFoundException());
+                        tcs.SetException(new FileNotFoundException("Unable to load file.", path));
                     }
                     else
                     {
