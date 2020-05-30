@@ -716,20 +716,23 @@ namespace Tests
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[0];
         public override string[] keywords { get; set; } = new string[] { Keyword.STEALTH };
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return true;
-            },(game,card,arg)=>
-            {
-                game.getPlayerForNextTurn(arg.player).master.damage(game,card,1);
-                return Task.CompletedTask;
-            })
-        };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        //public override IEffect[] effects { get; set; } = new IEffect[]
+        //{
+        //    new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
+        //    {
+        //        return true;
+        //    },(game,card,targets)=>
+        //    {
+        //        return true;
+        //    },(game,card,arg)=>
+        //    {
+
+        //        game.getPlayerForNextTurn(arg.player).master.damage(game, card, 1);
+        //        return Task.CompletedTask;
+        //    })
+        //};
 
     }
 
@@ -766,7 +769,7 @@ namespace Tests
     /// <summary>
     /// 魔免随从
     /// </summary>
-    public class MaginImmuneServant : ServantCardDefine
+    public class ElusiveServant : ServantCardDefine
     {
         public const int ID = 0x0011000B;
         public override int id { get; set; } = ID;
@@ -774,7 +777,7 @@ namespace Tests
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[] { };
-        public override string[] keywords { get; set; } = new string[] { Keyword.MAGICIMMUNE };
+        public override string[] keywords { get; set; } = new string[] { Keyword.ELUSIVE };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
 
@@ -834,7 +837,7 @@ namespace Tests
             },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
-                    await target.damage(game,card,1);
+                    await target.damage(game, card, arg.player.getSpellDamage(1));
             })
         };
     }
