@@ -16,7 +16,11 @@ namespace Game
         string _defaultImagePath;
         [SerializeField]
         Sprite _defaultImage;
-        async Task<Sprite> getDefaultSprite()
+        /// <summary>
+        /// 获取默认卡片贴图
+        /// </summary>
+        /// <returns></returns>
+        public async Task<Sprite> getDefaultSprite()
         {
             if (_defaultImage == null)
             {
@@ -28,12 +32,17 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
-            _ = Load();
+            _ = Load(_externalCardPaths);
         }
         [SerializeField]
         CardSkinData[] _skins = new CardSkinData[0];
         Dictionary<int, CardSkinData> skinDic { get; } = new Dictionary<int, CardSkinData>();
-        public async Task Load()
+        /// <summary>
+        /// 从给出的路径中加载卡片和皮肤
+        /// </summary>
+        /// <param name="excelPaths"></param>
+        /// <returns></returns>
+        public async Task Load(string[] excelPaths)
         {
             skinDic.Clear();
             foreach (CardSkinData skin in _skins)
@@ -44,7 +53,8 @@ namespace Game
             }
 
             Dictionary<Workbook, string> workbooks = new Dictionary<Workbook, string>();
-            foreach (var path in _externalCardPaths)
+
+            foreach (var path in excelPaths)
             {
                 try
                 {
@@ -77,6 +87,9 @@ namespace Game
                 skinDic.Add(skin.id, skin);
             }
         }
+        /// <summary>
+        /// 卸载所有加载的资源
+        /// </summary>
         public void Unload()
         {
 
@@ -84,16 +97,31 @@ namespace Game
         [SerializeField]
         string[] _externalCardPaths = new string[0];
         Dictionary<int, CardDefine> defineDic { get; set; } = new Dictionary<int, CardDefine>();
+        /// <summary>
+        /// 根据id获取卡片定义
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public CardDefine GetCardDefine(int id)
         {
             return defineDic.ContainsKey(id) ? defineDic[id] : null;
         }
+        /// <summary>
+        /// 根据条件获取卡片定义
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public CardDefine[] GetCardDefines(Func<CardDefine, bool> filter = null)
         {
             if (filter != null)
                 return defineDic.Values.Where(d => filter.Invoke(d)).ToArray();
             return defineDic.Values.ToArray();
         }
+        /// <summary>
+        /// 根据id获取卡片皮肤
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public CardSkinData GetCardSkin(int id)
         {
             if (tempSkinDic.ContainsKey(id))
@@ -101,6 +129,10 @@ namespace Game
             return skinDic.ContainsKey(id) ? skinDic[id] : null;
         }
         Dictionary<int, CardSkinData> tempSkinDic { get; } = new Dictionary<int, CardSkinData>();
+        /// <summary>
+        /// 添加临时的卡片皮肤
+        /// </summary>
+        /// <param name="skin"></param>
         public void AddCardSkinTemp(CardSkinData skin)
         {
             if (skinDic.ContainsKey(skin.id))
