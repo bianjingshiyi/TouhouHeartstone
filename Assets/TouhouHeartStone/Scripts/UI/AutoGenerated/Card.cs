@@ -26,14 +26,13 @@ namespace UI
         public void autoBind()
         {
             this._CardBackImage = this.transform.Find("CardBack").GetComponent<Image>();
-            this._Image_1 = this.transform.Find("CardBack").Find("Image_1").GetComponent<Image>();
-            this._Image_2 = this.transform.Find("CardBack").Find("Image_2").GetComponent<Image>();
             this._ShadowImage = this.transform.Find("CardFace").Find("Shadow").GetComponent<Image>();
             this._BackgroundImage = this.transform.Find("CardFace").Find("Background").GetComponent<Image>();
             this._Mask = this.transform.Find("CardFace").Find("Mask").GetComponent<Mask>();
             this._Image = this.transform.Find("CardFace").Find("Mask").Find("Image").GetComponent<Image>();
             this._NameShadowImage = this.transform.Find("CardFace").Find("Mask").Find("NameShadow").GetComponent<Image>();
-            this._NameText = this.transform.Find("CardFace").Find("Mask").Find("NameShadow").Find("NameText").GetComponent<Text>();
+            this._NameText = this.transform.Find("CardFace").Find("Mask").Find("NameText").GetComponent<Text>();
+            this._DescShadowImage = this.transform.Find("CardFace").Find("Mask").Find("DescShadow").GetComponent<Image>();
             this._DescText = this.transform.Find("CardFace").Find("Mask").Find("DescText").GetComponent<Text>();
             this._BorderImage = this.transform.Find("CardFace").Find("Border").GetComponent<Image>();
             this._CardFace_Image = this.transform.Find("CardFace").Find("Image").GetComponent<Image>();
@@ -43,8 +42,7 @@ namespace UI
             this._AttackPropNumber = this.transform.Find("CardFace").Find("Attack").GetComponent<PropNumber>();
             this._LifeImage = this.transform.Find("CardFace").Find("LifeImage").GetComponent<Image>();
             this._LifePropNumber = this.transform.Find("CardFace").Find("Life").GetComponent<PropNumber>();
-            this._Card_BackImage = this.transform.Find("GameObject").Find("Card_Back").GetComponent<Image>();
-            this._Card_CrossImage = this.transform.Find("GameObject").Find("Card_Cross").GetComponent<Image>();
+            this._CrossImage = this.transform.Find("Cross").GetComponent<Image>();
         }
         [SerializeField()]
         private Image _CardBackImage;
@@ -57,32 +55,6 @@ namespace UI
                     this._CardBackImage = this.transform.Find("CardBack").GetComponent<Image>();
                 }
                 return this._CardBackImage;
-            }
-        }
-        [SerializeField()]
-        private Image _Image_1;
-        public Image Image_1
-        {
-            get
-            {
-                if ((this._Image_1 == null))
-                {
-                    this._Image_1 = this.transform.Find("CardBack").Find("Image_1").GetComponent<Image>();
-                }
-                return this._Image_1;
-            }
-        }
-        [SerializeField()]
-        private Image _Image_2;
-        public Image Image_2
-        {
-            get
-            {
-                if ((this._Image_2 == null))
-                {
-                    this._Image_2 = this.transform.Find("CardBack").Find("Image_2").GetComponent<Image>();
-                }
-                return this._Image_2;
             }
         }
         [SerializeField()]
@@ -158,9 +130,22 @@ namespace UI
             {
                 if ((this._NameText == null))
                 {
-                    this._NameText = this.transform.Find("CardFace").Find("Mask").Find("NameShadow").Find("NameText").GetComponent<Text>();
+                    this._NameText = this.transform.Find("CardFace").Find("Mask").Find("NameText").GetComponent<Text>();
                 }
                 return this._NameText;
+            }
+        }
+        [SerializeField()]
+        private Image _DescShadowImage;
+        public Image DescShadowImage
+        {
+            get
+            {
+                if ((this._DescShadowImage == null))
+                {
+                    this._DescShadowImage = this.transform.Find("CardFace").Find("Mask").Find("DescShadow").GetComponent<Image>();
+                }
+                return this._DescShadowImage;
             }
         }
         [SerializeField()]
@@ -281,29 +266,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _Card_BackImage;
-        public Image Card_BackImage
+        private Image _CrossImage;
+        public Image CrossImage
         {
             get
             {
-                if ((this._Card_BackImage == null))
+                if ((this._CrossImage == null))
                 {
-                    this._Card_BackImage = this.transform.Find("GameObject").Find("Card_Back").GetComponent<Image>();
+                    this._CrossImage = this.transform.Find("Cross").GetComponent<Image>();
                 }
-                return this._Card_BackImage;
-            }
-        }
-        [SerializeField()]
-        private Image _Card_CrossImage;
-        public Image Card_CrossImage
-        {
-            get
-            {
-                if ((this._Card_CrossImage == null))
-                {
-                    this._Card_CrossImage = this.transform.Find("GameObject").Find("Card_Cross").GetComponent<Image>();
-                }
-                return this._Card_CrossImage;
+                return this._CrossImage;
             }
         }
         partial void onAwake();

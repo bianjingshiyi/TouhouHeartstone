@@ -36,7 +36,8 @@ namespace Game
         {
             var task = loadTextureByWebRequest(path);
             var result = await task;
-            if (task.Exception.InnerException == null) return result;
+            if (task.IsCompleted)
+                return result;
 
             string ext = "";
 
@@ -60,7 +61,7 @@ namespace Game
             try
             {
                 return await loadTextureBySystemIO(path);
-            } 
+            }
             catch (FileNotFoundException)
             {
                 string ext = "";
@@ -127,7 +128,7 @@ namespace Game
             TaskCompletionSource<byte[]> tcs = new TaskCompletionSource<byte[]>();
             UnityWebRequest.Get(Application.streamingAssetsPath + "/" + path).SendWebRequest().completed += op =>
             {
-                var uop = (op as UnityWebRequestAsyncOperation);
+                var uop = op as UnityWebRequestAsyncOperation;
                 if (uop.webRequest.isNetworkError)
                 {
                     tcs.SetException(new HttpRequestException(uop.webRequest.error));

@@ -37,6 +37,10 @@ namespace Game
         [SerializeField]
         CardSkinData[] _skins = new CardSkinData[0];
         Dictionary<int, CardSkinData> skinDic { get; } = new Dictionary<int, CardSkinData>();
+        public Task load()
+        {
+            return Load(_externalCardPaths);
+        }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤
         /// </summary>
