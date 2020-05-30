@@ -24,8 +24,10 @@ namespace Tests
 
         async Task<CardManager> loadCards()
         {
-            CardManager cm = new GameObject(nameof(CardManager)).AddComponent<CardManager>();
-            await cm.Load(new string[] { "Cards/cards.xls" });
+            var go = new GameObject(nameof(CardManager));
+            go.AddComponent<ResourceManager>();
+            CardManager cm = go.AddComponent<CardManager>();
+            await cm.Load(new string[] { "Cards/Cards.xls" });
             return cm;
         }
 
