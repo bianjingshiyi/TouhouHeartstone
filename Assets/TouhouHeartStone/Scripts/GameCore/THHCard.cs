@@ -321,8 +321,8 @@ namespace TouhouHeartstone
             IActiveEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) as IActiveEffect;
             if (effect == null)
                 return false;
-            //if (target.isElusive())
-            //    return false;
+            if (target.isStealth())
+                return false;
             return effect.checkTarget(game, null, card, new object[] { target });
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)

@@ -556,21 +556,23 @@ namespace Tests
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[0];
         public override string[] keywords { get; set; } = new string[] { Keyword.STEALTH };
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return true;
-            },(game,card,arg)=>
-            {
+        public override IEffect[] effects { get; set; } = new IEffect[0];
 
-                game.getPlayerForNextTurn(arg.player).master.damage(game, card, 1);
-                return Task.CompletedTask;
-            })
-        };
+        //public override IEffect[] effects { get; set; } = new IEffect[]
+        //{
+        //    new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
+        //    {
+        //        return true;
+        //    },(game,card,targets)=>
+        //    {
+        //        return true;
+        //    },(game,card,arg)=>
+        //    {
+
+        //        game.getPlayerForNextTurn(arg.player).master.damage(game, card, 1);
+        //        return Task.CompletedTask;
+        //    })
+        //};
 
     }
 
@@ -607,7 +609,7 @@ namespace Tests
     /// <summary>
     /// 魔免随从
     /// </summary>
-    public class MaginImmuneServant : ServantCardDefine
+    public class ElusiveServant : ServantCardDefine
     {
         public const int ID = 0x0011000B;
         public override int id { get; set; } = ID;
