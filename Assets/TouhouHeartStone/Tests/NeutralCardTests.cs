@@ -152,7 +152,7 @@ namespace Tests
             //炎之妖精 战吼：对一个随机敌方随从造成1点伤害
             //那么我们要测试这个战吼内容
 
-            game.skipTurnUntil(() => game.sortedPlayers[0].gem == 1);
+            game.skipTurnWhen(() => game.sortedPlayers[0].gem < 1);
 
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);//第一个行动的玩家使用手上的第一张牌，反正满手都是炎之妖精随便用
             Assert.IsInstanceOf<FlameFairy>(game.sortedPlayers[0].field[0].define);//预期场上拍了一个炎之妖精

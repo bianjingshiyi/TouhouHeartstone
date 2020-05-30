@@ -180,7 +180,7 @@ namespace Tests
             game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<MountainGaint>() as CardDefine, 30));
             game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<MountainGaint>() as CardDefine, 30));
 
-            game.skipTurnUntil(() => game.sortedPlayers[0].hand.count < 10);
+            game.skipTurnWhen(() => game.sortedPlayers[0].hand.count < 10);
 
             Assert.AreEqual(3, game.sortedPlayers[0].hand[0].getCost());
             int gemNow = game.sortedPlayers[0].gem;
@@ -199,16 +199,42 @@ namespace Tests
     }
     static class TestExtension
     {
-        public static void skipTurnUntil(this THHGame game, Func<bool> condition)
+        public static void skipTurnWhen(this THHGame game, Func<bool> condition)
         {
-            game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
+            if (!game.isRunning)
+            {
+                game.run();
+                game.sortedPlayers[0].cmdInitReplace(game);
+                game.sortedPlayers[1].cmdInitReplace(game);
+            }
 
             while (condition())
             {
-                game.sortedPlayers[0].cmdTurnEnd(game);
-                game.sortedPlayers[1].cmdTurnEnd(game);
+                if (game.currentPlayer == game.sortedPlayers[0])
+                    game.sortedPlayers[0].cmdTurnEnd(game);
+                if (!condition())
+                    return;
+                if (game.currentPlayer == game.sortedPlayers[1])
+                    game.sortedPlayers[1].cmdTurnEnd(game);
+            }
+        }
+        public static void skipTurnUntil(this THHGame game, Func<bool> condition)
+        {
+            if (!game.isRunning)
+            {
+                game.run();
+                game.sortedPlayers[0].cmdInitReplace(game);
+                game.sortedPlayers[1].cmdInitReplace(game);
+            }
+
+            while (!condition())
+            {
+                if (game.currentPlayer == game.sortedPlayers[0])
+                    game.sortedPlayers[0].cmdTurnEnd(game);
+                if (condition())
+                    return;
+                if (game.currentPlayer == game.sortedPlayers[1])
+                    game.sortedPlayers[1].cmdTurnEnd(game);
             }
         }
     }

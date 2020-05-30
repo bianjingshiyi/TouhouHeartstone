@@ -57,7 +57,6 @@ namespace Game
             }
 
             Dictionary<Workbook, string> workbooks = new Dictionary<Workbook, string>();
-
             foreach (var path in excelPaths)
             {
                 try

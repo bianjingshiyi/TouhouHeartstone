@@ -358,11 +358,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: d60c916ec6e59491c9e596d7b7c55dbf, type: 3}
-    m_FontSize: 25
+    m_FontSize: 30
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 20
-    m_MaxSize: 50
+    m_MinSize: 30
+    m_MaxSize: 40
     m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -912,14 +912,13 @@ MonoBehaviour:
   - IsFaceup/False
   - Type/Servant
   _CardBackImage: {fileID: 525013306416142025}
-  _Image_1: {fileID: 0}
-  _Image_2: {fileID: 0}
   _ShadowImage: {fileID: 1949518328878013980}
   _BackgroundImage: {fileID: 0}
   _Mask: {fileID: 4413013968147032452}
   _Image: {fileID: 6724395705441483877}
   _NameShadowImage: {fileID: 0}
   _NameText: {fileID: 5938416541120205926}
+  _DescShadowImage: {fileID: 0}
   _DescText: {fileID: 3032609579816535311}
   _BorderImage: {fileID: 4064673707873042981}
   _CardFace_Image: {fileID: 1229200602832887063}
@@ -929,8 +928,7 @@ MonoBehaviour:
   _AttackPropNumber: {fileID: 0}
   _LifeImage: {fileID: 0}
   _LifePropNumber: {fileID: 0}
-  _Card_BackImage: {fileID: 0}
-  _Card_CrossImage: {fileID: 0}
+  _CrossImage: {fileID: 0}
   _useCurve:
     serializedVersion: 2
     m_Curve:

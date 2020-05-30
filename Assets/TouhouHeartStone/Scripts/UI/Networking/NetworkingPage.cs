@@ -7,7 +7,8 @@ using TouhouHeartstone;
 using TouhouCardEngine;
 using System.Threading.Tasks;
 using System.Net;
-
+using System.Linq;
+using System.Net.Sockets;
 namespace UI
 {
     public partial class NetworkingPage : UIObject
@@ -26,18 +27,19 @@ namespace UI
         private void createRemoteRoom()
         {
             // todo: 向服务器发送房间信息
-            StatusText.text = "服务器上创建游戏房间\n127.0.0.1:" + Networking.host.port;
-            Networking.CreateRoom();
+            //Networking.CreateRoom();
+            //StatusText.text = "服务器上创建游戏房间\n" + address + ":" + Networking.host.port;
 
-            RemoteRoomScrollView.RoomList.AddItem("测试本机", "127.0.0.1");
+            //RemoteRoomScrollView.RoomList.AddItem("测试本机", address + ":" + Networking.host.port);
         }
 
         private void createLocalRoom()
         {
             Networking.CreateRoom();
-            StatusText.text = "本地局域网上创建游戏房间\n127.0.0.1:" + Networking.host.port;
+            string address = Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+            StatusText.text = "本地局域网上创建游戏房间\n" + address + ":" + Networking.host.port;
 
-            LocalRoomScrollView.RoomList.AddItem("测试本机", "127.0.0.1");
+            LocalRoomScrollView.RoomList.AddItem("测试本机", address + ":" + Networking.host.port);
         }
 
         void onDirectLinkBtnClick()

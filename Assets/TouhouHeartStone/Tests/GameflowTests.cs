@@ -799,7 +799,7 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.SKILL,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>

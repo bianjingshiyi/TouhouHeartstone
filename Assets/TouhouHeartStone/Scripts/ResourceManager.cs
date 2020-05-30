@@ -5,7 +5,7 @@ using ExcelLibrary.SpreadSheet;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
 using System.Net.Http;
-
+using System;
 namespace Game
 {
     public class ResourceManager : Manager
@@ -49,12 +49,34 @@ namespace Game
             path = Path.ChangeExtension(path, ext);
             return await loadTextureByWebRequest(path);
         }
-        public async Task<Texture2D> loadTextureByWebRequest(string path)
+        public Task<Texture2D> loadTextureByWebRequest(string path)
         {
-            Texture2D texture = new Texture2D(512, 512);
-            byte[] data = await loadBytesByWebRequest(path);
-            texture.LoadImage(data);
-            return texture;
+            TaskCompletionSource<Texture2D> tcs = new TaskCompletionSource<Texture2D>();
+            UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(Application.streamingAssetsPath + "/" + path);
+            uwr.SendWebRequest().completed += op =>
+            {
+                var uop = op as UnityWebRequestAsyncOperation;
+                if (uop.webRequest.isNetworkError)
+                {
+                    tcs.SetException(new HttpRequestException(uop.webRequest.error));
+                    return;
+                }
+                if (uop.webRequest.isHttpError)
+                {
+                    if (uop.webRequest.responseCode == 404)
+                    {
+                        tcs.SetException(new FileNotFoundException());
+                    }
+                    else
+                    {
+                        tcs.SetException(new HttpRequestException(uop.webRequest.error));
+                    }
+                    return;
+                }
+                tcs.SetResult(DownloadHandlerTexture.GetContent(uwr));
+                uwr.Dispose();
+            };
+            return tcs.Task;
         }
         public async Task<Texture2D> loadTextureBySystemIOWithFallback(string path)
         {
