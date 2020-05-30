@@ -443,14 +443,14 @@ MonoBehaviour:
   _initStates:
   - IsUsable/False
   - IsUsed/False
-  m_as_Button: {fileID: 540050246356179939}
-  _Mask: {fileID: 434557652962893678}
-  _Image: {fileID: 434557653138975224}
-  _FrameImage: {fileID: 434557653808379024}
-  _Frame_Image: {fileID: 1173695748}
-  _CostImage: {fileID: 434557654802033961}
-  _CostText: {fileID: 434557654365780058}
-  _BackImage: {fileID: 6951483999445456410}
+  m_as_Button: {fileID: 0}
+  _Mask: {fileID: 0}
+  _Image: {fileID: 0}
+  _FrameImage: {fileID: 0}
+  _Frame_Image: {fileID: 0}
+  _CostImage: {fileID: 0}
+  _CostText: {fileID: 0}
+  _BackImage: {fileID: 0}
 --- !u!114 &540050246356179939
 MonoBehaviour:
   m_ObjectHideFlags: 0
