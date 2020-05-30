@@ -33,6 +33,6 @@
         /// <summary>
         /// 魔免
         /// </summary>
-        public const string MAGICIMMUNE = "MagicImmune";
+        public const string ELUSIVE = "Elusive";
     }
 }

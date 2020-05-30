@@ -85,11 +85,11 @@ namespace Tests
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].field[1]);
             Assert.AreEqual(1, game.sortedPlayers[0].field[1].getCurrentLife());    //变为非潜行状态后可以被攻击
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
-            Assert.True(game.sortedPlayers[1].field[1].isStealth());
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife());     //潜行随从在回合结束时对对方master造成伤害
-            Assert.False(game.sortedPlayers[1].field[1].isStealth());               //潜行消失
+            //game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
+            //Assert.True(game.sortedPlayers[1].field[1].isStealth());
+            //game.sortedPlayers[1].cmdTurnEnd(game);
+            //Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife());     //潜行随从在回合结束时对对方master造成伤害
+            //Assert.False(game.sortedPlayers[1].field[1].isStealth());               //潜行消失
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace Tests
         /// 魔免测试
         /// </summary>
         [Test]
-        public void MagicImmuneTest()
+        public void ElusiveTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -159,23 +159,30 @@ namespace Tests
             game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getCardDefine<TestSpellCard>(), 2)));
             game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 29)
-            .Concat(Enumerable.Repeat(game.getCardDefine<MaginImmuneServant>(), 1)));
+            .Concat(Enumerable.Repeat(game.getCardDefine<ElusiveServant>(), 1)));
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
 
-            AfterXRound(game, 1);
+            AfterXRound(game, 2);
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1, game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(3, game.sortedPlayers[0].field[1]);     //魔免无法被法术指定
+            //Debug.Log(game.sortedPlayers[0].field[1]);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[2], 0);
+            Assert.AreEqual(3, game.sortedPlayers[0].field[1].getCurrentLife());     //魔免无法被法术指定
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1, game.sortedPlayers[0].field[0]);
-            Assert.AreEqual(6, game.sortedPlayers[0].field[0]);     //没有魔免的可以被法术指定
+            Assert.AreEqual(6, game.sortedPlayers[0].field[0].getCurrentLife());     //没有魔免的可以被法术指定
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 1, game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(3, game.sortedPlayers[0].field[1]);     //魔免无法被技能指定
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 1, game.sortedPlayers[0].field[0]);
-            Assert.AreEqual(6, game.sortedPlayers[0].field[0]);     //没有魔免的可以被技能指定
+            Assert.AreEqual(3, game.sortedPlayers[0].field[1].getCurrentLife());     //魔免无法被技能指定
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 0, game.sortedPlayers[0].field[0]);
+            Assert.AreEqual(5, game.sortedPlayers[0].field[0].getCurrentLife());     //没有魔免的可以被技能指定
+            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.sortedPlayers[0].cmdTurnEnd(game);
+
+            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].field[1]);
+            Assert.AreEqual(2, game.sortedPlayers[0].field[1].getCurrentLife());
         }
 
         

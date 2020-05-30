@@ -25,9 +25,11 @@ namespace Game
                     if (pRow.Key != 0)
                     {
                         int id = numberToInt(pRow.Value.GetCell(idIndex).Value);
+                        if (id < 1)
+                            continue;
                         CardDefine card = cardList.FirstOrDefault(c => c.id == id);
                         CardSkinData skin;
-                        var pair = await readCardDefine(resource, card, pBook.Value, worksheet, pRow.Key, defaultSprite);
+                        var pair = await readCardDefine(resource, card, worksheet, pRow.Key, defaultSprite);
                         card = pair.Key;
                         skin = pair.Value;
                         if (card == null)
@@ -46,7 +48,7 @@ namespace Game
             }
             return new KeyValuePair<CardDefine[], CardSkinData[]>(cardList.ToArray(), skinList.ToArray());
         }
-        static async Task<KeyValuePair<CardDefine, CardSkinData>> readCardDefine(ResourceManager resource, CardDefine card, string dir, Worksheet sheet, int row, Sprite defaultSprite)
+        static async Task<KeyValuePair<CardDefine, CardSkinData>> readCardDefine(ResourceManager resource, CardDefine card, Worksheet sheet, int row, Sprite defaultSprite)
         {
             if (card == null)
                 card = new GeneratedCardDefine();
@@ -70,8 +72,7 @@ namespace Game
             CardSkinData skin;
             if (sheet.Cells[row, ignoreIndex].Value is bool b && b)
             {
-                skin = null;
-                return new KeyValuePair<CardDefine, CardSkinData>(card, skin);
+                return new KeyValuePair<CardDefine, CardSkinData>(null, null);
             }
 
             skin = new CardSkinData()
@@ -89,7 +90,7 @@ namespace Game
             catch (Exception e)
             {
                 skin.image = defaultSprite;
-                Debug.LogError("加载贴图" + imagePath + "失败：" + e);
+                Debug.LogWarning("加载贴图" + imagePath + "失败：" + e);
             }
 
             int nameIndex = findColIndex(sheet, "Name");

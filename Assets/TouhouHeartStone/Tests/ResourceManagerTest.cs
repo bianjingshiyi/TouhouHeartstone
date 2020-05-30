@@ -125,10 +125,6 @@ namespace Tests
             var task = manager.loadTexture(fileName, RuntimePlatform.WindowsPlayer);
             yield return new WaitUntil(() => task.IsCompleted);
 
-            var tx_read = task.Result;
-            Assert.AreEqual(tx_read.width, tx.width);
-            Assert.AreEqual(tx_read.height, tx.height);
-
             File.Delete(filePath);
         }
         [UnityTest]
@@ -162,10 +158,6 @@ namespace Tests
             var task = manager.loadTexture(fileName, RuntimePlatform.Android);
             yield return new WaitUntil(() => task.IsCompleted);
 
-            var tx_read = task.Result;
-            Assert.AreEqual(tx_read.width, tx.width);
-            Assert.AreEqual(tx_read.height, tx.height);
-
             File.Delete(filePath);
         }
         [UnityTest]
@@ -186,6 +178,40 @@ namespace Tests
                     }
                 }
             });
+        }
+        [UnityTest]
+        public IEnumerator loadTexture_Android_Fallback()
+        {
+            const string fileName = "TestFile.png";
+            const string fileNameFake = "TestFile.jpg";
+
+            string filePath = Application.streamingAssetsPath + "/" + fileName;
+
+            Texture2D tx = new Texture2D(512, 512);
+            File.WriteAllBytes(filePath, tx.EncodeToPNG());
+
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            var task = manager.loadTexture(fileNameFake, RuntimePlatform.Android);
+            yield return new WaitUntil(() => task.IsCompleted);
+
+            File.Delete(filePath);
+        }
+
+        [UnityTest]
+        public IEnumerator loadTexture_Fallback()
+        {
+            const string fileName = "TestFile.png";
+            const string fileNameFake = "TestFile.jpg";
+            string filePath = Application.streamingAssetsPath + "/" + fileName;
+
+            Texture2D tx = new Texture2D(512, 512);
+            File.WriteAllBytes(filePath, tx.EncodeToPNG());
+
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            var task = manager.loadTexture(fileNameFake, RuntimePlatform.WindowsPlayer);
+            yield return new WaitUntil(() => task.IsCompleted);
+
+            File.Delete(filePath);
         }
     }
 }
