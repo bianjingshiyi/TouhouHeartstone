@@ -91,6 +91,24 @@ namespace Game
             }
         }
         /// <summary>
+        /// 加载文件中的卡片
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public async Task<CardDefine[]> loadCards(string path)
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// 加载文件中的皮肤
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public async Task<CardSkinData[]> loadSkins(string path)
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
         /// 卸载所有加载的资源
         /// </summary>
         public void Unload()

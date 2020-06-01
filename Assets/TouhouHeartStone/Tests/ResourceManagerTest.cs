@@ -4,10 +4,50 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using ExcelLibrary.SpreadSheet;
 using Game;
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 namespace Tests
 {
+    public class CardManagerTest
+    {
+        /// <summary>
+        /// 在Test/Resources文件夹中有测试用的表格和图片，在测试开始的时候把它们复制到streamingAssets中，然后测试能够从中加载出卡片，再删掉测试文件。
+        /// </summary>
+        /// <returns></returns>
+        [UnityTest]
+        public IEnumerator loadCardsTest()
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// 同上，只不过是加载图片
+        /// </summary>
+        /// <returns></returns>
+        [UnityTest]
+        public IEnumerator loadSkinsTest()
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// 同上，只不过是打包成安卓，然后再加载
+        /// </summary>
+        /// <returns></returns>
+        [UnityTest]
+        public IEnumerator loadCardsTest_Android()
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// 同上
+        /// </summary>
+        /// <returns></returns>
+        [UnityTest]
+        public IEnumerator loadSkinsTest_Android()
+        {
+            throw new NotImplementedException();
+        }
+    }
     public class ResourceManagerTest
     {
         //Excel测试资源为StreamgingAssets/TestExcel.xls。
