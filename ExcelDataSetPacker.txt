@@ -1,0 +1,3 @@
+# ExcelDataSetPacker 打包配置文件 
+
+Cards/Cards.xls | Cards/Cards.xls.dataset

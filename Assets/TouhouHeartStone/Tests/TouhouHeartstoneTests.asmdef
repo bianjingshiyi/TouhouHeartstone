@@ -7,7 +7,8 @@
         "TouhouHeartstone",
         "Plugins",
         "Game",
-        "BJSYGameCore"
+        "BJSYGameCore",
+        "ExcelDataSet"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
