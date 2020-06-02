@@ -61,7 +61,7 @@ namespace Game
         }
 
         [SerializeField]
-        RoomInfo _room = null;
+        THHRoomInfo _room = null;
         /// <summary>
         /// 创建一个房间
         /// </summary>
@@ -113,7 +113,7 @@ namespace Game
         private void Client_onConnected()
         {
             //加入成功之后把自己的信息发过去
-            _ = client.send(new RoomPlayerInfo()
+            _ = client.send(new THHRoomPlayerInfo()
             {
                 id = client.id,
                 name = "玩家" + client.id,
@@ -130,26 +130,22 @@ namespace Game
                     if (host != null)
                         _ = client.send(_room);
                     break;
-                case RoomInfo roomInfo:
+                case THHRoomInfo roomInfo:
                     _room = roomInfo;
                     if (_room.playerList.Count > 1)
-                        gameManager.startRemoteGame(client, _room.option, _room.playerList.ToArray());
+                        gameManager.startRemoteGame(client, _room.option, _room.playerList.Cast<THHRoomPlayerInfo>().ToArray());
                     break;
             }
         }
     }
     [Serializable]
-    public class RoomInfo
+    public class THHRoomInfo : RoomInfo
     {
         public GameOption option = new GameOption();
-        public List<RoomPlayerInfo> playerList = new List<RoomPlayerInfo>();
     }
     [Serializable]
-    public class RoomPlayerInfo
+    public class THHRoomPlayerInfo : RoomPlayerInfo
     {
-        public int id = 0;
-        public string name = null;
-        public int[] deck = null;
+        public int[] deck = new int[0];
     }
 }
-
