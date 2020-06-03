@@ -8,6 +8,10 @@ using UI;
 using ExcelLibrary.SpreadSheet;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Data;
+using IGensoukyo.Utilities;
+using TouhouHeartstone;
+
 namespace Game
 {
     public class CardManager : Manager
@@ -95,18 +99,90 @@ namespace Game
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public async Task<CardDefine[]> loadCards(string path)
+        public async Task<CardDefine[]> loadCards(string path, RuntimePlatform? platform = null)
         {
-            throw new NotImplementedException();
+#if UNITY_ANDROID
+            platform ??= RuntimePlatform.Android; 
+#endif
+            var dataset = platform != RuntimePlatform.Android ?
+                await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
+                await getManager<ResourceManager>().loadDataSet(path, platform);
+
+            if (dataset.Tables.Count < 1) throw new Exception("空数据集");
+            var table = dataset.Tables[0];
+            List<CardDefine> cards = new List<CardDefine>();
+
+            for (int i = 1; i < table.Rows.Count; i++)
+            {
+                var datarow = table.Rows[i];
+
+                if (datarow.ReadCol("Ignore", false))
+                    continue;
+
+                var card = new GeneratedCardDefine();
+                card.id = datarow.ReadCol<int>("ID");
+                card.type = datarow.ReadCol<string>("Type");
+                card.setProp(nameof(ServantCardDefine.cost), datarow.ReadCol<int>("Cost"));
+                card.setProp(nameof(ServantCardDefine.attack), datarow.ReadCol<int>("Attack", 0));
+                card.setProp(nameof(ServantCardDefine.life), datarow.ReadCol<int>("Life", 0));
+                card.setProp(nameof(ServantCardDefine.tags), datarow.ReadCol<string>("Tags", "").Split(','));
+                card.setProp(nameof(ServantCardDefine.keywords), datarow.ReadCol<string>("Keywords", "").Split(','));
+                card.setProp(nameof(ServantCardDefine.isToken), datarow.ReadCol<bool>("IsToken", false));
+
+                cards.Add(card);
+            }
+
+            return cards.ToArray();
         }
         /// <summary>
         /// 加载文件中的皮肤
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public async Task<CardSkinData[]> loadSkins(string path)
+        public async Task<CardSkinData[]> loadSkins(string path, RuntimePlatform? platform = null)
         {
-            throw new NotImplementedException();
+#if UNITY_ANDROID
+            platform ??= RuntimePlatform.Android; 
+#endif
+            var dataset = platform != RuntimePlatform.Android ?
+                await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
+                await getManager<ResourceManager>().loadDataSet(path, platform);
+
+            if (dataset.Tables.Count < 1) throw new Exception("空数据集");
+            var table = dataset.Tables[0];
+            List<CardSkinData> skins = new List<CardSkinData>();
+
+            var defSprite = await getDefaultSprite();
+
+            for (int i = 1; i < table.Rows.Count; i++)
+            {
+                var datarow = table.Rows[i];
+
+                if (datarow.ReadCol("Ignore", false))
+                    continue;
+
+                var skin = new CardSkinData()
+                {
+                    id = datarow.ReadCol<int>("ID"),
+                    name = datarow.ReadCol<string>("Name"),
+                    desc = datarow.ReadCol<string>("Desc", "")
+                };
+                string imagePath = datarow.ReadCol("Image", "");
+                try
+                {
+                    Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath);
+                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+                    skin.image = sprite;
+                }
+                catch (Exception e)
+                {
+                    skin.image = defSprite;
+                    Debug.LogWarning("加载贴图" + imagePath + "失败：" + e);
+                }
+
+                skins.Add(skin);
+            }
+            return skins.ToArray();
         }
         /// <summary>
         /// 卸载所有加载的资源
