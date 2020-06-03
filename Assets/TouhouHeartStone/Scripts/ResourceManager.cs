@@ -8,6 +8,7 @@ using System.Net.Http;
 using System;
 using System.Data;
 using System.Runtime.Serialization.Formatters.Binary;
+using ExcelDataReader;
 
 namespace Game
 {
@@ -50,6 +51,21 @@ namespace Game
                     return loadDataSetByWebRequest(path);
                 default:
                     return loadDataSetBySystemIO(path);
+            }
+        }
+
+        public Task<DataSet> loadExcelAsDataSet(string path, RuntimePlatform? platform = null)
+        {
+            if (string.IsNullOrEmpty(path))
+                return null;
+
+            platform = getPlatform(platform);
+            switch (platform)
+            {
+                case RuntimePlatform.Android:
+                    return loadExcelAsDataSetByWebRequest(path);
+                default:
+                    return loadExcelAsDataSetBySystemIO(path);
             }
         }
 
@@ -147,6 +163,25 @@ namespace Game
                 return Task.FromResult(bf.Deserialize(stream) as DataSet);
             }
         }
+        public Task<DataSet> loadExcelAsDataSetBySystemIO(string path)
+        {
+            using (FileStream stream = getFileStream(path))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    var result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    {
+                        ConfigureDataTable = (tableReader) => new ExcelDataTableConfiguration()
+                        {
+                            // 使用第一行的内容作为列索引
+                            // 其他选项的说明见Github的ReadMe
+                            UseHeaderRow = true,
+                        }
+                    });
+                    return Task.FromResult(result);
+                }
+            }
+        }
         private async Task<Workbook> loadExcelByWebRequest(string path)
         {
             byte[] data = await loadBytesByWebRequest(path);
@@ -162,6 +197,26 @@ namespace Game
             {
                 BinaryFormatter bf = new BinaryFormatter();
                 return bf.Deserialize(stream) as DataSet;
+            }
+        }
+        private async Task<DataSet> loadExcelAsDataSetByWebRequest(string path)
+        {
+            byte[] data = await loadBytesByWebRequest(path);
+            using (MemoryStream stream = new MemoryStream(data))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    var result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    {
+                        ConfigureDataTable = (tableReader) => new ExcelDataTableConfiguration()
+                        {
+                            // 使用第一行的内容作为列索引
+                            // 其他选项的说明见Github的ReadMe
+                            UseHeaderRow = true,
+                        }
+                    });
+                    return result;
+                }
             }
         }
         private async Task<byte[]> loadBytesBySystemIO(string path)
@@ -198,7 +253,7 @@ namespace Game
                 {
                     if (uop.webRequest.responseCode == 404)
                     {
-                        tcs.SetException(new FileNotFoundException("Unable to load file.", path));
+                        tcs.SetException(new FileNotFoundException($"Unable to load file {path}", path));
                     }
                     else
                     {

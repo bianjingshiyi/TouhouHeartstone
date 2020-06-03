@@ -12,6 +12,10 @@ using Game;
 using UnityEngine.SceneManagement;
 using TouhouHeartstone;
 
+using System.IO;
+using IGensoukyo;
+using TouhouCardEngine;
+
 namespace Tests
 {
     public class CardManagerTests
@@ -101,6 +105,126 @@ namespace Tests
             var skin = cm.GetCardSkin(ExistsCardID);
             Assert.NotNull(skin);
             Assert.Equals(skin.id, ExistsCardID);
+        }
+
+        /// <summary>
+        /// 在Test/Resources文件夹中有测试用的表格和图片，在测试开始的时候把它们复制到streamingAssets中，然后测试能够从中加载出卡片，再删掉测试文件。
+        /// </summary>
+        /// <returns></returns>
+        [UnityTest]
+        public IEnumerator loadCardsTest()
+        {
+            var go = new GameObject(nameof(CardManager));
+            go.AddComponent<ResourceManager>();
+            CardManager cm = go.AddComponent<CardManager>();
+
+            string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
+
+            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
+
+            var task = cm.loadCards(xlsFile);
+            yield return new WaitUntil(() => task.IsCompleted);
+            var cards = task.Result;
+
+            Assert.NotNull(cards);
+            Assert.True(cards.Where(c => c.id == ExistsCardID).Count() > 0);
+
+            File.Delete(xlsFile);
+        }
+
+        void safeCopy(string src, string dst)
+        {
+            if (File.Exists(dst))
+                File.Delete(dst);
+
+            File.Copy(src, dst);
+        }
+
+        /// <summary>
+        /// 同上，只不过是加载图片
+        /// </summary>
+        /// <returns></returns>
+        [UnityTest]
+        public IEnumerator loadSkinsTest()
+        {
+            var go = new GameObject(nameof(CardManager));
+            go.AddComponent<ResourceManager>();
+            CardManager cm = go.AddComponent<CardManager>();
+
+            string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
+            string pictureFile = Path.Combine(Application.streamingAssetsPath, "测试图片.jpg");
+
+            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
+            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\测试图片.jpg", pictureFile);
+
+            var task = cm.loadCards(xlsFile);
+            yield return new WaitUntil(() => task.IsCompleted);
+            var cards = task.Result;
+
+            Assert.NotNull(cards);
+            Assert.True(cards.Where(c => c.id == ExistsCardID).Count() > 0);
+
+            File.Delete(xlsFile);
+            File.Delete(pictureFile);
+        }
+        /// <summary>
+        /// 同上，只不过是打包成安卓，然后再加载
+        /// </summary>
+        /// <returns></returns>
+        [UnityTest]
+        public IEnumerator loadCardsTest_Android()
+        {
+            var go = new GameObject(nameof(CardManager));
+            go.AddComponent<ResourceManager>();
+            CardManager cm = go.AddComponent<CardManager>();
+
+            string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
+            string dataSetFileName = Path.Combine("Cards", "Test.xls.dataset");
+            string dataSetFile = Path.Combine(Application.streamingAssetsPath, dataSetFileName);
+
+            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
+            ExcelDataSetPacker.PackExcelToDataSet(xlsFile, dataSetFile);
+
+            var task = cm.loadCards(dataSetFileName, RuntimePlatform.Android);
+            yield return new WaitUntil(() => task.IsCompleted);
+            var cards = task.Result;
+
+            Assert.NotNull(cards);
+            Assert.True(cards.Where(c => c.id == ExistsCardID).Count() > 0);
+
+            File.Delete(xlsFile);
+            File.Delete(dataSetFile);
+        }
+        /// <summary>
+        /// 同上
+        /// </summary>
+        /// <returns></returns>
+        [UnityTest]
+        public IEnumerator loadSkinsTest_Android()
+        {
+            var go = new GameObject(nameof(CardManager));
+            go.AddComponent<ResourceManager>();
+            CardManager cm = go.AddComponent<CardManager>();
+
+            string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
+            string dataSetFileName = Path.Combine("Cards", "Test.xls.dataset");
+            string dataSetFile = Path.Combine(Application.streamingAssetsPath, dataSetFileName);
+            string pictureFile = Path.Combine(Application.streamingAssetsPath, "测试图片.jpg");
+
+            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
+            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\测试图片.jpg", pictureFile);
+            ExcelDataSetPacker.PackExcelToDataSet(xlsFile, dataSetFile);
+
+            var task = cm.loadCards(dataSetFileName, RuntimePlatform.Android);
+            yield return new WaitUntil(() => task.IsCompleted);
+            var cards = task.Result;
+
+            Assert.NotNull(cards);
+            Assert.True(cards.Where(c => c.id == ExistsCardID).Count() > 0);
+
+            File.Delete(xlsFile);
+            File.Delete(pictureFile);
+            File.Delete(dataSetFile);
         }
     }
 }
