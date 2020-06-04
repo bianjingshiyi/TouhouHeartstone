@@ -61,7 +61,7 @@ namespace Tests
             // 一定会有的卡
             var cd = cm.GetCardDefine(ExistsCardID);
             Assert.NotNull(cd);
-            Assert.Equals(cd.id, ExistsCardID);
+            Assert.AreEqual(cd.id, ExistsCardID);
         }
 
         /// <summary>
@@ -77,8 +77,8 @@ namespace Tests
 
             var cards = cm.GetCardDefines((cd) => { return cd.id == ExistsCardID; });
             Assert.NotNull(cards);
-            Assert.Equals(cards.Length, 1);
-            Assert.Equals(cards[0].id, ExistsCardID);
+            Assert.AreEqual(cards.Length, 1);
+            Assert.AreEqual(cards[0].id, ExistsCardID);
         }
 
         [UnityTest]
@@ -104,7 +104,7 @@ namespace Tests
             cm.AddCardSkinTemp(new UI.CardSkinData { id = ExistsCardID });
             var skin = cm.GetCardSkin(ExistsCardID);
             Assert.NotNull(skin);
-            Assert.Equals(skin.id, ExistsCardID);
+            Assert.AreEqual(skin.id, ExistsCardID);
         }
 
         /// <summary>
@@ -122,12 +122,21 @@ namespace Tests
 
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
 
-            var task = cm.loadCards(xlsFile);
+            var task = cm.loadCards(xlsFile, RuntimePlatform.WindowsPlayer);
             yield return new WaitUntil(() => task.IsCompleted);
             var cards = task.Result;
 
             Assert.NotNull(cards);
-            Assert.True(cards.Where(c => c.id == ExistsCardID).Count() > 0);
+
+            var existingCards = cards.Where(c => c.id == ExistsCardID);
+            Assert.True(existingCards.Count() > 0);
+
+            var card = existingCards.First();
+            Assert.AreEqual(card.id, ExistsCardID);
+            Assert.AreEqual(card.type, "Master");
+            Assert.AreEqual(card.getCost(), 0);
+            Assert.AreEqual(card.getAttack(), 0);
+            Assert.AreEqual(card.getLife(), 30);
 
             File.Delete(xlsFile);
         }
@@ -157,12 +166,17 @@ namespace Tests
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\测试图片.jpg", pictureFile);
 
-            var task = cm.loadCards(xlsFile);
+            var task = cm.loadSkins(xlsFile, RuntimePlatform.WindowsPlayer);
             yield return new WaitUntil(() => task.IsCompleted);
-            var cards = task.Result;
+            var skins = task.Result;
 
-            Assert.NotNull(cards);
-            Assert.True(cards.Where(c => c.id == ExistsCardID).Count() > 0);
+            Assert.NotNull(skins);
+            var existingSkins = skins.Where(c => c.id == ExistsCardID);
+            Assert.True(existingSkins.Count() > 0);
+
+            var skin = existingSkins.First();
+            Assert.AreEqual(skin.name, "测试卡牌");
+            Assert.AreEqual(skin.desc, "");
 
             File.Delete(xlsFile);
             File.Delete(pictureFile);
@@ -190,7 +204,15 @@ namespace Tests
             var cards = task.Result;
 
             Assert.NotNull(cards);
-            Assert.True(cards.Where(c => c.id == ExistsCardID).Count() > 0);
+            var existingCards = cards.Where(c => c.id == ExistsCardID);
+            Assert.True(existingCards.Count() > 0);
+
+            var card = existingCards.First();
+            Assert.AreEqual(card.id, ExistsCardID);
+            Assert.AreEqual(card.type, "Master");
+            Assert.AreEqual(card.getCost(), 0);
+            Assert.AreEqual(card.getAttack(), 0);
+            Assert.AreEqual(card.getLife(), 30);
 
             File.Delete(xlsFile);
             File.Delete(dataSetFile);
@@ -215,12 +237,17 @@ namespace Tests
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\测试图片.jpg", pictureFile);
             ExcelDataSetPacker.PackExcelToDataSet(xlsFile, dataSetFile);
 
-            var task = cm.loadCards(dataSetFileName, RuntimePlatform.Android);
+            var task = cm.loadSkins(dataSetFileName, RuntimePlatform.Android);
             yield return new WaitUntil(() => task.IsCompleted);
-            var cards = task.Result;
+            var skins = task.Result;
 
-            Assert.NotNull(cards);
-            Assert.True(cards.Where(c => c.id == ExistsCardID).Count() > 0);
+            Assert.NotNull(skins);
+            var existingSkins = skins.Where(c => c.id == ExistsCardID);
+            Assert.True(existingSkins.Count() > 0);
+
+            var skin = existingSkins.First();
+            Assert.AreEqual(skin.name, "测试卡牌");
+            Assert.AreEqual(skin.desc, "");
 
             File.Delete(xlsFile);
             File.Delete(pictureFile);
