@@ -61,6 +61,14 @@ namespace UI
             this._TurnTimeText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("TurnTimeText").GetComponent<Text>();
             this._TurnTimeInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("TurnTimeInputField").GetComponent<InputField>();
         }
+        private Main _parent;
+        public Main parent
+        {
+            get
+            {
+                return this.transform.parent.GetComponent<Main>();
+            }
+        }
         [SerializeField()]
         private Image m_as_Image;
         public Image asImage

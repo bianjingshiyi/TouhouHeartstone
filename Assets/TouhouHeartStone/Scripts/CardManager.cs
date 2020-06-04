@@ -5,7 +5,6 @@ using UnityEngine;
 using TouhouCardEngine;
 using BJSYGameCore;
 using UI;
-using ExcelLibrary.SpreadSheet;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Data;
@@ -52,30 +51,30 @@ namespace Game
         /// <returns></returns>
         public async Task Load(string[] excelPaths)
         {
-            skinDic.Clear();
-            foreach (CardSkinData skin in _skins)
-            {
-                if (skin.image == null)
-                    skin.image = await getDefaultSprite();
-                skinDic.Add(skin.id, skin);
-            }
-
-            Dictionary<Workbook, string> workbooks = new Dictionary<Workbook, string>();
-            foreach (var path in excelPaths)
+            //加载内置卡片
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies));
+            //加载外置卡片
+            foreach (string path in excelPaths)
             {
                 try
                 {
-                    Workbook workbook = await getManager<ResourceManager>().loadExcel(path);
-                    workbooks.Add(workbook, path);
+                    CardDefine[] cards = await loadCards(path);
+                    foreach (var card in cards)
+                    {
+                        CardDefine older = cardList.Find(c => c.id == card.id);
+                        if (older != null)
+                            older.merge(card);
+                        else
+                            cardList.Add(card);
+                    }
                 }
                 catch (Exception e)
                 {
                     UberDebug.LogError("读取外部卡牌文件" + path + "失败，发生异常：" + e);
                 }
             }
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var result = await CardImporter.GetCardDefines(getManager<ResourceManager>(), assemblies, workbooks, await getDefaultSprite());
-            foreach (CardDefine card in result.Key)
+            foreach (CardDefine card in cardList)
             {
                 if (defineDic.ContainsKey(card.id))
                 {
@@ -84,14 +83,33 @@ namespace Game
                 }
                 defineDic.Add(card.id, card);
             }
-            foreach (CardSkinData skin in result.Value)
+            //加载内置皮肤
+            skinDic.Clear();
+            foreach (CardSkinData skin in _skins)
             {
-                if (skinDic.ContainsKey(skin.id))
-                {
-                    Debug.LogWarning("存在重复ID的皮肤" + skinDic[skin.id] + "和" + skin);
-                    continue;
-                }
+                if (skin.image == null)
+                    skin.image = await getDefaultSprite();
                 skinDic.Add(skin.id, skin);
+            }
+            foreach (string path in excelPaths)
+            {
+                try
+                {
+                    CardSkinData[] skins = await loadSkins(path);
+                    foreach (var skin in skins)
+                    {
+                        if (skinDic.ContainsKey(skin.id))
+                        {
+                            Debug.LogWarning("存在重复ID的皮肤" + skinDic[skin.id] + "和" + skin);
+                            continue;
+                        }
+                        skinDic.Add(skin.id, skin);
+                    }
+                }
+                catch (Exception e)
+                {
+                    UberDebug.LogError("读取外部皮肤文件" + path + "失败，发生异常：" + e);
+                }
             }
         }
         /// <summary>
@@ -102,7 +120,8 @@ namespace Game
         public async Task<CardDefine[]> loadCards(string path, RuntimePlatform? platform = null)
         {
 #if UNITY_ANDROID
-            platform ??= RuntimePlatform.Android; 
+            if (platform == null)
+                platform = RuntimePlatform.Android;
 #endif
             var dataset = platform != RuntimePlatform.Android ?
                 await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
@@ -122,7 +141,7 @@ namespace Game
                 var card = new GeneratedCardDefine();
                 card.id = datarow.ReadCol<int>("ID");
                 card.type = datarow.ReadCol<string>("Type");
-                card.setProp(nameof(ServantCardDefine.cost), datarow.ReadCol<int>("Cost"));
+                card.setProp(nameof(ServantCardDefine.cost), datarow.ReadCol<int>("Cost", 0));
                 card.setProp(nameof(ServantCardDefine.attack), datarow.ReadCol<int>("Attack", 0));
                 card.setProp(nameof(ServantCardDefine.life), datarow.ReadCol<int>("Life", 0));
                 card.setProp(nameof(ServantCardDefine.tags), datarow.ReadCol<string>("Tags", "").Split(','));
@@ -142,7 +161,8 @@ namespace Game
         public async Task<CardSkinData[]> loadSkins(string path, RuntimePlatform? platform = null)
         {
 #if UNITY_ANDROID
-            platform ??= RuntimePlatform.Android; 
+            if (platform == null)
+                platform = RuntimePlatform.Android;
 #endif
             var dataset = platform != RuntimePlatform.Android ?
                 await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :

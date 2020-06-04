@@ -49,7 +49,9 @@ namespace UI
 
             LocalRoomScrollView.RoomList.networking = this;
             RemoteRoomScrollView.RoomList.networking = this;
-
+        }
+        protected void Start()
+        {
             host.start();
             client.start();
         }
