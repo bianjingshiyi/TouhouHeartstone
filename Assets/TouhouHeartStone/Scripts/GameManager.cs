@@ -88,7 +88,7 @@ namespace Game
             game.triggers.onEventAfter += onEventAfter;
             gameTask = game.run();
         }
-        public void startRemoteGame(ClientManager client, GameOption option, THHRoomPlayerInfo[] players)
+        public void startRemoteGame(ClientManager client, GameOption option, RoomPlayerInfo[] players)
         {
             game = new THHGame(option, getManager<CardManager>().GetCardDefines())
             {

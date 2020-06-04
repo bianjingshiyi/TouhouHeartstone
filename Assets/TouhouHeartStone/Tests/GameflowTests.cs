@@ -349,12 +349,12 @@ namespace Tests
             ClientManager local = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
             local.logger = logger;
             //开房，打开Host，自己加入自己，房间应该有Option
-            THHRoomInfo roomInfo = new THHRoomInfo();
+            RoomInfo roomInfo = new RoomInfo();
             THHGame localGame = null;
             local.onConnected += () =>
             {
                 //发送玩家信息
-                _ = local.send(new THHRoomPlayerInfo()
+                _ = local.send(new RoomPlayerInfo()
                 {
                     id = local.id,
                     name = "玩家" + local.id,
@@ -363,10 +363,10 @@ namespace Tests
             };
             local.onReceive += (id, obj) =>
             {
-                if (obj is THHRoomPlayerInfo newPlayerInfo)
+                if (obj is RoomPlayerInfo newPlayerInfo)
                 {
                     //收到玩家信息
-                    THHRoomInfo newRoomInfo = new THHRoomInfo()
+                    RoomInfo newRoomInfo = new RoomInfo()
                     {
                         option = roomInfo.option,
                         playerList = new List<RoomPlayerInfo>(roomInfo.playerList)
@@ -375,7 +375,7 @@ namespace Tests
                     //发送房间信息
                     _ = local.send(newRoomInfo);
                 }
-                else if (obj is THHRoomInfo newRoomInfo)
+                else if (obj is RoomInfo newRoomInfo)
                 {
                     roomInfo = newRoomInfo;
                     //收到房间信息
@@ -383,7 +383,7 @@ namespace Tests
                     {
                         localGame = TestGameflow.initGameWithoutPlayers("本地游戏", newRoomInfo.option);
                         (localGame.answers as AnswerManager).client = local;
-                        foreach (var playerInfo in newRoomInfo.playerList.Cast<THHRoomPlayerInfo>())
+                        foreach (var playerInfo in newRoomInfo.playerList)
                         {
                             localGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, localGame.getCardDefine<MasterCardDefine>(playerInfo.deck[0]), playerInfo.deck.Skip(1).Select(did => localGame.getCardDefine(did)));
                         }
@@ -403,7 +403,7 @@ namespace Tests
             remote.onConnected += () =>
             {
                 //发送玩家信息
-                _ = remote.send(new THHRoomPlayerInfo()
+                _ = remote.send(new RoomPlayerInfo()
                 {
                     id = remote.id,
                     name = "玩家" + remote.id,
@@ -412,14 +412,14 @@ namespace Tests
             };
             remote.onReceive += (id, obj) =>
             {
-                if (obj is THHRoomInfo newRoomInfo)
+                if (obj is RoomInfo newRoomInfo)
                 {
                     //收到房间信息
                     if (newRoomInfo.playerList.Count > 1)
                     {
                         remoteGame = TestGameflow.initGameWithoutPlayers("远端游戏", newRoomInfo.option);
                         (remoteGame.answers as AnswerManager).client = remote;
-                        foreach (var playerInfo in newRoomInfo.playerList.Cast<THHRoomPlayerInfo>())
+                        foreach (var playerInfo in newRoomInfo.playerList)
                         {
                             remoteGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, remoteGame.getCardDefine<MasterCardDefine>(playerInfo.deck[0]), playerInfo.deck.Skip(1).Select(did => remoteGame.getCardDefine(did)));
                         }
