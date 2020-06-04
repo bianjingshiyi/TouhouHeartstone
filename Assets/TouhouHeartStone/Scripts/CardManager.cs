@@ -172,8 +172,6 @@ namespace Game
             var table = dataset.Tables[0];
             List<CardSkinData> skins = new List<CardSkinData>();
 
-            var defSprite = await getDefaultSprite();
-
             for (int i = 1; i < table.Rows.Count; i++)
             {
                 var datarow = table.Rows[i];
@@ -196,7 +194,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    skin.image = defSprite;
+                    skin.image = await getDefaultSprite();
                     Debug.LogWarning("加载贴图" + imagePath + "失败：" + e);
                 }
 

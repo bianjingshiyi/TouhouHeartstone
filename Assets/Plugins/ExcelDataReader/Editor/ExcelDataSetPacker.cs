@@ -29,7 +29,7 @@ namespace IGensoukyo
                             UseHeaderRow = true,
                         }
                     });
-                    using (var writeStream = File.Open(Path.Combine(Application.streamingAssetsPath, pathOut), FileMode.CreateNew, FileAccess.Write))
+                    using (var writeStream = File.Open(Path.Combine(Application.streamingAssetsPath, pathOut), FileMode.OpenOrCreate, FileAccess.Write))
                     {
                         BinaryFormatter bf = new BinaryFormatter();
                         bf.Serialize(writeStream, result);
