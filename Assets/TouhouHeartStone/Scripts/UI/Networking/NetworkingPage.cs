@@ -9,21 +9,54 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Linq;
 using System.Net.Sockets;
+using BJSYGameCore;
 namespace UI
 {
     public partial class NetworkingPage : UIObject
     {
         public NetworkingManager Networking { get; set; }
+        [SerializeField]
+        HostManager _host;
+        public HostManager host
+        {
+            get
+            {
+                if (_host == null)
+                    _host = this.findInstance<HostManager>();
+                return _host;
+            }
+        }
+        [SerializeField]
+        ClientManager _client;
+        public ClientManager client
+        {
+            get
+            {
+                if (_client == null)
+                    _client = this.findInstance<ClientManager>();
+                return _client;
+            }
+        }
         partial void onAwake()
         {
-            DirectLinkButton.onClick.AddListener(onDirectLinkBtnClick);
+            ReturnButton.onClick.AddListener(() =>
+            {
+                parent.display(parent.MainMenu);
+            });
+            ConnectButton.onClick.AddListener(onDirectLinkBtnClick);
             LANButton.onClick.AddListener(createLocalRoom);
             WANButton.onClick.AddListener(createRemoteRoom);
 
             LocalRoomScrollView.RoomList.networking = this;
             RemoteRoomScrollView.RoomList.networking = this;
-        }
 
+            host.start();
+            client.start();
+        }
+        protected void Update()
+        {
+            AddressText.text = host.address;
+        }
         private void createRemoteRoom()
         {
             // todo: 向服务器发送房间信息
@@ -37,14 +70,30 @@ namespace UI
         {
             Networking.CreateRoom();
             string address = Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
-            StatusText.text = "本地局域网上创建游戏房间\n" + address + ":" + Networking.host.port;
+            AddressText.text = "本地局域网上创建游戏房间\n" + address + ":" + Networking.host.port;
 
             LocalRoomScrollView.RoomList.AddItem("测试本机", address + ":" + Networking.host.port);
         }
 
-        void onDirectLinkBtnClick()
+        async void onDirectLinkBtnClick()
         {
-            Networking.Connect(IPFieldInput.text);
+            Uri uri = new Uri(IPInputField.text);
+            try
+            {
+                await client.joinRoom(new RoomInfo()
+                {
+                    ip = uri.Host,
+                    port = uri.Port
+                }, new THHRoomPlayerInfo()
+                {
+                    deck = ui.getManager<GameManager>().deck
+                });
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("加入" + uri + "的游戏失败：" + e);
+            }
+            //Networking.Connect(IPInputField.text);
         }
 
         public void JoinRoom(string addr)

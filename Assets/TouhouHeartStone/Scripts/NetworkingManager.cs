@@ -35,6 +35,7 @@ namespace Game
             var _nw = this.findInstance<NetworkingPage>();
             if (_nw != null)
                 _nw.Networking = this;
+            gameManager.onGameEnd += onGameEnd;
         }
 
         private void initClient()
@@ -46,9 +47,9 @@ namespace Game
                     throw new Exception("没有找到ClientManager");
                 client.onConnected += Client_onConnected;
                 client.onReceive += Client_onReceive;
+                client.onDisconnect += Client_onDisconnect;
             }
         }
-
         private void initHost()
         {
             if (_host == null)
@@ -136,6 +137,14 @@ namespace Game
                         gameManager.startRemoteGame(client, _room.option, _room.playerList.Cast<THHRoomPlayerInfo>().ToArray());
                     break;
             }
+        }
+        private void Client_onDisconnect()
+        {
+            gameManager.quitGame();
+        }
+        private void onGameEnd()
+        {
+            client.disconnect();
         }
     }
     [Serializable]

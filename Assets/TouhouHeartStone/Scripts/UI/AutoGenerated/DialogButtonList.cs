@@ -15,7 +15,7 @@ namespace UI
     using UnityEngine.UI;
     using BJSYGameCore.UI;
     
-    public partial class RoomList : UIList<RoomListItem>
+    public partial class DialogButtonList : UIList<DialogButtonListItem>
     {
         protected override void Awake()
         {
@@ -26,33 +26,33 @@ namespace UI
         }
         public void autoBind()
         {
-            this.m_as_VerticalLayoutGroup = this.GetComponent<VerticalLayoutGroup>();
-            this.defaultItem = this.transform.Find("RoomListItem").GetComponent<RoomListItem>();
+            this.m_as_HorizontalLayoutGroup = this.GetComponent<HorizontalLayoutGroup>();
+            this.defaultItem = this.transform.Find("DialogButtonListItem").GetComponent<DialogButtonListItem>();
         }
         private NetworkingPage _parent;
         public NetworkingPage parent
         {
             get
             {
-                return this.transform.parent.parent.parent.parent.parent.GetComponent<NetworkingPage>();
+                return this.transform.parent.parent.GetComponent<NetworkingPage>();
             }
         }
         [SerializeField()]
-        private VerticalLayoutGroup m_as_VerticalLayoutGroup;
-        public VerticalLayoutGroup asVerticalLayoutGroup
+        private HorizontalLayoutGroup m_as_HorizontalLayoutGroup;
+        public HorizontalLayoutGroup asHorizontalLayoutGroup
         {
             get
             {
-                if ((this.m_as_VerticalLayoutGroup == null))
+                if ((this.m_as_HorizontalLayoutGroup == null))
                 {
-                    this.m_as_VerticalLayoutGroup = this.GetComponent<VerticalLayoutGroup>();
+                    this.m_as_HorizontalLayoutGroup = this.GetComponent<HorizontalLayoutGroup>();
                 }
-                return this.m_as_VerticalLayoutGroup;
+                return this.m_as_HorizontalLayoutGroup;
             }
         }
-        protected override RoomListItem getDefaultItem()
+        protected override DialogButtonListItem getDefaultItem()
         {
-            return this.transform.Find("RoomListItem").GetComponent<RoomListItem>();
+            return this.transform.Find("DialogButtonListItem").GetComponent<DialogButtonListItem>();
         }
         partial void onAwake();
     }

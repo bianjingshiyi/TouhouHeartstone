@@ -10,6 +10,7 @@ using TouhouCardEngine;
 using TouhouHeartstone.Builtin;
 using BJSYGameCore;
 using UI;
+using System;
 using ExcelLibrary.SpreadSheet;
 namespace Game
 {
@@ -52,10 +53,7 @@ namespace Game
             {
                 if (!game.isRunning || gameTask.IsCompleted || gameTask.IsCanceled || gameTask.IsFaulted)
                 {
-                    game.Dispose();
-                    game = null;
-                    gameTask = null;
-                    _ui.display(_ui.MainMenu);
+                    quitGame();
                 }
             }
         }
@@ -139,18 +137,25 @@ namespace Game
             _ui.display(_ui.Game);
             _ui.Game.Table.setGame(game, localPlayer);
         }
-
+        public void quitGame()
+        {
+            if (game != null)
+            {
+                game.Dispose();
+                game = null;
+                _ui.display(_ui.MainMenu);
+                gameTask = null;
+                onGameEnd?.Invoke();
+            }
+        }
         private void onEventAfter(TouhouCardEngine.Interfaces.IEventArg obj)
         {
             if (obj is THHGame.GameEndEventArg)
             {
-                game.Dispose();
-                game = null;
-                gameTask = null;
-                _ui.display(_ui.MainMenu);
+                quitGame();
             }
         }
-
+        public event Action onGameEnd;
         void tryLoadDeckFromPrefs()
         {
             if (!PlayerPrefs.HasKey("DeckCount"))

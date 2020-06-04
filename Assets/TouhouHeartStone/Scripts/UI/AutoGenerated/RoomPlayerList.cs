@@ -15,7 +15,7 @@ namespace UI
     using UnityEngine.UI;
     using BJSYGameCore.UI;
     
-    public partial class RoomList : UIList<RoomListItem>
+    public partial class RoomPlayerList : UIList<RoomPlayerListItem>
     {
         protected override void Awake()
         {
@@ -27,14 +27,14 @@ namespace UI
         public void autoBind()
         {
             this.m_as_VerticalLayoutGroup = this.GetComponent<VerticalLayoutGroup>();
-            this.defaultItem = this.transform.Find("RoomListItem").GetComponent<RoomListItem>();
+            this.defaultItem = this.transform.Find("RoomPlayerListItem").GetComponent<RoomPlayerListItem>();
         }
         private NetworkingPage _parent;
         public NetworkingPage parent
         {
             get
             {
-                return this.transform.parent.parent.parent.parent.parent.GetComponent<NetworkingPage>();
+                return this.transform.parent.parent.parent.parent.GetComponent<NetworkingPage>();
             }
         }
         [SerializeField()]
@@ -50,9 +50,9 @@ namespace UI
                 return this.m_as_VerticalLayoutGroup;
             }
         }
-        protected override RoomListItem getDefaultItem()
+        protected override RoomPlayerListItem getDefaultItem()
         {
-            return this.transform.Find("RoomListItem").GetComponent<RoomListItem>();
+            return this.transform.Find("RoomPlayerListItem").GetComponent<RoomPlayerListItem>();
         }
         partial void onAwake();
     }

@@ -26,26 +26,40 @@ namespace UI
         public void autoBind()
         {
             this.m_as_Image = this.GetComponent<Image>();
+            this._ReturnButton = this.transform.Find("ReturnButton").GetComponent<Button>();
+            this._IPPanelImage = this.transform.Find("IPPanel").GetComponent<Image>();
+            this._IPInputField = this.transform.Find("IPPanel").Find("IPInputField").GetComponent<InputField>();
+            this._ConnectButton = this.transform.Find("IPPanel").Find("ConnectButton").GetComponent<Button>();
+            this._AddressText = this.transform.Find("IPPanel").Find("AddressText").GetComponent<Text>();
             this._ControlPanelImage = this.transform.Find("ControlPanel").GetComponent<Image>();
             this._BtnGroupVerticalLayoutGroup = this.transform.Find("ControlPanel").Find("BtnGroup").GetComponent<VerticalLayoutGroup>();
-            this._IPFieldInput = this.transform.Find("ControlPanel").Find("BtnGroup").Find("IPField").GetComponent<InputField>();
-            this._DirectLinkButton = this.transform.Find("ControlPanel").Find("BtnGroup").Find("DirectLink").GetComponent<Button>();
             this._LANButton = this.transform.Find("ControlPanel").Find("BtnGroup").Find("LAN").GetComponent<Button>();
             this._WANButton = this.transform.Find("ControlPanel").Find("BtnGroup").Find("WAN").GetComponent<Button>();
-            this._StatusText = this.transform.Find("ControlPanel").Find("StatusText").GetComponent<Text>();
             this._RoomListsImage = this.transform.Find("RoomLists").GetComponent<Image>();
             this._LocalRoomScrollView = this.transform.Find("RoomLists").Find("Local").Find("LocalRoomScrollView").GetComponent<RoomScrollView>();
             this._Text = this.transform.Find("RoomLists").Find("Local").Find("Text").GetComponent<Text>();
             this._RemoteRoomScrollView = this.transform.Find("RoomLists").Find("Remote").Find("RemoteRoomScrollView").GetComponent<RoomScrollView>();
             this._Remote_Text = this.transform.Find("RoomLists").Find("Remote").Find("Text").GetComponent<Text>();
-        }
-        private Main _parent;
-        public Main parent
-        {
-            get
-            {
-                return this.transform.parent.GetComponent<Main>();
-            }
+            this._NetworkDialogImage = this.transform.Find("NetworkDialog").GetComponent<Image>();
+            this._DialogText = this.transform.Find("NetworkDialog").Find("DialogText").GetComponent<Text>();
+            this._DialogButtonList = this.transform.Find("NetworkDialog").Find("DialogButtonList").GetComponent<DialogButtonList>();
+            this._RoomPanelImage = this.transform.Find("RoomPanel").GetComponent<Image>();
+            this._RoomPlayerListScrollRect = this.transform.Find("RoomPanel").Find("RoomPlayerListScrollRect").GetComponent<ScrollRect>();
+            this._RoomPlayerList = this.transform.Find("RoomPanel").Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
+            this._GameOptionPanelImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").GetComponent<Image>();
+            this._RandomSeedToggle = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").GetComponent<Toggle>();
+            this._BackgroundImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").Find("Background").GetComponent<Image>();
+            this._CheckmarkImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").Find("Background").Find("Checkmark").GetComponent<Image>();
+            this._LabelText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").Find("Label").GetComponent<Text>();
+            this._RandomSeedInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedInputField").GetComponent<InputField>();
+            this._ShuffleToggle = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").GetComponent<Toggle>();
+            this._ShuffleToggle_BackgroundImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").Find("Background").GetComponent<Image>();
+            this._Background_CheckmarkImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").Find("Background").Find("Checkmark").GetComponent<Image>();
+            this._ShuffleToggle_LabelText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").Find("Label").GetComponent<Text>();
+            this._InitReplaceTimeText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("InitReplaceTimeText").GetComponent<Text>();
+            this._InitReplaceTimeInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("InitReplaceTimeInputField").GetComponent<InputField>();
+            this._TurnTimeText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("TurnTimeText").GetComponent<Text>();
+            this._TurnTimeInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("TurnTimeInputField").GetComponent<InputField>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -58,6 +72,71 @@ namespace UI
                     this.m_as_Image = this.GetComponent<Image>();
                 }
                 return this.m_as_Image;
+            }
+        }
+        [SerializeField()]
+        private Button _ReturnButton;
+        public Button ReturnButton
+        {
+            get
+            {
+                if ((this._ReturnButton == null))
+                {
+                    this._ReturnButton = this.transform.Find("ReturnButton").GetComponent<Button>();
+                }
+                return this._ReturnButton;
+            }
+        }
+        [SerializeField()]
+        private Image _IPPanelImage;
+        public Image IPPanelImage
+        {
+            get
+            {
+                if ((this._IPPanelImage == null))
+                {
+                    this._IPPanelImage = this.transform.Find("IPPanel").GetComponent<Image>();
+                }
+                return this._IPPanelImage;
+            }
+        }
+        [SerializeField()]
+        private InputField _IPInputField;
+        public InputField IPInputField
+        {
+            get
+            {
+                if ((this._IPInputField == null))
+                {
+                    this._IPInputField = this.transform.Find("IPPanel").Find("IPInputField").GetComponent<InputField>();
+                }
+                return this._IPInputField;
+            }
+        }
+        [SerializeField()]
+        private Button _ConnectButton;
+        public Button ConnectButton
+        {
+            get
+            {
+                if ((this._ConnectButton == null))
+                {
+                    this._ConnectButton = this.transform.Find("IPPanel").Find("ConnectButton").GetComponent<Button>();
+                }
+                return this._ConnectButton;
+            }
+        }
+        [SerializeField()]
+        private Text _AddressText;
+        public Text AddressText
+        {
+            get
+            {
+                if ((this._AddressText == null))
+                {
+                    this._AddressText = this.transform.Find("IPPanel").Find("AddressText").GetComponent<Text>();
+                }
+                return this._AddressText;
             }
         }
         [SerializeField()]
@@ -87,32 +166,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private InputField _IPFieldInput;
-        public InputField IPFieldInput
-        {
-            get
-            {
-                if ((this._IPFieldInput == null))
-                {
-                    this._IPFieldInput = this.transform.Find("ControlPanel").Find("BtnGroup").Find("IPField").GetComponent<InputField>();
-                }
-                return this._IPFieldInput;
-            }
-        }
-        [SerializeField()]
-        private Button _DirectLinkButton;
-        public Button DirectLinkButton
-        {
-            get
-            {
-                if ((this._DirectLinkButton == null))
-                {
-                    this._DirectLinkButton = this.transform.Find("ControlPanel").Find("BtnGroup").Find("DirectLink").GetComponent<Button>();
-                }
-                return this._DirectLinkButton;
-            }
-        }
-        [SerializeField()]
         private Button _LANButton;
         public Button LANButton
         {
@@ -136,19 +189,6 @@ namespace UI
                     this._WANButton = this.transform.Find("ControlPanel").Find("BtnGroup").Find("WAN").GetComponent<Button>();
                 }
                 return this._WANButton;
-            }
-        }
-        [SerializeField()]
-        private Text _StatusText;
-        public Text StatusText
-        {
-            get
-            {
-                if ((this._StatusText == null))
-                {
-                    this._StatusText = this.transform.Find("ControlPanel").Find("StatusText").GetComponent<Text>();
-                }
-                return this._StatusText;
             }
         }
         [SerializeField()]
@@ -214,6 +254,266 @@ namespace UI
                     this._Remote_Text = this.transform.Find("RoomLists").Find("Remote").Find("Text").GetComponent<Text>();
                 }
                 return this._Remote_Text;
+            }
+        }
+        [SerializeField()]
+        private Image _NetworkDialogImage;
+        public Image NetworkDialogImage
+        {
+            get
+            {
+                if ((this._NetworkDialogImage == null))
+                {
+                    this._NetworkDialogImage = this.transform.Find("NetworkDialog").GetComponent<Image>();
+                }
+                return this._NetworkDialogImage;
+            }
+        }
+        [SerializeField()]
+        private Text _DialogText;
+        public Text DialogText
+        {
+            get
+            {
+                if ((this._DialogText == null))
+                {
+                    this._DialogText = this.transform.Find("NetworkDialog").Find("DialogText").GetComponent<Text>();
+                }
+                return this._DialogText;
+            }
+        }
+        [SerializeField()]
+        private DialogButtonList _DialogButtonList;
+        public DialogButtonList DialogButtonList
+        {
+            get
+            {
+                if ((this._DialogButtonList == null))
+                {
+                    this._DialogButtonList = this.transform.Find("NetworkDialog").Find("DialogButtonList").GetComponent<DialogButtonList>();
+                }
+                return this._DialogButtonList;
+            }
+        }
+        [SerializeField()]
+        private Image _RoomPanelImage;
+        public Image RoomPanelImage
+        {
+            get
+            {
+                if ((this._RoomPanelImage == null))
+                {
+                    this._RoomPanelImage = this.transform.Find("RoomPanel").GetComponent<Image>();
+                }
+                return this._RoomPanelImage;
+            }
+        }
+        [SerializeField()]
+        private ScrollRect _RoomPlayerListScrollRect;
+        public ScrollRect RoomPlayerListScrollRect
+        {
+            get
+            {
+                if ((this._RoomPlayerListScrollRect == null))
+                {
+                    this._RoomPlayerListScrollRect = this.transform.Find("RoomPanel").Find("RoomPlayerListScrollRect").GetComponent<ScrollRect>();
+                }
+                return this._RoomPlayerListScrollRect;
+            }
+        }
+        [SerializeField()]
+        private RoomPlayerList _RoomPlayerList;
+        public RoomPlayerList RoomPlayerList
+        {
+            get
+            {
+                if ((this._RoomPlayerList == null))
+                {
+                    this._RoomPlayerList = this.transform.Find("RoomPanel").Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
+                }
+                return this._RoomPlayerList;
+            }
+        }
+        [SerializeField()]
+        private Image _GameOptionPanelImage;
+        public Image GameOptionPanelImage
+        {
+            get
+            {
+                if ((this._GameOptionPanelImage == null))
+                {
+                    this._GameOptionPanelImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").GetComponent<Image>();
+                }
+                return this._GameOptionPanelImage;
+            }
+        }
+        [SerializeField()]
+        private Toggle _RandomSeedToggle;
+        public Toggle RandomSeedToggle
+        {
+            get
+            {
+                if ((this._RandomSeedToggle == null))
+                {
+                    this._RandomSeedToggle = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").GetComponent<Toggle>();
+                }
+                return this._RandomSeedToggle;
+            }
+        }
+        [SerializeField()]
+        private Image _BackgroundImage;
+        public Image BackgroundImage
+        {
+            get
+            {
+                if ((this._BackgroundImage == null))
+                {
+                    this._BackgroundImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").Find("Background").GetComponent<Image>();
+                }
+                return this._BackgroundImage;
+            }
+        }
+        [SerializeField()]
+        private Image _CheckmarkImage;
+        public Image CheckmarkImage
+        {
+            get
+            {
+                if ((this._CheckmarkImage == null))
+                {
+                    this._CheckmarkImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").Find("Background").Find("Checkmark").GetComponent<Image>();
+                }
+                return this._CheckmarkImage;
+            }
+        }
+        [SerializeField()]
+        private Text _LabelText;
+        public Text LabelText
+        {
+            get
+            {
+                if ((this._LabelText == null))
+                {
+                    this._LabelText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").Find("Label").GetComponent<Text>();
+                }
+                return this._LabelText;
+            }
+        }
+        [SerializeField()]
+        private InputField _RandomSeedInputField;
+        public InputField RandomSeedInputField
+        {
+            get
+            {
+                if ((this._RandomSeedInputField == null))
+                {
+                    this._RandomSeedInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedInputField").GetComponent<InputField>();
+                }
+                return this._RandomSeedInputField;
+            }
+        }
+        [SerializeField()]
+        private Toggle _ShuffleToggle;
+        public Toggle ShuffleToggle
+        {
+            get
+            {
+                if ((this._ShuffleToggle == null))
+                {
+                    this._ShuffleToggle = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").GetComponent<Toggle>();
+                }
+                return this._ShuffleToggle;
+            }
+        }
+        [SerializeField()]
+        private Image _ShuffleToggle_BackgroundImage;
+        public Image ShuffleToggle_BackgroundImage
+        {
+            get
+            {
+                if ((this._ShuffleToggle_BackgroundImage == null))
+                {
+                    this._ShuffleToggle_BackgroundImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").Find("Background").GetComponent<Image>();
+                }
+                return this._ShuffleToggle_BackgroundImage;
+            }
+        }
+        [SerializeField()]
+        private Image _Background_CheckmarkImage;
+        public Image Background_CheckmarkImage
+        {
+            get
+            {
+                if ((this._Background_CheckmarkImage == null))
+                {
+                    this._Background_CheckmarkImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").Find("Background").Find("Checkmark").GetComponent<Image>();
+                }
+                return this._Background_CheckmarkImage;
+            }
+        }
+        [SerializeField()]
+        private Text _ShuffleToggle_LabelText;
+        public Text ShuffleToggle_LabelText
+        {
+            get
+            {
+                if ((this._ShuffleToggle_LabelText == null))
+                {
+                    this._ShuffleToggle_LabelText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").Find("Label").GetComponent<Text>();
+                }
+                return this._ShuffleToggle_LabelText;
+            }
+        }
+        [SerializeField()]
+        private Text _InitReplaceTimeText;
+        public Text InitReplaceTimeText
+        {
+            get
+            {
+                if ((this._InitReplaceTimeText == null))
+                {
+                    this._InitReplaceTimeText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("InitReplaceTimeText").GetComponent<Text>();
+                }
+                return this._InitReplaceTimeText;
+            }
+        }
+        [SerializeField()]
+        private InputField _InitReplaceTimeInputField;
+        public InputField InitReplaceTimeInputField
+        {
+            get
+            {
+                if ((this._InitReplaceTimeInputField == null))
+                {
+                    this._InitReplaceTimeInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("InitReplaceTimeInputField").GetComponent<InputField>();
+                }
+                return this._InitReplaceTimeInputField;
+            }
+        }
+        [SerializeField()]
+        private Text _TurnTimeText;
+        public Text TurnTimeText
+        {
+            get
+            {
+                if ((this._TurnTimeText == null))
+                {
+                    this._TurnTimeText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("TurnTimeText").GetComponent<Text>();
+                }
+                return this._TurnTimeText;
+            }
+        }
+        [SerializeField()]
+        private InputField _TurnTimeInputField;
+        public InputField TurnTimeInputField
+        {
+            get
+            {
+                if ((this._TurnTimeInputField == null))
+                {
+                    this._TurnTimeInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("TurnTimeInputField").GetComponent<InputField>();
+                }
+                return this._TurnTimeInputField;
             }
         }
         partial void onAwake();
