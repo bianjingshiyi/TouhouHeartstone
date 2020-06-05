@@ -397,6 +397,7 @@ GameObject:
   - component: {fileID: 2552346440453194824}
   - component: {fileID: 6724395705441483877}
   - component: {fileID: 300039448989035209}
+  - component: {fileID: 5872990134443048607}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -443,7 +444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 7849b08cb412f7b4487f0eed020f997b, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
@@ -473,6 +474,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AspectMode: 4
   m_AspectRatio: 1
+--- !u!114 &5872990134443048607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2452597073961219392}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aafda845fd932a140b2c40b0e5ea2934, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _matPropList:
+  - name: _BlackWhite
+    floatValue: 0.5
 --- !u!1 &2821792485326690568
 GameObject:
   m_ObjectHideFlags: 0

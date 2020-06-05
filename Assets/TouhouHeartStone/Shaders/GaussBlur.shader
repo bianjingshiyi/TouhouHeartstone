@@ -1,4 +1,4 @@
-Shader "Effect/GaussBlur"
+Shader "THH/GaussBlur"
 {
     Properties
     {
@@ -57,7 +57,6 @@ Shader "Effect/GaussBlur"
                         col += color * weight;
                     }
                 }
-                
                 return col;
             }
 
