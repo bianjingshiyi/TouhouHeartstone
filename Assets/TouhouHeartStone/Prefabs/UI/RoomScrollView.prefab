@@ -91,6 +91,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
   _initStates: []
+  m_as_Button: {fileID: 0}
   m_as_Image: {fileID: 5421060708397287125}
   _RoomNameText: {fileID: 5421060708794400084}
   _Button: {fileID: 5421060709444376454}

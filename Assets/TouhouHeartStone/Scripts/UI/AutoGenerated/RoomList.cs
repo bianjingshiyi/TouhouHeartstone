@@ -29,12 +29,12 @@ namespace UI
             this.m_as_VerticalLayoutGroup = this.GetComponent<VerticalLayoutGroup>();
             this.defaultItem = this.transform.Find("RoomListItem").GetComponent<RoomListItem>();
         }
-        private RoomScrollView _parent;
-        public RoomScrollView parent
+        private Main _parent;
+        public Main parent
         {
             get
             {
-                return this.transform.parent.parent.GetComponent<RoomScrollView>();
+                return this.transform.parent.parent.parent.parent.parent.parent.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]

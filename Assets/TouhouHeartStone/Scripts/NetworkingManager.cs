@@ -25,6 +25,10 @@ namespace Game
                 return _host;
             }
         }
+        public string address
+        {
+            get { return host.address; }
+        }
         [SerializeField]
         private ClientManager _client;
         public ClientManager client
@@ -69,7 +73,7 @@ namespace Game
             RoomListItem item = getManager<UIManager>().getObject<LANPanel>().RoomScrollView.RoomList.addItem();
             item.refresh(obj);
         }
-        public async void joinRoom(RoomInfo roomInfo)
+        public async Task joinRoom(RoomInfo roomInfo)
         {
             if (roomInfo == null)
                 throw new ArgumentNullException(nameof(roomInfo));
@@ -109,14 +113,19 @@ namespace Game
         /// 创建一个房间
         /// </summary>
         /// <returns></returns>
-        public Task createRoom()
+        public async Task createRoom()
         {
-            host.openRoom(new THHRoomInfo()
+            RoomInfo room = host.openRoom(new THHRoomInfo()
             {
+                port = 9050,
                 option = new GameOption()
             });
-            client.joinRoom(,)
-            return client.join("127.0.0.1", host.port);
+            ui.NetworkingPageGroup.display(null);
+            await client.joinRoom(room, new THHRoomPlayerInfo()
+            {
+                deck = getManager<GameManager>().deck
+            });
+            ui.NetworkingPageGroup.display(ui.NetworkingPageGroup.RoomPanel);
         }
         /// <summary>
         /// 加入一个房间
