@@ -50,6 +50,18 @@ namespace TouhouHeartstone
             else
                 base.setProp(propName, value);
         }
+        public override void merge(CardDefine newVersion)
+        {
+            if (newVersion.type != type)
+                UberDebug.LogWarning(newVersion + "的类型与" + this + "不同，可能是一次非法的数据合并！");
+            cost = newVersion.getProp<int>(nameof(cost));
+            attack = newVersion.getProp<int>(nameof(attack));
+            life = newVersion.getProp<int>(nameof(life));
+            spellDamage = newVersion.getProp<int>(nameof(spellDamage));
+            isToken = newVersion.getProp<bool>(nameof(isToken));
+            tags = newVersion.getProp<string[]>(nameof(tags));
+            keywords = newVersion.getProp<string[]>(nameof(keywords));
+        }
         public override string isUsable(CardEngine engine, Player player, Card card)
         {
             throw new NotImplementedException();

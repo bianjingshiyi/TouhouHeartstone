@@ -141,10 +141,13 @@ namespace TouhouHeartstone
         public async Task<bool> tryUse(THHGame game, Card card, int position, params Card[] targets)
         {
             if (!card.isUsable(game, this, out _))
+                //卡牌不可用
                 return false;
-            if (targets.Length == 1 && (targets[0].isElusive() || targets[0].isStealth()))
+            if (targets.Any(t => t is Card targetCard && targetCard.isElusive() && (card.define is SkillCardDefine || card.define is SpellCardDefine)))
+                //目标是魔免
                 return false;
             if (card.define is SkillCardDefine)
+                //使用技能
                 card.setUsed(true);
             await setGem(game, gem - card.getCost());
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>
@@ -167,14 +170,6 @@ namespace TouhouHeartstone
                             await effect.execute(game, card, new object[] { eventArg }, targets);
                         }
                     }
-                    //IEffect effect = arg.card.define.getEffectOn<BattleCryEventArg>(game.triggers);
-                    //if (effect != null)
-                    //{
-                    //    await game.triggers.doEvent(new BattleCryEventArg() { player = arg.player, card = arg.card, effect = effect, targets = arg.targets }, arg2 =>
-                    //    {
-                    //        return arg2.effect.execute(game, arg2.player, arg2.card, new object[] { arg2 }, arg2.targets);
-                    //    });
-                    //}
                 }
                 else if (card.define is SkillCardDefine)
                 {

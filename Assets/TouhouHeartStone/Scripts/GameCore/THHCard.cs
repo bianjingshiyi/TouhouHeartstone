@@ -310,7 +310,7 @@ namespace TouhouHeartstone
                     targetList.Add(player.master);
                 foreach (Card servant in player.field)
                 {
-                    if (effect.checkTarget(game, null, card, new object[] { servant }) && !servant.isElusive())
+                    if (effect.checkTarget(game, null, card, new object[] { servant }))
                         targetList.Add(servant);
                 }
             }

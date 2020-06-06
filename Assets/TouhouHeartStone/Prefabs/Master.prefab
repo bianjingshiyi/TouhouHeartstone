@@ -387,7 +387,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7552501258077180534}
-  - component: {fileID: 7552501258077180533}
   - component: {fileID: 7019960628220374399}
   - component: {fileID: 2712425241954072648}
   m_Layer: 5
@@ -424,19 +423,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 207.43451}
   m_SizeDelta: {x: 250, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &7552501258077180533
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7552501258077180535}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09f1d5add514f3a4f98be17ee1519e1f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _board: {fileID: 0}
 --- !u!114 &7019960628220374399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1047,7 +1033,6 @@ GameObject:
   - component: {fileID: 7552501259472621952}
   - component: {fileID: 7552501259472621981}
   - component: {fileID: 7552501259472621982}
-  - component: {fileID: 7552501259472621983}
   m_Layer: 5
   m_Name: ArmorText
   m_TagString: Untagged
@@ -1114,22 +1099,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 3
---- !u!114 &7552501259472621983
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7552501259472621953}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1670825535, guid: 94f5ecf3c8f5a394b91a889848c86e7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  viewAdapterTypeName: UnityWeld.Binding.Adapters.IntToStringAdapter
-  viewAdapterOptions: {fileID: 0}
-  viewModelPropertyName: TouhouHeartstone.Frontend.ViewModel.CharacterInfoViewModel.Defence
-  viewPropertyName: UnityEngine.UI.Text.text
 --- !u!1 &8587948920208383593
 GameObject:
   m_ObjectHideFlags: 0

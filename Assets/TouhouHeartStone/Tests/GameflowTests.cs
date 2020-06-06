@@ -14,6 +14,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Xml.Serialization;
 using TouhouHeartstone.Builtin;
+using Game;
 namespace Tests
 {
     public static class TestGameflow
@@ -48,9 +49,9 @@ namespace Tests
             THHGame game = new THHGame(option != null ? option : GameOption.Default, CardHelper.getCardDefines())
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
-                triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>(),
+                triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
                 time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
-                logger = new ULogger()
+                logger = new ULogger(name)
             };
             (game.triggers as TriggerManager).logger = game.logger;
             return game;
@@ -338,6 +339,165 @@ namespace Tests
 
             g1.Dispose();
             g2.Dispose();
+        }
+        [UnityTest]
+        public IEnumerator remotePVPSimulTest()
+        {
+            UnityLogger logger = new UnityLogger();
+            HostManager host = new GameObject(nameof(HostManager)).AddComponent<HostManager>();
+            host.logger = logger;
+            ClientManager local = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
+            local.logger = logger;
+            //开房，打开Host，自己加入自己，房间应该有Option
+            THHRoomInfo roomInfo = new THHRoomInfo();
+            THHGame localGame = null;
+            local.onConnected += () =>
+            {
+                //发送玩家信息
+                _ = local.send(new THHRoomPlayerInfo()
+                {
+                    id = local.id,
+                    name = "玩家" + local.id,
+                    deck = new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray()
+                });
+            };
+            local.onReceive += (id, obj) =>
+            {
+                if (obj is RoomPlayerInfo newPlayerInfo)
+                {
+                    //收到玩家信息
+                    THHRoomInfo newRoomInfo = new THHRoomInfo()
+                    {
+                        option = roomInfo.option,
+                        playerList = new List<RoomPlayerInfo>(roomInfo.playerList)
+                    };
+                    newRoomInfo.playerList.Add(newPlayerInfo);
+                    //发送房间信息
+                    _ = local.send(newRoomInfo);
+                }
+                else if (obj is THHRoomInfo newRoomInfo)
+                {
+                    roomInfo = newRoomInfo;
+                    //收到房间信息
+                    if (newRoomInfo.playerList.Count > 1)
+                    {
+                        localGame = TestGameflow.initGameWithoutPlayers("本地游戏", newRoomInfo.option);
+                        (localGame.answers as AnswerManager).client = local;
+                        foreach (var playerInfo in newRoomInfo.playerList.Cast<THHRoomPlayerInfo>())
+                        {
+                            localGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, localGame.getCardDefine<MasterCardDefine>(playerInfo.deck[0]), playerInfo.deck.Skip(1).Select(did => localGame.getCardDefine(did)));
+                        }
+                        localGame.run();
+                    }
+                }
+            };
+            host.start();
+            local.start();
+            string address = Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+            Task task = local.join(address, host.port);
+            yield return new WaitUntil(() => task.IsCompleted && roomInfo.playerList.Count > 0);
+
+            ClientManager remote = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
+            remote.logger = logger;
+            THHGame remoteGame = null;
+            remote.onConnected += () =>
+            {
+                //发送玩家信息
+                _ = remote.send(new THHRoomPlayerInfo()
+                {
+                    id = remote.id,
+                    name = "玩家" + remote.id,
+                    deck = new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray()
+                });
+            };
+            remote.onReceive += (id, obj) =>
+            {
+                if (obj is THHRoomInfo newRoomInfo)
+                {
+                    //收到房间信息
+                    if (newRoomInfo.playerList.Count > 1)
+                    {
+                        remoteGame = TestGameflow.initGameWithoutPlayers("远端游戏", newRoomInfo.option);
+                        (remoteGame.answers as AnswerManager).client = remote;
+                        foreach (var playerInfo in newRoomInfo.playerList.Cast<THHRoomPlayerInfo>())
+                        {
+                            remoteGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, remoteGame.getCardDefine<MasterCardDefine>(playerInfo.deck[0]), playerInfo.deck.Skip(1).Select(did => remoteGame.getCardDefine(did)));
+                        }
+                        remoteGame.run();
+                    }
+                }
+            };
+            //加入房间
+            remote.start();
+            task = remote.join(address, host.port);
+            yield return new WaitUntil(() => task.IsCompleted && roomInfo.playerList.Count > 1);
+            //连接了，远程玩家把玩家信息发给本地，本地更新房间信息发给远端和开始游戏。
+            yield return new WaitUntil(() => localGame != null && remoteGame != null);
+
+            Assert.True(localGame.isRunning);
+            Assert.AreEqual(local.id, localGame.players[0].id);
+            Assert.AreEqual(remote.id, localGame.players[1].id);
+            Assert.True(remoteGame.isRunning);
+            Assert.AreEqual(local.id, remoteGame.players[0].id);
+            Assert.AreEqual(remote.id, remoteGame.players[1].id);
+
+            THHPlayer localPlayer = localGame.getPlayer(local.id);
+            Assert.AreEqual(0, localPlayer.id);
+            yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is InitReplaceRequest);
+            Assert.Greater(localPlayer.init.count, 0);
+            localPlayer.cmdInitReplace(localGame);
+            yield return new WaitUntil(() => localGame.answers.getResponse(localPlayer.id, localGame.answers.getRequests(localPlayer.id).FirstOrDefault()) is InitReplaceResponse);
+
+            THHPlayer remotePlayer = remoteGame.getPlayer(remote.id);
+            Assert.AreEqual(1, remotePlayer.id);
+            yield return new WaitUntil(() => remoteGame.answers.getRequests(remotePlayer.id).FirstOrDefault() is InitReplaceRequest);
+            Assert.Greater(remotePlayer.init.count, 0);
+            remotePlayer.cmdInitReplace(remoteGame);
+            yield return new WaitUntil(() => remoteGame.triggers.getRecordedEvents().Any(e => e is THHGame.StartEventArg));
+            //拍怪
+            if (localGame.sortedPlayers[0] == localPlayer)
+            {
+                yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is FreeActRequest);
+                localPlayer.cmdUse(localGame, localPlayer.hand[0], 0);
+                yield return new WaitUntil(() => localPlayer.field.count > 0);
+                localPlayer.cmdTurnEnd(localGame);
+                yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
+            }
+            yield return new WaitUntil(() => remoteGame.answers.getRequests(remotePlayer.id).FirstOrDefault() is FreeActRequest);
+            remotePlayer.cmdUse(remoteGame, remotePlayer.hand[0], 0);
+            yield return new WaitUntil(() => remotePlayer.field.count > 0);
+            remotePlayer.cmdTurnEnd(remoteGame);
+            yield return new WaitUntil(() => remoteGame.currentPlayer != remotePlayer);
+            if (localGame.sortedPlayers[0] != localPlayer)
+            {
+                yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is FreeActRequest);
+                localPlayer.cmdUse(localGame, localPlayer.hand[0], 0);
+                yield return new WaitUntil(() => localPlayer.field.count > 0);
+                localPlayer.cmdTurnEnd(localGame);
+                yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
+            }
+            do
+            {
+                yield return new WaitUntil(() => localGame.currentPlayer == localPlayer || remoteGame.currentPlayer == remotePlayer);
+                if (localGame.currentPlayer == localPlayer)
+                {
+                    localPlayer.cmdAttack(localGame, localPlayer.field[0], localGame.getOpponent(localPlayer).master);
+                    yield return new WaitUntil(() => localPlayer.field[0].getAttackTimes() > 0);
+                    localPlayer.cmdTurnEnd(localGame);
+                    yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
+                }
+                else if (remoteGame.currentPlayer == remotePlayer)
+                {
+                    remotePlayer.cmdAttack(remoteGame, remotePlayer.field[0], remoteGame.getOpponent(remotePlayer).master);
+                    yield return new WaitUntil(() => remotePlayer.field[0].getAttackTimes() > 0);
+                    remotePlayer.cmdTurnEnd(remoteGame);
+                    yield return new WaitUntil(() => remoteGame.currentPlayer != remotePlayer);
+                }
+            }
+            while (localGame.isRunning && remoteGame.isRunning);
+
+            local.disconnect();
+            remote.disconnect();
         }
         [UnityTest]
         public IEnumerator effectRegisterTest()
@@ -639,7 +799,7 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.SKILL,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>

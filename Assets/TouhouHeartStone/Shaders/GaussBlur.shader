@@ -1,4 +1,4 @@
-Shader "Effect/GaussBlur"
+Shader "THH/GaussBlur"
 {
     Properties
     {
@@ -92,7 +92,9 @@ Shader "Effect/GaussBlur"
                         sumWeight += weight;
                     }
                 }
+
                 return col / sumWeight;
+
             }
 
 

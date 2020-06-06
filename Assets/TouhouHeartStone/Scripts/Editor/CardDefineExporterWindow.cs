@@ -77,7 +77,7 @@ namespace TouhouHeartstone
         }
         private void exportAsExcel(List<CardDefine> cardList)
         {
-            _manager.Load();
+            _manager.load();
 
             _templatePath = EditorUtility.OpenFilePanel("选择模板文件",
                 File.Exists(_templatePath) ? Path.GetDirectoryName(_templatePath) : Application.dataPath, "xls");

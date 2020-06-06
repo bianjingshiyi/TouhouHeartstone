@@ -121,6 +121,10 @@ namespace TouhouHeartstone
                 }
                 card.setProp(nameof(ServantCardDefine.tags), servant.tags);
             }
+            else if (define is SpellCardDefine spell)
+            {
+                card.setCost(spell.cost);
+            }
             return card;
         }
         public Card[] findAllCardsInField(Func<Card, bool> filter)
