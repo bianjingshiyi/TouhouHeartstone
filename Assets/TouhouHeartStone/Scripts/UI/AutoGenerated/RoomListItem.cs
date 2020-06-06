@@ -25,9 +25,9 @@ namespace UI
         }
         public void autoBind()
         {
+            this.m_as_Button = this.GetComponent<Button>();
             this.m_as_Image = this.GetComponent<Image>();
-            this._RoomNameText = this.transform.Find("Texts").Find("RoomName").GetComponent<Text>();
-            this._RoomDescText = this.transform.Find("Texts").Find("RoomDesc").GetComponent<Text>();
+            this._RoomNameText = this.transform.Find("RoomName").GetComponent<Text>();
             this._Button = this.transform.Find("Button").GetComponent<Button>();
         }
         private RoomList _parent;
@@ -36,6 +36,19 @@ namespace UI
             get
             {
                 return this.transform.parent.GetComponent<RoomList>();
+            }
+        }
+        [SerializeField()]
+        private Button m_as_Button;
+        public Button asButton
+        {
+            get
+            {
+                if ((this.m_as_Button == null))
+                {
+                    this.m_as_Button = this.GetComponent<Button>();
+                }
+                return this.m_as_Button;
             }
         }
         [SerializeField()]
@@ -59,22 +72,9 @@ namespace UI
             {
                 if ((this._RoomNameText == null))
                 {
-                    this._RoomNameText = this.transform.Find("Texts").Find("RoomName").GetComponent<Text>();
+                    this._RoomNameText = this.transform.Find("RoomName").GetComponent<Text>();
                 }
                 return this._RoomNameText;
-            }
-        }
-        [SerializeField()]
-        private Text _RoomDescText;
-        public Text RoomDescText
-        {
-            get
-            {
-                if ((this._RoomDescText == null))
-                {
-                    this._RoomDescText = this.transform.Find("Texts").Find("RoomDesc").GetComponent<Text>();
-                }
-                return this._RoomDescText;
             }
         }
         [SerializeField()]

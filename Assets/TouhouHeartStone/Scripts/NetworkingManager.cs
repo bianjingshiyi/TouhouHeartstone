@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using TouhouCardEngine;
 using BJSYGameCore;
 using UI;
@@ -10,15 +8,34 @@ using System.Net.Sockets;
 using System.Net;
 using System;
 using System.Linq;
-
+using System.Collections.Generic;
+using BJSYGameCore.UI;
 namespace Game
 {
     public class NetworkingManager : Manager
     {
+        [SerializeField]
         private HostManager _host;
-        public HostManager host => _host;
+        public HostManager host
+        {
+            get
+            {
+                if (_host == null)
+                    _host = this.findInstance<HostManager>();
+                return _host;
+            }
+        }
+        [SerializeField]
         private ClientManager _client;
-        public ClientManager client => _client;
+        public ClientManager client
+        {
+            get
+            {
+                if (_client == null)
+                    _client = this.findInstance<ClientManager>();
+                return _client;
+            }
+        }
         private GameManager _gameManager;
         public GameManager gameManager
         {
@@ -28,16 +45,41 @@ namespace Game
                 return _gameManager;
             }
         }
+        public NetworkingPage ui
+        {
+            get { return getManager<UIManager>().getObject<NetworkingPage>(); }
+        }
         protected override void onAwake()
         {
             base.onAwake();
-            //初始化组件
-            var _nw = this.findInstance<NetworkingPage>();
-            if (_nw != null)
-                _nw.Networking = this;
+            host.logger = new ULogger("Host");
+            client.logger = new ULogger("Client");
+            client.onRoomFound += Client_onRoomFound;
             gameManager.onGameEnd += onGameEnd;
         }
-
+        [SerializeField]
+        List<RoomInfo> _LANRoomList;
+        public void updateLANRooms()
+        {
+            client.findRoom();
+        }
+        private void Client_onRoomFound(RoomInfo obj)
+        {
+            _LANRoomList.Add(obj);
+            RoomListItem item = getManager<UIManager>().getObject<LANPanel>().RoomScrollView.RoomList.addItem();
+            item.refresh(obj);
+        }
+        public async void joinRoom(RoomInfo roomInfo)
+        {
+            if (roomInfo == null)
+                throw new ArgumentNullException(nameof(roomInfo));
+            ui.NetworkingPageGroup.display(null);
+            await client.joinRoom(roomInfo, new THHRoomPlayerInfo()
+            {
+                deck = getManager<GameManager>().deck
+            });
+            ui.NetworkingPageGroup.display(ui.NetworkingPageGroup.RoomPanel);
+        }
         private void initClient()
         {
             if (_client == null)
@@ -67,15 +109,13 @@ namespace Game
         /// 创建一个房间
         /// </summary>
         /// <returns></returns>
-        public Task CreateRoom()
+        public Task createRoom()
         {
-            initHost();
-            initClient();
-            host.logger = new UnityLogger();
-            client.logger = new UnityLogger();
-
-            host.start();
-            client.start();
+            host.openRoom(new THHRoomInfo()
+            {
+                option = new GameOption()
+            });
+            client.joinRoom(,)
             return client.join("127.0.0.1", host.port);
         }
         /// <summary>

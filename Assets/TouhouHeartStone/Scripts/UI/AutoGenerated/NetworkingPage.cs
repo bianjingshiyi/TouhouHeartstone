@@ -27,39 +27,18 @@ namespace UI
         {
             this.m_as_Image = this.GetComponent<Image>();
             this._ReturnButton = this.transform.Find("ReturnButton").GetComponent<Button>();
-            this._IPPanelImage = this.transform.Find("IPPanel").GetComponent<Image>();
-            this._IPInputField = this.transform.Find("IPPanel").Find("IPInputField").GetComponent<InputField>();
-            this._ConnectButton = this.transform.Find("IPPanel").Find("ConnectButton").GetComponent<Button>();
-            this._AddressText = this.transform.Find("IPPanel").Find("AddressText").GetComponent<Text>();
+            this._LinkButton = this.transform.Find("LinkButton").GetComponent<Button>();
+            this._LANButton = this.transform.Find("LANButton").GetComponent<Button>();
+            this._RoomButton = this.transform.Find("RoomButton").GetComponent<Button>();
             this._ControlPanelImage = this.transform.Find("ControlPanel").GetComponent<Image>();
             this._BtnGroupVerticalLayoutGroup = this.transform.Find("ControlPanel").Find("BtnGroup").GetComponent<VerticalLayoutGroup>();
-            this._LANButton = this.transform.Find("ControlPanel").Find("BtnGroup").Find("LAN").GetComponent<Button>();
             this._WANButton = this.transform.Find("ControlPanel").Find("BtnGroup").Find("WAN").GetComponent<Button>();
-            this._RoomListsImage = this.transform.Find("RoomLists").GetComponent<Image>();
-            this._LocalRoomScrollView = this.transform.Find("RoomLists").Find("Local").Find("LocalRoomScrollView").GetComponent<RoomScrollView>();
-            this._Text = this.transform.Find("RoomLists").Find("Local").Find("Text").GetComponent<Text>();
-            this._RemoteRoomScrollView = this.transform.Find("RoomLists").Find("Remote").Find("RemoteRoomScrollView").GetComponent<RoomScrollView>();
-            this._Remote_Text = this.transform.Find("RoomLists").Find("Remote").Find("Text").GetComponent<Text>();
             this._NetworkDialogImage = this.transform.Find("NetworkDialog").GetComponent<Image>();
             this._DialogText = this.transform.Find("NetworkDialog").Find("DialogText").GetComponent<Text>();
             this._DialogButtonList = this.transform.Find("NetworkDialog").Find("DialogButtonList").GetComponent<DialogButtonList>();
-            this._RoomPanelImage = this.transform.Find("RoomPanel").GetComponent<Image>();
-            this._RoomPlayerListScrollRect = this.transform.Find("RoomPanel").Find("RoomPlayerListScrollRect").GetComponent<ScrollRect>();
-            this._RoomPlayerList = this.transform.Find("RoomPanel").Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
-            this._GameOptionPanelImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").GetComponent<Image>();
-            this._RandomSeedToggle = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").GetComponent<Toggle>();
-            this._BackgroundImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").Find("Background").GetComponent<Image>();
-            this._CheckmarkImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").Find("Background").Find("Checkmark").GetComponent<Image>();
-            this._LabelText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").Find("Label").GetComponent<Text>();
-            this._RandomSeedInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedInputField").GetComponent<InputField>();
-            this._ShuffleToggle = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").GetComponent<Toggle>();
-            this._ShuffleToggle_BackgroundImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").Find("Background").GetComponent<Image>();
-            this._Background_CheckmarkImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").Find("Background").Find("Checkmark").GetComponent<Image>();
-            this._ShuffleToggle_LabelText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").Find("Label").GetComponent<Text>();
-            this._InitReplaceTimeText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("InitReplaceTimeText").GetComponent<Text>();
-            this._InitReplaceTimeInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("InitReplaceTimeInputField").GetComponent<InputField>();
-            this._TurnTimeText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("TurnTimeText").GetComponent<Text>();
-            this._TurnTimeInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("TurnTimeInputField").GetComponent<InputField>();
+            this._RemoteRoomScrollView = this.transform.Find("Remote").Find("RemoteRoomScrollView").GetComponent<RoomScrollView>();
+            this._Text = this.transform.Find("Remote").Find("Text").GetComponent<Text>();
+            this._NetworkingPageGroup = this.transform.Find("NetworkingPageGroup").GetComponent<NetworkingPageGroup>();
         }
         private Main _parent;
         public Main parent
@@ -96,55 +75,42 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _IPPanelImage;
-        public Image IPPanelImage
+        private Button _LinkButton;
+        public Button LinkButton
         {
             get
             {
-                if ((this._IPPanelImage == null))
+                if ((this._LinkButton == null))
                 {
-                    this._IPPanelImage = this.transform.Find("IPPanel").GetComponent<Image>();
+                    this._LinkButton = this.transform.Find("LinkButton").GetComponent<Button>();
                 }
-                return this._IPPanelImage;
+                return this._LinkButton;
             }
         }
         [SerializeField()]
-        private InputField _IPInputField;
-        public InputField IPInputField
+        private Button _LANButton;
+        public Button LANButton
         {
             get
             {
-                if ((this._IPInputField == null))
+                if ((this._LANButton == null))
                 {
-                    this._IPInputField = this.transform.Find("IPPanel").Find("IPInputField").GetComponent<InputField>();
+                    this._LANButton = this.transform.Find("LANButton").GetComponent<Button>();
                 }
-                return this._IPInputField;
+                return this._LANButton;
             }
         }
         [SerializeField()]
-        private Button _ConnectButton;
-        public Button ConnectButton
+        private Button _RoomButton;
+        public Button RoomButton
         {
             get
             {
-                if ((this._ConnectButton == null))
+                if ((this._RoomButton == null))
                 {
-                    this._ConnectButton = this.transform.Find("IPPanel").Find("ConnectButton").GetComponent<Button>();
+                    this._RoomButton = this.transform.Find("RoomButton").GetComponent<Button>();
                 }
-                return this._ConnectButton;
-            }
-        }
-        [SerializeField()]
-        private Text _AddressText;
-        public Text AddressText
-        {
-            get
-            {
-                if ((this._AddressText == null))
-                {
-                    this._AddressText = this.transform.Find("IPPanel").Find("AddressText").GetComponent<Text>();
-                }
-                return this._AddressText;
+                return this._RoomButton;
             }
         }
         [SerializeField()]
@@ -174,19 +140,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Button _LANButton;
-        public Button LANButton
-        {
-            get
-            {
-                if ((this._LANButton == null))
-                {
-                    this._LANButton = this.transform.Find("ControlPanel").Find("BtnGroup").Find("LAN").GetComponent<Button>();
-                }
-                return this._LANButton;
-            }
-        }
-        [SerializeField()]
         private Button _WANButton;
         public Button WANButton
         {
@@ -197,71 +150,6 @@ namespace UI
                     this._WANButton = this.transform.Find("ControlPanel").Find("BtnGroup").Find("WAN").GetComponent<Button>();
                 }
                 return this._WANButton;
-            }
-        }
-        [SerializeField()]
-        private Image _RoomListsImage;
-        public Image RoomListsImage
-        {
-            get
-            {
-                if ((this._RoomListsImage == null))
-                {
-                    this._RoomListsImage = this.transform.Find("RoomLists").GetComponent<Image>();
-                }
-                return this._RoomListsImage;
-            }
-        }
-        [SerializeField()]
-        private RoomScrollView _LocalRoomScrollView;
-        public RoomScrollView LocalRoomScrollView
-        {
-            get
-            {
-                if ((this._LocalRoomScrollView == null))
-                {
-                    this._LocalRoomScrollView = this.transform.Find("RoomLists").Find("Local").Find("LocalRoomScrollView").GetComponent<RoomScrollView>();
-                }
-                return this._LocalRoomScrollView;
-            }
-        }
-        [SerializeField()]
-        private Text _Text;
-        public Text Text
-        {
-            get
-            {
-                if ((this._Text == null))
-                {
-                    this._Text = this.transform.Find("RoomLists").Find("Local").Find("Text").GetComponent<Text>();
-                }
-                return this._Text;
-            }
-        }
-        [SerializeField()]
-        private RoomScrollView _RemoteRoomScrollView;
-        public RoomScrollView RemoteRoomScrollView
-        {
-            get
-            {
-                if ((this._RemoteRoomScrollView == null))
-                {
-                    this._RemoteRoomScrollView = this.transform.Find("RoomLists").Find("Remote").Find("RemoteRoomScrollView").GetComponent<RoomScrollView>();
-                }
-                return this._RemoteRoomScrollView;
-            }
-        }
-        [SerializeField()]
-        private Text _Remote_Text;
-        public Text Remote_Text
-        {
-            get
-            {
-                if ((this._Remote_Text == null))
-                {
-                    this._Remote_Text = this.transform.Find("RoomLists").Find("Remote").Find("Text").GetComponent<Text>();
-                }
-                return this._Remote_Text;
             }
         }
         [SerializeField()]
@@ -304,224 +192,42 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _RoomPanelImage;
-        public Image RoomPanelImage
+        private RoomScrollView _RemoteRoomScrollView;
+        public RoomScrollView RemoteRoomScrollView
         {
             get
             {
-                if ((this._RoomPanelImage == null))
+                if ((this._RemoteRoomScrollView == null))
                 {
-                    this._RoomPanelImage = this.transform.Find("RoomPanel").GetComponent<Image>();
+                    this._RemoteRoomScrollView = this.transform.Find("Remote").Find("RemoteRoomScrollView").GetComponent<RoomScrollView>();
                 }
-                return this._RoomPanelImage;
+                return this._RemoteRoomScrollView;
             }
         }
         [SerializeField()]
-        private ScrollRect _RoomPlayerListScrollRect;
-        public ScrollRect RoomPlayerListScrollRect
+        private Text _Text;
+        public Text Text
         {
             get
             {
-                if ((this._RoomPlayerListScrollRect == null))
+                if ((this._Text == null))
                 {
-                    this._RoomPlayerListScrollRect = this.transform.Find("RoomPanel").Find("RoomPlayerListScrollRect").GetComponent<ScrollRect>();
+                    this._Text = this.transform.Find("Remote").Find("Text").GetComponent<Text>();
                 }
-                return this._RoomPlayerListScrollRect;
+                return this._Text;
             }
         }
         [SerializeField()]
-        private RoomPlayerList _RoomPlayerList;
-        public RoomPlayerList RoomPlayerList
+        private NetworkingPageGroup _NetworkingPageGroup;
+        public NetworkingPageGroup NetworkingPageGroup
         {
             get
             {
-                if ((this._RoomPlayerList == null))
+                if ((this._NetworkingPageGroup == null))
                 {
-                    this._RoomPlayerList = this.transform.Find("RoomPanel").Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
+                    this._NetworkingPageGroup = this.transform.Find("NetworkingPageGroup").GetComponent<NetworkingPageGroup>();
                 }
-                return this._RoomPlayerList;
-            }
-        }
-        [SerializeField()]
-        private Image _GameOptionPanelImage;
-        public Image GameOptionPanelImage
-        {
-            get
-            {
-                if ((this._GameOptionPanelImage == null))
-                {
-                    this._GameOptionPanelImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").GetComponent<Image>();
-                }
-                return this._GameOptionPanelImage;
-            }
-        }
-        [SerializeField()]
-        private Toggle _RandomSeedToggle;
-        public Toggle RandomSeedToggle
-        {
-            get
-            {
-                if ((this._RandomSeedToggle == null))
-                {
-                    this._RandomSeedToggle = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").GetComponent<Toggle>();
-                }
-                return this._RandomSeedToggle;
-            }
-        }
-        [SerializeField()]
-        private Image _BackgroundImage;
-        public Image BackgroundImage
-        {
-            get
-            {
-                if ((this._BackgroundImage == null))
-                {
-                    this._BackgroundImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").Find("Background").GetComponent<Image>();
-                }
-                return this._BackgroundImage;
-            }
-        }
-        [SerializeField()]
-        private Image _CheckmarkImage;
-        public Image CheckmarkImage
-        {
-            get
-            {
-                if ((this._CheckmarkImage == null))
-                {
-                    this._CheckmarkImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").Find("Background").Find("Checkmark").GetComponent<Image>();
-                }
-                return this._CheckmarkImage;
-            }
-        }
-        [SerializeField()]
-        private Text _LabelText;
-        public Text LabelText
-        {
-            get
-            {
-                if ((this._LabelText == null))
-                {
-                    this._LabelText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedToggle").Find("Label").GetComponent<Text>();
-                }
-                return this._LabelText;
-            }
-        }
-        [SerializeField()]
-        private InputField _RandomSeedInputField;
-        public InputField RandomSeedInputField
-        {
-            get
-            {
-                if ((this._RandomSeedInputField == null))
-                {
-                    this._RandomSeedInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("RandomSeedInputField").GetComponent<InputField>();
-                }
-                return this._RandomSeedInputField;
-            }
-        }
-        [SerializeField()]
-        private Toggle _ShuffleToggle;
-        public Toggle ShuffleToggle
-        {
-            get
-            {
-                if ((this._ShuffleToggle == null))
-                {
-                    this._ShuffleToggle = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").GetComponent<Toggle>();
-                }
-                return this._ShuffleToggle;
-            }
-        }
-        [SerializeField()]
-        private Image _ShuffleToggle_BackgroundImage;
-        public Image ShuffleToggle_BackgroundImage
-        {
-            get
-            {
-                if ((this._ShuffleToggle_BackgroundImage == null))
-                {
-                    this._ShuffleToggle_BackgroundImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").Find("Background").GetComponent<Image>();
-                }
-                return this._ShuffleToggle_BackgroundImage;
-            }
-        }
-        [SerializeField()]
-        private Image _Background_CheckmarkImage;
-        public Image Background_CheckmarkImage
-        {
-            get
-            {
-                if ((this._Background_CheckmarkImage == null))
-                {
-                    this._Background_CheckmarkImage = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").Find("Background").Find("Checkmark").GetComponent<Image>();
-                }
-                return this._Background_CheckmarkImage;
-            }
-        }
-        [SerializeField()]
-        private Text _ShuffleToggle_LabelText;
-        public Text ShuffleToggle_LabelText
-        {
-            get
-            {
-                if ((this._ShuffleToggle_LabelText == null))
-                {
-                    this._ShuffleToggle_LabelText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("ShuffleToggle").Find("Label").GetComponent<Text>();
-                }
-                return this._ShuffleToggle_LabelText;
-            }
-        }
-        [SerializeField()]
-        private Text _InitReplaceTimeText;
-        public Text InitReplaceTimeText
-        {
-            get
-            {
-                if ((this._InitReplaceTimeText == null))
-                {
-                    this._InitReplaceTimeText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("InitReplaceTimeText").GetComponent<Text>();
-                }
-                return this._InitReplaceTimeText;
-            }
-        }
-        [SerializeField()]
-        private InputField _InitReplaceTimeInputField;
-        public InputField InitReplaceTimeInputField
-        {
-            get
-            {
-                if ((this._InitReplaceTimeInputField == null))
-                {
-                    this._InitReplaceTimeInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("InitReplaceTimeInputField").GetComponent<InputField>();
-                }
-                return this._InitReplaceTimeInputField;
-            }
-        }
-        [SerializeField()]
-        private Text _TurnTimeText;
-        public Text TurnTimeText
-        {
-            get
-            {
-                if ((this._TurnTimeText == null))
-                {
-                    this._TurnTimeText = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("TurnTimeText").GetComponent<Text>();
-                }
-                return this._TurnTimeText;
-            }
-        }
-        [SerializeField()]
-        private InputField _TurnTimeInputField;
-        public InputField TurnTimeInputField
-        {
-            get
-            {
-                if ((this._TurnTimeInputField == null))
-                {
-                    this._TurnTimeInputField = this.transform.Find("RoomPanel").Find("GameOptionPanel").Find("TurnTimeInputField").GetComponent<InputField>();
-                }
-                return this._TurnTimeInputField;
+                return this._NetworkingPageGroup;
             }
         }
         partial void onAwake();

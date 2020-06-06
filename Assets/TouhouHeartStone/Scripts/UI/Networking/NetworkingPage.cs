@@ -12,6 +12,38 @@ using System.Net.Sockets;
 using BJSYGameCore;
 namespace UI
 {
+    public partial class LANPanel
+    {
+        partial void onAwake()
+        {
+            CreateRoomButton.onClick.AddListener(() =>
+            {
+                ui.getManager<NetworkingManager>().createRoom();
+            });
+        }
+        protected override void onDisplay()
+        {
+            base.onDisplay();
+            ui.getManager<NetworkingManager>().updateLANRooms();
+        }
+        public void refreshRoomInfo(RoomInfo room)
+        {
+            if (room == null)
+            {
+                NameText.text = null;
+                IPText.text = null;
+                PortText.text = null;
+                DescText.text = null;
+            }
+            else
+            {
+                NameText.text = "房间";
+                IPText.text = "IP:" + room.ip;
+                PortText.text = "端口:" + room.port;
+                DescText.text = "描述:";
+            }
+        }
+    }
     public partial class NetworkingPage : UIObject
     {
         public NetworkingManager Networking { get; set; }
@@ -43,11 +75,13 @@ namespace UI
             {
                 parent.display(parent.MainMenu);
             });
-            ConnectButton.onClick.AddListener(onDirectLinkBtnClick);
+            NetworkingPageGroup.display(NetworkingPageGroup.LANPanel);
+
+            NetworkingPageGroup.IPPanel.ConnectButton.onClick.AddListener(onDirectLinkBtnClick);
             LANButton.onClick.AddListener(createLocalRoom);
             WANButton.onClick.AddListener(createRemoteRoom);
 
-            LocalRoomScrollView.RoomList.networking = this;
+            //LocalRoomScrollView.RoomList.networking = this;
             RemoteRoomScrollView.RoomList.networking = this;
         }
         protected void Start()
@@ -57,7 +91,7 @@ namespace UI
         }
         protected void Update()
         {
-            AddressText.text = host.address;
+            NetworkingPageGroup.IPPanel.AddressText.text = host.address;
         }
         private void createRemoteRoom()
         {
@@ -70,16 +104,16 @@ namespace UI
 
         private void createLocalRoom()
         {
-            Networking.CreateRoom();
+            Networking.createRoom();
             string address = Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
-            AddressText.text = "本地局域网上创建游戏房间\n" + address + ":" + Networking.host.port;
+            NetworkingPageGroup.IPPanel.AddressText.text = "本地局域网上创建游戏房间\n" + address + ":" + Networking.host.port;
 
-            LocalRoomScrollView.RoomList.AddItem("测试本机", address + ":" + Networking.host.port);
+            //LocalRoomScrollView.RoomList.AddItem("测试本机", address + ":" + Networking.host.port);
         }
 
         async void onDirectLinkBtnClick()
         {
-            Uri uri = new Uri(IPInputField.text);
+            Uri uri = new Uri(NetworkingPageGroup.IPPanel.IPInputField.text);
             try
             {
                 await client.joinRoom(new RoomInfo()
@@ -127,19 +161,32 @@ namespace UI
 
     public partial class RoomListItem
     {
+        [SerializeField]
+        RoomInfo _room;
+        public RoomInfo room
+        {
+            get { return _room; }
+        }
         partial void onAwake()
         {
+            asButton.onClick.AddListener(() =>
+            {
+                ui.getObject<LANPanel>().refreshRoomInfo(_room);
+            });
             Button.onClick.AddListener(onJoinClick);
         }
-
         void onJoinClick()
         {
-            parent.JoinRoom(RoomDescText.text);
+            ui.getManager<NetworkingManager>().joinRoom(_room);
         }
-
+        public void refresh(RoomInfo roomInfo)
+        {
+            _room = roomInfo;
+            RoomNameText.text = roomInfo.ip + ":" + roomInfo.port;
+        }
         public void setContext(string title, string addr)
         {
-            RoomDescText.text = addr;
+            //RoomDescText.text = addr;
             RoomNameText.text = title;
         }
     }

@@ -29,12 +29,9 @@ namespace UI
             this.m_as_ScrollRect = this.GetComponent<ScrollRect>();
             this._ViewportMask = this.transform.Find("Viewport").GetComponent<Mask>();
             this._RoomList = this.transform.Find("Viewport").Find("RoomList").GetComponent<RoomList>();
-            this._Scrollbar_HorizontalImage = this.transform.Find("Scrollbar Horizontal").GetComponent<Image>();
-            this._Scrollbar_Horizontal = this.transform.Find("Scrollbar Horizontal").GetComponent<Scrollbar>();
-            this._HandleImage = this.transform.Find("Scrollbar Horizontal").Find("Sliding Area").Find("Handle").GetComponent<Image>();
             this._Scrollbar_VerticalImage = this.transform.Find("Scrollbar Vertical").GetComponent<Image>();
             this._Scrollbar_Vertical = this.transform.Find("Scrollbar Vertical").GetComponent<Scrollbar>();
-            this._Sliding_Area_HandleImage = this.transform.Find("Scrollbar Vertical").Find("Sliding Area").Find("Handle").GetComponent<Image>();
+            this._HandleImage = this.transform.Find("Scrollbar Vertical").Find("Sliding Area").Find("Handle").GetComponent<Image>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -89,45 +86,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _Scrollbar_HorizontalImage;
-        public Image Scrollbar_HorizontalImage
-        {
-            get
-            {
-                if ((this._Scrollbar_HorizontalImage == null))
-                {
-                    this._Scrollbar_HorizontalImage = this.transform.Find("Scrollbar Horizontal").GetComponent<Image>();
-                }
-                return this._Scrollbar_HorizontalImage;
-            }
-        }
-        [SerializeField()]
-        private Scrollbar _Scrollbar_Horizontal;
-        public Scrollbar Scrollbar_Horizontal
-        {
-            get
-            {
-                if ((this._Scrollbar_Horizontal == null))
-                {
-                    this._Scrollbar_Horizontal = this.transform.Find("Scrollbar Horizontal").GetComponent<Scrollbar>();
-                }
-                return this._Scrollbar_Horizontal;
-            }
-        }
-        [SerializeField()]
-        private Image _HandleImage;
-        public Image HandleImage
-        {
-            get
-            {
-                if ((this._HandleImage == null))
-                {
-                    this._HandleImage = this.transform.Find("Scrollbar Horizontal").Find("Sliding Area").Find("Handle").GetComponent<Image>();
-                }
-                return this._HandleImage;
-            }
-        }
-        [SerializeField()]
         private Image _Scrollbar_VerticalImage;
         public Image Scrollbar_VerticalImage
         {
@@ -154,16 +112,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _Sliding_Area_HandleImage;
-        public Image Sliding_Area_HandleImage
+        private Image _HandleImage;
+        public Image HandleImage
         {
             get
             {
-                if ((this._Sliding_Area_HandleImage == null))
+                if ((this._HandleImage == null))
                 {
-                    this._Sliding_Area_HandleImage = this.transform.Find("Scrollbar Vertical").Find("Sliding Area").Find("Handle").GetComponent<Image>();
+                    this._HandleImage = this.transform.Find("Scrollbar Vertical").Find("Sliding Area").Find("Handle").GetComponent<Image>();
                 }
-                return this._Sliding_Area_HandleImage;
+                return this._HandleImage;
             }
         }
         partial void onAwake();
