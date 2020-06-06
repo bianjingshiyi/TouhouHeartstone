@@ -5,6 +5,10 @@ using ExcelLibrary.SpreadSheet;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
 using System.Net.Http;
+using System;
+using System.Data;
+using System.Runtime.Serialization.Formatters.Binary;
+using ExcelDataReader;
 
 namespace Game
 {
@@ -12,6 +16,8 @@ namespace Game
     {
         public Task<Workbook> loadExcel(string path, RuntimePlatform? platform = null)
         {
+            if (string.IsNullOrEmpty(path))
+                return null;
             platform = getPlatform(platform);
             switch (platform)
             {
@@ -23,20 +29,109 @@ namespace Game
         }
         public Task<Texture2D> loadTexture(string path, RuntimePlatform? platform = null)
         {
+            if (string.IsNullOrEmpty(path))
+                return null;
             platform = getPlatform(platform);
             switch (platform)
             {
                 case RuntimePlatform.Android:
-                    return loadTextureByWebRequest(path);
+                    return loadTextureByWebRequestWithFallback(path);
                 default:
-                    return loadTextureBySystemIO(path);
+                    return loadTextureBySystemIOWithFallback(path);
             }
         }
-        public async Task<Texture2D> loadTextureByWebRequest(string path)
+        public Task<DataSet> loadDataSet(string path, RuntimePlatform? platform = null)
         {
-            Texture2D texture = new Texture2D(512, 512);
-            texture.LoadImage(await loadBytesByWebRequest(path));
-            return texture;
+            if (string.IsNullOrEmpty(path))
+                return null;
+            platform = getPlatform(platform);
+            switch (platform)
+            {
+                case RuntimePlatform.Android:
+                    return loadDataSetByWebRequest(path);
+                default:
+                    return loadDataSetBySystemIO(path);
+            }
+        }
+
+        public Task<DataSet> loadExcelAsDataSet(string path, RuntimePlatform? platform = null)
+        {
+            if (string.IsNullOrEmpty(path))
+                return null;
+
+            platform = getPlatform(platform);
+            switch (platform)
+            {
+                case RuntimePlatform.Android:
+                    return loadExcelAsDataSetByWebRequest(path);
+                default:
+                    return loadExcelAsDataSetBySystemIO(path);
+            }
+        }
+
+        public async Task<Texture2D> loadTextureByWebRequestWithFallback(string path)
+        {
+            var task = loadTextureByWebRequest(path);
+            var result = await task;
+            if (task.IsCompleted)
+                return result;
+
+            string ext = "";
+
+            if (Path.GetExtension(path).ToLower() == "png")
+                ext = "jpg";
+            if (Path.GetExtension(path).ToLower() == "jpg")
+                ext = "png";
+
+            path = Path.ChangeExtension(path, ext);
+            return await loadTextureByWebRequest(path);
+        }
+        public Task<Texture2D> loadTextureByWebRequest(string path)
+        {
+            TaskCompletionSource<Texture2D> tcs = new TaskCompletionSource<Texture2D>();
+            UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(Application.streamingAssetsPath + "/" + path);
+            uwr.SendWebRequest().completed += op =>
+            {
+                var uop = op as UnityWebRequestAsyncOperation;
+                if (uop.webRequest.isNetworkError)
+                {
+                    tcs.SetException(new HttpRequestException(uop.webRequest.error));
+                    return;
+                }
+                if (uop.webRequest.isHttpError)
+                {
+                    if (uop.webRequest.responseCode == 404)
+                    {
+                        tcs.SetException(new FileNotFoundException());
+                    }
+                    else
+                    {
+                        tcs.SetException(new HttpRequestException(uop.webRequest.error));
+                    }
+                    return;
+                }
+                tcs.SetResult(DownloadHandlerTexture.GetContent(uwr));
+                uwr.Dispose();
+            };
+            return tcs.Task;
+        }
+        public async Task<Texture2D> loadTextureBySystemIOWithFallback(string path)
+        {
+            try
+            {
+                return await loadTextureBySystemIO(path);
+            }
+            catch (FileNotFoundException)
+            {
+                string ext = "";
+                if (Path.GetExtension(path).ToLower() == "png")
+                    ext = "jpg";
+                if (Path.GetExtension(path).ToLower() == "jpg")
+                    ext = "png";
+
+                path = Path.ChangeExtension(path, ext);
+                return await loadTextureBySystemIO(path);
+            }
         }
         public async Task<Texture2D> loadTextureBySystemIO(string path)
         {
@@ -60,12 +155,68 @@ namespace Game
                 return Task.FromResult(Workbook.Load(stream));
             }
         }
+        public Task<DataSet> loadDataSetBySystemIO(string path)
+        {
+            using (FileStream stream = getFileStream(path))
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                return Task.FromResult(bf.Deserialize(stream) as DataSet);
+            }
+        }
+        public Task<DataSet> loadExcelAsDataSetBySystemIO(string path)
+        {
+            using (FileStream stream = getFileStream(path))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    var result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    {
+                        ConfigureDataTable = (tableReader) => new ExcelDataTableConfiguration()
+                        {
+                            // 使用第一行的内容作为列索引
+                            // 其他选项的说明见Github的ReadMe
+                            UseHeaderRow = true,
+                        }
+                    });
+                    return Task.FromResult(result);
+                }
+            }
+        }
         private async Task<Workbook> loadExcelByWebRequest(string path)
         {
             byte[] data = await loadBytesByWebRequest(path);
             using (MemoryStream stream = new MemoryStream(data))
             {
                 return Workbook.Load(stream);
+            }
+        }
+        private async Task<DataSet> loadDataSetByWebRequest(string path)
+        {
+            byte[] data = await loadBytesByWebRequest(path);
+            using (MemoryStream stream = new MemoryStream(data))
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                return bf.Deserialize(stream) as DataSet;
+            }
+        }
+        private async Task<DataSet> loadExcelAsDataSetByWebRequest(string path)
+        {
+            byte[] data = await loadBytesByWebRequest(path);
+            using (MemoryStream stream = new MemoryStream(data))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    var result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    {
+                        ConfigureDataTable = (tableReader) => new ExcelDataTableConfiguration()
+                        {
+                            // 使用第一行的内容作为列索引
+                            // 其他选项的说明见Github的ReadMe
+                            UseHeaderRow = true,
+                        }
+                    });
+                    return result;
+                }
             }
         }
         private async Task<byte[]> loadBytesBySystemIO(string path)
@@ -85,14 +236,14 @@ namespace Game
             filePath = Application.streamingAssetsPath + "/" + path;
             if (File.Exists(filePath))
                 return new FileStream(filePath, FileMode.Open);
-            throw new FileNotFoundException(path);
+            throw new FileNotFoundException("File not found.", path);
         }
         private Task<byte[]> loadBytesByWebRequest(string path)
         {
             TaskCompletionSource<byte[]> tcs = new TaskCompletionSource<byte[]>();
             UnityWebRequest.Get(Application.streamingAssetsPath + "/" + path).SendWebRequest().completed += op =>
             {
-                var uop = (op as UnityWebRequestAsyncOperation);
+                var uop = op as UnityWebRequestAsyncOperation;
                 if (uop.webRequest.isNetworkError)
                 {
                     tcs.SetException(new HttpRequestException(uop.webRequest.error));
@@ -102,7 +253,7 @@ namespace Game
                 {
                     if (uop.webRequest.responseCode == 404)
                     {
-                        tcs.SetException(new FileNotFoundException());
+                        tcs.SetException(new FileNotFoundException($"Unable to load file {path}", path));
                     }
                     else
                     {

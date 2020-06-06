@@ -1,0 +1,17 @@
+{
+    "name": "ExcelDataSet",
+    "references": [
+        "GUID:a271640aea1e78b45af671b2597adb18"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

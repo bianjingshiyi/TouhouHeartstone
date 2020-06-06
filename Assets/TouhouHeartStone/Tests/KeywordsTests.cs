@@ -114,7 +114,7 @@ namespace Tests
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[1], game.sortedPlayers[0].field[1]);
             Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife());  //会吸血的随从攻击后，master回血
             Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife());  //攻击吸血随从，敌方master回血
-            
+
         }
 
         /// <summary>
@@ -156,37 +156,34 @@ namespace Tests
             {
                 shuffle = false
             });
-            game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getCardDefine<TestSpellCard>(), 2)));
-            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 29)
+            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 29)
             .Concat(Enumerable.Repeat(game.getCardDefine<ElusiveServant>(), 1)));
-            game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
 
-            AfterXRound(game, 2);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1, game.sortedPlayers[0].field[1]);
-            //Debug.Log(game.sortedPlayers[0].field[1]);
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[2], 0);
-            Assert.AreEqual(3, game.sortedPlayers[0].field[1].getCurrentLife());     //魔免无法被法术指定
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1, game.sortedPlayers[0].field[0]);
-            Assert.AreEqual(6, game.sortedPlayers[0].field[0].getCurrentLife());     //没有魔免的可以被法术指定
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 1, game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(3, game.sortedPlayers[0].field[1].getCurrentLife());     //魔免无法被技能指定
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 0, game.sortedPlayers[0].field[0]);
-            Assert.AreEqual(5, game.sortedPlayers[0].field[0].getCurrentLife());     //没有魔免的可以被技能指定
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
 
-            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(2, game.sortedPlayers[0].field[1].getCurrentLife());
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<ElusiveServant>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == ElusiveServant.ID), 0);
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<TestSpellCard>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == TestSpellCard.ID), 0, defaultPlayer.field[0]);
+            Assert.AreEqual(6, defaultPlayer.field[0].getCurrentLife());//没有魔免的可以被法术指定
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == TestSpellCard.ID), 0, elusivePlayer.field[0]);
+            Assert.AreEqual(3, elusivePlayer.field[0].getCurrentLife());//魔免无法被法术指定
+
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<TestDamageSkill>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.skill, 0, defaultPlayer.field[0]);
+            Assert.AreEqual(5, defaultPlayer.field[0].getCurrentLife());//没有魔免的可以被技能指定
+            elusivePlayer.cmdTurnEnd(game);
+
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<TestDamageSkill>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.skill, 0, elusivePlayer.field[0]);
+            Assert.AreEqual(3, elusivePlayer.field[0].getCurrentLife());//魔免无法被技能指定
+
+            game.Dispose();
         }
-
-        
-
         /// <summary>
         /// 从player[0]开始经过x回合
         /// </summary>

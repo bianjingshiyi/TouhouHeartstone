@@ -35,6 +35,7 @@ namespace Game
             var _nw = this.findInstance<NetworkingPage>();
             if (_nw != null)
                 _nw.Networking = this;
+            gameManager.onGameEnd += onGameEnd;
         }
 
         private void initClient()
@@ -46,9 +47,9 @@ namespace Game
                     throw new Exception("没有找到ClientManager");
                 client.onConnected += Client_onConnected;
                 client.onReceive += Client_onReceive;
+                client.onDisconnect += Client_onDisconnect;
             }
         }
-
         private void initHost()
         {
             if (_host == null)
@@ -61,7 +62,7 @@ namespace Game
         }
 
         [SerializeField]
-        RoomInfo _room = null;
+        THHRoomInfo _room = null;
         /// <summary>
         /// 创建一个房间
         /// </summary>
@@ -75,7 +76,7 @@ namespace Game
 
             host.start();
             client.start();
-            return client.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
+            return client.join("127.0.0.1", host.port);
         }
         /// <summary>
         /// 加入一个房间
@@ -86,12 +87,12 @@ namespace Game
         {
             initClient();
 
-            int port = host.port;
+            int port = client.port;
             string address = "";
             var uri = new Uri("http://" + addr);
             if (uri.HostNameType == UriHostNameType.Dns)
             {
-                address = Dns.GetHostAddresses(uri.Host).FirstOrDefault(e => e.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)?.ToString();
+                address = Dns.GetHostAddresses(uri.Host).FirstOrDefault(e => e.AddressFamily == AddressFamily.InterNetwork)?.ToString();
             }
             else
             {
@@ -113,7 +114,7 @@ namespace Game
         private void Client_onConnected()
         {
             //加入成功之后把自己的信息发过去
-            _ = client.send(new RoomPlayerInfo()
+            _ = client.send(new THHRoomPlayerInfo()
             {
                 id = client.id,
                 name = "玩家" + client.id,
@@ -130,26 +131,31 @@ namespace Game
                     if (host != null)
                         _ = client.send(_room);
                     break;
-                case RoomInfo roomInfo:
+                case THHRoomInfo roomInfo:
                     _room = roomInfo;
                     if (_room.playerList.Count > 1)
-                        gameManager.startRemoteGame(client, _room.option, _room.playerList.ToArray());
+                        gameManager.startRemoteGame(client, _room.option, _room.playerList.Cast<THHRoomPlayerInfo>().ToArray());
                     break;
             }
         }
+        private void Client_onDisconnect()
+        {
+            gameManager.quitGame();
+        }
+        private void onGameEnd()
+        {
+            client.disconnect();
+        }
     }
     [Serializable]
-    public class RoomInfo
+    public class THHRoomInfo : RoomInfo
     {
         public GameOption option = new GameOption();
-        public List<RoomPlayerInfo> playerList = new List<RoomPlayerInfo>();
     }
     [Serializable]
-    public class RoomPlayerInfo
+    public class THHRoomPlayerInfo : RoomPlayerInfo
     {
-        public int id = 0;
-        public string name = null;
-        public int[] deck = null;
+        public int[] deck = new int[0];
     }
 }
 
