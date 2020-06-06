@@ -377,6 +377,31 @@ namespace Tests
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[0].field[1]);
             Assert.AreEqual(7, game.sortedPlayers[0].field[1].getCurrentLife());
         }
+
+        [Test]
+        public void SkillAndSpellCardTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getCardDefine<DefaultServant>(), 2)));
+            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 29)
+            .Concat(Enumerable.Repeat(game.getCardDefine<TestSpellCard>(), 1)));
+            game.run();
+            game.sortedPlayers[0].cmdInitReplace(game);
+            game.sortedPlayers[1].cmdInitReplace(game);
+            
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 0);
+            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].skill, 0, game.sortedPlayers[1].field[0]);
+            Assert.True(game.sortedPlayers[0].skill.isUsed());
+            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife());
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0, game.sortedPlayers[1].field[0]);
+            Assert.AreEqual(5, game.sortedPlayers[1].field[0].getCurrentLife());
+        }
     }
     static class TaskExceptionHandler
     {
