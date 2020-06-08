@@ -4,6 +4,8 @@ using System.Reflection;
 using TouhouCardEngine;
 using System.Collections.Generic;
 using ExcelLibrary.SpreadSheet;
+using UnityEngine;
+using MongoDB.Bson;
 namespace TouhouHeartstone
 {
     public class CardHelper
@@ -23,7 +25,10 @@ namespace TouhouHeartstone
                     if (constructor != null)
                     {
                         if (constructor.Invoke(new object[0]) is CardDefine define)
+                        {
                             cardList.Add(define);
+                            UberDebug.LogChannel("Load", "加载卡片" + define.ToJson());
+                        }
                     }
                 }
             }

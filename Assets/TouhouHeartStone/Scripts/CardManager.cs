@@ -10,7 +10,8 @@ using System.Reflection;
 using System.Data;
 using IGensoukyo.Utilities;
 using TouhouHeartstone;
-
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 namespace Game
 {
     public class CardManager : Manager
@@ -64,7 +65,10 @@ namespace Game
                     {
                         CardDefine older = cardList.Find(c => c.id == card.id);
                         if (older != null)
+                        {
                             older.merge(card);
+                            UberDebug.LogChannel("Load", "数据覆盖：" + card.ToJson());
+                        }
                         else
                             cardList.Add(card);
                     }

@@ -27,6 +27,10 @@ namespace TouhouHeartstone
         {
             return dicProp.Keys.ToArray();
         }
+        public bool hasProp(string propName)
+        {
+            return dicProp.ContainsKey(propName);
+        }
         public override string type { get; set; }
         public override string isUsable(CardEngine engine, Player player, Card card)
         {

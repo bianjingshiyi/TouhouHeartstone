@@ -59,13 +59,23 @@ namespace TouhouHeartstone
         {
             if (newVersion.type != type)
                 UberDebug.LogWarning(newVersion + "的类型与" + this + "不同，可能是一次非法的数据合并！");
-            cost = newVersion.getProp<int>(nameof(cost));
-            attack = newVersion.getProp<int>(nameof(attack));
-            life = newVersion.getProp<int>(nameof(life));
-            spellDamage = newVersion.getProp<int>(nameof(spellDamage));
-            isToken = newVersion.getProp<bool>(nameof(isToken));
-            tags = newVersion.getProp<string[]>(nameof(tags));
-            keywords = newVersion.getProp<string[]>(nameof(keywords));
+            if (newVersion is GeneratedCardDefine generated)
+            {
+                if (generated.hasProp(nameof(cost)))
+                    cost = generated.getProp<int>(nameof(cost));
+                if (generated.hasProp(nameof(attack)))
+                    attack = generated.getProp<int>(nameof(attack));
+                if (generated.hasProp(nameof(life)))
+                    life = generated.getProp<int>(nameof(life));
+                if (generated.hasProp(nameof(spellDamage)))
+                    spellDamage = generated.getProp<int>(nameof(spellDamage));
+                if (generated.hasProp(nameof(isToken)))
+                    isToken = generated.getProp<bool>(nameof(isToken));
+                if (generated.hasProp(nameof(tags)))
+                    tags = generated.getProp<string[]>(nameof(tags));
+                if (generated.hasProp(nameof(keywords)))
+                    keywords = generated.getProp<string[]>(nameof(keywords));
+            }
         }
         public override string isUsable(CardEngine engine, Player player, Card card)
         {
