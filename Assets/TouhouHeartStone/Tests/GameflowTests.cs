@@ -120,6 +120,30 @@ namespace Tests
             game.Dispose();
         }
         [UnityTest]
+        public IEnumerator initReplaceRefuseTest()
+        {
+            THHGame game = TestGameflow.initStandardGame();
+
+            _ = game.run();
+            yield return new WaitForSeconds(.1f);
+            game.players[0].cmdInitReplace(game);
+            game.players[1].cmdInitReplace(game);
+            yield return new WaitForSeconds(.1f);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            yield return new WaitForSeconds(.1f);
+
+            game.players[0].cmdInitReplace(game);
+            game.players[1].cmdInitReplace(game);
+
+            var args = game.triggers.getRecordedEvents().Where(e => e is THHPlayer.InitReplaceEventArg);
+            Assert.AreEqual(args.Count(), 2);
+            Assert.AreEqual(((THHPlayer.InitReplaceEventArg)args.ElementAt(0)).player, game.players[0]);
+            Assert.AreEqual(((THHPlayer.InitReplaceEventArg)args.ElementAt(1)).player, game.players[1]);
+
+            game.Dispose();
+        }
+
+        [UnityTest]
         public IEnumerator useTest()
         {
             THHGame game = TestGameflow.initStandardGame();

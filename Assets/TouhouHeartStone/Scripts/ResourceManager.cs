@@ -44,6 +44,12 @@ namespace Game
         {
             if (string.IsNullOrEmpty(path))
                 return null;
+            if (Path.GetExtension(path).ToLower() == ".xls" || Path.GetExtension(path).ToLower() == ".xlsx")
+            {
+                Debug.Log("尝试直接读取Excel文件，程序将读取对应的dataset文件");
+                path += ".dataset";
+            }
+
             platform = getPlatform(platform);
             switch (platform)
             {
