@@ -123,7 +123,7 @@ namespace Game
             if (platform == null)
                 platform = RuntimePlatform.Android;
 #endif
-            var dataset = platform != RuntimePlatform.Android ?
+            DataSet dataset = platform != RuntimePlatform.Android ?
                 await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
                 await getManager<ResourceManager>().loadDataSet(path, platform);
 

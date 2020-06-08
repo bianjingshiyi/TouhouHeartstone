@@ -17,7 +17,7 @@ namespace UI
         protected override void onDisplay()
         {
             base.onDisplay();
-
+            //ui.getManager<NetworkingManager>()
         }
     }
     public partial class NetworkingPage : UIObject

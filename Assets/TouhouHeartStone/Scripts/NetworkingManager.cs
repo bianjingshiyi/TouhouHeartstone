@@ -106,9 +106,13 @@ namespace Game
                 host.onClientConnected += Host_onClientConnected;
             }
         }
-
         [SerializeField]
         THHRoomInfo _room = null;
+        public THHRoomInfo room
+        {
+            get { return _room; }
+            set { _room = value; }
+        }
         /// <summary>
         /// 创建一个房间
         /// </summary>

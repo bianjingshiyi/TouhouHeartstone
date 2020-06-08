@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/TouhouHeartStone/Scenes/NewUI.unity
     guid: 3a59eb9ea34f3554790774e68d032097
+  - enabled: 1
+    path: Assets/Tests/VideoTest/VideoTest.unity
+    guid: 61a1dd8b053a9e34eadccc18ea3fb7a2
   m_configObjects: {}
