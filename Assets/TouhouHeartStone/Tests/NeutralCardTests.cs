@@ -168,5 +168,81 @@ namespace Tests
             //出了个随从重名的小问题，测试结果看看Log还是挺正常的，那就没有问题了。
             //做这个测试是为了防止以后对系统的改动导致已经做好的卡失效，这样能防止很多bug。
         }
+
+        [Test]
+        public void SunnyMilkTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<SunnyMilk>() as CardDefine, 30));
+            game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<SunnyMilk>() as CardDefine, 30));
+            
+            game.skipTurnWhen(() => game.sortedPlayers[0].gem < 2);
+
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            Assert.True(game.sortedPlayers[0].field[0].isStealth());
+        }
+
+        [Test]
+        public void LunaChildTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<LunaChild>() as CardDefine, 30));
+            game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<LunaChild>() as CardDefine, 29)
+            .Concat(Enumerable.Repeat(game.getCardDefine<DefaultServant>(), 1)));
+            game.skipTurnWhen(() => game.sortedPlayers[0].gem < 3);
+
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            Assert.False(game.sortedPlayers[0].field[0].isStealth());   //default随从一开始没有潜行
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 1, game.sortedPlayers[0].field[0]);
+            Assert.True(game.sortedPlayers[0].field[0].isStealth());    //露娜出场后default随从变为潜行状态
+        }
+
+        [Test]
+        public void StarSphereTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<LunaChild>() as CardDefine, 30));
+            game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<LunaChild>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getCardDefine<SunnyMilk>(), 1))
+            .Concat(Enumerable.Repeat(game.getCardDefine<LunaChild>(), 1))
+            .Concat(Enumerable.Repeat(game.getCardDefine<DefaultServant>(), 1)));
+            game.skipTurnWhen(() => game.sortedPlayers[0].gem < 9);
+
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);   //default
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[3], 1);   //斯塔
+            Assert.False(game.sortedPlayers[0].field[0].isStealth());   //没有桑尼和露娜，光环没起效
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 2);   //桑尼
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 3);   //露娜
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 4);
+            Assert.True(game.sortedPlayers[0].field[2].isStealth());    //露娜和桑尼在场，光环起效
+        }
+
+        [Test]
+        public void BeerFairyTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<BeerFairy>() as CardDefine, 30));
+            game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<BeerFairy>() as CardDefine, 30));
+            game.skipTurnWhen(() => game.sortedPlayers[0].gem < 2);
+
+            int handCardNum = game.sortedPlayers[0].hand.count;
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            Assert.AreEqual(handCardNum, game.sortedPlayers[0].hand.count);   //使用了一张牌后，又获得一张牌，手牌数没变
+            Assert.True(game.sortedPlayers[0].hand[handCardNum - 1].GetType().IsSubclassOf(typeof(ServantCardDefine)));
+        }
+
+
     }
 }

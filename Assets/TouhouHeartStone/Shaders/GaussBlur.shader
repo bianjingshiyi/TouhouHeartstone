@@ -3,12 +3,42 @@ Shader "THH/GaussBlur"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _BlurRadius ("Blur Radius", Range(3, 20)) = 1
+        _BlurRadius ("Blur Radius", Range(0, 20)) = 1
+        _Sigma ("Sigma", Range(0.5, 20)) = 1
+
+        _StencilComp ("Stencil Comparison", Float) = 8
+        _Stencil ("Stencil ID", Float) = 0
+        _StencilOp ("Stencil Operation", Float) = 0
+        _StencilWriteMask ("Stencil Write Mask", Float) = 255
+        _StencilReadMask ("Stencil Read Mask", Float) = 255
+        _ColorMask ("Color Mask", Float) = 15
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags
+        { 
+            "RenderType"="Transparent" 
+            "IgnoreProjector"="True"
+            "Queue" = "Transparent"
+            "PreviewType"="Plane"
+            "CanUseSpriteAtlas"="True"
+        }
         LOD 100
+        Stencil
+        {
+            Ref [_Stencil]
+            Comp [_StencilComp]
+            Pass [_StencilOp] 
+            ReadMask [_StencilReadMask]
+            WriteMask [_StencilWriteMask]
+        }
+        ColorMask [_ColorMask]
+
+        Blend SrcAlpha OneMinusSrcAlpha
+        Cull Off
+        ZWrite Off
+        ZTest Always 
+        ZClip True
 
         Pass
         {
@@ -31,33 +61,40 @@ Shader "THH/GaussBlur"
             };
 
             sampler2D _MainTex;
-            float4 _MainTex_ST;
-            float4 _MainTex_TexelSize;
-            float _BlurRadius;
+            CBUFFER_START(UnityPerMaterial)
+                float4 _MainTex_ST;
+                float4 _MainTex_TexelSize;
+                float _BlurRadius;
+                float _Sigma;
+            CBUFFER_END
 
             
-            float GetGaussWeight(float x, float y, float sigma)
+            float GetGaussWeight(float x, float y, float sigma2, float left)
             {
-                float sigma2 = pow(sigma, 2.0f);
-                float left = 1 / (2 * sigma2 * 3.1415926f);
                 float right = exp(-(x*x+y*y)/(2*sigma2));
                 return left * right;
             }
             
             half4 GaussBlur(float2 uv)
             {
-                float sigma = _BlurRadius / 3.0;
+                float sigma = _Sigma;
+                float sigma2 = pow(sigma, 2.0f);
+                float left = 1 / (2 * sigma2 * 3.1415926f);
                 float4 col = float4(0, 0, 0, 0);
+                float sumWeight = 0;
                 for (int x = - _BlurRadius; x <= _BlurRadius; ++x)
                 {
                     for (int y = - _BlurRadius; y <= _BlurRadius; ++y)
                     {
                         float4 color = tex2D(_MainTex, uv + float2(x * _MainTex_TexelSize.x, y * _MainTex_TexelSize.y));
-                        float weight = GetGaussWeight(x, y, sigma);
+                        float weight = GetGaussWeight(x, y, sigma2, left);
                         col += color * weight;
+                        sumWeight += weight;
                     }
                 }
-                return col;
+
+                return col / sumWeight;
+
             }
 
 
