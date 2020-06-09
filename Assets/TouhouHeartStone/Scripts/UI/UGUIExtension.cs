@@ -1,6 +1,7 @@
 ﻿using UnityEngine.EventSystems;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 namespace UI
 {
     public static class UGUIExtension
@@ -48,6 +49,11 @@ namespace UI
         public static void setAlpha(this Graphic graphic, float value)
         {
             graphic.color = new Color(graphic.color.r, graphic.color.g, graphic.color.b, value);
+        }
+        public static void set(this UnityEvent e, UnityAction action)
+        {
+            e.RemoveAllListeners();
+            e.AddListener(action);
         }
     }
 }

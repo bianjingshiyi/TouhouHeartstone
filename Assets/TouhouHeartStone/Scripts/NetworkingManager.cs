@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using BJSYGameCore.UI;
+using System.Text.RegularExpressions;
 namespace Game
 {
     public class NetworkingManager : Manager
@@ -65,9 +66,33 @@ namespace Game
             base.onAwake();
             host.logger = new ULogger("Host");
             client.logger = new ULogger("Client");
+
             client.onRoomFound += Client_onRoomFound;
             client.onJoinRoom += Client_onJoinRoom;
+            client.onRoomInfoUpdate += Client_onRoomInfoUpdate;
+            client.onQuitRoom += Client_onQuitRoom;
             gameManager.onGameEnd += onGameEnd;
+
+            ui.LinkButton.onClick.set(() =>
+            {
+                displayIPPanel();
+            });
+
+            IPPanel ipPanel = ui.NetworkingPageGroup.IPPanel;
+            ipPanel.ConnectButton.onClick.set(() =>
+            {
+                Match m = Regex.Match(ipPanel.IPInputField.text, @"(?<ip>d+\.d+\.d+\.d+)\:(?<port>d+)");
+                if (m.Success)
+                {
+                    _ = joinRoom(new RoomInfo()
+                    {
+                        ip = m.Groups["ip"].Value,
+                        port = int.Parse(m.Groups["port"].Value)
+                    });
+                }
+                else
+                    getManager<UIManager>().getObject<Dialog>().display("输入的地址格式有误", null);
+            });
         }
         [SerializeField]
         List<RoomInfo> _LANRoomList;
@@ -81,16 +106,28 @@ namespace Game
             RoomListItem item = getManager<UIManager>().getObject<LANPanel>().RoomScrollView.RoomList.addItem();
             item.refresh(obj);
         }
-        public async Task joinRoom(RoomInfo roomInfo)
+        private void Client_onJoinRoom(RoomInfo obj)
         {
-            if (roomInfo == null)
-                throw new ArgumentNullException(nameof(roomInfo));
-            displayLoadingPanel();
-            await client.joinRoom(roomInfo, new THHRoomPlayerInfo()
-            {
-                deck = getManager<GameManager>().deck
-            });
+            if (obj is THHRoomInfo THHRoom)
+                displayRoomPanel(THHRoom);
+            else
+                Debug.LogError("加入的房间不是一个东方炉石房间！");
         }
+        private void Client_onRoomInfoUpdate(RoomInfo obj)
+        {
+            if (obj is THHRoomInfo tHHRoom)
+                displayRoomPanel(tHHRoom);
+            else
+                Debug.LogError("加入的房间不是一个东方炉石房间！");
+        }
+        private void Client_onQuitRoom()
+        {
+        }
+        private void onGameEnd()
+        {
+            client.disconnect();
+        }
+        #region Logic
         /// <summary>
         /// 创建一个房间
         /// </summary>
@@ -111,18 +148,27 @@ namespace Game
                 deck = getManager<GameManager>().deck
             });
         }
-        private void Client_onJoinRoom(RoomInfo obj)
+        public async Task joinRoom(RoomInfo roomInfo)
         {
-            if (obj is THHRoomInfo THHRoom)
+            if (roomInfo == null)
+                throw new ArgumentNullException(nameof(roomInfo));
+            displayLoadingPanel();
+            await client.joinRoom(roomInfo, new THHRoomPlayerInfo()
             {
-                displayRoomPanel(THHRoom);
-            }
-            else
-                Debug.LogError("加入的房间不是一个东方炉石房间！");
+                deck = getManager<GameManager>().deck
+            });
         }
+        #endregion
+        #region UI
         void displayLoadingPanel()
         {
             ui.NetworkingPageGroup.display(null);
+        }
+        void displayIPPanel()
+        {
+            IPPanel ipPanel = ui.NetworkingPageGroup.IPPanel;
+            ui.NetworkingPageGroup.display(ipPanel);
+            ipPanel.AddressText.text = "你的地址：\n" + address;
         }
         void displayRoomPanel(THHRoomInfo room)
         {
@@ -206,10 +252,7 @@ namespace Game
                 client.quitRoom();
             });
         }
-        private void onGameEnd()
-        {
-            client.disconnect();
-        }
+        #endregion
     }
     [Serializable]
     public class THHRoomInfo : RoomInfo
