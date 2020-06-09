@@ -55,12 +55,9 @@ namespace Game
             get { return getManager<UIManager>().getObject<NetworkingPage>(); }
         }
         [SerializeField]
-        THHRoomInfo _room = null;
-        public THHRoomInfo room
-        {
-            get { return _room; }
-            private set { _room = value; }
-        }
+        List<THHRoomInfo> _LANRoomList;
+        [SerializeField]
+        BJSYGameCore.Timer _LANUpdateTimer = new BJSYGameCore.Timer() { duration = 1 };
         protected override void onAwake()
         {
             base.onAwake();
@@ -70,6 +67,7 @@ namespace Game
             client.onRoomFound += Client_onRoomFound;
             client.onJoinRoom += Client_onJoinRoom;
             client.onRoomInfoUpdate += Client_onRoomInfoUpdate;
+            _LANUpdateTimer.start();
             client.onQuitRoom += Client_onQuitRoom;
             gameManager.onGameEnd += onGameEnd;
 
@@ -77,34 +75,68 @@ namespace Game
             {
                 displayIPPanel();
             });
-
-            IPPanel ipPanel = ui.NetworkingPageGroup.IPPanel;
-            ipPanel.ConnectButton.onClick.set(() =>
+            ui.LANButton.onClick.set(() =>
             {
-                Match m = Regex.Match(ipPanel.IPInputField.text, @"(?<ip>d+\.d+\.d+\.d+)\:(?<port>d+)");
-                if (m.Success)
-                {
-                    _ = joinRoom(new RoomInfo()
-                    {
-                        ip = m.Groups["ip"].Value,
-                        port = int.Parse(m.Groups["port"].Value)
-                    });
-                }
-                else
-                    getManager<UIManager>().getObject<Dialog>().display("输入的地址格式有误", null);
+                displayLANPanel();
             });
+            ui.RoomButton.interactable = false;
+            ui.RoomButton.image.color = Color.gray;
+            ui.RoomButton.onClick.set(() =>
+            {
+                if (client.roomInfo is THHRoomInfo tHHRoom)
+                    displayRoomPanel(tHHRoom);
+            });
+            ui.ReturnButton.onClick.AddListener(() =>
+            {
+                ui.parent.display(ui.parent.MainMenu);
+            });
+
+            ui.NetworkingPageGroup.display(ui.NetworkingPageGroup.LANPanel);
         }
-        [SerializeField]
-        List<RoomInfo> _LANRoomList;
-        public void updateLANRooms()
+        protected void Update()
         {
-            client.findRoom();
+            if (_LANUpdateTimer.isExpired())
+            {
+                foreach (var room in _LANRoomList)
+                {
+                    _ = updateRoomInfo(room);
+                }
+                _LANUpdateTimer.start();
+            }
         }
         private void Client_onRoomFound(RoomInfo obj)
         {
-            _LANRoomList.Add(obj);
-            RoomListItem item = getManager<UIManager>().getObject<LANPanel>().RoomScrollView.RoomList.addItem();
-            item.refresh(obj);
+            if (obj is THHRoomInfo tHHRoom)
+            {
+                _LANRoomList.Add(tHHRoom);
+                RoomListItem item = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.addItem();
+                refreshRoomListItem(item, tHHRoom);
+            }
+        }
+        async Task updateRoomInfo(THHRoomInfo roomInfo)
+        {
+            THHRoomInfo newRoomInfo = await client.checkRoomInfo(roomInfo) as THHRoomInfo;
+            if (newRoomInfo != null)
+            {
+                int index = _LANRoomList.IndexOf(roomInfo);
+                if (index > 0)
+                {
+                    _LANRoomList[index] = newRoomInfo;
+                    RoomList list = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList;
+                    RoomListItem item = list.getItems()[index];
+                    refreshRoomListItem(item, newRoomInfo);
+                }
+            }
+            else
+            {
+                int index = _LANRoomList.IndexOf(roomInfo);
+                if (index > 0)
+                {
+                    _LANRoomList.RemoveAt(index);
+                    RoomList list = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList;
+                    list.removeItem(list.getItems()[index]);
+                }
+            }
         }
         private void Client_onJoinRoom(RoomInfo obj)
         {
@@ -122,6 +154,7 @@ namespace Game
         }
         private void Client_onQuitRoom()
         {
+            displayLANPanel();
         }
         private void onGameEnd()
         {
@@ -147,6 +180,12 @@ namespace Game
             {
                 deck = getManager<GameManager>().deck
             });
+            ui.RoomButton.interactable = true;
+            ui.RoomButton.image.color = Color.white;
+        }
+        public void updateLANRooms()
+        {
+            client.findRoom();
         }
         public async Task joinRoom(RoomInfo roomInfo)
         {
@@ -157,6 +196,17 @@ namespace Game
             {
                 deck = getManager<GameManager>().deck
             });
+            ui.RoomButton.interactable = true;
+            ui.RoomButton.image.color = Color.white;
+        }
+        public void quitRoom()
+        {
+            if (host.roomInfo != null)
+                host.closeRoom();
+            if (client.roomInfo != null)
+                client.quitRoom();
+            ui.RoomButton.interactable = false;
+            ui.RoomButton.image.color = Color.gray;
         }
         #endregion
         #region UI
@@ -168,7 +218,61 @@ namespace Game
         {
             IPPanel ipPanel = ui.NetworkingPageGroup.IPPanel;
             ui.NetworkingPageGroup.display(ipPanel);
+            ipPanel.ConnectButton.onClick.set(() =>
+            {
+                Match m = Regex.Match(ipPanel.IPInputField.text, @"(?<ip>d+\.d+\.d+\.d+)\:(?<port>d+)");
+                if (m.Success)
+                {
+                    _ = joinRoom(new RoomInfo()
+                    {
+                        ip = m.Groups["ip"].Value,
+                        port = int.Parse(m.Groups["port"].Value)
+                    });
+                }
+                else
+                    getManager<UIManager>().getObject<Dialog>().display("输入的地址格式有误", null);
+            });
             ipPanel.AddressText.text = "你的地址：\n" + address;
+        }
+        void displayLANPanel()
+        {
+            LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
+            ui.NetworkingPageGroup.display(lanPanel);
+            lanPanel.CreateRoomButton.onClick.set(() =>
+            {
+                _ = createRoom();
+            });
+            lanPanel.NameText.text = null;
+            lanPanel.IPText.text = null;
+            lanPanel.PortText.text = null;
+            lanPanel.DescText.text = null;
+            updateLANRooms();
+        }
+        private void refreshRoomListItem(RoomListItem item, RoomInfo obj)
+        {
+            item.RoomNameText.text = obj.ip + ":" + obj.port;
+            item.asButton.onClick.set(() =>
+            {
+                LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
+                if (obj == null)
+                {
+                    lanPanel.NameText.text = null;
+                    lanPanel.IPText.text = null;
+                    lanPanel.PortText.text = null;
+                    lanPanel.DescText.text = null;
+                }
+                else
+                {
+                    lanPanel.NameText.text = "房间";
+                    lanPanel.IPText.text = "IP:" + obj.ip;
+                    lanPanel.PortText.text = "端口:" + obj.port;
+                    lanPanel.DescText.text = "描述:";
+                }
+            });
+            item.Button.onClick.set(() =>
+            {
+                _ = joinRoom(obj);
+            });
         }
         void displayRoomPanel(THHRoomInfo room)
         {
@@ -247,9 +351,7 @@ namespace Game
             roomPanel.QuitButton.onClick.RemoveAllListeners();
             roomPanel.QuitButton.onClick.AddListener(() =>
             {
-                if (host.roomInfo != null)
-                    host.closeRoom();
-                client.quitRoom();
+                quitRoom();
             });
         }
         #endregion
@@ -265,4 +367,3 @@ namespace Game
         public int[] deck = new int[0];
     }
 }
-
