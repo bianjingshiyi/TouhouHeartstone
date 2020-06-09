@@ -30,18 +30,13 @@ namespace UI
             this._RoomPlayerList = this.transform.Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
             this._GameOptionPanelImage = this.transform.Find("GameOptionPanel").GetComponent<Image>();
             this._RandomSeedToggle = this.transform.Find("GameOptionPanel").Find("RandomSeedToggle").GetComponent<Toggle>();
-            this._BackgroundImage = this.transform.Find("GameOptionPanel").Find("RandomSeedToggle").Find("Background").GetComponent<Image>();
-            this._CheckmarkImage = this.transform.Find("GameOptionPanel").Find("RandomSeedToggle").Find("Background").Find("Checkmark").GetComponent<Image>();
-            this._LabelText = this.transform.Find("GameOptionPanel").Find("RandomSeedToggle").Find("Label").GetComponent<Text>();
             this._RandomSeedInputField = this.transform.Find("GameOptionPanel").Find("RandomSeedInputField").GetComponent<InputField>();
             this._ShuffleToggle = this.transform.Find("GameOptionPanel").Find("ShuffleToggle").GetComponent<Toggle>();
-            this._ShuffleToggle_BackgroundImage = this.transform.Find("GameOptionPanel").Find("ShuffleToggle").Find("Background").GetComponent<Image>();
-            this._Background_CheckmarkImage = this.transform.Find("GameOptionPanel").Find("ShuffleToggle").Find("Background").Find("Checkmark").GetComponent<Image>();
-            this._ShuffleToggle_LabelText = this.transform.Find("GameOptionPanel").Find("ShuffleToggle").Find("Label").GetComponent<Text>();
             this._InitReplaceTimeText = this.transform.Find("GameOptionPanel").Find("InitReplaceTimeText").GetComponent<Text>();
             this._InitReplaceTimeInputField = this.transform.Find("GameOptionPanel").Find("InitReplaceTimeInputField").GetComponent<InputField>();
             this._TurnTimeText = this.transform.Find("GameOptionPanel").Find("TurnTimeText").GetComponent<Text>();
             this._TurnTimeInputField = this.transform.Find("GameOptionPanel").Find("TurnTimeInputField").GetComponent<InputField>();
+            this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
         }
         private Main _parent;
         public Main parent
@@ -117,45 +112,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _BackgroundImage;
-        public Image BackgroundImage
-        {
-            get
-            {
-                if ((this._BackgroundImage == null))
-                {
-                    this._BackgroundImage = this.transform.Find("GameOptionPanel").Find("RandomSeedToggle").Find("Background").GetComponent<Image>();
-                }
-                return this._BackgroundImage;
-            }
-        }
-        [SerializeField()]
-        private Image _CheckmarkImage;
-        public Image CheckmarkImage
-        {
-            get
-            {
-                if ((this._CheckmarkImage == null))
-                {
-                    this._CheckmarkImage = this.transform.Find("GameOptionPanel").Find("RandomSeedToggle").Find("Background").Find("Checkmark").GetComponent<Image>();
-                }
-                return this._CheckmarkImage;
-            }
-        }
-        [SerializeField()]
-        private Text _LabelText;
-        public Text LabelText
-        {
-            get
-            {
-                if ((this._LabelText == null))
-                {
-                    this._LabelText = this.transform.Find("GameOptionPanel").Find("RandomSeedToggle").Find("Label").GetComponent<Text>();
-                }
-                return this._LabelText;
-            }
-        }
-        [SerializeField()]
         private InputField _RandomSeedInputField;
         public InputField RandomSeedInputField
         {
@@ -179,45 +135,6 @@ namespace UI
                     this._ShuffleToggle = this.transform.Find("GameOptionPanel").Find("ShuffleToggle").GetComponent<Toggle>();
                 }
                 return this._ShuffleToggle;
-            }
-        }
-        [SerializeField()]
-        private Image _ShuffleToggle_BackgroundImage;
-        public Image ShuffleToggle_BackgroundImage
-        {
-            get
-            {
-                if ((this._ShuffleToggle_BackgroundImage == null))
-                {
-                    this._ShuffleToggle_BackgroundImage = this.transform.Find("GameOptionPanel").Find("ShuffleToggle").Find("Background").GetComponent<Image>();
-                }
-                return this._ShuffleToggle_BackgroundImage;
-            }
-        }
-        [SerializeField()]
-        private Image _Background_CheckmarkImage;
-        public Image Background_CheckmarkImage
-        {
-            get
-            {
-                if ((this._Background_CheckmarkImage == null))
-                {
-                    this._Background_CheckmarkImage = this.transform.Find("GameOptionPanel").Find("ShuffleToggle").Find("Background").Find("Checkmark").GetComponent<Image>();
-                }
-                return this._Background_CheckmarkImage;
-            }
-        }
-        [SerializeField()]
-        private Text _ShuffleToggle_LabelText;
-        public Text ShuffleToggle_LabelText
-        {
-            get
-            {
-                if ((this._ShuffleToggle_LabelText == null))
-                {
-                    this._ShuffleToggle_LabelText = this.transform.Find("GameOptionPanel").Find("ShuffleToggle").Find("Label").GetComponent<Text>();
-                }
-                return this._ShuffleToggle_LabelText;
             }
         }
         [SerializeField()]
@@ -270,6 +187,19 @@ namespace UI
                     this._TurnTimeInputField = this.transform.Find("GameOptionPanel").Find("TurnTimeInputField").GetComponent<InputField>();
                 }
                 return this._TurnTimeInputField;
+            }
+        }
+        [SerializeField()]
+        private Button _QuitButton;
+        public Button QuitButton
+        {
+            get
+            {
+                if ((this._QuitButton == null))
+                {
+                    this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
+                }
+                return this._QuitButton;
             }
         }
         partial void onAwake();

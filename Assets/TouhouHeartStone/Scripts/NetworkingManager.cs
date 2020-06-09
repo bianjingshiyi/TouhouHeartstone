@@ -53,12 +53,20 @@ namespace Game
         {
             get { return getManager<UIManager>().getObject<NetworkingPage>(); }
         }
+        [SerializeField]
+        THHRoomInfo _room = null;
+        public THHRoomInfo room
+        {
+            get { return _room; }
+            private set { _room = value; }
+        }
         protected override void onAwake()
         {
             base.onAwake();
             host.logger = new ULogger("Host");
             client.logger = new ULogger("Client");
             client.onRoomFound += Client_onRoomFound;
+            client.onJoinRoom += Client_onJoinRoom;
             gameManager.onGameEnd += onGameEnd;
         }
         [SerializeField]
@@ -77,41 +85,11 @@ namespace Game
         {
             if (roomInfo == null)
                 throw new ArgumentNullException(nameof(roomInfo));
-            ui.NetworkingPageGroup.display(null);
+            displayLoadingPanel();
             await client.joinRoom(roomInfo, new THHRoomPlayerInfo()
             {
                 deck = getManager<GameManager>().deck
             });
-            ui.NetworkingPageGroup.display(ui.NetworkingPageGroup.RoomPanel);
-        }
-        private void initClient()
-        {
-            if (_client == null)
-            {
-                _client = this.findInstance<ClientManager>();
-                if (_client == null)
-                    throw new Exception("没有找到ClientManager");
-                client.onConnected += Client_onConnected;
-                client.onReceive += Client_onReceive;
-                client.onDisconnect += Client_onDisconnect;
-            }
-        }
-        private void initHost()
-        {
-            if (_host == null)
-            {
-                _host = this.findInstance<HostManager>();
-                if (_host == null)
-                    throw new Exception("没有找到HostManager");
-                host.onClientConnected += Host_onClientConnected;
-            }
-        }
-        [SerializeField]
-        THHRoomInfo _room = null;
-        public THHRoomInfo room
-        {
-            get { return _room; }
-            set { _room = value; }
         }
         /// <summary>
         /// 创建一个房间
@@ -123,77 +101,110 @@ namespace Game
             {
                 port = 9050,
                 option = new GameOption()
+                {
+                    randomSeed = (int)DateTime.Now.ToBinary()
+                }
             });
-            ui.NetworkingPageGroup.display(null);
+            displayLoadingPanel();
             await client.joinRoom(room, new THHRoomPlayerInfo()
             {
                 deck = getManager<GameManager>().deck
             });
-            ui.NetworkingPageGroup.display(ui.NetworkingPageGroup.RoomPanel);
         }
-        /// <summary>
-        /// 加入一个房间
-        /// </summary>
-        /// <param name="addr"></param>
-        /// <returns></returns>
-        public Task Connect(string addr)
+        private void Client_onJoinRoom(RoomInfo obj)
         {
-            initClient();
-
-            int port = client.port;
-            string address = "";
-            var uri = new Uri("http://" + addr);
-            if (uri.HostNameType == UriHostNameType.Dns)
+            if (obj is THHRoomInfo THHRoom)
             {
-                address = Dns.GetHostAddresses(uri.Host).FirstOrDefault(e => e.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+                displayRoomPanel(THHRoom);
             }
             else
+                Debug.LogError("加入的房间不是一个东方炉石房间！");
+        }
+        void displayLoadingPanel()
+        {
+            ui.NetworkingPageGroup.display(null);
+        }
+        void displayRoomPanel(THHRoomInfo room)
+        {
+            RoomPanel roomPanel = ui.NetworkingPageGroup.RoomPanel;
+            ui.NetworkingPageGroup.display(roomPanel);
+            roomPanel.RoomPlayerList.clearItems();
+            foreach (var player in room.playerList.Cast<THHRoomPlayerInfo>())
             {
-                address = uri.Host;
+                var item = roomPanel.RoomPlayerList.addItem();
+                item.NameText.text = player.name;
+                item.CharacterText.text = getManager<CardManager>().GetCardSkin(player.deck[0]).name;
+                item.Button.onClick.AddListener(() =>
+                {
+                    //TODO:查看卡组
+                });
             }
-
-            if (uri.Port != 80)
-                port = uri.Port;
-
-            client.logger = new UnityLogger();
-            client.start();
-            Debug.Log($"Connect to {address}:{port}...");
-            return client.join(address, port);
-        }
-        private void Host_onClientConnected(int peerID)
-        {
-            //连接过来了不能作数，对方的卡组，名字之类的信息都不知道
-        }
-        private void Client_onConnected()
-        {
-            //加入成功之后把自己的信息发过去
-            _ = client.send(new THHRoomPlayerInfo()
+            roomPanel.RandomSeedInputField.text = room.option.randomSeed.ToString();
+            roomPanel.RandomSeedInputField.onEndEdit.RemoveAllListeners();
+            roomPanel.RandomSeedInputField.onEndEdit.AddListener(value =>
             {
-                id = client.id,
-                name = "玩家" + client.id,
-                deck = gameManager.deck
+                if (host.roomInfo is THHRoomInfo roomInfo)
+                {
+                    if (int.TryParse(value, out int i))
+                    {
+                        roomInfo.option.randomSeed = i;
+                        host.updateRoomInfo(roomInfo);
+                    }
+                    else
+                        roomPanel.RandomSeedInputField.text = roomInfo.option.randomSeed.ToString();
+                }
             });
-        }
-        private void Client_onReceive(int id, object obj)
-        {
-            switch (obj)
+            roomPanel.ShuffleToggle.isOn = room.option.shuffle;
+            roomPanel.ShuffleToggle.onValueChanged.RemoveAllListeners();
+            roomPanel.ShuffleToggle.onValueChanged.AddListener(value =>
             {
-                case RoomPlayerInfo playerInfo:
-                    if (_room != null)
-                        _room.playerList.Add(playerInfo);
-                    if (host != null)
-                        _ = client.send(_room);
-                    break;
-                case THHRoomInfo roomInfo:
-                    _room = roomInfo;
-                    if (_room.playerList.Count > 1)
-                        gameManager.startRemoteGame(client, _room.option, _room.playerList.Cast<THHRoomPlayerInfo>().ToArray());
-                    break;
-            }
-        }
-        private void Client_onDisconnect()
-        {
-            gameManager.quitGame();
+                if (host.roomInfo is THHRoomInfo roomInfo)
+                {
+                    roomInfo.option.shuffle = value;
+                    host.updateRoomInfo(roomInfo);
+                }
+            });
+            roomPanel.InitReplaceTimeInputField.text = room.option.timeoutForInitReplace.ToString();
+            roomPanel.InitReplaceTimeInputField.onEndEdit.RemoveAllListeners();
+            roomPanel.InitReplaceTimeInputField.onEndEdit.AddListener(value =>
+            {
+                if (host.roomInfo is THHRoomInfo roomInfo)
+                {
+                    if (int.TryParse(value, out int i) && 5 < i)
+                    {
+                        roomInfo.option.timeoutForInitReplace = i;
+                        host.updateRoomInfo(roomInfo);
+                    }
+                    else
+                    {
+                        roomPanel.InitReplaceTimeInputField.text = roomInfo.option.timeoutForInitReplace.ToString();
+                    }
+                }
+            });
+            roomPanel.TurnTimeInputField.text = room.option.timeoutForTurn.ToString();
+            roomPanel.TurnTimeInputField.onEndEdit.RemoveAllListeners();
+            roomPanel.TurnTimeInputField.onEndEdit.AddListener(value =>
+            {
+                if (host.roomInfo is THHRoomInfo roomInfo)
+                {
+                    if (int.TryParse(value, out int i) && 5 < i)
+                    {
+                        roomInfo.option.timeoutForTurn = i;
+                        host.updateRoomInfo(roomInfo);
+                    }
+                    else
+                    {
+                        roomPanel.TurnTimeInputField.text = roomInfo.option.timeoutForTurn.ToString();
+                    }
+                }
+            });
+            roomPanel.QuitButton.onClick.RemoveAllListeners();
+            roomPanel.QuitButton.onClick.AddListener(() =>
+            {
+                if (host.roomInfo != null)
+                    host.closeRoom();
+                client.quitRoom();
+            });
         }
         private void onGameEnd()
         {

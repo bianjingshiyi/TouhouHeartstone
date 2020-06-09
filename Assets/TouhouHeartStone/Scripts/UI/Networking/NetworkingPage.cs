@@ -14,13 +14,22 @@ namespace UI
 {
     partial class RoomPanel
     {
-        protected override void onDisplay()
+        partial void onAwake()
         {
-            base.onDisplay();
-            //ui.getManager<NetworkingManager>()
+            RandomSeedToggle.onValueChanged.AddListener(value =>
+            {
+                RandomSeedInputField.interactable = value;
+                RandomSeedInputField.image.color = value ? Color.white : Color.gray;
+            });
+            RandomSeedToggle.isOn = false;
+            RandomSeedInputField.text = null;
+            RandomSeedInputField.interactable = false;
+            RandomSeedInputField.image.color = Color.gray;
+
+            
         }
     }
-    public partial class NetworkingPage : UIObject
+    public partial class NetworkingPage
     {
         public NetworkingManager Networking { get; set; }
         [SerializeField]
