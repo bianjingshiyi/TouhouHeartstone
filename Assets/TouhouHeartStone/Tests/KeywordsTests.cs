@@ -185,6 +185,14 @@ namespace Tests
             game.Dispose();
         }
         /// <summary>
+        /// 冰冻测试：在测试类中创建一个冰环法术，对方拍一个默认随从，我方放一个冰环，预期下一个回合对方的随从无法进行攻击，再下一个回合解冻可以进行攻击。
+        /// </summary>
+        [Test]
+        public void freezeTest()
+        {
+
+        }
+        /// <summary>
         /// 从player[0]开始经过x回合
         /// </summary>
         /// <param name="game"></param>
