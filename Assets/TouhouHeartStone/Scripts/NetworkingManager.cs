@@ -91,7 +91,7 @@ namespace Game
                 ui.parent.display(ui.parent.MainMenu);
             });
 
-            ui.NetworkingPageGroup.display(ui.NetworkingPageGroup.LANPanel);
+            displayLANPanel();
         }
         protected void Update()
         {
