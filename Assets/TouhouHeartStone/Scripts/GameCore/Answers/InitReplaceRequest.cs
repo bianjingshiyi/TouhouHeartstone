@@ -16,7 +16,7 @@ namespace TouhouHeartstone
         }
         public override bool isValidResponse(IResponse response)
         {
-            return response is InitReplaceResponse;
+            return response is InitReplaceResponse || response is SurrenderResponse;
         }
     }
 }

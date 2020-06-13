@@ -37,6 +37,7 @@ namespace UI
             this._TurnTimeText = this.transform.Find("GameOptionPanel").Find("TurnTimeText").GetComponent<Text>();
             this._TurnTimeInputField = this.transform.Find("GameOptionPanel").Find("TurnTimeInputField").GetComponent<InputField>();
             this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
+            this._StartButton = this.transform.Find("StartButton").GetComponent<Button>();
         }
         private Main _parent;
         public Main parent
@@ -200,6 +201,19 @@ namespace UI
                     this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
                 }
                 return this._QuitButton;
+            }
+        }
+        [SerializeField()]
+        private Button _StartButton;
+        public Button StartButton
+        {
+            get
+            {
+                if ((this._StartButton == null))
+                {
+                    this._StartButton = this.transform.Find("StartButton").GetComponent<Button>();
+                }
+                return this._StartButton;
             }
         }
         partial void onAwake();

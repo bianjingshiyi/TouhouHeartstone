@@ -373,43 +373,44 @@ namespace Tests
             ClientManager local = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
             local.logger = logger;
             //开房，打开Host，自己加入自己，房间应该有Option
-            THHRoomInfo roomInfo = new THHRoomInfo();
+            RoomInfo roomInfo = new RoomInfo();
             THHGame localGame = null;
             local.onConnected += () =>
             {
                 //发送玩家信息
-                _ = local.send(new THHRoomPlayerInfo()
+                RoomPlayerInfo playerInfo = new RoomPlayerInfo()
                 {
                     id = local.id,
                     name = "玩家" + local.id,
-                    deck = new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray()
-                });
+                };
+                playerInfo.setDeck(new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray());
+                _ = local.send(playerInfo);
             };
             local.onReceive += (id, obj) =>
             {
                 if (obj is RoomPlayerInfo newPlayerInfo)
                 {
                     //收到玩家信息
-                    THHRoomInfo newRoomInfo = new THHRoomInfo()
+                    RoomInfo newRoomInfo = new RoomInfo()
                     {
-                        option = roomInfo.option,
                         playerList = new List<RoomPlayerInfo>(roomInfo.playerList)
                     };
+                    newRoomInfo.setOption(roomInfo.getOption());
                     newRoomInfo.playerList.Add(newPlayerInfo);
                     //发送房间信息
                     _ = local.send(newRoomInfo);
                 }
-                else if (obj is THHRoomInfo newRoomInfo)
+                else if (obj is RoomInfo newRoomInfo)
                 {
                     roomInfo = newRoomInfo;
                     //收到房间信息
                     if (newRoomInfo.playerList.Count > 1)
                     {
-                        localGame = TestGameflow.initGameWithoutPlayers("本地游戏", newRoomInfo.option);
+                        localGame = TestGameflow.initGameWithoutPlayers("本地游戏", newRoomInfo.getOption());
                         (localGame.answers as AnswerManager).client = local;
-                        foreach (var playerInfo in newRoomInfo.playerList.Cast<THHRoomPlayerInfo>())
+                        foreach (var playerInfo in newRoomInfo.playerList)
                         {
-                            localGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, localGame.getCardDefine<MasterCardDefine>(playerInfo.deck[0]), playerInfo.deck.Skip(1).Select(did => localGame.getCardDefine(did)));
+                            localGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, localGame.getCardDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => localGame.getCardDefine(did)));
                         }
                         localGame.run();
                     }
@@ -427,25 +428,26 @@ namespace Tests
             remote.onConnected += () =>
             {
                 //发送玩家信息
-                _ = remote.send(new THHRoomPlayerInfo()
+                RoomPlayerInfo playerInfo = new RoomPlayerInfo()
                 {
                     id = remote.id,
-                    name = "玩家" + remote.id,
-                    deck = new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray()
-                });
+                    name = "玩家" + remote.id
+                };
+                playerInfo.setDeck(new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray());
+                _ = remote.send(playerInfo);
             };
             remote.onReceive += (id, obj) =>
             {
-                if (obj is THHRoomInfo newRoomInfo)
+                if (obj is RoomInfo newRoomInfo)
                 {
                     //收到房间信息
                     if (newRoomInfo.playerList.Count > 1)
                     {
-                        remoteGame = TestGameflow.initGameWithoutPlayers("远端游戏", newRoomInfo.option);
+                        remoteGame = TestGameflow.initGameWithoutPlayers("远端游戏", newRoomInfo.getOption());
                         (remoteGame.answers as AnswerManager).client = remote;
-                        foreach (var playerInfo in newRoomInfo.playerList.Cast<THHRoomPlayerInfo>())
+                        foreach (var playerInfo in newRoomInfo.playerList)
                         {
-                            remoteGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, remoteGame.getCardDefine<MasterCardDefine>(playerInfo.deck[0]), playerInfo.deck.Skip(1).Select(did => remoteGame.getCardDefine(did)));
+                            remoteGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, remoteGame.getCardDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => remoteGame.getCardDefine(did)));
                         }
                         remoteGame.run();
                     }
@@ -576,7 +578,7 @@ namespace Tests
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
-            
+
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 0);
             game.sortedPlayers[1].cmdTurnEnd(game);
@@ -585,6 +587,18 @@ namespace Tests
             Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife());
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0, game.sortedPlayers[1].field[0]);
             Assert.AreEqual(5, game.sortedPlayers[1].field[0].getCurrentLife());
+        }
+        [UnityTest]
+        public IEnumerator surrenderTest()
+        {
+            THHGame game = TestGameflow.initStandardGame();
+            Task task = game.run();
+            yield return new WaitUntil(() => game.answers.getLastRequest(game.players[0].id) is InitReplaceRequest);
+            game.players[0].cmdSurrender(game);
+            yield return new WaitUntil(() => game.triggers.getRecordedEvents().LastOrDefault() is THHGame.GameEndEventArg);
+            THHGame.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.GameEndEventArg) as THHGame.GameEndEventArg;
+            Assert.AreEqual(game.players[1], gameEnd.winners[0]);
+            game.Dispose();
         }
     }
     static class TaskExceptionHandler

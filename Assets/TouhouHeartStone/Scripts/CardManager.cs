@@ -127,9 +127,11 @@ namespace Game
             if (platform == null)
                 platform = RuntimePlatform.Android;
 #endif
-            DataSet dataset = platform != RuntimePlatform.Android ?
-                await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
-                await getManager<ResourceManager>().loadDataSet(path, platform);
+            DataSet dataset;
+            if (true/*platform == RuntimePlatform.Android*/)
+                dataset = await getManager<ResourceManager>().loadDataSet(path, platform);
+            else
+                dataset = await getManager<ResourceManager>().loadExcelAsDataSet(path, platform);
 
             if (dataset.Tables.Count < 1) throw new Exception("空数据集");
             var table = dataset.Tables[0];
@@ -145,12 +147,12 @@ namespace Game
                 var card = new GeneratedCardDefine();
                 card.id = datarow.ReadCol<int>("ID");
                 card.type = datarow.ReadCol<string>("Type");
-                card.setProp(nameof(ServantCardDefine.cost), datarow.ReadCol<int>("Cost", 0));
-                card.setProp(nameof(ServantCardDefine.attack), datarow.ReadCol<int>("Attack", 0));
-                card.setProp(nameof(ServantCardDefine.life), datarow.ReadCol<int>("Life", 0));
-                card.setProp(nameof(ServantCardDefine.tags), datarow.ReadCol<string>("Tags", "").Split(','));
-                card.setProp(nameof(ServantCardDefine.keywords), datarow.ReadCol<string>("Keywords", "").Split(','));
-                card.setProp(nameof(ServantCardDefine.isToken), datarow.ReadCol<bool>("IsToken", false));
+                card.setProp(nameof(ServantCardDefine.cost), datarow.ReadCol("Cost", 0));
+                card.setProp(nameof(ServantCardDefine.attack), datarow.ReadCol("Attack", 0));
+                card.setProp(nameof(ServantCardDefine.life), datarow.ReadCol("Life", 0));
+                card.setProp(nameof(ServantCardDefine.tags), datarow.ReadCol("Tags", "").Split(','));
+                card.setProp(nameof(ServantCardDefine.keywords), datarow.ReadCol("Keywords", "").Split(','));
+                card.setProp(nameof(ServantCardDefine.isToken), datarow.ReadCol("IsToken", false));
 
                 cards.Add(card);
             }
@@ -168,9 +170,11 @@ namespace Game
             if (platform == null)
                 platform = RuntimePlatform.Android;
 #endif
-            var dataset = platform != RuntimePlatform.Android ?
-                await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
-                await getManager<ResourceManager>().loadDataSet(path, platform);
+            DataSet dataset;
+            if (true/*platform == RuntimePlatform.Android*/)
+                dataset = await getManager<ResourceManager>().loadDataSet(path, platform);
+            else
+                dataset = await getManager<ResourceManager>().loadExcelAsDataSet(path, platform);
 
             if (dataset.Tables.Count < 1) throw new Exception("空数据集");
             var table = dataset.Tables[0];

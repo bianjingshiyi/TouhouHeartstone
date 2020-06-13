@@ -85,7 +85,7 @@ namespace Game
             game.triggers.onEventAfter += onEventAfter;
             gameTask = game.run();
         }
-        public void startRemoteGame(ClientManager client, GameOption option, THHRoomPlayerInfo[] players)
+        public void startRemoteGame(ClientManager client, GameOption option, RoomPlayerInfo[] players)
         {
             game = new THHGame(option, getManager<CardManager>().GetCardDefines())
             {
@@ -98,10 +98,10 @@ namespace Game
 
             foreach (var info in players)
             {
-                checkDeckValid(info.deck);
+                checkDeckValid(info.getDeck());
 
-                THHPlayer player = game.createPlayer(info.id, info.name, game.getCardDefine(info.deck[0]) as MasterCardDefine,
-                    info.deck.Skip(1).Select(id => game.getCardDefine(id)));
+                THHPlayer player = game.createPlayer(info.id, info.name, game.getCardDefine(info.getDeck()[0]) as MasterCardDefine,
+                    info.getDeck().Skip(1).Select(id => game.getCardDefine(id)));
                 if (client.id == info.id)
                     displayGameUI(player);
             }

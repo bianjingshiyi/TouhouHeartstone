@@ -55,5 +55,10 @@ namespace UI
             e.RemoveAllListeners();
             e.AddListener(action);
         }
+        public static void set<T>(this UnityEvent<T> e, UnityAction<T> action)
+        {
+            e.RemoveAllListeners();
+            e.AddListener(action);
+        }
     }
 }

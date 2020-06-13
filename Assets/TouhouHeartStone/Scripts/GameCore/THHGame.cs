@@ -125,6 +125,10 @@ namespace TouhouHeartstone
             {
                 card.setCost(spell.cost);
             }
+            else if (define is SkillCardDefine skill)
+            {
+                card.setCost(skill.cost);
+            }
             return card;
         }
         public Card[] findAllCardsInField(Func<Card, bool> filter)
@@ -199,7 +203,10 @@ namespace TouhouHeartstone
             foreach (var result in initReplaceResponses)
             {
                 THHPlayer player = getPlayer(result.Key);
-                await player.initReplace(this, getCards((result.Value as InitReplaceResponse).cardsId));
+                if (result.Value is InitReplaceResponse initReplace)
+                    await player.initReplace(this, getCards(initReplace.cardsId));
+                else if (result.Value is SurrenderResponse surrender)
+                    await this.surrender(player);
             }
             await start();
             currentPlayer = sortedPlayers[0];
@@ -341,6 +348,9 @@ namespace TouhouHeartstone
                         break;
                     case TurnEndResponse _:
                         return;
+                    case SurrenderResponse _:
+                        await this.surrender(player);
+                        return;
                 }
             }
         }
@@ -398,6 +408,15 @@ namespace TouhouHeartstone
             }
             else
                 return Task.CompletedTask;
+        }
+        internal async Task surrender(THHPlayer player)
+        {
+            await player.master.die(this, new THHCard.DeathEventArg.Info()
+            {
+                card = player.master,
+                player = player,
+                position = 0
+            });
         }
         internal async Task gameEnd(THHPlayer[] winners)
         {

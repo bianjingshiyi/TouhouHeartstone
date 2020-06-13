@@ -310,6 +310,13 @@ namespace TouhouHeartstone
                 targetId = target.id
             });
         }
+        public void cmdSurrender(THHGame game)
+        {
+            _ = game.surrender(this);
+            //game.answers.answer(id, new SurrenderResponse()
+            //{
+            //});
+        }
         #endregion
     }
 }

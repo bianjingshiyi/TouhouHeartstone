@@ -27,14 +27,17 @@ namespace UI
         {
             this.m_as_Image = this.GetComponent<Image>();
             this._CreateRoomButton = this.transform.Find("CreateRoomButton").GetComponent<Button>();
+            this._FlushRoomButton = this.transform.Find("FlushRoomButton").GetComponent<Button>();
             this._RoomListPanelImage = this.transform.Find("RoomListPanel").GetComponent<Image>();
             this._RoomScrollView = this.transform.Find("RoomListPanel").Find("RoomScrollView").GetComponent<RoomScrollView>();
             this._LANGameText = this.transform.Find("RoomListPanel").Find("LANGameText").GetComponent<Text>();
             this._RoomInfoPanelImage = this.transform.Find("RoomInfoPanel").GetComponent<Image>();
             this._NameText = this.transform.Find("RoomInfoPanel").Find("NameText").GetComponent<Text>();
             this._IPText = this.transform.Find("RoomInfoPanel").Find("IPText").GetComponent<Text>();
-            this._PortText = this.transform.Find("RoomInfoPanel").Find("PortText").GetComponent<Text>();
             this._DescText = this.transform.Find("RoomInfoPanel").Find("DescText").GetComponent<Text>();
+            this._YourPortText = this.transform.Find("RoomInfoPanel").Find("YourPortText").GetComponent<Text>();
+            this._PortText = this.transform.Find("RoomInfoPanel").Find("PortText").GetComponent<Text>();
+            this._InputField = this.transform.Find("RoomInfoPanel").Find("InputField").GetComponent<InputField>();
         }
         private Main _parent;
         public Main parent
@@ -68,6 +71,19 @@ namespace UI
                     this._CreateRoomButton = this.transform.Find("CreateRoomButton").GetComponent<Button>();
                 }
                 return this._CreateRoomButton;
+            }
+        }
+        [SerializeField()]
+        private Button _FlushRoomButton;
+        public Button FlushRoomButton
+        {
+            get
+            {
+                if ((this._FlushRoomButton == null))
+                {
+                    this._FlushRoomButton = this.transform.Find("FlushRoomButton").GetComponent<Button>();
+                }
+                return this._FlushRoomButton;
             }
         }
         [SerializeField()]
@@ -149,6 +165,32 @@ namespace UI
             }
         }
         [SerializeField()]
+        private Text _DescText;
+        public Text DescText
+        {
+            get
+            {
+                if ((this._DescText == null))
+                {
+                    this._DescText = this.transform.Find("RoomInfoPanel").Find("DescText").GetComponent<Text>();
+                }
+                return this._DescText;
+            }
+        }
+        [SerializeField()]
+        private Text _YourPortText;
+        public Text YourPortText
+        {
+            get
+            {
+                if ((this._YourPortText == null))
+                {
+                    this._YourPortText = this.transform.Find("RoomInfoPanel").Find("YourPortText").GetComponent<Text>();
+                }
+                return this._YourPortText;
+            }
+        }
+        [SerializeField()]
         private Text _PortText;
         public Text PortText
         {
@@ -162,16 +204,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _DescText;
-        public Text DescText
+        private InputField _InputField;
+        public InputField InputField
         {
             get
             {
-                if ((this._DescText == null))
+                if ((this._InputField == null))
                 {
-                    this._DescText = this.transform.Find("RoomInfoPanel").Find("DescText").GetComponent<Text>();
+                    this._InputField = this.transform.Find("RoomInfoPanel").Find("InputField").GetComponent<InputField>();
                 }
-                return this._DescText;
+                return this._InputField;
             }
         }
         partial void onAwake();
