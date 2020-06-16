@@ -564,6 +564,10 @@ namespace Tests
             Assert.AreEqual(7, game.sortedPlayers[0].field[1].getCurrentLife());
         }
 
+
+        /// <summary>
+        /// 使用法术以及符卡时能正常消耗水晶的测试
+        /// </summary>
         [Test]
         public void SkillAndSpellCardTest()
         {
@@ -582,11 +586,15 @@ namespace Tests
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 0);
             game.sortedPlayers[1].cmdTurnEnd(game);
+            int gemNum = game.sortedPlayers[0].gem;
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].skill, 0, game.sortedPlayers[1].field[0]);
-            Assert.True(game.sortedPlayers[0].skill.isUsed());
-            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife());
+            Assert.True(game.sortedPlayers[0].skill.isUsed());  //技能已使用
+            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife());    //敌方随从受到伤害
+            Assert.AreEqual(1, gemNum - game.sortedPlayers[0].gem);     //水晶减1
+            gemNum = game.sortedPlayers[0].gem;
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0, game.sortedPlayers[1].field[0]);
             Assert.AreEqual(5, game.sortedPlayers[1].field[0].getCurrentLife());
+            Assert.AreEqual(1, gemNum - game.sortedPlayers[0].gem);     //水晶减1
         }
         [UnityTest]
         public IEnumerator surrenderTest()
