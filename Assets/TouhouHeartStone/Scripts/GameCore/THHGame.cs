@@ -376,47 +376,36 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public Task updateDeath()
         {
-            Dictionary<Card, THHCard.DeathEventArg.Info> deathDic = new Dictionary<Card, THHCard.DeathEventArg.Info>();
+            List<Card> deathList = new List<Card>();
             foreach (THHPlayer player in players)
             {
-                if (player.master.getCurrentLife() <= 0)
+                if (player.master.isDead())
                 {
-                    deathDic.Add(player.master, new THHCard.DeathEventArg.Info()
-                    {
-                        card = player.master,
-                        player = player,
-                        position = 0
-                    });
+                    deathList.Add(player.master);
                 }
                 foreach (Card card in player.field)
                 {
-                    if (card.getCurrentLife() <= 0)
+                    if (card.isDead())
                     {
-                        deathDic.Add(card, new THHCard.DeathEventArg.Info()
-                        {
-                            card = card,
-                            player = player,
-                            position = player.field.indexOf(card)
-                        });
+                        deathList.Add(card);
                     }
                 }
             }
-            if (deathDic.Count > 0)
+            if (deathList.Count > 0)
             {
-                logger.log("结算" + string.Join("，", deathDic.Keys) + "的死亡");
-                return deathDic.Keys.die(this, deathDic);
+                logger.log("结算" + string.Join("，", deathList) + "的死亡");
+                return deathList.die(this);
             }
             else
                 return Task.CompletedTask;
         }
         internal async Task surrender(THHPlayer player)
         {
-            await player.master.die(this, new THHCard.DeathEventArg.Info()
-            {
-                card = player.master,
-                player = player,
-                position = 0
-            });
+            await player.master.die(this);
+        }
+        public async Task leave(THHPlayer player)
+        {
+            await player.master.die(this);
         }
         internal async Task gameEnd(THHPlayer[] winners)
         {

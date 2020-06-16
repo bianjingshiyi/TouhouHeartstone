@@ -4,7 +4,7 @@ using System.Linq;
 using TouhouHeartstone;
 using TouhouCardEngine;
 using TouhouHeartstone.Builtin;
-
+using System;
 namespace Tests
 {
     public class KeywordsTests
@@ -190,7 +190,15 @@ namespace Tests
         [Test]
         public void freezeTest()
         {
-
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// 需要写一个愤怒的女祭司随从，给它剧毒属性，然后预期在回合结束的时候她只需要刮一刀就可以刮死对面不止1血的怪
+        /// </summary>
+        [Test]
+        public void poisiousTest_ServantEffect()
+        {
+            throw new NotImplementedException();
         }
         /// <summary>
         /// 从player[0]开始经过x回合

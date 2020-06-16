@@ -84,8 +84,7 @@ namespace Game
             ui.RoomButton.image.color = Color.gray;
             ui.RoomButton.onClick.set(() =>
             {
-                if (client.roomInfo is RoomInfo tHHRoom)
-                    displayRoomPanel(tHHRoom, true);
+                displayRoomPanel();
             });
             ui.ReturnButton.onClick.AddListener(() =>
             {
@@ -154,11 +153,21 @@ namespace Game
         }
         private void Client_onJoinRoom(RoomInfo obj)
         {
-            displayRoomPanel(obj, true);
+            displayRoomPanel();
+            setRoomPanel(obj);
         }
-        private void Client_onRoomInfoUpdate(RoomInfo obj)
+        private void Client_onRoomInfoUpdate(RoomInfo now, RoomInfo updated)
         {
-            displayRoomPanel(obj, false);
+            if (updated.playerList.Count < now.playerList.Count)
+            {
+                //有玩家离开了
+                var roomPlayer = now.playerList.First(p => !updated.playerList.Exists(p2 => p2.id == p.id));
+                if (getManager<GameManager>().game is THHGame game)
+                {
+                    game.getPlayer(roomPlayer.id).cmdSurrender(game);
+                }
+            }
+            setRoomPanel(updated);
         }
         private void Client_onQuitRoom()
         {
@@ -315,11 +324,9 @@ namespace Game
                 _ = joinRoom(obj);
             });
         }
-        void displayRoomPanel(RoomInfo room, bool display)
+        private void setRoomPanel(RoomInfo room)
         {
             RoomPanel roomPanel = ui.NetworkingPageGroup.RoomPanel;
-            if (display)
-                ui.NetworkingPageGroup.display(roomPanel);
             roomPanel.RoomPlayerList.clearItems();
             foreach (var player in room.playerList)
             {
@@ -402,6 +409,11 @@ namespace Game
             {
                 _ = host.invokeAll<object>(host.roomInfo.playerList.Select(p => p.id).ToArray(), nameof(start));
             });
+        }
+
+        private void displayRoomPanel()
+        {
+            ui.NetworkingPageGroup.display(ui.NetworkingPageGroup.RoomPanel);
         }
         #endregion
     }

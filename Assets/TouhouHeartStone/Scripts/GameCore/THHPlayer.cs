@@ -228,6 +228,7 @@ namespace TouhouHeartstone
                     player.field.insert(game, card, position);
                 if (card.define is ServantCardDefine servant)
                 {
+                    card.setDead(false);
                     card.setCurrentLife(servant.life);
                     card.setReady(false);
                 }
