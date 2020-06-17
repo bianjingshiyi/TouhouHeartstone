@@ -29,13 +29,14 @@ namespace UI
             this._RoomPlayerListScrollRect = this.transform.Find("RoomPlayerListScrollRect").GetComponent<ScrollRect>();
             this._RoomPlayerList = this.transform.Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
             this._GameOptionPanelImage = this.transform.Find("GameOptionPanel").GetComponent<Image>();
-            this._RandomSeedToggle = this.transform.Find("GameOptionPanel").Find("RandomSeedToggle").GetComponent<Toggle>();
+            this._RandomSeedText = this.transform.Find("GameOptionPanel").Find("RandomSeedText").GetComponent<Text>();
             this._RandomSeedInputField = this.transform.Find("GameOptionPanel").Find("RandomSeedInputField").GetComponent<InputField>();
             this._ShuffleToggle = this.transform.Find("GameOptionPanel").Find("ShuffleToggle").GetComponent<Toggle>();
             this._InitReplaceTimeText = this.transform.Find("GameOptionPanel").Find("InitReplaceTimeText").GetComponent<Text>();
             this._InitReplaceTimeInputField = this.transform.Find("GameOptionPanel").Find("InitReplaceTimeInputField").GetComponent<InputField>();
             this._TurnTimeText = this.transform.Find("GameOptionPanel").Find("TurnTimeText").GetComponent<Text>();
             this._TurnTimeInputField = this.transform.Find("GameOptionPanel").Find("TurnTimeInputField").GetComponent<InputField>();
+            this._IsSortedToggle = this.transform.Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<Toggle>();
             this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
             this._StartButton = this.transform.Find("StartButton").GetComponent<Button>();
         }
@@ -100,16 +101,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Toggle _RandomSeedToggle;
-        public Toggle RandomSeedToggle
+        private Text _RandomSeedText;
+        public Text RandomSeedText
         {
             get
             {
-                if ((this._RandomSeedToggle == null))
+                if ((this._RandomSeedText == null))
                 {
-                    this._RandomSeedToggle = this.transform.Find("GameOptionPanel").Find("RandomSeedToggle").GetComponent<Toggle>();
+                    this._RandomSeedText = this.transform.Find("GameOptionPanel").Find("RandomSeedText").GetComponent<Text>();
                 }
-                return this._RandomSeedToggle;
+                return this._RandomSeedText;
             }
         }
         [SerializeField()]
@@ -188,6 +189,19 @@ namespace UI
                     this._TurnTimeInputField = this.transform.Find("GameOptionPanel").Find("TurnTimeInputField").GetComponent<InputField>();
                 }
                 return this._TurnTimeInputField;
+            }
+        }
+        [SerializeField()]
+        private Toggle _IsSortedToggle;
+        public Toggle IsSortedToggle
+        {
+            get
+            {
+                if ((this._IsSortedToggle == null))
+                {
+                    this._IsSortedToggle = this.transform.Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<Toggle>();
+                }
+                return this._IsSortedToggle;
             }
         }
         [SerializeField()]

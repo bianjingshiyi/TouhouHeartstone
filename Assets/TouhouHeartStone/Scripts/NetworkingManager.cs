@@ -339,78 +339,96 @@ namespace Game
                 });
             }
             roomPanel.RandomSeedInputField.text = room.getOption().randomSeed.ToString();
-            roomPanel.RandomSeedInputField.onEndEdit.RemoveAllListeners();
-            roomPanel.RandomSeedInputField.onEndEdit.AddListener(value =>
-            {
-                if (host.roomInfo is RoomInfo roomInfo)
-                {
-                    if (int.TryParse(value, out int i))
-                    {
-                        roomInfo.getOption().randomSeed = i;
-                        host.updateRoomInfo(roomInfo);
-                    }
-                    else
-                        roomPanel.RandomSeedInputField.text = roomInfo.getOption().randomSeed.ToString();
-                }
-            });
             roomPanel.ShuffleToggle.isOn = room.getOption().shuffle;
-            roomPanel.ShuffleToggle.onValueChanged.RemoveAllListeners();
-            roomPanel.ShuffleToggle.onValueChanged.AddListener(value =>
-            {
-                if (host.roomInfo is RoomInfo roomInfo)
-                {
-                    roomInfo.getOption().shuffle = value;
-                    host.updateRoomInfo(roomInfo);
-                }
-            });
             roomPanel.InitReplaceTimeInputField.text = room.getOption().timeoutForInitReplace.ToString();
-            roomPanel.InitReplaceTimeInputField.onEndEdit.RemoveAllListeners();
-            roomPanel.InitReplaceTimeInputField.onEndEdit.AddListener(value =>
-            {
-                if (host.roomInfo is RoomInfo roomInfo)
-                {
-                    if (int.TryParse(value, out int i) && 5 < i)
-                    {
-                        roomInfo.getOption().timeoutForInitReplace = i;
-                        host.updateRoomInfo(roomInfo);
-                    }
-                    else
-                    {
-                        roomPanel.InitReplaceTimeInputField.text = roomInfo.getOption().timeoutForInitReplace.ToString();
-                    }
-                }
-            });
             roomPanel.TurnTimeInputField.text = room.getOption().timeoutForTurn.ToString();
-            roomPanel.TurnTimeInputField.onEndEdit.RemoveAllListeners();
-            roomPanel.TurnTimeInputField.onEndEdit.AddListener(value =>
+            roomPanel.IsSortedToggle.isOn = room.getOption().sortedPlayers != null;
+            if (host.roomInfo != null)
             {
-                if (host.roomInfo is RoomInfo roomInfo)
+                roomPanel.RandomSeedInputField.setSelectable(true);
+                roomPanel.RandomSeedInputField.onValueChanged.set(value =>
                 {
-                    if (int.TryParse(value, out int i) && 5 < i)
+                    if (host.roomInfo is RoomInfo roomInfo)
                     {
-                        roomInfo.getOption().timeoutForTurn = i;
+                        if (int.TryParse(value, out int i))
+                        {
+                            roomInfo.getOption().randomSeed = i;
+                            host.updateRoomInfo(roomInfo);
+                        }
+                        else
+                            roomPanel.RandomSeedInputField.text = roomInfo.getOption().randomSeed.ToString();
+                    }
+                });
+                roomPanel.ShuffleToggle.setSelectable(true);
+                roomPanel.ShuffleToggle.onValueChanged.set(value =>
+                {
+                    if (host.roomInfo is RoomInfo roomInfo)
+                    {
+                        roomInfo.getOption().shuffle = value;
                         host.updateRoomInfo(roomInfo);
                     }
-                    else
+                });
+                roomPanel.InitReplaceTimeInputField.setSelectable(true);
+                roomPanel.InitReplaceTimeInputField.onEndEdit.set(value =>
+                {
+                    if (host.roomInfo is RoomInfo roomInfo)
                     {
-                        roomPanel.TurnTimeInputField.text = roomInfo.getOption().timeoutForTurn.ToString();
+                        if (int.TryParse(value, out int i) && 5 < i)
+                        {
+                            roomInfo.getOption().timeoutForInitReplace = i;
+                            host.updateRoomInfo(roomInfo);
+                        }
+                        else
+                        {
+                            roomPanel.InitReplaceTimeInputField.text = roomInfo.getOption().timeoutForInitReplace.ToString();
+                        }
                     }
-                }
-            });
-            roomPanel.QuitButton.onClick.RemoveAllListeners();
-            roomPanel.QuitButton.onClick.AddListener(() =>
+                });
+                roomPanel.TurnTimeInputField.setSelectable(true);
+                roomPanel.TurnTimeInputField.onEndEdit.set(value =>
+                {
+                    if (host.roomInfo is RoomInfo roomInfo)
+                    {
+                        if (int.TryParse(value, out int i) && 5 < i)
+                        {
+                            roomInfo.getOption().timeoutForTurn = i;
+                            host.updateRoomInfo(roomInfo);
+                        }
+                        else
+                        {
+                            roomPanel.TurnTimeInputField.text = roomInfo.getOption().timeoutForTurn.ToString();
+                        }
+                    }
+                });
+                roomPanel.IsSortedToggle.setSelectable(true);
+                roomPanel.IsSortedToggle.onValueChanged.set(value =>
+                {
+                    if (host.roomInfo is RoomInfo roomInfo)
+                    {
+                        roomInfo.getOption().sortedPlayers = value ? roomInfo.playerList.Select(p => p.id).ToArray() : null;
+                        host.updateRoomInfo(roomInfo);
+                    }
+                });
+                roomPanel.StartButton.setSelectable(room.isOne(host.roomInfo) && room.playerList.Count > 1);
+                roomPanel.StartButton.onClick.set(() =>
+                {
+                    _ = host.invokeAll<object>(host.roomInfo.playerList.Select(p => p.id).ToArray(), nameof(start));
+                });
+            }
+            else
+            {
+                roomPanel.RandomSeedInputField.setSelectable(false);
+                roomPanel.ShuffleToggle.setSelectable(false);
+                roomPanel.InitReplaceTimeInputField.setSelectable(false);
+                roomPanel.TurnTimeInputField.setSelectable(false);
+                roomPanel.IsSortedToggle.setSelectable(false);
+                roomPanel.StartButton.setSelectable(false);
+            }
+            roomPanel.QuitButton.onClick.set(() =>
             {
                 quitRoom();
             });
-            bool isReady = room.isOne(host.roomInfo) && room.playerList.Count > 1;
-            roomPanel.StartButton.interactable = isReady;
-            roomPanel.StartButton.image.color = isReady ? Color.white : Color.gray;
-            roomPanel.StartButton.onClick.set(() =>
-            {
-                _ = host.invokeAll<object>(host.roomInfo.playerList.Select(p => p.id).ToArray(), nameof(start));
-            });
         }
-
         private void displayRoomPanel()
         {
             ui.NetworkingPageGroup.display(ui.NetworkingPageGroup.RoomPanel);

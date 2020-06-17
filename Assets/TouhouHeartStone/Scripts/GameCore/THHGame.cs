@@ -229,6 +229,8 @@ namespace TouhouHeartstone
                 //决定玩家行动顺序
                 if (option.sortedPlayers == null || option.sortedPlayers.Length != players.Length)
                 {
+                    if (option.sortedPlayers.Length != players.Length)
+                        logger?.log("Warning", "游戏参数玩家行动顺序长度与实际数量不匹配");
                     List<THHPlayer> remainedList = new List<THHPlayer>(players);
                     THHPlayer[] sortedPlayers = new THHPlayer[remainedList.Count];
                     for (int i = 0; i < sortedPlayers.Length; i++)

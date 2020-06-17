@@ -60,5 +60,22 @@ namespace UI
             e.RemoveAllListeners();
             e.AddListener(action);
         }
+        public static bool isSelectable(this Selectable selectable)
+        {
+            return selectable.interactable;
+        }
+        public static void setSelectable(this Selectable selectable, bool value)
+        {
+            if (value)
+            {
+                selectable.interactable = true;
+                selectable.image.color = Color.white;
+            }
+            else
+            {
+                selectable.interactable = false;
+                selectable.image.color = Color.gray;
+            }
+        }
     }
 }
