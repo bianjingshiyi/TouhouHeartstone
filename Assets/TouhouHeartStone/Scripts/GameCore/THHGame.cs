@@ -485,6 +485,17 @@ namespace TouhouHeartstone
         public bool shuffle = true;
         public float timeoutForInitReplace = 30;
         public float timeoutForTurn = 75;
+        public GameOption()
+        {
+        }
+        public GameOption(GameOption copyTarget)
+        {
+            randomSeed = copyTarget.randomSeed;
+            sortedPlayers = copyTarget.sortedPlayers;
+            shuffle = copyTarget.shuffle;
+            timeoutForInitReplace = copyTarget.timeoutForInitReplace;
+            timeoutForTurn = copyTarget.timeoutForTurn;
+        }
     }
 
     [Serializable]

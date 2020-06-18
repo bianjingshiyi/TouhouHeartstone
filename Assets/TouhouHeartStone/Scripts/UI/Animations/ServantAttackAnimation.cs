@@ -4,7 +4,7 @@ using BJSYGameCore.UI;
 using UnityEngine;
 namespace UI
 {
-    class ProjectileAnimation : Animation
+    class ProjectileAnimation : UIAnimation
     {
         Projectile projectile { get; }
         public ProjectileAnimation(Projectile projectile, UIObject target)
@@ -19,7 +19,7 @@ namespace UI
             return true;
         }
     }
-    class ServantAttackAnimation : Animation<THHCard.AttackEventArg>
+    class ServantAttackAnimation : UIAnimation<THHCard.AttackEventArg>
     {
         public ServantAttackAnimation(THHCard.AttackEventArg eventArg) : base(eventArg)
         {
@@ -68,7 +68,7 @@ namespace UI
             }
             return true;
         }
-        public override bool blockAnim(Animation nextAnim)
+        public override bool blockAnim(UIAnimation nextAnim)
         {
             if (_timer2.isStarted && nextAnim is DamageAnimation)
                 return false;

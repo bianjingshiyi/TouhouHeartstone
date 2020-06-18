@@ -2,7 +2,7 @@
 using BJSYGameCore;
 namespace UI
 {
-    class HealAnimation : Animation<THHCard.HealEventArg>
+    class HealAnimation : UIAnimation<THHCard.HealEventArg>
     {
         public HealAnimation(THHCard.HealEventArg eventArg) : base(eventArg)
         {

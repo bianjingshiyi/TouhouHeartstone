@@ -332,7 +332,7 @@ namespace Game
             {
                 var item = roomPanel.RoomPlayerList.addItem();
                 item.NameText.text = player.name;
-                item.CharacterText.text = getManager<CardManager>().GetCardSkin(player.getProp<int[]>(RoomPlayerInfoName.DECK_INTARRAY)[0]).name;
+                item.CharacterText.text = getManager<CardManager>().getSkin(player.getProp<int[]>(RoomPlayerInfoName.DECK_INTARRAY)[0]).name;
                 item.Button.onClick.AddListener(() =>
                 {
                     //TODO:查看卡组
@@ -342,6 +342,7 @@ namespace Game
             roomPanel.ShuffleToggle.isOn = room.getOption().shuffle;
             roomPanel.InitReplaceTimeInputField.text = room.getOption().timeoutForInitReplace.ToString();
             roomPanel.TurnTimeInputField.text = room.getOption().timeoutForTurn.ToString();
+            Debug.Log("刷新房间设定" + roomPanel.IsSortedToggle.isOn);
             roomPanel.IsSortedToggle.isOn = room.getOption().sortedPlayers != null;
             if (host.roomInfo != null)
             {
@@ -401,14 +402,19 @@ namespace Game
                     }
                 });
                 roomPanel.IsSortedToggle.setSelectable(true);
-                roomPanel.IsSortedToggle.onValueChanged.set(value =>
+                roomPanel.IsSortedToggle.onValueChanged.set(onValueChanged);
+                void onValueChanged(bool value)
                 {
                     if (host.roomInfo is RoomInfo roomInfo)
                     {
-                        roomInfo.getOption().sortedPlayers = value ? roomInfo.playerList.Select(p => p.id).ToArray() : null;
+                        Debug.Log("更新房间设定" + value);
+                        roomInfo.setOption(new GameOption(roomInfo.getOption())
+                        {
+                            sortedPlayers = value ? roomInfo.playerList.Select(p => p.id).ToArray() : null
+                        });
                         host.updateRoomInfo(roomInfo);
                     }
-                });
+                }
                 roomPanel.StartButton.setSelectable(room.isOne(host.roomInfo) && room.playerList.Count > 1);
                 roomPanel.StartButton.onClick.set(() =>
                 {
@@ -429,6 +435,9 @@ namespace Game
                 quitRoom();
             });
         }
+
+
+
         private void displayRoomPanel()
         {
             ui.NetworkingPageGroup.display(ui.NetworkingPageGroup.RoomPanel);

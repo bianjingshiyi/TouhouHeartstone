@@ -1,7 +1,7 @@
 ﻿using TouhouHeartstone;
 namespace UI
 {
-    class CreateTokenAnimation : Animation<THHPlayer.CreateTokenEventArg>
+    class CreateTokenAnimation : UIAnimation<THHPlayer.CreateTokenEventArg>
     {
         public CreateTokenAnimation(THHPlayer.CreateTokenEventArg eventArg) : base(eventArg)
         {

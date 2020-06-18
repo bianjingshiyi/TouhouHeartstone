@@ -3,7 +3,7 @@ using UnityEngine;
 using BJSYGameCore;
 namespace UI
 {
-    class BurnAnimation : Animation<THHPlayer.BurnEventArg>
+    class BurnAnimation : UIAnimation<THHPlayer.BurnEventArg>
     {
         public BurnAnimation(THHPlayer.BurnEventArg eventArg) : base(eventArg)
         {

@@ -3,7 +3,7 @@ using TouhouHeartstone;
 
 namespace UI
 {
-    class DeathAnimation : Animation<THHCard.DeathEventArg>
+    class DeathAnimation : UIAnimation<THHCard.DeathEventArg>
     {
         public DeathAnimation(THHCard.DeathEventArg eventArg) : base(eventArg)
         {

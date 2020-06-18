@@ -3,7 +3,7 @@ using BJSYGameCore;
 using System.Linq;
 namespace UI
 {
-    class DamageAnimation : Animation<THHCard.DamageEventArg>
+    class DamageAnimation : UIAnimation<THHCard.DamageEventArg>
     {
         public DamageAnimation(THHCard.DamageEventArg eventArg) : base(eventArg)
         {
@@ -61,7 +61,7 @@ namespace UI
             }
             return true;
         }
-        public override bool blockAnim(Animation nextAnim)
+        public override bool blockAnim(UIAnimation nextAnim)
         {
             if (nextAnim is DamageAnimation damage && damage.eventArg.cards.Intersect(eventArg.cards).Count() == 0)
                 return false;

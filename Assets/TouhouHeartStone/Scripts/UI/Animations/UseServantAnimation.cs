@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 namespace UI
 {
-    class UseServantAnimation : Animation
+    class UseServantAnimation : UIAnimation
     {
         public THHPlayer.UseEventArg eventArg { get; }
         public UseServantAnimation(THHPlayer.UseEventArg eventArg)

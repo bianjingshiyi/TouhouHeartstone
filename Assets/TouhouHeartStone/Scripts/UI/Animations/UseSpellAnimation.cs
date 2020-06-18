@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 namespace UI
 {
-    class UseSpellAnimation : Animation
+    class UseSpellAnimation : UIAnimation
     {
         public THHPlayer.UseEventArg eventArg { get; }
         public UseSpellAnimation(THHPlayer.UseEventArg eventArg)

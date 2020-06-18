@@ -1,7 +1,7 @@
 ﻿using TouhouHeartstone;
 namespace UI
 {
-    class InitReplaceAnimation : Animation<THHPlayer.InitReplaceEventArg>
+    class InitReplaceAnimation : UIAnimation<THHPlayer.InitReplaceEventArg>
     {
         public InitReplaceAnimation(THHPlayer.InitReplaceEventArg eventArg) : base(eventArg)
         {

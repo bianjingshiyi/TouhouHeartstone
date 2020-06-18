@@ -3,7 +3,7 @@ using UnityEngine;
 using BJSYGameCore;
 namespace UI
 {
-    class DrawAnimation : Animation<THHPlayer.DrawEventArg>
+    class DrawAnimation : UIAnimation<THHPlayer.DrawEventArg>
     {
         public DrawAnimation(THHPlayer.DrawEventArg eventArg) : base(eventArg)
         {

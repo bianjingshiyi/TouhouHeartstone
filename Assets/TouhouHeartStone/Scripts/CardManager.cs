@@ -240,12 +240,16 @@ namespace Game
                 return defineDic.Values.Where(d => filter.Invoke(d)).ToArray();
             return defineDic.Values.ToArray();
         }
+        public CardSkinData getSkin(TouhouCardEngine.Card card)
+        {
+            return getSkin(card.define.id);
+        }
         /// <summary>
         /// 根据id获取卡片皮肤
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public CardSkinData GetCardSkin(int id)
+        public CardSkinData getSkin(int id)
         {
             if (tempSkinDic.ContainsKey(id))
                 return tempSkinDic[id];

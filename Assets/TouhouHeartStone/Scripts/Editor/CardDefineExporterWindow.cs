@@ -147,7 +147,7 @@ namespace TouhouHeartstone
                 sheet.Cells[rowIndex, keywordsIndex] = new Cell(null);
             if (_manager != null)
             {
-                var skin = _manager.GetCardSkin(card.id);
+                var skin = _manager.getSkin(card.id);
                 int imageIndex = findColIndex(sheet, "Image");
                 sheet.Cells[rowIndex, imageIndex] = new Cell(skin == null ? sheet.Cells[rowIndex, imageIndex].StringValue : (skin.image != null && !string.IsNullOrEmpty(skin.image.name) ? (skin.image.name + ".png") : sheet.Cells[rowIndex, imageIndex].StringValue));
                 int nameIndex = findColIndex(sheet, "Name");
@@ -229,7 +229,7 @@ namespace TouhouHeartstone
                 xml["Card"]["Keywords"].InnerText = null;
             if (_manager != null)
             {
-                var skin = _manager.GetCardSkin(card.id);
+                var skin = _manager.getSkin(card.id);
                 xml["Card"]["Skin"]["Image"].InnerText = skin == null ? null : skin.image != null ? skin.image.name + ".png" : null;
                 xml["Card"]["Skin"]["Name"].InnerText = skin == null ? card.GetType().Name : skin.name;
                 xml["Card"]["Skin"]["Desc"].InnerText = skin == null ? null : skin.desc;

@@ -1,7 +1,7 @@
 ﻿using TouhouHeartstone;
 namespace UI
 {
-    class StartAnimation : Animation<THHGame.StartEventArg>
+    class StartAnimation : UIAnimation<THHGame.StartEventArg>
     {
         public StartAnimation(THHGame.StartEventArg eventArg) : base(eventArg)
         {

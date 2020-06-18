@@ -3,7 +3,7 @@ using UnityEngine;
 using BJSYGameCore;
 namespace UI
 {
-    class TurnStartAnimation : Animation<THHGame.TurnStartEventArg>
+    class TurnStartAnimation : UIAnimation<THHGame.TurnStartEventArg>
     {
         public TurnStartAnimation(THHGame.TurnStartEventArg eventArg) : base(eventArg)
         {

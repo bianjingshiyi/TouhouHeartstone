@@ -37,14 +37,14 @@ namespace UI
             //目前只有一个卡组
             cards = parent.game.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly);
             int[] deck = parent.game.deck;
-            CardSkinData masterSkin = parent.game.cards.GetCardSkin(deck[0]);
+            CardSkinData masterSkin = parent.game.cards.getSkin(deck[0]);
             MasterButton.setSprite(masterSkin.image);
             MasterNameText.text = masterSkin.name;
             BuildDeckList.clearItems();
             foreach (var cards in deck.Skip(1).Select(id => cards.FirstOrDefault(c => c.id == id)).Where(c => c != null).GroupBy(c => c.id))
             {
                 var item = BuildDeckList.addItem();
-                var skin = parent.game.cards.GetCardSkin(cards.First().id);
+                var skin = parent.game.cards.getSkin(cards.First().id);
                 item.update(cards.First(), skin, cards.Count());
             }
             BuildCardList.clearItems();
@@ -54,7 +54,7 @@ namespace UI
                     )
                 )
             {
-                var skin = parent.game.cards.GetCardSkin(card.id);
+                var skin = parent.game.cards.getSkin(card.id);
                 var item = BuildCardList.addItem();
                 item.update(card, skin);
             }
@@ -173,8 +173,8 @@ namespace UI
                 DragCard.Card.display();
                 DragCard.BuildDeckListItem.hide();
             }
-            DragCard.BuildDeckListItem.update(card, parent.game.cards.GetCardSkin(card.id), 1);
-            DragCard.Card.update(card, parent.game.cards.GetCardSkin(card.id));
+            DragCard.BuildDeckListItem.update(card, parent.game.cards.getSkin(card.id), 1);
+            DragCard.Card.update(card, parent.game.cards.getSkin(card.id));
         }
         private void onReleaseItem()
         {
@@ -193,7 +193,7 @@ namespace UI
             else
             {
                 var newItem = BuildDeckList.addItem();
-                newItem.update(DragCard.BuildDeckListItem.card, parent.game.cards.GetCardSkin(DragCard.BuildDeckListItem.card.id), 1);
+                newItem.update(DragCard.BuildDeckListItem.card, parent.game.cards.getSkin(DragCard.BuildDeckListItem.card.id), 1);
             }
             BuildDeckList.sortItems((a, b) =>
             {

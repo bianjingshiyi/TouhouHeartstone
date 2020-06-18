@@ -6,7 +6,7 @@ using TouhouCardEngine.Interfaces;
 namespace UI
 {
     [Serializable]
-    public abstract class Animation
+    public abstract class UIAnimation
     {
         [SerializeField]
         string _name;
@@ -14,11 +14,11 @@ namespace UI
         {
             get { return _name; }
         }
-        public Animation()
+        public UIAnimation()
         {
             _name = GetType().Name;
         }
-        public Animation(string name)
+        public UIAnimation(string name)
         {
             _name = name;
         }
@@ -33,16 +33,16 @@ namespace UI
         /// </summary>
         /// <param name="nextAnim">下一个动画</param>
         /// <returns></returns>
-        public virtual bool blockAnim(Animation nextAnim)
+        public virtual bool blockAnim(UIAnimation nextAnim)
         {
             return true;
         }
     }
     [Serializable]
-    abstract class Animation<T> : Animation where T : IEventArg
+    public abstract class UIAnimation<T> : UIAnimation where T : IEventArg
     {
         public T eventArg { get; protected set; }
-        public Animation(T eventArg)
+        public UIAnimation(T eventArg)
         {
             this.eventArg = eventArg;
         }

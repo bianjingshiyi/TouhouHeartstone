@@ -1,7 +1,7 @@
 ﻿using TouhouHeartstone;
 namespace UI
 {
-    class SetGemAnimation : Animation<THHPlayer.SetGemEventArg>
+    class SetGemAnimation : UIAnimation<THHPlayer.SetGemEventArg>
     {
         public SetGemAnimation(THHPlayer.SetGemEventArg eventArg) : base(eventArg)
         {

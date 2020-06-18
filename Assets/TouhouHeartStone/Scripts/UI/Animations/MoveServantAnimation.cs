@@ -2,7 +2,7 @@
 using BJSYGameCore.UI;
 namespace UI
 {
-    class MoveServantAnimation : Animation<THHPlayer.MoveEventArg>
+    class MoveServantAnimation : UIAnimation<THHPlayer.MoveEventArg>
     {
         public MoveServantAnimation(THHPlayer.MoveEventArg eventArg) : base(eventArg)
         {

@@ -3,7 +3,7 @@ using UnityEngine;
 using BJSYGameCore;
 namespace UI
 {
-    class FatigueAnimation : Animation<THHPlayer.FatigueEventArg>
+    class FatigueAnimation : UIAnimation<THHPlayer.FatigueEventArg>
     {
         public FatigueAnimation(THHPlayer.FatigueEventArg eventArg) : base(eventArg)
         {

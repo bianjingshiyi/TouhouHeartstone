@@ -1,7 +1,7 @@
 ﻿using TouhouHeartstone;
 namespace UI
 {
-    class TurnEndAnimation : Animation<THHGame.TurnEndEventArg>
+    class TurnEndAnimation : UIAnimation<THHGame.TurnEndEventArg>
     {
         public TurnEndAnimation(THHGame.TurnEndEventArg eventArg) : base(eventArg)
         {

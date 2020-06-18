@@ -1,7 +1,7 @@
 ﻿using TouhouHeartstone;
 namespace UI
 {
-    class SetMaxGemAnimation : Animation<THHPlayer.SetMaxGemEventArg>
+    class SetMaxGemAnimation : UIAnimation<THHPlayer.SetMaxGemEventArg>
     {
         public SetMaxGemAnimation(THHPlayer.SetMaxGemEventArg eventArg) : base(eventArg)
         {

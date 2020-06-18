@@ -2,7 +2,7 @@
 using BJSYGameCore;
 namespace UI
 {
-    class SelectTargetAnimation : Animation
+    class SelectTargetAnimation : UIAnimation
     {
         public THHPlayer.ActiveEventArg eventArg { get; }
         public SelectTargetAnimation(THHPlayer.ActiveEventArg eventArg)

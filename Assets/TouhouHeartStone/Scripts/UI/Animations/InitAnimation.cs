@@ -1,16 +1,21 @@
 ﻿using TouhouHeartstone;
-namespace UI
+using BJSYGameCore;
+using UI;
+namespace Game
 {
-    class InitAnimation : Animation<THHGame.InitEventArg>
+    class InitAnimation : UIAnimation<THHGame.InitEventArg>
     {
         public InitAnimation(THHGame.InitEventArg eventArg) : base(eventArg)
         {
         }
         public override bool update(Table table)
         {
-            table.SelfMaster.update(table, table.player, table.player.master, table.getSkin(table.player.master));
-            THHPlayer opponent = table.game.getOpponent(table.player);
-            table.EnemyMaster.update(table, opponent, opponent.master, table.getSkin(opponent.master));
+            TableManager manager = table.findInstance<TableManager>();
+            table.SelfMaster.update(table, manager.player, manager.player.master, manager.getManager<CardManager>().getSkin(manager.player.master));
+            table.SelfSkill.update(table, manager.player, manager.player, manager.player.skill, manager.getManager<CardManager>().getSkin(manager.player.skill));
+            THHPlayer opponent = manager.game.getOpponent(manager.player);
+            table.EnemyMaster.update(table, opponent, opponent.master, manager.getManager<CardManager>().getSkin(opponent.master));
+            table.EnemySkill.update(table, manager.player, opponent, opponent.skill, manager.getManager<CardManager>().getSkin(opponent.skill));
             return true;
         }
     }

@@ -1,7 +1,7 @@
 ﻿using TouhouHeartstone;
 namespace UI
 {
-    class GameEndAnimation : Animation<THHGame.GameEndEventArg>
+    class GameEndAnimation : UIAnimation<THHGame.GameEndEventArg>
     {
         public GameEndAnimation(THHGame.GameEndEventArg eventArg) : base(eventArg)
         {
