@@ -8017,6 +8017,7 @@ MonoBehaviour:
     _desc: "\u5632\u8BBD"
   _externalCardPaths:
   - Cards/Cards.xls
+  - Cards/*.xls
 --- !u!4 &902763123
 Transform:
   m_ObjectHideFlags: 0

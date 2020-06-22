@@ -48,6 +48,21 @@ namespace Tests
         }
 
         /// <summary>
+        /// 加载文件夹测试
+        /// </summary>
+        /// <returns></returns>
+        [UnityTest]
+        public IEnumerator LoadFolderTest()
+        {
+            var go = new GameObject(nameof(CardManager));
+            go.AddComponent<ResourceManager>();
+            CardManager cm = go.AddComponent<CardManager>();
+            var task = cm.Load(new string[] { "Cards/*.xls" });
+            yield return new WaitUntil(() => task.IsCompleted);
+            Assert.IsNull(task.Exception);
+        }
+
+        /// <summary>
         /// 获取指定ID的卡片测试
         /// </summary>
         /// <returns></returns>
@@ -122,7 +137,7 @@ namespace Tests
 
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
 
-            var task = cm.loadCards(xlsFile, RuntimePlatform.WindowsPlayer);
+            var task = cm.loadCards(xlsFile, new PlatformCompability(RuntimePlatform.WindowsPlayer));
             yield return new WaitUntil(() => task.IsCompleted);
             var cards = task.Result;
 
@@ -166,7 +181,7 @@ namespace Tests
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\测试图片.jpg", pictureFile);
 
-            var task = cm.loadSkins(xlsFile, RuntimePlatform.WindowsPlayer);
+            var task = cm.loadSkins(xlsFile, new PlatformCompability(RuntimePlatform.WindowsPlayer));
             yield return new WaitUntil(() => task.IsCompleted);
             var skins = task.Result;
 
@@ -199,7 +214,7 @@ namespace Tests
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
             ExcelDataSetPacker.PackExcelToDataSet(xlsFile, dataSetFile);
 
-            var task = cm.loadCards(dataSetFileName, RuntimePlatform.Android);
+            var task = cm.loadCards(dataSetFileName, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
             var cards = task.Result;
 
@@ -237,7 +252,7 @@ namespace Tests
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\测试图片.jpg", pictureFile);
             ExcelDataSetPacker.PackExcelToDataSet(xlsFile, dataSetFile);
 
-            var task = cm.loadSkins(dataSetFileName, RuntimePlatform.Android);
+            var task = cm.loadSkins(dataSetFileName, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
             var skins = task.Result;
 
