@@ -121,17 +121,13 @@ namespace Game
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public async Task<CardDefine[]> loadCards(string path, RuntimePlatform? platform = null)
+        public async Task<CardDefine[]> loadCards(string path, PlatformCompability platform = null)
         {
-#if UNITY_ANDROID
-            if (platform == null)
-                platform = RuntimePlatform.Android;
-#endif
-            DataSet dataset;
-            if (platform == RuntimePlatform.Android)
-                dataset = await getManager<ResourceManager>().loadDataSet(path, platform);
-            else
-                dataset = await getManager<ResourceManager>().loadExcelAsDataSet(path, platform);
+            platform = platform ?? PlatformCompability.Current;
+
+            DataSet dataset = platform.SupportExcelReading ?
+                await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
+                await getManager<ResourceManager>().loadDataSet(path, platform);
 
             if (dataset.Tables.Count < 1) throw new Exception("空数据集");
             var table = dataset.Tables[0];
@@ -164,17 +160,13 @@ namespace Game
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public async Task<CardSkinData[]> loadSkins(string path, RuntimePlatform? platform = null)
+        public async Task<CardSkinData[]> loadSkins(string path, PlatformCompability platform = null)
         {
-#if UNITY_ANDROID
-            if (platform == null)
-                platform = RuntimePlatform.Android;
-#endif
-            DataSet dataset;
-            if (platform == RuntimePlatform.Android)
-                dataset = await getManager<ResourceManager>().loadDataSet(path, platform);
-            else
-                dataset = await getManager<ResourceManager>().loadExcelAsDataSet(path, platform);
+            platform = platform ?? PlatformCompability.Current;
+
+            DataSet dataset = platform.SupportExcelReading ?
+                await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
+                await getManager<ResourceManager>().loadDataSet(path, platform);
 
             if (dataset.Tables.Count < 1) throw new Exception("空数据集");
             var table = dataset.Tables[0];

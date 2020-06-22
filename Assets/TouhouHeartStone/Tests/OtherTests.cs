@@ -31,7 +31,7 @@ namespace Tests
         public IEnumerator webRequestExcelTest()
         {
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
-            var task = manager.loadExcel("TestExcel.xls", RuntimePlatform.Android);
+            var task = manager.loadExcel("TestExcel.xls", new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
 
             Workbook workbook = task.Result;
