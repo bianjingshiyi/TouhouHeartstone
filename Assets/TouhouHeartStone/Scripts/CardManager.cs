@@ -253,7 +253,9 @@ namespace Game
         {
             if (tempSkinDic.ContainsKey(id))
                 return tempSkinDic[id];
-            return skinDic.ContainsKey(id) ? skinDic[id] : null;
+            if (skinDic.ContainsKey(id))
+                return skinDic[id];
+            return null;
         }
         Dictionary<int, CardSkinData> tempSkinDic { get; } = new Dictionary<int, CardSkinData>();
         /// <summary>
@@ -274,5 +276,16 @@ namespace Game
             }
             tempSkinDic.Add(skin.id, skin);
         }
+    }
+
+    [Serializable]
+    public class SkinNotFoundException : Exception
+    {
+        public SkinNotFoundException() { }
+        public SkinNotFoundException(string message) : base(message) { }
+        public SkinNotFoundException(string message, Exception inner) : base(message, inner) { }
+        protected SkinNotFoundException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

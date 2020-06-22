@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using TouhouHeartstone;
 using BJSYGameCore.UI;
+using System;
 namespace UI
 {
     partial class HandListItem : IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -35,8 +36,9 @@ namespace UI
             }
             if (_isDragging)
             {
-                Table table = GetComponentInParent<Table>();
-                table.onDragHand(this, eventData);
+                //Table table = GetComponentInParent<Table>();
+                //table.onDragHand(this, eventData);
+                onDrag.invoke(this, eventData);
             }
             //{
             //    if (handlist.placingCard == null)
@@ -46,15 +48,18 @@ namespace UI
             //    }
             //}
         }
+        public ActionEvent<HandListItem, PointerEventData> onDrag = new ActionEvent<HandListItem, PointerEventData>();
         public void OnEndDrag(PointerEventData eventData)
         {
             //_isDragging = false;
             if (_isDragging)
             {
-                Table table = GetComponentInParent<Table>();
-                table.onReleaseHand(this, eventData);
+                //Table table = GetComponentInParent<Table>();
+                //table.onReleaseHand(this, eventData);
+                onEndDrag.invoke(this, eventData);
             }
             _isDragging = false;
         }
+        public ActionEvent<HandListItem, PointerEventData> onEndDrag = new ActionEvent<HandListItem, PointerEventData>();
     }
 }

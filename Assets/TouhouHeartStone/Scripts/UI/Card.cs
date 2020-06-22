@@ -1,10 +1,12 @@
 ﻿using TouhouHeartstone;
+using System;
 using TouhouCardEngine;
 using UnityEngine;
 namespace UI
 {
     partial class Card
     {
+        [Obsolete]
         public TouhouCardEngine.Card card { get; private set; }
         public void update(TouhouCardEngine.Card card, CardSkinData skin)
         {

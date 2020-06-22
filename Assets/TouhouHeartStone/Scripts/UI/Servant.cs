@@ -15,6 +15,7 @@ namespace UI
         {
             get { return _attackAnimationCurve; }
         }
+        [Obsolete]
         public void update(THHPlayer player, TouhouCardEngine.Card card, CardSkinData skin)
         {
             this.card = card;
@@ -47,6 +48,10 @@ namespace UI
         }
         [SerializeField]
         float _attackThreshold = 70;
+        public float attackThreshold
+        {
+            get { return _attackThreshold; }
+        }
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
         }
@@ -82,6 +87,7 @@ namespace UI
                 cancelAttack(table);
             }
         }
+        public ActionEvent<Servant, PointerEventData> onDrag { get; } = new ActionEvent<Servant, PointerEventData>();
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
             Table table = GetComponentInParent<Table>();
@@ -116,6 +122,7 @@ namespace UI
             //取消选中和攻击
             cancelAttack(table);
         }
+        public ActionEvent<Servant, PointerEventData> onDragEnd { get; } = new ActionEvent<Servant, PointerEventData>();
         private void cancelAttack(Table table)
         {
             rectTransform.localScale = Vector3.one;
@@ -150,8 +157,8 @@ namespace UI
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            Table table = GetComponentInParent<Table>();
-            table.onClickServant(this, eventData);
+            onClick.invoke(this, eventData);
         }
+        public ActionEvent<Servant, PointerEventData> onClick { get; } = new ActionEvent<Servant, PointerEventData>();
     }
 }

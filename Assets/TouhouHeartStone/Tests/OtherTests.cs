@@ -5,6 +5,7 @@ using ExcelLibrary.SpreadSheet;
 using Game;
 using UnityEngine.TestTools;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 namespace Tests
 {
@@ -59,12 +60,48 @@ namespace Tests
             //};
             Assert.False(obj.invoke());
         }
+        [Test]
+        public void multiDelegateRegisterTest()
+        {
+            DelegateObject obj = new DelegateObject();
+            int i = 0;
+            obj.func += onFunc;
+            obj.func += onFunc;
+            bool onFunc()
+            {
+                i++;
+                Debug.Log(i);
+                return true;
+            }
+            obj.invoke();
+            Assert.AreEqual(1, i);
+        }
         class DelegateObject
         {
-            public event Func<bool> func;
+            List<Func<bool>> _list = new List<Func<bool>>();
+            public event Func<bool> func
+            {
+                add
+                {
+                    if (value != null && !_list.Contains(value))
+                        _list.Add(value);
+                    else
+                        Debug.Log("防止重复注册" + value.Method.Name);
+                }
+                remove
+                {
+                    _list.Remove(value);
+                }
+            }
             public bool invoke()
             {
-                return func != null ? func.Invoke() : default;
+                bool result = false;
+                foreach (var func in _list)
+                {
+                    if (func != null)
+                        result = func.Invoke();
+                }
+                return result;
             }
         }
     }

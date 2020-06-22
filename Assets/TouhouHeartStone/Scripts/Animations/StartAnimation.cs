@@ -1,29 +1,27 @@
 ﻿using TouhouHeartstone;
-namespace UI
+using UI;
+namespace Game
 {
-    class StartAnimation : UIAnimation<THHGame.StartEventArg>
+    class StartAnimation : EventAnimation<THHGame.StartEventArg>
     {
-        public StartAnimation(THHGame.StartEventArg eventArg) : base(eventArg)
-        {
-        }
-        public override bool update(Table table)
+        public override bool update(TableManager table, THHGame.StartEventArg eventArg)
         {
             foreach (THHPlayer player in table.game.players)
             {
                 if (player == table.player)
                 {
+                    table.ui.SelfHandList.clearItems();
                     foreach (TouhouCardEngine.Card card in player.hand)
                     {
-                        var item = table.SelfHandList.addItem();
-                        item.Card.update(card, table.getSkin(card));
+                        table.createHand(card);
                     }
                 }
                 else
                 {
+                    table.ui.EnemyHandList.clearItems();
                     foreach (TouhouCardEngine.Card card in player.hand)
                     {
-                        var item = table.EnemyHandList.addItem();
-                        item.Card.update(card, null);
+                        table.createHand(card);
                     }
                 }
             }

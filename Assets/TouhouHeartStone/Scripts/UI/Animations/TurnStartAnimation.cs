@@ -1,43 +1,38 @@
 ﻿using TouhouHeartstone;
 using UnityEngine;
 using BJSYGameCore;
-namespace UI
+using UI;
+namespace Game
 {
-    class TurnStartAnimation : UIAnimation<THHGame.TurnStartEventArg>
+    class TurnStartAnimation : EventAnimation<THHGame.TurnStartEventArg>
     {
-        public TurnStartAnimation(THHGame.TurnStartEventArg eventArg) : base(eventArg)
-        {
-        }
         Timer _timer = new Timer() { duration = 2 };
-        public override bool update(Table table)
+        public override bool update(TableManager table, THHGame.TurnStartEventArg eventArg)
         {
             if (!_timer.isStarted)
             {
-                table.TurnTipImage.display();
+                table.ui.TurnTipImage.display();
                 if (eventArg.player == table.player)
                 {
-                    table.TurnTipText.text = "你的回合";
+                    table.ui.TurnTipText.text = "你的回合";
                     table.canControl = true;
                 }
                 else
                 {
-                    table.TurnTipText.text = "对手的回合";
+                    table.ui.TurnTipText.text = "对手的回合";
                     table.canControl = false;
                 }
-                table.TurnTipImage.GetComponent<Animator>().Play("Display");
-                foreach (var servant in table.SelfFieldList)
+                table.ui.TurnTipImage.GetComponent<Animator>().Play("Display");
+                foreach (var card in eventArg.player.field)
                 {
-                    servant.update(table.player, servant.card, table.getSkin(servant.card));
-                }
-                foreach (var servant in table.EnemyFieldList)
-                {
-                    servant.update(table.game.getOpponent(table.player), servant.card, table.getSkin(servant.card));
+                    var servant = table.getServant(card);
+                    table.setServant(servant, card);
                 }
                 _timer.start();
             }
             if (!_timer.isExpired())
                 return false;
-            table.TurnTipImage.hide();
+            table.ui.TurnTipImage.hide();
             return true;
         }
     }

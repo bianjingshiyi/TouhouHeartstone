@@ -2,7 +2,8 @@
 using BJSYGameCore;
 using BJSYGameCore.UI;
 using UnityEngine;
-namespace UI
+using UI;
+namespace Game
 {
     class ProjectileAnimation : UIAnimation
     {
@@ -19,18 +20,19 @@ namespace UI
             return true;
         }
     }
-    class ServantAttackAnimation : UIAnimation<THHCard.AttackEventArg>
+    class AttackAnimation : EventAnimation<THHCard.AttackEventArg>
     {
-        public ServantAttackAnimation(THHCard.AttackEventArg eventArg) : base(eventArg)
-        {
-        }
         Timer _timer1 = new Timer() { duration = .5f };
         Timer _timer2 = new Timer() { duration = .5f };
-        public override bool update(Table table)
+        public override bool update(TableManager table, THHCard.AttackEventArg eventArg)
         {
-            if (table.getServant(eventArg.card) is Servant attackServant)
+            if (table.tryGetMaster(eventArg.card, out var attackMaster))
             {
-                if (table.getMaster(eventArg.target) is Master targetMaster)
+                //TODO:Master攻击
+            }
+            else if (table.getServant(eventArg.card) is Servant attackServant)
+            {
+                if (table.tryGetMaster(eventArg.target, out var targetMaster))
                 {
                     if (!_timer1.isStarted)
                         _timer1.start();
@@ -64,7 +66,7 @@ namespace UI
                     if (!_timer2.isExpired())
                         return false;
                 }
-                attackServant.update(attackServant.card.owner as THHPlayer, attackServant.card, table.getSkin(attackServant.card));
+                table.setServant(attackServant, eventArg.card);
             }
             return true;
         }

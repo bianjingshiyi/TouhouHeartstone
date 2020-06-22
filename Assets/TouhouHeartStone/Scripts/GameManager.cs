@@ -135,7 +135,7 @@ namespace Game
             //本地玩家用UI
             _ui.display(_ui.Game);
             getManager<TableManager>().setGame(game, localPlayer);
-            //_ui.Game.Table.setGame(game, localPlayer);
+            _ui.Game.Table.setGame(game, localPlayer);
         }
         public void quitGame()
         {
