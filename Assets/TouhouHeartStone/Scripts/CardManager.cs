@@ -128,7 +128,7 @@ namespace Game
                 platform = RuntimePlatform.Android;
 #endif
             DataSet dataset;
-            if (true/*platform == RuntimePlatform.Android*/)
+            if (platform == RuntimePlatform.Android)
                 dataset = await getManager<ResourceManager>().loadDataSet(path, platform);
             else
                 dataset = await getManager<ResourceManager>().loadExcelAsDataSet(path, platform);
@@ -171,7 +171,7 @@ namespace Game
                 platform = RuntimePlatform.Android;
 #endif
             DataSet dataset;
-            if (true/*platform == RuntimePlatform.Android*/)
+            if (platform == RuntimePlatform.Android)
                 dataset = await getManager<ResourceManager>().loadDataSet(path, platform);
             else
                 dataset = await getManager<ResourceManager>().loadExcelAsDataSet(path, platform);
@@ -203,7 +203,7 @@ namespace Game
                 catch (Exception e)
                 {
                     skin.image = await getDefaultSprite();
-                    Debug.LogWarning("加载贴图" + imagePath + "失败：" + e);
+                    Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
                 }
 
                 skins.Add(skin);

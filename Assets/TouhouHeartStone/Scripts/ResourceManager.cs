@@ -82,16 +82,31 @@ namespace Game
             if (task.IsCompleted)
                 return result;
 
-            string ext = "";
-
-            if (Path.GetExtension(path).ToLower() == "png")
-                ext = "jpg";
-            if (Path.GetExtension(path).ToLower() == "jpg")
-                ext = "png";
-
-            path = Path.ChangeExtension(path, ext);
+            path = textureChangeExt(path);
             return await loadTextureByWebRequest(path);
         }
+
+        private static string textureChangeExt(string path)
+        {
+            string origExt = Path.GetExtension(path).ToLower();
+            string ext = origExt;
+            switch (origExt)
+            {
+                case "png":
+                    ext = "jpg";
+                    break;
+                case "jpg":
+                    ext = "png";
+                    break;
+                default:
+                    Debug.Log($"{ext} has not fallback.");
+                    break;
+            }
+
+            path = Path.ChangeExtension(path, ext);
+            return path;
+        }
+
         public Task<Texture2D> loadTextureByWebRequest(string path)
         {
             TaskCompletionSource<Texture2D> tcs = new TaskCompletionSource<Texture2D>();
@@ -129,13 +144,7 @@ namespace Game
             }
             catch (FileNotFoundException)
             {
-                string ext = "";
-                if (Path.GetExtension(path).ToLower() == "png")
-                    ext = "jpg";
-                if (Path.GetExtension(path).ToLower() == "jpg")
-                    ext = "png";
-
-                path = Path.ChangeExtension(path, ext);
+                path = textureChangeExt(path);
                 return await loadTextureBySystemIO(path);
             }
         }
