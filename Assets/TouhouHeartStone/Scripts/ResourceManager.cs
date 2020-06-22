@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System;
 using System.Data;
+using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using ExcelDataReader;
 
@@ -96,6 +97,28 @@ namespace Game
 
             path = Path.ChangeExtension(path, ext);
             return path;
+        }
+
+        /// <summary>
+        /// 查找指定路径的文件列表
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string[] GetDirectoryFiles(string path)
+        {
+            var dir = Path.GetDirectoryName(path);
+            var name = Path.GetFileName(path);
+
+            var files = Directory.GetFiles(Path.Combine(Application.streamingAssetsPath, dir), name);
+            Uri streaming = new Uri(Application.streamingAssetsPath + "/");
+
+            List<string> encodedFiles = new List<string>();
+            foreach (var file in files)
+            {
+                Uri abs = new Uri(file);
+                encodedFiles.Add(streaming.MakeRelativeUri(abs).ToString());
+            }
+            return encodedFiles.ToArray();
         }
 
         public Task<Texture2D> loadTextureByWebRequest(string path)

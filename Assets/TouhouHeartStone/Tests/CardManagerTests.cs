@@ -48,6 +48,21 @@ namespace Tests
         }
 
         /// <summary>
+        /// 加载文件夹测试
+        /// </summary>
+        /// <returns></returns>
+        [UnityTest]
+        public IEnumerator LoadFolderTest()
+        {
+            var go = new GameObject(nameof(CardManager));
+            go.AddComponent<ResourceManager>();
+            CardManager cm = go.AddComponent<CardManager>();
+            var task = cm.Load(new string[] { "Cards/*.xls" });
+            yield return new WaitUntil(() => task.IsCompleted);
+            Assert.IsNull(task.Exception);
+        }
+
+        /// <summary>
         /// 获取指定ID的卡片测试
         /// </summary>
         /// <returns></returns>

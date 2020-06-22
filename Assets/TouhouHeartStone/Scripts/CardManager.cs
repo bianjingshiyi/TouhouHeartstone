@@ -55,8 +55,31 @@ namespace Game
             //加载内置卡片
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies));
+
+            List<string> pathList = new List<string>();
+            foreach (var excelPath in excelPaths)
+            {
+                // 判断文件夹
+                if (excelPath.Contains("*") || excelPath.Contains("?"))
+                {
+                    if (!PlatformCompability.Current.RequireWebRequest)
+                    {
+                        var pathes = ResourceManager.GetDirectoryFiles(excelPath);
+                        // 去重
+                        foreach (var item in pathes)
+                        {
+                            if (!pathList.Contains(item)) pathList.Add(item);
+                        }
+                    }
+                }
+                else
+                {
+                    if (!pathList.Contains(excelPath)) pathList.Add(excelPath);
+                }
+            }
+
             //加载外置卡片
-            foreach (string path in excelPaths)
+            foreach (string path in pathList)
             {
                 try
                 {
@@ -95,7 +118,7 @@ namespace Game
                     skin.image = await getDefaultSprite();
                 skinDic.Add(skin.id, skin);
             }
-            foreach (string path in excelPaths)
+            foreach (string path in pathList)
             {
                 try
                 {
@@ -194,8 +217,8 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    skin.image = await getDefaultSprite();
                     Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
+                    skin.image = await getDefaultSprite();
                 }
 
                 skins.Add(skin);
