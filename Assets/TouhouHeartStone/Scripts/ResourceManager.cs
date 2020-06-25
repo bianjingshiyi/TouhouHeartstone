@@ -15,6 +15,7 @@ namespace Game
 {
     public class ResourceManager : Manager
     {
+        [Obsolete("Use loadExcelAsDataSet instead.")]
         public Task<Workbook> loadExcel(string path, PlatformCompability platform = null)
         {
             if (string.IsNullOrEmpty(path))

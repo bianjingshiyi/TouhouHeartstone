@@ -8,6 +8,10 @@ namespace TouhouHeartstone
         /// 是否是衍生物？
         /// </summary>
         public virtual bool isToken { get; set; } = false;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual bool isActive { get; set; } = false;
         public abstract int cost { get; set; }
         public abstract int attack { get; set; }
         public abstract int life { get; set; }
