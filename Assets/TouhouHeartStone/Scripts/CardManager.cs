@@ -33,6 +33,10 @@ namespace Game
             }
             return _defaultImage;
         }
+        public void setDefaultImagePath(string path)
+        {
+            _defaultImagePath = path;
+        }
         protected override void onAwake()
         {
             base.onAwake();
