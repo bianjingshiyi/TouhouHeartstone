@@ -6,8 +6,7 @@
         _RangeX ("RangeX", Range(0, 0.5)) = 0.4
         _RangeY ("RangeY", Range(0, 0.5)) = 0.4
         _Magnitude ("Alpha Magnitude", Float) = 1
-        _Color ("Color", Color) = (1,1,1,1)
-        _Intensity ("Color Intensity", Float) = 1
+        _Color ("Color", Color) = (0,0,0,0)
 
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
@@ -68,22 +67,23 @@
             float4 _MainTex_ST;
 
             CBUFFER_START(UnityPerMaterial)
-                half _FillterRange;
                 half _RangeX;
                 half _RangeY;
                 half _Magnitude;
-                half _Intensity;
                 half4 _Color;
             CBUFFER_END
 
-            half FillterColorRange(half2 uv)
-            {
-                half uvX = abs(uv.x);
-                half uvY = abs(uv.y);
 
-                half max_X = step(_RangeX, uvX);
-                half max_Y = step(_RangeY, uvY);
-                return (1 - max_X) * (1 - max_Y);
+            half FillterColorAlpha(half2 dir)
+            {
+                half uvX = abs(dir.x);
+                half uvY = abs(dir.y);
+                half maxX = 0.5 - _RangeX;
+                half maxY = 0.5 - _RangeY;
+                half2 a = half2(clamp(0.5 - uvX, 0, maxX), clamp(0.5 - uvY, 0, maxY));
+                a = abs(a - half2(maxX, maxY));
+                half dis = length(a);
+                return clamp(1 - dis, 0, max(maxX, maxY)) * dis * _Magnitude;
             }
 
             v2f vert (appdata v)
@@ -100,13 +100,10 @@
                 half4 col = tex2D(_MainTex, uv);
                 half2 center = half2(0.5, 0.5);
                 half2 dir = uv - center;
-                half len = length(dir) * 0.1;
-
-                half fRange = FillterColorRange(dir);
-                half alpha = lerp(1, fRange, saturate(len * _Magnitude));
-                half3 color = lerp(col.rgb, _Color.rgb, (1 - fRange) * saturate(len * _Intensity));
                 
-                return half4(color, alpha);
+                return half4(_Color.xyz, FillterColorAlpha(dir));
+
+                
             }
             ENDCG
         }
