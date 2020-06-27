@@ -33,6 +33,10 @@ namespace Game
             }
             return _defaultImage;
         }
+        public void setDefaultImagePath(string path)
+        {
+            _defaultImagePath = path;
+        }
         protected override void onAwake()
         {
             base.onAwake();
@@ -172,6 +176,7 @@ namespace Game
                 card.setProp(nameof(ServantCardDefine.tags), datarow.ReadCol("Tags", "").Split(','));
                 card.setProp(nameof(ServantCardDefine.keywords), datarow.ReadCol("Keywords", "").Split(','));
                 card.setProp(nameof(ServantCardDefine.isToken), datarow.ReadCol("IsToken", false));
+                card.setProp(nameof(ServantCardDefine.isActive), datarow.ReadCol("IsActive", false));
 
                 cards.Add(card);
             }

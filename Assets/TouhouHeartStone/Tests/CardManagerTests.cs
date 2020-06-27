@@ -25,12 +25,23 @@ namespace Tests
         /// 如果这张卡不见了，请改一下这个测试
         /// </summary>
         const int ExistsCardID = 1000;
+        /// <summary>
+        /// 一定不会有的卡ID
+        /// </summary>
+        const int NonExistsCardID = -1;
 
-        async Task<CardManager> loadCards()
+        private static CardManager createCardManager()
         {
             var go = new GameObject(nameof(CardManager));
             go.AddComponent<ResourceManager>();
             CardManager cm = go.AddComponent<CardManager>();
+            cm.setDefaultImagePath("Textures/砰砰博士.png");
+            return cm;
+        }
+
+        async Task<CardManager> loadCards()
+        {
+            var cm = createCardManager();
             await cm.Load(new string[] { "Cards/Cards.xls" });
             return cm;
         }
@@ -54,10 +65,10 @@ namespace Tests
         [UnityTest]
         public IEnumerator LoadFolderTest()
         {
-            var go = new GameObject(nameof(CardManager));
-            go.AddComponent<ResourceManager>();
-            CardManager cm = go.AddComponent<CardManager>();
+            CardManager cm = createCardManager();
+
             var task = cm.Load(new string[] { "Cards/*.xls" });
+
             yield return new WaitUntil(() => task.IsCompleted);
             Assert.IsNull(task.Exception);
         }
@@ -116,10 +127,10 @@ namespace Tests
             yield return new WaitUntil(() => task.IsCompleted);
             var cm = task.Result;
 
-            cm.AddCardSkinTemp(new UI.CardSkinData { id = ExistsCardID });
-            var skin = cm.getSkin(ExistsCardID);
+            cm.AddCardSkinTemp(new UI.CardSkinData { id = NonExistsCardID });
+            var skin = cm.getSkin(NonExistsCardID);
             Assert.NotNull(skin);
-            Assert.AreEqual(skin.id, ExistsCardID);
+            Assert.AreEqual(skin.id, NonExistsCardID);
         }
 
         /// <summary>
