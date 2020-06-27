@@ -25,12 +25,23 @@ namespace Tests
         /// 如果这张卡不见了，请改一下这个测试
         /// </summary>
         const int ExistsCardID = 1000;
+        /// <summary>
+        /// 一定不会有的卡ID
+        /// </summary>
+        const int NonExistsCardID = -1;
 
-        async Task<CardManager> loadCards()
+        private static CardManager createCardManager()
         {
             var go = new GameObject(nameof(CardManager));
             go.AddComponent<ResourceManager>();
             CardManager cm = go.AddComponent<CardManager>();
+            cm.setDefaultImagePath("Textures/砰砰博士.png");
+            return cm;
+        }
+
+        async Task<CardManager> loadCards()
+        {
+            var cm = createCardManager();
             await cm.Load(new string[] { "Cards/Cards.xls" });
             return cm;
         }
@@ -43,6 +54,21 @@ namespace Tests
         public IEnumerator LoadTest()
         {
             var task = loadCards();
+            yield return new WaitUntil(() => task.IsCompleted);
+            Assert.IsNull(task.Exception);
+        }
+
+        /// <summary>
+        /// 加载文件夹测试
+        /// </summary>
+        /// <returns></returns>
+        [UnityTest]
+        public IEnumerator LoadFolderTest()
+        {
+            CardManager cm = createCardManager();
+
+            var task = cm.Load(new string[] { "Cards/*.xls" });
+
             yield return new WaitUntil(() => task.IsCompleted);
             Assert.IsNull(task.Exception);
         }
@@ -101,10 +127,10 @@ namespace Tests
             yield return new WaitUntil(() => task.IsCompleted);
             var cm = task.Result;
 
-            cm.AddCardSkinTemp(new UI.CardSkinData { id = ExistsCardID });
-            var skin = cm.getSkin(ExistsCardID);
+            cm.AddCardSkinTemp(new UI.CardSkinData { id = NonExistsCardID });
+            var skin = cm.getSkin(NonExistsCardID);
             Assert.NotNull(skin);
-            Assert.AreEqual(skin.id, ExistsCardID);
+            Assert.AreEqual(skin.id, NonExistsCardID);
         }
 
         /// <summary>
@@ -122,7 +148,7 @@ namespace Tests
 
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
 
-            var task = cm.loadCards(xlsFile, RuntimePlatform.WindowsPlayer);
+            var task = cm.loadCards(xlsFile, new PlatformCompability(RuntimePlatform.WindowsPlayer));
             yield return new WaitUntil(() => task.IsCompleted);
             var cards = task.Result;
 
@@ -166,7 +192,7 @@ namespace Tests
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\测试图片.jpg", pictureFile);
 
-            var task = cm.loadSkins(xlsFile, RuntimePlatform.WindowsPlayer);
+            var task = cm.loadSkins(xlsFile, new PlatformCompability(RuntimePlatform.WindowsPlayer));
             yield return new WaitUntil(() => task.IsCompleted);
             var skins = task.Result;
 
@@ -199,7 +225,7 @@ namespace Tests
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
             ExcelDataSetPacker.PackExcelToDataSet(xlsFile, dataSetFile);
 
-            var task = cm.loadCards(dataSetFileName, RuntimePlatform.Android);
+            var task = cm.loadCards(dataSetFileName, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
             var cards = task.Result;
 
@@ -237,7 +263,7 @@ namespace Tests
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\测试图片.jpg", pictureFile);
             ExcelDataSetPacker.PackExcelToDataSet(xlsFile, dataSetFile);
 
-            var task = cm.loadSkins(dataSetFileName, RuntimePlatform.Android);
+            var task = cm.loadSkins(dataSetFileName, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
             var skins = task.Result;
 

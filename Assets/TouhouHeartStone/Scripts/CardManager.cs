@@ -33,6 +33,10 @@ namespace Game
             }
             return _defaultImage;
         }
+        public void setDefaultImagePath(string path)
+        {
+            _defaultImagePath = path;
+        }
         protected override void onAwake()
         {
             base.onAwake();
@@ -55,8 +59,31 @@ namespace Game
             //加载内置卡片
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies));
+
+            List<string> pathList = new List<string>();
+            foreach (var excelPath in excelPaths)
+            {
+                // 判断文件夹
+                if (excelPath.Contains("*") || excelPath.Contains("?"))
+                {
+                    if (!PlatformCompability.Current.RequireWebRequest)
+                    {
+                        var pathes = ResourceManager.GetDirectoryFiles(excelPath);
+                        // 去重
+                        foreach (var item in pathes)
+                        {
+                            if (!pathList.Contains(item)) pathList.Add(item);
+                        }
+                    }
+                }
+                else
+                {
+                    if (!pathList.Contains(excelPath)) pathList.Add(excelPath);
+                }
+            }
+
             //加载外置卡片
-            foreach (string path in excelPaths)
+            foreach (string path in pathList)
             {
                 try
                 {
@@ -95,7 +122,7 @@ namespace Game
                     skin.image = await getDefaultSprite();
                 skinDic.Add(skin.id, skin);
             }
-            foreach (string path in excelPaths)
+            foreach (string path in pathList)
             {
                 try
                 {
@@ -121,17 +148,13 @@ namespace Game
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public async Task<CardDefine[]> loadCards(string path, RuntimePlatform? platform = null)
+        public async Task<CardDefine[]> loadCards(string path, PlatformCompability platform = null)
         {
-#if UNITY_ANDROID
-            if (platform == null)
-                platform = RuntimePlatform.Android;
-#endif
-            DataSet dataset;
-            if (platform == RuntimePlatform.Android)
-                dataset = await getManager<ResourceManager>().loadDataSet(path, platform);
-            else
-                dataset = await getManager<ResourceManager>().loadExcelAsDataSet(path, platform);
+            platform = platform ?? PlatformCompability.Current;
+
+            DataSet dataset = platform.SupportExcelReading ?
+                await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
+                await getManager<ResourceManager>().loadDataSet(path, platform);
 
             if (dataset.Tables.Count < 1) throw new Exception("空数据集");
             var table = dataset.Tables[0];
@@ -153,6 +176,7 @@ namespace Game
                 card.setProp(nameof(ServantCardDefine.tags), datarow.ReadCol("Tags", "").Split(','));
                 card.setProp(nameof(ServantCardDefine.keywords), datarow.ReadCol("Keywords", "").Split(','));
                 card.setProp(nameof(ServantCardDefine.isToken), datarow.ReadCol("IsToken", false));
+                card.setProp(nameof(ServantCardDefine.isActive), datarow.ReadCol("IsActive", false));
 
                 cards.Add(card);
             }
@@ -164,17 +188,13 @@ namespace Game
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public async Task<CardSkinData[]> loadSkins(string path, RuntimePlatform? platform = null)
+        public async Task<CardSkinData[]> loadSkins(string path, PlatformCompability platform = null)
         {
-#if UNITY_ANDROID
-            if (platform == null)
-                platform = RuntimePlatform.Android;
-#endif
-            DataSet dataset;
-            if (platform == RuntimePlatform.Android)
-                dataset = await getManager<ResourceManager>().loadDataSet(path, platform);
-            else
-                dataset = await getManager<ResourceManager>().loadExcelAsDataSet(path, platform);
+            platform = platform ?? PlatformCompability.Current;
+
+            DataSet dataset = platform.SupportExcelReading ?
+                await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
+                await getManager<ResourceManager>().loadDataSet(path, platform);
 
             if (dataset.Tables.Count < 1) throw new Exception("空数据集");
             var table = dataset.Tables[0];
@@ -202,8 +222,8 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    skin.image = await getDefaultSprite();
                     Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
+                    skin.image = await getDefaultSprite();
                 }
 
                 skins.Add(skin);

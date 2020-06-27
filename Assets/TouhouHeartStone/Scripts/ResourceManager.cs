@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System;
 using System.Data;
+using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using ExcelDataReader;
 
@@ -14,33 +15,29 @@ namespace Game
 {
     public class ResourceManager : Manager
     {
-        public Task<Workbook> loadExcel(string path, RuntimePlatform? platform = null)
+        [Obsolete("Use loadExcelAsDataSet instead.")]
+        public Task<Workbook> loadExcel(string path, PlatformCompability platform = null)
         {
             if (string.IsNullOrEmpty(path))
                 return null;
-            platform = getPlatform(platform);
-            switch (platform)
-            {
-                case RuntimePlatform.Android:
-                    return loadExcelByWebRequest(path);
-                default:
-                    return loadExcelBySystemIO(path);
-            }
+
+            platform = platform ?? PlatformCompability.Current;
+            if (platform.RequireWebRequest)
+                return loadExcelByWebRequest(path);
+
+            return loadExcelBySystemIO(path);
         }
-        public Task<Texture2D> loadTexture(string path, RuntimePlatform? platform = null)
+        public Task<Texture2D> loadTexture(string path, PlatformCompability platform = null)
         {
             if (string.IsNullOrEmpty(path))
                 return null;
-            platform = getPlatform(platform);
-            switch (platform)
-            {
-                case RuntimePlatform.Android:
-                    return loadTextureByWebRequestWithFallback(path);
-                default:
-                    return loadTextureBySystemIOWithFallback(path);
-            }
+            platform = platform ?? PlatformCompability.Current;
+            if (platform.RequireWebRequest)
+                return loadTextureByWebRequestWithFallback(path);
+
+            return loadTextureBySystemIOWithFallback(path);
         }
-        public Task<DataSet> loadDataSet(string path, RuntimePlatform? platform = null)
+        public Task<DataSet> loadDataSet(string path, PlatformCompability platform = null)
         {
             if (string.IsNullOrEmpty(path))
                 return null;
@@ -50,29 +47,25 @@ namespace Game
                 path += ".dataset";
             }
 
-            platform = getPlatform(platform);
-            switch (platform)
-            {
-                case RuntimePlatform.Android:
-                    return loadDataSetByWebRequest(path);
-                default:
-                    return loadDataSetBySystemIO(path);
-            }
+            platform = platform ?? PlatformCompability.Current;
+
+            if (platform.RequireWebRequest)
+                return loadDataSetByWebRequest(path);
+
+            return loadDataSetBySystemIO(path);
+
         }
 
-        public Task<DataSet> loadExcelAsDataSet(string path, RuntimePlatform? platform = null)
+        public Task<DataSet> loadExcelAsDataSet(string path, PlatformCompability platform = null)
         {
             if (string.IsNullOrEmpty(path))
                 return null;
 
-            platform = getPlatform(platform);
-            switch (platform)
-            {
-                case RuntimePlatform.Android:
-                    return loadExcelAsDataSetByWebRequest(path);
-                default:
-                    return loadExcelAsDataSetBySystemIO(path);
-            }
+            platform = platform ?? PlatformCompability.Current;
+            if (platform.RequireWebRequest)
+                return loadExcelAsDataSetByWebRequest(path);
+
+            return loadExcelAsDataSetBySystemIO(path);
         }
 
         public async Task<Texture2D> loadTextureByWebRequestWithFallback(string path)
@@ -92,19 +85,41 @@ namespace Game
             string ext = origExt;
             switch (origExt)
             {
-                case "png":
-                    ext = "jpg";
+                case ".png":
+                    ext = ".jpg";
                     break;
-                case "jpg":
-                    ext = "png";
+                case ".jpg":
+                    ext = ".png";
                     break;
                 default:
-                    Debug.Log($"{ext} has not fallback.");
+                    Debug.Log($"{ext} has no fallback. path: {path}");
                     break;
             }
 
             path = Path.ChangeExtension(path, ext);
             return path;
+        }
+
+        /// <summary>
+        /// 查找指定路径的文件列表
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string[] GetDirectoryFiles(string path)
+        {
+            var dir = Path.GetDirectoryName(path);
+            var name = Path.GetFileName(path);
+
+            var files = Directory.GetFiles(Path.Combine(Application.streamingAssetsPath, dir), name);
+            Uri streaming = new Uri(Application.streamingAssetsPath + "/");
+
+            List<string> encodedFiles = new List<string>();
+            foreach (var file in files)
+            {
+                Uri abs = new Uri(file);
+                encodedFiles.Add(streaming.MakeRelativeUri(abs).ToString());
+            }
+            return encodedFiles.ToArray();
         }
 
         public Task<Texture2D> loadTextureByWebRequest(string path)
@@ -153,14 +168,6 @@ namespace Game
             Texture2D texture = new Texture2D(512, 512);
             texture.LoadImage(await loadBytesBySystemIO(path));
             return texture;
-        }
-        private static RuntimePlatform? getPlatform(RuntimePlatform? platform)
-        {
-#if UNITY_ANDROID
-            if (platform == null)
-                platform = RuntimePlatform.Android;
-#endif
-            return platform;
         }
 
         public Task<Workbook> loadExcelBySystemIO(string path)
