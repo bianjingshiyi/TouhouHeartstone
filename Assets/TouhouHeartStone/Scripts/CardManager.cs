@@ -257,6 +257,24 @@ namespace Game
                 return skinDic[id];
             return null;
         }
+        public bool tryGetSkin(int id, out CardSkinData skin)
+        {
+            if (tempSkinDic.ContainsKey(id))
+            {
+                skin = tempSkinDic[id];
+                return true;
+            }
+            else if (skinDic.ContainsKey(id))
+            {
+                skin = skinDic[id];
+                return true;
+            }
+            else
+            {
+                skin = null;
+                return false;
+            }
+        }
         Dictionary<int, CardSkinData> tempSkinDic { get; } = new Dictionary<int, CardSkinData>();
         /// <summary>
         /// 添加临时的卡片皮肤

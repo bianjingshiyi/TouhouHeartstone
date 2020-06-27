@@ -54,9 +54,13 @@ namespace UI
                     )
                 )
             {
-                var skin = parent.game.cards.getSkin(card.id);
-                var item = BuildCardList.addItem();
-                item.update(card, skin);
+                if (parent.game.cards.tryGetSkin(card.id, out var skin))
+                {
+                    var item = BuildCardList.addItem();
+                    item.update(card, skin);
+                }
+                else
+                    UberDebug.LogErrorChannel("UI", "无法找到" + card + "的皮肤");
             }
             BuildDeckList.sortItems((a, b) =>
             {
