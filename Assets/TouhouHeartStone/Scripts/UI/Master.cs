@@ -9,6 +9,7 @@ namespace UI
 {
     partial class Master : IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
     {
+        [Obsolete]
         public TouhouCardEngine.Card card { get; private set; } = null;
         public void update(Table table, THHPlayer player, TouhouCardEngine.Card card, CardSkinData skin)
         {
@@ -118,7 +119,7 @@ namespace UI
         }
         public void invoke(T0 t0, T1 t1)
         {
-            foreach (var action in _actionList)
+            foreach (var action in _actionList.ToArray())
             {
                 if (action != null)
                     action.Invoke(t0, t1);

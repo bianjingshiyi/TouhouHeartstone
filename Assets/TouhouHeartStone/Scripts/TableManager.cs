@@ -124,39 +124,9 @@ namespace Game
 
         private void onEventBefore(IEventArg arg)
         {
-            UIAnimation anim = null;
+            UIAnimation anim;
             switch (arg)
             {
-                case THHPlayer.DrawEventArg draw:
-                    anim = new DrawAnimation(draw);
-                    break;
-                case THHCard.HealEventArg heal:
-                    anim = new HealAnimation(heal);
-                    break;
-                //case THHPlayer.CreateTokenEventArg createToken:
-                //    anim = new CreateTokenAnimation(createToken);
-                //    break;
-                case THHCard.DamageEventArg damage:
-                    anim = new DamageAnimation(damage);
-                    break;
-                case THHCard.DeathEventArg death:
-                    anim = new DeathAnimation(death);
-                    break;
-                case THHPlayer.ActiveEventArg active:
-                    foreach (var target in active.targets)
-                    {
-                        if (target is TouhouCardEngine.Card card)
-                        {
-                            anim = new SelectTargetAnimation(active);
-                        }
-                    }
-                    break;
-                case THHGame.TurnEndEventArg turnEnd:
-                    anim = new TurnEndAnimation(turnEnd);
-                    break;
-                case THHGame.GameEndEventArg gameEnd:
-                    anim = new GameEndAnimation(gameEnd);
-                    break;
                 default:
                     anim = getEventAnim(arg);
                     break;
@@ -201,16 +171,24 @@ namespace Game
             {
                 master.AttackText.text = card.getAttack().ToString();
                 master.AttackText.display();
+                master.AtkImage.display();
             }
             else
+            {
                 master.AttackText.hide();
+                master.AtkImage.hide();
+            }
             if (card.getArmor() > 0)
             {
                 master.ArmorText.text = card.getArmor().ToString();
                 master.ArmorText.display();
+                master.ArmorImage.display();
             }
             else
+            {
                 master.ArmorText.hide();
+                master.ArmorImage.hide();
+            }
 
             if (isSelectable)
                 master.HighlightController = Master.Highlight.Yellow;
@@ -248,6 +226,12 @@ namespace Game
         Dictionary<TouhouCardEngine.Card, HandListItem> cardHandDic { get; } = new Dictionary<TouhouCardEngine.Card, HandListItem>();
         public HandListItem createHand(TouhouCardEngine.Card card)
         {
+            if (cardHandDic.ContainsKey(card))
+            {
+                UberDebug.LogErrorChannel("UI", "手牌中已经存在" + card + "对应UI" + cardHandDic[card]);
+                return cardHandDic[card];
+            }
+            UberDebug.LogChannel("UI", "创建手牌UI：" + card);
             HandListItem item;
             bool isDragable;
             if (card.getOwner() == player)
@@ -429,9 +413,9 @@ namespace Game
         {
             if (isSelectingTarget)
             {
-                if (usingCard.isValidTarget(game, master.card))
+                if (usingCard.isValidTarget(game, getCard(master)))
                 {
-                    player.cmdUse(game, usingCard, usingPosition, master.card);
+                    player.cmdUse(game, usingCard, usingPosition, getCard(master));
                     resetUse(false, false);
                 }
                 else
@@ -445,9 +429,9 @@ namespace Game
         {
             if (isSelectingTarget)
             {
-                if (usingCard.isValidTarget(game, servant.card))
+                if (usingCard.isValidTarget(game, getCard(servant)))
                 {
-                    player.cmdUse(game, usingCard, usingPosition, servant.card);
+                    player.cmdUse(game, usingCard, usingPosition, getCard(servant));
                     resetUse(false, false);
                 }
                 else
@@ -485,6 +469,13 @@ namespace Game
                     return pair.Key;
             }
             return null;
+        }
+        public TouhouCardEngine.Card getCard(Master master)
+        {
+            if (master == ui.SelfMaster)
+                return player.master;
+            else
+                return game.getOpponent(player).master;
         }
         public void setCard(UI.Card ui, TouhouCardEngine.Card card, bool isFaceup)
         {
@@ -566,6 +557,7 @@ namespace Game
             {
                 servant.HighlightController = Servant.Highlight.Green;
                 servant.onDrag.add(onDragServant);
+                servant.onDragEnd.add(onDragEndServant);
             }
             else
                 servant.HighlightController = Servant.Highlight.None;
@@ -595,30 +587,86 @@ namespace Game
                 ui.AttackArrowImage.rectTransform.up = ((Vector3)pointer.position - servant.rectTransform.position).normalized;
                 ui.AttackArrowImage.rectTransform.sizeDelta = new Vector2(
                     ui.AttackArrowImage.rectTransform.sizeDelta.x,
-                    Vector2.Distance(servant.rectTransform.position, pointer.position) / GetComponentInParent<Canvas>().transform.localScale.y);
+                    Vector2.Distance(servant.rectTransform.position, pointer.position) / ui.getCanvas().transform.localScale.y);
                 //高亮标记所有目标
-                foreach (var target in game.findAllCardsInField(c => card.isAttackable(game, player, c, out _)))
-                {
-                    if (tryGetMaster(target, out var targetMaster))
-                    {
-                        setMaster(targetMaster, target, true);
-                    }
-                    else if (tryGetServant(target, out var targetServant))
-                    {
-                        setServant(targetServant, target, true);
-                    }
-                }
+                highlightTargets(game.findAllCardsInField(c => card.isAttackable(game, player, c, out _)));
             }
             else
             {
                 cancelAttack();
             }
         }
+        /// <summary>
+        /// 高亮所有目标
+        /// </summary>
+        /// <param name="targets"></param>
+        void highlightTargets(TouhouCardEngine.Card[] targets)
+        {
+            foreach (var target in targets)
+            {
+                if (tryGetMaster(target, out var targetMaster))
+                {
+                    setMaster(targetMaster, target, true);
+                }
+                else if (tryGetServant(target, out var targetServant))
+                {
+                    setServant(targetServant, target, true);
+                }
+            }
+        }
+        void removeHighlights()
+        {
+            setMaster(ui.SelfMaster, player.master, false);
+            THHPlayer opponent = game.getOpponent(player);
+            setMaster(ui.EnemyMaster, opponent.master, false);
+            foreach (var servant in ui.SelfFieldList)
+            {
+                setServant(servant, getCard(servant), false);
+            }
+            foreach (var servant in ui.EnemyFieldList)
+            {
+                setServant(servant, getCard(servant), false);
+            }
+        }
+        void onDragEndServant(Servant servant, PointerEventData pointer)
+        {
+            if (!canControl)//不是你的回合
+                return;
+            TouhouCardEngine.Card card = getCard(servant);
+            if (card.owner != player)//不是你的卡
+                return;
+            if (!card.canAttack(game))//不能攻击
+                return;
+            //如果在随从上面
+            if (pointer.pointerCurrentRaycast.gameObject != null)
+            {
+                if (pointer.pointerCurrentRaycast.gameObject.GetComponentInParent<Servant>() is Servant targetServant)
+                {
+                    if (card.isAttackable(game, player, getCard(targetServant), out var tip))
+                    {
+                        player.cmdAttack(game, card, getCard(targetServant));
+                    }
+                    else
+                        ui.showTip(tip);
+                }
+                else if (pointer.pointerCurrentRaycast.gameObject.GetComponentInParent<Master>() is Master targetMaster)
+                {
+                    if (card.isAttackable(game, player, getCard(targetMaster), out var tip))
+                    {
+                        player.cmdAttack(game, card, getCard(targetMaster));
+                    }
+                    else
+                        ui.showTip(tip);
+                }
+            }
+            //取消选中和攻击
+            cancelAttack();
+        }
         private void cancelAttack()
         {
             //rectTransform.localScale = Vector3.one;
             ui.AttackArrowImage.hide();
-            //.selectableTargets = null;
+            removeHighlights();
         }
         public void setServant(Servant servant, CardDefine card)
         {
@@ -714,6 +762,7 @@ namespace Game
                 if (anim is EventAnimation tAnim)
                 {
                     tAnim.eventArg = eventArg;
+                    tAnim.init(this);
                 }
                 return anim;
             }

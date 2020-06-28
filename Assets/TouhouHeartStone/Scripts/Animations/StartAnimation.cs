@@ -6,12 +6,12 @@ namespace Game
     {
         public override bool update(TableManager table, THHGame.StartEventArg eventArg)
         {
-            foreach (THHPlayer player in table.game.players)
+            foreach (var pair in eventArg.startHandDic)
             {
-                if (player == table.player)
+                if (pair.Key == table.player)
                 {
                     table.ui.SelfHandList.clearItems();
-                    foreach (TouhouCardEngine.Card card in player.hand)
+                    foreach (TouhouCardEngine.Card card in pair.Value.hands)
                     {
                         table.createHand(card);
                     }
@@ -19,7 +19,7 @@ namespace Game
                 else
                 {
                     table.ui.EnemyHandList.clearItems();
-                    foreach (TouhouCardEngine.Card card in player.hand)
+                    foreach (TouhouCardEngine.Card card in pair.Value.hands)
                     {
                         table.createHand(card);
                     }

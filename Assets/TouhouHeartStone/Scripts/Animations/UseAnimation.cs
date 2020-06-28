@@ -9,6 +9,7 @@ namespace Game
     {
         Vector3 _startPosition;
         Timer _timer = new Timer() { duration = .6f };
+        Timer _targetingTimer = new Timer() { duration = .8f };
         public override bool update(TableManager table, THHPlayer.UseEventArg eventArg)
         {
             if (eventArg.card.define is ServantCardDefine)
@@ -30,6 +31,8 @@ namespace Game
                     table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
                     table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
                     table.ui.ServantPlaceHolder.hide();
+                    if (selectTarget(table, eventArg))
+                        return false;
                 }
                 else
                 {
@@ -55,6 +58,8 @@ namespace Game
                     table.ui.EnemyHandList.removeItem(hand);
                     table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
                     table.ui.ServantPlaceHolder.hide();
+                    if (selectTarget(table, eventArg))
+                        return false;
                 }
             }
             else if (eventArg.card.define is SpellCardDefine)
@@ -62,6 +67,8 @@ namespace Game
                 if (eventArg.player == table.player)
                 {
                     table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
+                    if (selectTarget(table, eventArg))
+                        return false;
                 }
                 else
                 {
@@ -80,9 +87,28 @@ namespace Game
                     if (!_timer.isExpired())
                         return false;
                     table.ui.EnemyHandList.removeItem(hand);
+                    if (selectTarget(table, eventArg))
+                        return false;
                 }
             }
             return true;
+        }
+        bool selectTarget(TableManager table, THHPlayer.UseEventArg eventArg)
+        {
+            if (eventArg.targets != null && eventArg.targets.Length > 0 && eventArg.targets[0] is var target)
+            {
+                if (table.tryGetServant(target, out var targetServant))
+                {
+                    if (!_targetingTimer.isStarted)
+                    {
+                        targetServant.animator.Play("Targeted");
+                        _targetingTimer.start();
+                    }
+                    if (!_targetingTimer.isExpired())
+                        return true;
+                }
+            }
+            return false;
         }
     }
 }
