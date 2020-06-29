@@ -29,7 +29,16 @@ namespace UI
                 PlayerPrefs.Save();
                 parent.display(parent.MainMenu);
             });
+
+            FilterPanel.onFilterConditionChange += reloadCardList;
+            FilterPanel.onSortChange += onSortChange;
         }
+
+        private void onSortChange()
+        {
+            BuildCardList.sortItems(FilterPanel.sortCompareMethod);
+        }
+
         CardDefine[] cards { get; set; } = null;
         protected override void onDisplay()
         {
@@ -47,6 +56,19 @@ namespace UI
                 var skin = parent.game.cards.getSkin(cards.First().id);
                 item.update(cards.First(), skin, cards.Count());
             }
+            reloadCardList();
+            BuildDeckList.sortItems((a, b) =>
+            {
+                if (a.card.getCost() != b.card.getCost())
+                    return a.card.getCost() - b.card.getCost();
+                else
+                    return a.card.id - b.card.id;
+            });
+            DragCard.hide();
+        }
+
+        private void reloadCardList()
+        {
             BuildCardList.clearItems();
             foreach (CardDefine card in
                 cards.Where(
@@ -56,20 +78,17 @@ namespace UI
             {
                 if (parent.game.cards.tryGetSkin(card.id, out var skin))
                 {
-                    var item = BuildCardList.addItem();
-                    item.update(card, skin);
+                    if (FilterPanel.cardFilter(card, skin))
+                    {
+                        var item = BuildCardList.addItem();
+                        item.update(card, skin);
+                    }
                 }
                 else
                     UberDebug.LogErrorChannel("UI", "无法找到" + card + "的皮肤");
+
+                BuildCardList.sortItems(FilterPanel.sortCompareMethod);
             }
-            BuildDeckList.sortItems((a, b) =>
-            {
-                if (a.card.getCost() != b.card.getCost())
-                    return a.card.getCost() - b.card.getCost();
-                else
-                    return a.card.id - b.card.id;
-            });
-            DragCard.hide();
         }
 
         private bool isStandardCard(CardDefine c)
