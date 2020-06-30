@@ -39,6 +39,14 @@ namespace UI
             this._LabelSortText = this.transform.Find("LabelSort").GetComponent<Text>();
             this._InputField = this.transform.Find("InputField").GetComponent<InputField>();
         }
+        private Main _parent;
+        public Main parent
+        {
+            get
+            {
+                return this.transform.parent.parent.GetComponent<Main>();
+            }
+        }
         [SerializeField()]
         private Image m_as_Image;
         public Image asImage
