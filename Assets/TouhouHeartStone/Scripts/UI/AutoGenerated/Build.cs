@@ -36,6 +36,7 @@ namespace UI
             this._BuildCardList = this.transform.Find("CardView").Find("Viewport").Find("BuildCardList").GetComponent<BuildCardList>();
             this._ReturnButton = this.transform.Find("ReturnButton").GetComponent<Button>();
             this._DragCard = this.transform.Find("DragCard").GetComponent<DragCard>();
+            this._FilterPanel = this.transform.Find("FilterPanel").GetComponent<FilterPanel>();
         }
         private Main _parent;
         public Main parent
@@ -186,6 +187,19 @@ namespace UI
                     this._DragCard = this.transform.Find("DragCard").GetComponent<DragCard>();
                 }
                 return this._DragCard;
+            }
+        }
+        [SerializeField()]
+        private FilterPanel _FilterPanel;
+        public FilterPanel FilterPanel
+        {
+            get
+            {
+                if ((this._FilterPanel == null))
+                {
+                    this._FilterPanel = this.transform.Find("FilterPanel").GetComponent<FilterPanel>();
+                }
+                return this._FilterPanel;
             }
         }
         partial void onAwake();
