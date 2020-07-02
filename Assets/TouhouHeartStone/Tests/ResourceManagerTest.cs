@@ -217,5 +217,16 @@ namespace Tests
 
             File.Delete(filePath);
         }
+        [UnityTest]
+        public IEnumerator loadTexture_Resources()
+        {
+            const string TEX_NAME = "res:TestFile";
+
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            var task = manager.loadTexture(TEX_NAME);
+            yield return new WaitUntil(() => task.IsCompleted);
+
+            Assert.NotNull(task.Result);
+        }
     }
 }
