@@ -61,7 +61,7 @@ namespace TouhouHeartstone
             this.onCheckTarget = onCheckTarget;
             this.onExecute = onExecute;
         }
-        public virtual void register(IGame game, ICard card)
+        public virtual void onEnable(IGame game, ICard card)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -78,7 +78,7 @@ namespace TouhouHeartstone
                 game.triggers.register(time.getEventName(game.triggers), trigger);
             }
         }
-        public virtual void unregister(IGame game, ICard card)
+        public virtual void onDisable(IGame game, ICard card)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -109,7 +109,7 @@ namespace TouhouHeartstone
             })
         {
         }
-        public override void register(IGame game, ICard card)
+        public override void onEnable(IGame game, ICard card)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -126,7 +126,7 @@ namespace TouhouHeartstone
                 game.triggers.registerBefore(trigger);
             }
         }
-        public override void unregister(IGame game, ICard card)
+        public override void onDisable(IGame game, ICard card)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -178,7 +178,7 @@ namespace TouhouHeartstone
             })
         {
         }
-        public override void register(IGame game, ICard card)
+        public override void onEnable(IGame game, ICard card)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -195,7 +195,7 @@ namespace TouhouHeartstone
                 game.triggers.registerAfter(trigger);
             }
         }
-        public override void unregister(IGame game, ICard card)
+        public override void onDisable(IGame game, ICard card)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -226,7 +226,15 @@ namespace TouhouHeartstone
         {
             return new string[0];
         }
-        public abstract void register(IGame game, ICard card);
-        public abstract void unregister(IGame game, ICard card);
+        void IEffect.onEnable(IGame game, ICard card)
+        {
+            onEnable(game as THHGame, card as Card);
+        }
+        public abstract void onEnable(THHGame game, Card card);
+        void IEffect.onDisable(IGame game, ICard card)
+        {
+            onDisable(game as THHGame, card as Card);
+        }
+        public abstract void onDisable(THHGame game, Card card);
     }
 }

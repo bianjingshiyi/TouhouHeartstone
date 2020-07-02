@@ -939,11 +939,11 @@ namespace Tests
         {
             public override string[] piles { get; } = new string[] { PileName.HAND };
             CostModifier _modifier = new CostModifier();
-            public override void register(IGame game, ICard card)
+            public override void onEnable(THHGame game, Card card)
             {
                 card.addModifier(game, _modifier);
             }
-            public override void unregister(IGame game, ICard card)
+            public override void onDisable(THHGame game, Card card)
             {
                 card.removeModifier(game, _modifier);
             }
@@ -953,6 +953,55 @@ namespace Tests
                 public override int calc(Card card, int value)
                 {
                     return value - card.getOwner().hand.count + 1;
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 巫师学徒
+    /// </summary>
+    class SorcererApprentice : ServantCardDefine
+    {
+        public const int ID = 0x00110011;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new Halo()
+        };
+        class Halo : PassiveEffect
+        {
+            public override string[] piles { get; } = new string[] { PileName.FIELD };
+            public override void onEnable(THHGame game, Card card)
+            {
+                foreach (var target in card.getOwner().hand)
+                {
+                    target.addBuff(game, new HaloBuff());
+                }
+            }
+            public override void onDisable(THHGame game, Card card)
+            {
+                foreach (var target in card.getOwner().hand)
+                {
+                    //target.removeBuff(game,target.getBuffs)
+                }
+            }
+            class HaloBuff : Buff
+            {
+                public override int id { get; } = 0;
+                public override PropModifier[] modifiers { get; } = new PropModifier[]
+                {
+                    new HaloBuffModifier()
+                };
+                class HaloBuffModifier : PropModifier<int>
+                {
+                    public override string propName { get; } = nameof(ServantCardDefine.cost);
+                    public override int calc(Card card, int value)
+                    {
+                        return value - 1;
+                    }
                 }
             }
         }
