@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Card id="111" type="3">
-  <Effect pile="Warp" trigger="onUse">engine.damage(engine.getRandomEnemy(player), 1);
-engine.damage(engine.getRandomEnemy(player), 1);
-engine.damage(engine.getRandomEnemy(player), 1);</Effect>
-  <cost>1</cost>
-</Card>
