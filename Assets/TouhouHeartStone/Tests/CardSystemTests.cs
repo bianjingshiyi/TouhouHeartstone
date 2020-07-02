@@ -196,6 +196,16 @@ namespace Tests
                 this.modifiers = modifiers;
             }
         }
+        /// <summary>
+        /// 巫师学徒
+        /// </summary>
+        class SorcererApprentice : ServantCardDefine
+        {
+            public override int cost { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+            public override int attack { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+            public override int life { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+            public override int id { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        }
     }
     static class TestExtension
     {

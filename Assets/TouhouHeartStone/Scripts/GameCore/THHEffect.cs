@@ -206,4 +206,27 @@ namespace TouhouHeartstone
             }
         }
     }
+    public abstract class PassiveEffect : IEffect
+    {
+        public string[] events => throw new System.NotImplementedException();
+        public abstract string[] piles { get; }
+        public bool checkCondition(IGame game, ICard card, object[] vars)
+        {
+            throw new System.NotImplementedException();
+        }
+        public bool checkTarget(IGame game, ICard card, object[] vars, object[] targets)
+        {
+            throw new System.NotImplementedException();
+        }
+        public Task execute(IGame game, ICard card, object[] vars, object[] targets)
+        {
+            throw new System.NotImplementedException();
+        }
+        public string[] getEvents(ITriggerManager manager)
+        {
+            return new string[0];
+        }
+        public abstract void register(IGame game, ICard card);
+        public abstract void unregister(IGame game, ICard card);
+    }
 }

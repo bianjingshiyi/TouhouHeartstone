@@ -1,20 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
-using NUnit.Framework;
-using System.IO;
-using UnityEngine;
-using UnityEngine.TestTools;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using Game;
+using NUnit.Framework;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
-using System.Threading.Tasks;
-using System.Net;
-using System.Net.Sockets;
-using System.Xml.Serialization;
 using TouhouHeartstone.Builtin;
-using Game;
+using UnityEngine;
+using UnityEngine.TestTools;
 namespace Tests
 {
     public static class TestGameflow
@@ -938,32 +935,15 @@ namespace Tests
         {
             new CostFixer()
         };
-        class CostFixer : IEffect
+        class CostFixer : PassiveEffect
         {
-            public string[] events => throw new System.NotImplementedException();
-            public string[] piles { get; } = new string[] { PileName.HAND };
-            public bool checkCondition(IGame game, ICard card, object[] vars)
-            {
-                throw new System.NotImplementedException();
-            }
-            public bool checkTarget(IGame game, ICard card, object[] vars, object[] targets)
-            {
-                throw new System.NotImplementedException();
-            }
-            public Task execute(IGame game, ICard card, object[] vars, object[] targets)
-            {
-                throw new System.NotImplementedException();
-            }
-            public string[] getEvents(ITriggerManager manager)
-            {
-                return new string[0];
-            }
+            public override string[] piles { get; } = new string[] { PileName.HAND };
             CostModifier _modifier = new CostModifier();
-            public void register(IGame game, ICard card)
+            public override void register(IGame game, ICard card)
             {
                 card.addModifier(game, _modifier);
             }
-            public void unregister(IGame game, ICard card)
+            public override void unregister(IGame game, ICard card)
             {
                 card.removeModifier(game, _modifier);
             }
