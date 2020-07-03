@@ -71,6 +71,11 @@ namespace Tests
 
             yield return new WaitUntil(() => task.IsCompleted);
             Assert.IsNull(task.Exception);
+
+            // 一定会有的卡
+            var cd = cm.GetCardDefine(ExistsCardID);
+            Assert.NotNull(cd);
+            Assert.AreEqual(cd.id, ExistsCardID);
         }
 
         /// <summary>
