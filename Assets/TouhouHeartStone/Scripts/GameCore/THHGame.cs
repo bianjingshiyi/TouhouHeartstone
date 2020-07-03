@@ -22,13 +22,6 @@ namespace TouhouHeartstone
         {
             this.option = option;
         }
-        [Obsolete]
-        public THHGame(IGameEnvironment env, bool shuffle = true, params CardDefine[] cards) : base(env, new HeartStoneRule(env), (int)DateTime.Now.ToBinary())
-        {
-            engine = new CardEngine(env, new HeartStoneRule(env), (int)DateTime.Now.ToBinary());
-            engine.setProp("shuffle", shuffle);
-            engine.afterEvent += afterEvent;
-        }
         #region Player
         public THHPlayer createPlayer(int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
         {
@@ -229,7 +222,7 @@ namespace TouhouHeartstone
                 //决定玩家行动顺序
                 if (option.sortedPlayers == null || option.sortedPlayers.Length != players.Length)
                 {
-                    if (option.sortedPlayers.Length != players.Length)
+                    if (option.sortedPlayers != null && option.sortedPlayers.Length != players.Length)
                         logger?.log("Warning", "游戏参数玩家行动顺序长度与实际数量不匹配");
                     List<THHPlayer> remainedList = new List<THHPlayer>(players);
                     THHPlayer[] sortedPlayers = new THHPlayer[remainedList.Count];
@@ -276,18 +269,30 @@ namespace TouhouHeartstone
                 logger.log("Debug", "游戏开始");
                 foreach (THHPlayer player in sortedPlayers)
                 {
+                    player.setMaxGem(this, option.startGem);
                     player.init.moveTo(this, player.init[0, player.init.count - 1], player.hand, 0);
                     if (player != sortedPlayers[0])
                     {
                         player.hand.add(this, createCard(getCardDefine<LuckyCoin>()));
                         logger.log("由于后手行动" + player + "获得一张幸运币");
                     }
+                    arg.startHandDic.Add(player, new StartEventArg.StartInfo()
+                    {
+                        gem = player.maxGem,
+                        hands = player.hand.ToArray()
+                    });
                 }
                 return Task.CompletedTask;
             });
         }
         public class StartEventArg : EventArg
         {
+            public Dictionary<THHPlayer, StartInfo> startHandDic = new Dictionary<THHPlayer, StartInfo>();
+            public class StartInfo
+            {
+                public int gem;
+                public Card[] hands;
+            }
         }
         public THHPlayer currentPlayer { get; private set; }
         async Task turnStart(THHPlayer player)
@@ -427,50 +432,6 @@ namespace TouhouHeartstone
             answers.cancelAll();
         }
         #endregion
-        private void afterEvent(Event @event)
-        {
-            if (@event.parent == null)
-            {
-                foreach (Player player in engine.getPlayers())
-                {
-                    EventWitness[] wArray = generateWitnessTree(engine, player, @event);
-                    for (int i = 0; i < wArray.Length; i++)
-                    {
-                        dicPlayerFrontend[player].sendWitness(wArray[i]);
-                    }
-                }
-            }
-        }
-        EventWitness[] generateWitnessTree(CardEngine engine, Player player, Event e)
-        {
-            List<EventWitness> wlist = new List<EventWitness>();
-            if (e is VisibleEvent)
-            {
-                EventWitness w = (e as VisibleEvent).getWitness(engine, player);
-                for (int i = 0; i < e.before.Count; i++)
-                {
-                    wlist.AddRange(generateWitnessTree(engine, player, e.before[i]));
-                }
-                for (int i = 0; i < e.child.Count; i++)
-                {
-                    w.child.AddRange(generateWitnessTree(engine, player, e.child[i]));
-                }
-                wlist.Add(w);
-                for (int i = 0; i < e.after.Count; i++)
-                {
-                    wlist.AddRange(generateWitnessTree(engine, player, e.after[i]));
-                }
-                return wlist.ToArray();
-            }
-            else
-            {
-                for (int i = 0; i < e.child.Count; i++)
-                {
-                    wlist.AddRange(generateWitnessTree(engine, player, e.child[i]));
-                }
-                return wlist.ToArray();
-            }
-        }
         public void Dispose()
         {
             close();
@@ -485,6 +446,7 @@ namespace TouhouHeartstone
         public bool shuffle = true;
         public float timeoutForInitReplace = 30;
         public float timeoutForTurn = 75;
+        public int startGem = 0;
         public GameOption()
         {
         }

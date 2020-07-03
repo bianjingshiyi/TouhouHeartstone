@@ -46,6 +46,9 @@ namespace UI
         {
             throw new NotImplementedException();
         }
+        public virtual void init(TableManager table)
+        {
+        }
         public abstract bool update(TableManager table);
     }
     public abstract class EventAnimation : TableAnimation
@@ -61,6 +64,18 @@ namespace UI
         {
             get { return _eventArg; }
             set { _eventArg = value is T t ? t : default; }
+        }
+        public T tEventArg
+        {
+            get { return eventArg is T t ? t : default; }
+        }
+        public sealed override void init(TableManager table)
+        {
+            base.init(table);
+            init(table, eventArg is T t ? t : default);
+        }
+        public virtual void init(TableManager table, T eventArg)
+        {
         }
         public sealed override bool update(TableManager table)
         {

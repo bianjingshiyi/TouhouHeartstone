@@ -4,6 +4,7 @@ namespace UI
 {
     partial class Skill
     {
+        [Obsolete]
         public TouhouCardEngine.Card card { get; private set; } = null;
         [Obsolete]
         public void update(Table table, THHPlayer self, THHPlayer player, TouhouCardEngine.Card card, CardSkinData skin)

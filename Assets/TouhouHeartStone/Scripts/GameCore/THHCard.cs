@@ -410,7 +410,7 @@ namespace TouhouHeartstone
                     else
                     {
                         card.setCurrentLife(card.getCurrentLife() - arg.value);
-                        if (source.isPoisonous())
+                        if (source != null && source.isPoisonous())
                             card.setDead(true);
                         arg.infoDic.Add(card, new DamageEventArg.Info()
                         {

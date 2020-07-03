@@ -39,13 +39,10 @@ namespace UI
             this._BorderImage = this.transform.Find("CardFace").Find("Border").GetComponent<Image>();
             this._CardFace_Image = this.transform.Find("CardFace").Find("Image").GetComponent<Image>();
             this._CostImage = this.transform.Find("CardFace").Find("CostImage").GetComponent<Image>();
-            this._Image_2 = this.transform.Find("CardFace").Find("Image (2)").GetComponent<Image>();
             this._CostPropNumber = this.transform.Find("CardFace").Find("Cost").GetComponent<PropNumber>();
             this._AttackImage = this.transform.Find("CardFace").Find("AttackImage").GetComponent<Image>();
-            this._Image_1 = this.transform.Find("CardFace").Find("Image (1)").GetComponent<Image>();
             this._AttackPropNumber = this.transform.Find("CardFace").Find("Attack").GetComponent<PropNumber>();
             this._LifeImage = this.transform.Find("CardFace").Find("LifeImage").GetComponent<Image>();
-            this._CardFace_Image_1 = this.transform.Find("CardFace").Find("Image (1)").GetComponent<Image>();
             this._LifePropNumber = this.transform.Find("CardFace").Find("Life").GetComponent<PropNumber>();
             this._CrossImage = this.transform.Find("Cross").GetComponent<Image>();
         }
@@ -232,19 +229,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _Image_2;
-        public Image Image_2
-        {
-            get
-            {
-                if ((this._Image_2 == null))
-                {
-                    this._Image_2 = this.transform.Find("CardFace").Find("Image (2)").GetComponent<Image>();
-                }
-                return this._Image_2;
-            }
-        }
-        [SerializeField()]
         private PropNumber _CostPropNumber;
         public PropNumber CostPropNumber
         {
@@ -271,19 +255,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _Image_1;
-        public Image Image_1
-        {
-            get
-            {
-                if ((this._Image_1 == null))
-                {
-                    this._Image_1 = this.transform.Find("CardFace").Find("Image (1)").GetComponent<Image>();
-                }
-                return this._Image_1;
-            }
-        }
-        [SerializeField()]
         private PropNumber _AttackPropNumber;
         public PropNumber AttackPropNumber
         {
@@ -307,19 +278,6 @@ namespace UI
                     this._LifeImage = this.transform.Find("CardFace").Find("LifeImage").GetComponent<Image>();
                 }
                 return this._LifeImage;
-            }
-        }
-        [SerializeField()]
-        private Image _CardFace_Image_1;
-        public Image CardFace_Image_1
-        {
-            get
-            {
-                if ((this._CardFace_Image_1 == null))
-                {
-                    this._CardFace_Image_1 = this.transform.Find("CardFace").Find("Image (1)").GetComponent<Image>();
-                }
-                return this._CardFace_Image_1;
             }
         }
         [SerializeField()]

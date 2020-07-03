@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using BJSYGameCore.UI;
 namespace UI
 {
     public static class UGUIExtension
@@ -76,6 +77,14 @@ namespace UI
                 selectable.interactable = false;
                 selectable.image.color = Color.gray;
             }
+        }
+        public static Canvas getCanvas(this RectTransform transform)
+        {
+            return transform.GetComponentInParent<Canvas>();
+        }
+        public static Canvas getCanvas(this UIObject obj)
+        {
+            return obj.GetComponentInParent<Canvas>();
         }
     }
 }

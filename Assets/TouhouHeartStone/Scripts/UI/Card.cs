@@ -8,6 +8,7 @@ namespace UI
     {
         [Obsolete]
         public TouhouCardEngine.Card card { get; private set; }
+        [Obsolete]
         public void update(TouhouCardEngine.Card card, CardSkinData skin)
         {
             this.card = card;

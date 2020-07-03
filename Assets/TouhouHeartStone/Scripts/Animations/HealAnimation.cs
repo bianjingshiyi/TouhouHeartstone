@@ -1,33 +1,29 @@
 ﻿using TouhouHeartstone;
 using BJSYGameCore;
-namespace UI
+using UI;
+namespace Game
 {
-    class HealAnimation : UIAnimation<THHCard.HealEventArg>
+    class HealAnimation : EventAnimation<THHCard.HealEventArg>
     {
-        public HealAnimation(THHCard.HealEventArg eventArg) : base(eventArg)
-        {
-        }
         Timer _timer = new Timer() { duration = .2f };
-        public override bool update(Table table)
+        public override bool update(TableManager table, THHCard.HealEventArg eventArg)
         {
             if (!_timer.isStarted)
             {
                 foreach (var card in eventArg.cards)
                 {
-                    var target = table.getCharacter(card);
-                    if (target is Servant servant)
+                    if (table.tryGetServant(card,out Servant servant))
                     {
                         servant.HealImage.display();
                         servant.HealText.text = "+" + eventArg.infoDic[card].healedValue.ToString();
-                        servant.update(card.owner as THHPlayer, card, table.getSkin(card));
+                        table.setServant(table.getServant(card), card);
                     }
                 }
                 _timer.start();
             }
             foreach (var card in eventArg.cards)
             {
-                var target = table.getCharacter(card);
-                if (target is Servant servant)
+                if (table.tryGetServant(card, out Servant servant))
                 {
                     servant.HealImage.setAlpha(_timer.progress);
                     servant.HealText.setAlpha(_timer.progress);
@@ -37,8 +33,7 @@ namespace UI
                 return false;
             foreach (var card in eventArg.cards)
             {
-                var target = table.getCharacter(card);
-                if (target is Servant servant)
+                if (table.tryGetServant(card, out Servant servant))
                 {
                     servant.HealImage.hide();
                 }
