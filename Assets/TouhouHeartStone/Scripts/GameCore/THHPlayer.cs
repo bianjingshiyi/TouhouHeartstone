@@ -180,8 +180,16 @@ namespace TouhouHeartstone
                 {
                     //法术卡，释放效果然后丢进墓地
                     player.hand.remove(game, card);
-                    ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    await effect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    ITriggerEffect triggerEffect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    if (triggerEffect != null)
+                    {
+                        await triggerEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    }
+                    IActiveEffect activeEffect = arg.card.define.getActiveEffect();
+                    if (activeEffect != null)
+                    {
+                        await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    }
                     player.grave.add(game, card);
                 }
             });
@@ -288,9 +296,9 @@ namespace TouhouHeartstone
                 cardsId = cards.Select(c => c.id).ToArray()
             });
         }
-        public void cmdUse(THHGame game, Card card, int position, params Card[] targets)
+        public Task cmdUse(THHGame game, Card card, int position = 0, params Card[] targets)
         {
-            game.answers.answer(id, new UseResponse()
+            return game.answers.answer(id, new UseResponse()
             {
                 cardId = card.id,
                 position = position,

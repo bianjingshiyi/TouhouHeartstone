@@ -220,7 +220,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator loadTexture_Resources()
         {
-            const string TEX_NAME = "res:TestFile";
+            const string TEX_NAME = "res:测试图片";
 
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
             var task = manager.loadTexture(TEX_NAME);

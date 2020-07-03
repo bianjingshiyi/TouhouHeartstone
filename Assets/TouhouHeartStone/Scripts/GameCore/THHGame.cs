@@ -12,7 +12,11 @@ namespace TouhouHeartstone
     public class THHGame : CardEngine, IDisposable
     {
         public GameOption option { get; }
-        public CardEngine engine { get; }
+        public new TriggerManager triggers
+        {
+            get { return base.triggers as TriggerManager; }
+            set { base.triggers = value; }
+        }
         Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
         public THHGame(params CardDefine[] defines) : base(null, null, GameOption.Default.randomSeed, defines)
         {

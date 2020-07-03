@@ -6,7 +6,7 @@ using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    public class THHEffect : IActiveEffect
+    public class THHEffect : ITriggerEffect
     {
         public TriggerTime[] triggers { get; }
         string[] ITriggerEffect.events
@@ -29,7 +29,7 @@ namespace TouhouHeartstone
         }
         public delegate bool CheckTargetDelegate(THHGame game, Card card, object[] targets);
         CheckTargetDelegate onCheckTarget { get; }
-        bool IActiveEffect.checkTarget(IGame game, ICard card, object[] vars, object[] targets)
+        bool ITriggerEffect.checkTargets(IGame game, ICard card, object[] vars, object[] targets)
         {
             if (onCheckTarget != null)
                 return onCheckTarget.Invoke(game as THHGame, card as Card, targets);
@@ -206,7 +206,7 @@ namespace TouhouHeartstone
             }
         }
     }
-    public abstract class PassiveEffect : IEffect
+    public abstract class PassiveEffect : IPassiveEffect
     {
         public string[] events => throw new System.NotImplementedException();
         public abstract string[] piles { get; }
@@ -226,15 +226,112 @@ namespace TouhouHeartstone
         {
             return new string[0];
         }
-        void IEffect.onEnable(IGame game, ICard card)
+        void IPassiveEffect.onEnable(IGame game, ICard card)
         {
             onEnable(game as THHGame, card as Card);
         }
         public abstract void onEnable(THHGame game, Card card);
-        void IEffect.onDisable(IGame game, ICard card)
+        void IPassiveEffect.onDisable(IGame game, ICard card)
         {
             onDisable(game as THHGame, card as Card);
         }
         public abstract void onDisable(THHGame game, Card card);
+    }
+    public abstract class SingleTargetEffect : IActiveEffect
+    {
+        public string[] piles => throw new NotImplementedException();
+        public string[] events => throw new NotImplementedException();
+        public string[] getEvents(ITriggerManager manager)
+        {
+            return new string[] { manager.getName<THHPlayer.ActiveEventArg>() };
+        }
+        /// <summary>
+        /// 可选目标范围。
+        /// </summary>
+        public virtual string[] ranges { get; } = new string[]
+        {
+            PileName.FIELD,
+            PileName.MASTER
+        };
+        public bool checkCondition(IGame game, ICard card, object[] vars)
+        {
+            return checkCondition(game as THHGame, card as Card, vars);
+        }
+        /// <summary>
+        /// 默认实现，存在可以作为目标的卡片。
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="vars"></param>
+        /// <returns></returns>
+        public virtual bool checkCondition(THHGame game, Card card, object[] vars)
+        {
+            foreach (var player in game.players)
+            {
+                foreach (var pileName in ranges)
+                {
+                    foreach (var target in player.getPile(pileName))
+                    {
+                        if (checkTarget(game, card, target))
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool checkTargets(IGame game, ICard card, object[] vars, object[] targets)
+        {
+            return checkTargets(game as THHGame, card as Card, vars, targets);
+        }
+        public bool checkTargets(THHGame game, Card card, object[] vars, object[] targets)
+        {
+            if (targets != null &&
+                targets.Length > 0 &&
+                targets[0] is Card target &&
+                checkTarget(game, card, target))
+                return true;
+            return false;
+        }
+        /// <summary>
+        /// 默认实现，目标必须在可选范围内
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public virtual bool checkTarget(THHGame game, Card card, Card target)
+        {
+            return ranges.Contains(target.pile.name);
+        }
+        public Task execute(IGame game, ICard card, object[] vars, object[] targets)
+        {
+            if (targets != null &&
+                targets.Length > 0 &&
+                targets[0] is Card target)
+                return execute(game as THHGame, card as Card, target);
+            return Task.CompletedTask;
+        }
+        public abstract Task execute(THHGame game, Card card, Card target);
+        public void onDisable(IGame game, ICard card)
+        {
+        }
+        public void onEnable(IGame game, ICard card)
+        {
+        }
+    }
+    public class CSingleTargetEffect : SingleTargetEffect
+    {
+        public delegate Task ExecuteDelegate(THHGame game, Card card, Card target);
+        ExecuteDelegate _onExecute = null;
+        public CSingleTargetEffect(ExecuteDelegate onExecute)
+        {
+            _onExecute = onExecute;
+        }
+        public override Task execute(THHGame game, Card card, Card target)
+        {
+            if (_onExecute != null)
+                return _onExecute(game, card, target);
+            return Task.CompletedTask;
+        }
     }
 }
