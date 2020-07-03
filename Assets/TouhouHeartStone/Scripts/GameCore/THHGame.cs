@@ -33,7 +33,7 @@ namespace TouhouHeartstone
         /// <param name="id"></param>
         /// <param name="name"></param>
         /// <param name="master"></param>
-        /// <param name="deck">注意，牌库</param>
+        /// <param name="deck">注意，牌库的第一张是牌库的底端</param>
         /// <returns></returns>
         public THHPlayer createPlayer(int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
         {

@@ -355,7 +355,8 @@ namespace Tests
             Dictionary<Card, Buff> buffDic { get; } = new Dictionary<Card, Buff>();
             public override void onEnable(THHGame game, Card card)
             {
-                foreach (var target in card.getOwner().hand)
+                //game.triggers.registerAfter(new Trigger)
+                foreach (var target in card.getOwner().hand.Where(c => c.define is SpellCardDefine))
                 {
                     HaloBuff buff = new HaloBuff();
                     target.addBuff(game, buff);
@@ -364,11 +365,11 @@ namespace Tests
             }
             public override void onDisable(THHGame game, Card card)
             {
-                foreach (var target in card.getOwner().hand)
+                foreach (var pair in buffDic)
                 {
-                    target.removeBuff(game, buffDic[target]);
-                    buffDic.Remove(target);
+                    pair.Key.removeBuff(game, pair.Value);
                 }
+                buffDic.Clear();
             }
             class HaloBuff : Buff
             {

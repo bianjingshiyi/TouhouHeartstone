@@ -23,10 +23,13 @@ namespace TouhouHeartstone
         public THHPlayer(THHGame game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck) : base(id, name)
         {
             this.master = game.createCard(master);
-            addPile(new Pile(game, "Master", new Card[] { this.master }, 1));
+            addPile(new Pile(game, PileName.MASTER, 1));
+            getPile(PileName.MASTER).add(game, this.master);
             skill = game.createCardById(master.skillID);
-            addPile(new Pile(game, "Skill", new Card[] { skill }, 1));
-            this.deck = new Pile(game, "Deck", deck.Select(d => game.createCard(d)).ToArray());
+            addPile(new Pile(game, "Skill", 1));
+            this[PileName.SKILL].add(game, skill);
+            this.deck = new Pile(game, "Deck");
+            this.deck.add(game, deck.Select(d => game.createCard(d)).ToArray());
             addPile(this.deck);
             init = new Pile(game, "Init", maxCount: 4);
             addPile(init);
