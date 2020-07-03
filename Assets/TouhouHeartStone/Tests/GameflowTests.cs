@@ -150,8 +150,10 @@ namespace Tests
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
             yield return new WaitForSeconds(.1f);
-            var task = game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
-            yield return 
+            Card card = game.sortedPlayers[0].hand[0];
+            var task = game.sortedPlayers[0].cmdUse(game, card, 0);
+            yield return TestHelper.waitTask(task);
+            Assert.True(game.sortedPlayers[0].field.Contains(card));
 
             THHPlayer.UseEventArg use = game.triggers.getRecordedEvents().FirstOrDefault(e => e is THHPlayer.UseEventArg) as THHPlayer.UseEventArg;
             Assert.NotNull(use);
