@@ -1,12 +1,16 @@
 ﻿using System.Data.Common;
 using Mono.Data.Sqlite;
 using System.IO;
+using System;
+using System.Threading.Tasks;
 
 namespace IGensoukyo.Utilities
 {
     public class SQLiteDB : SqlDatabase
     {
         SqliteConnection connection;
+
+        public override bool IsConnected => connection != null && connection.State == System.Data.ConnectionState.Open;
 
         public override void Close()
         {
@@ -42,11 +46,27 @@ namespace IGensoukyo.Utilities
             return cmd;
         }
 
-        public override DbTransaction BeginTransition()
+        public override DbTransaction BeginTransation()
         {
             return connection.BeginTransaction();
         }
+
+        public override async Task<long> GetLastInsertIDAsync(string table)
+        {
+            return await ReadAsync<Int64>($"SELECT last_insert_rowid() as rowid FROM {table}", async (r) =>
+            {
+                await r.ReadAsync();
+                return r.Get<Int64>("rowid");
+            });
+        }
+
+        public override long GetLastInsertID(string table)
+        {
+            return Read<Int64>($"SELECT last_insert_rowid() as rowid FROM {table}", (r) =>
+            {
+                r.Read();
+                return r.Get<Int64>("rowid");
+            });
+        }
     }
-
-
 }
