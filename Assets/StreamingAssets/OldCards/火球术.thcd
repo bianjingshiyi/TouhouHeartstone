@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Card id="113" type="3">
-  <Effect pile="Warp" trigger="onUse">engine.damage(targetCards[0], 6);</Effect>
-  <cost>0</cost>
-</Card>

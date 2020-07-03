@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Card id="115" type="3">
-  <cost>10</cost>
-  <Condition>return engine.getCharacters(c =&gt; { return c.pile.owner != player &amp;&amp; c.define.type == TouhouHeartstone.CardDefineType.servant; }).Length &gt; 0 ? null : "Unusable_NoValidTarget";</Condition>
-</Card>
