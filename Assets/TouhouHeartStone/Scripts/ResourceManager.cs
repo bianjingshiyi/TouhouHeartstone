@@ -31,6 +31,14 @@ namespace Game
         {
             if (string.IsNullOrEmpty(path))
                 return null;
+
+            if (path.StartsWith("res:"))
+            {
+                TaskCompletionSource<Texture2D> tcs = new TaskCompletionSource<Texture2D>();
+                tcs.SetResult(Resources.Load<Texture2D>(path.Replace("res:", "")));
+                return tcs.Task;
+            }
+
             platform = platform ?? PlatformCompability.Current;
             if (platform.RequireWebRequest)
                 return loadTextureByWebRequestWithFallback(path);
