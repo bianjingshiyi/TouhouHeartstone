@@ -7,8 +7,7 @@ using UnityEngine.TestTools;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using TouhouHeartstone;
-namespace Tests
+using Mono.Data.Sqlite;using TouhouHeartstone;namespace Tests
 {
     public class OtherTests
     {
@@ -88,5 +87,37 @@ namespace Tests
             flag |= PileFlag.both;
             Assert.True(flag.HasFlag(PileFlag.oppo));
         }
-    }
+        [Test]
+        public void sqliteTest()
+        {
+            IGensoukyo.Utilities.SQLiteDB db = new IGensoukyo.Utilities.SQLiteDB();
+            db.Connect(":memory:");
+
+            using (var cmd = db.CreateCommand(@"
+            CREATE TABLE IF NOT EXISTS circle(
+                circleID INTEGER PRIMARY KEY AUTOINCREMENT,
+                name VARCHAR(64),
+                altname VARCHAR(64) NULL
+            );"))
+            {
+                cmd.ExecuteNonQuery();
+            }
+
+            using (var cmd = db.CreateCommand(@"insert into circle(name, altname) values(?,?)", null, "test1", "test2"))
+            {
+                cmd.ExecuteNonQuery();
+            }
+
+            using (var cmd = db.CreateCommand(@"select name,altname from circle"))
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.NextResult())
+                    {
+                        Assert.AreEqual("test1", reader.GetString(reader.GetOrdinal("name")));
+                        Assert.AreEqual("test2", reader.GetString(reader.GetOrdinal("altname")));
+                    }
+                }
+            }
+        }    }
 }
