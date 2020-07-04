@@ -2,20 +2,17 @@
 
 namespace TouhouHeartstone
 {
-    public class LifeModifier : PropModifier<int>
+    public class LifeModifier : IntPropModifier
     {
-        public override string propName { get; } = nameof(ServantCardDefine.life);
-        public int value { get; }
-        public bool isSet { get; }
-        public LifeModifier(int value)
+        public LifeModifier(int value) : base(nameof(ServantCardDefine.life), value)
         {
-            this.value = value;
-            isSet = false;
         }
-        public LifeModifier(int value, bool isSet)
+        public LifeModifier(int value, bool isSet) : base(nameof(ServantCardDefine.life), value, isSet)
         {
-            this.value = value;
-            this.isSet = isSet;
+        }
+        LifeModifier(LifeModifier origin) : base(origin)
+        {
+
         }
         public override void beforeAdd(Card card)
         {
@@ -45,6 +42,10 @@ namespace TouhouHeartstone
             {
                 card.setCurrentLife(card.getLife());
             }
+        }
+        public override PropModifier clone()
+        {
+            return new LifeModifier(this);
         }
     }
 }

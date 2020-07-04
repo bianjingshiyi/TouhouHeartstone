@@ -76,6 +76,36 @@ namespace Tests
         }
 
         [Test]
+        public void GetDeckCards()
+        {
+            DeckManager dm = createDM();
+
+            var deckID = dm.CreateDeck("测试卡组");
+
+            var instID1 = dm.AddCard(deckID, 1000);
+            var instID2 = dm.AddCard(deckID, 1001);
+
+            var cards = dm.GetDeckCards(deckID);
+            Assert.AreEqual(cards.Count, 2);
+            Assert.AreEqual(1000, cards[instID1]);
+            Assert.AreEqual(1001, cards[instID2]);
+        }
+
+        [Test]
+        public void GetDecks()
+        {
+            DeckManager dm = createDM();
+
+            var deck1ID = dm.CreateDeck("测试卡组1");
+            var deck2ID = dm.CreateDeck("测试卡组2");
+
+            var decks = dm.GetDecks();
+            Assert.AreEqual(decks.Count, 2);
+            Assert.AreEqual("测试卡组1", decks[deck1ID]);
+            Assert.AreEqual("测试卡组2", decks[deck2ID]);
+        }
+
+        [Test]
         public void CardsTransation()
         {
             DeckManager dm = createDM();

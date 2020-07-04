@@ -195,6 +195,15 @@ namespace Tests
             {
                 this.modifiers = modifiers;
             }
+            TestBuff(TestBuff origin)
+            {
+                id = origin.id;
+                modifiers = origin.modifiers;
+            }
+            public override Buff clone()
+            {
+                return new TestBuff(this);
+            }
         }
         [UnityTest]
         public IEnumerator fireBallTest()
@@ -238,6 +247,17 @@ namespace Tests
             yield return TestHelper.waitTask(task);
             Assert.True(game.players[0].field.Any(c => c.define is SorcererApprentice));
             Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost() == 3));//火球术全是3费
+            task = game.players[0].draw(game);//抽一张火球
+            yield return TestHelper.waitTask(task);
+            Card card = game.players[0].hand.right;
+            Assert.AreEqual(3, card.getCost());
+            task = card.pile.moveTo(game, card, game.players[0].grave);//把火球送入墓地
+            yield return TestHelper.waitTask(task);
+            Assert.AreEqual(4, card.getCost());
+            yield return game.players[0].field[0].die(game).wait();//杀死哀绿
+            Assert.True(game.players[0].hand.getCards<FireBall>().All(c => c.getCost() == 4));
+            yield return game.players[0].draw(game).wait();//再抽一张火球术
+            Assert.True(game.players[0].hand.getCards<FireBall>().All(c => c.getCost() == 4));
         }
     }
     static class TestExtension

@@ -179,5 +179,9 @@ namespace TouhouHeartstone.Builtin
             new LifeModifier(1),
             new SpellDamageModifier(1)
         };
+        public override Buff clone()
+        {
+            return new MarisasBigHatBuff();
+        }
     }
 }
