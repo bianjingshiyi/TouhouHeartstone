@@ -89,9 +89,9 @@ namespace Game
         /// 获取所有牌组名称
         /// </summary>
         /// <returns></returns>
-        public KeyValuePair<long, string>[] GetDecks()
+        public Dictionary<long, string> GetDecks()
         {
-            return db.Read<KeyValuePair<long, string>[]>($@"SELECT * FROM {tableDeck}", (r) =>
+            return db.Read<Dictionary<long, string>>($@"SELECT * FROM {tableDeck}", (r) =>
             {
                 Dictionary<long, string> dict = new Dictionary<long, string>();
 
@@ -99,11 +99,11 @@ namespace Game
                 {
                     while (r.Read())
                     {
-                        dict.Add(r.Get<long>("id"), r.Get<string>("name"));
+                        dict.Add(r.Get<long>("deckID"), r.Get<string>("name"));
                     }
                 }
 
-                return dict.ToArray();
+                return dict;
             });
         }
 
@@ -154,9 +154,9 @@ namespace Game
         /// </summary>
         /// <param name="deckID">卡组ID</param>
         /// <returns>引用ID-定义ID 键值对</returns>
-        public KeyValuePair<long, long>[] GetDeckCards(long deckID)
+        public Dictionary<long, long> GetDeckCards(long deckID)
         {
-            return db.Read<KeyValuePair<long, long>[]>($@"SELECT cardID, ID FROM {tableCards} WHERE deckID = ?", (r) =>
+            return db.Read<Dictionary<long, long>>($@"SELECT cardID, ID FROM {tableCards} WHERE deckID = ?", (r) =>
             {
                 Dictionary<long, long> dict = new Dictionary<long, long>();
                 if (r.HasRows)
@@ -165,7 +165,7 @@ namespace Game
                         dict.Add(r.Get<long>("ID"), r.Get<long>("cardID"));
                 }
 
-                return dict.ToArray();
+                return dict;
             }, deckID);
         }
 
