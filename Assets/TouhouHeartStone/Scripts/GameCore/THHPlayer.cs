@@ -198,6 +198,24 @@ namespace TouhouHeartstone
             await game.updateDeath();
             return true;
         }
+
+        public async Task Find(THHGame game, Card[] cards)
+        {
+            int index = await game.Find(this, cards.Length);
+            await game.triggers.doEvent(new DrawEventArg() { player = this }, arg =>
+            {
+                arg.card = cards[index];
+                arg.player.hand.add(game, arg.card);
+                game.logger.log("发现卡牌：");
+                for (int i = 0; i < cards.Length; i++)
+                {
+                    game.logger.log(" " + cards[i]);
+                }
+                game.logger.log(arg.player + "选择" + arg.card);
+                return Task.CompletedTask;
+            });
+        }
+
         public class UseEventArg : EventArg
         {
             public THHPlayer player;
@@ -327,6 +345,13 @@ namespace TouhouHeartstone
             //game.answers.answer(id, new SurrenderResponse()
             //{
             //});
+        }
+        public void cmdSelect(THHGame game, int select)
+        {
+            game.answers.answer(id, new FindResponse()
+            {
+                selectId = select
+            });
         }
         #endregion
     }

@@ -125,6 +125,11 @@ namespace TouhouHeartstone
                 return false;
             if (card.getAttackTimes() >= card.getMaxAttackTimes())//已经攻击过了
                 return false;
+            if (card.isFreeze())
+            {
+                game.logger.log(card + "被冰冻");
+                return false;
+            }
             return true;
         }
         /// <summary>
@@ -246,6 +251,14 @@ namespace TouhouHeartstone
         public static void setElusive(this Card card, bool value)
         {
             card.setProp(Keyword.ELUSIVE, value);
+        }
+        public static bool isFreeze(this Card card)
+        {
+            return card.getProp<bool>(Keyword.FREEZE);
+        }
+        public static void setFreeze(this Card card, bool value)
+        {
+            card.setProp(Keyword.FREEZE, value);
         }
 
         public static int getSpellDamage(this Card card)

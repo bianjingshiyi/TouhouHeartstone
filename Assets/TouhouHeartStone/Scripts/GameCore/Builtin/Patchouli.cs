@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 namespace TouhouHeartstone.Builtin
@@ -41,8 +45,16 @@ namespace TouhouHeartstone.Builtin
     public class SummerFire : SkillCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SKILL | 0x001;
-        public override int cost { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override int id { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect((game,card,target)=>
+            {
+                target.damage(game, card, card.getOwner().getSpellDamage(1));
+                return Task.CompletedTask;
+            })
+        };
     }
     /// <summary>
     /// 3 秘藏魔法 本回合内你使用的下一张法术牌花费-5
@@ -106,7 +118,14 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x007;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect((game,card,target)=>
+            {
+                target.damage(game, card, card.getOwner().getSpellDamage(7));
+                return Task.CompletedTask;
+            })
+        };
     }
     /// <summary>
     /// 5 水精公主 元素法术，使所有友方角色获得减伤+3直到你的下个回合开始
@@ -125,8 +144,40 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x009;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 5;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,card,arg)=>
+            {
+                return true;
+            },(game,card,targets)=>
+            {
+                if(targets[0] is Card target && target.pile.name == PileName.FIELD)
+                    return true;
+                return false;
+            },(game,card,arg,targets)=>
+            {
+                if (targets[0] is Card target)
+                {
+                    card.addBuff(game,new SylphyHornBuff());
+                }
+                return Task.CompletedTask;
+            })
+        };
+        class SylphyHornBuff : Buff
+        {
+            public const int ID = 0x001;
+            public override int id { get; } = ID;
+            public override PropModifier[] modifiers { get; } = new PropModifier[]
+            {
+                new AttackModifier(3),
+                new LifeModifier(6)
+            };
+            public override Buff clone()
+            {
+                return new SylphyHornBuff();
+            }
+        }
     }
     /// <summary>
     /// 5 巨石震怒 元素法术，召唤一个3/9具有嘲讽且无法攻击的巨石
@@ -136,8 +187,46 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x010;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]{
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            {
+                return true;
+            },(game,card,targets)=>
+            {
+                return false;
+            },async (game,card,arg,targets)=>
+            {
+                await arg.player.createToken(game, game.getCardDefine<Boulder>(), arg.player.field.count);
+            })
+        };
     }
+    /// <summary>
+    /// 巨石 衍生物
+    /// </summary>
+    public class Boulder : ServantCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x657;
+        public override int id { get; set; } = ID;
+        public override bool isToken { get; set; } = true;
+        public override int cost { get; set; } = 5;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 9;
+        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectBefore<THHGame.TurnStartEventArg>(PileName.NONE,(game,card,arg)=>
+            {
+                return true;
+            },(game,card,targets)=>
+            {
+                return false;
+            },async(game,card,arg)=>
+            {
+                card.setReady(false);
+            })
+        };
+    }
+
     /// <summary>
     /// 5 金属疲劳 元素法术，对所有敌方随从造成3点伤害
     /// </summary>
@@ -146,7 +235,21 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x011;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]{
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            {
+                return true;
+            },(game,card,targets)=>
+            {
+                return false;
+            },async (game,card,arg,targets)=>
+            {
+                foreach (Card target in game.getOpponent(card.owner as THHPlayer).field)
+                {
+                    await target.damage(game, card, arg.player.getSpellDamage(3));
+                }
+            })
+        };
     }
     /// <summary>
     /// 666 小恶魔 战吼：发现一张墓地中的法术并置入你的手牌。
@@ -155,11 +258,26 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x012;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 6;
+        public override int cost { get; set; } = 0;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 6;
         public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]{
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            {
+                return true;
+            },(game,card,targets)=>
+            {
+                return false;
+            },async(game,card,arg,targets)=>
+            {
+                IEnumerable<Card> cards = arg.player.grave.getCards<SpellCardDefine>().randomTake(game,3);
+                Card[] spcards = cards.ToArray();
+
+                await arg.player.Find(game,spcards);
+
+            })
+        };
     }
     /// <summary>
     /// 12 皇家烈焰 对敌方英雄造成15点伤害。
@@ -169,7 +287,18 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x013;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 12;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]{
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            {
+                return true;
+            },(game,card,targets)=>
+            {
+                return false;
+            },async(game,card,arg,targets)=>
+            {
+                await game.getOpponent(card.owner as THHPlayer).master.damage(game, card, 15);
+            })
+        };
     }
     /// <summary>
     /// 12 沉静月神 沉默并消灭所有敌方随从。
@@ -179,7 +308,21 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x014;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 12;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]{
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            {
+                return true;
+            },(game,card,targets)=>
+            {
+                return false;
+            },async(game,card,arg,targets)=>
+            {
+               foreach(Card target in game.getOpponent(card.owner as THHPlayer).field)
+                {
+                    target.define.effects = new IEffect[0];
+                }
+            })
+        };
     }
     /// <summary>
     /// 111 元素精灵 战吼：将一张随机0费元素法术置入手牌
