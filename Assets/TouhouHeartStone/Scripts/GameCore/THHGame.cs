@@ -179,15 +179,6 @@ namespace TouhouHeartstone
             return opponent.field.Concat(new Card[] { opponent.master }).ToArray();
         }
         #endregion
-        /// <summary>
-        /// 添加玩家
-        /// </summary>
-        /// <param name="frontend">实现接口的前端对象，Game会通过这个对象与前端进行沟通。</param>
-        /// <param name="deck">玩家使用的卡组，数组的第一个整数代表玩家使用的角色卡，后30个是玩家使用的卡组。</param>
-        public void addPlayer(IFrontend frontend, int[] deck)
-        {
-            throw new NotImplementedException();
-        }
         #region Gameflow
         public bool isRunning { get; private set; } = false;
         /// <summary>

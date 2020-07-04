@@ -7,6 +7,7 @@ using UnityEngine.TestTools;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using TouhouHeartstone;
 namespace Tests
 {
     public class OtherTests
@@ -75,6 +76,17 @@ namespace Tests
                 }
                 return result;
             }
+        }
+        [Test]
+        public void flagTest()
+        {
+            PileFlag flag = PileFlag.self | PileFlag.hand | PileFlag.field;
+            Assert.True(flag.HasFlag(PileFlag.self));
+            Assert.False(flag.HasFlag(PileFlag.oppo));
+            Assert.True(flag.HasFlag(PileFlag.hand));
+            Assert.True(flag.HasFlag(PileFlag.field));
+            flag |= PileFlag.both;
+            Assert.True(flag.HasFlag(PileFlag.oppo));
         }
     }
 }

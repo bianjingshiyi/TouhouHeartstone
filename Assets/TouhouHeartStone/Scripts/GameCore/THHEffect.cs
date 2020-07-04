@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-
+using System.Collections.Generic;
 namespace TouhouHeartstone
 {
     public class THHEffect : ITriggerEffect
@@ -319,11 +319,14 @@ namespace TouhouHeartstone
         {
         }
     }
-    public class CSingleTargetEffect : SingleTargetEffect
+    /// <summary>
+    /// 使用lambda表达式的单一目标主动效果
+    /// </summary>
+    public class LambdaSingleTargetEffect : SingleTargetEffect
     {
         public delegate Task ExecuteDelegate(THHGame game, Card card, Card target);
         ExecuteDelegate _onExecute = null;
-        public CSingleTargetEffect(ExecuteDelegate onExecute)
+        public LambdaSingleTargetEffect(ExecuteDelegate onExecute)
         {
             _onExecute = onExecute;
         }
@@ -332,6 +335,85 @@ namespace TouhouHeartstone
             if (_onExecute != null)
                 return _onExecute(game, card, target);
             return Task.CompletedTask;
+        }
+    }
+    /// <summary>
+    /// 被动光环，像是巫师学徒的那种
+    /// </summary>
+    public class Halo : PassiveEffect
+    {
+        public override string[] piles { get; }
+        Func<THHGame, Card, Pile[]> getRange { get; }
+        Func<THHGame, Card, bool> filter { get; }
+        Buff buff { get; }
+        Dictionary<Card, Buff> buffDic { get; } = new Dictionary<Card, Buff>();
+        Trigger<Pile.MoveCardEventArg> onCardEnterHandTrigger { get; set; } = null;
+        /// <summary>
+        /// 简化的构造器
+        /// </summary>
+        /// <param name="buff">光环添加的buff</param>
+        /// <param name="range"></param>
+        /// <param name="pile"></param>
+        /// <param name="filter"></param>
+        public Halo(Buff buff, PileFlag range, PileFlag pile = PileFlag.self | PileFlag.field, Func<THHGame, Card, bool> filter = null)
+        {
+            this.buff = buff;
+            piles = PileName.getPiles(pile);
+            getRange = (game, card) => range.getPiles(game, card.getOwner());
+            this.filter = filter;
+        }
+        public Halo(string[] piles, Func<THHGame, Card, Pile[]> getRange, Func<THHGame, Card, bool> filter, Buff buff)
+        {
+            this.piles = piles;
+            this.getRange = getRange;
+            this.filter = filter;
+            this.buff = buff;
+        }
+        public override void onEnable(THHGame game, Card card)
+        {
+            Pile[] ranges = getRange != null ? getRange(game, card) : null;
+            if (onCardEnterHandTrigger == null)
+            {
+                onCardEnterHandTrigger = new Trigger<Pile.MoveCardEventArg>(arg =>
+                {
+                    if (ranges == null)
+                        return Task.CompletedTask;
+                    if (ranges.Contains(arg.to) &&
+                       (filter == null || filter(game, arg.card)))
+                    {
+                        Buff buff = this.buff.clone();
+                        arg.card.addBuff(game, buff);
+                        buffDic.Add(arg.card, buff);
+                    }
+                    else if (ranges.Contains(arg.from) &&
+                        (filter == null || filter(game, arg.card)))
+                    {
+                        if (buffDic.ContainsKey(arg.card))
+                            arg.card.removeBuff(game, buffDic[arg.card]);
+                    }
+                    return Task.CompletedTask;
+                });
+                game.triggers.registerAfter(onCardEnterHandTrigger);
+            }
+            foreach (var target in card.getOwner().hand.Where(c => filter == null || filter(game, c)))
+            {
+                Buff buff = this.buff.clone();
+                target.addBuff(game, buff);
+                buffDic.Add(target, buff);
+            }
+        }
+        public override void onDisable(THHGame game, Card card)
+        {
+            if (onCardEnterHandTrigger != null)
+            {
+                game.triggers.removeAfter(onCardEnterHandTrigger);
+                onCardEnterHandTrigger = null;
+            }
+            foreach (var pair in buffDic)
+            {
+                pair.Key.removeBuff(game, pair.Value);
+            }
+            buffDic.Clear();
         }
     }
 }

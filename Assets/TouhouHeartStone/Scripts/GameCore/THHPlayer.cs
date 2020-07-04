@@ -43,12 +43,11 @@ namespace TouhouHeartstone
         internal async Task initReplace(THHGame game, params Card[] cards)
         {
             await game.triggers.doEvent(new InitReplaceEventArg() { player = this, cards = cards }, onInitReplace);
-            Task onInitReplace(InitReplaceEventArg arg)
+            async Task onInitReplace(InitReplaceEventArg arg)
             {
-                arg.replacedCards = arg.player.init.replaceByRandom(game, arg.cards, arg.player.deck);
+                arg.replacedCards = await arg.player.init.replaceByRandom(game, arg.cards, arg.player.deck);
                 game.logger.log(arg.player + "替换卡牌：" + string.Join("，", arg.cards.Select(c => c.ToString())) + "=>"
                     + string.Join("，", arg.replacedCards.Select(c => c.ToString())));
-                return Task.CompletedTask;
             }
         }
         public class InitReplaceEventArg : EventArg
