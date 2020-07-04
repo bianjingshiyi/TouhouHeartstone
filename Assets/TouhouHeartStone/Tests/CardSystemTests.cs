@@ -196,6 +196,49 @@ namespace Tests
                 this.modifiers = modifiers;
             }
         }
+        [UnityTest]
+        public IEnumerator fireBallTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<FireBall>() as CardDefine, 30));
+            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<FireBall>() as CardDefine, 30));
+
+            game.skipTurnUntil(() => game.players[0].hand.count > 0);
+            Assert.False(game.players[0].hand[0].isUsable(game, game.players[0], out _));
+            game.skipTurnUntil(() => game.players[0].gem == 4);
+            Assert.True(game.players[0].hand[0].isUsable(game, game.players[0], out _));
+            Assert.True(game.players[0].hand[0].isValidTarget(game, game.players[1].master));
+            game.players[0].cmdUse(game, game.players[0].hand[0], 0, game.players[1].master);
+            yield return new WaitUntil(() => game.triggers.getRecordedEvents().Any(e => e is THHCard.DamageEventArg));
+            Assert.NotNull(game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last());
+        }
+        [UnityTest]
+        public IEnumerator sorcererApprenticeTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster>(),
+                Enumerable.Repeat(game.getCardDefine<FireBall>(), 29).Cast<CardDefine>()
+                .Concat(Enumerable.Repeat(game.getCardDefine<SorcererApprentice>(), 1).Cast<CardDefine>()));
+            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(),
+                Enumerable.Repeat(game.getCardDefine<FireBall>(), 29).Cast<CardDefine>()
+                .Concat(Enumerable.Repeat(game.getCardDefine<SorcererApprentice>(), 1).Cast<CardDefine>()));
+
+            game.skipTurnUntil(() =>
+                game.currentPlayer == game.players[0] &&
+                game.players[0].gem >= game.getCardDefine<SorcererApprentice>().cost &&
+                game.players[0].hand.Any(c => c.define is SorcererApprentice));
+            Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost() == 4));//火球术全是4费
+            var task = game.players[0].cmdUse(game, game.players[0].hand.getCard<SorcererApprentice>());//使用哀绿
+            yield return TestHelper.waitTask(task);
+            Assert.True(game.players[0].field.Any(c => c.define is SorcererApprentice));
+            Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost() == 3));//火球术全是3费
+        }
     }
     static class TestExtension
     {
@@ -226,7 +269,7 @@ namespace Tests
                 game.sortedPlayers[0].cmdInitReplace(game);
                 game.sortedPlayers[1].cmdInitReplace(game);
             }
-
+            int count = 0;
             while (!condition())
             {
                 if (game.currentPlayer == game.sortedPlayers[0])
@@ -235,6 +278,9 @@ namespace Tests
                     return;
                 if (game.currentPlayer == game.sortedPlayers[1])
                     game.sortedPlayers[1].cmdTurnEnd(game);
+                count++;
+                if (count > 1000)
+                    throw new StackOverflowException();
             }
         }
     }

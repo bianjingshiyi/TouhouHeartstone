@@ -23,10 +23,13 @@ namespace TouhouHeartstone
         public THHPlayer(THHGame game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck) : base(id, name)
         {
             this.master = game.createCard(master);
-            addPile(new Pile(game, "Master", new Card[] { this.master }, 1));
+            addPile(new Pile(game, PileName.MASTER, 1));
+            getPile(PileName.MASTER).add(game, this.master);
             skill = game.createCardById(master.skillID);
-            addPile(new Pile(game, "Skill", new Card[] { skill }, 1));
-            this.deck = new Pile(game, "Deck", deck.Select(d => game.createCard(d)).ToArray());
+            addPile(new Pile(game, "Skill", 1));
+            this[PileName.SKILL].add(game, skill);
+            this.deck = new Pile(game, "Deck");
+            this.deck.add(game, deck.Select(d => game.createCard(d)).ToArray());
             addPile(this.deck);
             init = new Pile(game, "Init", maxCount: 4);
             addPile(init);
@@ -180,8 +183,16 @@ namespace TouhouHeartstone
                 {
                     //法术卡，释放效果然后丢进墓地
                     player.hand.remove(game, card);
-                    ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    await effect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    ITriggerEffect triggerEffect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    if (triggerEffect != null)
+                    {
+                        await triggerEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    }
+                    IActiveEffect activeEffect = arg.card.define.getActiveEffect();
+                    if (activeEffect != null)
+                    {
+                        await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    }
                     player.grave.add(game, card);
                 }
             });
@@ -288,9 +299,9 @@ namespace TouhouHeartstone
                 cardsId = cards.Select(c => c.id).ToArray()
             });
         }
-        public void cmdUse(THHGame game, Card card, int position, params Card[] targets)
+        public Task cmdUse(THHGame game, Card card, int position = 0, params Card[] targets)
         {
-            game.answers.answer(id, new UseResponse()
+            return game.answers.answer(id, new UseResponse()
             {
                 cardId = card.id,
                 position = position,

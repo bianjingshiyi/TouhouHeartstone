@@ -12,7 +12,11 @@ namespace TouhouHeartstone
     public class THHGame : CardEngine, IDisposable
     {
         public GameOption option { get; }
-        public CardEngine engine { get; }
+        public new TriggerManager triggers
+        {
+            get { return base.triggers as TriggerManager; }
+            set { base.triggers = value; }
+        }
         Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
         public THHGame(params CardDefine[] defines) : base(null, null, GameOption.Default.randomSeed, defines)
         {
@@ -23,6 +27,14 @@ namespace TouhouHeartstone
             this.option = option;
         }
         #region Player
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <param name="master"></param>
+        /// <param name="deck">注意，牌库的第一张是牌库的底端</param>
+        /// <returns></returns>
         public THHPlayer createPlayer(int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
         {
             if (players.Any(p => p.id == id))

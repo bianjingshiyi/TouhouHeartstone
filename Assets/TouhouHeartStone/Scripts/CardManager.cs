@@ -50,7 +50,7 @@ namespace Game
             return Load(_externalCardPaths);
         }
         /// <summary>
-        /// 从给出的路径中加载卡片和皮肤
+        /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
         /// </summary>
         /// <param name="excelPaths"></param>
         /// <returns></returns>
