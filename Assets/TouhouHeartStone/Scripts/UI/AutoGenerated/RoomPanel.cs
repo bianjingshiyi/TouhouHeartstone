@@ -40,12 +40,12 @@ namespace UI
             this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
             this._StartButton = this.transform.Find("StartButton").GetComponent<Button>();
         }
-        private Main _parent;
-        public Main parent
+        private NetworkingPageGroup _parent;
+        public NetworkingPageGroup parent
         {
             get
             {
-                return this.transform.parent.parent.parent.GetComponent<Main>();
+                return this.transform.parent.GetComponent<NetworkingPageGroup>();
             }
         }
         [SerializeField()]

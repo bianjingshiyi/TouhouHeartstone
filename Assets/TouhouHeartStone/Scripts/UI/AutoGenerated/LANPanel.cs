@@ -35,16 +35,13 @@ namespace UI
             this._NameText = this.transform.Find("RoomInfoPanel").Find("NameText").GetComponent<Text>();
             this._IPText = this.transform.Find("RoomInfoPanel").Find("IPText").GetComponent<Text>();
             this._DescText = this.transform.Find("RoomInfoPanel").Find("DescText").GetComponent<Text>();
-            this._YourPortText = this.transform.Find("RoomInfoPanel").Find("YourPortText").GetComponent<Text>();
-            this._PortText = this.transform.Find("RoomInfoPanel").Find("PortText").GetComponent<Text>();
-            this._InputField = this.transform.Find("RoomInfoPanel").Find("InputField").GetComponent<InputField>();
         }
-        private Main _parent;
-        public Main parent
+        private NetworkingPageGroup _parent;
+        public NetworkingPageGroup parent
         {
             get
             {
-                return this.transform.parent.parent.parent.GetComponent<Main>();
+                return this.transform.parent.GetComponent<NetworkingPageGroup>();
             }
         }
         [SerializeField()]
@@ -175,45 +172,6 @@ namespace UI
                     this._DescText = this.transform.Find("RoomInfoPanel").Find("DescText").GetComponent<Text>();
                 }
                 return this._DescText;
-            }
-        }
-        [SerializeField()]
-        private Text _YourPortText;
-        public Text YourPortText
-        {
-            get
-            {
-                if ((this._YourPortText == null))
-                {
-                    this._YourPortText = this.transform.Find("RoomInfoPanel").Find("YourPortText").GetComponent<Text>();
-                }
-                return this._YourPortText;
-            }
-        }
-        [SerializeField()]
-        private Text _PortText;
-        public Text PortText
-        {
-            get
-            {
-                if ((this._PortText == null))
-                {
-                    this._PortText = this.transform.Find("RoomInfoPanel").Find("PortText").GetComponent<Text>();
-                }
-                return this._PortText;
-            }
-        }
-        [SerializeField()]
-        private InputField _InputField;
-        public InputField InputField
-        {
-            get
-            {
-                if ((this._InputField == null))
-                {
-                    this._InputField = this.transform.Find("RoomInfoPanel").Find("InputField").GetComponent<InputField>();
-                }
-                return this._InputField;
             }
         }
         partial void onAwake();
