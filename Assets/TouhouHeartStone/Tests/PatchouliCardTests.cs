@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TouhouCardEngine;
 using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using UnityEngine;
@@ -191,19 +192,78 @@ namespace Tests
 
         }
 
+        [Test]
         public void PatchouliTrilithonShakeTest()
         {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getCardDefine<TrilithonShake>(), 2)));
 
+            defaultPlayer.cmdTurnEnd(game);
+
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<TrilithonShake>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == TrilithonShake.ID), 0);
+
+            game.Dispose();
         }
 
+        [Test]
         public void PatchouliMetalFatigueTest()
         {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getCardDefine<MetalFatigue>(), 2)));
 
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+
+            elusivePlayer.cmdTurnEnd(game);
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<MetalFatigue>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == MetalFatigue.ID), 0);
+
+            game.Dispose();
         }
 
+        [Test]
         public void PatchouliKoakumaTest()
         {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<SylphyHorn>() as CardDefine, 27)
+            .Concat(Enumerable.Repeat(game.getCardDefine<TestFreeze>(), 2)).Concat(Enumerable.Repeat(game.getCardDefine<Koakuma>(), 1)));
+            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28));
 
+            defaultPlayer.cmdTurnEnd(game);
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<SylphyHorn>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == SylphyHorn.ID), 0, elusivePlayer.field[0]);
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<TestFreeze>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == TestFreeze.ID), 0, defaultPlayer.field);
+
+            elusivePlayer.cmdTurnEnd(game);
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<Koakuma>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == Koakuma.ID), 0);
+            defaultPlayer.cmdSelect(game,0);
+
+            game.Dispose();
         }
 
         public void PatchouliRoyalFlareTest()
