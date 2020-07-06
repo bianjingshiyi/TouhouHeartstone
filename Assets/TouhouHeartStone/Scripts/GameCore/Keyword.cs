@@ -34,5 +34,9 @@
         /// 魔免
         /// </summary>
         public const string ELUSIVE = "Elusive";
+        /// <summary>
+        /// 冰冻
+        /// </summary>
+        public const string FREEZE = "Freeze";
     }
 }

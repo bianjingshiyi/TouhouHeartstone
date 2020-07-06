@@ -190,7 +190,33 @@ namespace Tests
         [Test]
         public void freezeTest()
         {
-            throw new NotImplementedException();
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getCardDefine<TestFreeze>(), 2)));
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+            //玩家0拍白板一张
+
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<TestFreeze>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == TestFreeze.ID), 0, defaultPlayer.field);
+            //玩家1释放冰环
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdAttack(game, defaultPlayer.field[0], elusivePlayer.master);//被冻结的随从无法攻击
+            defaultPlayer.cmdTurnEnd(game);//回合结束，随从解冻
+
+            elusivePlayer.cmdTurnEnd(game);
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdAttack(game, defaultPlayer.field[0], elusivePlayer.master);//已解除冰冻的随从可以攻击
+            Assert.AreEqual(29, elusivePlayer.master.getCurrentLife());
+
+            game.Dispose();
         }
         /// <summary>
         /// 需要写一个愤怒的女祭司随从，给它剧毒属性，然后预期在回合结束的时候她只需要刮一刀就可以刮死对面不止1血的怪
@@ -198,7 +224,26 @@ namespace Tests
         [Test]
         public void poisiousTest_ServantEffect()
         {
-            throw new NotImplementedException();
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getCardDefine<Priestess>(), 2)));
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+            //玩家0拍白板一张
+
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<Priestess>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == Priestess.ID), 0);
+            //玩家1拍女祭司
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 1);
+
+            game.Dispose();
         }
         /// <summary>
         /// 从player[0]开始经过x回合
