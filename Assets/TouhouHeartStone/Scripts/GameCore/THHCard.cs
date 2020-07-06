@@ -330,11 +330,11 @@ namespace TouhouHeartstone
             List<Card> targetList = new List<Card>();
             foreach (THHPlayer player in game.players)
             {
-                if (effect.checkTarget(game, null, card, new object[] { player.master }))
+                if (effect.checkTargets(game, null, card, new object[] { player.master }))
                     targetList.Add(player.master);
                 foreach (Card servant in player.field)
                 {
-                    if (effect.checkTarget(game, null, card, new object[] { servant }))
+                    if (effect.checkTargets(game, null, card, new object[] { servant }))
                         targetList.Add(servant);
                 }
             }
@@ -342,12 +342,12 @@ namespace TouhouHeartstone
         }
         public static bool isValidTarget(this Card card, THHGame game, Card target)
         {
-            IActiveEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) as IActiveEffect;
+            IActiveEffect effect = card.define.getActiveEffect();
             if (effect == null)
                 return false;
             if (target.isStealth())
                 return false;
-            return effect.checkTarget(game, null, card, new object[] { target });
+            return effect.checkTargets(game, null, card, new object[] { target });
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {

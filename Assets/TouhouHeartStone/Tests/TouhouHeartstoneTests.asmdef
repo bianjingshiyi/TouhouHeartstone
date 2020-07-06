@@ -17,7 +17,8 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "LiteNetLib.dll",
-        "ExcelLibrary.dll"
+        "ExcelLibrary.dll",
+        "Mono.Data.Sqlite.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

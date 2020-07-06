@@ -368,11 +368,11 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 2c3a2d5fe7fee4344a22cd42f4292a1d, type: 3}
-    m_FontSize: 25
+    m_FontSize: 0
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 25
-    m_MaxSize: 40
+    m_MinSize: 0
+    m_MaxSize: 107
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -1144,18 +1144,17 @@ MonoBehaviour:
   _Image: {fileID: 6724395705441483877}
   _NameShadowImage: {fileID: 896383926161244298}
   _NameText: {fileID: 5938416541120205926}
+  _SubNameText: {fileID: 0}
   _DescShadowImage: {fileID: 6046089851005868003}
   _DescText: {fileID: 3032609579816535311}
+  _RaceText: {fileID: 0}
   _BorderImage: {fileID: 4064673707873042981}
   _CardFace_Image: {fileID: 1229200602832887063}
   _CostImage: {fileID: 1331063411485177131}
-  _Image_2: {fileID: 0}
   _CostPropNumber: {fileID: 3464161385205700997}
   _AttackImage: {fileID: 7332843369358120563}
-  _Image_1: {fileID: 0}
   _AttackPropNumber: {fileID: 161879813876738413}
   _LifeImage: {fileID: 6026117150627719063}
-  _CardFace_Image_1: {fileID: 0}
   _LifePropNumber: {fileID: 2993783898706470777}
   _CrossImage: {fileID: 3125290120513002367}
   _useCurve:

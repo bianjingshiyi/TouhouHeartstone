@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-
+using System.Collections.Generic;
 namespace TouhouHeartstone
 {
-    public class THHEffect : IActiveEffect
+    public class THHEffect : ITriggerEffect
     {
         public TriggerTime[] triggers { get; }
         string[] ITriggerEffect.events
@@ -29,7 +29,7 @@ namespace TouhouHeartstone
         }
         public delegate bool CheckTargetDelegate(THHGame game, Card card, object[] targets);
         CheckTargetDelegate onCheckTarget { get; }
-        bool IActiveEffect.checkTarget(IGame game, ICard card, object[] vars, object[] targets)
+        bool ITriggerEffect.checkTargets(IGame game, ICard card, object[] vars, object[] targets)
         {
             if (onCheckTarget != null)
                 return onCheckTarget.Invoke(game as THHGame, card as Card, targets);
@@ -61,7 +61,7 @@ namespace TouhouHeartstone
             this.onCheckTarget = onCheckTarget;
             this.onExecute = onExecute;
         }
-        public virtual void register(IGame game, ICard card)
+        public virtual void onEnable(IGame game, ICard card)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -78,7 +78,7 @@ namespace TouhouHeartstone
                 game.triggers.register(time.getEventName(game.triggers), trigger);
             }
         }
-        public virtual void unregister(IGame game, ICard card)
+        public virtual void onDisable(IGame game, ICard card)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -109,7 +109,7 @@ namespace TouhouHeartstone
             })
         {
         }
-        public override void register(IGame game, ICard card)
+        public override void onEnable(IGame game, ICard card)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -126,7 +126,7 @@ namespace TouhouHeartstone
                 game.triggers.registerBefore(trigger);
             }
         }
-        public override void unregister(IGame game, ICard card)
+        public override void onDisable(IGame game, ICard card)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -178,7 +178,7 @@ namespace TouhouHeartstone
             })
         {
         }
-        public override void register(IGame game, ICard card)
+        public override void onEnable(IGame game, ICard card)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -195,7 +195,7 @@ namespace TouhouHeartstone
                 game.triggers.registerAfter(trigger);
             }
         }
-        public override void unregister(IGame game, ICard card)
+        public override void onDisable(IGame game, ICard card)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -204,6 +204,216 @@ namespace TouhouHeartstone
                 game.logger.log("Effect", card + "注销效果" + effectName);
                 game.triggers.removeAfter(trigger);
             }
+        }
+    }
+    public abstract class PassiveEffect : IPassiveEffect
+    {
+        public string[] events => throw new System.NotImplementedException();
+        public abstract string[] piles { get; }
+        public bool checkCondition(IGame game, ICard card, object[] vars)
+        {
+            throw new System.NotImplementedException();
+        }
+        public bool checkTarget(IGame game, ICard card, object[] vars, object[] targets)
+        {
+            throw new System.NotImplementedException();
+        }
+        public Task execute(IGame game, ICard card, object[] vars, object[] targets)
+        {
+            throw new System.NotImplementedException();
+        }
+        public string[] getEvents(ITriggerManager manager)
+        {
+            return new string[0];
+        }
+        void IPassiveEffect.onEnable(IGame game, ICard card)
+        {
+            onEnable(game as THHGame, card as Card);
+        }
+        public abstract void onEnable(THHGame game, Card card);
+        void IPassiveEffect.onDisable(IGame game, ICard card)
+        {
+            onDisable(game as THHGame, card as Card);
+        }
+        public abstract void onDisable(THHGame game, Card card);
+    }
+    public abstract class SingleTargetEffect : IActiveEffect
+    {
+        public string[] piles => throw new NotImplementedException();
+        public string[] events => throw new NotImplementedException();
+        public string[] getEvents(ITriggerManager manager)
+        {
+            return new string[] { manager.getName<THHPlayer.ActiveEventArg>() };
+        }
+        /// <summary>
+        /// 可选目标范围。
+        /// </summary>
+        public virtual string[] ranges { get; } = new string[]
+        {
+            PileName.FIELD,
+            PileName.MASTER
+        };
+        public bool checkCondition(IGame game, ICard card, object[] vars)
+        {
+            return checkCondition(game as THHGame, card as Card, vars);
+        }
+        /// <summary>
+        /// 默认实现，存在可以作为目标的卡片。
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="vars"></param>
+        /// <returns></returns>
+        public virtual bool checkCondition(THHGame game, Card card, object[] vars)
+        {
+            foreach (var player in game.players)
+            {
+                foreach (var pileName in ranges)
+                {
+                    foreach (var target in player.getPile(pileName))
+                    {
+                        if (checkTarget(game, card, target))
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool checkTargets(IGame game, ICard card, object[] vars, object[] targets)
+        {
+            return checkTargets(game as THHGame, card as Card, vars, targets);
+        }
+        public bool checkTargets(THHGame game, Card card, object[] vars, object[] targets)
+        {
+            if (targets != null &&
+                targets.Length > 0 &&
+                targets[0] is Card target &&
+                checkTarget(game, card, target))
+                return true;
+            return false;
+        }
+        /// <summary>
+        /// 默认实现，目标必须在可选范围内
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public virtual bool checkTarget(THHGame game, Card card, Card target)
+        {
+            return ranges.Contains(target.pile.name);
+        }
+        public Task execute(IGame game, ICard card, object[] vars, object[] targets)
+        {
+            if (targets != null &&
+                targets.Length > 0 &&
+                targets[0] is Card target)
+                return execute(game as THHGame, card as Card, target);
+            return Task.CompletedTask;
+        }
+        public abstract Task execute(THHGame game, Card card, Card target);
+        public void onDisable(IGame game, ICard card)
+        {
+        }
+        public void onEnable(IGame game, ICard card)
+        {
+        }
+    }
+    /// <summary>
+    /// 使用lambda表达式的单一目标主动效果
+    /// </summary>
+    public class LambdaSingleTargetEffect : SingleTargetEffect
+    {
+        public delegate Task ExecuteDelegate(THHGame game, Card card, Card target);
+        ExecuteDelegate _onExecute = null;
+        public LambdaSingleTargetEffect(ExecuteDelegate onExecute)
+        {
+            _onExecute = onExecute;
+        }
+        public override Task execute(THHGame game, Card card, Card target)
+        {
+            if (_onExecute != null)
+                return _onExecute(game, card, target);
+            return Task.CompletedTask;
+        }
+    }
+    /// <summary>
+    /// 被动光环，像是巫师学徒的那种
+    /// </summary>
+    public class Halo : PassiveEffect
+    {
+        public override string[] piles { get; }
+        Func<THHGame, Card, Pile[]> getRange { get; }
+        Func<THHGame, Card, bool> filter { get; }
+        Buff buff { get; }
+        Dictionary<Card, Buff> buffDic { get; } = new Dictionary<Card, Buff>();
+        Trigger<Pile.MoveCardEventArg> onCardEnterHandTrigger { get; set; } = null;
+        /// <summary>
+        /// 简化的构造器
+        /// </summary>
+        /// <param name="buff">光环添加的buff</param>
+        /// <param name="range"></param>
+        /// <param name="pile"></param>
+        /// <param name="filter"></param>
+        public Halo(Buff buff, PileFlag range, PileFlag pile = PileFlag.self | PileFlag.field, Func<THHGame, Card, bool> filter = null)
+        {
+            this.buff = buff;
+            piles = PileName.getPiles(pile);
+            getRange = (game, card) => range.getPiles(game, card.getOwner());
+            this.filter = filter;
+        }
+        public Halo(string[] piles, Func<THHGame, Card, Pile[]> getRange, Func<THHGame, Card, bool> filter, Buff buff)
+        {
+            this.piles = piles;
+            this.getRange = getRange;
+            this.filter = filter;
+            this.buff = buff;
+        }
+        public override void onEnable(THHGame game, Card card)
+        {
+            Pile[] ranges = getRange != null ? getRange(game, card) : null;
+            if (onCardEnterHandTrigger == null)
+            {
+                onCardEnterHandTrigger = new Trigger<Pile.MoveCardEventArg>(arg =>
+                {
+                    if (ranges == null)
+                        return Task.CompletedTask;
+                    if (ranges.Contains(arg.to) &&
+                       (filter == null || filter(game, arg.card)))
+                    {
+                        Buff buff = this.buff.clone();
+                        arg.card.addBuff(game, buff);
+                        buffDic.Add(arg.card, buff);
+                    }
+                    else if (ranges.Contains(arg.from) &&
+                        (filter == null || filter(game, arg.card)))
+                    {
+                        if (buffDic.ContainsKey(arg.card))
+                            arg.card.removeBuff(game, buffDic[arg.card]);
+                    }
+                    return Task.CompletedTask;
+                });
+                game.triggers.registerAfter(onCardEnterHandTrigger);
+            }
+            foreach (var target in card.getOwner().hand.Where(c => filter == null || filter(game, c)))
+            {
+                Buff buff = this.buff.clone();
+                target.addBuff(game, buff);
+                buffDic.Add(target, buff);
+            }
+        }
+        public override void onDisable(THHGame game, Card card)
+        {
+            if (onCardEnterHandTrigger != null)
+            {
+                game.triggers.removeAfter(onCardEnterHandTrigger);
+                onCardEnterHandTrigger = null;
+            }
+            foreach (var pair in buffDic)
+            {
+                pair.Key.removeBuff(game, pair.Value);
+            }
+            buffDic.Clear();
         }
     }
 }

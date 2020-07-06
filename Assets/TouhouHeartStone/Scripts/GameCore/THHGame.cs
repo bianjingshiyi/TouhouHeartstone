@@ -12,7 +12,11 @@ namespace TouhouHeartstone
     public class THHGame : CardEngine, IDisposable
     {
         public GameOption option { get; }
-        public CardEngine engine { get; }
+        public new TriggerManager triggers
+        {
+            get { return base.triggers as TriggerManager; }
+            set { base.triggers = value; }
+        }
         Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
         public THHGame(params CardDefine[] defines) : base(null, null, GameOption.Default.randomSeed, defines)
         {
@@ -23,6 +27,14 @@ namespace TouhouHeartstone
             this.option = option;
         }
         #region Player
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <param name="master"></param>
+        /// <param name="deck">注意，牌库的第一张是牌库的底端</param>
+        /// <returns></returns>
         public THHPlayer createPlayer(int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
         {
             if (players.Any(p => p.id == id))
@@ -167,15 +179,6 @@ namespace TouhouHeartstone
             return opponent.field.Concat(new Card[] { opponent.master }).ToArray();
         }
         #endregion
-        /// <summary>
-        /// 添加玩家
-        /// </summary>
-        /// <param name="frontend">实现接口的前端对象，Game会通过这个对象与前端进行沟通。</param>
-        /// <param name="deck">玩家使用的卡组，数组的第一个整数代表玩家使用的角色卡，后30个是玩家使用的卡组。</param>
-        public void addPlayer(IFrontend frontend, int[] deck)
-        {
-            throw new NotImplementedException();
-        }
         #region Gameflow
         public bool isRunning { get; private set; } = false;
         /// <summary>

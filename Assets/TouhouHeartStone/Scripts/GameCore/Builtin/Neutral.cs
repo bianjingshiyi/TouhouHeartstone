@@ -403,6 +403,10 @@ namespace TouhouHeartstone.Builtin
         {
             new AttackModifier(2)
         };
+        public override Buff clone()
+        {
+            return new ClownpieceBuff();
+        }
     }
     /// <summary>
     /// 森之妖精 每当一个妖精阵亡后，花费-1

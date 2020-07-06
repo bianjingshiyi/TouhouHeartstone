@@ -26,8 +26,20 @@ namespace TouhouHeartstone
                     {
                         if (constructor.Invoke(new object[0]) is CardDefine define)
                         {
-                            cardList.Add(define);
-                            UberDebug.LogChannel("Load", "加载卡片" + define.ToJson());
+                            try
+                            {
+                                UberDebug.LogChannel("Load", "加载卡片" + define.ToJson());
+                                cardList.Add(define);
+                            }
+                            catch (Exception e)
+                            {
+                                if (e.InnerException is NotImplementedException)
+                                {
+                                    UberDebug.LogWarningChannel("Load", "忽略尚未完成的卡片" + define);
+                                }
+                                else
+                                    throw e;
+                            }
                         }
                     }
                 }
