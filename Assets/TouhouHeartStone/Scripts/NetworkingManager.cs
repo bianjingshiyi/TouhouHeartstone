@@ -30,6 +30,8 @@ namespace Game
         {
             get { return host.address; }
         }
+        public string[] addresses => host.addresses;
+
         [SerializeField]
         private ClientManager _client;
         public ClientManager client
@@ -93,7 +95,7 @@ namespace Game
         }
         protected void Start()
         {
-            host.start();
+            host.start(_port);
             client.start();
             _port = host.port;
 
@@ -250,19 +252,31 @@ namespace Game
             ui.NetworkingPageGroup.display(ipPanel);
             ipPanel.ConnectButton.onClick.set(() =>
             {
-                Match m = Regex.Match(ipPanel.IPInputField.text, @"(?<ip>d+\.d+\.d+\.d+)\:(?<port>d+)");
-                if (m.Success)
+                int port = _port;
+                string address = "";
+                var uri = new Uri("http://" + ipPanel.IPInputField.text);
+
+                if (uri.HostNameType == UriHostNameType.Dns)
                 {
-                    _ = joinRoom(new RoomInfo()
-                    {
-                        ip = m.Groups["ip"].Value,
-                        port = int.Parse(m.Groups["port"].Value)
-                    });
+                    address = Dns.GetHostAddresses(uri.Host).FirstOrDefault(e => e.AddressFamily == AddressFamily.InterNetwork)?.ToString();
                 }
                 else
-                    getManager<UIManager>().getObject<Dialog>().display("输入的地址格式有误", null);
+                {
+                    address = uri.Host;
+                }
+
+                if (uri.Port != 80)
+                    port = uri.Port;
+
+                _ = joinRoom(new RoomInfo()
+                {
+                    ip = address,
+                    port = port
+                });
+
+                // getManager<UIManager>().getObject<Dialog>().display("输入的地址格式有误", null);
             });
-            ipPanel.AddressText.text = "你的地址：\n" + address;
+            ipPanel.AddressText.text = "你的地址：\n" + string.Join("\n", addresses);
         }
         [SerializeField]
         int _port;
@@ -283,19 +297,6 @@ namespace Game
             lanPanel.NameText.text = null;
             lanPanel.IPText.text = null;
             lanPanel.DescText.text = null;
-            lanPanel.YourPortText.text = "你的端口：" + host.port;
-            lanPanel.InputField.text = _port.ToString();
-            lanPanel.InputField.onEndEdit.set(value =>
-            {
-                if (int.TryParse(value, out int i))
-                {
-                    _port = i;
-                    Debug.Log("端口变更为" + i);
-                    flushLANRooms();
-                }
-                else
-                    lanPanel.InputField.text = _port.ToString();
-            });
             findLANRooms();
         }
         private void refreshRoomListItem(RoomListItem item, RoomInfo obj)

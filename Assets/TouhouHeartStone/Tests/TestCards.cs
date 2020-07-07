@@ -344,6 +344,34 @@ namespace Tests
             }
         }
     }
+
+    /// <summary>
+    /// 冰环法术
+    /// </summary>
+    public class TestFreeze : SpellCardDefine
+    {
+        public const int ID = 0x0011000F;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            {
+                return true;
+            },(game,card,targets)=>
+            {
+                return true;
+            },(game,card,arg,targets)=>
+            {
+                foreach(Card target in targets)
+                {
+                    target.setFreeze(true);
+                }
+                return Task.CompletedTask;
+            })
+        };
+    }
+
     /// <summary>
     /// 巫师学徒
     /// </summary>
@@ -442,6 +470,41 @@ namespace Tests
             {
                 target.damage(game, card, card.getOwner().getSpellDamage(6));
                 return Task.CompletedTask;
+            })
+        };
+    }
+
+    /// <summary>
+    /// 剧毒女祭师
+    /// </summary>
+    public class Priestess : ServantCardDefine
+    {
+        public const int ID = 0x001100AA;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 6;
+        public override int life { get; set; } = 1;
+        public override string[] tags { get; set; } = new string[] { };
+        public override string[] keywords { get; set; } = new string[] { Keyword.POISONOUS };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
+            {
+                if(arg.player!=game.currentPlayer)
+                return false;
+                return true;
+            },(game,card,targets)=>
+            {
+                return false;
+            },async(game,card,arg)=>
+            {
+                for(int i=0;i<6;i++)
+                {
+                    foreach (var character in game.getOpponent(card.owner as THHPlayer).field.randomTake(game, 1))
+                    {
+                        await character.damage(game, card, 1);
+                    }
+                }
             })
         };
     }

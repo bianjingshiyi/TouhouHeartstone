@@ -371,6 +371,18 @@ namespace TouhouHeartstone
             await triggers.doEvent(new TurnEndEventArg() { player = player }, arg =>
             {
                 logger.log("Debug", currentPlayer + "回合结束");
+                foreach (Card servant in arg.player.field)
+                {
+                    if (servant.isFreeze())
+                    {
+                        servant.setAttackTimes(servant.getAttackTimes() + 1);
+                        if (servant.getMaxAttackTimes() - servant.getAttackTimes() >= 0)
+                        {
+                            logger.log("被冻结的随从解除冰冻");
+                            servant.setFreeze(false);
+                        }
+                    }
+                }
                 return Task.CompletedTask;
             });
             time.cancel(turnTimer);
@@ -380,6 +392,24 @@ namespace TouhouHeartstone
         {
             public THHPlayer player;
         }
+
+        /// <summary>
+        /// 发现机制
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> Find(THHPlayer player, int count)
+        {
+            int index = 0;
+            IResponse response = await answers.ask(player.id, new FindRequest(count), option.timeoutForTurn * 2);
+            switch (response)
+            {
+                case FindResponse find:
+                    index = find.selectId;
+                    break;
+            }
+            return index;
+        }
+
         /// <summary>
         /// 清理战场上死亡的随从
         /// </summary>
