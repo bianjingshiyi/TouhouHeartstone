@@ -110,50 +110,59 @@ namespace TouhouHeartstone
         void saveCardToExcel(CardDefine card, Worksheet sheet)
         {
             int idIndex = findColIndex(sheet, "ID");
-            int rowIndex = sheet.Cells.Rows.Count;
+            int classIndex = findColIndex(sheet, "Class");
+            int cardRow = sheet.Cells.Rows.Count;//如果表里没有这张卡，那么就新增
             foreach (var pRow in sheet.Cells.Rows)
             {
                 if (numberToInt(pRow.Value.GetCell(idIndex).Value) == card.id)
-                    rowIndex = pRow.Key;
+                {
+                    cardRow = pRow.Key;//如果有相同ID的卡，复写
+                    sheet.Cells[cardRow, classIndex] = new Cell(card.GetType().Name);
+                }
+                else if (pRow.Value.GetCell(classIndex).StringValue == card.GetType().Name)
+                {
+                    cardRow = pRow.Key;//如果有相同类型的卡，复写
+                    sheet.Cells[cardRow, idIndex] = new Cell(card.id);
+                }
             }
 
-            sheet.Cells[rowIndex, idIndex] = new Cell(card.id);
+            sheet.Cells[cardRow, idIndex] = new Cell(card.id);
             int typeIndex = findColIndex(sheet, "Type");
             if (card is ServantCardDefine)
-                sheet.Cells[rowIndex, typeIndex] = new Cell("Servant");
+                sheet.Cells[cardRow, typeIndex] = new Cell("Servant");
             else if (card is MasterCardDefine)
-                sheet.Cells[rowIndex, typeIndex] = new Cell("Master");
+                sheet.Cells[cardRow, typeIndex] = new Cell("Master");
             else if (card is SkillCardDefine)
-                sheet.Cells[rowIndex, typeIndex] = new Cell("Skill");
+                sheet.Cells[cardRow, typeIndex] = new Cell("Skill");
             else if (card is SpellCardDefine)
-                sheet.Cells[rowIndex, typeIndex] = new Cell("Spell");
+                sheet.Cells[cardRow, typeIndex] = new Cell("Spell");
             else if (card is ItemCardDefine)
-                sheet.Cells[rowIndex, typeIndex] = new Cell("Item");
+                sheet.Cells[cardRow, typeIndex] = new Cell("Item");
             int costIndex = findColIndex(sheet, "Cost");
-            sheet.Cells[rowIndex, costIndex] = new Cell(card.getProp<int>("cost"));
+            sheet.Cells[cardRow, costIndex] = new Cell(card.getProp<int>("cost"));
             int attackIndex = findColIndex(sheet, "Attack");
-            sheet.Cells[rowIndex, attackIndex] = new Cell(card.getProp<int>("attack"));
+            sheet.Cells[cardRow, attackIndex] = new Cell(card.getProp<int>("attack"));
             int lifeIndex = findColIndex(sheet, "Life");
-            sheet.Cells[rowIndex, lifeIndex] = new Cell(card.getProp<int>("life"));
+            sheet.Cells[cardRow, lifeIndex] = new Cell(card.getProp<int>("life"));
             int tagsIndex = findColIndex(sheet, "Tags");
             if (card.getProp<string[]>("tags") is string[] tags)
-                sheet.Cells[rowIndex, tagsIndex] = new Cell(string.Join(",", tags));
+                sheet.Cells[cardRow, tagsIndex] = new Cell(string.Join(",", tags));
             else
-                sheet.Cells[rowIndex, tagsIndex] = new Cell(null);
+                sheet.Cells[cardRow, tagsIndex] = new Cell(null);
             int keywordsIndex = findColIndex(sheet, "Keywords");
             if (card.getProp<string[]>("keywords") is string[] keywords)
-                sheet.Cells[rowIndex, keywordsIndex] = new Cell(string.Join(",", keywords));
+                sheet.Cells[cardRow, keywordsIndex] = new Cell(string.Join(",", keywords));
             else
-                sheet.Cells[rowIndex, keywordsIndex] = new Cell(null);
+                sheet.Cells[cardRow, keywordsIndex] = new Cell(null);
             if (_manager != null)
             {
                 var skin = _manager.getSkin(card.id);
                 int imageIndex = findColIndex(sheet, "Image");
-                sheet.Cells[rowIndex, imageIndex] = new Cell(skin == null ? sheet.Cells[rowIndex, imageIndex].StringValue : (skin.image != null && !string.IsNullOrEmpty(skin.image.name) ? (skin.image.name + ".png") : sheet.Cells[rowIndex, imageIndex].StringValue));
+                sheet.Cells[cardRow, imageIndex] = new Cell(skin == null ? sheet.Cells[cardRow, imageIndex].StringValue : (skin.image != null && !string.IsNullOrEmpty(skin.image.name) ? (skin.image.name + ".png") : sheet.Cells[cardRow, imageIndex].StringValue));
                 int nameIndex = findColIndex(sheet, "Name");
-                sheet.Cells[rowIndex, nameIndex] = new Cell(skin == null ? (!string.IsNullOrEmpty(sheet.Cells[rowIndex, nameIndex].StringValue) ? sheet.Cells[rowIndex, nameIndex].StringValue : card.GetType().Name) : skin.name);
+                sheet.Cells[cardRow, nameIndex] = new Cell(skin == null ? (!string.IsNullOrEmpty(sheet.Cells[cardRow, nameIndex].StringValue) ? sheet.Cells[cardRow, nameIndex].StringValue : card.GetType().Name) : skin.name);
                 int descIndex = findColIndex(sheet, "Desc");
-                sheet.Cells[rowIndex, descIndex] = new Cell(skin == null ? sheet.Cells[rowIndex, descIndex].StringValue : skin.desc);
+                sheet.Cells[cardRow, descIndex] = new Cell(skin == null ? sheet.Cells[cardRow, descIndex].StringValue : skin.desc);
             }
         }
         static int numberToInt(object value)
