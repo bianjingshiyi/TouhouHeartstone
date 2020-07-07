@@ -13,6 +13,7 @@ using UI;
 using ExcelLibrary;
 using ExcelLibrary.SpreadSheet;
 using Game;
+using BJSYGameCore;
 namespace TouhouHeartstone
 {
     class CardDefineExporterWindow : EditorWindow
@@ -32,50 +33,77 @@ namespace TouhouHeartstone
         string _templatePath;
         [SerializeField]
         string _outputPath;
-        private void OnGUI()
+        Assembly[] _assemblies;
+        GenericMenu _menu;
+        protected void OnEnable()
         {
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            GenericMenu menu = new GenericMenu();
-            List<CardDefine> cardList = new List<CardDefine>();
-            foreach (var assembly in assemblies)
+            _assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            _menu = new GenericMenu();
+            foreach (var assembly in _assemblies)
             {
                 string name = assembly.GetName().Name.Replace('.', '/');
                 bool isSelected = _selectedAssemblyNameList.Contains(name);
-                if (isSelected)
-                {
-                    cardList.AddRange(CardHelper.getCardDefines(new Assembly[] { assembly }));
-                }
-                menu.AddItem(new GUIContent(name), isSelected, () =>
+                _menu.AddItem(new GUIContent(name), isSelected, () =>
                 {
                     if (!_selectedAssemblyNameList.Contains(name))
                         _selectedAssemblyNameList.Add(name);
                     else
                         _selectedAssemblyNameList.Remove(name);
+                    loadCardList();
                 });
             }
+            loadCardList();
+        }
+        List<CardDefine> _cardList;
+        protected void OnGUI()
+        {
             if (EditorGUILayout.DropdownButton(new GUIContent("选择编译集"), FocusType.Keyboard))
             {
-                menu.DropDown(GUILayoutUtility.GetLastRect());
+                _menu.DropDown(GUILayoutUtility.GetLastRect());
             }
             _manager = EditorGUILayout.ObjectField("Table", _manager, typeof(CardManager), true) as CardManager;
             _scroll = EditorGUILayout.BeginScrollView(_scroll, GUILayout.Width(512), GUILayout.Height(512));
-            foreach (var card in cardList)
+            foreach (var card in _cardList.OrderBy(c => c.id))
             {
-                GUILayout.Label(card.GetType().Name);
+                if (!card.isObsolete())
+                    GUILayout.Label(card.id + " " + card.GetType().Name);
+                else
+                {
+                    var style = new GUIStyle(GUI.skin.label);
+                    style.normal.textColor = Color.yellow;
+                    GUILayout.Label(card.id + " " + card.GetType().Name, style);
+                }
             }
             EditorGUILayout.EndScrollView();
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("导出Xml", GUILayout.Width(128)))
             {
-                exportAsXml(cardList);
+                exportAsXml(_cardList);
             }
             if (GUILayout.Button("导出Excel", GUILayout.Width(128)))
             {
-                exportAsExcel(cardList);
+                exportAsExcel(_cardList);
+            }
+            if (GUILayout.Button("覆盖Excel", GUILayout.Width(128)))
+            {
+                overrideToExcel(_cardList);
             }
             EditorGUILayout.EndHorizontal();
         }
-        private void exportAsExcel(List<CardDefine> cardList)
+        void loadCardList()
+        {
+            _cardList = new List<CardDefine>();
+            foreach (var assembly in _assemblies)
+            {
+                string name = assembly.GetName().Name.Replace('.', '/');
+                bool isSelected = _selectedAssemblyNameList.Contains(name);
+                if (isSelected)
+                {
+                    _cardList.AddRange(CardHelper.getCardDefines(new Assembly[] { assembly }));
+                }
+            }
+        }
+        void exportAsExcel(List<CardDefine> cardList)
         {
             _manager.load();
 
@@ -106,6 +134,71 @@ namespace TouhouHeartstone
             }
             else
                 Debug.LogError("不存在模板文件" + _templatePath);
+        }
+        void overrideToExcel(List<CardDefine> cardList)
+        {
+            if (trySelectFilePath(ref _outputPath, "选择要覆盖的文件", "Cards", "xls"))
+            {
+                Workbook workbook;
+                using (FileStream stream = new FileStream(_outputPath, FileMode.Open))
+                {
+                    workbook = Workbook.Load(stream);
+                    Worksheet worksheet = workbook.Worksheets[0];
+                    foreach (var card in cardList)
+                    {
+                        if (isExcelContainCard(worksheet, card))
+                        {
+                            Debug.Log("覆盖" + card);
+                            saveCardToExcel(card, worksheet);
+                        }
+                    }
+                }
+                using (FileStream stream = new FileStream(_outputPath, FileMode.Create))
+                {
+                    workbook.Save(stream);
+                }
+            }
+            else
+                Debug.LogError("不存在覆盖文件" + Path.GetDirectoryName(_outputPath));
+        }
+        /// <summary>
+        /// 尝试选择文件路径并将它保存为字段，下一次选择路径会优先打开上一次选择的文件夹。
+        /// </summary>
+        /// <param name="pathField">路径字段</param>
+        /// <param name="title"></param>
+        /// <param name="defaultName"></param>
+        /// <param name="extension">不需要带.</param>
+        /// <param name="defaultDir">如果不填，那么是Application.streamingAssetsPath</param>
+        /// <returns></returns>
+        bool trySelectFilePath(ref string pathField, string title, string defaultName, string extension, string defaultDir = null)
+        {
+            pathField = EditorUtility.SaveFilePanel(title,
+                        File.Exists(pathField) ? Path.GetDirectoryName(pathField) : (Directory.Exists(defaultDir) ? defaultDir : Application.streamingAssetsPath), defaultName, extension);
+            if (Directory.Exists(Path.GetDirectoryName(pathField)))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        bool isExcelContainCard(Worksheet sheet, CardDefine card)
+        {
+            int idIndex = findColIndex(sheet, "ID");
+            int classIndex = findColIndex(sheet, "Class");
+            foreach (var pRow in sheet.Cells.Rows)
+            {
+                if (numberToInt(pRow.Value.GetCell(idIndex).Value) == card.id)
+                {
+                    return true;
+                }
+                else if (pRow.Value.GetCell(classIndex).StringValue == card.GetType().Name)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         void saveCardToExcel(CardDefine card, Worksheet sheet)
         {
@@ -215,7 +308,6 @@ namespace TouhouHeartstone
             else
                 Debug.LogError("不存在模板文件" + _templatePath);
         }
-
         void saveCardToXml(CardDefine card, XmlDocument xml)
         {
             xml["Card"]["ID"].InnerText = card.id.ToString();

@@ -384,7 +384,7 @@ namespace Tests
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new Halo(new GeneratedBuff(new CostModifier(-1)), PileFlag.self | PileFlag.hand,filter:(game,card)=>
+            new Halo(new GeneratedBuff(ID, new CostModifier(-1)), PileFlag.self | PileFlag.hand,filter:(game,card)=>
             {
                 return card.define is SpellCardDefine;
             })

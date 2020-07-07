@@ -344,7 +344,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 4 奥术知识 抽两张法术牌并使其花费-1
     /// </summary>
-    public class ArcaneKnoledge : SpellCardDefine
+    public class ArcaneKnowledge : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x018;
         public override int cost { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
