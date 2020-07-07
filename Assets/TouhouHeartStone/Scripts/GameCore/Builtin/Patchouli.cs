@@ -159,25 +159,11 @@ namespace TouhouHeartstone.Builtin
             {
                 if (targets[0] is Card target)
                 {
-                    card.addBuff(game,new SylphyHornBuff());
+                    card.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3),new LifeModifier(6)));
                 }
                 return Task.CompletedTask;
             })
         };
-        class SylphyHornBuff : Buff
-        {
-            public const int ID = 0x001;
-            public override int id { get; } = ID;
-            public override PropModifier[] modifiers { get; } = new PropModifier[]
-            {
-                new AttackModifier(3),
-                new LifeModifier(6)
-            };
-            public override Buff clone()
-            {
-                return new SylphyHornBuff();
-            }
-        }
     }
     /// <summary>
     /// 5 巨石震怒 元素法术，召唤一个3/9具有嘲讽且无法攻击的巨石
