@@ -18,7 +18,7 @@ namespace Tests
             var Namespace = unit.Namespaces[0];
             Assert.AreEqual("Game", Namespace.Name);
             var Class = Namespace.Types[0];
-            Assert.AreEqual("GraphMatPropCtrl", Class.BaseTypes[0].BaseType);
+            Assert.AreEqual(nameof(GraphMatPropCtrl), Class.BaseTypes[0].BaseType);
             Assert.AreEqual("TestShader", Class.Name);
             checkField(Class, typeof(int), "SHADER_ID", MemberAttributes.Public | MemberAttributes.Const, shader.GetInstanceID());
             checkField(Class, typeof(Color), "_Color");
