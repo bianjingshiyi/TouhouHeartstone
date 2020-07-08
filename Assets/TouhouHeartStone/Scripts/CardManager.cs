@@ -12,6 +12,7 @@ using IGensoukyo.Utilities;
 using TouhouHeartstone;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using ILogger = TouhouCardEngine.Interfaces.ILogger;
 namespace Game
 {
     public class CardManager : Manager
@@ -49,20 +50,20 @@ namespace Game
         /// 加载配置路径中的所有卡片和皮肤。
         /// </summary>
         /// <returns></returns>
-        public Task load()
+        public Task load(ILogger logger = null)
         {
-            return Load(_externalCardPaths);
+            return Load(_externalCardPaths, logger);
         }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
         /// </summary>
         /// <param name="excelPaths"></param>
         /// <returns></returns>
-        public async Task Load(string[] excelPaths)
+        public async Task Load(string[] excelPaths, ILogger logger = null)
         {
             //加载内置卡片
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies));
+            List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies, logger));
 
             List<string> pathList = new List<string>();
             foreach (var excelPath in excelPaths)

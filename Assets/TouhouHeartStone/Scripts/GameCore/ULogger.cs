@@ -1,4 +1,6 @@
-﻿namespace TouhouHeartstone
+﻿using System.Collections.Generic;
+
+namespace TouhouHeartstone
 {
     public class ULogger : TouhouCardEngine.Interfaces.ILogger
     {
@@ -13,15 +15,18 @@
             this.name = name;
         }
         public bool enable { get; set; } = true;
+
+        public List<string> blackList { get; set; } = new List<string>();
+
         public void log(string msg)
         {
-            if (!enable)
-                return;
-            UberDebug.Log((string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+            log("Debug", msg);
         }
         public void log(string channel, string msg)
         {
             if (!enable)
+                return;
+            if (blackList.Contains(channel))
                 return;
             if (channel == "Debug")
                 UberDebug.Log((string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
@@ -31,6 +36,40 @@
                 UberDebug.LogError((string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
             else
                 UberDebug.LogChannel(channel, (string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+        }
+
+        public void logWarn(string msg)
+        {
+            logWarn(msg);
+        }
+
+        public void logWarn(string channel, string msg)
+        {
+            if (!enable)
+                return;
+            if (blackList.Contains(channel))
+                return;
+            if (string.IsNullOrEmpty(channel))
+                UberDebug.LogWarning((string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+            else
+                UberDebug.LogWarningChannel(channel, (string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+        }
+
+        public void logError(string msg)
+        {
+            logError(msg);
+        }
+
+        public void logError(string channel, string msg)
+        {
+            if (!enable)
+                return;
+            if (blackList.Contains(channel))
+                return;
+            if (string.IsNullOrEmpty(channel))
+                UberDebug.LogError((string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+            else
+                UberDebug.LogErrorChannel(channel, (string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
         }
     }
 }

@@ -42,14 +42,13 @@ namespace Tests
 
         void checkCall(CodeMemberMethod method, string methodName, string propName)
         {
-            var call = method.Statements.OfType<CodeExpressionStatement>().Select(e => e.Expression).OfType<CodeMethodInvokeExpression>().First(c => c.Method.MethodName == methodName);
-            var material = call.Method.TargetObject as CodePropertyReferenceExpression;
-            var p1 = call.Parameters[0] as CodePrimitiveExpression;
-            var p2 = call.Parameters[1] as CodeFieldReferenceExpression;
-            Assert.AreEqual("material", material.PropertyName);
-            Assert.AreEqual(methodName, call.Method.MethodName);
-            Assert.AreEqual(propName, p1.Value);
-            Assert.AreEqual(propName, p2.FieldName);
+            var call = method.Statements
+                .OfType<CodeExpressionStatement>().Select(e => e.Expression)
+                .OfType<CodeMethodInvokeExpression>().Any(c =>
+                c.Method.TargetObject is CodePropertyReferenceExpression p && p.PropertyName == "material" &&
+                c.Method.MethodName == methodName &&
+                c.Parameters[0] is CodePrimitiveExpression p1 && (string)p1.Value == propName &&
+                c.Parameters[1] is CodeFieldReferenceExpression p2 && p2.FieldName == propName);
         }
         private static CodeMemberMethod checkMethod(CodeTypeDeclaration Class, Type returnType, string methodName)
         {
@@ -61,12 +60,11 @@ namespace Tests
         }
         private static CodeMemberField checkField(CodeTypeDeclaration Class, Type type, string fieldName, MemberAttributes flag = MemberAttributes.Public, object value = null)
         {
-            CodeMemberField field = Class.Members.OfType<CodeMemberField>().FirstOrDefault(f => f.Name == fieldName);
-            Assert.NotNull(field);
-            Assert.True(field.Attributes.HasFlag(flag));
-            Assert.AreEqual(type.FullName, field.Type.BaseType);
-            if (value != null)
-                Assert.True(field.InitExpression is CodePrimitiveExpression v && v.Value == value);
+            CodeMemberField field = Class.Members.OfType<CodeMemberField>().First(f =>
+                f.Name == fieldName &&
+                f.Attributes.HasFlag(flag) &&
+                f.Type.BaseType == type.FullName &&
+                (value == null || f.InitExpression is CodePrimitiveExpression v && v.Value == value));
             return field;
         }
     }

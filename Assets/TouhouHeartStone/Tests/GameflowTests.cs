@@ -12,6 +12,7 @@ using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using UnityEngine;
 using UnityEngine.TestTools;
+using BJSYGameCore;
 namespace Tests
 {
     public static class TestGameflow
@@ -43,12 +44,13 @@ namespace Tests
         public static THHGame initGameWithoutPlayers(string name, GameOption option)
         {
             TaskExceptionHandler.register();
-            THHGame game = new THHGame(option != null ? option : GameOption.Default, CardHelper.getCardDefines())
+            ULogger logger = new ULogger(name) { blackList = new List<string>() { "Load" } };
+            THHGame game = new THHGame(option != null ? option : GameOption.Default, CardHelper.getCardDefines(logger))
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
                 time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
-                logger = new ULogger(name)
+                logger = logger
             };
             (game.triggers as TriggerManager).logger = game.logger;
             return game;
@@ -82,36 +84,34 @@ namespace Tests
             THHGame game = TestGameflow.initStandardGame();
 
             _ = game.run();
-            yield return new WaitForSeconds(.1f);
-            game.players[0].cmdInitReplace(game, game.players[0].init[0]);
-            game.players[1].cmdInitReplace(game, game.players[1].init[0, 1]);
-            yield return new WaitForSeconds(.1f);
+            yield return game.players[0].cmdInitReplace(game, game.players[0].init[0]).wait();
+            yield return game.players[1].cmdInitReplace(game, game.players[1].init[0, 1]).wait();
             //替换手牌
-            Assert.AreEqual(8, game.triggers.getRecordedEvents().Length);
-            THHPlayer.InitReplaceEventArg initReplace = game.triggers.getRecordedEvents()[1] as THHPlayer.InitReplaceEventArg;
+            IEventArg[] events = game.triggers.getRecordedEvents();
+            THHPlayer.InitReplaceEventArg initReplace = events.OfType<THHPlayer.InitReplaceEventArg>().First();
             Assert.NotNull(initReplace);
             Assert.AreEqual(game.players[0], initReplace.player);
             Assert.AreEqual(1, initReplace.replacedCards.Length);
-            initReplace = game.triggers.getRecordedEvents()[2] as THHPlayer.InitReplaceEventArg;
+            initReplace = events.OfType<THHPlayer.InitReplaceEventArg>().Skip(1).First();
             Assert.NotNull(initReplace);
             Assert.AreEqual(game.players[1], initReplace.player);
             Assert.AreEqual(2, initReplace.replacedCards.Length);
             //游戏开始
-            THHGame.StartEventArg start = game.triggers.getRecordedEvents()[3] as THHGame.StartEventArg;
+            THHGame.StartEventArg start = events.OfType<THHGame.StartEventArg>().First();
             Assert.NotNull(start);
             //玩家回合开始
-            THHGame.TurnStartEventArg turnStart = game.triggers.getRecordedEvents()[4] as THHGame.TurnStartEventArg;
+            THHGame.TurnStartEventArg turnStart = events.OfType<THHGame.TurnStartEventArg>().First();
             Assert.NotNull(turnStart);
             Assert.AreEqual(game.sortedPlayers[0], turnStart.player);
             //增加法力水晶并充满
-            THHPlayer.SetMaxGemEventArg setMaxGem = game.triggers.getRecordedEvents()[5] as THHPlayer.SetMaxGemEventArg;
+            THHPlayer.SetMaxGemEventArg setMaxGem = events.skipUntil(e => e is THHGame.TurnStartEventArg).OfType<THHPlayer.SetMaxGemEventArg>().First();
             Assert.NotNull(setMaxGem);
             Assert.AreEqual(1, setMaxGem.value);
-            THHPlayer.SetGemEventArg setGem = game.triggers.getRecordedEvents()[6] as THHPlayer.SetGemEventArg;
+            THHPlayer.SetGemEventArg setGem = events.OfType<THHPlayer.SetGemEventArg>().First();
             Assert.NotNull(setGem);
             Assert.AreEqual(1, setGem.value);
             //抽一张卡
-            THHPlayer.DrawEventArg draw = game.triggers.getRecordedEvents()[7] as THHPlayer.DrawEventArg;
+            THHPlayer.DrawEventArg draw = events.OfType<THHPlayer.DrawEventArg>().First();
             Assert.NotNull(draw);
             Assert.AreEqual(game.sortedPlayers[0], draw.player);
             game.Dispose();
@@ -417,8 +417,7 @@ namespace Tests
             };
             host.start();
             local.start();
-            string address = Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
-            Task task = local.join(address, host.port);
+            Task task = local.join(host.address, host.port);
             yield return new WaitUntil(() => task.IsCompleted && roomInfo.playerList.Count > 0);
 
             ClientManager remote = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
@@ -454,7 +453,7 @@ namespace Tests
             };
             //加入房间
             remote.start();
-            task = remote.join(address, host.port);
+            task = remote.join(host.address, host.port);
             yield return new WaitUntil(() => task.IsCompleted && roomInfo.playerList.Count > 1);
             //连接了，远程玩家把玩家信息发给本地，本地更新房间信息发给远端和开始游戏。
             yield return new WaitUntil(() => localGame != null && remoteGame != null);

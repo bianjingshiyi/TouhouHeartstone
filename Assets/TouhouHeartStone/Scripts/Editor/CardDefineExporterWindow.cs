@@ -99,7 +99,7 @@ namespace TouhouHeartstone
                 bool isSelected = _selectedAssemblyNameList.Contains(name);
                 if (isSelected)
                 {
-                    _cardList.AddRange(CardHelper.getCardDefines(new Assembly[] { assembly }));
+                    _cardList.AddRange(CardHelper.getCardDefines(new Assembly[] { assembly }, new ULogger() { blackList = new List<string>() { "Load" } }));
                 }
             }
         }
