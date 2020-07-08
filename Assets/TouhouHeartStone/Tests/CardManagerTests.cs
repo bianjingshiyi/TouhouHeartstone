@@ -42,7 +42,13 @@ namespace Tests
         async Task<CardManager> loadCards()
         {
             var cm = createCardManager();
-            await cm.Load(new string[] { "Cards/Cards.xls" });
+            string fileName = Path.Combine("Cards", "Test.xls");
+            string xlsFile = Path.Combine(Application.streamingAssetsPath, fileName);
+            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
+
+            await cm.Load(new string[] { fileName });
+
+            File.Delete(xlsFile);
             return cm;
         }
 
@@ -67,6 +73,8 @@ namespace Tests
         {
             CardManager cm = createCardManager();
 
+            string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
+            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
             var task = cm.Load(new string[] { "Cards/*.xls" });
 
             yield return new WaitUntil(() => task.IsCompleted);
@@ -76,6 +84,8 @@ namespace Tests
             var cd = cm.GetCardDefine(ExistsCardID);
             Assert.NotNull(cd);
             Assert.AreEqual(cd.id, ExistsCardID);
+
+            File.Delete(xlsFile);
         }
 
         /// <summary>
