@@ -247,7 +247,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
-  - {fileID: 608965932}
+  - {fileID: 946936615}
   - {fileID: 85837670}
   - {fileID: 1184519899}
   - {fileID: 1064767971}
@@ -271,21 +271,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5134b14c38bbd94cb94e5bd278b5116, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _particle: {fileID: 608965931}
+  _particle: {fileID: 1064767971}
   _from: {fileID: 85837670}
   _to: {fileID: 1184519899}
---- !u!1 &608965931 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1254724754748870, guid: ead2eb1ec6d8ee54fa5d36c7f5e30eef,
-    type: 3}
-  m_PrefabInstance: {fileID: 946936614}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &608965932 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4399021083629618, guid: ead2eb1ec6d8ee54fa5d36c7f5e30eef,
-    type: 3}
-  m_PrefabInstance: {fileID: 946936614}
-  m_PrefabAsset: {fileID: 0}
+  step: 0.0003
 --- !u!1001 &946936614
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -367,6 +356,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ead2eb1ec6d8ee54fa5d36c7f5e30eef, type: 3}
+--- !u!4 &946936615 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4399021083629618, guid: ead2eb1ec6d8ee54fa5d36c7f5e30eef,
+    type: 3}
+  m_PrefabInstance: {fileID: 946936614}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1064767970
 GameObject:
   m_ObjectHideFlags: 0
@@ -381,7 +376,7 @@ GameObject:
   - component: {fileID: 1064767973}
   - component: {fileID: 1064767972}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: TestPartical
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -750,7 +745,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 5
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -1212,7 +1207,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 1
+      value: 50
       mode: 0
       spread: 0
       speed:
