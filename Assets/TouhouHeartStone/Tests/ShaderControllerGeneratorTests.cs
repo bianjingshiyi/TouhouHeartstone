@@ -18,8 +18,8 @@ namespace Tests
             var Namespace = unit.Namespaces[0];
             Assert.AreEqual("Game", Namespace.Name);
             var Class = Namespace.Types[0];
-            Assert.AreEqual(nameof(GraphMatPropCtrl), Class.BaseTypes[0].BaseType);
-            Assert.AreEqual("TestShader", Class.Name);
+            Assert.AreEqual(typeof(GraphMatPropCtrl).FullName, Class.BaseTypes[0].BaseType);
+            Assert.AreEqual("TestShader" + "Controller", Class.Name);
             checkField(Class, typeof(int), "SHADER_ID", MemberAttributes.Public | MemberAttributes.Const, shader.GetInstanceID());
             checkField(Class, typeof(Color), "_Color");
             checkField(Class, typeof(float), "_Gray");
@@ -64,7 +64,7 @@ namespace Tests
                 f.Name == fieldName &&
                 f.Attributes.HasFlag(flag) &&
                 f.Type.BaseType == type.FullName &&
-                (value == null || f.InitExpression is CodePrimitiveExpression v && v.Value == value));
+                (value == null || (f.InitExpression is CodePrimitiveExpression v && v.Value.Equals(value))));
             return field;
         }
     }
