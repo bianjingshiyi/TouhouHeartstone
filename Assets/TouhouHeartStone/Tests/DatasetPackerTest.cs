@@ -2,6 +2,7 @@
 using IGensoukyo;
 using System.Data;
 using System.IO;
+using UnityEngine;
 
 namespace Tests
 {
@@ -10,16 +11,22 @@ namespace Tests
         [Test]
         public void PackTest()
         {
-            const string excelFile = "Cards/Cards.xls";
-            const string outFile = excelFile + ".dataset";
+            string xlsFileName = Path.Combine("Cards", "Test.xls");
+            string xlsFile = Path.Combine(Application.streamingAssetsPath, xlsFileName);
+            string dataSetFileName = Path.Combine("Cards", "Test.xls.dataset");
+            string dataSetFile = Path.Combine(Application.streamingAssetsPath, dataSetFileName);
 
-            ExcelDataSetPacker.PackExcelToDataSet(excelFile, outFile);
-            DataSet set = ExcelDataSetPacker.ReadDataset(outFile);
+            if (!File.Exists(xlsFile))
+                File.Copy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
+
+            ExcelDataSetPacker.PackExcelToDataSet(xlsFile, dataSetFile);
+            DataSet set = ExcelDataSetPacker.ReadDataset(dataSetFile);
 
             Assert.NotNull(set);
             Assert.True(set.Tables.Count > 0);
 
-            File.Delete(outFile);
+            File.Delete(dataSetFile);
+            File.Delete(xlsFile);
         }
     }
 }
