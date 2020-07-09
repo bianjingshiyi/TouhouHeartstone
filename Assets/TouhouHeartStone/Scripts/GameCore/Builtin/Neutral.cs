@@ -232,22 +232,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            //new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
-            //{
-            //    return true;
-            //},(game,player,card,targets)=>
-            //{
-            //    if(targets[0] is Card target && target.owner == player && target.pile.name == PileName.FIELD)
-            //        return true;
-            //    return false;
-            //},async (game,player,card,arg,targets)=>
-            //{
-            //    THHPlayer opponent = game.getOpponent(arg.player);
-            //    if(opponent.field.count>0)
-            //    {
-            //        await opponent.field.randomTake(game,1).damage(game,1);
-            //    }
-            //})
+            new LambdaSingleTargetEffect((game,card,target)=>
+            {
+                return target.backToHand(game);
+            }, PileFlag.self | PileFlag.field)
         };
     }
     /// <summary>

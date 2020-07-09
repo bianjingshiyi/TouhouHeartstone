@@ -17,6 +17,11 @@ namespace TouhouHeartstone
             get { return base.triggers as TriggerManager; }
             set { base.triggers = value; }
         }
+        public new AnswerManager answers
+        {
+            get { return base.answers as AnswerManager; }
+            set { base.answers = value; }
+        }
         Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
         public THHGame(params CardDefine[] defines) : base(null, null, GameOption.Default.randomSeed, defines)
         {
@@ -396,24 +401,6 @@ namespace TouhouHeartstone
         {
             public THHPlayer player;
         }
-
-        /// <summary>
-        /// 发现机制
-        /// </summary>
-        /// <returns></returns>
-        public async Task<int> Find(THHPlayer player, int count)
-        {
-            int index = 0;
-            IResponse response = await answers.ask(player.id, new FindRequest(count), option.timeoutForTurn * 2);
-            switch (response)
-            {
-                case FindResponse find:
-                    index = find.selectId;
-                    break;
-            }
-            return index;
-        }
-
         /// <summary>
         /// 清理战场上死亡的随从
         /// </summary>

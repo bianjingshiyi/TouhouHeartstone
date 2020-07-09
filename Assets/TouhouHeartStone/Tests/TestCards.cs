@@ -461,7 +461,7 @@ namespace Tests
     }
     class FireBall : SpellCardDefine
     {
-        const int ID = TestConst.ID | CardCategory.SPELL | 0x012;
+        public const int ID = TestConst.ID | CardCategory.SPELL | 0x012;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]

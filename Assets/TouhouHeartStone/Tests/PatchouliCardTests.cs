@@ -7,7 +7,7 @@ using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using UnityEngine;
 using UnityEngine.TestTools;
-
+using System;
 namespace Tests
 {
     public class PatchouliCardTests
@@ -30,11 +30,11 @@ namespace Tests
             int preDeck = game.sortedPlayers[1].deck.count;
             int preLife = game.sortedPlayers[1].master.getCurrentLife();
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 0, game.sortedPlayers[1].master);
-            
+
             Assert.AreEqual(1, game.sortedPlayers[1].hand.count - preHand);
             Assert.AreEqual(-1, game.sortedPlayers[1].deck.count - preDeck);
             Assert.AreEqual(-2, game.sortedPlayers[1].master.getCurrentLife() - preLife);
-            
+
         }
 
         [Test]
@@ -119,7 +119,7 @@ namespace Tests
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdTurnEnd(game);
             game.sortedPlayers[0].cmdTurnEnd(game);
-            
+
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 0);
             THHCard.DamageEventArg damage = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DamageEventArg) as THHCard.DamageEventArg;
             Assert.AreEqual(0, game.sortedPlayers[0].field.count);
@@ -239,33 +239,29 @@ namespace Tests
         [Test]
         public void PatchouliKoakumaTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Koakuma.ID, 1),
+                new KeyValuePair<int, int>(FireBall.ID, 3)
+            );//游戏初始化写的这么复杂干嘛
+            for (int i = 0; i < 3; i++)
             {
-                shuffle = false
-            });
-            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<SylphyHorn>() as CardDefine, 27)
-            .Concat(Enumerable.Repeat(game.getCardDefine<TestFreeze>(), 2)).Concat(Enumerable.Repeat(game.getCardDefine<Koakuma>(), 1)));
-            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28));
-
-            defaultPlayer.cmdTurnEnd(game);
-            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == elusivePlayer);
-            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
-
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<SylphyHorn>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == SylphyHorn.ID), 0, elusivePlayer.field[0]);
-
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<TestFreeze>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == TestFreeze.ID), 0, defaultPlayer.field);
-
-            elusivePlayer.cmdTurnEnd(game);
-
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<Koakuma>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == Koakuma.ID), 0);
-            defaultPlayer.cmdSelect(game,0);
+                game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<FireBall>().cost);
+                you.cmdUse(game, you.hand.getCard<FireBall>(), targets: oppo.master);
+                you.cmdTurnEnd(game);
+            }//先射三发火球
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<Koakuma>().cost);
+            you.cmdUse(game, you.hand.getCard<Koakuma>(), targets: oppo.master);//使用小恶魔
+            DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
+            Assert.NotNull(discoverRequest);//确实发现
+            Assert.True(discoverRequest.cardIdArray.All(id => you.grave.Any(c => c.id == id)));//发现的全是墓地里的卡
+            int cardId = discoverRequest.cardIdArray[0];
+            Card card = you.grave.getCard(cardId);//随便选一张
+            you.cmdDiscover(game, cardId);//选
+            Assert.True(you.hand.Contains(card));//确认它在你的手牌里了
+            //TODO:落叶，补充各种特殊情况，比如墓地里没有卡，手牌满了，墓地里还有随从
 
             game.Dispose();
         }
-
         public void PatchouliRoyalFlareTest()
         {
 

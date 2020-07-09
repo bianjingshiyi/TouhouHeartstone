@@ -7,6 +7,10 @@ namespace TouhouHeartstone
 {
     public static class THHCard
     {
+        public static bool isSpell(this Card card)
+        {
+            return card.define is SpellCardDefine;
+        }
         public static THHPlayer getOwner(this Card card)
         {
             return card.owner as THHPlayer;
@@ -560,6 +564,19 @@ namespace TouhouHeartstone
             if (index == card.pile.count - 1 && card.pile.count > 1)
                 return new Card[] { card.pile[card.pile.count - 2] };
             return new Card[] { card.pile[index - 1], card.pile[index + 1] };
+        }
+        public static Task backToHand(this Card card, THHGame game)
+        {
+            if (card.getOwner().hand.isFull)
+            {
+                game.logger.log(card.getOwner() + "的手牌已满，无法将" + card + "置入手牌");
+                return card.die(game);
+            }
+            else
+            {
+                game.logger.log("将" + card + "置入" + card.getOwner() + "的手牌");
+                return card.getOwner().field.moveTo(game, card, card.getOwner().hand);
+            }
         }
     }
 }

@@ -234,14 +234,15 @@ namespace Tests
             });
             game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<BeerFairy>() as CardDefine, 30));
             game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<BeerFairy>() as CardDefine, 30));
-            game.skipTurnWhen(() => game.sortedPlayers[0].gem < 2);
+            game.skipTurnWhen(() => game.sortedPlayers[0].gem < 4);
 
-            int handCardNum = game.sortedPlayers[0].hand.count;
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
-            Assert.AreEqual(handCardNum, game.sortedPlayers[0].hand.count);   //使用了一张牌后，又获得一张牌，手牌数没变
-            Assert.True(game.sortedPlayers[0].hand[handCardNum - 1].GetType().IsSubclassOf(typeof(ServantCardDefine)));
+            var s = game.sortedPlayers[0].hand[0];
+            game.sortedPlayers[0].cmdUse(game, s, 0);
+            Assert.True(game.sortedPlayers[0].field.Contains(s));
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0, game.sortedPlayers[0].field[0]);
+            Assert.True(game.sortedPlayers[0].hand.Contains(s));
+            //TODO:落叶，这里就只有两个小熊猫相互测试，还不够。
+            //还要测试手牌满了的情况下，小熊猫被挤死了
         }
-
-
     }
 }

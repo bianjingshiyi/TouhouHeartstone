@@ -178,6 +178,11 @@ namespace TouhouHeartstone
                             await effect.execute(game, card, new object[] { eventArg }, targets);
                         }
                     }
+                    IActiveEffect activeEffect = arg.card.define.getActiveEffect();
+                    if (activeEffect != null)
+                    {
+                        await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    }
                 }
                 else if (card.define is SkillCardDefine)
                 {
@@ -204,24 +209,20 @@ namespace TouhouHeartstone
             await game.updateDeath();
             return true;
         }
-
-        public async Task Find(THHGame game, Card[] cards)
+        /// <summary>
+        /// 从给出的卡牌中发现一张牌，默认是从中挑三张
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="cards"></param>
+        /// <param name="count">如果小于等于0，则全都可以挑</param>
+        /// <returns></returns>
+        public async Task<Card> discover(THHGame game, IEnumerable<Card> cards, int count = 3)
         {
-            int index = await game.Find(this, cards.Length);
-            await game.triggers.doEvent(new DrawEventArg() { player = this }, arg =>
-            {
-                arg.card = cards[index];
-                arg.player.hand.add(game, arg.card);
-                game.logger.log("发现卡牌：");
-                for (int i = 0; i < cards.Length; i++)
-                {
-                    game.logger.log(" " + cards[i]);
-                }
-                game.logger.log(arg.player + "选择" + arg.card);
-                return Task.CompletedTask;
-            });
+            if (count > 0)
+                cards = cards.randomTake(game, count);
+            int cardId = (await game.answers.ask(id, new DiscoverRequest(cards.Select(c => c.id).ToArray())) as DiscoverResponse).cardId;
+            return cards.First(c => c.id == cardId);
         }
-
         public class UseEventArg : EventArg
         {
             public THHPlayer player;
@@ -349,11 +350,11 @@ namespace TouhouHeartstone
         {
             return game.surrender(this);
         }
-        public void cmdSelect(THHGame game, int select)
+        public Task cmdDiscover(THHGame game, int select)
         {
-            game.answers.answer(id, new FindResponse()
+            return game.answers.answer(id, new DiscoverResponse()
             {
-                selectId = select
+                cardId = select
             });
         }
         #endregion
