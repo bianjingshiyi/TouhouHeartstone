@@ -12,6 +12,7 @@ using IGensoukyo.Utilities;
 using TouhouHeartstone;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using ILogger = TouhouCardEngine.Interfaces.ILogger;
 namespace Game
 {
     public class CardManager : Manager
@@ -45,20 +46,24 @@ namespace Game
         [SerializeField]
         CardSkinData[] _skins = new CardSkinData[0];
         Dictionary<int, CardSkinData> skinDic { get; } = new Dictionary<int, CardSkinData>();
-        public Task load()
+        /// <summary>
+        /// 加载配置路径中的所有卡片和皮肤。
+        /// </summary>
+        /// <returns></returns>
+        public Task load(ILogger logger = null)
         {
-            return Load(_externalCardPaths);
+            return Load(_externalCardPaths, logger);
         }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
         /// </summary>
         /// <param name="excelPaths"></param>
         /// <returns></returns>
-        public async Task Load(string[] excelPaths)
+        public async Task Load(string[] excelPaths, ILogger logger = null)
         {
             //加载内置卡片
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies));
+            List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies, logger));
 
             List<string> pathList = new List<string>();
             foreach (var excelPath in excelPaths)
@@ -162,23 +167,30 @@ namespace Game
 
             for (int i = 1; i < table.Rows.Count; i++)
             {
-                var datarow = table.Rows[i];
+                try
+                {
+                    var datarow = table.Rows[i];
 
-                if (datarow.ReadCol("Ignore", false))
-                    continue;
+                    if (datarow.ReadCol("Ignore", false))
+                        continue;
 
-                var card = new GeneratedCardDefine();
-                card.id = datarow.ReadCol<int>("ID");
-                card.type = datarow.ReadCol<string>("Type");
-                card.setProp(nameof(ServantCardDefine.cost), datarow.ReadCol("Cost", 0));
-                card.setProp(nameof(ServantCardDefine.attack), datarow.ReadCol("Attack", 0));
-                card.setProp(nameof(ServantCardDefine.life), datarow.ReadCol("Life", 0));
-                card.setProp(nameof(ServantCardDefine.tags), datarow.ReadCol("Tags", "").Split(','));
-                card.setProp(nameof(ServantCardDefine.keywords), datarow.ReadCol("Keywords", "").Split(','));
-                card.setProp(nameof(ServantCardDefine.isToken), datarow.ReadCol("IsToken", false));
-                card.setProp(nameof(ServantCardDefine.isActive), datarow.ReadCol("IsActive", false));
+                    var card = new GeneratedCardDefine();
+                    card.id = datarow.ReadCol<int>("ID");
+                    card.type = datarow.ReadCol<string>("Type");
+                    card.setProp(nameof(ServantCardDefine.cost), datarow.ReadCol("Cost", 0));
+                    card.setProp(nameof(ServantCardDefine.attack), datarow.ReadCol("Attack", 0));
+                    card.setProp(nameof(ServantCardDefine.life), datarow.ReadCol("Life", 0));
+                    card.setProp(nameof(ServantCardDefine.tags), datarow.ReadCol("Tags", "").Split(','));
+                    card.setProp(nameof(ServantCardDefine.keywords), datarow.ReadCol("Keywords", "").Split(','));
+                    card.setProp(nameof(ServantCardDefine.isToken), datarow.ReadCol("IsToken", false));
+                    card.setProp(nameof(ServantCardDefine.isActive), datarow.ReadCol("IsActive", false));
 
-                cards.Add(card);
+                    cards.Add(card);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"Error when loading {path} (row {i}): " + e);
+                }
             }
 
             return cards.ToArray();
@@ -202,31 +214,38 @@ namespace Game
 
             for (int i = 1; i < table.Rows.Count; i++)
             {
-                var datarow = table.Rows[i];
-
-                if (datarow.ReadCol("Ignore", false))
-                    continue;
-
-                var skin = new CardSkinData()
-                {
-                    id = datarow.ReadCol<int>("ID"),
-                    name = datarow.ReadCol<string>("Name"),
-                    desc = datarow.ReadCol<string>("Desc", "")
-                };
-                string imagePath = datarow.ReadCol("Image", "");
                 try
                 {
-                    Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath);
-                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
-                    skin.image = sprite;
+                    var datarow = table.Rows[i];
+
+                    if (datarow.ReadCol("Ignore", false))
+                        continue;
+
+                    var skin = new CardSkinData()
+                    {
+                        id = datarow.ReadCol<int>("ID"),
+                        name = datarow.ReadCol<string>("Name"),
+                        desc = datarow.ReadCol<string>("Desc", "")
+                    };
+                    string imagePath = datarow.ReadCol("Image", "");
+                    try
+                    {
+                        Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath);
+                        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+                        skin.image = sprite;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
+                        skin.image = await getDefaultSprite();
+                    }
+
+                    skins.Add(skin);
                 }
                 catch (Exception e)
                 {
-                    Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
-                    skin.image = await getDefaultSprite();
+                    Debug.LogWarning($"Error when loading {path} (row {i}): " + e);
                 }
-
-                skins.Add(skin);
             }
             return skins.ToArray();
         }

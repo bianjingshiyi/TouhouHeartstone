@@ -7,7 +7,11 @@ using UnityEngine.TestTools;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using Mono.Data.Sqlite;using TouhouHeartstone;namespace Tests
+using System.Linq;
+using Mono.Data.Sqlite;
+using TouhouHeartstone;
+using BJSYGameCore;
+namespace Tests
 {
     public class OtherTests
     {
@@ -119,5 +123,16 @@ using Mono.Data.Sqlite;using TouhouHeartstone;namespace Tests
                     }
                 }
             }
-        }    }
+        }
+        [Test]
+        public void skipUntilTest()
+        {
+            int[] array = new int[]
+            {
+                1,2,1,2,3,2,4,2
+            };
+            var e = array.skipUntil(i => i == 3);
+            Assert.True(e.Contains(3));
+        }
+    }
 }

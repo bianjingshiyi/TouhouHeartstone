@@ -16,6 +16,10 @@ namespace TouhouHeartstone
         public Pile hand { get; }
         public Pile field { get; }
         public Pile grave { get; }
+        /// <summary>
+        /// 正在使用的法术卡都会被置入亚空间
+        /// </summary>
+        public Pile warp { get; }
         public bool isPrepared { get; set; } = false;
         public int gem { get; private set; } = 0;
         public int maxGem { get; private set; } = 0;
@@ -39,6 +43,8 @@ namespace TouhouHeartstone
             addPile(field);
             grave = new Pile(game, "Grave");
             addPile(grave);
+            warp = new Pile(game, "Warp");
+            addPile(warp);
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
         {
@@ -181,7 +187,7 @@ namespace TouhouHeartstone
                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.SPELL))
                 {
                     //法术卡，释放效果然后丢进墓地
-                    player.hand.remove(game, card);
+                    await player.hand.moveTo(game, card, player.warp);
                     ITriggerEffect triggerEffect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
                     if (triggerEffect != null)
                     {
@@ -192,7 +198,7 @@ namespace TouhouHeartstone
                     {
                         await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
                     }
-                    player.grave.add(game, card);
+                    await player.warp.moveTo(game, card, player.grave);
                 }
             });
             await game.updateDeath();
@@ -309,9 +315,9 @@ namespace TouhouHeartstone
             return result;
         }
         #region Command
-        public void cmdInitReplace(THHGame game, params Card[] cards)
+        public Task cmdInitReplace(THHGame game, params Card[] cards)
         {
-            game.answers.answer(id, new InitReplaceResponse()
+            return game.answers.answer(id, new InitReplaceResponse()
             {
                 cardsId = cards.Select(c => c.id).ToArray()
             });

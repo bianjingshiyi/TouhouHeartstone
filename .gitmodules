@@ -10,3 +10,6 @@
 [submodule "Assets/Plugins/CustomBuilder"]
 	path = Assets/Plugins/CustomBuilder
 	url = https://code.lotlab.org/IGensokyo/CustomBuilder
+[submodule "Assets/TouhouHeartStone/MassResources"]
+	path = Assets/TouhouHeartStone/MassResources
+	url = https://github.com/bianjingshiyi/TouhouHeartstone.MassResources.git

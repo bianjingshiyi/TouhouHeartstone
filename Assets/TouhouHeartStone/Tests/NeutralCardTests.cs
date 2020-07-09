@@ -5,7 +5,6 @@ using System.Linq;
 using TouhouHeartstone;
 using TouhouCardEngine;
 using TouhouHeartstone.Builtin;
-
 namespace Tests
 {
     public class NeutralCardTests
@@ -178,7 +177,7 @@ namespace Tests
             });
             game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<SunnyMilk>() as CardDefine, 30));
             game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<SunnyMilk>() as CardDefine, 30));
-            
+
             game.skipTurnWhen(() => game.sortedPlayers[0].gem < 2);
 
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
