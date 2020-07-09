@@ -176,13 +176,10 @@ namespace Tests
         {
             THHGame game = TestGameflow.initStandardGame();
 
-            _ = game.run();
-            yield return new WaitForSeconds(.1f);
+            game.run();
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
-            yield return new WaitForSeconds(.1f);
             game.sortedPlayers[0].cmdTurnEnd(game);
-            yield return new WaitForSeconds(.1f);
 
             THHGame.TurnEndEventArg turnEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.TurnEndEventArg) as THHGame.TurnEndEventArg;
             Assert.NotNull(turnEnd);
@@ -191,6 +188,7 @@ namespace Tests
             Assert.NotNull(turnStart);
             Assert.AreEqual(game.sortedPlayers[1], turnStart.player);
             game.Dispose();
+            yield break;
         }
         [UnityTest]
         public IEnumerator burnTest()
@@ -383,7 +381,7 @@ namespace Tests
                     name = "玩家" + local.id,
                 };
                 playerInfo.setDeck(new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray());
-                _ = local.send(playerInfo);
+                return local.send(playerInfo);
             };
             local.onReceive += (id, obj) =>
             {
@@ -417,111 +415,113 @@ namespace Tests
             };
             host.start();
             local.start();
-            Task task = local.join(host.address, host.port);
-            yield return new WaitUntil(() => task.IsCompleted && roomInfo.playerList.Count > 0);
+            yield return local.join(host.ip, host.port).wait();
+            Assert.AreEqual(1, host.roomInfo.playerList.Count);
+            //yield return new WaitUntil(() => task.IsCompleted && roomInfo.playerList.Count > 0);
 
-            ClientManager remote = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
-            remote.logger = logger;
-            THHGame remoteGame = null;
-            remote.onConnected += () =>
-            {
-                //发送玩家信息
-                RoomPlayerInfo playerInfo = new RoomPlayerInfo()
-                {
-                    id = remote.id,
-                    name = "玩家" + remote.id
-                };
-                playerInfo.setDeck(new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray());
-                _ = remote.send(playerInfo);
-            };
-            remote.onReceive += (id, obj) =>
-            {
-                if (obj is RoomInfo newRoomInfo)
-                {
-                    //收到房间信息
-                    if (newRoomInfo.playerList.Count > 1)
-                    {
-                        remoteGame = TestGameflow.initGameWithoutPlayers("远端游戏", newRoomInfo.getOption());
-                        (remoteGame.answers as AnswerManager).client = remote;
-                        foreach (var playerInfo in newRoomInfo.playerList)
-                        {
-                            remoteGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, remoteGame.getCardDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => remoteGame.getCardDefine(did)));
-                        }
-                        remoteGame.run();
-                    }
-                }
-            };
-            //加入房间
-            remote.start();
-            task = remote.join(host.address, host.port);
-            yield return new WaitUntil(() => task.IsCompleted && roomInfo.playerList.Count > 1);
-            //连接了，远程玩家把玩家信息发给本地，本地更新房间信息发给远端和开始游戏。
-            yield return new WaitUntil(() => localGame != null && remoteGame != null);
+            //ClientManager remote = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
+            //remote.logger = logger;
+            //THHGame remoteGame = null;
+            //remote.onConnected += () =>
+            //{
+            //    //发送玩家信息
+            //    RoomPlayerInfo playerInfo = new RoomPlayerInfo()
+            //    {
+            //        id = remote.id,
+            //        name = "玩家" + remote.id
+            //    };
+            //    playerInfo.setDeck(new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray());
+            //    _ = remote.send(playerInfo);
+            //};
+            //remote.onReceive += (id, obj) =>
+            //{
+            //    if (obj is RoomInfo newRoomInfo)
+            //    {
+            //        //收到房间信息
+            //        if (newRoomInfo.playerList.Count > 1)
+            //        {
+            //            remoteGame = TestGameflow.initGameWithoutPlayers("远端游戏", newRoomInfo.getOption());
+            //            (remoteGame.answers as AnswerManager).client = remote;
+            //            foreach (var playerInfo in newRoomInfo.playerList)
+            //            {
+            //                remoteGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, remoteGame.getCardDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => remoteGame.getCardDefine(did)));
+            //            }
+            //            remoteGame.run();
+            //        }
+            //    }
+            //};
+            ////加入房间
+            //remote.start();
+            //task = remote.join(host.address, host.port);
+            //yield return new WaitUntil(() => task.IsCompleted && roomInfo.playerList.Count > 1);
+            ////连接了，远程玩家把玩家信息发给本地，本地更新房间信息发给远端和开始游戏。
+            //yield return new WaitUntil(() => localGame != null && remoteGame != null);
 
-            Assert.True(localGame.isRunning);
-            Assert.AreEqual(local.id, localGame.players[0].id);
-            Assert.AreEqual(remote.id, localGame.players[1].id);
-            Assert.True(remoteGame.isRunning);
-            Assert.AreEqual(local.id, remoteGame.players[0].id);
-            Assert.AreEqual(remote.id, remoteGame.players[1].id);
+            //Assert.True(localGame.isRunning);
+            //Assert.AreEqual(local.id, localGame.players[0].id);
+            //Assert.AreEqual(remote.id, localGame.players[1].id);
+            //Assert.True(remoteGame.isRunning);
+            //Assert.AreEqual(local.id, remoteGame.players[0].id);
+            //Assert.AreEqual(remote.id, remoteGame.players[1].id);
 
-            THHPlayer localPlayer = localGame.getPlayer(local.id);
-            Assert.AreEqual(0, localPlayer.id);
-            yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is InitReplaceRequest);
-            Assert.Greater(localPlayer.init.count, 0);
-            localPlayer.cmdInitReplace(localGame);
-            yield return new WaitUntil(() => localGame.answers.getResponse(localPlayer.id, localGame.answers.getRequests(localPlayer.id).FirstOrDefault()) is InitReplaceResponse);
+            //THHPlayer localPlayer = localGame.getPlayer(local.id);
+            //Assert.AreEqual(0, localPlayer.id);
+            //yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is InitReplaceRequest);
+            //Assert.Greater(localPlayer.init.count, 0);
+            //localPlayer.cmdInitReplace(localGame);
+            //yield return new WaitUntil(() => localGame.answers.getResponse(localPlayer.id, localGame.answers.getRequests(localPlayer.id).FirstOrDefault()) is InitReplaceResponse);
 
-            THHPlayer remotePlayer = remoteGame.getPlayer(remote.id);
-            Assert.AreEqual(1, remotePlayer.id);
-            yield return new WaitUntil(() => remoteGame.answers.getRequests(remotePlayer.id).FirstOrDefault() is InitReplaceRequest);
-            Assert.Greater(remotePlayer.init.count, 0);
-            remotePlayer.cmdInitReplace(remoteGame);
-            yield return new WaitUntil(() => remoteGame.triggers.getRecordedEvents().Any(e => e is THHGame.StartEventArg));
-            //拍怪
-            if (localGame.sortedPlayers[0] == localPlayer)
-            {
-                yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is FreeActRequest);
-                localPlayer.cmdUse(localGame, localPlayer.hand[0], 0);
-                yield return new WaitUntil(() => localPlayer.field.count > 0);
-                localPlayer.cmdTurnEnd(localGame);
-                yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
-            }
-            yield return new WaitUntil(() => remoteGame.answers.getRequests(remotePlayer.id).FirstOrDefault() is FreeActRequest);
-            remotePlayer.cmdUse(remoteGame, remotePlayer.hand[0], 0);
-            yield return new WaitUntil(() => remotePlayer.field.count > 0);
-            remotePlayer.cmdTurnEnd(remoteGame);
-            yield return new WaitUntil(() => remoteGame.currentPlayer != remotePlayer);
-            if (localGame.sortedPlayers[0] != localPlayer)
-            {
-                yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is FreeActRequest);
-                localPlayer.cmdUse(localGame, localPlayer.hand[0], 0);
-                yield return new WaitUntil(() => localPlayer.field.count > 0);
-                localPlayer.cmdTurnEnd(localGame);
-                yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
-            }
-            do
-            {
-                yield return new WaitUntil(() => localGame.currentPlayer == localPlayer || remoteGame.currentPlayer == remotePlayer);
-                if (localGame.currentPlayer == localPlayer)
-                {
-                    localPlayer.cmdAttack(localGame, localPlayer.field[0], localGame.getOpponent(localPlayer).master);
-                    yield return new WaitUntil(() => localPlayer.field[0].getAttackTimes() > 0);
-                    localPlayer.cmdTurnEnd(localGame);
-                    yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
-                }
-                else if (remoteGame.currentPlayer == remotePlayer)
-                {
-                    remotePlayer.cmdAttack(remoteGame, remotePlayer.field[0], remoteGame.getOpponent(remotePlayer).master);
-                    yield return new WaitUntil(() => remotePlayer.field[0].getAttackTimes() > 0);
-                    remotePlayer.cmdTurnEnd(remoteGame);
-                    yield return new WaitUntil(() => remoteGame.currentPlayer != remotePlayer);
-                }
-            }
-            while (localGame.isRunning && remoteGame.isRunning);
+            //THHPlayer remotePlayer = remoteGame.getPlayer(remote.id);
+            //Assert.AreEqual(1, remotePlayer.id);
+            //yield return new WaitUntil(() => remoteGame.answers.getRequests(remotePlayer.id).FirstOrDefault() is InitReplaceRequest);
+            //Assert.Greater(remotePlayer.init.count, 0);
+            //remotePlayer.cmdInitReplace(remoteGame);
+            //yield return new WaitUntil(() => remoteGame.triggers.getRecordedEvents().Any(e => e is THHGame.StartEventArg));
+            ////拍怪
+            //if (localGame.sortedPlayers[0] == localPlayer)
+            //{
+            //    yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is FreeActRequest);
+            //    localPlayer.cmdUse(localGame, localPlayer.hand[0], 0);
+            //    yield return new WaitUntil(() => localPlayer.field.count > 0);
+            //    localPlayer.cmdTurnEnd(localGame);
+            //    yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
+            //}
+            //yield return new WaitUntil(() => remoteGame.answers.getRequests(remotePlayer.id).FirstOrDefault() is FreeActRequest);
+            //remotePlayer.cmdUse(remoteGame, remotePlayer.hand[0], 0);
+            //yield return new WaitUntil(() => remotePlayer.field.count > 0);
+            //remotePlayer.cmdTurnEnd(remoteGame);
+            //yield return new WaitUntil(() => remoteGame.currentPlayer != remotePlayer);
+            //if (localGame.sortedPlayers[0] != localPlayer)
+            //{
+            //    yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is FreeActRequest);
+            //    localPlayer.cmdUse(localGame, localPlayer.hand[0], 0);
+            //    yield return new WaitUntil(() => localPlayer.field.count > 0);
+            //    localPlayer.cmdTurnEnd(localGame);
+            //    yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
+            //}
+            //do
+            //{
+            //    yield return new WaitUntil(() => localGame.currentPlayer == localPlayer || remoteGame.currentPlayer == remotePlayer);
+            //    if (localGame.currentPlayer == localPlayer)
+            //    {
+            //        localPlayer.cmdAttack(localGame, localPlayer.field[0], localGame.getOpponent(localPlayer).master);
+            //        yield return new WaitUntil(() => localPlayer.field[0].getAttackTimes() > 0);
+            //        localPlayer.cmdTurnEnd(localGame);
+            //        yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
+            //    }
+            //    else if (remoteGame.currentPlayer == remotePlayer)
+            //    {
+            //        remotePlayer.cmdAttack(remoteGame, remotePlayer.field[0], remoteGame.getOpponent(remotePlayer).master);
+            //        yield return new WaitUntil(() => remotePlayer.field[0].getAttackTimes() > 0);
+            //        remotePlayer.cmdTurnEnd(remoteGame);
+            //        yield return new WaitUntil(() => remoteGame.currentPlayer != remotePlayer);
+            //    }
+            //}
+            //while (localGame.isRunning && remoteGame.isRunning);
 
-            local.disconnect();
-            remote.disconnect();
+            //local.disconnect();
+            //remote.disconnect();
+            yield break;
         }
         [UnityTest]
         public IEnumerator effectRegisterTest()
@@ -598,13 +598,16 @@ namespace Tests
         public IEnumerator surrenderTest()
         {
             THHGame game = TestGameflow.initStandardGame();
-            Task task = game.run();
-            yield return new WaitUntil(() => game.answers.getLastRequest(game.players[0].id) is InitReplaceRequest);
-            game.players[0].cmdSurrender(game);
-            yield return new WaitUntil(() => game.triggers.getRecordedEvents().LastOrDefault() is THHGame.GameEndEventArg);
+            game.run();
+            //yield return new WaitUntil(() =>
+            //{
+            //    return game.answers.getLastRequest(game.players[0].id) is InitReplaceRequest;
+            //});
+            yield return game.players[0].cmdSurrender(game).wait();
             THHGame.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.GameEndEventArg) as THHGame.GameEndEventArg;
             Assert.AreEqual(game.players[1], gameEnd.winners[0]);
             game.Dispose();
+            yield break;
         }
     }
     static class TaskExceptionHandler

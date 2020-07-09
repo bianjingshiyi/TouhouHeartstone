@@ -11,6 +11,11 @@ using System.Linq;
 using Mono.Data.Sqlite;
 using TouhouHeartstone;
 using BJSYGameCore;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson;
 namespace Tests
 {
     public class OtherTests
@@ -133,6 +138,51 @@ namespace Tests
             };
             var e = array.skipUntil(i => i == 3);
             Assert.True(e.Contains(3));
+        }
+        [UnityTest]
+        public IEnumerator cancleTest()
+        {
+            CancellationTokenSource cts = new CancellationTokenSource();
+            int count = 0;
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await Task.Delay(1000);
+                    count++;
+                    Debug.Log(count);
+                }
+            }, cts.Token);
+            yield return new WaitForSeconds(5);
+            cts.Cancel();
+            yield return new WaitForSeconds(5);
+            Debug.Log("结果：" + count);
+        }
+        [Test]
+        public void ofTypeTest()
+        {
+            Parent[] parents = new Parent[]
+            {
+                new Parent(),new Parent(),new Child(),new Child()
+            };
+            Assert.AreEqual(2, parents.OfType<IStudent>().Count());
+        }
+        class Parent { }
+        class Child : Parent, IStudent { }
+        interface IStudent { }
+        [Test]
+        public void jsonTest()
+        {
+            JsonTarget target = new JsonTarget() { i = 1 };
+            string json = target.ToJson();
+            Debug.Log(json);
+            //object obj = BsonSerializer.Deserialize(json);
+            //Debug.Log(obj + ",Type:" + obj.GetType().Name);
+            //Assert.True(obj is JsonTarget t && t.i == 1);
+        }
+        class JsonTarget
+        {
+            public int i;
         }
     }
 }

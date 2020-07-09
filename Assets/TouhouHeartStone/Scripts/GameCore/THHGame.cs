@@ -185,17 +185,21 @@ namespace TouhouHeartstone
         /// 运行游戏
         /// </summary>
         /// <returns>游戏运行的Task</returns>
-        public Task run()
+        public Task run(Action onInited = null)
         {
             isRunning = true;
-            return gameflow();
+            return gameflow(onInited);
         }
-        private async Task gameflow()
+        private async Task gameflow(Action onInited = null)
         {
             await init();
-            Dictionary<int, IResponse> initReplaceResponses = await answers.askAll(sortedPlayers.Select(p => p.id).ToArray(), new InitReplaceRequest()
+            Task<Dictionary<int, IResponse>> task = answers.askAll(sortedPlayers.Select(p => p.id).ToArray(), new InitReplaceRequest()
             {
             }, option.timeoutForInitReplace);
+            onInited?.Invoke();
+            Dictionary<int, IResponse> initReplaceResponses = await task;
+            if (!isRunning)
+                return;
             foreach (var result in initReplaceResponses)
             {
                 THHPlayer player = getPlayer(result.Key);
@@ -439,9 +443,10 @@ namespace TouhouHeartstone
             else
                 return Task.CompletedTask;
         }
-        internal async Task surrender(THHPlayer player)
+        internal Task surrender(THHPlayer player)
         {
-            await player.master.die(this);
+            logger.log(player + "投降");
+            return player.master.die(this);
         }
         public async Task leave(THHPlayer player)
         {
