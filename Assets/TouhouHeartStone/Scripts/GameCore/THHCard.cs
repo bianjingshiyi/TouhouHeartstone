@@ -341,30 +341,51 @@ namespace TouhouHeartstone
         }
         public static Card[] getAvaliableTargets(this Card card, THHGame game)
         {
-            IActiveEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) as IActiveEffect;
-            if (effect == null)
-                return null;
-            List<Card> targetList = new List<Card>();
-            foreach (THHPlayer player in game.players)
+            if (card.define.getActiveEffect() is IActiveEffect activeEffect)
             {
-                if (effect.checkTargets(game, null, card, new object[] { player.master }))
-                    targetList.Add(player.master);
-                foreach (Card servant in player.field)
+                List<Card> targetList = new List<Card>();
+                foreach (THHPlayer player in game.players)
                 {
-                    if (effect.checkTargets(game, null, card, new object[] { servant }))
-                        targetList.Add(servant);
+                    if (activeEffect.checkTargets(game, null, card, new object[] { player.master }))
+                        targetList.Add(player.master);
+                    foreach (Card servant in player.field)
+                    {
+                        if (activeEffect.checkTargets(game, null, card, new object[] { servant }))
+                            targetList.Add(servant);
+                    }
                 }
+                return targetList.ToArray();
             }
-            return targetList.ToArray();
+            if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is ITriggerEffect triggerEffect)
+            {
+                List<Card> targetList = new List<Card>();
+                foreach (THHPlayer player in game.players)
+                {
+                    if (triggerEffect.checkTargets(game, null, card, new object[] { player.master }))
+                        targetList.Add(player.master);
+                    foreach (Card servant in player.field)
+                    {
+                        if (triggerEffect.checkTargets(game, null, card, new object[] { servant }))
+                            targetList.Add(servant);
+                    }
+                }
+                return targetList.ToArray();
+            }
+            return null;
         }
         public static bool isValidTarget(this Card card, THHGame game, Card target)
         {
-            IActiveEffect effect = card.define.getActiveEffect();
-            if (effect == null)
-                return false;
             if (target.isStealth())
                 return false;
-            return effect.checkTargets(game, null, card, new object[] { target });
+            IActiveEffect activeEffect = card.define.getActiveEffect();
+            ITriggerEffect triggerEffect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            if (activeEffect == null && triggerEffect == null)
+                return false;
+            if (activeEffect != null && !activeEffect.checkTargets(game, card, null, new object[] { target }))
+                return false;
+            if (triggerEffect != null && triggerEffect.checkTargets(game, card, null, new object[] { target }))
+                return false;
+            return true;
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {

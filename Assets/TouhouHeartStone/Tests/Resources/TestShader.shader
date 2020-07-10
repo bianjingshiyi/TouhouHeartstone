@@ -139,7 +139,7 @@ Shader "Test/TestShader"
 }
 /*ASEBEGIN
 Version=17000
-292;199;1395;714;510.9345;180.8288;1;True;False
+-540;909;1395;708;502.9345;177.8288;1;True;False
 Node;AmplifyShaderEditor.TemplateShaderPropertyNode;1;-386.1028,-239.0032;Float;True;0;0;_MainTex;Shader;0;5;SAMPLER2D;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.SamplerNode;3;-88.10278,-160.0032;Float;True;Property;_TextureSample0;Texture Sample 0;0;0;Create;True;0;0;False;0;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;6;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.TemplateShaderPropertyNode;2;-265.1028,-22.0032;Float;False;0;0;_Color;Shader;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
@@ -159,4 +159,4 @@ WireConnection;7;1;6;0
 WireConnection;7;2;8;0
 WireConnection;0;0;7;0
 ASEEND*/
-//CHKSM=13758DEA10A70FE9ED641EB75569C30C37F9A85D
+//CHKSM=C0E0378B5442F69D513EE7444140AADFF811E040
