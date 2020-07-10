@@ -19553,6 +19553,11 @@ MonoBehaviour:
   _port: 9050
   _autoStart: 0
   _timeout: 3
+  _room:
+    ip: 
+    port: 0
+    playerList: []
+    _persistDataList: []
 --- !u!114 &1750958371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23938,8 +23943,8 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 371741957616553030, guid: fe929c75fb32b9e4c87cf82f20a3252d,
         type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 5.399994
+      propertyPath: m_LocalPosition.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 616714060498516848, guid: fe929c75fb32b9e4c87cf82f20a3252d,
         type: 3}
