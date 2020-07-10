@@ -14,6 +14,11 @@ namespace IGensoukyo
 {
     public class ExcelDataSetPacker
     {
+        /// <summary>
+        /// 打包一个Excel
+        /// </summary>
+        /// <param name="pathIn">Excel路径（相对路径）</param>
+        /// <param name="pathOut">输出Dataset路径（相对路径）</param>
         static public void PackExcelToDataSet(string pathIn, string pathOut)
         {
             using (var stream = File.Open(Path.Combine(Application.streamingAssetsPath, pathIn), FileMode.Open, FileAccess.Read))

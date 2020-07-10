@@ -17,6 +17,11 @@ namespace TouhouHeartstone
             get { return base.triggers as TriggerManager; }
             set { base.triggers = value; }
         }
+        public new AnswerManager answers
+        {
+            get { return base.answers as AnswerManager; }
+            set { base.answers = value; }
+        }
         Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
         public THHGame(params CardDefine[] defines) : base(null, null, GameOption.Default.randomSeed, defines)
         {
@@ -185,17 +190,21 @@ namespace TouhouHeartstone
         /// 运行游戏
         /// </summary>
         /// <returns>游戏运行的Task</returns>
-        public Task run()
+        public Task run(Action onInited = null)
         {
             isRunning = true;
-            return gameflow();
+            return gameflow(onInited);
         }
-        private async Task gameflow()
+        private async Task gameflow(Action onInited = null)
         {
             await init();
-            Dictionary<int, IResponse> initReplaceResponses = await answers.askAll(sortedPlayers.Select(p => p.id).ToArray(), new InitReplaceRequest()
+            Task<Dictionary<int, IResponse>> task = answers.askAll(sortedPlayers.Select(p => p.id).ToArray(), new InitReplaceRequest()
             {
             }, option.timeoutForInitReplace);
+            onInited?.Invoke();
+            Dictionary<int, IResponse> initReplaceResponses = await task;
+            if (!isRunning)
+                return;
             foreach (var result in initReplaceResponses)
             {
                 THHPlayer player = getPlayer(result.Key);
@@ -392,24 +401,6 @@ namespace TouhouHeartstone
         {
             public THHPlayer player;
         }
-
-        /// <summary>
-        /// 发现机制
-        /// </summary>
-        /// <returns></returns>
-        public async Task<int> Find(THHPlayer player, int count)
-        {
-            int index = 0;
-            IResponse response = await answers.ask(player.id, new FindRequest(count), option.timeoutForTurn * 2);
-            switch (response)
-            {
-                case FindResponse find:
-                    index = find.selectId;
-                    break;
-            }
-            return index;
-        }
-
         /// <summary>
         /// 清理战场上死亡的随从
         /// </summary>
@@ -439,9 +430,10 @@ namespace TouhouHeartstone
             else
                 return Task.CompletedTask;
         }
-        internal async Task surrender(THHPlayer player)
+        internal Task surrender(THHPlayer player)
         {
-            await player.master.die(this);
+            logger.log(player + "投降");
+            return player.master.die(this);
         }
         public async Task leave(THHPlayer player)
         {

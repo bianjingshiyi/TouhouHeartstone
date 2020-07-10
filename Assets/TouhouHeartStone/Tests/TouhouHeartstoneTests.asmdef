@@ -19,7 +19,8 @@
         "nunit.framework.dll",
         "LiteNetLib.dll",
         "ExcelLibrary.dll",
-        "Mono.Data.Sqlite.dll"
+        "Mono.Data.Sqlite.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

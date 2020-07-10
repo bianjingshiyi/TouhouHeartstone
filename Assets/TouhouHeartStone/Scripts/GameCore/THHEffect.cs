@@ -237,7 +237,7 @@ namespace TouhouHeartstone
         }
         public abstract void onDisable(THHGame game, Card card);
     }
-    public abstract class SingleTargetEffect : IActiveEffect
+    public abstract class ActiveEffect : IActiveEffect
     {
         public string[] piles => throw new NotImplementedException();
         public string[] events => throw new NotImplementedException();
@@ -245,26 +245,61 @@ namespace TouhouHeartstone
         {
             return new string[] { manager.getName<THHPlayer.ActiveEventArg>() };
         }
+        public bool checkCondition(IGame game, ICard card, object[] vars)
+        {
+            return checkCondition(game as THHGame, card as Card);
+        }
+        public abstract bool checkCondition(THHGame game, Card card);
+        public bool checkTargets(IGame game, ICard card, object[] vars, object[] targets)
+        {
+            return checkTargets(game as THHGame, card as Card, targets);
+        }
+        public abstract bool checkTargets(THHGame game, Card card, object[] targets);
+        public abstract Task execute(IGame game, ICard card, object[] vars, object[] targets);
+    }
+    public class NoTargetEffect : ActiveEffect
+    {
+        CheckConditionDelegate _onCheckCondition;
+        public delegate Task ExecuteDelegate(THHGame game, Card card);
+        ExecuteDelegate _onExecute;
+        public NoTargetEffect(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null)
+        {
+            _onCheckCondition = onCheckCondition;
+            _onExecute = onExecute;
+        }
+        public override bool checkCondition(THHGame game, Card card)
+        {
+            return _onCheckCondition == null || _onCheckCondition(game, card);
+        }
+        public override bool checkTargets(THHGame game, Card card, object[] targets)
+        {
+            return true;
+        }
+        public override Task execute(IGame game, ICard card, object[] vars, object[] targets)
+        {
+            if (_onExecute != null)
+                return _onExecute(game as THHGame, card as Card);
+            return Task.CompletedTask;
+        }
+    }
+    public abstract class SingleTargetEffect : ActiveEffect
+    {
         /// <summary>
         /// 可选目标范围。
         /// </summary>
-        public virtual string[] ranges { get; } = new string[]
+        public string[] ranges { get; protected set; } = new string[]
         {
             PileName.FIELD,
             PileName.MASTER
         };
-        public bool checkCondition(IGame game, ICard card, object[] vars)
-        {
-            return checkCondition(game as THHGame, card as Card, vars);
-        }
         /// <summary>
         /// 默认实现，存在可以作为目标的卡片。
         /// </summary>
         /// <param name="game"></param>
         /// <param name="card"></param>
-        /// <param name="vars"></param>
+        /// 
         /// <returns></returns>
-        public virtual bool checkCondition(THHGame game, Card card, object[] vars)
+        public override bool checkCondition(THHGame game, Card card)
         {
             foreach (var player in game.players)
             {
@@ -279,11 +314,7 @@ namespace TouhouHeartstone
             }
             return false;
         }
-        public bool checkTargets(IGame game, ICard card, object[] vars, object[] targets)
-        {
-            return checkTargets(game as THHGame, card as Card, vars, targets);
-        }
-        public bool checkTargets(THHGame game, Card card, object[] vars, object[] targets)
+        public override bool checkTargets(THHGame game, Card card, object[] targets)
         {
             if (targets != null &&
                 targets.Length > 0 &&
@@ -303,7 +334,7 @@ namespace TouhouHeartstone
         {
             return ranges.Contains(target.pile.name);
         }
-        public Task execute(IGame game, ICard card, object[] vars, object[] targets)
+        public override Task execute(IGame game, ICard card, object[] vars, object[] targets)
         {
             if (targets != null &&
                 targets.Length > 0 &&
@@ -312,23 +343,36 @@ namespace TouhouHeartstone
             return Task.CompletedTask;
         }
         public abstract Task execute(THHGame game, Card card, Card target);
-        public void onDisable(IGame game, ICard card)
-        {
-        }
-        public void onEnable(IGame game, ICard card)
-        {
-        }
     }
+    public delegate bool CheckConditionDelegate(THHGame game, Card card);
     /// <summary>
     /// 使用lambda表达式的单一目标主动效果
     /// </summary>
     public class LambdaSingleTargetEffect : SingleTargetEffect
     {
+        CheckConditionDelegate _onCheckCondition = null;
+        public delegate bool CheckTargetDelegate(THHGame game, Card card, Card target);
+        CheckTargetDelegate _onCheckTarget = null;
         public delegate Task ExecuteDelegate(THHGame game, Card card, Card target);
         ExecuteDelegate _onExecute = null;
-        public LambdaSingleTargetEffect(ExecuteDelegate onExecute)
+        public LambdaSingleTargetEffect(ExecuteDelegate onExecute,
+            PileFlag ranges = PileFlag.none,
+            CheckConditionDelegate onCheckCondition = null,
+            CheckTargetDelegate onCheckTarget = null)
         {
+            if (ranges != PileFlag.none)
+                this.ranges = PileName.getPiles(ranges);
+            _onCheckCondition = onCheckCondition;
+            _onCheckTarget = onCheckTarget;
             _onExecute = onExecute;
+        }
+        public override bool checkCondition(THHGame game, Card card)
+        {
+            return base.checkCondition(game, card) && (_onCheckCondition == null || _onCheckCondition(game, card));
+        }
+        public override bool checkTarget(THHGame game, Card card, Card target)
+        {
+            return base.checkTarget(game, card, target) && (_onCheckTarget == null || _onCheckTarget(game, card, target));
         }
         public override Task execute(THHGame game, Card card, Card target)
         {

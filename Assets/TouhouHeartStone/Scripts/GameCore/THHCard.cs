@@ -7,6 +7,10 @@ namespace TouhouHeartstone
 {
     public static class THHCard
     {
+        public static bool isSpell(this Card card)
+        {
+            return card.define is SpellCardDefine;
+        }
         public static THHPlayer getOwner(this Card card)
         {
             return card.owner as THHPlayer;
@@ -503,13 +507,12 @@ namespace TouhouHeartstone
         public static async Task die(this IEnumerable<Card> cards, THHGame game)
         {
             List<THHPlayer> remainPlayerList = new List<THHPlayer>(game.players);
-            await game.triggers.doEvent(new DeathEventArg() { infoDic = cards.ToDictionary(c => c, c => default(DeathEventArg.Info)) }, arg =>
+            await game.triggers.doEvent(new DeathEventArg() { infoDic = cards.ToDictionary(c => c, c => default(DeathEventArg.Info)) }, onDie);
+            Task onDie(DeathEventArg arg)
             {
                 Dictionary<Card, DeathEventArg.Info> infoDic = new Dictionary<Card, DeathEventArg.Info>();
                 foreach (var card in arg.infoDic.Keys)
                 {
-                    if (card.pile.name != PileName.FIELD)//只有在战场上的随从才能阵亡
-                        continue;
                     if (card.pile.name == PileName.MASTER)//英雄阵亡
                     {
                         infoDic.Add(card, new DeathEventArg.Info()
@@ -520,7 +523,7 @@ namespace TouhouHeartstone
                         remainPlayerList.Remove(card.getOwner());
                         game.logger.log(card.getOwner() + "失败");
                     }
-                    else if (card.pile.name == PileName.FIELD)
+                    else if (card.pile.name == PileName.FIELD)//随从阵亡
                     {
                         infoDic.Add(card, new DeathEventArg.Info()
                         {
@@ -533,7 +536,7 @@ namespace TouhouHeartstone
                 }
                 arg.infoDic = infoDic;
                 return Task.CompletedTask;
-            });
+            }
             if (remainPlayerList.Count != game.players.Length)
             {
                 if (remainPlayerList.Count > 0)
@@ -561,6 +564,19 @@ namespace TouhouHeartstone
             if (index == card.pile.count - 1 && card.pile.count > 1)
                 return new Card[] { card.pile[card.pile.count - 2] };
             return new Card[] { card.pile[index - 1], card.pile[index + 1] };
+        }
+        public static Task backToHand(this Card card, THHGame game)
+        {
+            if (card.getOwner().hand.isFull)
+            {
+                game.logger.log(card.getOwner() + "的手牌已满，无法将" + card + "置入手牌");
+                return card.die(game);
+            }
+            else
+            {
+                game.logger.log("将" + card + "置入" + card.getOwner() + "的手牌");
+                return card.getOwner().field.moveTo(game, card, card.getOwner().hand);
+            }
         }
     }
 }

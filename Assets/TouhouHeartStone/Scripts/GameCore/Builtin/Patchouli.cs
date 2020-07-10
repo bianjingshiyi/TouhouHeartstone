@@ -248,22 +248,16 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 6;
         public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
-        public override IEffect[] effects { get; set; } = new IEffect[]{
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return false;
-            },async(game,card,arg,targets)=>
-            {
-                IEnumerable<Card> cards = arg.player.grave.getCards<SpellCardDefine>().randomTake(game,3);
-                Card[] spcards = cards.ToArray();
-
-                await arg.player.Find(game,spcards);
-
-            })
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
         };
+        static async Task effect(THHGame game, Card card)
+        {
+            var discovered = await card.getOwner().discover(game, card.getOwner().grave.Where(c => c.isSpell()));
+            if (!card.getOwner().hand.isFull)
+                await card.getOwner().grave.moveTo(game, discovered, card.getOwner().hand);
+        }
     }
     /// <summary>
     /// 12 皇家烈焰 对敌方英雄造成15点伤害。

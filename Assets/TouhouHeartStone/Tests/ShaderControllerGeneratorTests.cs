@@ -23,10 +23,10 @@ namespace Tests
             checkField(Class, typeof(int), "SHADER_ID", MemberAttributes.Public | MemberAttributes.Const, shader.GetInstanceID());
             checkField(Class, typeof(Color), "_Color");
             checkField(Class, typeof(float), "_Gray");
-            var update = checkMethod(Class, typeof(void), "Update");
+            var update = checkMethod(Class, MemberAttributes.Family | MemberAttributes.Override, typeof(void), "Update");
             checkCall(update, "SetColor", "_Color");
             checkCall(update, "SetFloat", "_Gray");
-            var reset = checkMethod(Class, typeof(void), "Reset");
+            var reset = checkMethod(Class, MemberAttributes.Family, typeof(void), "Reset");
             checkAssign(reset, "_Gray", "GetFloat", "_Gray");
             checkAssign(reset, "_Color", "GetColor", "_Color");
         }
@@ -50,10 +50,10 @@ namespace Tests
                 c.Parameters[0] is CodePrimitiveExpression p1 && (string)p1.Value == propName &&
                 c.Parameters[1] is CodeFieldReferenceExpression p2 && p2.FieldName == propName);
         }
-        private static CodeMemberMethod checkMethod(CodeTypeDeclaration Class, Type returnType, string methodName)
+        private static CodeMemberMethod checkMethod(CodeTypeDeclaration Class, MemberAttributes attributes, Type returnType, string methodName)
         {
             CodeMemberMethod method = Class.Members.OfType<CodeMemberMethod>().FirstOrDefault(m => m.Name == methodName);
-            Assert.True(method.Attributes.HasFlag(MemberAttributes.Family | MemberAttributes.Override));
+            Assert.True(method.Attributes.HasFlag(attributes));
             Assert.AreEqual(returnType.FullName, method.ReturnType.BaseType);
             Assert.AreEqual(0, method.Parameters.Count);
             return method;

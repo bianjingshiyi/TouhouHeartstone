@@ -267,10 +267,12 @@ namespace Tests
             if (!game.isRunning)
             {
                 game.run();
+            }
+            if (!game.triggers.getRecordedEvents().Any(e => e is THHGame.StartEventArg))
+            {
                 game.sortedPlayers[0].cmdInitReplace(game);
                 game.sortedPlayers[1].cmdInitReplace(game);
             }
-
             while (condition())
             {
                 if (game.currentPlayer == game.sortedPlayers[0])
