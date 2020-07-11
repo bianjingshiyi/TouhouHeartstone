@@ -25,12 +25,11 @@ namespace UI
         }
         public void autoBind()
         {
-            this.m_as_Image = this.GetComponent<Image>();
             this._FieldsImage = this.transform.Find("Fields").GetComponent<Image>();
             this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
             this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
-            this._SelfFieldList = this.transform.Find("Fields").Find("SelfField").GetComponent<FieldList>();
             this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
+            this._SelfFieldList = this.transform.Find("Fields").Find("SelfField").GetComponent<FieldList>();
             this._EnemyFieldList = this.transform.Find("Fields").Find("EnemyField").GetComponent<FieldList>();
             this._AttackArrowImage = this.transform.Find("Fields").Find("AttackArrow").GetComponent<Image>();
             this._ServantPlaceHolder = this.transform.Find("Fields").Find("ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
@@ -62,19 +61,6 @@ namespace UI
             get
             {
                 return this.transform.parent.parent.GetComponent<Main>();
-            }
-        }
-        [SerializeField()]
-        private Image m_as_Image;
-        public Image asImage
-        {
-            get
-            {
-                if ((this.m_as_Image == null))
-                {
-                    this.m_as_Image = this.GetComponent<Image>();
-                }
-                return this.m_as_Image;
             }
         }
         [SerializeField()]
@@ -117,19 +103,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private FieldList _SelfFieldList;
-        public FieldList SelfFieldList
-        {
-            get
-            {
-                if ((this._SelfFieldList == null))
-                {
-                    this._SelfFieldList = this.transform.Find("Fields").Find("SelfField").GetComponent<FieldList>();
-                }
-                return this._SelfFieldList;
-            }
-        }
-        [SerializeField()]
         private Weather _Weather;
         public Weather Weather
         {
@@ -140,6 +113,19 @@ namespace UI
                     this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
                 }
                 return this._Weather;
+            }
+        }
+        [SerializeField()]
+        private FieldList _SelfFieldList;
+        public FieldList SelfFieldList
+        {
+            get
+            {
+                if ((this._SelfFieldList == null))
+                {
+                    this._SelfFieldList = this.transform.Find("Fields").Find("SelfField").GetComponent<FieldList>();
+                }
+                return this._SelfFieldList;
             }
         }
         [SerializeField()]

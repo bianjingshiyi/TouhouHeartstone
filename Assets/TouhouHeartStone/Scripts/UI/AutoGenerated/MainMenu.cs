@@ -27,9 +27,11 @@ namespace UI
         {
             this._BackgroundImage = this.transform.Find("BackgroundContainer").Find("Background").GetComponent<Image>();
             this._ButtonPanelImage = this.transform.Find("ButtonPanel").GetComponent<Image>();
-            this._ManMachineButton = this.transform.Find("ManMachineButton").GetComponent<Button>();
-            this._BuildButton = this.transform.Find("BuildButton").GetComponent<Button>();
-            this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
+            this._ButtonsVerticalLayoutGroup = this.transform.Find("ButtonPanel").Find("Buttons").GetComponent<VerticalLayoutGroup>();
+            this._ManMachineButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("ManMachineButton").GetComponent<Button>();
+            this._NetworkButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("NetworkButton").GetComponent<Button>();
+            this._BuildButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<Button>();
+            this._QuitButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<Button>();
         }
         private Main _parent;
         public Main parent
@@ -66,6 +68,19 @@ namespace UI
             }
         }
         [SerializeField()]
+        private VerticalLayoutGroup _ButtonsVerticalLayoutGroup;
+        public VerticalLayoutGroup ButtonsVerticalLayoutGroup
+        {
+            get
+            {
+                if ((this._ButtonsVerticalLayoutGroup == null))
+                {
+                    this._ButtonsVerticalLayoutGroup = this.transform.Find("ButtonPanel").Find("Buttons").GetComponent<VerticalLayoutGroup>();
+                }
+                return this._ButtonsVerticalLayoutGroup;
+            }
+        }
+        [SerializeField()]
         private Button _ManMachineButton;
         public Button ManMachineButton
         {
@@ -73,9 +88,22 @@ namespace UI
             {
                 if ((this._ManMachineButton == null))
                 {
-                    this._ManMachineButton = this.transform.Find("ManMachineButton").GetComponent<Button>();
+                    this._ManMachineButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("ManMachineButton").GetComponent<Button>();
                 }
                 return this._ManMachineButton;
+            }
+        }
+        [SerializeField()]
+        private Button _NetworkButton;
+        public Button NetworkButton
+        {
+            get
+            {
+                if ((this._NetworkButton == null))
+                {
+                    this._NetworkButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("NetworkButton").GetComponent<Button>();
+                }
+                return this._NetworkButton;
             }
         }
         [SerializeField()]
@@ -86,7 +114,7 @@ namespace UI
             {
                 if ((this._BuildButton == null))
                 {
-                    this._BuildButton = this.transform.Find("BuildButton").GetComponent<Button>();
+                    this._BuildButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<Button>();
                 }
                 return this._BuildButton;
             }
@@ -99,7 +127,7 @@ namespace UI
             {
                 if ((this._QuitButton == null))
                 {
-                    this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
+                    this._QuitButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<Button>();
                 }
                 return this._QuitButton;
             }

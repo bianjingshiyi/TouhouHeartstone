@@ -45,16 +45,9 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,vars)=>
+            new LambdaSingleTargetEffect((game,card,target)=>
             {
-                return true;
-            },(game,card,targets)=>
-            {
-                return true;
-            },async (game,card,vars,targets)=>
-            {
-                Card target = targets[0] as Card;
-                await target.damage(game,card,2);
+                return target.damage(game,card,2);
             })
         };
     }
@@ -232,22 +225,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            //new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
-            //{
-            //    return true;
-            //},(game,player,card,targets)=>
-            //{
-            //    if(targets[0] is Card target && target.owner == player && target.pile.name == PileName.FIELD)
-            //        return true;
-            //    return false;
-            //},async (game,player,card,arg,targets)=>
-            //{
-            //    THHPlayer opponent = game.getOpponent(arg.player);
-            //    if(opponent.field.count>0)
-            //    {
-            //        await opponent.field.randomTake(game,1).damage(game,1);
-            //    }
-            //})
+            new LambdaSingleTargetEffect((game,card,target)=>
+            {
+                return target.backToHand(game);
+            }, PileFlag.self | PileFlag.field)
         };
     }
     /// <summary>
@@ -403,6 +384,10 @@ namespace TouhouHeartstone.Builtin
         {
             new AttackModifier(2)
         };
+        public override Buff clone()
+        {
+            return new ClownpieceBuff();
+        }
     }
     /// <summary>
     /// 森之妖精 每当一个妖精阵亡后，花费-1

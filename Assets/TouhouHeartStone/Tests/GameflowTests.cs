@@ -1,23 +1,42 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
-using NUnit.Framework;
-using System.IO;
-using UnityEngine;
-using UnityEngine.TestTools;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using Game;
+using NUnit.Framework;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
-using System.Threading.Tasks;
-using System.Net;
-using System.Net.Sockets;
-using System.Xml.Serialization;
 using TouhouHeartstone.Builtin;
+using UnityEngine;
+using UnityEngine.TestTools;
+using BJSYGameCore;
 namespace Tests
 {
     public static class TestGameflow
     {
+        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, params KeyValuePair<int, int>[] yourDeck)
+        {
+            game = initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            IEnumerable<CardDefine> yourTrueDeck = yourDeck.Length > 0 ?
+ Enumerable.Repeat(game.getCardDefine(yourDeck[0].Key), yourDeck[0].Value) :
+ Enumerable.Repeat(game.getCardDefine(DefaultServant.ID), 30);
+            for (int i = 1; i < yourDeck.Length; i++)
+            {
+                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getCardDefine(yourDeck[i].Key), yourDeck[i].Value));
+            }
+            int count = yourTrueDeck.Count();
+            if (count < 30)
+                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getCardDefine<DefaultServant>(), 30 - count));
+            yourTrueDeck = yourTrueDeck.Reverse();
+            you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), yourTrueDeck);
+            oppo = game.createPlayer(2, "玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+        }
         public static THHGame initStandardGame(string name = null, int deckCount = 30, int[] playersId = null, GameOption option = null)
         {
             return initStandardGame(name, playersId,
@@ -45,12 +64,13 @@ namespace Tests
         public static THHGame initGameWithoutPlayers(string name, GameOption option)
         {
             TaskExceptionHandler.register();
-            THHGame game = new THHGame(option != null ? option : GameOption.Default, CardHelper.getCardDefines())
+            ULogger logger = new ULogger(name) { blackList = new List<string>() { "Load" } };
+            THHGame game = new THHGame(option != null ? option : GameOption.Default, CardHelper.getCardDefines(logger))
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
-                triggers = new GameObject("TriggerManager").AddComponent<TriggerManager>(),
+                triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
                 time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
-                logger = new ULogger()
+                logger = logger
             };
             (game.triggers as TriggerManager).logger = game.logger;
             return game;
@@ -84,42 +104,40 @@ namespace Tests
             THHGame game = TestGameflow.initStandardGame();
 
             _ = game.run();
-            yield return new WaitForSeconds(.1f);
-            game.players[0].cmdInitReplace(game, game.players[0].init[0]);
-            game.players[1].cmdInitReplace(game, game.players[1].init[0, 1]);
-            yield return new WaitForSeconds(.1f);
+            yield return game.players[0].cmdInitReplace(game, game.players[0].init[0]).wait();
+            yield return game.players[1].cmdInitReplace(game, game.players[1].init[0, 1]).wait();
             //替换手牌
-            Assert.AreEqual(8, game.triggers.getRecordedEvents().Length);
-            THHPlayer.InitReplaceEventArg initReplace = game.triggers.getRecordedEvents()[1] as THHPlayer.InitReplaceEventArg;
+            IEventArg[] events = game.triggers.getRecordedEvents();
+            THHPlayer.InitReplaceEventArg initReplace = events.OfType<THHPlayer.InitReplaceEventArg>().First();
             Assert.NotNull(initReplace);
             Assert.AreEqual(game.players[0], initReplace.player);
             Assert.AreEqual(1, initReplace.replacedCards.Length);
-            initReplace = game.triggers.getRecordedEvents()[2] as THHPlayer.InitReplaceEventArg;
+            initReplace = events.OfType<THHPlayer.InitReplaceEventArg>().Skip(1).First();
             Assert.NotNull(initReplace);
             Assert.AreEqual(game.players[1], initReplace.player);
             Assert.AreEqual(2, initReplace.replacedCards.Length);
             //游戏开始
-            THHGame.StartEventArg start = game.triggers.getRecordedEvents()[3] as THHGame.StartEventArg;
+            THHGame.StartEventArg start = events.OfType<THHGame.StartEventArg>().First();
             Assert.NotNull(start);
             //玩家回合开始
-            THHGame.TurnStartEventArg turnStart = game.triggers.getRecordedEvents()[4] as THHGame.TurnStartEventArg;
+            THHGame.TurnStartEventArg turnStart = events.OfType<THHGame.TurnStartEventArg>().First();
             Assert.NotNull(turnStart);
             Assert.AreEqual(game.sortedPlayers[0], turnStart.player);
             //增加法力水晶并充满
-            THHPlayer.SetMaxGemEventArg setMaxGem = game.triggers.getRecordedEvents()[5] as THHPlayer.SetMaxGemEventArg;
+            THHPlayer.SetMaxGemEventArg setMaxGem = events.skipUntil(e => e is THHGame.TurnStartEventArg).OfType<THHPlayer.SetMaxGemEventArg>().First();
             Assert.NotNull(setMaxGem);
             Assert.AreEqual(1, setMaxGem.value);
-            THHPlayer.SetGemEventArg setGem = game.triggers.getRecordedEvents()[6] as THHPlayer.SetGemEventArg;
+            THHPlayer.SetGemEventArg setGem = events.OfType<THHPlayer.SetGemEventArg>().First();
             Assert.NotNull(setGem);
             Assert.AreEqual(1, setGem.value);
             //抽一张卡
-            THHPlayer.DrawEventArg draw = game.triggers.getRecordedEvents()[7] as THHPlayer.DrawEventArg;
+            THHPlayer.DrawEventArg draw = events.OfType<THHPlayer.DrawEventArg>().First();
             Assert.NotNull(draw);
             Assert.AreEqual(game.sortedPlayers[0], draw.player);
             game.Dispose();
         }
         [UnityTest]
-        public IEnumerator useTest()
+        public IEnumerator initReplaceRefuseTest()
         {
             THHGame game = TestGameflow.initStandardGame();
 
@@ -130,6 +148,32 @@ namespace Tests
             yield return new WaitForSeconds(.1f);
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
             yield return new WaitForSeconds(.1f);
+
+            game.players[0].cmdInitReplace(game);
+            game.players[1].cmdInitReplace(game);
+
+            var args = game.triggers.getRecordedEvents().Where(e => e is THHPlayer.InitReplaceEventArg);
+            Assert.AreEqual(args.Count(), 2);
+            Assert.AreEqual(((THHPlayer.InitReplaceEventArg)args.ElementAt(0)).player, game.players[0]);
+            Assert.AreEqual(((THHPlayer.InitReplaceEventArg)args.ElementAt(1)).player, game.players[1]);
+
+            game.Dispose();
+        }
+
+        [UnityTest]
+        public IEnumerator useTest()
+        {
+            THHGame game = TestGameflow.initStandardGame();
+
+            _ = game.run();
+            yield return new WaitForSeconds(.1f);
+            game.players[0].cmdInitReplace(game);
+            game.players[1].cmdInitReplace(game);
+            yield return new WaitForSeconds(.1f);
+            Card card = game.sortedPlayers[0].hand[0];
+            var task = game.sortedPlayers[0].cmdUse(game, card, 0);
+            yield return TestHelper.waitTask(task);
+            Assert.True(game.sortedPlayers[0].field.Contains(card));
 
             THHPlayer.UseEventArg use = game.triggers.getRecordedEvents().FirstOrDefault(e => e is THHPlayer.UseEventArg) as THHPlayer.UseEventArg;
             Assert.NotNull(use);
@@ -152,13 +196,10 @@ namespace Tests
         {
             THHGame game = TestGameflow.initStandardGame();
 
-            _ = game.run();
-            yield return new WaitForSeconds(.1f);
+            game.run();
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
-            yield return new WaitForSeconds(.1f);
             game.sortedPlayers[0].cmdTurnEnd(game);
-            yield return new WaitForSeconds(.1f);
 
             THHGame.TurnEndEventArg turnEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.TurnEndEventArg) as THHGame.TurnEndEventArg;
             Assert.NotNull(turnEnd);
@@ -167,6 +208,7 @@ namespace Tests
             Assert.NotNull(turnStart);
             Assert.AreEqual(game.sortedPlayers[1], turnStart.player);
             game.Dispose();
+            yield break;
         }
         [UnityTest]
         public IEnumerator burnTest()
@@ -306,7 +348,7 @@ namespace Tests
             ClientManager c1 = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
             c1.logger = g1.logger;
             c1.start();
-            _ = c1.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
+            Task task = c1.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
             (g1.answers as AnswerManager).client = c1;
 
             THHGame g2 = TestGameflow.initStandardGame(name: "客户端1", playersId: new int[] { 0, 1 }, option: new GameOption()
@@ -316,9 +358,9 @@ namespace Tests
             ClientManager c2 = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
             c2.logger = g2.logger;
             c2.start();
-            _ = c2.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
+            task = c2.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
             (g2.answers as AnswerManager).client = c2;
-            yield return new WaitForSeconds(.5f);
+            yield return new WaitUntil(() => task.IsCompleted);
 
             _ = g1.run();
             _ = g2.run();
@@ -338,6 +380,169 @@ namespace Tests
 
             g1.Dispose();
             g2.Dispose();
+        }
+        [UnityTest]
+        public IEnumerator remotePVPSimulTest()
+        {
+            UnityLogger logger = new UnityLogger();
+            HostManager host = new GameObject(nameof(HostManager)).AddComponent<HostManager>();
+            host.logger = logger;
+            ClientManager local = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
+            local.logger = logger;
+            //开房，打开Host，自己加入自己，房间应该有Option
+            RoomInfo roomInfo = new RoomInfo();
+            roomInfo.setOption(new GameOption());
+            THHGame localGame = null;
+            local.onConnected += () =>
+            {
+                //发送玩家信息
+                RoomPlayerInfo playerInfo = new RoomPlayerInfo()
+                {
+                    id = local.id,
+                    name = "玩家" + local.id,
+                };
+                playerInfo.setDeck(new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray());
+                return local.send(playerInfo);
+            };
+            local.onReceive += (id, obj) =>
+            {
+                if (obj is RoomPlayerInfo newPlayerInfo)
+                {
+                    //收到玩家信息
+                    RoomInfo newRoomInfo = new RoomInfo()
+                    {
+                        playerList = new List<RoomPlayerInfo>(roomInfo.playerList)
+                    };
+                    newRoomInfo.setOption(roomInfo.getOption());
+                    newRoomInfo.playerList.Add(newPlayerInfo);
+                    //发送房间信息
+                    return local.send(newRoomInfo);
+                }
+                else if (obj is RoomInfo newRoomInfo)
+                {
+                    roomInfo = newRoomInfo;
+                    //收到房间信息
+                    if (newRoomInfo.playerList.Count > 1)
+                    {
+                        localGame = TestGameflow.initGameWithoutPlayers("本地游戏", newRoomInfo.getOption());
+                        (localGame.answers as AnswerManager).client = local;
+                        foreach (var playerInfo in newRoomInfo.playerList)
+                        {
+                            localGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, localGame.getCardDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => localGame.getCardDefine(did)));
+                        }
+                        localGame.run();
+                    }
+                }
+                return Task.CompletedTask;
+            };
+            host.start();
+            local.start();
+            yield return local.join(host.ip, host.port).wait();
+            Assert.AreEqual(1, roomInfo.playerList.Count);
+
+            ClientManager remote = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
+            remote.logger = logger;
+            THHGame remoteGame = null;
+            remote.onConnected += () =>
+            {
+                //发送玩家信息
+                RoomPlayerInfo playerInfo = new RoomPlayerInfo()
+                {
+                    id = remote.id,
+                    name = "玩家" + remote.id
+                };
+                playerInfo.setDeck(new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray());
+                return remote.send(playerInfo);
+            };
+            remote.onReceive += (id, obj) =>
+            {
+                if (obj is RoomInfo newRoomInfo)
+                {
+                    //收到房间信息
+                    if (newRoomInfo.playerList.Count > 1)
+                    {
+                        remoteGame = TestGameflow.initGameWithoutPlayers("远端游戏", newRoomInfo.getOption());
+                        (remoteGame.answers as AnswerManager).client = remote;
+                        foreach (var playerInfo in newRoomInfo.playerList)
+                        {
+                            remoteGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, remoteGame.getCardDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => remoteGame.getCardDefine(did)));
+                        }
+                        remoteGame.run();
+                    }
+                }
+                return Task.CompletedTask;
+            };
+            //加入房间
+            remote.start();
+            yield return remote.join(host.ip, host.port).wait();
+            //连接了，远程玩家把玩家信息发给本地，本地更新房间信息发给远端和开始游戏。
+            yield return new WaitUntil(() => localGame != null && remoteGame != null);
+
+            Assert.True(localGame.isRunning);
+            Assert.AreEqual(local.id, localGame.players[0].id);
+            Assert.AreEqual(remote.id, localGame.players[1].id);
+            Assert.True(remoteGame.isRunning);
+            Assert.AreEqual(local.id, remoteGame.players[0].id);
+            Assert.AreEqual(remote.id, remoteGame.players[1].id);
+
+            THHPlayer localPlayer = localGame.getPlayer(local.id);
+            Assert.AreEqual(0, localPlayer.id);
+            yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is InitReplaceRequest);
+            Assert.Greater(localPlayer.init.count, 0);
+            localPlayer.cmdInitReplace(localGame);
+            yield return new WaitUntil(() => localGame.answers.getResponse(localPlayer.id, localGame.answers.getRequests(localPlayer.id).FirstOrDefault()) is InitReplaceResponse);
+
+            THHPlayer remotePlayer = remoteGame.getPlayer(remote.id);
+            Assert.AreEqual(1, remotePlayer.id);
+            yield return new WaitUntil(() => remoteGame.answers.getRequests(remotePlayer.id).FirstOrDefault() is InitReplaceRequest);
+            Assert.Greater(remotePlayer.init.count, 0);
+            remotePlayer.cmdInitReplace(remoteGame);
+            yield return new WaitUntil(() => remoteGame.triggers.getRecordedEvents().Any(e => e is THHGame.StartEventArg));
+            //拍怪
+            if (localGame.sortedPlayers[0] == localPlayer)
+            {
+                yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is FreeActRequest);
+                localPlayer.cmdUse(localGame, localPlayer.hand[0], 0);
+                yield return new WaitUntil(() => localPlayer.field.count > 0);
+                localPlayer.cmdTurnEnd(localGame);
+                yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
+            }
+            yield return new WaitUntil(() => remoteGame.answers.getRequests(remotePlayer.id).FirstOrDefault() is FreeActRequest);
+            remotePlayer.cmdUse(remoteGame, remotePlayer.hand[0], 0);
+            yield return new WaitUntil(() => remotePlayer.field.count > 0);
+            remotePlayer.cmdTurnEnd(remoteGame);
+            yield return new WaitUntil(() => remoteGame.currentPlayer != remotePlayer);
+            if (localGame.sortedPlayers[0] != localPlayer)
+            {
+                yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is FreeActRequest);
+                localPlayer.cmdUse(localGame, localPlayer.hand[0], 0);
+                yield return new WaitUntil(() => localPlayer.field.count > 0);
+                localPlayer.cmdTurnEnd(localGame);
+                yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
+            }
+            do
+            {
+                yield return new WaitUntil(() => localGame.currentPlayer == localPlayer || remoteGame.currentPlayer == remotePlayer);
+                if (localGame.currentPlayer == localPlayer)
+                {
+                    localPlayer.cmdAttack(localGame, localPlayer.field[0], localGame.getOpponent(localPlayer).master);
+                    yield return new WaitUntil(() => localPlayer.field[0].getAttackTimes() > 0);
+                    localPlayer.cmdTurnEnd(localGame);
+                    yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
+                }
+                else if (remoteGame.currentPlayer == remotePlayer)
+                {
+                    remotePlayer.cmdAttack(remoteGame, remotePlayer.field[0], remoteGame.getOpponent(remotePlayer).master);
+                    yield return new WaitUntil(() => remotePlayer.field[0].getAttackTimes() > 0);
+                    remotePlayer.cmdTurnEnd(remoteGame);
+                    yield return new WaitUntil(() => remoteGame.currentPlayer != remotePlayer);
+                }
+            }
+            while (localGame.isRunning && remoteGame.isRunning);
+
+            local.disconnect();
+            remote.disconnect();
+            yield break;
         }
         [UnityTest]
         public IEnumerator effectRegisterTest()
@@ -377,6 +582,54 @@ namespace Tests
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[0].field[1]);
             Assert.AreEqual(7, game.sortedPlayers[0].field[1].getCurrentLife());
         }
+
+
+        /// <summary>
+        /// 使用法术以及符卡时能正常消耗水晶的测试
+        /// </summary>
+        [Test]
+        public void SkillAndSpellCardTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getCardDefine<DefaultServant>(), 2)));
+            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 29)
+            .Concat(Enumerable.Repeat(game.getCardDefine<TestSpellCard>(), 1)));
+            game.run();
+            game.sortedPlayers[0].cmdInitReplace(game);
+            game.sortedPlayers[1].cmdInitReplace(game);
+
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 0);
+            game.sortedPlayers[1].cmdTurnEnd(game);
+            int gemNum = game.sortedPlayers[0].gem;
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].skill, 0, game.sortedPlayers[1].field[0]);
+            Assert.True(game.sortedPlayers[0].skill.isUsed());  //技能已使用
+            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife());    //敌方随从受到伤害
+            Assert.AreEqual(1, gemNum - game.sortedPlayers[0].gem);     //水晶减1
+            gemNum = game.sortedPlayers[0].gem;
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0, game.sortedPlayers[1].field[0]);
+            Assert.AreEqual(5, game.sortedPlayers[1].field[0].getCurrentLife());
+            Assert.AreEqual(1, gemNum - game.sortedPlayers[0].gem);     //水晶减1
+        }
+        [UnityTest]
+        public IEnumerator surrenderTest()
+        {
+            THHGame game = TestGameflow.initStandardGame();
+            game.run();
+            //yield return new WaitUntil(() =>
+            //{
+            //    return game.answers.getLastRequest(game.players[0].id) is InitReplaceRequest;
+            //});
+            yield return game.players[0].cmdSurrender(game).wait();
+            THHGame.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.GameEndEventArg) as THHGame.GameEndEventArg;
+            Assert.AreEqual(game.players[1], gameEnd.winners[0]);
+            game.Dispose();
+            yield break;
+        }
     }
     static class TaskExceptionHandler
     {
@@ -403,252 +656,6 @@ namespace Tests
                     obj.SetObserved();
                 };
                 registered = true;
-            }
-        }
-    }
-    class TestMaster : MasterCardDefine
-    {
-        public const int ID = 0x00100000;
-        public override int id { get; set; } = ID;
-        public override int life { get; set; } = 30;
-        public override int skillID { get; set; } = TestSkill.ID;
-        public override IEffect[] effects { get; set; } = new Effect[0];
-    }
-    class TestSkill : SkillCardDefine
-    {
-        public const int ID = 0x00110000;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new Effect[0];
-    }
-    class TestServant : ServantCardDefine
-    {
-        public const int ID = 0x00110001;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 2;
-        public override int life { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new Effect[0];
-    }
-    class TestServant_TurnEndEffect : ServantCardDefine
-    {
-        public const int ID = 0x00110002;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return true;
-            },(game,card,arg)=>
-            {
-                card.setProp("TestResult",true);
-                return Task.CompletedTask;
-            })
-        };
-    }
-    class TestServant_ZeroAttack : ServantCardDefine
-    {
-        public const int ID = 0x00110003;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 0;
-        public override int life { get; set; } = 4;
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-        };
-    }
-    class TestServant_Reverse : ServantCardDefine
-    {
-        public const int ID = 0x00110004;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
-        public override int attack { get; set; } = 2;
-        public override int life { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return true;
-            },(game,card,arg,targets)=>
-            {
-                return Task.CompletedTask;
-            })
-        };
-    }
-    class TestServant_Buff : ServantCardDefine
-    {
-        public const int ID = 0x00110005;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return true;
-            },(game,card,arg,targets)=>
-            {
-                card.addBuff(game,new TestBuff());
-                return Task.CompletedTask;
-            })
-        };
-        class TestBuff : Buff
-        {
-            public const int ID = 0x001;
-            public override int id { get; } = ID;
-            public override PropModifier[] modifiers { get; } = new PropModifier[]
-            {
-                new AttackModifier(1),
-                new LifeModifier(1)
-            };
-        }
-    }
-    /// <summary>
-    /// 一个会突袭的随从
-    /// </summary>
-    public class RushServant : ServantCardDefine
-    {
-        public const int ID = 0x00110006;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[0];
-        public override string[] keywords { get; set; } = new string[] { Keyword.RUSH };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
-    }
-    /// <summary>
-    /// 一个会圣盾的随从
-    /// </summary>
-    public class ShieldServant : ServantCardDefine
-    {
-        public const int ID = 0x00110007;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[0];
-        public override string[] keywords { get; set; } = new string[] { Keyword.SHIELD };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
-    }
-    /// <summary>
-    /// 会潜行的随从
-    /// </summary>
-    public class StealthServant : ServantCardDefine
-    {
-        public const int ID = 0x00110008;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[0];
-        public override string[] keywords { get; set; } = new string[] { Keyword.STEALTH };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
-    }
-
-    /// <summary>
-    /// 会吸血的随从
-    /// </summary>
-    public class SuckingServant : ServantCardDefine
-    {
-        public const int ID = 0x00110009;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[] { };
-        public override string[] keywords { get; set; } = new string[] { };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
-    }
-
-    /// <summary>
-    /// 剧毒随从
-    /// </summary>
-    public class PoisonServant : ServantCardDefine
-    {
-        public const int ID = 0x0011000A;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[] { };
-        public override string[] keywords { get; set; } = new string[] { };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
-    }
-    /// <summary>
-    /// 一只白板的挨打用随从
-    /// </summary>
-    public class DefaultServant : ServantCardDefine
-    {
-        public const int ID = 0x0011FFFF;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 7;
-        public override string[] tags { get; set; } = new string[0];
-        public override string[] keywords { get; set; } = new string[0];
-        public override IEffect[] effects { get; set; } = new IEffect[0];
-    }
-    public class MountainGaint : ServantCardDefine
-    {
-        public const int ID = 0x0011000B;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 12;
-        public override int attack { get; set; } = 8;
-        public override int life { get; set; } = 8;
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            new CostFixer()
-        };
-        class CostFixer : IEffect
-        {
-            public string[] events => throw new System.NotImplementedException();
-            public string[] piles { get; } = new string[] { PileName.HAND };
-            public bool checkCondition(IGame game, ICard card, object[] vars)
-            {
-                throw new System.NotImplementedException();
-            }
-            public bool checkTarget(IGame game, ICard card, object[] vars, object[] targets)
-            {
-                throw new System.NotImplementedException();
-            }
-            public Task execute(IGame game, ICard card, object[] vars, object[] targets)
-            {
-                throw new System.NotImplementedException();
-            }
-            public string[] getEvents(ITriggerManager manager)
-            {
-                return new string[0];
-            }
-            CostModifier _modifier = new CostModifier();
-            public void register(IGame game, ICard card)
-            {
-                card.addModifier(game, _modifier);
-            }
-            public void unregister(IGame game, ICard card)
-            {
-                card.removeModifier(game, _modifier);
-            }
-            class CostModifier : PropModifier<int>
-            {
-                public override string propName { get; } = nameof(ServantCardDefine.cost);
-                public override int calc(Card card, int value)
-                {
-                    return value - card.getOwner().hand.count + 1;
-                }
             }
         }
     }

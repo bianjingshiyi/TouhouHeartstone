@@ -2,29 +2,20 @@
 
 namespace TouhouHeartstone
 {
-    public class SpellDamageModifier : PropModifier<int>
+    public class SpellDamageModifier : IntPropModifier
     {
-        public override string propName { get; } = nameof(ServantCardDefine.spellDamage);
-        public int value { get; }
-        public SpellDamageModifier(int value)
-        {
-            this.value = value;
-        }
-        public override void beforeAdd(Card card)
+        public SpellDamageModifier(int value) : base(nameof(ServantCardDefine.spellDamage), value)
         {
         }
-        public override void beforeRemove(Card card)
+        public SpellDamageModifier(int value, bool isSet) : base(nameof(ServantCardDefine.spellDamage), value, isSet)
         {
         }
-        public override int calc(Card card, int value)
-        {
-            return value + this.value;
-        }
-        public override void afterAdd(Card card)
+        protected SpellDamageModifier(IntPropModifier origin) : base(origin)
         {
         }
-        public override void afterRemove(Card card)
+        public override PropModifier clone()
         {
+            return new SpellDamageModifier(this);
         }
     }
 }

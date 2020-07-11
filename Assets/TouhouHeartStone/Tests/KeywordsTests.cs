@@ -4,7 +4,7 @@ using System.Linq;
 using TouhouHeartstone;
 using TouhouCardEngine;
 using TouhouHeartstone.Builtin;
-
+using System;
 namespace Tests
 {
     public class KeywordsTests
@@ -85,34 +85,166 @@ namespace Tests
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].field[1]);
             Assert.AreEqual(1, game.sortedPlayers[0].field[1].getCurrentLife());    //变为非潜行状态后可以被攻击
+            //game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
+            //Assert.True(game.sortedPlayers[1].field[1].isStealth());
+            //game.sortedPlayers[1].cmdTurnEnd(game);
+            //Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife());     //潜行随从在回合结束时对对方master造成伤害
+            //Assert.False(game.sortedPlayers[1].field[1].isStealth());               //潜行消失
         }
-
 
         /// <summary>
-        /// 攻击自己的测试
+        /// 吸血测试
         /// </summary>
         [Test]
-        public void AttackSelf()
+        public void DrainTest()
         {
-            THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
-            Enumerable.Repeat(new Reimu(), 2).ToArray(),
-            Enumerable.Repeat(Enumerable.Repeat(new DefaultServant(), 30).ToArray(), 2).ToArray(),
-            new GameOption() { });
-            game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
-
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            THHGame game = GameInitWithoutPlayer<DefaultServant, DrainServant>(29, 1);
+            AfterXRound(game, 1);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
             game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[1], 0);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
             game.sortedPlayers[1].cmdTurnEnd(game);
+            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].master);
+            Assert.AreEqual(29, game.sortedPlayers[1].master.getCurrentLife());  //被攻击后血量减少1
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[0].master);
-            Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife()); //攻击己方master
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(7, game.sortedPlayers[0].field[1].getCurrentLife());  //攻击己方servant
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].master);
+            Assert.AreEqual(29, game.sortedPlayers[1].master.getCurrentLife());  //不会吸血的随从攻击后，master没有回血
+            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[1], game.sortedPlayers[0].field[1]);
+            Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife());  //会吸血的随从攻击后，master回血
+            Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife());  //攻击吸血随从，敌方master回血
 
         }
 
+        /// <summary>
+        /// 剧毒测试
+        /// </summary>
+        [Test]
+        public void PoisonousTest()
+        {
+            THHGame game = GameInitWithoutPlayer<DefaultServant, PoisonousServant>(29, 1);
+            AfterXRound(game, 1);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[1], 0);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
+            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].field[1]);
+            Assert.AreEqual(0, game.sortedPlayers[0].field.count);      //攻击剧毒随从，自身死亡
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].field[0]);
+            Assert.AreEqual(6, game.sortedPlayers[0].field[0].getCurrentLife());    //没有剧毒的随从攻击，受到伤害，不会即死
+            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[1], game.sortedPlayers[0].field[0]);
+            Assert.AreEqual(0, game.sortedPlayers[0].field.count);      //有剧毒的随从攻击敌方随从，随从死亡
+            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            Assert.True(game.sortedPlayers[1].field[1].isPoisonous());
+            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[1], game.sortedPlayers[0].master);
+            Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife());     //剧毒随从攻击master，master受到伤害，不会即死
+
+        }
+
+        /// <summary>
+        /// 魔免测试
+        /// </summary>
+        [Test]
+        public void ElusiveTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getCardDefine<TestSpellCard>(), 2)));
+            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 29)
+            .Concat(Enumerable.Repeat(game.getCardDefine<ElusiveServant>(), 1)));
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<ElusiveServant>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == ElusiveServant.ID), 0);
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<TestSpellCard>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == TestSpellCard.ID), 0, defaultPlayer.field[0]);
+            Assert.AreEqual(6, defaultPlayer.field[0].getCurrentLife());//没有魔免的可以被法术指定
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == TestSpellCard.ID), 0, elusivePlayer.field[0]);
+            Assert.AreEqual(3, elusivePlayer.field[0].getCurrentLife());//魔免无法被法术指定
+
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<TestDamageSkill>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.skill, 0, defaultPlayer.field[0]);
+            Assert.AreEqual(5, defaultPlayer.field[0].getCurrentLife());//没有魔免的可以被技能指定
+            elusivePlayer.cmdTurnEnd(game);
+
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<TestDamageSkill>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.skill, 0, elusivePlayer.field[0]);
+            Assert.AreEqual(3, elusivePlayer.field[0].getCurrentLife());//魔免无法被技能指定
+
+            game.Dispose();
+        }
+        /// <summary>
+        /// 冰冻测试：在测试类中创建一个冰环法术，对方拍一个默认随从，我方放一个冰环，预期下一个回合对方的随从无法进行攻击，再下一个回合解冻可以进行攻击。
+        /// </summary>
+        [Test]
+        public void freezeTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getCardDefine<TestFreeze>(), 2)));
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+            //玩家0拍白板一张
+
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<TestFreeze>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == TestFreeze.ID), 0, defaultPlayer.field);
+            //玩家1释放冰环
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdAttack(game, defaultPlayer.field[0], elusivePlayer.master);//被冻结的随从无法攻击
+            defaultPlayer.cmdTurnEnd(game);//回合结束，随从解冻
+
+            elusivePlayer.cmdTurnEnd(game);
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdAttack(game, defaultPlayer.field[0], elusivePlayer.master);//已解除冰冻的随从可以攻击
+            Assert.AreEqual(29, elusivePlayer.master.getCurrentLife());
+
+            game.Dispose();
+        }
+        /// <summary>
+        /// 需要写一个愤怒的女祭司随从，给它剧毒属性，然后预期在回合结束的时候她只需要刮一刀就可以刮死对面不止1血的怪
+        /// </summary>
+        [Test]
+        public void poisiousTest_ServantEffect()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getCardDefine<Priestess>(), 2)));
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+            //玩家0拍白板一张
+
+            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<Priestess>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == Priestess.ID), 0);
+            //玩家1拍女祭司
+
+            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 1);
+
+            game.Dispose();
+        }
         /// <summary>
         /// 从player[0]开始经过x回合
         /// </summary>

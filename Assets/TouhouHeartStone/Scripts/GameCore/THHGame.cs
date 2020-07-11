@@ -12,7 +12,16 @@ namespace TouhouHeartstone
     public class THHGame : CardEngine, IDisposable
     {
         public GameOption option { get; }
-        public CardEngine engine { get; }
+        public new TriggerManager triggers
+        {
+            get { return base.triggers as TriggerManager; }
+            set { base.triggers = value; }
+        }
+        public new AnswerManager answers
+        {
+            get { return base.answers as AnswerManager; }
+            set { base.answers = value; }
+        }
         Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
         public THHGame(params CardDefine[] defines) : base(null, null, GameOption.Default.randomSeed, defines)
         {
@@ -22,14 +31,15 @@ namespace TouhouHeartstone
         {
             this.option = option;
         }
-        [Obsolete]
-        public THHGame(IGameEnvironment env, bool shuffle = true, params CardDefine[] cards) : base(env, new HeartStoneRule(env), (int)DateTime.Now.ToBinary())
-        {
-            engine = new CardEngine(env, new HeartStoneRule(env), (int)DateTime.Now.ToBinary());
-            engine.setProp("shuffle", shuffle);
-            engine.afterEvent += afterEvent;
-        }
         #region Player
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <param name="master"></param>
+        /// <param name="deck">注意，牌库的第一张是牌库的底端</param>
+        /// <returns></returns>
         public THHPlayer createPlayer(int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
         {
             if (players.Any(p => p.id == id))
@@ -106,11 +116,28 @@ namespace TouhouHeartstone
                         case Keyword.STEALTH:
                             card.setStealth(true);
                             break;
+                        case Keyword.DRAIN:
+                            card.setDrain(true);
+                            break;
+                        case Keyword.POISONOUS:
+                            card.setPoisonous(true);
+                            break;
+                        case Keyword.ELUSIVE:
+                            card.setElusive(true);
+                            break;
                         default:
                             throw new UnknowKeywordException("未知关键词" + keyword);
                     }
                 }
                 card.setProp(nameof(ServantCardDefine.tags), servant.tags);
+            }
+            else if (define is SpellCardDefine spell)
+            {
+                card.setCost(spell.cost);
+            }
+            else if (define is SkillCardDefine skill)
+            {
+                card.setCost(skill.cost);
             }
             return card;
         }
@@ -157,36 +184,34 @@ namespace TouhouHeartstone
             return opponent.field.Concat(new Card[] { opponent.master }).ToArray();
         }
         #endregion
-        /// <summary>
-        /// 添加玩家
-        /// </summary>
-        /// <param name="frontend">实现接口的前端对象，Game会通过这个对象与前端进行沟通。</param>
-        /// <param name="deck">玩家使用的卡组，数组的第一个整数代表玩家使用的角色卡，后30个是玩家使用的卡组。</param>
-        public void addPlayer(IFrontend frontend, int[] deck)
-        {
-            throw new NotImplementedException();
-        }
         #region Gameflow
         public bool isRunning { get; private set; } = false;
         /// <summary>
         /// 运行游戏
         /// </summary>
         /// <returns>游戏运行的Task</returns>
-        public Task run()
+        public Task run(Action onInited = null)
         {
             isRunning = true;
-            return gameflow();
+            return gameflow(onInited);
         }
-        private async Task gameflow()
+        private async Task gameflow(Action onInited = null)
         {
             await init();
-            Dictionary<int, IResponse> initReplaceResponses = await answers.askAll(sortedPlayers.Select(p => p.id).ToArray(), new InitReplaceRequest()
+            Task<Dictionary<int, IResponse>> task = answers.askAll(sortedPlayers.Select(p => p.id).ToArray(), new InitReplaceRequest()
             {
             }, option.timeoutForInitReplace);
+            onInited?.Invoke();
+            Dictionary<int, IResponse> initReplaceResponses = await task;
+            if (!isRunning)
+                return;
             foreach (var result in initReplaceResponses)
             {
                 THHPlayer player = getPlayer(result.Key);
-                await player.initReplace(this, getCards((result.Value as InitReplaceResponse).cardsId));
+                if (result.Value is InitReplaceResponse initReplace)
+                    await player.initReplace(this, getCards(initReplace.cardsId));
+                else if (result.Value is SurrenderResponse surrender)
+                    await this.surrender(player);
             }
             await start();
             currentPlayer = sortedPlayers[0];
@@ -209,6 +234,8 @@ namespace TouhouHeartstone
                 //决定玩家行动顺序
                 if (option.sortedPlayers == null || option.sortedPlayers.Length != players.Length)
                 {
+                    if (option.sortedPlayers != null && option.sortedPlayers.Length != players.Length)
+                        logger?.log("Warning", "游戏参数玩家行动顺序长度与实际数量不匹配");
                     List<THHPlayer> remainedList = new List<THHPlayer>(players);
                     THHPlayer[] sortedPlayers = new THHPlayer[remainedList.Count];
                     for (int i = 0; i < sortedPlayers.Length; i++)
@@ -254,18 +281,30 @@ namespace TouhouHeartstone
                 logger.log("Debug", "游戏开始");
                 foreach (THHPlayer player in sortedPlayers)
                 {
+                    player.setMaxGem(this, option.startGem);
                     player.init.moveTo(this, player.init[0, player.init.count - 1], player.hand, 0);
                     if (player != sortedPlayers[0])
                     {
                         player.hand.add(this, createCard(getCardDefine<LuckyCoin>()));
                         logger.log("由于后手行动" + player + "获得一张幸运币");
                     }
+                    arg.startHandDic.Add(player, new StartEventArg.StartInfo()
+                    {
+                        gem = player.maxGem,
+                        hands = player.hand.ToArray()
+                    });
                 }
                 return Task.CompletedTask;
             });
         }
         public class StartEventArg : EventArg
         {
+            public Dictionary<THHPlayer, StartInfo> startHandDic = new Dictionary<THHPlayer, StartInfo>();
+            public class StartInfo
+            {
+                public int gem;
+                public Card[] hands;
+            }
         }
         public THHPlayer currentPlayer { get; private set; }
         async Task turnStart(THHPlayer player)
@@ -328,6 +367,9 @@ namespace TouhouHeartstone
                         break;
                     case TurnEndResponse _:
                         return;
+                    case SurrenderResponse _:
+                        await this.surrender(player);
+                        return;
                 }
             }
         }
@@ -338,6 +380,18 @@ namespace TouhouHeartstone
             await triggers.doEvent(new TurnEndEventArg() { player = player }, arg =>
             {
                 logger.log("Debug", currentPlayer + "回合结束");
+                foreach (Card servant in arg.player.field)
+                {
+                    if (servant.isFreeze())
+                    {
+                        servant.setAttackTimes(servant.getAttackTimes() + 1);
+                        if (servant.getMaxAttackTimes() - servant.getAttackTimes() >= 0)
+                        {
+                            logger.log("被冻结的随从解除冰冻");
+                            servant.setFreeze(false);
+                        }
+                    }
+                }
                 return Task.CompletedTask;
             });
             time.cancel(turnTimer);
@@ -353,38 +407,37 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public Task updateDeath()
         {
-            Dictionary<Card, THHCard.DeathEventArg.Info> deathDic = new Dictionary<Card, THHCard.DeathEventArg.Info>();
+            List<Card> deathList = new List<Card>();
             foreach (THHPlayer player in players)
             {
-                if (player.master.getCurrentLife() <= 0)
+                if (player.master.isDead())
                 {
-                    deathDic.Add(player.master, new THHCard.DeathEventArg.Info()
-                    {
-                        card = player.master,
-                        player = player,
-                        position = 0
-                    });
+                    deathList.Add(player.master);
                 }
                 foreach (Card card in player.field)
                 {
-                    if (card.getCurrentLife() <= 0)
+                    if (card.isDead())
                     {
-                        deathDic.Add(card, new THHCard.DeathEventArg.Info()
-                        {
-                            card = card,
-                            player = player,
-                            position = player.field.indexOf(card)
-                        });
+                        deathList.Add(card);
                     }
                 }
             }
-            if (deathDic.Count > 0)
+            if (deathList.Count > 0)
             {
-                logger.log("结算" + string.Join("，", deathDic.Keys) + "的死亡");
-                return deathDic.Keys.die(this, deathDic);
+                logger.log("结算" + string.Join("，", deathList) + "的死亡");
+                return deathList.die(this);
             }
             else
                 return Task.CompletedTask;
+        }
+        internal Task surrender(THHPlayer player)
+        {
+            logger.log(player + "投降");
+            return player.master.die(this);
+        }
+        public async Task leave(THHPlayer player)
+        {
+            await player.master.die(this);
         }
         internal async Task gameEnd(THHPlayer[] winners)
         {
@@ -404,50 +457,6 @@ namespace TouhouHeartstone
             answers.cancelAll();
         }
         #endregion
-        private void afterEvent(Event @event)
-        {
-            if (@event.parent == null)
-            {
-                foreach (Player player in engine.getPlayers())
-                {
-                    EventWitness[] wArray = generateWitnessTree(engine, player, @event);
-                    for (int i = 0; i < wArray.Length; i++)
-                    {
-                        dicPlayerFrontend[player].sendWitness(wArray[i]);
-                    }
-                }
-            }
-        }
-        EventWitness[] generateWitnessTree(CardEngine engine, Player player, Event e)
-        {
-            List<EventWitness> wlist = new List<EventWitness>();
-            if (e is VisibleEvent)
-            {
-                EventWitness w = (e as VisibleEvent).getWitness(engine, player);
-                for (int i = 0; i < e.before.Count; i++)
-                {
-                    wlist.AddRange(generateWitnessTree(engine, player, e.before[i]));
-                }
-                for (int i = 0; i < e.child.Count; i++)
-                {
-                    w.child.AddRange(generateWitnessTree(engine, player, e.child[i]));
-                }
-                wlist.Add(w);
-                for (int i = 0; i < e.after.Count; i++)
-                {
-                    wlist.AddRange(generateWitnessTree(engine, player, e.after[i]));
-                }
-                return wlist.ToArray();
-            }
-            else
-            {
-                for (int i = 0; i < e.child.Count; i++)
-                {
-                    wlist.AddRange(generateWitnessTree(engine, player, e.child[i]));
-                }
-                return wlist.ToArray();
-            }
-        }
         public void Dispose()
         {
             close();
@@ -462,6 +471,18 @@ namespace TouhouHeartstone
         public bool shuffle = true;
         public float timeoutForInitReplace = 30;
         public float timeoutForTurn = 75;
+        public int startGem = 0;
+        public GameOption()
+        {
+        }
+        public GameOption(GameOption copyTarget)
+        {
+            randomSeed = copyTarget.randomSeed;
+            sortedPlayers = copyTarget.sortedPlayers;
+            shuffle = copyTarget.shuffle;
+            timeoutForInitReplace = copyTarget.timeoutForInitReplace;
+            timeoutForTurn = copyTarget.timeoutForTurn;
+        }
     }
 
     [Serializable]

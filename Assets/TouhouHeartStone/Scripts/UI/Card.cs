@@ -1,21 +1,24 @@
 ﻿using TouhouHeartstone;
+using System;
 using TouhouCardEngine;
 using UnityEngine;
 namespace UI
 {
     partial class Card
     {
+        [Obsolete]
         public TouhouCardEngine.Card card { get; private set; }
+        [Obsolete]
         public void update(TouhouCardEngine.Card card, CardSkinData skin)
         {
             this.card = card;
 
-            CostText.text = card.getCost().ToString();
+            CostPropNumber.asText.text = card.getCost().ToString();
             if (card.define.type == CardDefineType.SERVANT)
             {
                 TypeController = Type.Servant;
-                AttackText.text = card.getAttack().ToString();
-                LifeText.text = card.getLife().ToString();
+                AttackPropNumber.asText.text = card.getAttack().ToString();
+                LifePropNumber.asText.text = card.getLife().ToString();
             }
             else
             {
@@ -34,9 +37,9 @@ namespace UI
         }
         public void update(CardDefine card, CardSkinData skin)
         {
-            CostText.text = card.getCost().ToString();
-            AttackText.text = card.getAttack().ToString();
-            LifeText.text = card.getLife().ToString();
+            CostPropNumber.asText.text = card.getCost().ToString();
+            AttackPropNumber.asText.text = card.getAttack().ToString();
+            LifePropNumber.asText.text = card.getLife().ToString();
 
             Image.sprite = skin.image;
             NameText.text = skin.name;

@@ -7,7 +7,9 @@
         "TouhouHeartstone",
         "Plugins",
         "Game",
-        "BJSYGameCore"
+        "BJSYGameCore",
+        "ExcelDataSet",
+        "BJSYGameCore.Editor"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -16,7 +18,9 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "LiteNetLib.dll",
-        "ExcelLibrary.dll"
+        "ExcelLibrary.dll",
+        "Mono.Data.Sqlite.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

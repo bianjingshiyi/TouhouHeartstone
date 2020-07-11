@@ -16,6 +16,10 @@ namespace TouhouHeartstone
         public Pile hand { get; }
         public Pile field { get; }
         public Pile grave { get; }
+        /// <summary>
+        /// 正在使用的法术卡都会被置入亚空间
+        /// </summary>
+        public Pile warp { get; }
         public bool isPrepared { get; set; } = false;
         public int gem { get; private set; } = 0;
         public int maxGem { get; private set; } = 0;
@@ -23,10 +27,13 @@ namespace TouhouHeartstone
         public THHPlayer(THHGame game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck) : base(id, name)
         {
             this.master = game.createCard(master);
-            addPile(new Pile(game, "Master", new Card[] { this.master }, 1));
+            addPile(new Pile(game, PileName.MASTER, 1));
+            getPile(PileName.MASTER).add(game, this.master);
             skill = game.createCardById(master.skillID);
-            addPile(new Pile(game, "Skill", new Card[] { skill }, 1));
-            this.deck = new Pile(game, "Deck", deck.Select(d => game.createCard(d)).ToArray());
+            addPile(new Pile(game, "Skill", 1));
+            this[PileName.SKILL].add(game, skill);
+            this.deck = new Pile(game, "Deck");
+            this.deck.add(game, deck.Select(d => game.createCard(d)).ToArray());
             addPile(this.deck);
             init = new Pile(game, "Init", maxCount: 4);
             addPile(init);
@@ -36,16 +43,17 @@ namespace TouhouHeartstone
             addPile(field);
             grave = new Pile(game, "Grave");
             addPile(grave);
+            warp = new Pile(game, "Warp");
+            addPile(warp);
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
         {
             await game.triggers.doEvent(new InitReplaceEventArg() { player = this, cards = cards }, onInitReplace);
-            Task onInitReplace(InitReplaceEventArg arg)
+            async Task onInitReplace(InitReplaceEventArg arg)
             {
-                arg.replacedCards = arg.player.init.replaceByRandom(game, arg.cards, arg.player.deck);
+                arg.replacedCards = await arg.player.init.replaceByRandom(game, arg.cards, arg.player.deck);
                 game.logger.log(arg.player + "替换卡牌：" + string.Join("，", arg.cards.Select(c => c.ToString())) + "=>"
                     + string.Join("，", arg.replacedCards.Select(c => c.ToString())));
-                return Task.CompletedTask;
             }
         }
         public class InitReplaceEventArg : EventArg
@@ -141,8 +149,13 @@ namespace TouhouHeartstone
         public async Task<bool> tryUse(THHGame game, Card card, int position, params Card[] targets)
         {
             if (!card.isUsable(game, this, out _))
+                //卡牌不可用
+                return false;
+            if (targets.Any(t => t is Card targetCard && targetCard.isElusive() && (card.define is SkillCardDefine || card.define is SpellCardDefine)))
+                //目标是魔免
                 return false;
             if (card.define is SkillCardDefine)
+                //使用技能
                 card.setUsed(true);
             await setGem(game, gem - card.getCost());
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>
@@ -165,31 +178,58 @@ namespace TouhouHeartstone
                             await effect.execute(game, card, new object[] { eventArg }, targets);
                         }
                     }
-                    //IEffect effect = arg.card.define.getEffectOn<BattleCryEventArg>(game.triggers);
-                    //if (effect != null)
-                    //{
-                    //    await game.triggers.doEvent(new BattleCryEventArg() { player = arg.player, card = arg.card, effect = effect, targets = arg.targets }, arg2 =>
-                    //    {
-                    //        return arg2.effect.execute(game, arg2.player, arg2.card, new object[] { arg2 }, arg2.targets);
-                    //    });
-                    //}
+                    IActiveEffect activeEffect = arg.card.define.getActiveEffect();
+                    if (activeEffect != null)
+                    {
+                        await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    }
                 }
                 else if (card.define is SkillCardDefine)
                 {
                     ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    await effect.execute(game, arg.card, new object[] { new ActiveEventArg(player, card, targets) }, arg.targets);
+                    if (effect != null)
+                    {
+                        await effect.execute(game, arg.card, new object[] { new ActiveEventArg(player, card, targets) }, arg.targets);
+                    }
+                    IActiveEffect activeEffect = arg.card.define.getActiveEffect();
+                    if (activeEffect != null)
+                    {
+                        await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    }
                 }
                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.SPELL))
                 {
                     //法术卡，释放效果然后丢进墓地
-                    player.hand.remove(game, card);
-                    ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    await effect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
-                    player.grave.add(game, card);
+                    await player.hand.moveTo(game, card, player.warp);
+                    ITriggerEffect triggerEffect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    if (triggerEffect != null)
+                    {
+                        await triggerEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    }
+                    IActiveEffect activeEffect = arg.card.define.getActiveEffect();
+                    if (activeEffect != null)
+                    {
+                        await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    }
+                    await player.warp.moveTo(game, card, player.grave);
                 }
             });
             await game.updateDeath();
             return true;
+        }
+        /// <summary>
+        /// 从给出的卡牌中发现一张牌，默认是从中挑三张
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="cards"></param>
+        /// <param name="count">如果小于等于0，则全都可以挑</param>
+        /// <returns></returns>
+        public async Task<Card> discover(THHGame game, IEnumerable<Card> cards, int count = 3)
+        {
+            if (count > 0)
+                cards = cards.randomTake(game, count);
+            int cardId = (await game.answers.ask(id, new DiscoverRequest(cards.Select(c => c.id).ToArray())) as DiscoverResponse).cardId;
+            return cards.First(c => c.id == cardId);
         }
         public class UseEventArg : EventArg
         {
@@ -231,6 +271,7 @@ namespace TouhouHeartstone
                     player.field.insert(game, card, position);
                 if (card.define is ServantCardDefine servant)
                 {
+                    card.setDead(false);
                     card.setCurrentLife(servant.life);
                     card.setReady(false);
                 }
@@ -283,16 +324,16 @@ namespace TouhouHeartstone
             return result;
         }
         #region Command
-        public void cmdInitReplace(THHGame game, params Card[] cards)
+        public Task cmdInitReplace(THHGame game, params Card[] cards)
         {
-            game.answers.answer(id, new InitReplaceResponse()
+            return game.answers.answer(id, new InitReplaceResponse()
             {
                 cardsId = cards.Select(c => c.id).ToArray()
             });
         }
-        public void cmdUse(THHGame game, Card card, int position, params Card[] targets)
+        public Task cmdUse(THHGame game, Card card, int position = 0, params Card[] targets)
         {
-            game.answers.answer(id, new UseResponse()
+            return game.answers.answer(id, new UseResponse()
             {
                 cardId = card.id,
                 position = position,
@@ -311,6 +352,17 @@ namespace TouhouHeartstone
             {
                 cardId = card.id,
                 targetId = target.id
+            });
+        }
+        public Task cmdSurrender(THHGame game)
+        {
+            return game.surrender(this);
+        }
+        public Task cmdDiscover(THHGame game, int select)
+        {
+            return game.answers.answer(id, new DiscoverResponse()
+            {
+                cardId = select
             });
         }
         #endregion

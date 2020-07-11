@@ -3,16 +3,17 @@ using System.Linq;
 using System.Reflection;
 using TouhouCardEngine;
 using System.Collections.Generic;
-using ExcelLibrary.SpreadSheet;
+using MongoDB.Bson;
+using ILogger = TouhouCardEngine.Interfaces.ILogger;
 namespace TouhouHeartstone
 {
     public class CardHelper
     {
-        public static CardDefine[] getCardDefines()
+        public static CardDefine[] getCardDefines(ILogger logger)
         {
-            return getCardDefines(AppDomain.CurrentDomain.GetAssemblies());
+            return getCardDefines(AppDomain.CurrentDomain.GetAssemblies(), logger);
         }
-        public static CardDefine[] getCardDefines(Assembly[] assemblies)
+        public static CardDefine[] getCardDefines(Assembly[] assemblies, ILogger logger)
         {
             List<CardDefine> cardList = new List<CardDefine>();
             foreach (Assembly assembly in assemblies)
@@ -23,7 +24,28 @@ namespace TouhouHeartstone
                     if (constructor != null)
                     {
                         if (constructor.Invoke(new object[0]) is CardDefine define)
-                            cardList.Add(define);
+                        {
+                            try
+                            {
+                                if (logger == null)
+                                    UberDebug.LogChannel("Load", "加载内置卡片" + define.ToJson());
+                                else
+                                    logger.log("Load", "加载内置卡片" + define.ToJson());
+                                cardList.Add(define);
+                            }
+                            catch (Exception e)
+                            {
+                                if (e.InnerException is NotImplementedException)
+                                {
+                                    if (logger == null)
+                                        UberDebug.LogWarningChannel("Load", "忽略尚未完成的卡片" + define);
+                                    else
+                                        logger.log("Load", "忽略尚未完成的卡片" + define);
+                                }
+                                else
+                                    throw e;
+                            }
+                        }
                     }
                 }
             }

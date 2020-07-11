@@ -7,6 +7,18 @@ namespace TouhouHeartstone
 {
     public static class THHCard
     {
+        public static bool isSkill(this Card card)
+        {
+            return card.define is SkillCardDefine;
+        }
+        public static bool isServant(this Card card)
+        {
+            return card.define is ServantCardDefine;
+        }
+        public static bool isSpell(this Card card)
+        {
+            return card.define is SpellCardDefine;
+        }
         public static THHPlayer getOwner(this Card card)
         {
             return card.owner as THHPlayer;
@@ -52,6 +64,30 @@ namespace TouhouHeartstone
         public static void setLife(this Card card, int value)
         {
             card.setProp(nameof(ServantCardDefine.life), value);
+        }
+        /// <summary>
+        /// 一个随从是否已经死了？除了生命值小于等于0以外，还有一个isDead的属性来控制卡片是否在死亡结算当中。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public static bool isDead(this Card card)
+        {
+            if (card.getCurrentLife() <= 0)
+                return true;
+            if (card.getLife() <= 0)
+                return true;
+            if (card.getProp<bool>(nameof(THHCard.isDead)))
+                return true;
+            return false;
+        }
+        /// <summary>
+        /// 设置为true则随从会在下一次死亡结算中视作阵亡。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="value"></param>
+        public static void setDead(this Card card, bool value)
+        {
+            card.setProp(nameof(THHCard.isDead), value);
         }
         public static int getArmor(this Card card)
         {
@@ -101,6 +137,11 @@ namespace TouhouHeartstone
                 return false;
             if (card.getAttackTimes() >= card.getMaxAttackTimes())//已经攻击过了
                 return false;
+            if (card.isFreeze())
+            {
+                game.logger.log(card + "被冰冻");
+                return false;
+            }
             return true;
         }
         /// <summary>
@@ -199,6 +240,39 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.STEALTH, value);
         }
+        public static bool isDrain(this Card card)
+        {
+            return card.getProp<bool>(Keyword.DRAIN);
+        }
+        public static void setDrain(this Card card, bool value)
+        {
+            card.setProp(Keyword.DRAIN, value);
+        }
+        public static bool isPoisonous(this Card card)
+        {
+            return card.getProp<bool>(Keyword.POISONOUS);
+        }
+        public static void setPoisonous(this Card card, bool value)
+        {
+            card.setProp(Keyword.POISONOUS, value);
+        }
+        public static bool isElusive(this Card card)
+        {
+            return card.getProp<bool>(Keyword.ELUSIVE);
+        }
+        public static void setElusive(this Card card, bool value)
+        {
+            card.setProp(Keyword.ELUSIVE, value);
+        }
+        public static bool isFreeze(this Card card)
+        {
+            return card.getProp<bool>(Keyword.FREEZE);
+        }
+        public static void setFreeze(this Card card, bool value)
+        {
+            card.setProp(Keyword.FREEZE, value);
+        }
+
         public static int getSpellDamage(this Card card)
         {
             return card.getProp<int>(nameof(ServantCardDefine.spellDamage));
@@ -256,14 +330,31 @@ namespace TouhouHeartstone
                     info = "你没有足够的法力值";
                     return false;
                 }
-                if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is IActiveEffect effect && !effect.checkCondition(game, card, new object[]
+                if (skill.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is ITriggerEffect effect)
+                {
+                    if (!effect.checkCondition(game, card, new object[]
                     {
                         new THHPlayer.ActiveEventArg(player,card,new object[0])
                     }))
-                {
-                    info = "技能不可用";
-                    return false;
+                    {
+                        info = "技能不可用";
+                        return false;
+                    }
+                    info = null;
+                    return true;
                 }
+                if (skill.getActiveEffect() is IActiveEffect activeEffect)
+                {
+                    if (!activeEffect.checkCondition(game, card, null))
+                    {
+                        info = "技能不可用";
+                        return false;
+                    }
+                    info = null;
+                    return true;
+                }
+                info = "技能无效";
+                return false;
             }
             else
             {
@@ -273,30 +364,61 @@ namespace TouhouHeartstone
             info = null;
             return true;
         }
+        public static bool isNeedTarget(this Card card, THHGame game, out Card[] targets)
+        {
+            if (card.define.getActiveEffect() is ITargetEffect targetEffect)
+            {
+                List<Card> targetList = new List<Card>();
+                foreach (THHPlayer player in game.players)
+                {
+                    if (targetEffect.checkTargets(game, null, card, new object[] { player.master }))
+                        targetList.Add(player.master);
+                    foreach (Card servant in player.field)
+                    {
+                        if (targetEffect.checkTargets(game, null, card, new object[] { servant }))
+                            targetList.Add(servant);
+                    }
+                }
+                targets = targetList.ToArray();
+                return true;
+            }
+            if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is ITriggerEffect triggerEffect)
+            {
+                List<Card> targetList = new List<Card>();
+                foreach (THHPlayer player in game.players)
+                {
+                    if (triggerEffect.checkTargets(game, null, card, new object[] { player.master }))
+                        targetList.Add(player.master);
+                    foreach (Card servant in player.field)
+                    {
+                        if (triggerEffect.checkTargets(game, null, card, new object[] { servant }))
+                            targetList.Add(servant);
+                    }
+                }
+                targets = targetList.ToArray();
+                return true;
+            }
+            targets = null;
+            return false;
+        }
         public static Card[] getAvaliableTargets(this Card card, THHGame game)
         {
-            IActiveEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) as IActiveEffect;
-            if (effect == null)
-                return null;
-            List<Card> targetList = new List<Card>();
-            foreach (THHPlayer player in game.players)
-            {
-                if (effect.checkTarget(game, null, card, new object[] { player.master }))
-                    targetList.Add(player.master);
-                foreach (Card servant in player.field)
-                {
-                    if (effect.checkTarget(game, null, card, new object[] { servant }))
-                        targetList.Add(servant);
-                }
-            }
-            return targetList.ToArray();
+            isNeedTarget(card, game, out var targets);
+            return targets;
         }
         public static bool isValidTarget(this Card card, THHGame game, Card target)
         {
-            IActiveEffect effect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) as IActiveEffect;
-            if (effect == null)
+            if (target.isStealth())
                 return false;
-            return effect.checkTarget(game, null, card, new object[] { target });
+            ITargetEffect targetEffect = card.define.getActiveEffect() as ITargetEffect;
+            ITriggerEffect triggerEffect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            if (targetEffect == null && triggerEffect == null)
+                return false;
+            if (targetEffect != null && !targetEffect.checkTargets(game, card, null, new object[] { target }))
+                return false;
+            if (triggerEffect != null && triggerEffect.checkTargets(game, card, null, new object[] { target }))
+                return false;
+            return true;
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
@@ -318,6 +440,10 @@ namespace TouhouHeartstone
                     await arg.target.damage(game, arg.card, arg.card.getAttack());
                 if (arg.target.getAttack() > 0)
                     await arg.card.damage(game, arg.target, arg.target.getAttack());
+                if (arg.card.isDrain())
+                    await player.master.heal(game, arg.card.getAttack());
+                if (arg.target.isDrain())
+                    await (arg.target.owner as THHPlayer).master.heal(game, arg.target.getAttack());
             });
             await game.updateDeath();
             return true;
@@ -355,6 +481,8 @@ namespace TouhouHeartstone
                     else
                     {
                         card.setCurrentLife(card.getCurrentLife() - arg.value);
+                        if (source != null && source.isPoisonous())
+                            card.setDead(true);
                         arg.infoDic.Add(card, new DamageEventArg.Info()
                         {
                             damagedValue = value,
@@ -426,35 +554,43 @@ namespace TouhouHeartstone
                 public int healedValue;
             }
         }
-        public static Task die(this Card card, THHGame game, DeathEventArg.Info info)
+        public static Task die(this Card card, THHGame game)
         {
-            return die(new Card[] { card }, game, new Dictionary<Card, DeathEventArg.Info>() { { card, info } });
+            return die(new Card[] { card }, game);
         }
-        public static async Task die(this IEnumerable<Card> cards, THHGame game, Dictionary<Card, DeathEventArg.Info> infoDic)
+        public static async Task die(this IEnumerable<Card> cards, THHGame game)
         {
             List<THHPlayer> remainPlayerList = new List<THHPlayer>(game.players);
-            await game.triggers.doEvent(new DeathEventArg() { infoDic = infoDic }, arg =>
+            await game.triggers.doEvent(new DeathEventArg() { infoDic = cards.ToDictionary(c => c, c => default(DeathEventArg.Info)) }, onDie);
+            Task onDie(DeathEventArg arg)
             {
-                infoDic = arg.infoDic;
-                foreach (var pair in infoDic)
+                Dictionary<Card, DeathEventArg.Info> infoDic = new Dictionary<Card, DeathEventArg.Info>();
+                foreach (var card in arg.infoDic.Keys)
                 {
-                    Card card = pair.Key;
-                    if (!game.players.Any(p => p.field.Contains(card) || p.master == card))
-                        continue;
-                    THHPlayer player = game.players.FirstOrDefault(p => p.master == card);
-                    if (player != null)
+                    if (card.pile.name == PileName.MASTER)//英雄阵亡
                     {
-                        remainPlayerList.Remove(player);
-                        game.logger.log(player + "失败");
+                        infoDic.Add(card, new DeathEventArg.Info()
+                        {
+                            player = card.getOwner(),
+                            position = card.pile.indexOf(card)
+                        });
+                        remainPlayerList.Remove(card.getOwner());
+                        game.logger.log(card.getOwner() + "失败");
                     }
-                    else
+                    else if (card.pile.name == PileName.FIELD)//随从阵亡
                     {
-                        pair.Value.player.field.moveTo(game, card, pair.Value.player.grave);
+                        infoDic.Add(card, new DeathEventArg.Info()
+                        {
+                            player = card.getOwner(),
+                            position = card.pile.indexOf(card)
+                        });
+                        card.pile.moveTo(game, card, card.getOwner().grave);
                         game.logger.log(card + "阵亡");
                     }
                 }
+                arg.infoDic = infoDic;
                 return Task.CompletedTask;
-            });
+            }
             if (remainPlayerList.Count != game.players.Length)
             {
                 if (remainPlayerList.Count > 0)
@@ -465,11 +601,10 @@ namespace TouhouHeartstone
         }
         public class DeathEventArg : EventArg
         {
-            public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
+            public Dictionary<Card, Info> infoDic;
             public class Info
             {
                 public THHPlayer player;
-                public Card card;
                 public int position;
             }
         }
@@ -483,6 +618,19 @@ namespace TouhouHeartstone
             if (index == card.pile.count - 1 && card.pile.count > 1)
                 return new Card[] { card.pile[card.pile.count - 2] };
             return new Card[] { card.pile[index - 1], card.pile[index + 1] };
+        }
+        public static Task backToHand(this Card card, THHGame game)
+        {
+            if (card.getOwner().hand.isFull)
+            {
+                game.logger.log(card.getOwner() + "的手牌已满，无法将" + card + "置入手牌");
+                return card.die(game);
+            }
+            else
+            {
+                game.logger.log("将" + card + "置入" + card.getOwner() + "的手牌");
+                return card.getOwner().field.moveTo(game, card, card.getOwner().hand);
+            }
         }
     }
 }

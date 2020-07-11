@@ -50,6 +50,28 @@ namespace TouhouHeartstone
             else
                 base.setProp(propName, value);
         }
+        public override void merge(CardDefine newVersion)
+        {
+            if (newVersion.type != type)
+                UberDebug.LogWarning(newVersion + "的类型与" + this + "不同，可能是一次非法的数据合并！");
+            if (newVersion is GeneratedCardDefine generated)
+            {
+                if (generated.hasProp(nameof(cost)))
+                    cost = newVersion.getProp<int>(nameof(cost));
+                if (generated.hasProp(nameof(attack)))
+                    attack = newVersion.getProp<int>(nameof(attack));
+                if (generated.hasProp(nameof(life)))
+                    life = newVersion.getProp<int>(nameof(life));
+                if (generated.hasProp(nameof(spellDamage)))
+                    spellDamage = newVersion.getProp<int>(nameof(spellDamage));
+                if (generated.hasProp(nameof(isToken)))
+                    isToken = newVersion.getProp<bool>(nameof(isToken));
+                if (generated.hasProp(nameof(tags)))
+                    tags = newVersion.getProp<string[]>(nameof(tags));
+                if (generated.hasProp(nameof(keywords)))
+                    keywords = newVersion.getProp<string[]>(nameof(keywords));
+            }
+        }
         public override string isUsable(CardEngine engine, Player player, Card card)
         {
             throw new NotImplementedException();

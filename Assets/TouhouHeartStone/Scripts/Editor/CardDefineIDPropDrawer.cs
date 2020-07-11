@@ -18,17 +18,52 @@ namespace TouhouHeartstone
         {
             int index = Array.FindIndex(getCardDefines(), c => c.id == property.intValue) + 1;
             if (label.text.StartsWith("Element", StringComparison.OrdinalIgnoreCase))
-                label.text = getCardDefines()[index].GetType().Name;
-            index = EditorGUI.Popup(position, label, index, new GUIContent[] { new GUIContent("None") }
-                .Concat(getCardDefines().Select(c => new GUIContent(c.GetType().Name))).ToArray());
-            property.intValue = index == 0 ? -1 : getCardDefines()[index - 1].id;
+                label.text = getCardDefines()[index - 1].GetType().Name;
+            if (GUI.Button(position, label))
+            {
+                getMenu(property).DropDown(position);
+            }
+        }
+        static GenericMenu getMenu(SerializedProperty property)
+        {
+            int id = property.intValue;
+            GenericMenu menu = new GenericMenu();
+            menu.AddItem(new GUIContent("None"), id == 0, () => property.intValue = 0);
+            foreach (var group in getCardDefines().GroupBy(c => c.getCharacterID()))
+            {
+                CardDefine character = getCardDefines().FirstOrDefault(c => c.id == group.Key);
+                foreach (var define in group.OrderBy(c => c.GetType().Name))
+                {
+                    string path = "";
+                    if (character != null)
+                        path = character.GetType().Name;
+                    else
+                        path = "Neutral";
+                    int typeId = define.getCategory();
+                    if (typeId == CardCategory.SERVANT)
+                        path += "/Servant";
+                    else if (typeId == CardCategory.SKILL)
+                        path += "/Skill";
+                    else if (typeId == CardCategory.SPELL)
+                        path += "/Spell";
+                    else if (typeId == CardCategory.ITEM)
+                        path += "/Item";
+                    path += "/" + define.GetType().Name;
+                    menu.AddItem(new GUIContent(path), define.id == id, () =>
+                    {
+                        property.intValue = define.id;
+                        property.serializedObject.ApplyModifiedProperties();
+                    });
+                }
+            }
+            return menu;
         }
         static CardDefine[] _cardDefines = null;
         static CardDefine[] getCardDefines()
         {
             if (_cardDefines == null)
             {
-                _cardDefines = CardHelper.getCardDefines();
+                _cardDefines = CardHelper.getCardDefines(null);
             }
             return _cardDefines;
         }

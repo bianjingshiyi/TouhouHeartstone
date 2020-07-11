@@ -1,0 +1,15 @@
+{"type":"root","options":{
+
+},"size":{"width":133,"height":183},"children":[{"name":"Servant_Border","type":"png","options":{
+
+},"offset":{"left":3,"top":3},"size":{"width":127,"height":177},"relativePath":"Servant_Border","children":[
+
+]},{"name":"Servant_Mask","type":"png","options":{
+
+},"offset":{"left":10,"top":10},"size":{"width":113,"height":163},"relativePath":"Servant_Mask","children":[
+
+]},{"name":"Servant_Background","type":"png","options":{
+
+},"offset":{"left":3,"top":3},"size":{"width":127,"height":177},"relativePath":"Servant_Background","children":[
+
+]}]}
