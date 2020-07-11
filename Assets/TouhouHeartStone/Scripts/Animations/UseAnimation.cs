@@ -67,11 +67,11 @@ namespace Game
                         if (!_handToField.update(table))
                             return false;
                     }
+                    if (selectTarget(table, eventArg))
+                        return false;
                     table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
                     table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
                     table.ui.ServantPlaceHolder.hide();
-                    if (selectTarget(table, eventArg))
-                        return false;
                 }
                 else
                 {
@@ -86,11 +86,11 @@ namespace Game
                         if (!_handToField.update(table))
                             return false;
                     }
+                    if (selectTarget(table, eventArg))
+                        return false;
                     table.ui.EnemyHandList.removeItem(hand);
                     table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
                     table.ui.ServantPlaceHolder.hide();
-                    if (selectTarget(table, eventArg))
-                        return false;
                 }
             }
             else if (eventArg.card.define is SpellCardDefine)
