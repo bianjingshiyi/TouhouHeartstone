@@ -20,13 +20,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,card,arg)=>
-            {
-                return arg.player.field.count<arg.player.field.maxCount;
-            },(game,card,targets)=>
-            {
-                return true;
-            },async (game,card,arg,targets)=>
+            new NoTargetEffect((game,card)=>
             {
                 CardDefine[] totemDefines = new CardDefine[]
                 {
@@ -35,19 +29,22 @@ namespace TouhouHeartstone.Builtin
                     game.getCardDefine<ManaTotem>(),
                     game.getCardDefine<TauntTotem>()
                 };
-                if(totemDefines.All(d=>arg.player.field.Any(c=>c.define==d)) ||//场上四种类型的图腾都有
-                    !totemDefines.Any(d=>arg.player.field.Any(c=>c.define==d)))//或者都没有
+                if(totemDefines.All(d=>card.getOwner().field.Any(c=>c.define==d)) ||//场上四种类型的图腾都有
+                    !totemDefines.Any(d=>card.getOwner().field.Any(c=>c.define==d)))//或者都没有
                 {
                     //随便召唤一种类型的图腾
                     CardDefine totemDefine = totemDefines[game.randomInt(0,3)];
-                    await arg.player.createToken(game,totemDefine,arg.player.field.count);
+                    return card.getOwner().createToken(game,totemDefine,card.getOwner().field.count);
                 }
                 else
                 {
                     //召唤一种场上没有的图腾
-                    CardDefine totemDefine = totemDefines.Where(d=>!arg.player.field.Any(c=>c.define==d)).shuffle(game).First();
-                    await arg.player.createToken(game,totemDefine,arg.player.field.count);
+                    CardDefine totemDefine = totemDefines.Where(d=>!card.getOwner().field.Any(c=>c.define==d)).shuffle(game).First();
+                    return card.getOwner().createToken(game,totemDefine,card.getOwner().field.count);
                 }
+            },(game,card)=>
+            {
+                return !card.getOwner().field.isFull;
             })
         };
     }

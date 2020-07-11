@@ -29,6 +29,14 @@ namespace UI
             this._LANPanel = this.transform.Find("LANPanel").GetComponent<LANPanel>();
             this._RoomPanel = this.transform.Find("RoomPanel").GetComponent<RoomPanel>();
         }
+        private Main _parent;
+        public Main parent
+        {
+            get
+            {
+                return this.transform.parent.parent.GetComponent<Main>();
+            }
+        }
         [SerializeField()]
         private IPPanel _IPPanel;
         public IPPanel IPPanel

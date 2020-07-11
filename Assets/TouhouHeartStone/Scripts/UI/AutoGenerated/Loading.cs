@@ -15,44 +15,52 @@ namespace UI
     using UnityEngine.UI;
     using BJSYGameCore.UI;
     
-    public partial class RoomPlayerList : UIList<RoomPlayerListItem>
+    public partial class Loading : UIObject
     {
         protected override void Awake()
         {
             base.Awake();
             this.autoBind();
-            this.defaultItem.gameObject.SetActive(false);
             this.onAwake();
         }
         public void autoBind()
         {
-            this.m_as_VerticalLayoutGroup = this.GetComponent<VerticalLayoutGroup>();
-            this.defaultItem = this.transform.Find("RoomPlayerListItem").GetComponent<RoomPlayerListItem>();
+            this.m_as_Image = this.GetComponent<Image>();
+            this._LoadingText = this.transform.Find("LoadingText").GetComponent<Text>();
         }
         private Main _parent;
         public Main parent
         {
             get
             {
-                return this.transform.parent.parent.parent.parent.parent.parent.GetComponent<Main>();
+                return this.transform.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]
-        private VerticalLayoutGroup m_as_VerticalLayoutGroup;
-        public VerticalLayoutGroup asVerticalLayoutGroup
+        private Image m_as_Image;
+        public Image asImage
         {
             get
             {
-                if ((this.m_as_VerticalLayoutGroup == null))
+                if ((this.m_as_Image == null))
                 {
-                    this.m_as_VerticalLayoutGroup = this.GetComponent<VerticalLayoutGroup>();
+                    this.m_as_Image = this.GetComponent<Image>();
                 }
-                return this.m_as_VerticalLayoutGroup;
+                return this.m_as_Image;
             }
         }
-        protected override RoomPlayerListItem getDefaultItem()
+        [SerializeField()]
+        private Text _LoadingText;
+        public Text LoadingText
         {
-            return this.transform.Find("RoomPlayerListItem").GetComponent<RoomPlayerListItem>();
+            get
+            {
+                if ((this._LoadingText == null))
+                {
+                    this._LoadingText = this.transform.Find("LoadingText").GetComponent<Text>();
+                }
+                return this._LoadingText;
+            }
         }
         partial void onAwake();
     }

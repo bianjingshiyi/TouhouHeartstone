@@ -17,7 +17,7 @@ namespace Game
                     {
                         servant.DamageImage.display();
                         servant.DamageText.text = "-" + eventArg.value;
-                        servant.HpText.text = eventArg.infoDic[card].currentLife.ToString();
+                        servant.HpTextPropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
                     }
                     else if (table.tryGetMaster(card, out Master master))
                     {

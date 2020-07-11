@@ -37,7 +37,7 @@ namespace Game
         }
         public TouhouCardEngine.Card usingCard { get; set; } = null;
         [SerializeField]
-        int _usingPosition;
+        int _usingPosition = -1;
         public int usingPosition
         {
             get { return _usingPosition; }
@@ -61,7 +61,15 @@ namespace Game
         protected void Update()
         {
             updateAnim();
-
+            if (_tipTimer.isExpired())
+            {
+                _tipTimer.reset();
+                ui.TipText.hide();
+            }
+            else if (_tipTimer.isStarted)
+            {
+                ui.TipText.setAlpha(1/*_tipTimer.getRemainedTime() / _tipTimer.duration*/);
+            }
         }
         public void setGame(THHGame game, THHPlayer player)
         {
@@ -69,8 +77,11 @@ namespace Game
             ui.TurnTipImage.hide();
             initMaster(ui.SelfMaster);
             initMaster(ui.EnemyMaster);
+            ui.SelfSkill.asButton.onClick.set(onClickSkill);
             ui.SelfHandList.clearItems();
             ui.SelfFieldList.clearItems();
+            ui.TurnEndButton.onClick.set(onTurnEndButtonClick);
+            ui.TipText.hide();
             ui.EnemyFieldList.clearItems();
             ui.EnemyHandList.clearItems();
             ui.AttackArrowImage.hide();
@@ -89,11 +100,6 @@ namespace Game
                 game.triggers.onEventBefore += onEventBefore;
                 game.triggers.onEventAfter += onEventAfter;
                 game.answers.onRequest += onRequest;
-            }
-            if (player != null)
-            {
-                ui.SelfSkill.asButton.onClick.RemoveAllListeners();
-                ui.TurnEndButton.onClick.RemoveAllListeners();
             }
             this.player = player;
         }
@@ -215,6 +221,20 @@ namespace Game
             //    skill.asButton.interactable = false;
             //}
         }
+        void onClickSkill()
+        {
+            if (usingCard != null)//已经在用别的牌了，不能点技能
+                return;
+            if (player.skill.isUsable(game, player, out var info))
+            {
+                if (!player.skill.isNeedTarget(game, out _))
+                    player.cmdUse(game, player.skill);
+            }
+            else
+            {
+                showTip(info);
+            }
+        }
         Dictionary<TouhouCardEngine.Card, HandListItem> cardHandDic { get; } = new Dictionary<TouhouCardEngine.Card, HandListItem>();
         public HandListItem createHand(TouhouCardEngine.Card card)
         {
@@ -251,7 +271,13 @@ namespace Game
                 resetUse(true, true);
                 return;
             }
-            usingCard = getCard(hand);
+            TouhouCardEngine.Card card = getCard(hand);
+            if (usingCard != null && usingCard != card)
+            {
+                resetUse(true, true);
+                return;
+            }
+            usingCard = card;
             //拖拽卡片
             hand.Card.rectTransform.position = pointer.position;
             if (ui.SelfHandList.rectTransform.rect.Contains(ui.SelfHandList.rectTransform.InverseTransformPoint(pointer.position)))
@@ -413,6 +439,7 @@ namespace Game
                 usingHand.Card.rectTransform.localScale = Vector3.one;
                 usingHand.Card.rectTransform.localPosition = Vector2.zero;
             }
+            usingCard = null;
             if (resetPlaceHolder)
                 hideServantPlaceHolder();
             isSelectingTarget = false;
@@ -479,6 +506,7 @@ namespace Game
                 servant = ui.EnemyFieldList.addItem();
                 ui.EnemyFieldList.defaultItem.rectTransform.SetAsFirstSibling();
             }
+            servant.gameObject.name = getSkin(card).name + "(" + card.id + ")";
             servant.rectTransform.SetSiblingIndex(position + 1);
             setServant(servant, card);
             servant.onClick.add(onClickServant);
@@ -513,8 +541,8 @@ namespace Game
             {
                 servant.Image.sprite = skin.image;
             }
-            servant.AttackText.text = card.getAttack().ToString();
-            servant.HpText.text = card.getCurrentLife().ToString();
+            servant.AttackTextPropNumber.asText.text = card.getAttack().ToString();
+            servant.HpTextPropNumber.asText.text = card.getCurrentLife().ToString();
 
             servant.onDrag.remove(onDragServant);
             if (isSelectable)
@@ -643,8 +671,8 @@ namespace Game
             {
                 servant.Image.sprite = skin.image;
             }
-            servant.AttackText.text = card.getAttack().ToString();
-            servant.HpText.text = card.getLife().ToString();
+            servant.AttackTextPropNumber.asText.text = card.getAttack().ToString();
+            servant.HpTextPropNumber.asText.text = card.getLife().ToString();
         }
         public TouhouCardEngine.Card getCard(Servant servant)
         {
@@ -668,6 +696,11 @@ namespace Game
             ui.TipText.gameObject.SetActive(true);
             ui.TipText.text = tip;
             _tipTimer.start();
+        }
+        void onTurnEndButtonClick()
+        {
+            resetUse(true, true);
+            player.cmdTurnEnd(game);
         }
         #endregion
         #region Animation
@@ -805,7 +838,16 @@ namespace Game
             if (skin != null)
                 return skin;
             else
-                throw new SkinNotFoundException("没有找到" + card + "对应的皮肤");
+            {
+                game.logger.logError("没有找到" + card + "对应的皮肤");
+                return new CardSkinData()
+                {
+                    id = card.define.id,
+                    desc = card.define.ToString(),
+                    image = getManager<CardManager>().getDefaultSprite().Result,
+                    name = card.define.GetType().Name
+                };
+            }
         }
         public CardSkinData getSkin(CardDefine define)
         {
@@ -813,7 +855,16 @@ namespace Game
             if (skin != null)
                 return skin;
             else
-                throw new SkinNotFoundException("没有找到" + define + "对应的皮肤");
+            {
+                game.logger.logError("没有找到" + define + "对应的皮肤");
+                return new CardSkinData()
+                {
+                    id = define.id,
+                    desc = define.ToString(),
+                    image = getManager<CardManager>().getDefaultSprite().Result,
+                    name = define.GetType().Name
+                };
+            }
         }
         #endregion
     }

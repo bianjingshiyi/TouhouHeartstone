@@ -6,10 +6,6 @@ namespace UI
     {
         partial void onAwake()
         {
-            ManMachineButton.onClick.AddListener(() =>
-            {
-                parent.game.startLocalGame();
-            });
             BuildButton.onClick.AddListener(() =>
             {
                 parent.display(parent.Build);
@@ -20,10 +16,6 @@ namespace UI
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
 #endif
-            });
-            NetworkButton.onClick.AddListener(() =>
-            {
-                parent.display(parent.NetworkingPage);
             });
         }
     }

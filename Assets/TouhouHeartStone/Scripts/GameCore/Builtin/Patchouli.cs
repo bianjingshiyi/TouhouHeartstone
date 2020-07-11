@@ -51,8 +51,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect((game,card,target)=>
             {
-                target.damage(game, card, card.getOwner().getSpellDamage(1));
-                return Task.CompletedTask;
+                return target.damage(game, card, 1);
             })
         };
     }

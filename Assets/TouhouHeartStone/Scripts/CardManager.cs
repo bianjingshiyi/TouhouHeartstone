@@ -38,11 +38,6 @@ namespace Game
         {
             _defaultImagePath = path;
         }
-        protected override void onAwake()
-        {
-            base.onAwake();
-            _ = Load(_externalCardPaths);
-        }
         [SerializeField]
         CardSkinData[] _skins = new CardSkinData[0];
         Dictionary<int, CardSkinData> skinDic { get; } = new Dictionary<int, CardSkinData>();
@@ -50,19 +45,20 @@ namespace Game
         /// 加载配置路径中的所有卡片和皮肤。
         /// </summary>
         /// <returns></returns>
-        public Task load(ILogger logger = null)
+        public Task load(Assembly[] assemblies = default, ILogger logger = null)
         {
-            return Load(_externalCardPaths, logger);
+            return Load(_externalCardPaths, assemblies, logger);
         }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
         /// </summary>
         /// <param name="excelPaths"></param>
         /// <returns></returns>
-        public async Task Load(string[] excelPaths, ILogger logger = null)
+        public async Task Load(string[] excelPaths, Assembly[] assemblies = default, ILogger logger = null)
         {
             //加载内置卡片
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            if (assemblies == default)
+                assemblies = AppDomain.CurrentDomain.GetAssemblies();
             List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies, logger));
 
             List<string> pathList = new List<string>();
@@ -332,6 +328,33 @@ namespace Game
                 return;
             }
             tempSkinDic.Add(skin.id, skin);
+        }
+        public bool isStandardCard(CardDefine c)
+        {
+            if (c.id == 0)
+                return false;
+            if (c.GetType().Assembly != typeof(THHGame).Assembly)
+                return false;
+            //if (!(c is SpellCardDefine))
+            //{
+            //    if (!(c is ServantCardDefine) && !(c is GeneratedCardDefine))
+            //        return false;
+            //}
+            if (!(c is ServantCardDefine) && !(c is GeneratedCardDefine))
+                return false;
+            if (c is ServantCardDefine servant)
+            {
+                if (servant.isToken)
+                    return false;
+            }
+            else if (c is GeneratedCardDefine generated)
+            {
+                if (generated.type != CardDefineType.SERVANT)
+                    return false;
+                if (generated.getProp<bool>(nameof(ServantCardDefine.isToken)))
+                    return false;
+            }
+            return true;
         }
     }
 

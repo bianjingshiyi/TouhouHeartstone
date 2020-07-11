@@ -22,7 +22,7 @@ namespace Tests
     }
     class TestSkill : SkillCardDefine
     {
-        public const int ID = 0x00110000;
+        public const int ID = TestMaster.ID | CardCategory.SKILL | 0x000;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new LambdaSingleTargetEffect[0];

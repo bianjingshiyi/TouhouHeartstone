@@ -326,14 +326,31 @@ namespace TouhouHeartstone
                     info = "你没有足够的法力值";
                     return false;
                 }
-                if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is IActiveEffect effect && !effect.checkCondition(game, card, new object[]
+                if (skill.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is ITriggerEffect effect)
+                {
+                    if (!effect.checkCondition(game, card, new object[]
                     {
                         new THHPlayer.ActiveEventArg(player,card,new object[0])
                     }))
-                {
-                    info = "技能不可用";
-                    return false;
+                    {
+                        info = "技能不可用";
+                        return false;
+                    }
+                    info = null;
+                    return true;
                 }
+                if (skill.getActiveEffect() is IActiveEffect activeEffect)
+                {
+                    if (!activeEffect.checkCondition(game, card, null))
+                    {
+                        info = "技能不可用";
+                        return false;
+                    }
+                    info = null;
+                    return true;
+                }
+                info = "技能无效";
+                return false;
             }
             else
             {
@@ -343,22 +360,23 @@ namespace TouhouHeartstone
             info = null;
             return true;
         }
-        public static Card[] getAvaliableTargets(this Card card, THHGame game)
+        public static bool isNeedTarget(this Card card, THHGame game, out Card[] targets)
         {
-            if (card.define.getActiveEffect() is IActiveEffect activeEffect)
+            if (card.define.getActiveEffect() is ITargetEffect targetEffect)
             {
                 List<Card> targetList = new List<Card>();
                 foreach (THHPlayer player in game.players)
                 {
-                    if (activeEffect.checkTargets(game, null, card, new object[] { player.master }))
+                    if (targetEffect.checkTargets(game, null, card, new object[] { player.master }))
                         targetList.Add(player.master);
                     foreach (Card servant in player.field)
                     {
-                        if (activeEffect.checkTargets(game, null, card, new object[] { servant }))
+                        if (targetEffect.checkTargets(game, null, card, new object[] { servant }))
                             targetList.Add(servant);
                     }
                 }
-                return targetList.ToArray();
+                targets = targetList.ToArray();
+                return true;
             }
             if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is ITriggerEffect triggerEffect)
             {
@@ -373,19 +391,26 @@ namespace TouhouHeartstone
                             targetList.Add(servant);
                     }
                 }
-                return targetList.ToArray();
+                targets = targetList.ToArray();
+                return true;
             }
-            return null;
+            targets = null;
+            return false;
+        }
+        public static Card[] getAvaliableTargets(this Card card, THHGame game)
+        {
+            isNeedTarget(card, game, out var targets);
+            return targets;
         }
         public static bool isValidTarget(this Card card, THHGame game, Card target)
         {
             if (target.isStealth())
                 return false;
-            IActiveEffect activeEffect = card.define.getActiveEffect();
+            ITargetEffect targetEffect = card.define.getActiveEffect() as ITargetEffect;
             ITriggerEffect triggerEffect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
-            if (activeEffect == null && triggerEffect == null)
+            if (targetEffect == null && triggerEffect == null)
                 return false;
-            if (activeEffect != null && !activeEffect.checkTargets(game, card, null, new object[] { target }))
+            if (targetEffect != null && !targetEffect.checkTargets(game, card, null, new object[] { target }))
                 return false;
             if (triggerEffect != null && triggerEffect.checkTargets(game, card, null, new object[] { target }))
                 return false;

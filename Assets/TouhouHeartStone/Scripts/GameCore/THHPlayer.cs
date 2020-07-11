@@ -187,7 +187,15 @@ namespace TouhouHeartstone
                 else if (card.define is SkillCardDefine)
                 {
                     ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    await effect.execute(game, arg.card, new object[] { new ActiveEventArg(player, card, targets) }, arg.targets);
+                    if (effect != null)
+                    {
+                        await effect.execute(game, arg.card, new object[] { new ActiveEventArg(player, card, targets) }, arg.targets);
+                    }
+                    IActiveEffect activeEffect = arg.card.define.getActiveEffect();
+                    if (activeEffect != null)
+                    {
+                        await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    }
                 }
                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.SPELL))
                 {

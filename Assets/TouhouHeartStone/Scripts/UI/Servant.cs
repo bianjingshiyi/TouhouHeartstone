@@ -26,8 +26,8 @@ namespace UI
             {
                 Image.sprite = skin.image;
             }
-            AttackText.text = card.getAttack().ToString();
-            HpText.text = card.getCurrentLife().ToString();
+            AttackTextPropNumber.asText.text = card.getAttack().ToString();
+            HpTextPropNumber.asText.text = card.getCurrentLife().ToString();
 
             if (table.selectableTargets != null && table.selectableTargets.Contains(this))
                 HighlightController = Highlight.Yellow;
@@ -44,8 +44,8 @@ namespace UI
             {
                 Image.sprite = skin.image;
             }
-            AttackText.text = card.getAttack().ToString();
-            HpText.text = card.getLife().ToString();
+            AttackTextPropNumber.asText.text = card.getAttack().ToString();
+            HpTextPropNumber.asText.text = card.getLife().ToString();
         }
         [SerializeField]
         float _attackThreshold = 70;

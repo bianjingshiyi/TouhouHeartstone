@@ -13,7 +13,7 @@ namespace UI
         }
         partial void onAwake()
         {
-            display(MainMenu);
+            display(Loading);
         }
     }
 }

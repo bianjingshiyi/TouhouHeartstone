@@ -29,6 +29,7 @@ namespace UI
             this._Build = this.transform.Find("Build").GetComponent<Build>();
             this._MainMenu = this.transform.Find("MainMenu").GetComponent<MainMenu>();
             this._NetworkingPage = this.transform.Find("NetworkingPage").GetComponent<NetworkingPage>();
+            this._Loading = this.transform.Find("Loading").GetComponent<Loading>();
             this._Dialog = this.transform.Find("Dialog").GetComponent<Dialog>();
         }
         [SerializeField()]
@@ -84,6 +85,19 @@ namespace UI
             }
         }
         [SerializeField()]
+        private Loading _Loading;
+        public Loading Loading
+        {
+            get
+            {
+                if ((this._Loading == null))
+                {
+                    this._Loading = this.transform.Find("Loading").GetComponent<Loading>();
+                }
+                return this._Loading;
+            }
+        }
+        [SerializeField()]
         private Dialog _Dialog;
         public Dialog Dialog
         {
@@ -103,6 +117,7 @@ namespace UI
                     this.Build,
                     this.MainMenu,
                     this.NetworkingPage,
+                    this.Loading,
                     this.Dialog};
         }
         partial void onAwake();

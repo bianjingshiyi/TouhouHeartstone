@@ -5,6 +5,7 @@ using UnityEngine.TestTools;
 using System.Linq;
 using System;
 using TouhouHeartstone;
+using TouhouHeartstone.Builtin;
 using TouhouCardEngine;
 namespace Tests
 {
@@ -258,6 +259,11 @@ namespace Tests
             Assert.True(game.players[0].hand.getCards<FireBall>().All(c => c.getCost() == 4));
             yield return game.players[0].draw(game).wait();//再抽一张火球术
             Assert.True(game.players[0].hand.getCards<FireBall>().All(c => c.getCost() == 4));
+        }
+        [Test]
+        public void idTest()
+        {
+            Assert.AreEqual(TestMaster.ID, CardCategory.getCharacterID(TestSkill.ID));
         }
     }
     static class TestExtension

@@ -10,6 +10,7 @@ using BJSYGameCore;
 using UI;
 using System;
 using ExcelLibrary.SpreadSheet;
+using System.Collections.Generic;
 
 namespace Game
 {
@@ -40,10 +41,24 @@ namespace Game
         {
             get { return getManager<CardManager>(); }
         }
+        [SerializeField]
+        bool _testRandomDeck = true;
         private void Start()
         {
 #if !UNITY_EDITOR
             tryLoadDeckFromPrefs();
+#else
+            if (_testRandomDeck)
+            {
+                List<int> randomDeck = new List<int>();
+                randomDeck.Add(Reimu.ID);
+                System.Random random = new System.Random();
+                for (int i = 0; i < 30; i++)
+                {
+                    randomDeck.Add(cards.GetCardDefines(c => cards.isStandardCard(c)).randomTake(random, 1).First().id);
+                }
+                _deck = randomDeck.ToArray();
+            }
 #endif
         }
         private void Update()
@@ -74,9 +89,11 @@ namespace Game
             int[] deck = _deck;
             checkDeckValid(deck);
 
-            THHPlayer localPlayer = game.createPlayer(1, "本地玩家", game.getCardDefine(deck[0]) as MasterCardDefine,
-                deck.Skip(1).Select(id => game.getCardDefine(id)));
-            THHPlayer aiPlayer = game.createPlayer(2, "AI", game.getCardDefine(deck[0]) as MasterCardDefine,
+            CardDefine playerMaster = game.getCardDefine(deck[0]);
+            CardDefine[] playerDeck = deck.Skip(1).Select(id => game.getCardDefine(id)).ToArray();
+            THHPlayer localPlayer = game.createPlayer(1, "本地玩家", playerMaster as MasterCardDefine,
+                playerDeck);
+            THHPlayer aiPlayer = game.createPlayer(2, "AI", playerMaster as MasterCardDefine,
                 deck.Skip(1).Select(id => game.getCardDefine(id)));
             displayGameUI(localPlayer);
             //AI玩家用AI

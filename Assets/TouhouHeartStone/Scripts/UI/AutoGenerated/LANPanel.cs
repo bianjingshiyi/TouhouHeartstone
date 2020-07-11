@@ -36,12 +36,12 @@ namespace UI
             this._IPText = this.transform.Find("RoomInfoPanel").Find("IPText").GetComponent<Text>();
             this._DescText = this.transform.Find("RoomInfoPanel").Find("DescText").GetComponent<Text>();
         }
-        private NetworkingPageGroup _parent;
-        public NetworkingPageGroup parent
+        private Main _parent;
+        public Main parent
         {
             get
             {
-                return this.transform.parent.GetComponent<NetworkingPageGroup>();
+                return this.transform.parent.parent.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]

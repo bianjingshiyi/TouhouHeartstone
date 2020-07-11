@@ -23,10 +23,13 @@ namespace Game
                     table.canControl = false;
                 }
                 table.ui.TurnTipImage.GetComponent<Animator>().Play("Display");
-                foreach (var card in eventArg.player.field)
+                foreach (var player in table.game.players)
                 {
-                    var servant = table.getServant(card);
-                    table.setServant(servant, card);
+                    foreach (var card in player.field)
+                    {
+                        var servant = table.getServant(card);
+                        table.setServant(servant, card);
+                    }
                 }
                 _timer.start();
             }

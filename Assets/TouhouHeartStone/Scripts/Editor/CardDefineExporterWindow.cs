@@ -137,6 +137,8 @@ namespace TouhouHeartstone
         }
         void overrideToExcel(List<CardDefine> cardList)
         {
+            _manager.load();
+
             if (trySelectFilePath(ref _outputPath, "选择要覆盖的文件", "Cards", "xls"))
             {
                 Workbook workbook;
@@ -251,7 +253,24 @@ namespace TouhouHeartstone
             {
                 var skin = _manager.getSkin(card.id);
                 int imageIndex = findColIndex(sheet, "Image");
-                sheet.Cells[cardRow, imageIndex] = new Cell(skin == null ? sheet.Cells[cardRow, imageIndex].StringValue : (skin.image != null && !string.IsNullOrEmpty(skin.image.name) ? (skin.image.name + ".png") : sheet.Cells[cardRow, imageIndex].StringValue));
+                if (skin == null)
+                    sheet.Cells[cardRow, imageIndex] = new Cell(sheet.Cells[cardRow, imageIndex].StringValue);
+                else
+                {
+                    if (skin.image != null && !string.IsNullOrEmpty(skin.image.name))
+                    {
+                        string path = AssetDatabase.GetAssetPath(skin.image);
+                        if (path.Contains("Resources/"))
+                        {
+                            path = path.removeHead("Resources/").removeRear(".");
+                            sheet.Cells[cardRow, imageIndex] = new Cell("res:" + path);
+                        }
+                        else
+                            sheet.Cells[cardRow, imageIndex] = new Cell(skin.image.name + ".png");
+                    }
+                    else
+                        sheet.Cells[cardRow, imageIndex] = new Cell(sheet.Cells[cardRow, imageIndex].StringValue);
+                }
                 int nameIndex = findColIndex(sheet, "Name");
                 sheet.Cells[cardRow, nameIndex] = new Cell(skin == null ? (!string.IsNullOrEmpty(sheet.Cells[cardRow, nameIndex].StringValue) ? sheet.Cells[cardRow, nameIndex].StringValue : card.GetType().Name) : skin.name);
                 int descIndex = findColIndex(sheet, "Desc");

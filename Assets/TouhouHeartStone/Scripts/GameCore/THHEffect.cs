@@ -250,11 +250,6 @@ namespace TouhouHeartstone
             return checkCondition(game as THHGame, card as Card);
         }
         public abstract bool checkCondition(THHGame game, Card card);
-        public bool checkTargets(IGame game, ICard card, object[] vars, object[] targets)
-        {
-            return checkTargets(game as THHGame, card as Card, targets);
-        }
-        public abstract bool checkTargets(THHGame game, Card card, object[] targets);
         public abstract Task execute(IGame game, ICard card, object[] vars, object[] targets);
     }
     public class NoTargetEffect : ActiveEffect
@@ -271,10 +266,6 @@ namespace TouhouHeartstone
         {
             return _onCheckCondition == null || _onCheckCondition(game, card);
         }
-        public override bool checkTargets(THHGame game, Card card, object[] targets)
-        {
-            return true;
-        }
         public override Task execute(IGame game, ICard card, object[] vars, object[] targets)
         {
             if (_onExecute != null)
@@ -282,7 +273,7 @@ namespace TouhouHeartstone
             return Task.CompletedTask;
         }
     }
-    public abstract class SingleTargetEffect : ActiveEffect
+    public abstract class SingleTargetEffect : ActiveEffect, ITargetEffect
     {
         /// <summary>
         /// 可选目标范围。
@@ -314,7 +305,11 @@ namespace TouhouHeartstone
             }
             return false;
         }
-        public override bool checkTargets(THHGame game, Card card, object[] targets)
+        public bool checkTargets(IGame game, ICard card, object[] vars, object[] targets)
+        {
+            return checkTargets(game as THHGame, card as Card, targets);
+        }
+        public virtual bool checkTargets(THHGame game, Card card, object[] targets)
         {
             if (targets != null &&
                 targets.Length > 0 &&
