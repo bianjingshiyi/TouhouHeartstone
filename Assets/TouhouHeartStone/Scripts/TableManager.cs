@@ -23,6 +23,11 @@ namespace Game
             get { return _table; }
             set { _table = value; }
         }
+        [Header("Config")]
+        [SerializeField]
+        AnimationCurve _moveToFieldCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+        public AnimationCurve handToFieldCurve => _moveToFieldCurve;
+        [Header("State")]
         [SerializeField]
         bool _canControl = true;
         public bool canControl
@@ -56,6 +61,7 @@ namespace Game
         protected void Update()
         {
             updateAnim();
+
         }
         public void setGame(THHGame game, THHPlayer player)
         {
@@ -106,7 +112,6 @@ namespace Game
             //    });
             //}
         }
-
         private void onRequest(IRequest obj)
         {
             UIAnimation anim;
@@ -121,7 +126,6 @@ namespace Game
             else
                 UberDebug.LogWarningChannel("UI", "没有与" + obj + "相应的动画");
         }
-
         private void onEventBefore(IEventArg arg)
         {
             UIAnimation anim;
@@ -134,7 +138,6 @@ namespace Game
             if (anim != null)
                 addAnim(anim);
         }
-
         private void onEventAfter(IEventArg arg)
         {
 
@@ -348,24 +351,16 @@ namespace Game
                         {
                             usingPosition = index;
                             //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
-                            item.Card.hide();
-                            //显示占位随从
-                            ui.ServantPlaceHolder.Servant.display();
-                            setServant(ui.ServantPlaceHolder.Servant, usingCard.define);
-                            isSelectingTarget = true;
-                            foreach (var target in targets)
+                            addAnim(new HandToFieldAnim(this, item, ui.SelfFieldList, index));
+                            addAnim(new CodeAnim(() =>
                             {
-                                if (tryGetMaster(target, out var master))
-                                {
-                                    setMaster(master, target, true);
-                                    master.onClick.add(onSelectMaster);
-                                }
-                                else if (tryGetServant(target, out var servant))
-                                {
-                                    setServant(servant, target, true);
-                                    servant.onClick.add(onSelectServant);
-                                }
-                            }
+                                item.Card.hide();
+                                //显示占位随从
+                                ui.ServantPlaceHolder.Servant.display();
+                                setServant(ui.ServantPlaceHolder.Servant, usingCard.define);
+                            }));
+                            isSelectingTarget = true;
+                            highlightTargets(targets);
                             ui.SelfHandList.shrink();
                         }
                         else
@@ -382,19 +377,7 @@ namespace Game
                             //进入选择目标状态，高亮可以选择的目标
                             item.Card.hide();
                             isSelectingTarget = true;
-                            foreach (var target in targets)
-                            {
-                                if (tryGetMaster(target, out var master))
-                                {
-                                    setMaster(master, target, true);
-                                    master.onClick.add(onSelectMaster);
-                                }
-                                else if (tryGetServant(target, out var servant))
-                                {
-                                    setServant(servant, target, true);
-                                    servant.onClick.add(onSelectServant);
-                                }
-                            }
+                            highlightTargets(targets);
                             ui.SelfHandList.shrink();
                         }
                         else
@@ -604,13 +587,15 @@ namespace Game
         {
             foreach (var target in targets)
             {
-                if (tryGetMaster(target, out var targetMaster))
+                if (tryGetMaster(target, out var master))
                 {
-                    setMaster(targetMaster, target, true);
+                    setMaster(master, target, true);
+                    master.onClick.add(onSelectMaster);
                 }
-                else if (tryGetServant(target, out var targetServant))
+                else if (tryGetServant(target, out var servant))
                 {
-                    setServant(targetServant, target, true);
+                    setServant(servant, target, true);
+                    servant.onClick.add(onSelectServant);
                 }
             }
         }
