@@ -45,16 +45,9 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,vars)=>
+            new LambdaSingleTargetEffect((game,card,target)=>
             {
-                return true;
-            },(game,card,targets)=>
-            {
-                return true;
-            },async (game,card,vars,targets)=>
-            {
-                Card target = targets[0] as Card;
-                await target.damage(game,card,2);
+                return target.damage(game,card,2);
             })
         };
     }

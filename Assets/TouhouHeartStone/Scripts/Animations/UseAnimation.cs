@@ -3,12 +3,55 @@ using BJSYGameCore;
 using UnityEngine;
 using System.Linq;
 using UI;
+using System;
 namespace Game
 {
+    class CodeAnim : TableAnimation
+    {
+        Action _action;
+        public CodeAnim(Action action)
+        {
+            _action = action;
+        }
+        public override bool update(TableManager table)
+        {
+            _action();
+            return true;
+        }
+    }
+    class HandToFieldAnim : TableAnimation
+    {
+        HandListItem _item;
+        Vector3 _startPosition;
+        Timer _timer;
+        public HandToFieldAnim(TableManager table, HandListItem item, FieldList field, int index)
+        {
+            _item = item;
+            _startPosition = item.Card.rectTransform.position;
+            _timer = new Timer() { duration = table.handToFieldCurve.keys.Last().time };
+
+            field.addChild(table.ui.ServantPlaceHolder.rectTransform);
+            field.defaultItem.rectTransform.SetAsFirstSibling();
+            table.ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(index + 1);
+            table.ui.ServantPlaceHolder.display();
+            _startPosition = _item.Card.rectTransform.position;
+            _timer.start();
+        }
+        public override bool update(TableManager table)
+        {
+            if (!_timer.isExpired())
+            {
+                _item.Card.rectTransform.position = Vector3.Lerp(_startPosition, table.ui.ServantPlaceHolder.rectTransform.position, table.handToFieldCurve.Evaluate(_timer.time));
+                return false;
+            }
+            return true;
+        }
+    }
     class UseAnimation : EventAnimation<THHPlayer.UseEventArg>
     {
         Vector3 _startPosition;
-        Timer _timer = new Timer() { duration = .6f };
+        Timer _timer;
+        HandToFieldAnim _handToField;
         Timer _targetingTimer = new Timer() { duration = .8f };
         public override bool update(TableManager table, THHPlayer.UseEventArg eventArg)
         {
@@ -19,13 +62,9 @@ namespace Game
                     if (!table.ui.ServantPlaceHolder.Servant.isDisplaying)
                     {
                         HandListItem item = table.getHand(eventArg.card);
-                        if (!_timer.isStarted)
-                        {
-                            _startPosition = item.Card.rectTransform.position;
-                            _timer.start();
-                        }
-                        item.Card.rectTransform.position = Vector3.Lerp(_startPosition, table.ui.ServantPlaceHolder.rectTransform.position, item.Card.useCurve.Evaluate(_timer.progress));
-                        if (!_timer.isExpired())
+                        if (_handToField == null)
+                            _handToField = new HandToFieldAnim(table, item, table.ui.SelfFieldList, eventArg.position);
+                        if (!_handToField.update(table))
                             return false;
                     }
                     table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
@@ -42,17 +81,9 @@ namespace Game
                     if (!table.ui.ServantPlaceHolder.Servant.isDisplaying)
                     {
                         //敌方使用随从
-                        if (!_timer.isStarted)
-                        {
-                            table.ui.EnemyFieldList.addChild(table.ui.ServantPlaceHolder.rectTransform);
-                            table.ui.EnemyFieldList.defaultItem.rectTransform.SetAsFirstSibling();
-                            table.ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(eventArg.position + 1);
-                            table.ui.ServantPlaceHolder.display();
-                            _startPosition = hand.Card.rectTransform.position;
-                            _timer.start();
-                        }
-                        hand.Card.rectTransform.position = Vector3.Lerp(_startPosition, table.ui.ServantPlaceHolder.rectTransform.position, hand.Card.useCurve.Evaluate(_timer.progress));
-                        if (!_timer.isExpired())
+                        if (_handToField == null)
+                            _handToField = new HandToFieldAnim(table, hand, table.ui.EnemyFieldList, eventArg.position);
+                        if (!_handToField.update(table))
                             return false;
                     }
                     table.ui.EnemyHandList.removeItem(hand);
