@@ -2,6 +2,7 @@
 using BJSYGameCore;
 using UnityEngine;
 using UI;
+using BJSYGameCore.UI;
 namespace Game
 {
     class UseAnimation : EventAnimation<THHPlayer.UseEventArg>
@@ -10,6 +11,7 @@ namespace Game
         Timer _timer;
         HandToFieldAnim _handToField;
         Timer _targetingTimer = new Timer() { duration = .8f };
+        TargetedAnim _targetedAnim;
         public override bool update(TableManager table, THHPlayer.UseEventArg eventArg)
         {
             if (eventArg.card.define is ServantCardDefine)
@@ -24,7 +26,7 @@ namespace Game
                         if (!_handToField.update(table))
                             return false;
                     }
-                    if (selectTarget(table, eventArg))
+                    if (tryTargetedAnim(table, eventArg))
                         return false;
                     table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
                     table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
@@ -43,7 +45,7 @@ namespace Game
                         if (!_handToField.update(table))
                             return false;
                     }
-                    if (selectTarget(table, eventArg))
+                    if (tryTargetedAnim(table, eventArg))
                         return false;
                     table.ui.EnemyHandList.removeItem(hand);
                     table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
@@ -55,7 +57,7 @@ namespace Game
                 if (eventArg.player == table.player)
                 {
                     table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
-                    if (selectTarget(table, eventArg))
+                    if (tryTargetedAnim(table, eventArg))
                         return false;
                 }
                 else
@@ -75,26 +77,39 @@ namespace Game
                     if (!_timer.isExpired())
                         return false;
                     table.ui.EnemyHandList.removeItem(hand);
-                    if (selectTarget(table, eventArg))
+                    if (tryTargetedAnim(table, eventArg))
                         return false;
                 }
             }
+            else if (eventArg.card.isSkill())
+            {
+                if (eventArg.player == table.player)
+                    table.setSkill(table.ui.SelfSkill, eventArg.card);
+                else
+                    table.setSkill(table.ui.EnemySkill, eventArg.card);
+                if (tryTargetedAnim(table, eventArg))
+                    return false;
+            }
             return true;
         }
-        bool selectTarget(TableManager table, THHPlayer.UseEventArg eventArg)
+        bool tryTargetedAnim(TableManager table, THHPlayer.UseEventArg eventArg)
         {
-            if (eventArg.targets != null && eventArg.targets.Length > 0 && eventArg.targets[0] is var target)
+            if (eventArg.targets != null && eventArg.targets.Length > 0 && eventArg.targets[0] is var targetCard)
             {
-                if (table.tryGetServant(target, out var targetServant))
+                if (_targetedAnim == null)
                 {
-                    if (!_targetingTimer.isStarted)
-                    {
-                        targetServant.animator.Play("Targeted");
-                        _targetingTimer.start();
-                    }
-                    if (!_targetingTimer.isExpired())
-                        return true;
+                    UIObject target;
+                    if (table.tryGetMaster(targetCard, out var targetMaster))
+                        target = targetMaster;
+                    else if (table.tryGetServant(targetCard, out var targetServant))
+                        target = targetServant;
+                    else
+                        throw new ActorNotFoundException(targetCard);
+                    if (target != null)
+                        _targetedAnim = new TargetedAnim(target);
                 }
+                if (!_targetedAnim.update(table))
+                    return true;
             }
             return false;
         }

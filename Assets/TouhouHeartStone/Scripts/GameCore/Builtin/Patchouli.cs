@@ -46,7 +46,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Patchouli.ID | CardCategory.SKILL | 0x001;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
+        public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect((game,card,target)=>

@@ -86,5 +86,13 @@ namespace UI
         {
             return obj.GetComponentInParent<Canvas>();
         }
+        public static void setHeight(this RectTransform transform, float height)
+        {
+            transform.sizeDelta = new Vector2(transform.sizeDelta.x, height);
+        }
+        public static void setWidth(this RectTransform transform, float width)
+        {
+            transform.sizeDelta = new Vector2(width, transform.sizeDelta.y);
+        }
     }
 }

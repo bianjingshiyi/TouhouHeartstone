@@ -25,6 +25,9 @@ namespace Game
         }
         [Header("Config")]
         [SerializeField]
+        float _skillDragThreshold = 75;
+        public float skillDragThreshold => _skillDragThreshold;
+        [SerializeField]
         AnimationCurve _moveToFieldCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
         public AnimationCurve handToFieldCurve => _moveToFieldCurve;
         [Header("State")]
@@ -76,12 +79,16 @@ namespace Game
             ui.InitReplaceDialog.hide();
             ui.TurnTipImage.hide();
             initMaster(ui.SelfMaster);
-            initMaster(ui.EnemyMaster);
             ui.SelfSkill.asButton.onClick.set(onClickSkill);
+            ui.SelfSkill.onDrag.set(onDragSkill);
+            ui.SelfSkill.onDragEnd.set(onDragSkillEnd);
+            ui.SelfItem.hide();
             ui.SelfHandList.clearItems();
             ui.SelfFieldList.clearItems();
             ui.TurnEndButton.onClick.set(onTurnEndButtonClick);
             ui.TipText.hide();
+            initMaster(ui.EnemyMaster);
+            ui.EnemyItem.hide();
             ui.EnemyFieldList.clearItems();
             ui.EnemyHandList.clearItems();
             ui.AttackArrowImage.hide();
@@ -200,29 +207,30 @@ namespace Game
             CardSkinData skin = getSkin(card);
             skill.Image.sprite = skin.image;
             skill.CostText.text = card.getCost().ToString();
-            //if (card.isUsed())
-            //{
-            //    skill.IsUsedController = Skill.IsUsed.True;
-            //}
-            //else
-            //    skill.IsUsedController = Skill.IsUsed.False;
-            //if (player == this.player
-            //    && card.isUsable(game, player, out _)//技能是可用的
-            //    && table.selectableTargets == null//没有在选择目标
-            //    && table.canControl//是自己的回合
-            //    )
-            //{
-            //    skill.IsUsableController = Skill.IsUsable.True;
-            //    skill.asButton.interactable = true;
-            //}
-            //else
-            //{
-            //    skill.IsUsableController = Skill.IsUsable.False;
-            //    skill.asButton.interactable = false;
-            //}
+            if (card.isUsed())
+            {
+                skill.IsUsedController = Skill.IsUsed.True;
+            }
+            else
+                skill.IsUsedController = Skill.IsUsed.False;
+            if (card.isUsable(game, player, out _) &&//技能是可用的
+                !isSelectingTarget &&//没有在选择目标
+                canControl//是自己的回合
+                )
+            {
+                skill.IsUsableController = Skill.IsUsable.True;
+                skill.asButton.interactable = true;
+            }
+            else
+            {
+                skill.IsUsableController = Skill.IsUsable.False;
+                skill.asButton.interactable = false;
+            }
         }
         void onClickSkill()
         {
+            if (!canControl)
+                return;
             if (usingCard != null)//已经在用别的牌了，不能点技能
                 return;
             if (player.skill.isUsable(game, player, out var info))
@@ -235,6 +243,71 @@ namespace Game
                 showTip(info);
             }
         }
+        void onDragSkill(Skill skill, PointerEventData pointer)
+        {
+            if (!canControl)
+                return;
+            if (usingCard == player.skill)
+            {
+                if (Vector3.Distance(skill.rectTransform.position, pointer.position) < skillDragThreshold)
+                    cancelSkill();
+                else
+                    displayArrow(skill.rectTransform.position, pointer.position);
+                return;
+            }
+            if (Vector3.Distance(skill.rectTransform.position, pointer.position) < skillDragThreshold)
+                return;
+            if (player.skill.isUsable(game, player, out var info))
+            {
+                if (player.skill.isNeedTarget(game, out var targets))
+                {
+                    usingCard = player.skill;
+                    highlightTargets(targets);
+                    displayArrow(skill.rectTransform.position, pointer.position);
+                }
+            }
+            else
+                showTip(info);
+        }
+        void onDragSkillEnd(Skill skill, PointerEventData pointer)
+        {
+            if (!canControl)
+            {
+                cancelSkill();
+                return;
+            }
+            if (usingCard != player.skill)
+            {
+                cancelSkill();
+                return;
+            }
+            if (isOnTarget(pointer, out var target))
+            {
+                if (player.skill.isUsable(game, player, out var info) && player.skill.isValidTarget(game, target))
+                    player.cmdUse(game, player.skill, 0, target);
+                else
+                    showTip(info);
+            }
+            cancelSkill();
+        }
+        private void cancelSkill()
+        {
+            usingCard = null;
+            removeHighlights();
+            hideArrow();
+        }
+        void displayArrow(Vector2 from, Vector2 to)
+        {
+            ui.AttackArrowImage.display();
+            ui.AttackArrowImage.rectTransform.position = from;
+            ui.AttackArrowImage.rectTransform.up = (to - from).normalized;
+            ui.AttackArrowImage.rectTransform.setHeight(Vector3.Distance(from, to) / ui.getCanvas().transform.localScale.y);
+        }
+        void hideArrow()
+        {
+            ui.AttackArrowImage.hide();
+        }
+
         Dictionary<TouhouCardEngine.Card, HandListItem> cardHandDic { get; } = new Dictionary<TouhouCardEngine.Card, HandListItem>();
         public HandListItem createHand(TouhouCardEngine.Card card)
         {
@@ -571,17 +644,9 @@ namespace Game
             if (Vector2.Distance(servant.rectTransform.position, pointer.position) > servant.attackThreshold)
             {
                 //播放一个变大的动画？
-                servant.rectTransform.localScale = Vector3.one * 1.1f;
+                //servant.rectTransform.localScale = Vector3.one * 1.1f;
                 //显示指针
-                ui.AttackArrowImage.display();
-                ui.AttackArrowImage.rectTransform.position = servant.rectTransform.position;
-                //移动指针
-                ui.AttackArrowImage.rectTransform.eulerAngles = new Vector3(0, 0,
-                    Vector2.Angle(servant.rectTransform.position, pointer.position));
-                ui.AttackArrowImage.rectTransform.up = ((Vector3)pointer.position - servant.rectTransform.position).normalized;
-                ui.AttackArrowImage.rectTransform.sizeDelta = new Vector2(
-                    ui.AttackArrowImage.rectTransform.sizeDelta.x,
-                    Vector2.Distance(servant.rectTransform.position, pointer.position) / ui.getCanvas().transform.localScale.y);
+                displayArrow(servant.rectTransform.position, pointer.position);
                 //高亮标记所有目标
                 highlightTargets(game.findAllCardsInField(c => card.isAttackable(game, player, c, out _)));
             }
@@ -634,32 +699,37 @@ namespace Game
             if (!card.canAttack(game))//不能攻击
                 return;
             //如果在随从上面
-            if (pointer.pointerCurrentRaycast.gameObject != null)
+            if (isOnTarget(pointer, out var target))
             {
-                if (pointer.pointerCurrentRaycast.gameObject.GetComponentInParent<Servant>() is Servant targetServant)
-                {
-                    if (card.isAttackable(game, player, getCard(targetServant), out var tip))
-                    {
-                        player.cmdAttack(game, card, getCard(targetServant));
-                    }
-                    else
-                        ui.showTip(tip);
-                }
-                else if (pointer.pointerCurrentRaycast.gameObject.GetComponentInParent<Master>() is Master targetMaster)
-                {
-                    if (card.isAttackable(game, player, getCard(targetMaster), out var tip))
-                    {
-                        player.cmdAttack(game, card, getCard(targetMaster));
-                    }
-                    else
-                        ui.showTip(tip);
-                }
+                if (card.isAttackable(game, player, target, out var tip))
+                    player.cmdAttack(game, card, target);
+                else
+                    ui.showTip(tip);
             }
             //取消选中和攻击
             cancelAttack();
         }
+        bool isOnTarget(PointerEventData pointer, out TouhouCardEngine.Card card)
+        {
+            if (pointer.pointerCurrentRaycast.gameObject != null)
+            {
+                if (pointer.pointerCurrentRaycast.gameObject.GetComponentInParent<Servant>() is Servant targetServant)
+                {
+                    card = getCard(targetServant);
+                    return card != null;
+                }
+                else if (pointer.pointerCurrentRaycast.gameObject.GetComponentInParent<Master>() is Master targetMaster)
+                {
+                    card = getCard(targetMaster);
+                    return card != null;
+                }
+            }
+            card = null;
+            return false;
+        }
         private void cancelAttack()
         {
+            //缩小动画
             //rectTransform.localScale = Vector3.one;
             ui.AttackArrowImage.hide();
             removeHighlights();
