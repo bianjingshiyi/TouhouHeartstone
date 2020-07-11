@@ -192,24 +192,6 @@ namespace Tests
             game.Dispose();
         }
 
-        /*public void PatchouliSilentSeleneTest()
-        {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption(){shuffle = false});
-            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<MissingSpecter>() as CardDefine, 30));
-            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<SilentSelene>() as CardDefine, 28)
-            .Concat(Enumerable.Repeat(game.getCardDefine<BestMagic>(), 2)));
-
-            game.skipTurnUntil(() => game.currentPlayer == defaultPlayer && defaultPlayer.gem >= game.getCardDefine<MissingSpecter>().cost);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.getCard<MissingSpecter>());
-
-            game.skipTurnUntil(() => game.currentPlayer == elusivePlayer && elusivePlayer.gem >= 10);
-            elusivePlayer.cmdUse(game, elusivePlayer.hand.getCard<BestMagic>());//使用秘藏魔法减费
-            Assert.True(game.players[0].hand.Where(c => c.define is SilentSelene).All(c => c.getCost() == 7));
-            elusivePlayer.cmdUse(game, elusivePlayer.hand.getCard<SilentSelene>());
-
-            game.Dispose();
-        }*/
-
         [Test]
         public void PatchouliElementSpriteTest()
         {
