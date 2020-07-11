@@ -109,6 +109,11 @@ namespace UI
                 return;
             _actionList.Add(action);
         }
+        public void set(Action<T0, T1> action)
+        {
+            clear();
+            add(action);
+        }
         public bool remove(Action<T0, T1> action)
         {
             return _actionList.Remove(action);

@@ -67,6 +67,8 @@ namespace Game
         {
             ui.InitReplaceDialog.hide();
             ui.TurnTipImage.hide();
+            initMaster(ui.SelfMaster);
+            initMaster(ui.EnemyMaster);
             ui.SelfHandList.clearItems();
             ui.SelfFieldList.clearItems();
             ui.EnemyFieldList.clearItems();
@@ -94,23 +96,6 @@ namespace Game
                 ui.TurnEndButton.onClick.RemoveAllListeners();
             }
             this.player = player;
-            //if (player != null)
-            //{
-            //    table.SelfSkill.asButton.onClick.AddListener(() =>
-            //    {
-            //        if (selectableTargets != null)
-            //            return;
-            //        player.cmdUse(game, SelfSkill.card, 0);
-            //    });
-            //    table.TurnEndButton.onClick.AddListener(() =>
-            //    {
-            //        player.cmdTurnEnd(game);
-
-            //        //SelfHandList.stopPlacing(true);
-            //        resetUse(true, true);
-            //        selectableTargets = null;
-            //    });
-            //}
         }
         private void onRequest(IRequest obj)
         {
@@ -160,6 +145,10 @@ namespace Game
                 master = null;
                 return false;
             }
+        }
+        public void initMaster(Master master)
+        {
+            master.onClick.add(onClickMaster);
         }
         public void setMaster(Master master, TouhouCardEngine.Card card, bool isSelectable = false)
         {
@@ -236,163 +225,154 @@ namespace Game
             }
             UberDebug.LogChannel("UI", "创建手牌UI：" + card);
             HandListItem item;
-            bool isDragable;
             if (card.getOwner() == player)
             {
                 item = ui.SelfHandList.addItem();
-                isDragable = true;
-                item.onDrag -= onDrag;
-                item.onEndDrag -= onEndDrag;
-                item.onDrag += onDrag;
-                item.onEndDrag += onEndDrag;
+                item.isDragable = true;
                 setCard(item.Card, card, true);
             }
             else
             {
                 item = ui.EnemyHandList.addItem();
-                isDragable = false;
-                item.onDrag -= onDrag;
-                item.onEndDrag -= onEndDrag;
+                item.isDragable = false;
                 setCard(item.Card, card, false);
             }
-            void onDrag(HandListItem hand, PointerEventData pointer)
-            {
-                if (!isDragable)
-                    return;
-                if (!canControl)//无法进行控制
-                {
-                    resetUse(true, true);
-                    return;
-                }
-                usingCard = getCard(item);
-                //拖拽卡片
-                item.Card.rectTransform.position = pointer.position;
-                if (ui.SelfHandList.rectTransform.rect.Contains(ui.SelfHandList.rectTransform.InverseTransformPoint(pointer.position)))
-                {
-                    //如果移动回手牌区域，恢复正常大小
-                    item.Card.rectTransform.localScale = Vector3.one;
-                    //移除随从占位
-                    hideServantPlaceHolder();
-                }
-                else
-                {
-                    //移动到手牌区以外的地方视作打算使用
-                    if (!usingCard.isUsable(game, player, out string info))
-                    {
-                        //卡牌不可用，停止拖拽并提示
-                        showTip(info);
-                        resetUse(true, true);
-                    }
-                    else
-                    {
-                        //手牌在战场上大小和随从牌一致
-                        item.Card.rectTransform.localScale = Vector3.one * .4f / ui.SelfHandList.rectTransform.localScale.y;
-                        if (usingCard.define is ServantCardDefine)
-                        {
-                            ui.SelfFieldList.defaultItem.rectTransform.SetAsFirstSibling();
-                            ui.ServantPlaceHolder.rectTransform.sizeDelta = ui.SelfFieldList.defaultItem.rectTransform.sizeDelta;
-                            ui.SelfFieldList.addChild(ui.ServantPlaceHolder.rectTransform);
-                            ui.ServantPlaceHolder.display();
-                            var servants = ui.SelfFieldList.getItems();
-                            int index = 0;
-                            if (servants.Length > 0)
-                            {
-                                //需要选择空位，计算空位
-                                for (int i = 0; i < servants.Length; i++)
-                                {
-                                    if (servants[i].rectTransform.position.x < pointer.position.x)
-                                        index = i + 1;
-                                }
-                                ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(index + 1);
-                            }
-                        }
-                    }
-                }
-            }
-            void onEndDrag(HandListItem hand, PointerEventData pointer)
-            {
-                if (item.GetComponentInParent<HandList>() != ui.SelfHandList)//你不能用别人的卡
-                    return;
-                if (!canControl)//不是你的回合，不生效
-                {
-                    resetUse(true, true);
-                    return;
-                }
-                usingCard = getCard(item);
-                if (ui.SelfHandList.rectTransform.rect.Contains(ui.SelfHandList.rectTransform.InverseTransformPoint(pointer.position)))
-                {
-                    //如果松开，取消使用
-                    resetUse(true, true);
-                }
-                else
-                {
-                    if (!usingCard.isUsable(game, player, out string info))
-                    {
-                        //卡牌不可用
-                        showTip(info);
-                        resetUse(true, true);
-                    }
-                    else if (usingCard.define is ServantCardDefine)
-                    {
-                        //松开鼠标，确认使用随从牌
-                        var servants = ui.SelfFieldList.getItems();
-                        int index = 0;
-                        if (servants.Length > 0)
-                        {
-                            //需要选择空位，计算空位
-                            for (int i = 0; i < servants.Length; i++)
-                            {
-                                if (servants[i].rectTransform.position.x < pointer.position.x)
-                                    index = i + 1;
-                            }
-                            ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(index + 1);
-                        }
-                        if (usingCard.getAvaliableTargets(game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
-                        {
-                            usingPosition = index;
-                            //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
-                            addAnim(new HandToFieldAnim(this, item, ui.SelfFieldList, index));
-                            addAnim(new CodeAnim(() =>
-                            {
-                                item.Card.hide();
-                                //显示占位随从
-                                ui.ServantPlaceHolder.Servant.display();
-                                setServant(ui.ServantPlaceHolder.Servant, usingCard.define);
-                            }));
-                            isSelectingTarget = true;
-                            highlightTargets(targets);
-                            ui.SelfHandList.shrink();
-                        }
-                        else
-                        {
-                            //使用无目标随从牌
-                            player.cmdUse(game, usingCard, index);
-                            resetUse(false, false);
-                        }
-                    }
-                    else if (usingCard.define is SpellCardDefine)
-                    {
-                        if (usingCard.getAvaliableTargets(game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
-                        {
-                            //进入选择目标状态，高亮可以选择的目标
-                            item.Card.hide();
-                            isSelectingTarget = true;
-                            highlightTargets(targets);
-                            ui.SelfHandList.shrink();
-                        }
-                        else
-                        {
-                            //使用无目标随从牌
-                            player.cmdUse(game, usingCard, 0);
-                            resetUse(false, false);
-                        }
-                    }
-                }
-            }
+            item.onDrag.set(onDragHand);
+            item.onEndDrag.set(onDragHandEnd);
             cardHandDic.Add(card, item);
             return item;
         }
-        void onSelectMaster(Master master, PointerEventData pointer)
+        void onDragHand(HandListItem hand, PointerEventData pointer)
+        {
+            if (!hand.isDragable)
+                return;
+            if (!canControl)//无法进行控制
+            {
+                resetUse(true, true);
+                return;
+            }
+            usingCard = getCard(hand);
+            //拖拽卡片
+            hand.Card.rectTransform.position = pointer.position;
+            if (ui.SelfHandList.rectTransform.rect.Contains(ui.SelfHandList.rectTransform.InverseTransformPoint(pointer.position)))
+            {
+                //如果移动回手牌区域，恢复正常大小
+                hand.Card.rectTransform.localScale = Vector3.one;
+                //移除随从占位
+                if (usingCard.isServant())
+                    hideServantPlaceHolder();
+            }
+            else
+            {
+                //移动到手牌区以外的地方视作打算使用
+                if (!usingCard.isUsable(game, player, out string info))
+                {
+                    //卡牌不可用，停止拖拽并提示
+                    showTip(info);
+                    resetUse(true, true);
+                }
+                else
+                {
+                    //手牌在战场上大小和随从牌一致
+                    hand.Card.rectTransform.localScale = Vector3.one * .4f / ui.SelfHandList.rectTransform.localScale.y;
+                    if (usingCard.define is ServantCardDefine)
+                    {
+                        //如果手牌是随从，那么在场上的时候会有一个占位符，预览这个随从放下去的位置。
+                        ui.SelfFieldList.defaultItem.rectTransform.SetAsFirstSibling();
+                        ui.ServantPlaceHolder.rectTransform.sizeDelta = ui.SelfFieldList.defaultItem.rectTransform.sizeDelta;
+                        ui.SelfFieldList.addChild(ui.ServantPlaceHolder.rectTransform);
+                        ui.ServantPlaceHolder.display();
+                        ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(calcIndexInField(pointer.position) + 1);
+                    }
+                }
+            }
+        }
+        private int calcIndexInField(Vector2 position)
+        {
+            int index = 0;
+            var servants = ui.SelfFieldList.getItems();
+            if (servants.Length > 0)
+            {
+                //需要选择空位，计算空位
+                for (int i = 0; i < servants.Length; i++)
+                {
+                    if (servants[i].rectTransform.position.x < position.x)
+                        index = i + 1;
+                }
+            }
+            return index;
+        }
+        void onDragHandEnd(HandListItem hand, PointerEventData pointer)
+        {
+            if (hand.GetComponentInParent<HandList>() != ui.SelfHandList)//你不能用别人的卡
+                return;
+            if (!canControl)//不是你的回合，不生效
+            {
+                resetUse(true, true);
+                return;
+            }
+            usingCard = getCard(hand);
+            if (ui.SelfHandList.rectTransform.rect.Contains(ui.SelfHandList.rectTransform.InverseTransformPoint(pointer.position)))
+            {
+                //如果松开，取消使用
+                resetUse(true, true);
+            }
+            else
+            {
+                if (!usingCard.isUsable(game, player, out string info))
+                {
+                    //卡牌不可用
+                    showTip(info);
+                    resetUse(true, true);
+                }
+                else if (usingCard.define is ServantCardDefine)
+                {
+                    //松开鼠标，确认使用随从牌
+                    int index = calcIndexInField(pointer.position);
+                    ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(index + 1);
+                    if (usingCard.getAvaliableTargets(game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
+                    {
+                        usingPosition = index;
+                        //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
+                        addAnim(new HandToFieldAnim(this, hand, ui.SelfFieldList, index));
+                        addAnim(new CodeAnim(() =>
+                        {
+                            hand.Card.hide();
+                            //显示占位随从
+                            ui.ServantPlaceHolder.Servant.display();
+                            setServant(ui.ServantPlaceHolder.Servant, usingCard.define);
+                        }));
+                        isSelectingTarget = true;
+                        highlightTargets(targets);
+                        ui.SelfHandList.shrink();
+                    }
+                    else
+                    {
+                        //使用无目标随从牌
+                        player.cmdUse(game, usingCard, index);
+                        resetUse(false, false);
+                    }
+                }
+                else if (usingCard.define is SpellCardDefine)
+                {
+                    if (usingCard.getAvaliableTargets(game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
+                    {
+                        //进入选择目标状态，高亮可以选择的目标
+                        hand.Card.hide();
+                        isSelectingTarget = true;
+                        highlightTargets(targets);
+                        ui.SelfHandList.shrink();
+                    }
+                    else
+                    {
+                        //使用无目标随从牌
+                        player.cmdUse(game, usingCard, 0);
+                        resetUse(false, false);
+                    }
+                }
+            }
+        }
+        void onClickMaster(Master master, PointerEventData pointer)
         {
             if (isSelectingTarget)
             {
@@ -408,7 +388,7 @@ namespace Game
                 }
             }
         }
-        void onSelectServant(Servant servant, PointerEventData pointer)
+        void onClickServant(Servant servant, PointerEventData pointer)
         {
             if (isSelectingTarget)
             {
@@ -436,7 +416,7 @@ namespace Game
             if (resetPlaceHolder)
                 hideServantPlaceHolder();
             isSelectingTarget = false;
-            //selectableTargets = null;
+            removeHighlights();
         }
         public HandListItem getHand(TouhouCardEngine.Card card)
         {
@@ -501,6 +481,9 @@ namespace Game
             }
             servant.rectTransform.SetSiblingIndex(position + 1);
             setServant(servant, card);
+            servant.onClick.add(onClickServant);
+            servant.onDrag.add(onDragServant);
+            servant.onDragEnd.add(onDragEndServant);
             cardServantDic.Add(card, servant);
             return servant;
         }
@@ -590,12 +573,12 @@ namespace Game
                 if (tryGetMaster(target, out var master))
                 {
                     setMaster(master, target, true);
-                    master.onClick.add(onSelectMaster);
+                    master.onClick.add(onClickMaster);
                 }
                 else if (tryGetServant(target, out var servant))
                 {
                     setServant(servant, target, true);
-                    servant.onClick.add(onSelectServant);
+                    servant.onClick.add(onClickServant);
                 }
             }
         }
