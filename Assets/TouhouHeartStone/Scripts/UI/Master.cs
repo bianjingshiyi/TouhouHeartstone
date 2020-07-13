@@ -16,25 +16,25 @@ namespace UI
             this.card = card;
 
             Image.sprite = skin.image;
-            HpText.text = card.getCurrentLife().ToString();
+            LifePropNumber.asText.text = card.getCurrentLife().ToString();
             //if (card.getCurrentLife() == card.getLife())
             //    HpText.color = Color.white;
             //else
             //    HpText.color = Color.red;
             if (card.getAttack() > 0)
             {
-                AttackText.text = card.getAttack().ToString();
-                AttackText.enabled = true;
+                AttackPropNumber.asText.text = card.getAttack().ToString();
+                AttackPropNumber.asText.enabled = true;
             }
             else
-                AttackText.enabled = false;
+                AttackPropNumber.asText.enabled = false;
             if (card.getArmor() > 0)
             {
-                ArmorText.text = card.getArmor().ToString();
-                ArmorText.enabled = true;
+                ArmorPropNumber.asText.text = card.getArmor().ToString();
+                ArmorPropNumber.asText.enabled = true;
             }
             else
-                ArmorText.enabled = false;
+                ArmorPropNumber.asText.enabled = false;
 
             if (table.selectableTargets != null && table.selectableTargets.Contains(this))
                 HighlightController = Highlight.Yellow;
@@ -108,6 +108,11 @@ namespace UI
             if (preventRepeatRegister && _actionList.Contains(action))
                 return;
             _actionList.Add(action);
+        }
+        public void set(Action<T0, T1> action)
+        {
+            clear();
+            add(action);
         }
         public bool remove(Action<T0, T1> action)
         {

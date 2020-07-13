@@ -17,13 +17,13 @@ namespace Game
                     {
                         servant.DamageImage.display();
                         servant.DamageText.text = "-" + eventArg.value;
-                        servant.HpText.text = eventArg.infoDic[card].currentLife.ToString();
+                        servant.HpTextPropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
                     }
                     else if (table.tryGetMaster(card, out Master master))
                     {
                         master.DamageImage.display();
                         master.DamageText.text = "-" + eventArg.value;
-                        master.HpText.text = eventArg.infoDic[card].currentLife.ToString();
+                        master.LifePropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
                     }
                 }
                 _timer.start();

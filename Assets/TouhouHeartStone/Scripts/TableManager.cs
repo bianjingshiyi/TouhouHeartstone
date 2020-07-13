@@ -25,6 +25,9 @@ namespace Game
         }
         [Header("Config")]
         [SerializeField]
+        float _skillDragThreshold = 75;
+        public float skillDragThreshold => _skillDragThreshold;
+        [SerializeField]
         AnimationCurve _moveToFieldCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
         public AnimationCurve handToFieldCurve => _moveToFieldCurve;
         [Header("State")]
@@ -37,7 +40,7 @@ namespace Game
         }
         public TouhouCardEngine.Card usingCard { get; set; } = null;
         [SerializeField]
-        int _usingPosition;
+        int _usingPosition = -1;
         public int usingPosition
         {
             get { return _usingPosition; }
@@ -61,14 +64,31 @@ namespace Game
         protected void Update()
         {
             updateAnim();
-
+            if (_tipTimer.isExpired())
+            {
+                _tipTimer.reset();
+                ui.TipText.hide();
+            }
+            else if (_tipTimer.isStarted)
+            {
+                ui.TipText.setAlpha(1/*_tipTimer.getRemainedTime() / _tipTimer.duration*/);
+            }
         }
         public void setGame(THHGame game, THHPlayer player)
         {
             ui.InitReplaceDialog.hide();
             ui.TurnTipImage.hide();
+            initMaster(ui.SelfMaster);
+            ui.SelfSkill.asButton.onClick.set(onClickSkill);
+            ui.SelfSkill.onDrag.set(onDragSkill);
+            ui.SelfSkill.onDragEnd.set(onDragSkillEnd);
+            ui.SelfItem.hide();
             ui.SelfHandList.clearItems();
             ui.SelfFieldList.clearItems();
+            ui.TurnEndButton.onClick.set(onTurnEndButtonClick);
+            ui.TipText.hide();
+            initMaster(ui.EnemyMaster);
+            ui.EnemyItem.hide();
             ui.EnemyFieldList.clearItems();
             ui.EnemyHandList.clearItems();
             ui.AttackArrowImage.hide();
@@ -88,29 +108,7 @@ namespace Game
                 game.triggers.onEventAfter += onEventAfter;
                 game.answers.onRequest += onRequest;
             }
-            if (player != null)
-            {
-                ui.SelfSkill.asButton.onClick.RemoveAllListeners();
-                ui.TurnEndButton.onClick.RemoveAllListeners();
-            }
             this.player = player;
-            //if (player != null)
-            //{
-            //    table.SelfSkill.asButton.onClick.AddListener(() =>
-            //    {
-            //        if (selectableTargets != null)
-            //            return;
-            //        player.cmdUse(game, SelfSkill.card, 0);
-            //    });
-            //    table.TurnEndButton.onClick.AddListener(() =>
-            //    {
-            //        player.cmdTurnEnd(game);
-
-            //        //SelfHandList.stopPlacing(true);
-            //        resetUse(true, true);
-            //        selectableTargets = null;
-            //    });
-            //}
         }
         private void onRequest(IRequest obj)
         {
@@ -161,35 +159,39 @@ namespace Game
                 return false;
             }
         }
+        public void initMaster(Master master)
+        {
+            master.onClick.add(onClickMaster);
+        }
         public void setMaster(Master master, TouhouCardEngine.Card card, bool isSelectable = false)
         {
             CardSkinData skin = getSkin(card);
             master.Image.sprite = skin.image;
-            master.HpText.text = card.getCurrentLife().ToString();
+            master.LifePropNumber.asText.text = card.getCurrentLife().ToString();
             //if (card.getCurrentLife() == card.getLife())
             //    HpText.color = Color.white;
             //else
             //    HpText.color = Color.red;
             if (card.getAttack() > 0)
             {
-                master.AttackText.text = card.getAttack().ToString();
-                master.AttackText.display();
-                master.AtkImage.display();
+                master.AttackPropNumber.asText.text = card.getAttack().ToString();
+                master.AttackPropNumber.asText.display();
+                master.AttackPropNumber.asText.display();
             }
             else
             {
-                master.AttackText.hide();
+                master.AttackPropNumber.asText.hide();
                 master.AtkImage.hide();
             }
             if (card.getArmor() > 0)
             {
-                master.ArmorText.text = card.getArmor().ToString();
-                master.ArmorText.display();
+                master.ArmorPropNumber.asText.text = card.getArmor().ToString();
+                master.ArmorPropNumber.display();
                 master.ArmorImage.display();
             }
             else
             {
-                master.ArmorText.hide();
+                master.ArmorPropNumber.asText.hide();
                 master.ArmorImage.hide();
             }
 
@@ -205,27 +207,107 @@ namespace Game
             CardSkinData skin = getSkin(card);
             skill.Image.sprite = skin.image;
             skill.CostText.text = card.getCost().ToString();
-            //if (card.isUsed())
-            //{
-            //    skill.IsUsedController = Skill.IsUsed.True;
-            //}
-            //else
-            //    skill.IsUsedController = Skill.IsUsed.False;
-            //if (player == this.player
-            //    && card.isUsable(game, player, out _)//技能是可用的
-            //    && table.selectableTargets == null//没有在选择目标
-            //    && table.canControl//是自己的回合
-            //    )
-            //{
-            //    skill.IsUsableController = Skill.IsUsable.True;
-            //    skill.asButton.interactable = true;
-            //}
-            //else
-            //{
-            //    skill.IsUsableController = Skill.IsUsable.False;
-            //    skill.asButton.interactable = false;
-            //}
+            if (card.isUsed())
+            {
+                skill.IsUsedController = Skill.IsUsed.True;
+            }
+            else
+                skill.IsUsedController = Skill.IsUsed.False;
+            if (card.isUsable(game, player, out _) &&//技能是可用的
+                !isSelectingTarget &&//没有在选择目标
+                canControl//是自己的回合
+                )
+            {
+                skill.IsUsableController = Skill.IsUsable.True;
+                skill.asButton.interactable = true;
+            }
+            else
+            {
+                skill.IsUsableController = Skill.IsUsable.False;
+                skill.asButton.interactable = false;
+            }
         }
+        void onClickSkill()
+        {
+            if (!canControl)
+                return;
+            if (usingCard != null)//已经在用别的牌了，不能点技能
+                return;
+            if (player.skill.isUsable(game, player, out var info))
+            {
+                if (!player.skill.isNeedTarget(game, out _))
+                    player.cmdUse(game, player.skill);
+            }
+            else
+            {
+                showTip(info);
+            }
+        }
+        void onDragSkill(Skill skill, PointerEventData pointer)
+        {
+            if (!canControl)
+                return;
+            if (usingCard == player.skill)
+            {
+                if (Vector3.Distance(skill.rectTransform.position, pointer.position) < skillDragThreshold)
+                    cancelSkill();
+                else
+                    displayArrow(skill.rectTransform.position, pointer.position);
+                return;
+            }
+            if (Vector3.Distance(skill.rectTransform.position, pointer.position) < skillDragThreshold)
+                return;
+            if (player.skill.isUsable(game, player, out var info))
+            {
+                if (player.skill.isNeedTarget(game, out var targets))
+                {
+                    usingCard = player.skill;
+                    highlightTargets(targets);
+                    displayArrow(skill.rectTransform.position, pointer.position);
+                }
+            }
+            else
+                showTip(info);
+        }
+        void onDragSkillEnd(Skill skill, PointerEventData pointer)
+        {
+            if (!canControl)
+            {
+                cancelSkill();
+                return;
+            }
+            if (usingCard != player.skill)
+            {
+                cancelSkill();
+                return;
+            }
+            if (isOnTarget(pointer, out var target))
+            {
+                if (player.skill.isUsable(game, player, out var info) && player.skill.isValidTarget(game, target))
+                    player.cmdUse(game, player.skill, 0, target);
+                else
+                    showTip(info);
+            }
+            cancelSkill();
+        }
+        private void cancelSkill()
+        {
+            usingCard = null;
+            removeHighlights();
+            hideArrow();
+        }
+        void displayArrow(Vector2 from, Vector2 to)
+        {
+            ui.AttackArrowImage.display();
+            ui.AttackArrowImage.rectTransform.position = from;
+            ui.AttackArrowImage.rectTransform.up = (to - from).normalized;
+            ui.AttackArrowImage.rectTransform.setHeight(Vector3.Distance(from, to) / ui.getCanvas().transform.localScale.y);
+        }
+        void hideArrow()
+        {
+            ui.AttackArrowImage.hide();
+        }
+
         Dictionary<TouhouCardEngine.Card, HandListItem> cardHandDic { get; } = new Dictionary<TouhouCardEngine.Card, HandListItem>();
         public HandListItem createHand(TouhouCardEngine.Card card)
         {
@@ -236,163 +318,160 @@ namespace Game
             }
             UberDebug.LogChannel("UI", "创建手牌UI：" + card);
             HandListItem item;
-            bool isDragable;
             if (card.getOwner() == player)
             {
                 item = ui.SelfHandList.addItem();
-                isDragable = true;
-                item.onDrag -= onDrag;
-                item.onEndDrag -= onEndDrag;
-                item.onDrag += onDrag;
-                item.onEndDrag += onEndDrag;
+                item.isDragable = true;
                 setCard(item.Card, card, true);
             }
             else
             {
                 item = ui.EnemyHandList.addItem();
-                isDragable = false;
-                item.onDrag -= onDrag;
-                item.onEndDrag -= onEndDrag;
+                item.isDragable = false;
                 setCard(item.Card, card, false);
             }
-            void onDrag(HandListItem hand, PointerEventData pointer)
-            {
-                if (!isDragable)
-                    return;
-                if (!canControl)//无法进行控制
-                {
-                    resetUse(true, true);
-                    return;
-                }
-                usingCard = getCard(item);
-                //拖拽卡片
-                item.Card.rectTransform.position = pointer.position;
-                if (ui.SelfHandList.rectTransform.rect.Contains(ui.SelfHandList.rectTransform.InverseTransformPoint(pointer.position)))
-                {
-                    //如果移动回手牌区域，恢复正常大小
-                    item.Card.rectTransform.localScale = Vector3.one;
-                    //移除随从占位
-                    hideServantPlaceHolder();
-                }
-                else
-                {
-                    //移动到手牌区以外的地方视作打算使用
-                    if (!usingCard.isUsable(game, player, out string info))
-                    {
-                        //卡牌不可用，停止拖拽并提示
-                        showTip(info);
-                        resetUse(true, true);
-                    }
-                    else
-                    {
-                        //手牌在战场上大小和随从牌一致
-                        item.Card.rectTransform.localScale = Vector3.one * .4f / ui.SelfHandList.rectTransform.localScale.y;
-                        if (usingCard.define is ServantCardDefine)
-                        {
-                            ui.SelfFieldList.defaultItem.rectTransform.SetAsFirstSibling();
-                            ui.ServantPlaceHolder.rectTransform.sizeDelta = ui.SelfFieldList.defaultItem.rectTransform.sizeDelta;
-                            ui.SelfFieldList.addChild(ui.ServantPlaceHolder.rectTransform);
-                            ui.ServantPlaceHolder.display();
-                            var servants = ui.SelfFieldList.getItems();
-                            int index = 0;
-                            if (servants.Length > 0)
-                            {
-                                //需要选择空位，计算空位
-                                for (int i = 0; i < servants.Length; i++)
-                                {
-                                    if (servants[i].rectTransform.position.x < pointer.position.x)
-                                        index = i + 1;
-                                }
-                                ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(index + 1);
-                            }
-                        }
-                    }
-                }
-            }
-            void onEndDrag(HandListItem hand, PointerEventData pointer)
-            {
-                if (item.GetComponentInParent<HandList>() != ui.SelfHandList)//你不能用别人的卡
-                    return;
-                if (!canControl)//不是你的回合，不生效
-                {
-                    resetUse(true, true);
-                    return;
-                }
-                usingCard = getCard(item);
-                if (ui.SelfHandList.rectTransform.rect.Contains(ui.SelfHandList.rectTransform.InverseTransformPoint(pointer.position)))
-                {
-                    //如果松开，取消使用
-                    resetUse(true, true);
-                }
-                else
-                {
-                    if (!usingCard.isUsable(game, player, out string info))
-                    {
-                        //卡牌不可用
-                        showTip(info);
-                        resetUse(true, true);
-                    }
-                    else if (usingCard.define is ServantCardDefine)
-                    {
-                        //松开鼠标，确认使用随从牌
-                        var servants = ui.SelfFieldList.getItems();
-                        int index = 0;
-                        if (servants.Length > 0)
-                        {
-                            //需要选择空位，计算空位
-                            for (int i = 0; i < servants.Length; i++)
-                            {
-                                if (servants[i].rectTransform.position.x < pointer.position.x)
-                                    index = i + 1;
-                            }
-                            ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(index + 1);
-                        }
-                        if (usingCard.getAvaliableTargets(game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
-                        {
-                            usingPosition = index;
-                            //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
-                            addAnim(new HandToFieldAnim(this, item, ui.SelfFieldList, index));
-                            addAnim(new CodeAnim(() =>
-                            {
-                                item.Card.hide();
-                                //显示占位随从
-                                ui.ServantPlaceHolder.Servant.display();
-                                setServant(ui.ServantPlaceHolder.Servant, usingCard.define);
-                            }));
-                            isSelectingTarget = true;
-                            highlightTargets(targets);
-                            ui.SelfHandList.shrink();
-                        }
-                        else
-                        {
-                            //使用无目标随从牌
-                            player.cmdUse(game, usingCard, index);
-                            resetUse(false, false);
-                        }
-                    }
-                    else if (usingCard.define is SpellCardDefine)
-                    {
-                        if (usingCard.getAvaliableTargets(game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
-                        {
-                            //进入选择目标状态，高亮可以选择的目标
-                            item.Card.hide();
-                            isSelectingTarget = true;
-                            highlightTargets(targets);
-                            ui.SelfHandList.shrink();
-                        }
-                        else
-                        {
-                            //使用无目标随从牌
-                            player.cmdUse(game, usingCard, 0);
-                            resetUse(false, false);
-                        }
-                    }
-                }
-            }
+            item.onDrag.set(onDragHand);
+            item.onEndDrag.set(onDragHandEnd);
             cardHandDic.Add(card, item);
             return item;
         }
-        void onSelectMaster(Master master, PointerEventData pointer)
+        void onDragHand(HandListItem hand, PointerEventData pointer)
+        {
+            if (!hand.isDragable)
+                return;
+            if (!canControl)//无法进行控制
+            {
+                resetUse(true, true);
+                return;
+            }
+            TouhouCardEngine.Card card = getCard(hand);
+            if (usingCard != null && usingCard != card)
+            {
+                resetUse(true, true);
+                return;
+            }
+            usingCard = card;
+            //拖拽卡片
+            hand.Card.rectTransform.position = pointer.position;
+            if (ui.SelfHandList.rectTransform.rect.Contains(ui.SelfHandList.rectTransform.InverseTransformPoint(pointer.position)))
+            {
+                //如果移动回手牌区域，恢复正常大小
+                hand.Card.rectTransform.localScale = Vector3.one;
+                //移除随从占位
+                if (usingCard.isServant())
+                    hideServantPlaceHolder();
+            }
+            else
+            {
+                //移动到手牌区以外的地方视作打算使用
+                if (!usingCard.isUsable(game, player, out string info))
+                {
+                    //卡牌不可用，停止拖拽并提示
+                    showTip(info);
+                    resetUse(true, true);
+                }
+                else
+                {
+                    //手牌在战场上大小和随从牌一致
+                    hand.Card.rectTransform.localScale = Vector3.one * .4f / ui.SelfHandList.rectTransform.localScale.y;
+                    if (usingCard.define is ServantCardDefine)
+                    {
+                        //如果手牌是随从，那么在场上的时候会有一个占位符，预览这个随从放下去的位置。
+                        ui.SelfFieldList.defaultItem.rectTransform.SetAsFirstSibling();
+                        ui.ServantPlaceHolder.rectTransform.sizeDelta = ui.SelfFieldList.defaultItem.rectTransform.sizeDelta;
+                        ui.SelfFieldList.addChild(ui.ServantPlaceHolder.rectTransform);
+                        ui.ServantPlaceHolder.display();
+                        ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(calcIndexInField(pointer.position) + 1);
+                    }
+                }
+            }
+        }
+        private int calcIndexInField(Vector2 position)
+        {
+            int index = 0;
+            var servants = ui.SelfFieldList.getItems();
+            if (servants.Length > 0)
+            {
+                //需要选择空位，计算空位
+                for (int i = 0; i < servants.Length; i++)
+                {
+                    if (servants[i].rectTransform.position.x < position.x)
+                        index = i + 1;
+                }
+            }
+            return index;
+        }
+        void onDragHandEnd(HandListItem hand, PointerEventData pointer)
+        {
+            if (hand.GetComponentInParent<HandList>() != ui.SelfHandList)//你不能用别人的卡
+                return;
+            if (!canControl)//不是你的回合，不生效
+            {
+                resetUse(true, true);
+                return;
+            }
+            usingCard = getCard(hand);
+            if (ui.SelfHandList.rectTransform.rect.Contains(ui.SelfHandList.rectTransform.InverseTransformPoint(pointer.position)))
+            {
+                //如果松开，取消使用
+                resetUse(true, true);
+            }
+            else
+            {
+                if (!usingCard.isUsable(game, player, out string info))
+                {
+                    //卡牌不可用
+                    showTip(info);
+                    resetUse(true, true);
+                }
+                else if (usingCard.define is ServantCardDefine)
+                {
+                    //松开鼠标，确认使用随从牌
+                    int index = calcIndexInField(pointer.position);
+                    ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(index + 1);
+                    if (usingCard.getAvaliableTargets(game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
+                    {
+                        usingPosition = index;
+                        //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
+                        addAnim(new HandToFieldAnim(this, hand, ui.SelfFieldList, index));
+                        addAnim(new CodeAnim(() =>
+                        {
+                            hand.Card.hide();
+                            //显示占位随从
+                            ui.ServantPlaceHolder.Servant.display();
+                            setServant(ui.ServantPlaceHolder.Servant, usingCard.define);
+                        }));
+                        isSelectingTarget = true;
+                        highlightTargets(targets);
+                        ui.SelfHandList.shrink();
+                    }
+                    else
+                    {
+                        //使用无目标随从牌
+                        player.cmdUse(game, usingCard, index);
+                        resetUse(false, false);
+                    }
+                }
+                else if (usingCard.define is SpellCardDefine)
+                {
+                    if (usingCard.getAvaliableTargets(game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
+                    {
+                        //进入选择目标状态，高亮可以选择的目标
+                        hand.Card.hide();
+                        isSelectingTarget = true;
+                        highlightTargets(targets);
+                        ui.SelfHandList.shrink();
+                    }
+                    else
+                    {
+                        //使用无目标随从牌
+                        player.cmdUse(game, usingCard, 0);
+                        resetUse(false, false);
+                    }
+                }
+            }
+        }
+        void onClickMaster(Master master, PointerEventData pointer)
         {
             if (isSelectingTarget)
             {
@@ -408,7 +487,7 @@ namespace Game
                 }
             }
         }
-        void onSelectServant(Servant servant, PointerEventData pointer)
+        void onClickServant(Servant servant, PointerEventData pointer)
         {
             if (isSelectingTarget)
             {
@@ -433,10 +512,11 @@ namespace Game
                 usingHand.Card.rectTransform.localScale = Vector3.one;
                 usingHand.Card.rectTransform.localPosition = Vector2.zero;
             }
+            usingCard = null;
             if (resetPlaceHolder)
                 hideServantPlaceHolder();
             isSelectingTarget = false;
-            //selectableTargets = null;
+            removeHighlights();
         }
         public HandListItem getHand(TouhouCardEngine.Card card)
         {
@@ -499,8 +579,12 @@ namespace Game
                 servant = ui.EnemyFieldList.addItem();
                 ui.EnemyFieldList.defaultItem.rectTransform.SetAsFirstSibling();
             }
+            servant.gameObject.name = getSkin(card).name + "(" + card.id + ")";
             servant.rectTransform.SetSiblingIndex(position + 1);
             setServant(servant, card);
+            servant.onClick.add(onClickServant);
+            servant.onDrag.add(onDragServant);
+            servant.onDragEnd.add(onDragEndServant);
             cardServantDic.Add(card, servant);
             return servant;
         }
@@ -530,8 +614,8 @@ namespace Game
             {
                 servant.Image.sprite = skin.image;
             }
-            servant.AttackText.text = card.getAttack().ToString();
-            servant.HpText.text = card.getCurrentLife().ToString();
+            servant.AttackTextPropNumber.asText.text = card.getAttack().ToString();
+            servant.HpTextPropNumber.asText.text = card.getCurrentLife().ToString();
 
             servant.onDrag.remove(onDragServant);
             if (isSelectable)
@@ -560,17 +644,9 @@ namespace Game
             if (Vector2.Distance(servant.rectTransform.position, pointer.position) > servant.attackThreshold)
             {
                 //播放一个变大的动画？
-                servant.rectTransform.localScale = Vector3.one * 1.1f;
+                //servant.rectTransform.localScale = Vector3.one * 1.1f;
                 //显示指针
-                ui.AttackArrowImage.display();
-                ui.AttackArrowImage.rectTransform.position = servant.rectTransform.position;
-                //移动指针
-                ui.AttackArrowImage.rectTransform.eulerAngles = new Vector3(0, 0,
-                    Vector2.Angle(servant.rectTransform.position, pointer.position));
-                ui.AttackArrowImage.rectTransform.up = ((Vector3)pointer.position - servant.rectTransform.position).normalized;
-                ui.AttackArrowImage.rectTransform.sizeDelta = new Vector2(
-                    ui.AttackArrowImage.rectTransform.sizeDelta.x,
-                    Vector2.Distance(servant.rectTransform.position, pointer.position) / ui.getCanvas().transform.localScale.y);
+                displayArrow(servant.rectTransform.position, pointer.position);
                 //高亮标记所有目标
                 highlightTargets(game.findAllCardsInField(c => card.isAttackable(game, player, c, out _)));
             }
@@ -590,12 +666,12 @@ namespace Game
                 if (tryGetMaster(target, out var master))
                 {
                     setMaster(master, target, true);
-                    master.onClick.add(onSelectMaster);
+                    master.onClick.add(onClickMaster);
                 }
                 else if (tryGetServant(target, out var servant))
                 {
                     setServant(servant, target, true);
-                    servant.onClick.add(onSelectServant);
+                    servant.onClick.add(onClickServant);
                 }
             }
         }
@@ -623,32 +699,37 @@ namespace Game
             if (!card.canAttack(game))//不能攻击
                 return;
             //如果在随从上面
-            if (pointer.pointerCurrentRaycast.gameObject != null)
+            if (isOnTarget(pointer, out var target))
             {
-                if (pointer.pointerCurrentRaycast.gameObject.GetComponentInParent<Servant>() is Servant targetServant)
-                {
-                    if (card.isAttackable(game, player, getCard(targetServant), out var tip))
-                    {
-                        player.cmdAttack(game, card, getCard(targetServant));
-                    }
-                    else
-                        ui.showTip(tip);
-                }
-                else if (pointer.pointerCurrentRaycast.gameObject.GetComponentInParent<Master>() is Master targetMaster)
-                {
-                    if (card.isAttackable(game, player, getCard(targetMaster), out var tip))
-                    {
-                        player.cmdAttack(game, card, getCard(targetMaster));
-                    }
-                    else
-                        ui.showTip(tip);
-                }
+                if (card.isAttackable(game, player, target, out var tip))
+                    player.cmdAttack(game, card, target);
+                else
+                    ui.showTip(tip);
             }
             //取消选中和攻击
             cancelAttack();
         }
+        bool isOnTarget(PointerEventData pointer, out TouhouCardEngine.Card card)
+        {
+            if (pointer.pointerCurrentRaycast.gameObject != null)
+            {
+                if (pointer.pointerCurrentRaycast.gameObject.GetComponentInParent<Servant>() is Servant targetServant)
+                {
+                    card = getCard(targetServant);
+                    return card != null;
+                }
+                else if (pointer.pointerCurrentRaycast.gameObject.GetComponentInParent<Master>() is Master targetMaster)
+                {
+                    card = getCard(targetMaster);
+                    return card != null;
+                }
+            }
+            card = null;
+            return false;
+        }
         private void cancelAttack()
         {
+            //缩小动画
             //rectTransform.localScale = Vector3.one;
             ui.AttackArrowImage.hide();
             removeHighlights();
@@ -660,8 +741,8 @@ namespace Game
             {
                 servant.Image.sprite = skin.image;
             }
-            servant.AttackText.text = card.getAttack().ToString();
-            servant.HpText.text = card.getLife().ToString();
+            servant.AttackTextPropNumber.asText.text = card.getAttack().ToString();
+            servant.HpTextPropNumber.asText.text = card.getLife().ToString();
         }
         public TouhouCardEngine.Card getCard(Servant servant)
         {
@@ -685,6 +766,11 @@ namespace Game
             ui.TipText.gameObject.SetActive(true);
             ui.TipText.text = tip;
             _tipTimer.start();
+        }
+        void onTurnEndButtonClick()
+        {
+            resetUse(true, true);
+            player.cmdTurnEnd(game);
         }
         #endregion
         #region Animation
@@ -822,7 +908,16 @@ namespace Game
             if (skin != null)
                 return skin;
             else
-                throw new SkinNotFoundException("没有找到" + card + "对应的皮肤");
+            {
+                game.logger.logError("没有找到" + card + "对应的皮肤");
+                return new CardSkinData()
+                {
+                    id = card.define.id,
+                    desc = card.define.ToString(),
+                    image = getManager<CardManager>().getDefaultSprite().Result,
+                    name = card.define.GetType().Name
+                };
+            }
         }
         public CardSkinData getSkin(CardDefine define)
         {
@@ -830,7 +925,16 @@ namespace Game
             if (skin != null)
                 return skin;
             else
-                throw new SkinNotFoundException("没有找到" + define + "对应的皮肤");
+            {
+                game.logger.logError("没有找到" + define + "对应的皮肤");
+                return new CardSkinData()
+                {
+                    id = define.id,
+                    desc = define.ToString(),
+                    image = getManager<CardManager>().getDefaultSprite().Result,
+                    name = define.GetType().Name
+                };
+            }
         }
         #endregion
     }

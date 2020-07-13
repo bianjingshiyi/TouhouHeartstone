@@ -197,6 +197,7 @@ MonoBehaviour:
   _ui: {fileID: 0}
   _initStates: []
   _Card: {fileID: 3555614237534435332}
+  _isDragable: 1
   _startDragPosition: {x: 0, y: 0}
   _dragThreshold: 0
   _isDragging: 0

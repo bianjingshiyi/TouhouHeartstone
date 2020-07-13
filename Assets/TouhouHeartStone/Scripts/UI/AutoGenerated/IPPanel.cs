@@ -30,12 +30,12 @@ namespace UI
             this._ConnectButton = this.transform.Find("ConnectButton").GetComponent<Button>();
             this._AddressText = this.transform.Find("AddressText").GetComponent<Text>();
         }
-        private NetworkingPageGroup _parent;
-        public NetworkingPageGroup parent
+        private Main _parent;
+        public Main parent
         {
             get
             {
-                return this.transform.parent.GetComponent<NetworkingPageGroup>();
+                return this.transform.parent.parent.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]

@@ -1,8 +1,12 @@
-﻿using TouhouHeartstone;
-using System;
+﻿using System;
+using UnityEngine.EventSystems;
+using UnityEngine;
+using TouhouHeartstone;
+using System.Linq;
+using TouhouCardEngine;
 namespace UI
 {
-    partial class Skill
+    partial class Skill : IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         [Obsolete]
         public TouhouCardEngine.Card card { get; private set; } = null;
@@ -34,5 +38,20 @@ namespace UI
                 asButton.interactable = false;
             }
         }
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            onDrag.invoke(this, eventData);
+        }
+        public ActionEvent<Skill, PointerEventData> onDrag { get; } = new ActionEvent<Skill, PointerEventData>();
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            onDragEnd.invoke(this, eventData);
+        }
+        public ActionEvent<Skill, PointerEventData> onDragEnd { get; } = new ActionEvent<Skill, PointerEventData>();
     }
 }

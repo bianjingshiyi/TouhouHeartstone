@@ -49,24 +49,6 @@ namespace UI
             EnemyHandList.clearItems();
             AttackArrowImage.hide();
             Fatigue.hide();
-
-            if (player != null)
-            {
-                SelfSkill.asButton.onClick.set(() =>
-                {
-                    if (selectableTargets != null)
-                        return;
-                    player.cmdUse(game, SelfSkill.card, 0);
-                });
-                TurnEndButton.onClick.set(() =>
-                {
-                    player.cmdTurnEnd(game);
-
-                    //SelfHandList.stopPlacing(true);
-                    resetUse(true, true);
-                    selectableTargets = null;
-                });
-            }
         }
         [Obsolete]
         public bool canControl
@@ -78,16 +60,6 @@ namespace UI
         Projectile _defaultProjectile;
         protected void Update()
         {
-            if (_tipTimer.isExpired())
-            {
-                _tipTimer.reset();
-                TipText.gameObject.SetActive(false);
-            }
-            else if (_tipTimer.isStarted)
-            {
-                TipText.color = new Color(TipText.color.r, TipText.color.g, TipText.color.b, 1/*_tipTimer.getRemainedTime() / _tipTimer.duration*/);
-            }
-
             if (game == null)
                 return;
             if (game.turnTimer != null && game.turnTimer.remainedTime <= 15)

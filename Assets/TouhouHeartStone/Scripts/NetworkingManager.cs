@@ -98,8 +98,6 @@ namespace Game
             host.start(_port);
             client.start();
             _port = host.port;
-
-            displayLANPanel();
         }
         protected void Update()
         {
@@ -280,7 +278,7 @@ namespace Game
         }
         [SerializeField]
         int _port;
-        void displayLANPanel()
+        public void displayLANPanel()
         {
             LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
             ui.NetworkingPageGroup.display(lanPanel);

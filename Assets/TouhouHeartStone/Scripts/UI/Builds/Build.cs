@@ -72,7 +72,7 @@ namespace UI
             BuildCardList.clearItems();
             foreach (CardDefine card in
                 cards.Where(
-                    c => isStandardCard(c)
+                    c => ui.getManager<CardManager>().isStandardCard(c)
                     )
                 )
             {
@@ -90,33 +90,6 @@ namespace UI
                 BuildCardList.sortItems(FilterPanel.sortCompareMethod);
             }
         }
-
-        private bool isStandardCard(CardDefine c)
-        {
-            if (c.id == 0)
-                return false;
-            //if (!(c is SpellCardDefine))
-            //{
-            //    if (!(c is ServantCardDefine) && !(c is GeneratedCardDefine))
-            //        return false;
-            //}
-            if (!(c is ServantCardDefine) && !(c is GeneratedCardDefine))
-                return false;
-            if (c is ServantCardDefine servant)
-            {
-                if (servant.isToken)
-                    return false;
-            }
-            else if (c is GeneratedCardDefine generated)
-            {
-                if (generated.type != CardDefineType.SERVANT)
-                    return false;
-                if (generated.getProp<bool>(nameof(ServantCardDefine.isToken)))
-                    return false;
-            }
-            return true;
-        }
-
         private void Update()
         {
             DeckCountText.text = BuildDeckList.getItems().Select(i => i.count).Sum() + "/30";

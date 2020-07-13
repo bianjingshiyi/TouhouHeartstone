@@ -1,58 +1,17 @@
 ﻿using TouhouHeartstone;
 using BJSYGameCore;
 using UnityEngine;
-using System.Linq;
 using UI;
-using System;
+using BJSYGameCore.UI;
 namespace Game
 {
-    class CodeAnim : TableAnimation
-    {
-        Action _action;
-        public CodeAnim(Action action)
-        {
-            _action = action;
-        }
-        public override bool update(TableManager table)
-        {
-            _action();
-            return true;
-        }
-    }
-    class HandToFieldAnim : TableAnimation
-    {
-        HandListItem _item;
-        Vector3 _startPosition;
-        Timer _timer;
-        public HandToFieldAnim(TableManager table, HandListItem item, FieldList field, int index)
-        {
-            _item = item;
-            _startPosition = item.Card.rectTransform.position;
-            _timer = new Timer() { duration = table.handToFieldCurve.keys.Last().time };
-
-            field.addChild(table.ui.ServantPlaceHolder.rectTransform);
-            field.defaultItem.rectTransform.SetAsFirstSibling();
-            table.ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(index + 1);
-            table.ui.ServantPlaceHolder.display();
-            _startPosition = _item.Card.rectTransform.position;
-            _timer.start();
-        }
-        public override bool update(TableManager table)
-        {
-            if (!_timer.isExpired())
-            {
-                _item.Card.rectTransform.position = Vector3.Lerp(_startPosition, table.ui.ServantPlaceHolder.rectTransform.position, table.handToFieldCurve.Evaluate(_timer.time));
-                return false;
-            }
-            return true;
-        }
-    }
     class UseAnimation : EventAnimation<THHPlayer.UseEventArg>
     {
         Vector3 _startPosition;
         Timer _timer;
         HandToFieldAnim _handToField;
         Timer _targetingTimer = new Timer() { duration = .8f };
+        TargetedAnim _targetedAnim;
         public override bool update(TableManager table, THHPlayer.UseEventArg eventArg)
         {
             if (eventArg.card.define is ServantCardDefine)
@@ -67,11 +26,11 @@ namespace Game
                         if (!_handToField.update(table))
                             return false;
                     }
+                    if (tryTargetedAnim(table, eventArg))
+                        return false;
                     table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
                     table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
                     table.ui.ServantPlaceHolder.hide();
-                    if (selectTarget(table, eventArg))
-                        return false;
                 }
                 else
                 {
@@ -86,11 +45,11 @@ namespace Game
                         if (!_handToField.update(table))
                             return false;
                     }
+                    if (tryTargetedAnim(table, eventArg))
+                        return false;
                     table.ui.EnemyHandList.removeItem(hand);
                     table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
                     table.ui.ServantPlaceHolder.hide();
-                    if (selectTarget(table, eventArg))
-                        return false;
                 }
             }
             else if (eventArg.card.define is SpellCardDefine)
@@ -98,7 +57,7 @@ namespace Game
                 if (eventArg.player == table.player)
                 {
                     table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
-                    if (selectTarget(table, eventArg))
+                    if (tryTargetedAnim(table, eventArg))
                         return false;
                 }
                 else
@@ -118,26 +77,39 @@ namespace Game
                     if (!_timer.isExpired())
                         return false;
                     table.ui.EnemyHandList.removeItem(hand);
-                    if (selectTarget(table, eventArg))
+                    if (tryTargetedAnim(table, eventArg))
                         return false;
                 }
             }
+            else if (eventArg.card.isSkill())
+            {
+                if (eventArg.player == table.player)
+                    table.setSkill(table.ui.SelfSkill, eventArg.card);
+                else
+                    table.setSkill(table.ui.EnemySkill, eventArg.card);
+                if (tryTargetedAnim(table, eventArg))
+                    return false;
+            }
             return true;
         }
-        bool selectTarget(TableManager table, THHPlayer.UseEventArg eventArg)
+        bool tryTargetedAnim(TableManager table, THHPlayer.UseEventArg eventArg)
         {
-            if (eventArg.targets != null && eventArg.targets.Length > 0 && eventArg.targets[0] is var target)
+            if (eventArg.targets != null && eventArg.targets.Length > 0 && eventArg.targets[0] is var targetCard)
             {
-                if (table.tryGetServant(target, out var targetServant))
+                if (_targetedAnim == null)
                 {
-                    if (!_targetingTimer.isStarted)
-                    {
-                        targetServant.animator.Play("Targeted");
-                        _targetingTimer.start();
-                    }
-                    if (!_targetingTimer.isExpired())
-                        return true;
+                    UIObject target;
+                    if (table.tryGetMaster(targetCard, out var targetMaster))
+                        target = targetMaster;
+                    else if (table.tryGetServant(targetCard, out var targetServant))
+                        target = targetServant;
+                    else
+                        throw new ActorNotFoundException(targetCard);
+                    if (target != null)
+                        _targetedAnim = new TargetedAnim(target);
                 }
+                if (!_targetedAnim.update(table))
+                    return true;
             }
             return false;
         }

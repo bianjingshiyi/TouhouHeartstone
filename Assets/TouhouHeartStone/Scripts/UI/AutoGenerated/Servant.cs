@@ -32,10 +32,12 @@ namespace UI
             this._BackgroundImage = this.transform.Find("Root").Find("Background").GetComponent<Image>();
             this._Mask = this.transform.Find("Root").Find("Mask").GetComponent<Mask>();
             this._Image = this.transform.Find("Root").Find("Mask").Find("Image").GetComponent<Image>();
-            this._HpImage = this.transform.Find("Root").Find("Hp").GetComponent<Image>();
-            this._HpText = this.transform.Find("Root").Find("Hp").Find("HpText").GetComponent<Text>();
+            this._MaskImage = this.transform.Find("Root").Find("Mask").GetComponent<Image>();
+            this._BorderImage = this.transform.Find("Root").Find("Border").GetComponent<Image>();
             this._AtkImage = this.transform.Find("Root").Find("Atk").GetComponent<Image>();
-            this._AttackText = this.transform.Find("Root").Find("Atk").Find("AttackText").GetComponent<Text>();
+            this._AttackTextPropNumber = this.transform.Find("Root").Find("Atk").Find("AttackText").GetComponent<PropNumber>();
+            this._HpImage = this.transform.Find("Root").Find("Hp").GetComponent<Image>();
+            this._HpTextPropNumber = this.transform.Find("Root").Find("Hp").Find("HpText").GetComponent<PropNumber>();
             this._DeathRattleImage = this.transform.Find("Root").Find("DeathRattle").GetComponent<Image>();
             this._LifeStealImage = this.transform.Find("Root").Find("LifeSteal").GetComponent<Image>();
             this._PoisionImage = this.transform.Find("Root").Find("Poision").GetComponent<Image>();
@@ -139,29 +141,29 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _HpImage;
-        public Image HpImage
+        private Image _MaskImage;
+        public Image MaskImage
         {
             get
             {
-                if ((this._HpImage == null))
+                if ((this._MaskImage == null))
                 {
-                    this._HpImage = this.transform.Find("Root").Find("Hp").GetComponent<Image>();
+                    this._MaskImage = this.transform.Find("Root").Find("Mask").GetComponent<Image>();
                 }
-                return this._HpImage;
+                return this._MaskImage;
             }
         }
         [SerializeField()]
-        private Text _HpText;
-        public Text HpText
+        private Image _BorderImage;
+        public Image BorderImage
         {
             get
             {
-                if ((this._HpText == null))
+                if ((this._BorderImage == null))
                 {
-                    this._HpText = this.transform.Find("Root").Find("Hp").Find("HpText").GetComponent<Text>();
+                    this._BorderImage = this.transform.Find("Root").Find("Border").GetComponent<Image>();
                 }
-                return this._HpText;
+                return this._BorderImage;
             }
         }
         [SerializeField()]
@@ -178,16 +180,42 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _AttackText;
-        public Text AttackText
+        private PropNumber _AttackTextPropNumber;
+        public PropNumber AttackTextPropNumber
         {
             get
             {
-                if ((this._AttackText == null))
+                if ((this._AttackTextPropNumber == null))
                 {
-                    this._AttackText = this.transform.Find("Root").Find("Atk").Find("AttackText").GetComponent<Text>();
+                    this._AttackTextPropNumber = this.transform.Find("Root").Find("Atk").Find("AttackText").GetComponent<PropNumber>();
                 }
-                return this._AttackText;
+                return this._AttackTextPropNumber;
+            }
+        }
+        [SerializeField()]
+        private Image _HpImage;
+        public Image HpImage
+        {
+            get
+            {
+                if ((this._HpImage == null))
+                {
+                    this._HpImage = this.transform.Find("Root").Find("Hp").GetComponent<Image>();
+                }
+                return this._HpImage;
+            }
+        }
+        [SerializeField()]
+        private PropNumber _HpTextPropNumber;
+        public PropNumber HpTextPropNumber
+        {
+            get
+            {
+                if ((this._HpTextPropNumber == null))
+                {
+                    this._HpTextPropNumber = this.transform.Find("Root").Find("Hp").Find("HpText").GetComponent<PropNumber>();
+                }
+                return this._HpTextPropNumber;
             }
         }
         [SerializeField()]
