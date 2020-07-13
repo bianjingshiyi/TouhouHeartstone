@@ -16,6 +16,11 @@ namespace TouhouHeartstone
         }
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            draw(position, property, label);
+        }
+
+        public static void draw(Rect position, SerializedProperty property, GUIContent label)
+        {
             int index = Array.FindIndex(getCardDefines(), c => c.id == property.intValue) + 1;
             if (label.text.StartsWith("Element", StringComparison.OrdinalIgnoreCase))
                 label.text = getCardDefines()[index - 1].GetType().Name;
@@ -24,6 +29,7 @@ namespace TouhouHeartstone
                 getMenu(property).DropDown(position);
             }
         }
+
         static GenericMenu getMenu(SerializedProperty property)
         {
             int id = property.intValue;
@@ -58,8 +64,15 @@ namespace TouhouHeartstone
             }
             return menu;
         }
-        static CardDefine[] _cardDefines = null;
         static CardDefine[] getCardDefines()
+        {
+            return EditorCardDefineHelper.getCardDefines();
+        }
+    }
+    public static class EditorCardDefineHelper
+    {
+        static CardDefine[] _cardDefines = null;
+        public static CardDefine[] getCardDefines()
         {
             if (_cardDefines == null)
             {
@@ -67,5 +80,10 @@ namespace TouhouHeartstone
             }
             return _cardDefines;
         }
+        public static CardDefine getCardDefine(int id)
+        {
+            return getCardDefines().FirstOrDefault(c => c.id == id);
+        }
     }
+
 }

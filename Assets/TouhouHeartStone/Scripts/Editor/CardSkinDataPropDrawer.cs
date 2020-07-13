@@ -38,9 +38,10 @@ namespace TouhouHeartstone
                 //id
                 position = EditorGUI.IndentedRect(position);
                 SerializedProperty idProp = property.FindPropertyRelative("_id");
-                int index = Array.FindIndex(getCardDefines(), c => c.id == idProp.intValue) + 1;
-                index = EditorGUI.Popup(position, nameof(CardSkinData.id), index, new string[] { "None" }.Concat(getCardDefines().Select(c => c.GetType().Name)).ToArray());
-                idProp.intValue = index == 0 ? -1 : getCardDefines()[index - 1].id;
+                CardDefineIDPropDrawer.draw(position, idProp, new GUIContent(EditorCardDefineHelper.getCardDefine(idProp.intValue).GetType().Name));
+                //int index = Array.FindIndex(getCardDefines(), c => c.id == idProp.intValue) + 1;
+                //index = EditorGUI.Popup(position, nameof(CardSkinData.id), index, new string[] { "None" }.Concat(getCardDefines().Select(c => c.GetType().Name)).ToArray());
+                //idProp.intValue = index == 0 ? -1 : getCardDefines()[index - 1].id;
                 position.y += EditorGUIUtility.singleLineHeight;
                 //image
                 SerializedProperty imageProp = property.FindPropertyRelative("_" + nameof(CardSkinData.image));
