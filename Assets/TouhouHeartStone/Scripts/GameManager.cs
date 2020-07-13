@@ -14,6 +14,21 @@ using System.Collections.Generic;
 
 namespace Game
 {
+    [Serializable]
+    public class Deck
+    {
+        public string name;
+        [CardDefineID]
+        public int master;
+        [Serializable]
+        public struct DeckItem
+        {
+            [CardDefineID]
+            public int id;
+            public int count;
+        }
+        public List<DeckItem> deckList = new List<DeckItem>();
+    }
     public class GameManager : Manager
     {
         [SerializeField]
@@ -29,6 +44,8 @@ namespace Game
             _ui.game = this;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
         }
+        [SerializeField]
+        Deck _newDeck;
         [CardDefineID]
         [SerializeField]
         int[] _deck = new int[31];

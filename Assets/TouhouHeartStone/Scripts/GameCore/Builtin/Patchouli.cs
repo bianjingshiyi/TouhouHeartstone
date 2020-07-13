@@ -480,9 +480,10 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static Task effect(THHGame game, Card card)
         {
-            card.addBuff(game, new GeneratedBuff(ID, new LifeModifier(card.getOwner().hand.Where(c => c.isSpell()).Count()-1)));
+            card.addBuff(game, new GeneratedBuff(ID, new LifeModifier(card.getOwner().hand.Where(c => c.isSpell()).Count() - 1)));
+            return Task.CompletedTask;
         }
     }
     /// <summary>
