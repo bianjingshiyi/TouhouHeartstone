@@ -167,31 +167,31 @@ namespace Game
         {
             CardSkinData skin = getSkin(card);
             master.Image.sprite = skin.image;
-            master.HpText.text = card.getCurrentLife().ToString();
+            master.LifePropNumber.asText.text = card.getCurrentLife().ToString();
             //if (card.getCurrentLife() == card.getLife())
             //    HpText.color = Color.white;
             //else
             //    HpText.color = Color.red;
             if (card.getAttack() > 0)
             {
-                master.AttackText.text = card.getAttack().ToString();
-                master.AttackText.display();
-                master.AtkImage.display();
+                master.AttackPropNumber.asText.text = card.getAttack().ToString();
+                master.AttackPropNumber.asText.display();
+                master.AttackPropNumber.asText.display();
             }
             else
             {
-                master.AttackText.hide();
+                master.AttackPropNumber.asText.hide();
                 master.AtkImage.hide();
             }
             if (card.getArmor() > 0)
             {
-                master.ArmorText.text = card.getArmor().ToString();
-                master.ArmorText.display();
+                master.ArmorPropNumber.asText.text = card.getArmor().ToString();
+                master.ArmorPropNumber.display();
                 master.ArmorImage.display();
             }
             else
             {
-                master.ArmorText.hide();
+                master.ArmorPropNumber.asText.hide();
                 master.ArmorImage.hide();
             }
 

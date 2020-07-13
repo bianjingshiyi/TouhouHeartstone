@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 89ea0aa5449eadc4ca2e02733095f2fe
+guid: fe8a79f257bbde347a10a9d65c60518a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1256000664291922148
-    second: Patchouli
+      213: -1654285172881529630
+    second: SummerFire
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -101,13 +101,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Patchouli
+      name: SummerFire
       rect:
         serializedVersion: 2
-        x: 0
-        y: 689
-        width: 749
-        height: 961
+        x: 853
+        y: 378
+        width: 427
+        height: 475
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c1fa937ec0ac19ee0800000000000000
-      internalID: -1256000664291922148
+      spriteID: 2e46339666cca09e0800000000000000
+      internalID: -1654285172881529630
       vertices: []
       indices: 
       edges: []

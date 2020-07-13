@@ -23,7 +23,7 @@ namespace Game
                     {
                         master.DamageImage.display();
                         master.DamageText.text = "-" + eventArg.value;
-                        master.HpText.text = eventArg.infoDic[card].currentLife.ToString();
+                        master.LifePropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
                     }
                 }
                 _timer.start();

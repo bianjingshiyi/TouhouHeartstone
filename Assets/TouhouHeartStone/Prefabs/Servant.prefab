@@ -1886,16 +1886,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2464874497836019469}
     m_Modifications:
-    - target: {fileID: 635103427995462404, guid: 26e94d6f26f17604e8a1fa704b48f146,
-        type: 3}
-      propertyPath: m_EffectDistance.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 635103427995462404, guid: 26e94d6f26f17604e8a1fa704b48f146,
-        type: 3}
-      propertyPath: m_EffectDistance.y
-      value: -1
-      objectReference: {fileID: 0}
     - target: {fileID: 2872538149249012041, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: m_Name
@@ -2043,16 +2033,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2835739073956430810}
     m_Modifications:
-    - target: {fileID: 635103427995462404, guid: 26e94d6f26f17604e8a1fa704b48f146,
-        type: 3}
-      propertyPath: m_EffectDistance.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 635103427995462404, guid: 26e94d6f26f17604e8a1fa704b48f146,
-        type: 3}
-      propertyPath: m_EffectDistance.y
-      value: -1
-      objectReference: {fileID: 0}
     - target: {fileID: 2872538149249012041, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: m_Name

@@ -30,11 +30,11 @@ namespace UI
             this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
             this._FrameImage = this.transform.Find("Frame").GetComponent<Image>();
             this._AtkImage = this.transform.Find("Atk").GetComponent<Image>();
-            this._AttackText = this.transform.Find("Atk").Find("AttackText").GetComponent<Text>();
+            this._AttackPropNumber = this.transform.Find("Atk").Find("Attack").GetComponent<PropNumber>();
             this._HpImage = this.transform.Find("Hp").GetComponent<Image>();
-            this._HpText = this.transform.Find("Hp").Find("HpText").GetComponent<Text>();
+            this._LifePropNumber = this.transform.Find("Hp").Find("Life").GetComponent<PropNumber>();
             this._ArmorImage = this.transform.Find("Armor").GetComponent<Image>();
-            this._ArmorText = this.transform.Find("Armor").Find("ArmorText").GetComponent<Text>();
+            this._ArmorPropNumber = this.transform.Find("Armor").Find("Armor").GetComponent<PropNumber>();
             this._DamageImage = this.transform.Find("DamageImage").GetComponent<Image>();
             this._DamageText = this.transform.Find("DamageImage").Find("DamageText").GetComponent<Text>();
             this._HealImage = this.transform.Find("HealImage").GetComponent<Image>();
@@ -106,16 +106,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _AttackText;
-        public Text AttackText
+        private PropNumber _AttackPropNumber;
+        public PropNumber AttackPropNumber
         {
             get
             {
-                if ((this._AttackText == null))
+                if ((this._AttackPropNumber == null))
                 {
-                    this._AttackText = this.transform.Find("Atk").Find("AttackText").GetComponent<Text>();
+                    this._AttackPropNumber = this.transform.Find("Atk").Find("Attack").GetComponent<PropNumber>();
                 }
-                return this._AttackText;
+                return this._AttackPropNumber;
             }
         }
         [SerializeField()]
@@ -132,16 +132,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _HpText;
-        public Text HpText
+        private PropNumber _LifePropNumber;
+        public PropNumber LifePropNumber
         {
             get
             {
-                if ((this._HpText == null))
+                if ((this._LifePropNumber == null))
                 {
-                    this._HpText = this.transform.Find("Hp").Find("HpText").GetComponent<Text>();
+                    this._LifePropNumber = this.transform.Find("Hp").Find("Life").GetComponent<PropNumber>();
                 }
-                return this._HpText;
+                return this._LifePropNumber;
             }
         }
         [SerializeField()]
@@ -158,16 +158,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _ArmorText;
-        public Text ArmorText
+        private PropNumber _ArmorPropNumber;
+        public PropNumber ArmorPropNumber
         {
             get
             {
-                if ((this._ArmorText == null))
+                if ((this._ArmorPropNumber == null))
                 {
-                    this._ArmorText = this.transform.Find("Armor").Find("ArmorText").GetComponent<Text>();
+                    this._ArmorPropNumber = this.transform.Find("Armor").Find("Armor").GetComponent<PropNumber>();
                 }
-                return this._ArmorText;
+                return this._ArmorPropNumber;
             }
         }
         [SerializeField()]

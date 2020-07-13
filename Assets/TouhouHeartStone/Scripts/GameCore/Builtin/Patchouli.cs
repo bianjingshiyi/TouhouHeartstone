@@ -85,7 +85,6 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 777 魔神机甲 如果你在本回合中使用过花费大于0的法术牌，花费-2
     /// </summary>
-    [Obsolete]
     public class MegaReaver : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x005;
@@ -121,8 +120,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect((game,card,target)=>
             {
-                target.damage(game, card, card.getOwner().getSpellDamage(7));
-                return Task.CompletedTask;
+                return target.damage(game, card, card.getOwner().getSpellDamage(7));
             })
         };
     }
