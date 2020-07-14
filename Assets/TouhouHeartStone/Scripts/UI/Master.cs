@@ -6,7 +6,11 @@ using TouhouHeartstone;
 using System.Linq;
 namespace UI
 {
-    partial class Master : IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
+    interface ITargetedAnim
+    {
+        string targetedAnimName { get; }
+    }
+    partial class Master : IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, ITargetedAnim
     {
         [Obsolete]
         public TouhouCardEngine.Card card { get; private set; } = null;
@@ -94,5 +98,8 @@ namespace UI
             onClick.invoke(this, eventData);
         }
         public ActionEvent<Master, PointerEventData> onClick { get; } = new ActionEvent<Master, PointerEventData>();
+        [SerializeField]
+        string _targetedAnimName = "Targetd";
+        public string targetedAnimName => _targetedAnimName;
     }
 }

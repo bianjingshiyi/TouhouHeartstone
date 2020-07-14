@@ -11,7 +11,7 @@ namespace Game
         Timer _timer = new Timer() { duration = 1f };
         HandToFieldAnim _handToField;
         Timer _targetingTimer = new Timer() { duration = .8f };
-        TargetedAnim _targetedAnim;
+        AnimAnim _targetedAnim;
         public override bool update(TableManager table, THHPlayer.UseEventArg eventArg)
         {
             if (eventArg.card.define is ServantCardDefine)
@@ -100,15 +100,16 @@ namespace Game
             {
                 if (_targetedAnim == null)
                 {
-                    UIObject target;
                     if (table.tryGetMaster(targetCard, out var targetMaster))
-                        target = targetMaster;
+                    {
+                        _targetedAnim = new AnimAnim(targetMaster.animator, targetMaster.targetedAnimName);
+                    }
                     else if (table.tryGetServant(targetCard, out var targetServant))
-                        target = targetServant;
+                    {
+                        _targetedAnim = new AnimAnim(targetServant.animator, targetServant.targetedAnimName);
+                    }
                     else
                         throw new ActorNotFoundException(targetCard);
-                    if (target != null)
-                        _targetedAnim = new TargetedAnim(target);
                 }
                 if (!_targetedAnim.update(table))
                     return true;

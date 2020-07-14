@@ -218,7 +218,8 @@ namespace Game
                 canControl//是自己的回合
                 )
             {
-                skill.IsUsableController = Skill.IsUsable.True;
+                skill.onIsUsableTrue.Invoke();
+                //skill.IsUsableController = Skill.IsUsable.True;
                 skill.asButton.interactable = true;
             }
             else
