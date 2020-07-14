@@ -47,9 +47,7 @@ namespace UI
         }
         public void OnBeginDrag(PointerEventData eventData)
         {
-            throw new NotImplementedException();
         }
-
         public void OnDrag(PointerEventData eventData)
         {
             onDrag.invoke(this, eventData);
@@ -63,7 +61,6 @@ namespace UI
         [SerializeField]
         UnityEvent _onIsUsableTrue = new UnityEvent();
         public UnityEvent onIsUsableTrue => _onIsUsableTrue;
-
         [SerializeField]
         UnityEvent _onIsUsableFalse = new UnityEvent();
         public UnityEvent onIsUsableFalse => _onIsUsableFalse;

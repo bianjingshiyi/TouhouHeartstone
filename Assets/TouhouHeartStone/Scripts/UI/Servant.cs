@@ -5,10 +5,9 @@ using TouhouHeartstone;
 using System.Linq;
 using TouhouCardEngine;
 using UnityEngine.Events;
-
 namespace UI
 {
-    partial class Servant : IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
+    partial class Servant : IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, ITargetedAnim
     {
         [Obsolete]
         public TouhouCardEngine.Card card { get; private set; }
@@ -174,8 +173,9 @@ namespace UI
             onClick.invoke(this, eventData);
         }
         public ActionEvent<Servant, PointerEventData> onClick { get; } = new ActionEvent<Servant, PointerEventData>();
-
         [SerializeField]
+        string _targetAnimName = "Targeted";
+        public string targetedAnimName => _targetAnimName;        [SerializeField]
         private UnityEvent _onHighlightControllerNone;
         public UnityEvent onHighlightControllerNone => _onHighlightControllerNone;
 
@@ -185,6 +185,5 @@ namespace UI
 
         [SerializeField]
         private UnityEvent _onHighlightControllerGreen;
-        public UnityEvent onHighlightControllerGreen => _onHighlightControllerGreen;
-    }
+        public UnityEvent onHighlightControllerGreen => _onHighlightControllerGreen;    }
 }
