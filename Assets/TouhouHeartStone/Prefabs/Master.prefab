@@ -381,6 +381,7 @@ MonoBehaviour:
   _HealImage: {fileID: 8792442376026923327}
   _HealText: {fileID: 2445753624763639741}
   _attackThreshold: 50
+  _targetedAnimName: Master_Targetd
   _onHighlightControllerNone:
     m_PersistentCalls:
       m_Calls:

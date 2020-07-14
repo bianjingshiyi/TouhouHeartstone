@@ -435,6 +435,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _attackThreshold: 70
+  _targetAnimName: Servant_Targeted
   _onHighlightControllerNone:
     m_PersistentCalls:
       m_Calls:
