@@ -386,7 +386,7 @@ MonoBehaviour:
   _initStates:
   - CanAttack/False
   - IsAttackable/False
-  - Highlight/None
+  - Highlight/Highlight_None
   _Image_1: {fileID: 3145869563410722482}
   _Image_2: {fileID: 2261231298026709281}
   _Image_3: {fileID: 3952394829758703074}

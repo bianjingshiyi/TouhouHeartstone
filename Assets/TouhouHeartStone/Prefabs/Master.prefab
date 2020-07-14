@@ -365,7 +365,7 @@ MonoBehaviour:
   _ui: {fileID: 0}
   _initStates:
   - IsAttackable/False
-  - Highlight/None
+  - Highlight/Highlight_Green
   _HighlightImage: {fileID: 246142453696156295}
   _Mask: {fileID: 7552501258627038251}
   _Image: {fileID: 7552501258534462119}
