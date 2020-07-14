@@ -392,8 +392,22 @@ MonoBehaviour:
   _FrameImage: {fileID: 434557653808379024}
   _Frame_Image: {fileID: 1173695748}
   _CostImage: {fileID: 434557654802033961}
-  _CostText: {fileID: 0}
+  _CostPropNumber: {fileID: 0}
   _BackImage: {fileID: 6951483999445456410}
+  _onIsUsable:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 383036939172281227}
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &540050246356179939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -626,7 +640,7 @@ PrefabInstance:
     - target: {fileID: 2872538149249012041, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: m_Name
-      value: PropNumber
+      value: Cost
       objectReference: {fileID: 0}
     - target: {fileID: 7176695291515966001, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
