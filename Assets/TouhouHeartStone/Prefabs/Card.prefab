@@ -754,7 +754,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &9037425591615100612
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1123,8 +1123,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
   _initStates:
-  - IsFaceup/True
-  - Type/Servant
+  - IsFaceup/IsFaceup_False
+  - Type/Type_Servant
   _CardBackImage: {fileID: 525013306416142025}
   _ShadowImage: {fileID: 1949518328878013980}
   _BackgroundImage: {fileID: 8512227078610663267}
@@ -1193,6 +1193,62 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _onTypeControllerSpell:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 613913946243370178}
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Type_Spell
+          m_BoolArgument: 0
+        m_CallState: 2
+  _onTypeControllerServant:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 613913946243370178}
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Type_Servant
+          m_BoolArgument: 0
+        m_CallState: 2
+  _onFaceupControllerFalse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 613913946243370178}
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: IsFaceup_False
+          m_BoolArgument: 0
+        m_CallState: 2
+  _onFaceupControllerTrue:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 613913946243370178}
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: IsFaceup_True
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!95 &613913946243370178
 Animator:
   serializedVersion: 3

@@ -31,7 +31,7 @@ namespace UI
             this._FrameImage = this.transform.Find("Frame").GetComponent<Image>();
             this._Frame_Image = this.transform.Find("Frame").Find("Image").GetComponent<Image>();
             this._CostImage = this.transform.Find("Cost").GetComponent<Image>();
-            this._CostText = this.transform.Find("Cost").Find("CostText").GetComponent<Text>();
+            this._CostPropNumber = this.transform.Find("Cost").Find("Cost").GetComponent<PropNumber>();
             this._BackImage = this.transform.Find("Back").GetComponent<Image>();
         }
         [SerializeField()]
@@ -113,16 +113,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _CostText;
-        public Text CostText
+        private PropNumber _CostPropNumber;
+        public PropNumber CostPropNumber
         {
             get
             {
-                if ((this._CostText == null))
+                if ((this._CostPropNumber == null))
                 {
-                    this._CostText = this.transform.Find("Cost").Find("CostText").GetComponent<Text>();
+                    this._CostPropNumber = this.transform.Find("Cost").Find("Cost").GetComponent<PropNumber>();
                 }
-                return this._CostText;
+                return this._CostPropNumber;
             }
         }
         [SerializeField()]

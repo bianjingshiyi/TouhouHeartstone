@@ -22,7 +22,10 @@ namespace TouhouHeartstone
         public static void draw(Rect position, SerializedProperty property, GUIContent label)
         {
             int index = Array.FindIndex(getCardDefines(), c => c.id == property.intValue) + 1;
-            if (label.text.StartsWith("Element", StringComparison.OrdinalIgnoreCase))
+            //if (label.text.StartsWith("Element", StringComparison.OrdinalIgnoreCase))
+            if (index == 0)
+                label.text = "None";
+            else
                 label.text = getCardDefines()[index - 1].GetType().Name;
             if (GUI.Button(position, label))
             {

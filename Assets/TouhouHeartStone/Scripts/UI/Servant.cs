@@ -4,9 +4,10 @@ using UnityEngine;
 using TouhouHeartstone;
 using System.Linq;
 using TouhouCardEngine;
+using UnityEngine.Events;
 namespace UI
 {
-    partial class Servant : IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
+    partial class Servant : IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, ITargetedAnim
     {
         [Obsolete]
         public TouhouCardEngine.Card card { get; private set; }
@@ -30,11 +31,20 @@ namespace UI
             HpTextPropNumber.asText.text = card.getCurrentLife().ToString();
 
             if (table.selectableTargets != null && table.selectableTargets.Contains(this))
-                HighlightController = Highlight.Yellow;
+            {
+                // HighlightController = Highlight.Yellow;
+                onHighlightControllerYellow?.Invoke();
+            }
             else if (table.player == player && table.game.currentPlayer == player && card.canAttack(table.game))
-                HighlightController = Highlight.Green;
+            {
+                // HighlightController = Highlight.Green;
+                onHighlightControllerGreen?.Invoke();
+            }
             else
-                HighlightController = Highlight.None;
+            {
+                // HighlightController = Highlight.None;
+                onHighlightControllerNone?.Invoke();
+            }
             getChild("Root").getChild("Taunt").gameObject.SetActive(card.isTaunt());
             getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
         }
@@ -163,5 +173,17 @@ namespace UI
             onClick.invoke(this, eventData);
         }
         public ActionEvent<Servant, PointerEventData> onClick { get; } = new ActionEvent<Servant, PointerEventData>();
-    }
+        [SerializeField]
+        string _targetAnimName = "Targeted";
+        public string targetedAnimName => _targetAnimName;        [SerializeField]
+        private UnityEvent _onHighlightControllerNone;
+        public UnityEvent onHighlightControllerNone => _onHighlightControllerNone;
+
+        [SerializeField]
+        private UnityEvent _onHighlightControllerYellow;
+        public UnityEvent onHighlightControllerYellow => _onHighlightControllerYellow;
+
+        [SerializeField]
+        private UnityEvent _onHighlightControllerGreen;
+        public UnityEvent onHighlightControllerGreen => _onHighlightControllerGreen;    }
 }

@@ -58,8 +58,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 1, b: 0, a: 1}
+  m_Color: {r: 0, g: 0.85, b: 0, a: 0.8}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -135,6 +136,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -222,6 +224,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -311,6 +314,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -379,17 +383,74 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates:
-  - IsUsable/False
-  - IsUsed/False
+  - IsUsable/IsUsable_False
+  - IsUsed/IsUsed_False
   m_as_Button: {fileID: 540050246356179939}
   _Mask: {fileID: 434557652962893678}
   _Image: {fileID: 434557653138975224}
   _FrameImage: {fileID: 434557653808379024}
   _Frame_Image: {fileID: 1173695748}
   _CostImage: {fileID: 434557654802033961}
-  _CostText: {fileID: 0}
+  _CostPropNumber: {fileID: 0}
   _BackImage: {fileID: 6951483999445456410}
+  _onIsUsableTrue:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 383036939172281227}
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: IsUsable_True
+          m_BoolArgument: 0
+        m_CallState: 2
+  _onIsUsableFalse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 383036939172281227}
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: IsUsable_False
+          m_BoolArgument: 0
+        m_CallState: 2
+  _onIsUsedControllerFalse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 383036939172281227}
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: IsUsed_False
+          m_BoolArgument: 0
+        m_CallState: 2
+  _onIsUsedControllerTrue:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 383036939172281227}
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: IsUsed_True
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &540050246356179939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -513,6 +574,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -586,6 +648,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.49803922, g: 0.49803922, b: 0.49803922, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -609,7 +672,7 @@ PrefabInstance:
     - target: {fileID: 2872538149249012041, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: m_Name
-      value: PropNumber
+      value: Cost
       objectReference: {fileID: 0}
     - target: {fileID: 7176695291515966001, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}

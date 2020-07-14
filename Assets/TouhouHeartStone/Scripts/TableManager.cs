@@ -196,34 +196,49 @@ namespace Game
             }
 
             if (isSelectable)
-                master.HighlightController = Master.Highlight.Yellow;
+            {
+                // master.HighlightController = Master.Highlight.Yellow;
+                master.onHighlightControllerYellow?.Invoke();
+            }
             else if (card.getOwner() == player && game.currentPlayer == player && card.canAttack(game))
-                master.HighlightController = Master.Highlight.Green;
+            {
+                // master.HighlightController = Master.Highlight.Green;
+                master.onHighlightControllerGreen?.Invoke();
+            }
             else
-                master.HighlightController = Master.Highlight.None;
+            {
+                // master.HighlightController = Master.Highlight.None;
+                master.onHighlightControllerNone?.Invoke();
+            }
         }
         public void setSkill(Skill skill, TouhouCardEngine.Card card)
         {
             CardSkinData skin = getSkin(card);
             skill.Image.sprite = skin.image;
-            skill.CostText.text = card.getCost().ToString();
+            skill.CostPropNumber.asText.text = card.getCost().ToString();
             if (card.isUsed())
             {
-                skill.IsUsedController = Skill.IsUsed.True;
+                // skill.IsUsedController = Skill.IsUsed.True;
+                skill.onIsUsedControllerTrue?.Invoke();
             }
             else
-                skill.IsUsedController = Skill.IsUsed.False;
+            {
+                // skill.IsUsedController = Skill.IsUsed.False;
+                skill.onIsUsedControllerFalse?.Invoke();
+            }
             if (card.isUsable(game, player, out _) &&//技能是可用的
                 !isSelectingTarget &&//没有在选择目标
                 canControl//是自己的回合
                 )
             {
-                skill.IsUsableController = Skill.IsUsable.True;
+                // skill.IsUsableController = Skill.IsUsable.True;
+                skill.onIsUsableTrue?.Invoke();
                 skill.asButton.interactable = true;
             }
             else
             {
-                skill.IsUsableController = Skill.IsUsable.False;
+                // skill.IsUsableController = Skill.IsUsable.False;
+                skill.onIsUsableFalse?.Invoke();
                 skill.asButton.interactable = false;
             }
         }
@@ -330,6 +345,7 @@ namespace Game
                 item.isDragable = false;
                 setCard(item.Card, card, false);
             }
+            item.gameObject.name = card.ToString();
             item.onDrag.set(onDragHand);
             item.onEndDrag.set(onDragHandEnd);
             cardHandDic.Add(card, item);
@@ -383,6 +399,21 @@ namespace Game
                         ui.ServantPlaceHolder.display();
                         ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(calcIndexInField(pointer.position) + 1);
                     }
+                    else if (usingCard.define is SpellCardDefine)
+                    {
+                        if (usingCard.isNeedTarget(game, out var targets))
+                        {
+                            if (!isSelectingTarget)
+                            {
+                                isSelectingTarget = true;//TODO:这个地方一定要重写，怎么能这样的？isSelectingTarget就应该被usingCard取代
+                                highlightTargets(targets);
+                                ui.SelfHandList.shrink();
+                            }
+                            hand.Card.hide();
+                            if (tryGetMaster(usingCard.getOwner().master, out var castMaster))
+                                displayArrow(castMaster.rectTransform.position, pointer.position);
+                        }
+                    }
                 }
             }
         }
@@ -434,12 +465,20 @@ namespace Game
                         usingPosition = index;
                         //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                         addAnim(new HandToFieldAnim(this, hand, ui.SelfFieldList, index));
+                        TouhouCardEngine.Card localUsingCard = usingCard;
                         addAnim(new CodeAnim(() =>
                         {
                             hand.Card.hide();
                             //显示占位随从
                             ui.ServantPlaceHolder.Servant.display();
-                            setServant(ui.ServantPlaceHolder.Servant, usingCard.define);
+                            try
+                            {
+                                setServant(ui.ServantPlaceHolder.Servant, localUsingCard.define);
+                            }
+                            catch (NullReferenceException e)
+                            {
+                                Debug.LogError(e);
+                            }
                         }));
                         isSelectingTarget = true;
                         highlightTargets(targets);
@@ -454,13 +493,17 @@ namespace Game
                 }
                 else if (usingCard.define is SpellCardDefine)
                 {
-                    if (usingCard.getAvaliableTargets(game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
+                    if (usingCard.isNeedTarget(game, out _))
                     {
                         //进入选择目标状态，高亮可以选择的目标
-                        hand.Card.hide();
-                        isSelectingTarget = true;
-                        highlightTargets(targets);
-                        ui.SelfHandList.shrink();
+                        if (isOnTarget(pointer, out var target))
+                        {
+                            if (usingCard.isUsable(game, player, out info) && usingCard.isValidTarget(game, target))
+                                player.cmdUse(game, usingCard, 0, target);
+                            else
+                                showTip(info);
+                        }
+                        resetUse(true, false);
                     }
                     else
                     {
@@ -515,6 +558,7 @@ namespace Game
             usingCard = null;
             if (resetPlaceHolder)
                 hideServantPlaceHolder();
+            hideArrow();
             isSelectingTarget = false;
             removeHighlights();
         }
@@ -523,6 +567,13 @@ namespace Game
             if (cardHandDic.ContainsKey(card))
                 return cardHandDic[card];
             throw new ActorNotFoundException(card);
+        }
+        public HandListItem tryGetHand(TouhouCardEngine.Card card)
+        {
+            var hand = getHand(card);
+            if (hand == null)
+                throw new ActorNotFoundException(card);
+            return hand;
         }
         public TouhouCardEngine.Card getCard(HandListItem item)
         {
@@ -545,13 +596,15 @@ namespace Game
             ui.CostPropNumber.asText.text = card.getCost().ToString();
             if (card.define.type == CardDefineType.SERVANT)
             {
-                ui.TypeController = UI.Card.Type.Servant;
+                // ui.TypeController = UI.Card.Type.Servant;
+                ui.onTypeControllerServant?.Invoke();
                 ui.AttackPropNumber.asText.text = card.getAttack().ToString();
                 ui.LifePropNumber.asText.text = card.getLife().ToString();
             }
             else
             {
-                ui.TypeController = UI.Card.Type.Spell;
+                // ui.TypeController = UI.Card.Type.Spell;
+                ui.onTypeControllerSpell?.Invoke();
             }
 
             if (isFaceup)
@@ -560,10 +613,14 @@ namespace Game
                 ui.Image.sprite = skin.image;
                 ui.NameText.text = skin.name;
                 ui.DescText.text = skin.desc;
-                ui.IsFaceupController = UI.Card.IsFaceup.True;
+                // ui.IsFaceupController = UI.Card.IsFaceup.True;
+                ui.onFaceupControllerTrue?.Invoke();
             }
             else
-                ui.IsFaceupController = UI.Card.IsFaceup.False;
+            {
+                // ui.IsFaceupController = UI.Card.IsFaceup.False;
+                ui.onFaceupControllerFalse?.Invoke();
+            }
         }
         Dictionary<TouhouCardEngine.Card, Servant> cardServantDic { get; } = new Dictionary<TouhouCardEngine.Card, Servant>();
         public Servant createServant(TouhouCardEngine.Card card, int position)
@@ -579,7 +636,7 @@ namespace Game
                 servant = ui.EnemyFieldList.addItem();
                 ui.EnemyFieldList.defaultItem.rectTransform.SetAsFirstSibling();
             }
-            servant.gameObject.name = getSkin(card).name + "(" + card.id + ")";
+            servant.gameObject.name = card.ToString();
             servant.rectTransform.SetSiblingIndex(position + 1);
             setServant(servant, card);
             servant.onClick.add(onClickServant);
@@ -619,15 +676,22 @@ namespace Game
 
             servant.onDrag.remove(onDragServant);
             if (isSelectable)
-                servant.HighlightController = Servant.Highlight.Yellow;
+            {
+                // servant.HighlightController = Servant.Highlight.Yellow;
+                servant.onHighlightControllerYellow?.Invoke();
+            }
             else if (player == card.getOwner() && game.currentPlayer == player && card.canAttack(game))
             {
-                servant.HighlightController = Servant.Highlight.Green;
+                // servant.HighlightController = Servant.Highlight.Green;
+                servant.onHighlightControllerGreen?.Invoke();
                 servant.onDrag.add(onDragServant);
                 servant.onDragEnd.add(onDragEndServant);
             }
             else
-                servant.HighlightController = Servant.Highlight.None;
+            {
+                // servant.HighlightController = Servant.Highlight.None;
+                servant.onHighlightControllerNone?.Invoke();
+            }
             //getChild("Root").getChild("Taunt").gameObject.SetActive(card.isTaunt());
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
         }
@@ -892,10 +956,19 @@ namespace Game
                     }
                     if (isBlocked)
                         continue;
-                    if (anim is TableAnimation tAnim ? tAnim.update(this) : anim.update(ui))
+                    try
+                    {
+                        if (anim is TableAnimation tAnim ? tAnim.update(this) : anim.update(ui))
+                        {
+                            _animationQueue.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                    catch (Exception e)
                     {
                         _animationQueue.RemoveAt(i);
                         i--;
+                        Debug.LogError("动画" + anim + "播放异常被跳过：" + e);
                     }
                 }
             }
