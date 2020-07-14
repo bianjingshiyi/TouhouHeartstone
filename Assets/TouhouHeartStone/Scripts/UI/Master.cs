@@ -36,11 +36,20 @@ namespace UI
                 ArmorPropNumber.asText.enabled = false;
 
             if (table.selectableTargets != null && table.selectableTargets.Contains(this))
-                HighlightController = Highlight.Yellow;
+            {
+                // HighlightController = Highlight.Yellow;
+                onHighlightControllerYellow?.Invoke();
+            }
             else if (table.player == player && table.game.currentPlayer == player && card.canAttack(table.game))
-                HighlightController = Highlight.Green;
+            {
+                // HighlightController = Highlight.Green;
+                onHighlightControllerGreen?.Invoke();
+            }
             else
-                HighlightController = Highlight.None;
+            {
+                // HighlightController = Highlight.None;
+                onHighlightControllerNone?.Invoke();
+            }
         }
         [SerializeField]
         float _attackThreshold = 50;
@@ -94,5 +103,17 @@ namespace UI
             onClick.invoke(this, eventData);
         }
         public ActionEvent<Master, PointerEventData> onClick { get; } = new ActionEvent<Master, PointerEventData>();
+
+        [SerializeField]
+        private UnityEvent _onHighlightControllerNone;
+        public UnityEvent onHighlightControllerNone => _onHighlightControllerNone;
+
+        [SerializeField]
+        private UnityEvent _onHighlightControllerYellow;
+        public UnityEvent onHighlightControllerYellow => _onHighlightControllerYellow;
+
+        [SerializeField]
+        private UnityEvent _onHighlightControllerGreen;
+        public UnityEvent onHighlightControllerGreen => _onHighlightControllerGreen;
     }
 }
