@@ -2,6 +2,8 @@
 using System;
 using TouhouCardEngine;
 using UnityEngine;
+using UnityEngine.Events;
+
 namespace UI
 {
     partial class Card
@@ -16,13 +18,15 @@ namespace UI
             CostPropNumber.asText.text = card.getCost().ToString();
             if (card.define.type == CardDefineType.SERVANT)
             {
-                TypeController = Type.Servant;
+                // TypeController = Type.Servant;
+                onTypeControllerServant?.Invoke();
                 AttackPropNumber.asText.text = card.getAttack().ToString();
                 LifePropNumber.asText.text = card.getLife().ToString();
             }
             else
             {
-                TypeController = Type.Spell;
+                // TypeController = Type.Spell;
+                onTypeControllerSpell?.Invoke();
             }
 
             if (skin != null)
@@ -30,10 +34,14 @@ namespace UI
                 Image.sprite = skin.image;
                 NameText.text = skin.name;
                 DescText.text = skin.desc;
-                IsFaceupController = IsFaceup.True;
+                // IsFaceupController = IsFaceup.True;
+                onFaceupControllerTrue?.Invoke();
             }
             else
-                IsFaceupController = IsFaceup.False;
+            {
+                // IsFaceupController = IsFaceup.False;
+                onFaceupControllerFalse?.Invoke();
+            }
         }
         public void update(CardDefine card, CardSkinData skin)
         {
@@ -44,7 +52,8 @@ namespace UI
             Image.sprite = skin.image;
             NameText.text = skin.name;
             DescText.text = skin.desc;
-            IsFaceupController = IsFaceup.True;
+            // IsFaceupController = IsFaceup.True;
+            onFaceupControllerTrue?.Invoke();
         }
         [SerializeField]
         AnimationCurve _useCurve = new AnimationCurve();
@@ -58,5 +67,21 @@ namespace UI
         {
             get { return _drawCurve; }
         }
+
+        [SerializeField]
+        private UnityEvent _onTypeControllerSpell;
+        public UnityEvent onTypeControllerSpell => _onTypeControllerSpell;
+
+        [SerializeField]
+        private UnityEvent _onTypeControllerServant;
+        public UnityEvent onTypeControllerServant => _onTypeControllerServant;
+
+        [SerializeField]
+        private UnityEvent _onFaceupControllerFalse;
+        public UnityEvent onFaceupControllerFalse => _onFaceupControllerFalse;
+
+        [SerializeField]
+        private UnityEvent _onFaceupControllerTrue;
+        public UnityEvent onFaceupControllerTrue => _onFaceupControllerTrue;
     }
 }
