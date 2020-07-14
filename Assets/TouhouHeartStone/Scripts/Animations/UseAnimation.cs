@@ -8,7 +8,7 @@ namespace Game
     class UseAnimation : EventAnimation<THHPlayer.UseEventArg>
     {
         Vector3 _startPosition;
-        Timer _timer;
+        Timer _timer = new Timer() { duration = 1f };
         HandToFieldAnim _handToField;
         Timer _targetingTimer = new Timer() { duration = .8f };
         TargetedAnim _targetedAnim;
@@ -62,21 +62,23 @@ namespace Game
                 }
                 else
                 {
-                    var hand = table.getHand(eventArg.card);
-                    if (hand == null)
-                        throw new ActorNotFoundException(eventArg.card);
-                    if (!_timer.isStarted)
+                    HandListItem hand = table.getHand(eventArg.card);
+                    if (hand != null)
                     {
-                        _startPosition = hand.Card.rectTransform.position;
-                        _timer.start();
+                        if (!_timer.isStarted)
+                        {
+                            table.setCard(hand.Card, eventArg.card, true);
+                            _startPosition = hand.Card.rectTransform.position;
+                            _timer.start();
+                        }
+                        if (_timer.progress <= .4f)
+                            hand.Card.rectTransform.position = Vector3.Lerp(_startPosition, table.ui.getChild("SpellDisplay").position, hand.Card.useCurve.Evaluate(_timer.progress / .4f));
+                        else
+                            hand.Card.rectTransform.position = table.ui.getChild("SpellDisplay").position;
+                        if (!_timer.isExpired())
+                            return false;
                     }
-                    if (_timer.progress <= .4f)
-                        hand.Card.rectTransform.position = Vector3.Lerp(_startPosition, table.ui.getChild("SpellDisplay").position, hand.Card.useCurve.Evaluate(_timer.progress / .4f));
-                    else
-                        hand.Card.rectTransform.position = table.ui.getChild("SpellDisplay").position;
-                    if (!_timer.isExpired())
-                        return false;
-                    table.ui.EnemyHandList.removeItem(hand);
+                    table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
                     if (tryTargetedAnim(table, eventArg))
                         return false;
                 }

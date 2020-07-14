@@ -28,6 +28,16 @@ namespace Game
             public int count;
         }
         public List<DeckItem> deckList = new List<DeckItem>();
+        public int[] toIdArray()
+        {
+            List<int> list = new List<int>();
+            list.Add(master);
+            foreach (var item in deckList)
+            {
+                list.AddRange(Enumerable.Repeat(item.id, item.count));
+            }
+            return list.ToArray();
+        }
     }
     public class GameManager : Manager
     {
@@ -45,7 +55,7 @@ namespace Game
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
         }
         [SerializeField]
-        Deck _newDeck;
+        Deck _testDeck;
         [CardDefineID]
         [SerializeField]
         int[] _deck = new int[31];
@@ -76,6 +86,8 @@ namespace Game
                 }
                 _deck = randomDeck.ToArray();
             }
+            if (_testDeck.deckList.Count > 0)
+                _deck = _testDeck.toIdArray();
 #endif
         }
         private void Update()
