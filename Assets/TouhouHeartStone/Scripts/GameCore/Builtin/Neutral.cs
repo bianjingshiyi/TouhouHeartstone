@@ -112,15 +112,9 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 0;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.HAND,(game,card,arg)=>
+            new NoTargetEffect((game,card)=>
             {
-                return true;
-            },(game,card,targets)=>
-            {
-                return false;
-            },async (game,card,arg,targets)=>
-            {
-                await arg.player.setGem(game,arg.player.gem + 1);
+                return card.getOwner().setGem(game,card.getOwner().gem + 1);
             })
         };
     }

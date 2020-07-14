@@ -407,6 +407,7 @@ namespace Game
                             {
                                 isSelectingTarget = true;//TODO:这个地方一定要重写，怎么能这样的？isSelectingTarget就应该被usingCard取代
                                 highlightTargets(targets);
+                                ui.SelfHandList.shrink();
                             }
                             hand.Card.hide();
                             if (tryGetMaster(usingCard.getOwner().master, out var castMaster))
@@ -492,13 +493,17 @@ namespace Game
                 }
                 else if (usingCard.define is SpellCardDefine)
                 {
-                    if (usingCard.getAvaliableTargets(game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
+                    if (usingCard.isNeedTarget(game, out _))
                     {
                         //进入选择目标状态，高亮可以选择的目标
-                        hand.Card.hide();
-                        isSelectingTarget = true;
-                        highlightTargets(targets);
-                        ui.SelfHandList.shrink();
+                        if (isOnTarget(pointer, out var target))
+                        {
+                            if (usingCard.isUsable(game, player, out info) && usingCard.isValidTarget(game, target))
+                                player.cmdUse(game, usingCard, 0, target);
+                            else
+                                showTip(info);
+                        }
+                        resetUse(true, false);
                     }
                     else
                     {
@@ -553,6 +558,7 @@ namespace Game
             usingCard = null;
             if (resetPlaceHolder)
                 hideServantPlaceHolder();
+            hideArrow();
             isSelectingTarget = false;
             removeHighlights();
         }
