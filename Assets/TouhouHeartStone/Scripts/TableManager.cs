@@ -33,11 +33,17 @@ namespace Game
         [Header("State")]
         [SerializeField]
         bool _canControl = true;
+        /// <summary>
+        /// 当前是否可以控制（是否是自己的回合）
+        /// </summary>
         public bool canControl
         {
             get { return _canControl; }
             set { _canControl = value; }
         }
+        /// <summary>
+        /// 当前正在使用的卡片的引用
+        /// </summary>
         public TouhouCardEngine.Card usingCard { get; set; } = null;
         [SerializeField]
         int _usingPosition = -1;
@@ -48,6 +54,9 @@ namespace Game
         }
         [SerializeField]
         bool _isSelectingTarget = false;
+        /// <summary>
+        /// 是否进入目标选择模式
+        /// </summary>
         public bool isSelectingTarget
         {
             get { return _isSelectingTarget; }
@@ -79,6 +88,11 @@ namespace Game
             //    if (EventSystem.current.currentInputModule.input. !isOnTarget(new PointerEventData(EventSystem.current), out var card))
             //}
         }
+        /// <summary>
+        /// 设置游戏对象和玩家并初始化UI
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
         public void setGame(THHGame game, THHPlayer player)
         {
             ui.onClickNoWhere.set(onClickNoWhere);
@@ -116,6 +130,10 @@ namespace Game
             }
             this.player = player;
         }
+        /// <summary>
+        /// 游戏核心Request对应处理
+        /// </summary>
+        /// <param name="obj"></param>
         private void onRequest(IRequest obj)
         {
             UIAnimation anim;
@@ -130,6 +148,10 @@ namespace Game
             else
                 UberDebug.LogWarningChannel("UI", "没有与" + obj + "相应的动画");
         }
+        /// <summary>
+        /// 事件前处理
+        /// </summary>
+        /// <param name="arg"></param>
         private void onEventBefore(IEventArg arg)
         {
             UIAnimation anim;
@@ -142,6 +164,10 @@ namespace Game
             if (anim != null)
                 addAnim(anim);
         }
+        /// <summary>
+        /// 事件后处理
+        /// </summary>
+        /// <param name="arg"></param>
         private void onEventAfter(IEventArg arg)
         {
 
@@ -154,6 +180,12 @@ namespace Game
                 UberDebug.LogChannel("UI", "ClickNoWhere");
             }
         }
+        /// <summary>
+        /// 尝试获取一张卡对应的Master
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="master"></param>
+        /// <returns></returns>
         public bool tryGetMaster(TouhouCardEngine.Card card, out Master master)
         {
             if (player.master == card)
@@ -172,10 +204,20 @@ namespace Game
                 return false;
             }
         }
+        /// <summary>
+        /// 初始化Master的事件
+        /// </summary>
+        /// <param name="master"></param>
         public void initMaster(Master master)
         {
             master.onClick.add(onClickMaster);
         }
+        /// <summary>
+        /// 设置Master的UI
+        /// </summary>
+        /// <param name="master"></param>
+        /// <param name="card"></param>
+        /// <param name="isSelectable"></param>
         public void setMaster(Master master, TouhouCardEngine.Card card, bool isSelectable = false)
         {
             CardSkinData skin = getSkin(card);
@@ -224,6 +266,11 @@ namespace Game
                 master.onHighlightControllerNone?.Invoke();
             }
         }
+        /// <summary>
+        /// 设置Skill的UI
+        /// </summary>
+        /// <param name="skill"></param>
+        /// <param name="card"></param>
         public void setSkill(Skill skill, TouhouCardEngine.Card card)
         {
             CardSkinData skin = getSkin(card);
@@ -255,6 +302,9 @@ namespace Game
                 skill.asButton.interactable = false;
             }
         }
+        /// <summary>
+        /// 技能点击处理
+        /// </summary>
         void onClickSkill()
         {
             if (!canControl)
@@ -271,10 +321,16 @@ namespace Game
                 showTip(info);
             }
         }
+        /// <summary>
+        /// 技能拖拽
+        /// </summary>
+        /// <param name="skill"></param>
+        /// <param name="pointer"></param>
         void onDragSkill(Skill skill, PointerEventData pointer)
         {
             if (!canControl)
                 return;
+            // Stage2: 当前正在拖拽，判断距离以决定是否退出目标选择模式
             if (usingCard == player.skill)
             {
                 if (Vector3.Distance(skill.rectTransform.position, pointer.position) < skillDragThreshold)
@@ -283,6 +339,7 @@ namespace Game
                     displayArrow(skill.rectTransform.position, pointer.position);
                 return;
             }
+            // Stage1: 当前没有拖拽，进入目标选择模式
             if (usingCard != null)
                 return;//已经在用别的牌了
             if (Vector3.Distance(skill.rectTransform.position, pointer.position) < skillDragThreshold)
@@ -299,6 +356,11 @@ namespace Game
             else
                 showTip(info);
         }
+        /// <summary>
+        /// 技能结束拖拽
+        /// </summary>
+        /// <param name="skill"></param>
+        /// <param name="pointer"></param>
         void onDragSkillEnd(Skill skill, PointerEventData pointer)
         {
             if (!canControl)
@@ -324,12 +386,20 @@ namespace Game
             }
             cancelSkill();
         }
+        /// <summary>
+        /// 取消正在执行的技能UI
+        /// </summary>
         private void cancelSkill()
         {
             usingCard = null;
             removeHighlights();
             hideArrow();
         }
+        /// <summary>
+        /// 显示箭头
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         void displayArrow(Vector2 from, Vector2 to)
         {
             ui.AttackArrowImage.display();
@@ -337,12 +407,22 @@ namespace Game
             ui.AttackArrowImage.rectTransform.up = (to - from).normalized;
             ui.AttackArrowImage.rectTransform.setHeight(Vector3.Distance(from, to) / ui.getCanvas().transform.localScale.y);
         }
+        /// <summary>
+        /// 隐藏箭头
+        /// </summary>
         void hideArrow()
         {
             ui.AttackArrowImage.hide();
         }
-
+        /// <summary>
+        /// 当前手牌列表
+        /// </summary>
         Dictionary<TouhouCardEngine.Card, HandListItem> cardHandDic { get; } = new Dictionary<TouhouCardEngine.Card, HandListItem>();
+        /// <summary>
+        /// 创建一张手牌
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
         public HandListItem createHand(TouhouCardEngine.Card card)
         {
             if (cardHandDic.ContainsKey(card))
@@ -370,6 +450,11 @@ namespace Game
             cardHandDic.Add(card, item);
             return item;
         }
+        /// <summary>
+        /// 手牌拖拽事件
+        /// </summary>
+        /// <param name="hand"></param>
+        /// <param name="pointer"></param>
         void onDragHand(HandListItem hand, PointerEventData pointer)
         {
             if (!hand.isDragable)
@@ -436,6 +521,11 @@ namespace Game
                 }
             }
         }
+        /// <summary>
+        /// 计算随从空位位置
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
         private int calcIndexInField(Vector2 position)
         {
             int index = 0;
@@ -451,6 +541,11 @@ namespace Game
             }
             return index;
         }
+        /// <summary>
+        /// 手牌拖拽结束
+        /// </summary>
+        /// <param name="hand"></param>
+        /// <param name="pointer"></param>
         void onDragHandEnd(HandListItem hand, PointerEventData pointer)
         {
             if (hand.GetComponentInParent<HandList>() != ui.SelfHandList)//你不能用别人的卡
@@ -534,8 +629,14 @@ namespace Game
                 }
             }
         }
+        /// <summary>
+        /// 点击Master卡处理
+        /// </summary>
+        /// <param name="master"></param>
+        /// <param name="pointer"></param>
         void onClickMaster(Master master, PointerEventData pointer)
         {
+            // （目标选择模式）
             if (isSelectingTarget)
             {
                 if (usingCard.isValidTarget(game, getCard(master)))
@@ -550,8 +651,14 @@ namespace Game
                 }
             }
         }
+        /// <summary>
+        /// 点击随从卡
+        /// </summary>
+        /// <param name="servant"></param>
+        /// <param name="pointer"></param>
         void onClickServant(Servant servant, PointerEventData pointer)
         {
+            // （目标选择模式）
             if (isSelectingTarget)
             {
                 if (usingCard.isValidTarget(game, getCard(servant)))
@@ -566,6 +673,11 @@ namespace Game
                 }
             }
         }
+        /// <summary>
+        /// 重置使用卡牌状态
+        /// </summary>
+        /// <param name="resetItem">是否重置手牌</param>
+        /// <param name="resetPlaceHolder">是否重置随从占位</param>
         private void resetUse(bool resetItem, bool resetPlaceHolder)
         {
             if (usingCard != null && resetItem)
@@ -583,12 +695,22 @@ namespace Game
             isSelectingTarget = false;
             removeHighlights();
         }
+        /// <summary>
+        /// 获取UI手牌引用
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
         public HandListItem getHand(TouhouCardEngine.Card card)
         {
             if (cardHandDic.ContainsKey(card))
                 return cardHandDic[card];
             throw new ActorNotFoundException(card);
         }
+        /// <summary>
+        /// 尝试获取UI手牌引用
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
         public HandListItem tryGetHand(TouhouCardEngine.Card card)
         {
             var hand = getHand(card);
@@ -596,6 +718,11 @@ namespace Game
                 throw new ActorNotFoundException(card);
             return hand;
         }
+        /// <summary>
+        /// 从UI手牌引用获取对应的牌
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public TouhouCardEngine.Card getCard(HandListItem item)
         {
             foreach (var pair in cardHandDic)
@@ -605,6 +732,11 @@ namespace Game
             }
             return null;
         }
+        /// <summary>
+        /// 从Master获取对应的牌
+        /// </summary>
+        /// <param name="master"></param>
+        /// <returns></returns>
         public TouhouCardEngine.Card getCard(Master master)
         {
             if (master == ui.SelfMaster)
@@ -612,6 +744,12 @@ namespace Game
             else
                 return game.getOpponent(player).master;
         }
+        /// <summary>
+        /// 设置卡片UI
+        /// </summary>
+        /// <param name="ui"></param>
+        /// <param name="card"></param>
+        /// <param name="isFaceup"></param>
         public void setCard(UI.Card ui, TouhouCardEngine.Card card, bool isFaceup)
         {
             ui.CostPropNumber.asText.text = card.getCost().ToString();
@@ -644,6 +782,12 @@ namespace Game
             }
         }
         Dictionary<TouhouCardEngine.Card, Servant> cardServantDic { get; } = new Dictionary<TouhouCardEngine.Card, Servant>();
+        /// <summary>
+        /// 创建一个随从
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
         public Servant createServant(TouhouCardEngine.Card card, int position)
         {
             Servant servant;
@@ -667,12 +811,23 @@ namespace Game
             cardServantDic.Add(card, servant);
             return servant;
         }
+        /// <summary>
+        /// 从卡获取对应的随从UI
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
         public Servant getServant(TouhouCardEngine.Card card)
         {
             if (cardServantDic.ContainsKey(card))
                 return cardServantDic[card];
             throw new ActorNotFoundException(card);
         }
+        /// <summary>
+        /// 尝试从卡获取对应的随从UI
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="servant"></param>
+        /// <returns></returns>
         public bool tryGetServant(TouhouCardEngine.Card card, out Servant servant)
         {
             if (cardServantDic.ContainsKey(card))
@@ -686,6 +841,12 @@ namespace Game
                 return false;
             }
         }
+        /// <summary>
+        /// 设置随从
+        /// </summary>
+        /// <param name="servant"></param>
+        /// <param name="card"></param>
+        /// <param name="isSelectable"></param>
         public void setServant(Servant servant, TouhouCardEngine.Card card, bool isSelectable = false)
         {
             CardSkinData skin = getSkin(card);
@@ -717,6 +878,11 @@ namespace Game
             //getChild("Root").getChild("Taunt").gameObject.SetActive(card.isTaunt());
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
         }
+        /// <summary>
+        /// 随从拖拽处理
+        /// </summary>
+        /// <param name="servant"></param>
+        /// <param name="pointer"></param>
         void onDragServant(Servant servant, PointerEventData pointer)
         {
             if (!canControl)//不是你的回合
@@ -742,7 +908,7 @@ namespace Game
             }
         }
         /// <summary>
-        /// 高亮所有目标
+        /// 高亮所有指定的目标（标记为可选择）
         /// </summary>
         /// <param name="targets"></param>
         void highlightTargets(TouhouCardEngine.Card[] targets)
@@ -761,6 +927,9 @@ namespace Game
                 }
             }
         }
+        /// <summary>
+        /// 关闭所有目标的高亮（可选择）
+        /// </summary>
         void removeHighlights()
         {
             setMaster(ui.SelfMaster, player.master, false);
@@ -775,6 +944,11 @@ namespace Game
                 setServant(servant, getCard(servant), false);
             }
         }
+        /// <summary>
+        /// 随从拖拽结束处理
+        /// </summary>
+        /// <param name="servant"></param>
+        /// <param name="pointer"></param>
         void onDragEndServant(Servant servant, PointerEventData pointer)
         {
             if (!canControl)//不是你的回合
@@ -795,6 +969,12 @@ namespace Game
             //取消选中和攻击
             cancelAttack();
         }
+        /// <summary>
+        /// 判断鼠标是否在某张卡上，并返回卡
+        /// </summary>
+        /// <param name="pointer"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
         bool isOnTarget(PointerEventData pointer, out TouhouCardEngine.Card card)
         {
             if (pointer.pointerCurrentRaycast.gameObject != null)
@@ -813,6 +993,9 @@ namespace Game
             card = null;
             return false;
         }
+        /// <summary>
+        /// 取消攻击
+        /// </summary>
         private void cancelAttack()
         {
             //缩小动画
@@ -820,6 +1003,11 @@ namespace Game
             ui.AttackArrowImage.hide();
             removeHighlights();
         }
+        /// <summary>
+        /// 设置随从定义
+        /// </summary>
+        /// <param name="servant"></param>
+        /// <param name="card"></param>
         public void setServant(Servant servant, CardDefine card)
         {
             CardSkinData skin = getSkin(card);
@@ -830,6 +1018,11 @@ namespace Game
             servant.AttackTextPropNumber.asText.text = card.getAttack().ToString();
             servant.HpTextPropNumber.asText.text = card.getLife().ToString();
         }
+        /// <summary>
+        /// 从随从获取对应的卡
+        /// </summary>
+        /// <param name="servant"></param>
+        /// <returns></returns>
         public TouhouCardEngine.Card getCard(Servant servant)
         {
             foreach (var pair in cardServantDic)
@@ -839,6 +1032,9 @@ namespace Game
             }
             return null;
         }
+        /// <summary>
+        /// 隐藏随从的占位符
+        /// </summary>
         private void hideServantPlaceHolder()
         {
             ui.addChild(ui.ServantPlaceHolder.rectTransform);
@@ -847,6 +1043,10 @@ namespace Game
         }
         [SerializeField]
         BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer();
+        /// <summary>
+        /// 显示文本提示
+        /// </summary>
+        /// <param name="tip"></param>
         public void showTip(string tip)
         {
             ui.TipText.gameObject.SetActive(true);
@@ -861,6 +1061,10 @@ namespace Game
         #endregion
         #region Animation
         Dictionary<Type, ConstructorInfo> animConstructorDic { get; } = new Dictionary<Type, ConstructorInfo>();
+        /// <summary>
+        /// 加载动画
+        /// </summary>
+        /// <param name="assembly"></param>
         public void loadAnim(Assembly assembly)
         {
             foreach (Type type in assembly.GetTypes())
@@ -881,6 +1085,11 @@ namespace Game
                 setAnim(paraType, type);
             }
         }
+        /// <summary>
+        /// 设置动画
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <param name="animType"></param>
         public void setAnim(Type eventType, Type animType)
         {
             foreach (ConstructorInfo constructor in animType.GetConstructors())
@@ -906,6 +1115,11 @@ namespace Game
         {
             setAnim(typeof(TRequest), typeof(TAnim));
         }
+        /// <summary>
+        /// 获取事件对应的动画
+        /// </summary>
+        /// <param name="eventArg"></param>
+        /// <returns></returns>
         public UIAnimation getEventAnim(IEventArg eventArg)
         {
             Type type = eventArg.GetType();
