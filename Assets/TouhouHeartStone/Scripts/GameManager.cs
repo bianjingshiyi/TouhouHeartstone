@@ -55,7 +55,9 @@ namespace Game
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
         }
         [SerializeField]
-        Deck _testDeck;
+        bool _useDefaultDeck = true;
+        [SerializeField]
+        Deck _defaultDeck;
         [CardDefineID]
         [SerializeField]
         int[] _deck = new int[31];
@@ -86,9 +88,11 @@ namespace Game
                 }
                 _deck = randomDeck.ToArray();
             }
-            if (_testDeck.deckList.Count > 0)
-                _deck = _testDeck.toIdArray();
+            if (_defaultDeck.deckList.Count > 0)
+                _deck = _defaultDeck.toIdArray();
 #endif
+            if (_useDefaultDeck)
+                _deck = _defaultDeck.toIdArray();
         }
         private void Update()
         {
