@@ -399,6 +399,20 @@ namespace Game
                         ui.ServantPlaceHolder.display();
                         ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(calcIndexInField(pointer.position) + 1);
                     }
+                    else if (usingCard.define is SpellCardDefine)
+                    {
+                        if (usingCard.isNeedTarget(game, out var targets))
+                        {
+                            if (!isSelectingTarget)
+                            {
+                                isSelectingTarget = true;//TODO:这个地方一定要重写，怎么能这样的？isSelectingTarget就应该被usingCard取代
+                                highlightTargets(targets);
+                            }
+                            hand.Card.hide();
+                            if (tryGetMaster(usingCard.getOwner().master, out var castMaster))
+                                displayArrow(castMaster.rectTransform.position, pointer.position);
+                        }
+                    }
                 }
             }
         }
