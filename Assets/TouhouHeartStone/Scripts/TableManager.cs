@@ -533,6 +533,13 @@ namespace Game
                 return cardHandDic[card];
             throw new ActorNotFoundException(card);
         }
+        public HandListItem tryGetHand(TouhouCardEngine.Card card)
+        {
+            var hand = getHand(card);
+            if (hand == null)
+                throw new ActorNotFoundException(card);
+            return hand;
+        }
         public TouhouCardEngine.Card getCard(HandListItem item)
         {
             foreach (var pair in cardHandDic)
@@ -901,10 +908,19 @@ namespace Game
                     }
                     if (isBlocked)
                         continue;
-                    if (anim is TableAnimation tAnim ? tAnim.update(this) : anim.update(ui))
+                    try
+                    {
+                        if (anim is TableAnimation tAnim ? tAnim.update(this) : anim.update(ui))
+                        {
+                            _animationQueue.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                    catch (Exception e)
                     {
                         _animationQueue.RemoveAt(i);
                         i--;
+                        Debug.LogError("动画" + anim + "播放异常被跳过：" + e);
                     }
                 }
             }
