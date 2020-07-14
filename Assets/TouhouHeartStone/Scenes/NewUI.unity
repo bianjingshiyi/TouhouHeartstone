@@ -11362,12 +11362,12 @@ PrefabInstance:
     - target: {fileID: 2243096023947547386, guid: 7583531f85baf3340b4ee592873c34f5,
         type: 3}
       propertyPath: _initStates.Array.data[0]
-      value: IsUsable/False
+      value: IsUsable/IsUsable_False
       objectReference: {fileID: 0}
     - target: {fileID: 2243096023947547386, guid: 7583531f85baf3340b4ee592873c34f5,
         type: 3}
       propertyPath: _initStates.Array.data[1]
-      value: IsUsed/False
+      value: IsUsed/IsUsed_False
       objectReference: {fileID: 0}
     - target: {fileID: 2243096023947547386, guid: 7583531f85baf3340b4ee592873c34f5,
         type: 3}
@@ -25762,7 +25762,7 @@ PrefabInstance:
     - target: {fileID: 5421060709278559635, guid: 6446fe25e4caa5d47848db50991178de,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -19.99997
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 5421060709278559635, guid: 6446fe25e4caa5d47848db50991178de,
         type: 3}

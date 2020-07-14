@@ -383,9 +383,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates:
   - IsUsable/IsUsable_False
-  - IsUsed/IsUsable_False
+  - IsUsed/IsUsed_False
   m_as_Button: {fileID: 540050246356179939}
   _Mask: {fileID: 434557652962893678}
   _Image: {fileID: 434557653138975224}
