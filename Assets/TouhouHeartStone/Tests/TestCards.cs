@@ -8,13 +8,9 @@ using System;
 using System.Linq;
 namespace Tests
 {
-    public static class TestConst
-    {
-        public const int ID = 0x00100000;
-    }
     class TestMaster : MasterCardDefine
     {
-        public const int ID = 0x00100000;
+        public const int ID = 0x0FF00000;
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = TestSkill.ID;
@@ -461,7 +457,7 @@ namespace Tests
     }
     class FireBall : SpellCardDefine
     {
-        public const int ID = TestConst.ID | CardCategory.SPELL | 0x012;
+        public const int ID = TestMaster.ID | CardCategory.SPELL | 0x012;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]

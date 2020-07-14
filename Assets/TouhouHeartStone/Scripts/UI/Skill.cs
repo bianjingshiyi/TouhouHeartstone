@@ -4,6 +4,7 @@ using UnityEngine;
 using TouhouHeartstone;
 using System.Linq;
 using TouhouCardEngine;
+using UnityEngine.Events;
 namespace UI
 {
     partial class Skill : IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -16,7 +17,7 @@ namespace UI
             this.card = card;
 
             Image.sprite = skin.image;
-            CostText.text = card.getCost().ToString();
+            CostPropNumber.asText.text = card.getCost().ToString();
             if (card.isUsed())
             {
                 IsUsedController = IsUsed.True;
@@ -53,5 +54,9 @@ namespace UI
             onDragEnd.invoke(this, eventData);
         }
         public ActionEvent<Skill, PointerEventData> onDragEnd { get; } = new ActionEvent<Skill, PointerEventData>();
+        [SerializeField]
+        UnityEvent _onIsUsableTrue = new UnityEvent();
+        [SerializeField]
+        UnityEvent _onIsUsableFalse = new UnityEvent();
     }
 }

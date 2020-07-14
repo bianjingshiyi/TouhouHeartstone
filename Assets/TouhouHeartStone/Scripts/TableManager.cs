@@ -206,7 +206,7 @@ namespace Game
         {
             CardSkinData skin = getSkin(card);
             skill.Image.sprite = skin.image;
-            skill.CostText.text = card.getCost().ToString();
+            skill.CostPropNumber.asText.text = card.getCost().ToString();
             if (card.isUsed())
             {
                 skill.IsUsedController = Skill.IsUsed.True;
@@ -330,6 +330,7 @@ namespace Game
                 item.isDragable = false;
                 setCard(item.Card, card, false);
             }
+            item.gameObject.name = card.ToString();
             item.onDrag.set(onDragHand);
             item.onEndDrag.set(onDragHandEnd);
             cardHandDic.Add(card, item);
@@ -434,12 +435,20 @@ namespace Game
                         usingPosition = index;
                         //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                         addAnim(new HandToFieldAnim(this, hand, ui.SelfFieldList, index));
+                        TouhouCardEngine.Card localUsingCard = usingCard;
                         addAnim(new CodeAnim(() =>
                         {
                             hand.Card.hide();
                             //显示占位随从
                             ui.ServantPlaceHolder.Servant.display();
-                            setServant(ui.ServantPlaceHolder.Servant, usingCard.define);
+                            try
+                            {
+                                setServant(ui.ServantPlaceHolder.Servant, localUsingCard.define);
+                            }
+                            catch (NullReferenceException e)
+                            {
+                                Debug.LogError(e);
+                            }
                         }));
                         isSelectingTarget = true;
                         highlightTargets(targets);
@@ -579,7 +588,7 @@ namespace Game
                 servant = ui.EnemyFieldList.addItem();
                 ui.EnemyFieldList.defaultItem.rectTransform.SetAsFirstSibling();
             }
-            servant.gameObject.name = getSkin(card).name + "(" + card.id + ")";
+            servant.gameObject.name = card.ToString();
             servant.rectTransform.SetSiblingIndex(position + 1);
             setServant(servant, card);
             servant.onClick.add(onClickServant);
