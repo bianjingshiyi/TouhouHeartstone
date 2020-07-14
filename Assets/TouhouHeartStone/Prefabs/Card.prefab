@@ -1122,10 +1122,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
-  _useController: 0
   _initStates:
   - IsFaceup/IsFaceup_False
-  - Type/Servant
+  - Type/Type_Servant
   _CardBackImage: {fileID: 525013306416142025}
   _ShadowImage: {fileID: 1949518328878013980}
   _BackgroundImage: {fileID: 8512227078610663267}
