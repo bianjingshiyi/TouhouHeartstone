@@ -17,7 +17,7 @@ using TouhouHeartstone.Builtin;
 using Game;
 namespace UI
 {
-    partial class Table
+    partial class Table : IPointerDownHandler
     {
         [Obsolete]
         public THHGame game
@@ -362,6 +362,12 @@ namespace UI
                 throw new ActorNotFoundException(target);
             }).ToArray();
         }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            Debug.Log("点击桌面ui:" + eventData.pointerCurrentRaycast.gameObject);
+        }
+
         [SerializeField]
         UIObject[] _selectableTargets = null;
         public UIObject[] selectableTargets

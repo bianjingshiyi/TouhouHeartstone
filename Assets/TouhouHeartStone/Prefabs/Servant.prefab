@@ -383,6 +383,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates:
   - CanAttack/False
   - IsAttackable/False
@@ -584,7 +585,7 @@ GameObject:
   - component: {fileID: 2470481777276467003}
   - component: {fileID: 2470481777276467000}
   m_Layer: 5
-  m_Name: Mask
+  m_Name: ImageMask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

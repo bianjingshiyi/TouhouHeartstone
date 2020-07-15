@@ -73,6 +73,11 @@ namespace Game
             {
                 ui.TipText.setAlpha(1/*_tipTimer.getRemainedTime() / _tipTimer.duration*/);
             }
+            //if (isSelectingTarget && usingCard.define is ServantCardDefine)
+            //{
+            //    //取消战吼
+            //    if (EventSystem.current.currentInputModule.input. !isOnTarget(new PointerEventData(EventSystem.current), out var card))
+            //}
         }
         public void setGame(THHGame game, THHPlayer player)
         {
@@ -552,6 +557,7 @@ namespace Game
             {
                 HandListItem usingHand = getHand(usingCard);
                 usingHand.Card.display();
+                usingHand.Card.onFaceupControllerTrue.Invoke();
                 usingHand.Card.rectTransform.localScale = Vector3.one;
                 usingHand.Card.rectTransform.localPosition = Vector2.zero;
             }
@@ -636,6 +642,7 @@ namespace Game
                 servant = ui.EnemyFieldList.addItem();
                 ui.EnemyFieldList.defaultItem.rectTransform.SetAsFirstSibling();
             }
+            UberDebug.LogChannel(servant, "UI", "为" + card + "创建" + servant);
             servant.gameObject.name = card.ToString();
             servant.rectTransform.SetSiblingIndex(position + 1);
             setServant(servant, card);

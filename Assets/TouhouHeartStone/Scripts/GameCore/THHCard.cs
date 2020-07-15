@@ -272,6 +272,14 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.FREEZE, value);
         }
+        public static bool isUnique(this Card card)
+        {
+            return card.getProp<bool>(Keyword.UNIQUE);
+        }
+        public static void setUnique(this Card card, bool value)
+        {
+            card.setProp(Keyword.UNIQUE, value);
+        }
 
         public static int getSpellDamage(this Card card)
         {

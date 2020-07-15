@@ -30,10 +30,16 @@ namespace Game
         public List<DeckItem> deckList = new List<DeckItem>();
         public int[] toIdArray()
         {
-            List<int> list = new List<int>();
-            list.Add(master);
+            List<int> list = new List<int>
+            {
+                master
+            };
             foreach (var item in deckList)
             {
+                if (item.id < 1)
+                    continue;
+                if (item.count < 1)
+                    continue;
                 list.AddRange(Enumerable.Repeat(item.id, item.count));
             }
             return list.ToArray();
