@@ -383,7 +383,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
-  _useController: 0
   _initStates:
   - CanAttack/False
   - IsAttackable/False
@@ -393,7 +392,7 @@ MonoBehaviour:
   _Image_3: {fileID: 3952394829758703074}
   _HighlightImage: {fileID: 2593902375022216909}
   _BackgroundImage: {fileID: 4712789771521229126}
-  _Mask: {fileID: 2470481777276467000}
+  _ImageMask: {fileID: 0}
   _Image: {fileID: 2470481776923723664}
   _MaskImage: {fileID: 2470481777276467003}
   _BorderImage: {fileID: 1519690174396059162}
