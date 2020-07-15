@@ -109,7 +109,8 @@ namespace UI
         public ActionEvent<Master, PointerEventData> onClick { get; } = new ActionEvent<Master, PointerEventData>();
         [SerializeField]
         string _targetedAnimName = "Targetd";
-        public string targetedAnimName => _targetedAnimName;        [SerializeField]
+        public string targetedAnimName => _targetedAnimName;
+        [SerializeField]
         private UnityEvent _onHighlightControllerNone;
         public UnityEvent onHighlightControllerNone => _onHighlightControllerNone;
 
@@ -119,5 +120,6 @@ namespace UI
 
         [SerializeField]
         private UnityEvent _onHighlightControllerGreen;
-        public UnityEvent onHighlightControllerGreen => _onHighlightControllerGreen;    }
+        public UnityEvent onHighlightControllerGreen => _onHighlightControllerGreen;
+    }
 }
