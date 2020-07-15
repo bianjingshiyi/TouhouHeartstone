@@ -47,14 +47,14 @@ namespace Game
         /// <returns></returns>
         public Task load(Assembly[] assemblies = default, ILogger logger = null)
         {
-            return Load(_externalCardPaths, assemblies, logger);
+            return load(_externalCardPaths, assemblies, logger);
         }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
         /// </summary>
         /// <param name="excelPaths"></param>
         /// <returns></returns>
-        public async Task Load(string[] excelPaths, Assembly[] assemblies = default, ILogger logger = null)
+        public async Task load(string[] excelPaths, Assembly[] assemblies = default, ILogger logger = null)
         {
             //加载内置卡片
             if (assemblies == default)

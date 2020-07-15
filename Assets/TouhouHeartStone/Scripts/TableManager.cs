@@ -1225,7 +1225,7 @@ namespace Game
                 return new CardSkinData()
                 {
                     id = card.define.id,
-                    desc = card.define.ToString(),
+                    desc = card.define.ToString() + "（这张卡随时可能爆炸！）",
                     image = getManager<CardManager>().getDefaultSprite().Result,
                     name = card.define.GetType().Name
                 };
@@ -1242,7 +1242,7 @@ namespace Game
                 return new CardSkinData()
                 {
                     id = define.id,
-                    desc = define.ToString(),
+                    desc = define.ToString() + "（这张卡随时可能爆炸！）",
                     image = getManager<CardManager>().getDefaultSprite().Result,
                     name = define.GetType().Name
                 };
