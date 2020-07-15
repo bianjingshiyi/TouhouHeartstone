@@ -21,12 +21,12 @@ namespace UI
             if (card.isUsed())
             {
                 // IsUsedController = IsUsed.True;
-                onIsUsedControllerTrue?.Invoke();
+                isUsed = true;
             }
             else
             {
                 // IsUsedController = IsUsed.False;
-                onIsUsedControllerFalse?.Invoke();
+                isUsed = false;
             }
             if (player == self
                 && card.isUsable(table.game, player, out _)//技能是可用的
@@ -35,13 +35,13 @@ namespace UI
                 )
             {
                 // IsUsableController = IsUsable.True;
-                onIsUsableTrue?.Invoke();
+                isUsable = true;
                 asButton.interactable = true;
             }
             else
             {
                 // IsUsableController = IsUsable.False;
-                onIsUsableFalse?.Invoke();
+                isUsable = false;
                 asButton.interactable = false;
             }
         }
@@ -58,20 +58,40 @@ namespace UI
             onDragEnd.invoke(this, eventData);
         }
         public ActionEvent<Skill, PointerEventData> onDragEnd { get; } = new ActionEvent<Skill, PointerEventData>();
+        public bool isUsable
+        {
+            set
+            {
+                if (value)
+                    _onIsUsableTrue.Invoke();
+                else
+                    _onIsUsableFalse.Invoke();
+            }
+        }
+        public bool isUsed
+        {
+            set
+            {
+                if (value)
+                    _onIsUsedControllerTrue.Invoke();
+                else
+                    _onIsUsedControllerFalse.Invoke();
+            }
+        }
         [SerializeField]
         UnityEvent _onIsUsableTrue = new UnityEvent();
-        public UnityEvent onIsUsableTrue => _onIsUsableTrue;
+        //public UnityEvent onIsUsableTrue => _onIsUsableTrue;
         [SerializeField]
         UnityEvent _onIsUsableFalse = new UnityEvent();
-        public UnityEvent onIsUsableFalse => _onIsUsableFalse;
+        //public UnityEvent onIsUsableFalse => _onIsUsableFalse;
 
         [SerializeField]
         private UnityEvent _onIsUsedControllerFalse;
-        public UnityEvent onIsUsedControllerFalse => _onIsUsedControllerFalse;
+        //public UnityEvent onIsUsedControllerFalse => _onIsUsedControllerFalse;
 
         [SerializeField]
         private UnityEvent _onIsUsedControllerTrue;
-        public UnityEvent onIsUsedControllerTrue => _onIsUsedControllerTrue;
+        //public UnityEvent onIsUsedControllerTrue => _onIsUsedControllerTrue;
 
     }
 }

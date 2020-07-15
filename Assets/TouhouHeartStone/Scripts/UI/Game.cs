@@ -1,6 +1,7 @@
-﻿namespace UI
+﻿using UnityEngine.EventSystems;
+namespace UI
 {
-    partial class Game
+    partial class Game : IPointerDownHandler
     {
         partial void onAwake()
         {
@@ -9,6 +10,10 @@
                 parent.game.game.Dispose();
                 parent.display(parent.MainMenu);
             });
+        }
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            Table.clickNoWhere(eventData);
         }
     }
 }

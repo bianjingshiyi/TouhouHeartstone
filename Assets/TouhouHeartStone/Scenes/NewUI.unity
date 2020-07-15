@@ -16592,7 +16592,7 @@ MonoBehaviour:
     shuffle: 1
     timeoutForInitReplace: 30
     timeoutForTurn: 75
-    startGem: 0
+    startGem: 10
   _ui: {fileID: 0}
   _useDefaultDeck: 1
   _defaultDeck:
@@ -16620,7 +16620,7 @@ MonoBehaviour:
     - id: 4206600
       count: 2
     - id: 4206599
-      count: 2
+      count: 20
     - id: 4206608
       count: 2
     - id: 4202514

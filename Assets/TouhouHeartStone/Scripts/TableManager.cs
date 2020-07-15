@@ -81,6 +81,7 @@ namespace Game
         }
         public void setGame(THHGame game, THHPlayer player)
         {
+            ui.onClickNoWhere.set(onClickNoWhere);
             ui.InitReplaceDialog.hide();
             ui.TurnTipImage.hide();
             initMaster(ui.SelfMaster);
@@ -146,6 +147,13 @@ namespace Game
 
         }
         #region UI
+        void onClickNoWhere(Table table, PointerEventData pointer)
+        {
+            if (usingCard != null && usingCard.define is ServantCardDefine && isSelectingTarget)
+            {
+                UberDebug.LogChannel("UI", "ClickNoWhere");
+            }
+        }
         public bool tryGetMaster(TouhouCardEngine.Card card, out Master master)
         {
             if (player.master == card)
@@ -224,12 +232,12 @@ namespace Game
             if (card.isUsed())
             {
                 // skill.IsUsedController = Skill.IsUsed.True;
-                skill.onIsUsedControllerTrue?.Invoke();
+                skill.isUsed = true;
             }
             else
             {
                 // skill.IsUsedController = Skill.IsUsed.False;
-                skill.onIsUsedControllerFalse?.Invoke();
+                skill.isUsed = false;
             }
             if (card.isUsable(game, player, out _) &&//技能是可用的
                 !isSelectingTarget &&//没有在选择目标
@@ -237,13 +245,13 @@ namespace Game
                 )
             {
                 // skill.IsUsableController = Skill.IsUsable.True;
-                skill.onIsUsableTrue?.Invoke();
+                skill.isUsable = true;
                 skill.asButton.interactable = true;
             }
             else
             {
                 // skill.IsUsableController = Skill.IsUsable.False;
-                skill.onIsUsableFalse?.Invoke();
+                skill.isUsable = false;
                 skill.asButton.interactable = false;
             }
         }
@@ -275,6 +283,8 @@ namespace Game
                     displayArrow(skill.rectTransform.position, pointer.position);
                 return;
             }
+            if (usingCard != null)
+                return;//已经在用别的牌了
             if (Vector3.Distance(skill.rectTransform.position, pointer.position) < skillDragThreshold)
                 return;
             if (player.skill.isUsable(game, player, out var info))
@@ -300,6 +310,10 @@ namespace Game
             {
                 cancelSkill();
                 return;
+            }
+            if (usingCard != null)
+            {
+                return;//已经在使用其他卡牌了
             }
             if (isOnTarget(pointer, out var target))
             {
@@ -487,6 +501,7 @@ namespace Game
                         }));
                         isSelectingTarget = true;
                         highlightTargets(targets);
+                        ui.SelfSkill.isUsable = false;
                         ui.SelfHandList.shrink();
                     }
                     else

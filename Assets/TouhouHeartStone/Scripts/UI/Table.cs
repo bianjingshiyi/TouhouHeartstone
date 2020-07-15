@@ -17,7 +17,7 @@ using TouhouHeartstone.Builtin;
 using Game;
 namespace UI
 {
-    partial class Table : IPointerDownHandler
+    partial class Table
     {
         [Obsolete]
         public THHGame game
@@ -88,6 +88,11 @@ namespace UI
             if (opponent == null)
                 return;
         }
+        public void clickNoWhere(PointerEventData pointer)
+        {
+            onClickNoWhere.invoke(this, pointer);
+        }
+        public ActionEvent<Table, PointerEventData> onClickNoWhere { get; } = new ActionEvent<Table, PointerEventData>();
         public void onClickMaster(Master master, PointerEventData pointer)
         {
             if (isSelectingTarget)
@@ -362,12 +367,6 @@ namespace UI
                 throw new ActorNotFoundException(target);
             }).ToArray();
         }
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            Debug.Log("点击桌面ui:" + eventData.pointerCurrentRaycast.gameObject);
-        }
-
         [SerializeField]
         UIObject[] _selectableTargets = null;
         public UIObject[] selectableTargets
