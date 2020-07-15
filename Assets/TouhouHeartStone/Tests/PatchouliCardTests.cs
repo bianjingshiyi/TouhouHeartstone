@@ -245,6 +245,283 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<ArcaneKnowledge>());
             game.Dispose();
         }
+
+        [Test]
+        public void PatchouliSilentSeleneTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption(){shuffle = false});
+            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<MissingSpecter>() as CardDefine, 30));
+            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<SilentSelene>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getCardDefine<BestMagic>(), 2)));
+
+            game.skipTurnUntil(() => game.currentPlayer == defaultPlayer && defaultPlayer.gem >= game.getCardDefine<MissingSpecter>().cost);
+            defaultPlayer.cmdUse(game, defaultPlayer.hand.getCard<MissingSpecter>());
+
+            game.skipTurnUntil(() => game.currentPlayer == elusivePlayer && elusivePlayer.gem >= 10);
+            elusivePlayer.cmdUse(game, elusivePlayer.hand.getCard<BestMagic>());//使用秘藏魔法减费
+            Assert.True(game.players[0].hand.Where(c => c.define is SilentSelene).All(c => c.getCost() == 7));
+            elusivePlayer.cmdUse(game, elusivePlayer.hand.getCard<SilentSelene>());
+
+            game.Dispose();
+        }
+
+        [Test]
+        public void SummerRedTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(SummerRed.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<DefaultServant>().cost);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.hand.getCard<SummerRed>(), targets:you.field[0]);
+            you.cmdTurnEnd(game);
+            game.Dispose();
+        }
+
+        [Test]
+        public void WinterSoberTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(WinterSober.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<DefaultServant>().cost + 1);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<WinterSober>(), targets: you.field[0]);
+            you.cmdAttack(game, you.field[0], oppo.master);
+            game.Dispose();
+        }
+
+        [Test]
+        public void SpringWindTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(SpringWind.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<SummerRed>().cost + 1);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.hand.getCard<SpringWind>(), targets: you.field[0]);
+            you.cmdTurnEnd(game);
+            game.Dispose();
+        }
+
+        [Test]
+        public void AutumnBladeTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(AutumnBlade.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            for(int i=0;i<3;i++)
+            {
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(),i);
+            }
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<AutumnBlade>());
+            game.Dispose();
+        }
+
+        [Test]
+        public void EarthGunTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(EarthGun.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<SummerRed>().cost + 1);
+            you.cmdUse(game, you.hand.getCard<EarthGun>());
+            game.Dispose();
+        }
+
+        [Test]
+        public void ElementHarvesterTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(ElementHarvester.ID, 1),
+                new KeyValuePair<int, int>(EarthGun.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 3);
+            for (int i = 0; i < 3; i++)
+            {
+                you.cmdUse(game, you.hand.getCard<EarthGun>());
+            }
+            you.cmdTurnEnd(game);
+            for (int i = 0; i < 3; i++)
+            {
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(),i);
+                oppo.field[i].setCurrentLife(2);
+            }
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<ElementHarvester>());
+            game.Dispose();
+        }
+
+        [Test]
+        public void MercuryPoisonTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(MercuryPoison.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            for (int i = 0; i < 3; i++)
+            {
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(),i);
+            }
+            oppo.field[0].setAttack(5);
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<MercuryPoison>());
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            game.Dispose();
+        }
+
+        [Test]
+        public void ForestFireTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(ForestFire.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            /*game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            for (int i = 0; i < 3; i++)
+            {
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
+            }
+            oppo.cmdTurnEnd(game);*/
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 9);
+            for (int i = 0; i < 3; i++)
+            {
+                you.cmdUse(game, you.hand.getCard<DefaultServant>(), i);
+            }
+            you.cmdUse(game, you.hand.getCard<ForestFire>(),targets:oppo.master);
+            game.Dispose();
+        }
+
+        [Test]
+        public void SproutingWalkingDeadTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(SproutingWalkingDead.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<DefaultServant>().cost);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.hand.getCard<SproutingWalkingDead>(), targets: you.field[0]);
+            you.field[0].die(game);
+            you.cmdTurnEnd(game);
+            game.Dispose();
+        }
+
+        [Test]
+        public void WaterSpiritTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(WaterSpirit.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 7);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.field[0].damage(game, you.master, 4);
+            you.cmdUse(game, you.hand.getCard<WaterSpirit>(), targets: you.field[0]);
+            Assert.True(you.field[0].getCurrentLife() == 13);
+            game.Dispose();
+        }
+
+        [Test]
+        public void BurningRainTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(BurningRain.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            for (int i = 0; i < 3; i++)
+            {
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
+            }
+            oppo.cmdTurnEnd(game);
+
+            you.cmdUse(game, you.hand.getCard<BurningRain>());
+            game.Dispose();
+        }
+
+        [Test]
+        public void SanElmoFirePillarTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(SanElmoFirePillar.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            for (int i = 0; i < 3; i++)
+            {
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
+            }
+            oppo.cmdTurnEnd(game);
+
+            you.cmdUse(game, you.hand.getCard<SanElmoFirePillar>(),targets:oppo.field[1]);
+            game.Dispose();
+        }
+
+        [Test]
+        public void RingLavaTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(RingLava.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            for (int i = 0; i < 3; i++)
+            {
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
+            }
+            oppo.cmdTurnEnd(game);
+
+            you.cmdUse(game, you.hand.getCard<RingLava>());
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            you.cmdTurnEnd(game);
+            game.Dispose();
+        }
+
+        [Test]
+        public void LightyellowgustTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Lightyellowgust.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            for (int i = 0; i < 3; i++)
+            {
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
+            }
+            oppo.cmdTurnEnd(game);
+
+            you.cmdUse(game, you.hand.getCard<Lightyellowgust>());
+            you.cmdAttack(game, you.field[0], oppo.field[1]);
+            you.cmdTurnEnd(game);
+            game.Dispose();
+        }
+
+        [Test]
+        public void NoahFloodTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(NoahFlood.ID, 1),
+                new KeyValuePair<int, int>(MissingSpecter.ID, 20)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 9);
+            you.cmdUse(game, you.hand.getCard<MissingSpecter>());
+            you.cmdUse(game, you.hand.getCard<NoahFlood>());
+            game.Dispose();
+        }
     }
 }
 
