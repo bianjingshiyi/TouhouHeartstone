@@ -128,6 +128,8 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool canAttack(this Card card, THHGame game)
         {
+            if (card.pile.name != PileName.FIELD)//你只能在战场上进行攻击。是不是必须得活着，这是个哲学问题。
+                return false;
             if (card.getAttack() <= 0)//没有攻击力
                 return false;
             if (!card.isReady()//还没准备好

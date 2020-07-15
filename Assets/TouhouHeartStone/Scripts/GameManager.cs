@@ -206,10 +206,6 @@ namespace Game
         }
         private void onEventAfter(TouhouCardEngine.Interfaces.IEventArg obj)
         {
-            if (obj is THHGame.GameEndEventArg)
-            {
-                quitGame();
-            }
         }
         public event Action onGameEnd;
         void tryLoadDeckFromPrefs()

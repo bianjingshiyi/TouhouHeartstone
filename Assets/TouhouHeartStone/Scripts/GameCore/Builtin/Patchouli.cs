@@ -300,7 +300,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 巨石 衍生物，无法攻击
+    /// 巨石 衍生随从，无法攻击
     /// </summary>
     public class Boulder : ServantCardDefine
     {
@@ -325,7 +325,6 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
-
     /// <summary>
     /// 5 金属疲劳 元素法术，对所有敌方随从造成3点伤害
     /// </summary>
@@ -410,10 +409,10 @@ namespace TouhouHeartstone.Builtin
                 return false;
             },async(game,card,arg,targets)=>
             {
-               foreach(Card target in game.getOpponent(card.owner as THHPlayer).field)
+                foreach(Card target in game.getOpponent(card.owner as THHPlayer).field)
                 {
                     target.define.effects = new IEffect[0];
-                    await target.die(game);
+                    target.setDead(true);
                 }
             })
         };
@@ -510,5 +509,415 @@ namespace TouhouHeartstone.Builtin
                 return Task.CompletedTask;
             });
         }
+    }
+    /// <summary>
+    /// 0 火符【夏之红】 使目标随从在本回合内获得攻击力+2
+    /// </summary>
+    public class SummerRed : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x019;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,card,arg)=>
+            {
+                return true;
+            },(game,card,targets)=>
+            {
+                if(targets[0] is Card target && target.pile.name == PileName.FIELD)
+                    return true;
+                return false;
+            },(game,card,arg,targets)=>
+            {
+                if (targets[0] is Card target)
+                {
+                    new BuffFixer().onEnable(game,target);
+                }
+                return Task.CompletedTask;
+            })
+        };
+        class BuffFixer
+        {
+            Trigger<THHGame.TurnEndEventArg> TurnEndTrigger { get; set; } = null;
+            Buff buff = new GeneratedBuff(ID, new AttackModifier(2));
+            public void onEnable(THHGame game, Card card)
+            {
+                card.addBuff(game,buff);
+                if (TurnEndTrigger == null)
+                {
+                    TurnEndTrigger = new Trigger<THHGame.TurnEndEventArg>(arg =>
+                    {
+                        card.removeBuff(game,buff);
+                        game.triggers.removeAfter(TurnEndTrigger);
+                        TurnEndTrigger = null;
+                        return Task.CompletedTask;
+                    });
+                    game.triggers.registerAfter(TurnEndTrigger);
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 0 水符【冬之素】 使目标随从冻结
+    /// </summary>
+    public class WinterSober : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x020;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new LambdaSingleTargetEffect((game,card,target)=>
+            {
+                target.setFreeze(true);
+                return Task.CompletedTask;
+            })
+        };
+    }
+    /// <summary>
+    /// 0 木符【春之风】 使目标随从获得生命值+2
+    /// </summary>
+    public class SpringWind : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x021;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new LambdaSingleTargetEffect((game,card,target)=>
+            {
+                target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(2)));
+                return Task.CompletedTask;
+            })
+        };
+    }
+    /// <summary>
+    /// 0 金符【秋之刃】 随机对一个敌方随从造成2点伤害
+    /// </summary>
+    public class AutumnBlade : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x022;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer opponent = game.getOpponent(card.getOwner());
+            if (opponent.field.count > 0)
+            {
+                await opponent.field.randomTake(game, 1).damage(game, card, 2);
+            }
+        }
+    }
+    /// <summary>
+    /// 0 土符【土用之枪】 召唤一个1/1的宝石长枪
+    /// </summary>
+    public class EarthGun : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x023;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().createToken(game, game.getCardDefine<GemLance>(), card.getOwner().field.count);
+        }
+    }
+    /// <summary>
+    /// 111 衍生随从 宝石长枪
+    /// </summary>
+    public class GemLance : ServantCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x658;
+        public override int id { get; set; } = ID;
+        public override bool isToken { get; set; } = true;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+    /// <summary>
+    /// 4 金木符【元素收割者】 对所有敌方随从造成2点伤害，每消灭一个敌方随从使一个随机友方随从获得+1/1
+    /// </summary>
+    public class ElementHarvester : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x024;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer opponent = game.getOpponent(card.getOwner());
+            foreach(Card target in opponent.field)
+            {
+                await target.damage(game, card, 2);
+                if(target.isDead())
+                {
+                    game.logger.log("die!!");
+                    foreach(Card buffcard in card.getOwner().field.randomTake(game, 1))
+                        buffcard.addBuff(game,new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 6 金水符【水银之毒】 使所有敌方随从攻击力-3直到你的回合开始，若其攻击力被减为0，则将其消灭
+    /// </summary>
+    public class MercuryPoison : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x025;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,card,arg)=>
+            {
+                return true;
+            },(game,card,targets)=>
+            {
+                return false;
+            },(game,card,arg,targets)=>
+            {
+                THHPlayer opponent = game.getOpponent(card.getOwner());
+                foreach(Card target in opponent.field)
+                {
+                    new BuffFixer().onEnable(game,target);
+                }
+                return Task.CompletedTask;
+            })
+        };
+        class BuffFixer
+        {
+            Trigger<THHGame.TurnStartEventArg> TurnEndTrigger { get; set; } = null;
+            Buff buff = new GeneratedBuff(ID, new AttackModifier(-3));
+            public void onEnable(THHGame game, Card card)
+            {
+                card.addBuff(game, buff);
+                if (card.getAttack() == 0)
+                    card.setDead(true);
+                if (TurnEndTrigger == null)
+                {
+                    TurnEndTrigger = new Trigger<THHGame.TurnStartEventArg>(arg =>
+                    {
+                        if (game.currentPlayer != card.getOwner())
+                        {
+                            card.removeBuff(game, buff);
+                            game.triggers.removeAfter(TurnEndTrigger);
+                            TurnEndTrigger = null;  
+                        }
+                        return Task.CompletedTask;
+                    });
+                    game.triggers.registerAfter(TurnEndTrigger);   
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 6 木火符【森林大火】 使所有友方随从获得+2/2，你每控制一个随从便对目标造成1点伤害
+    /// </summary>
+    public class ForestFire : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x026;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new LambdaSingleTargetEffect((game,card,target)=>
+            {
+                foreach(Card buffcard in card.getOwner().field)
+                {
+                    buffcard.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
+                }
+                return target.damage(game,card,card.getOwner().field.count);
+            })
+        };
+    }
+    /// <summary>
+    /// 4 木土符【抽芽行尸】 使目标随从获得亡语：召唤一个目标随从的复制并使其获得+3+3
+    /// </summary>
+    public class SproutingWalkingDead : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x027;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new LambdaSingleTargetEffect((game,card,target)=>
+            {
+                target.define.effects = target.define.effects.Concat(addeffect).ToArray();
+                return Task.CompletedTask;
+            })
+        };
+        private static IEffect[] addeffect = new IEffect[]{new THHEffectAfter<THHCard.DeathEventArg>(PileName.GRAVE, (game, card, arg) =>
+        {
+            return arg.infoDic.Any(p => p.Key == card);
+        }, (game, card, targets) =>
+        {
+            return true;
+        }, async (game, card, arg) =>
+        {
+            await arg.infoDic[card].player.createToken(game, game.getCardDefine(card.define.id), arg.infoDic[card].position);
+        })
+        };
+    }
+    /// <summary>
+    /// 6 水木符【水精灵】 使目标随从获得+3/6和嘲讽，并回复其所有生命值
+    /// </summary>
+    public class WaterSpirit : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x028;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new LambdaSingleTargetEffect((game,card,target)=>
+            {
+                target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3)));
+                return target.heal(game,target.getLife()-target.getCurrentLife());
+            })
+        };
+    }
+    /// <summary>
+    /// 4 水火符【燃素之雨】 造成点6伤害，随机分配给所有敌方角色
+    /// </summary>
+    public class BurningRain : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x029;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            for(int i=0;i<6;i++)
+                await game.getAllEnemies(card.getOwner()).randomTake(game, 1).damage(game, card, 1);
+        }
+    }
+    /// <summary>
+    /// 火金符【圣爱尔摩火柱】 对目标随从造成6点伤害，并对其相邻的随从造成2点伤害
+    /// </summary>
+    public class SanElmoFirePillar : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x030;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new LambdaSingleTargetEffect((game,card,target)=>
+            {
+                target.damage(game,card,6);
+                return target.getNearbyCards().damage(game,card,2);
+            })
+        };
+    }
+    /// <summary>
+    /// 火土符【环状熔岩带】 召唤3个2/2并能在回合结束对随机敌方角色造成2点伤害的熔岩元素
+    /// </summary>
+    public class RingLava : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x031;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            for(int i =0;i<3;i++)
+                await card.getOwner().createToken(game, game.getCardDefine<Lavaelement>(), card.getOwner().field.count);
+        }
+    }
+    /// <summary>
+    /// 衍生随从 熔岩元素 回合结束对随机敌方角色造成2点伤害
+    /// </summary>
+    public class Lavaelement : ServantCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x659;
+        public override int id { get; set; } = ID;
+        public override bool isToken { get; set; } = true;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]{
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
+            {
+                if(card.getOwner() != game.currentPlayer)
+                    return false;
+                return true;
+            },(game,card,targets)=>
+            {
+                return false;
+            },async(game,card,arg)=>
+            {
+                await game.getAllEnemies(card.getOwner()).randomTake(game, 1).damage(game, card, 2);
+            })
+        };
+    }
+    /// <summary>
+    /// 土金符【淡黄阵风】 每有一个敌方随从，便召唤一个3/1具有突袭的沙尘元素
+    /// </summary>
+    public class Lightyellowgust : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x032;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer opponent = game.getOpponent(card.getOwner());
+            for (int i = 0; i < opponent.field.count; i++)
+                await card.getOwner().createToken(game, game.getCardDefine<Dustelement>(), card.getOwner().field.count);
+        }
+    }
+    /// <summary>
+    /// 衍生随从 沙尘元素 31突袭
+    /// </summary>
+    public class Dustelement : ServantCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x660;
+        public override int id { get; set; } = ID;
+        public override bool isToken { get; set; } = true;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { Keyword.RUSH };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+    /// <summary>
+    /// 土水符【诺亚洪水】 沉默所有随从，然后召唤1个2/2并具有嘲讽的洪水元素
+    /// </summary>
+    public class NoahFlood : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x033;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            foreach(Card servant in game.getAllServants())
+            {
+                servant.define.effects = new IEffect[0];
+            }
+            for (int i = 0; i < 2; i++)
+                await card.getOwner().createToken(game, game.getCardDefine<Floodelement>(), card.getOwner().field.count);
+        }
+    }
+    /// <summary>
+    /// 衍生随从 洪水元素 嘲讽
+    /// </summary>
+    public class Floodelement : ServantCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x661;
+        public override int id { get; set; } = ID;
+        public override bool isToken { get; set; } = true;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
     }
 }
