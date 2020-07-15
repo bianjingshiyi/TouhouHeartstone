@@ -82,11 +82,6 @@ namespace Game
             {
                 ui.TipText.setAlpha(1/*_tipTimer.getRemainedTime() / _tipTimer.duration*/);
             }
-            //if (isSelectingTarget && usingCard.define is ServantCardDefine)
-            //{
-            //    //取消战吼
-            //    if (EventSystem.current.currentInputModule.input. !isOnTarget(new PointerEventData(EventSystem.current), out var card))
-            //}
         }
         /// <summary>
         /// 设置游戏对象和玩家并初始化UI
@@ -175,11 +170,19 @@ namespace Game
         #region UI
         void onClickNoWhere(Table table, PointerEventData pointer)
         {
+            tryCancelUse();
+        }
+
+        private bool tryCancelUse()
+        {
             if (usingCard != null && usingCard.define is ServantCardDefine && isSelectingTarget)
             {
-                UberDebug.LogChannel("UI", "ClickNoWhere");
+                resetUse(true, true);
+                return true;
             }
+            return false;
         }
+
         /// <summary>
         /// 尝试获取一张卡对应的Master
         /// </summary>
@@ -309,6 +312,8 @@ namespace Game
         {
             if (!canControl)
                 return;
+            if (tryCancelUse())
+                return;
             if (usingCard != null)//已经在用别的牌了，不能点技能
                 return;
             if (player.skill.isUsable(game, player, out var info))
@@ -368,14 +373,12 @@ namespace Game
                 cancelSkill();
                 return;
             }
+            if (usingCard != null && usingCard != player.skill)
+                return;//在用其他卡片
             if (usingCard != player.skill)
             {
                 cancelSkill();
                 return;
-            }
-            if (usingCard != null)
-            {
-                return;//已经在使用其他卡牌了
             }
             if (isOnTarget(pointer, out var target))
             {
