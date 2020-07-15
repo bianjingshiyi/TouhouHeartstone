@@ -401,8 +401,8 @@ GameObject:
   - component: {fileID: 2976694557532219890}
   - component: {fileID: 2552346440453194824}
   - component: {fileID: 6724395705441483877}
-  - component: {fileID: 300039448989035209}
   - component: {fileID: 5872990134443048607}
+  - component: {fileID: 6775156639724210257}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -466,20 +466,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &300039448989035209
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2452597073961219392}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AspectMode: 4
-  m_AspectRatio: 1
 --- !u!114 &5872990134443048607
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -495,6 +481,20 @@ MonoBehaviour:
   _matPropList:
   - name: _BlackWhite
     floatValue: 0.5
+--- !u!114 &6775156639724210257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2452597073961219392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aee4afc213a51341a79e009f669f865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 4
+  m_AspectRatio: 1
 --- !u!1 &2821792485326690568
 GameObject:
   m_ObjectHideFlags: 0

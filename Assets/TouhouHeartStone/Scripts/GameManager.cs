@@ -104,8 +104,12 @@ namespace Game
         {
             if (gameTask != null)
             {
-                if (!game.isRunning || gameTask.IsCompleted || gameTask.IsCanceled || gameTask.IsFaulted)
+                if (gameTask.IsCanceled || gameTask.IsFaulted)
                 {
+                    if (gameTask.Exception != null)
+                        UberDebug.LogErrorChannel("Game", "游戏因异常退出：" + gameTask.Exception);
+                    else
+                        UberDebug.LogErrorChannel("Game", "游戏因未知异常退出");
                     quitGame();
                 }
             }
@@ -137,8 +141,6 @@ namespace Game
             displayGameUI(localPlayer);
             //AI玩家用AI
             new AI(game, aiPlayer);
-
-            game.triggers.onEventAfter += onEventAfter;
             gameTask = game.run();
         }
         public void startRemoteGame(ClientManager client, GameOption option, RoomPlayerInfo[] players)
@@ -161,7 +163,6 @@ namespace Game
                 if (client.id == info.id)
                     displayGameUI(player);
             }
-            game.triggers.onEventAfter += onEventAfter;
             gameTask = game.run();
         }
         private void checkDeckValid(int[] deck)
@@ -203,9 +204,6 @@ namespace Game
                 gameTask = null;
                 onGameEnd?.Invoke();
             }
-        }
-        private void onEventAfter(TouhouCardEngine.Interfaces.IEventArg obj)
-        {
         }
         public event Action onGameEnd;
         void tryLoadDeckFromPrefs()
