@@ -29,7 +29,7 @@ namespace Game
         }
         protected void Start()
         {
-            _loadCardTask = getManager<CardManager>().load(new string[] { "Cards/Card.xls", "Cards/Patchouli.xls" }, new System.Reflection.Assembly[] { typeof(THHGame).Assembly });
+            _loadCardTask = getManager<CardManager>().load(new string[] { "Cards/Cards.xls", "Cards/Patchouli.xls" }, new System.Reflection.Assembly[] { typeof(THHGame).Assembly });
         }
         protected void Update()
         {

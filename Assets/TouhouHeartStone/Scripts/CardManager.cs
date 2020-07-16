@@ -11,6 +11,7 @@ using System.Data;
 using IGensoukyo.Utilities;
 using TouhouHeartstone;
 using MongoDB.Bson;
+using System.IO;
 using MongoDB.Bson.Serialization;
 using ILogger = TouhouCardEngine.Interfaces.ILogger;
 namespace Game
@@ -29,7 +30,7 @@ namespace Game
         {
             if (_defaultImage == null)
             {
-                Texture2D texture = await getManager<ResourceManager>().loadTexture(_defaultImagePath);
+                Texture2D texture = await getManager<ResourceManager>().loadTexture(_defaultImagePath, null);
                 _defaultImage = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
             }
             return _defaultImage;
@@ -226,7 +227,7 @@ namespace Game
                     string imagePath = datarow.ReadCol("Image", "");
                     try
                     {
-                        Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath);
+                        Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
                         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
                         skin.image = sprite;
                     }
