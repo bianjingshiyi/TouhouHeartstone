@@ -456,7 +456,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 613689129cc15ea40b5652e7ddc95e49, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 40ae718547bea62478890d4b8c009638, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -494,7 +494,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AspectMode: 4
-  m_AspectRatio: 1
+  m_AspectRatio: 1.5306427
 --- !u!1 &2821792485326690568
 GameObject:
   m_ObjectHideFlags: 0
