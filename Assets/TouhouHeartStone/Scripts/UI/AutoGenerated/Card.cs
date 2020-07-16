@@ -309,8 +309,8 @@ namespace UI
         partial void onAwake();
         public enum IsFaceup
         {
-            False,
-            True,
+            IsFaceup_False,
+            IsFaceup_True,
         }
         public IsFaceup IsFaceupController
         {
@@ -325,8 +325,8 @@ namespace UI
         }
         public enum Type
         {
-            Servant,
-            Spell,
+            Type_Servant,
+            Type_Spell,
         }
         public Type TypeController
         {

@@ -28,6 +28,7 @@ namespace UI
             this._BackgroundImage = this.transform.Find("Background").GetComponent<Image>();
             this._Table = this.transform.Find("Table").GetComponent<Table>();
             this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
+            this._GameResultDialog = this.transform.Find("GameResultDialog").GetComponent<GameResultDialog>();
         }
         private Main _parent;
         public Main parent
@@ -74,6 +75,19 @@ namespace UI
                     this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
                 }
                 return this._QuitButton;
+            }
+        }
+        [SerializeField()]
+        private GameResultDialog _GameResultDialog;
+        public GameResultDialog GameResultDialog
+        {
+            get
+            {
+                if ((this._GameResultDialog == null))
+                {
+                    this._GameResultDialog = this.transform.Find("GameResultDialog").GetComponent<GameResultDialog>();
+                }
+                return this._GameResultDialog;
             }
         }
         partial void onAwake();

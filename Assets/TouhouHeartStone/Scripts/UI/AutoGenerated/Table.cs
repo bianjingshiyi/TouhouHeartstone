@@ -49,8 +49,9 @@ namespace UI
             this._BlockerButton = this.transform.Find("Blocker").GetComponent<Button>();
             this._SelfHandList = this.transform.Find("SelfHand").GetComponent<HandList>();
             this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
-            this._TipText = this.transform.Find("TipText").GetComponent<Text>();
             this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
+            this._Discover = this.transform.Find("Discover").GetComponent<Discover>();
+            this._TipText = this.transform.Find("TipText").GetComponent<Text>();
             this._Fatigue = this.transform.Find("Fatigue").GetComponent<Fatigue>();
             this._TurnTipImage = this.transform.Find("TurnTipImage").GetComponent<Image>();
             this._TurnTipText = this.transform.Find("TurnTipImage").Find("TurnTipText").GetComponent<Text>();
@@ -376,19 +377,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _TipText;
-        public Text TipText
-        {
-            get
-            {
-                if ((this._TipText == null))
-                {
-                    this._TipText = this.transform.Find("TipText").GetComponent<Text>();
-                }
-                return this._TipText;
-            }
-        }
-        [SerializeField()]
         private Card _LargeCard;
         public Card LargeCard
         {
@@ -399,6 +387,32 @@ namespace UI
                     this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
                 }
                 return this._LargeCard;
+            }
+        }
+        [SerializeField()]
+        private Discover _Discover;
+        public Discover Discover
+        {
+            get
+            {
+                if ((this._Discover == null))
+                {
+                    this._Discover = this.transform.Find("Discover").GetComponent<Discover>();
+                }
+                return this._Discover;
+            }
+        }
+        [SerializeField()]
+        private Text _TipText;
+        public Text TipText
+        {
+            get
+            {
+                if ((this._TipText == null))
+                {
+                    this._TipText = this.transform.Find("TipText").GetComponent<Text>();
+                }
+                return this._TipText;
             }
         }
         [SerializeField()]

@@ -392,9 +392,9 @@ MonoBehaviour:
   _Image_3: {fileID: 3952394829758703074}
   _HighlightImage: {fileID: 2593902375022216909}
   _BackgroundImage: {fileID: 4712789771521229126}
-  _ImageMask: {fileID: 0}
+  _ImageMask: {fileID: 2470481777276467000}
   _Image: {fileID: 2470481776923723664}
-  _MaskImage: {fileID: 2470481777276467003}
+  _MaskImage: {fileID: 7890671223044519497}
   _BorderImage: {fileID: 1519690174396059162}
   _AtkImage: {fileID: 290831591498722625}
   _AttackTextPropNumber: {fileID: 5388715380635890011}
@@ -562,7 +562,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 40ae718547bea62478890d4b8c009638, type: 3}
+  m_Sprite: {fileID: -1565917534116930634, guid: 40ae718547bea62478890d4b8c009638,
+    type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -585,7 +586,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AspectMode: 4
-  m_AspectRatio: 1.5306427
+  m_AspectRatio: 1.2342657
 --- !u!1 &2470481777276467006
 GameObject:
   m_ObjectHideFlags: 0
