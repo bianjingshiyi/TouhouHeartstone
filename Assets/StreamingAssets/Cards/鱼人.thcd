@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Card id="103" type="2">
-  <Effect pile="Field" trigger="onUse">engine.summon(player, engine.rule.pool[101], player["Field"].count);</Effect>
-  <cost>2</cost>
-  <attack>2</attack>
-  <life>1</life>
-</Card>

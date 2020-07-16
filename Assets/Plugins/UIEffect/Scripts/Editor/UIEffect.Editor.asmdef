@@ -1,0 +1,17 @@
+{
+    "name": "UIEffect.Editor",
+    "references": [
+        "GUID:04fc4c34da21bb645900a23283a782b3"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

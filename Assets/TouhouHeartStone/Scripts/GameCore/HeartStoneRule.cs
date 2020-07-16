@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 
-using TouhouHeartstone.Backend.Builtin;
+using TouhouCardEngine;
 
-namespace TouhouHeartstone.Backend
+namespace TouhouHeartstone
 {
     /// <summary>
     /// 这个炉石规则是测试用的。
@@ -71,30 +71,32 @@ namespace TouhouHeartstone.Backend
         public override void afterEvent(CardEngine engine, Event e)
         {
             Player[] sortedPlayers = engine.getProp<Player[]>("sortedPlayers");
-            if (e.name is "onInitReplace")
-            {
-                //玩家准备完毕
-                e.getProp<Player>("player").setProp("prepared", true);
-                //判断是否所有玩家都准备完毕
-                if (engine.getPlayers().All(p => { return p.getProp<bool>("prepared"); }))
-                {
-                    //对战开始
-                    engine.start();
-                }
-            }
-            else if (e.name == "onStart")
-            {
-                engine.turnStart(sortedPlayers[0]);
-            }
-            else if (e.name == "onTurnEnd")
-            {
-                int index = Array.IndexOf(sortedPlayers, engine.getProp<Player>("currentPlayer"));
-                index++;
-                if (index >= sortedPlayers.Length)
-                    index = 0;
-                Player nextPlayer = sortedPlayers[index];
-                engine.turnStart(nextPlayer);
-            }
+            //if (e.name is "onInitReplace")
+            //{
+            //    //玩家准备完毕
+            //    e.getProp<Player>("player").setProp("prepared", true);
+            //    //判断是否所有玩家都准备完毕
+            //    if (engine.getPlayers().All(p => { return p.getProp<bool>("prepared"); }))
+            //    {
+            //        //对战开始
+            //        engine.start();
+            //    }
+            //}
+            //else
+            //if (e.name == "onStart")
+            //{
+            //    engine.turnStart(sortedPlayers[0]);
+            //}
+            //else
+            //if (e.name == "onTurnEnd")
+            //{
+            //    int index = Array.IndexOf(sortedPlayers, engine.getProp<Player>("currentPlayer"));
+            //    index++;
+            //    if (index >= sortedPlayers.Length)
+            //        index = 0;
+            //    Player nextPlayer = sortedPlayers[index];
+            //    engine.turnStart(nextPlayer);
+            //}
         }
     }
 }

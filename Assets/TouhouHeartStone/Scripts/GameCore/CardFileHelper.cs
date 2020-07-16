@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
-namespace TouhouHeartstone.Backend
+using TouhouCardEngine;
+
+namespace TouhouHeartstone
 {
     public static class CardFileHelper
     {
@@ -62,7 +64,7 @@ namespace TouhouHeartstone.Backend
             if (effectList.Count > 0)
                 card.setProp("effects", effectList.ToArray());
             //属性
-            if (card.type == CardDefineType.servant)
+            if (card.type == CardDefineType.SERVANT)
             {
                 if (doc["Card"]["cost"] != null)
                     card.setProp("cost", Convert.ToInt32(doc["Card"]["cost"].InnerText));
@@ -71,7 +73,7 @@ namespace TouhouHeartstone.Backend
                 if (doc["Card"]["life"] != null)
                     card.setProp("life", Convert.ToInt32(doc["Card"]["life"].InnerText));
             }
-            else if (card.type == CardDefineType.spell)
+            else if (card.type == CardDefineType.SPELL)
             {
                 if (doc["Card"]["cost"] != null)
                     card.setProp("cost", Convert.ToInt32(doc["Card"]["cost"].InnerText));
@@ -93,9 +95,9 @@ namespace TouhouHeartstone.Backend
             XmlElement cardEle = doc.CreateElement("Card");
             //ID与类型
             cardEle.SetAttribute("id", card.id.ToString());
-            cardEle.SetAttribute("type", ((int)card.type).ToString());
+            cardEle.SetAttribute("type", card.type);
             //属性
-            if (card.type == CardDefineType.servant)
+            if (card.type == CardDefineType.SERVANT)
             {
                 XmlElement propEle = doc.CreateElement("cost");
                 propEle.InnerText = card.getProp<int>("cost").ToString();
@@ -107,7 +109,7 @@ namespace TouhouHeartstone.Backend
                 propEle.InnerText = card.getProp<int>("life").ToString();
                 cardEle.AppendChild(propEle);
             }
-            else if (card.type == CardDefineType.spell)
+            else if (card.type == CardDefineType.SPELL)
             {
                 XmlElement propEle = doc.CreateElement("cost");
                 propEle.InnerText = card.getProp<int>("cost").ToString();

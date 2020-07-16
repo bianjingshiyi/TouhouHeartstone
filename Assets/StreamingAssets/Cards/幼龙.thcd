@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Card id="106" type="2">
-  <Effect pile="Field" trigger="onUse">engine.draw(player);</Effect>
-  <cost>5</cost>
-  <attack>4</attack>
-  <life>4</life>
-</Card>

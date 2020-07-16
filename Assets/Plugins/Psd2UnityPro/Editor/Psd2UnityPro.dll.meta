@@ -1,0 +1,51 @@
+fileFormatVersion: 2
+guid: 393acd78c52e246f5b0089f469f36000
+labels:
+- Arrange
+- Auto
+- Automatic
+- Button
+- GUI
+- Import
+- Layer
+- Layers
+- Layout
+- Photoshop
+- Position
+- Psd
+- Size
+- Text
+- UI
+- uGUI
+timeCreated: 1498630074
+licenseType: Store
+PluginImporter:
+  serializedVersion: 2
+  iconMap: {}
+  executionOrder: {}
+  isPreloaded: 0
+  isOverridable: 0
+  platformData:
+    data:
+      first:
+        Any: 
+      second:
+        enabled: 0
+        settings: {}
+    data:
+      first:
+        Editor: Editor
+      second:
+        enabled: 1
+        settings:
+          DefaultValueInitialized: true
+    data:
+      first:
+        Windows Store Apps: WindowsStoreApps
+      second:
+        enabled: 0
+        settings:
+          CPU: AnyCPU
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

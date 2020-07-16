@@ -1,3 +1,15 @@
 [submodule "Assets/Plugins/UberLogger"]
 	path = Assets/Plugins/UberLogger
 	url = https://code.lotlab.org/IGensokyo/UberLogger-fork.git
+[submodule "Assets/Plugins/TouhouCardEngine"]
+	path = Assets/Plugins/TouhouCardEngine
+	url = https://github.com/bianjingshiyi/TouhouCardEngine.git
+[submodule "Assets/Plugins/BJSYGameCore"]
+	path = Assets/Plugins/BJSYGameCore
+	url = https://github.com/bianjingshiyi/BJSYGameCore.git
+[submodule "Assets/Plugins/CustomBuilder"]
+	path = Assets/Plugins/CustomBuilder
+	url = https://code.lotlab.org/IGensokyo/CustomBuilder
+[submodule "Assets/TouhouHeartStone/MassResources"]
+	path = Assets/TouhouHeartStone/MassResources
+	url = https://github.com/bianjingshiyi/TouhouHeartstone.MassResources.git

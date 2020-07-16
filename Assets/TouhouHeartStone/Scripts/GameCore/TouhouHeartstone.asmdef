@@ -1,0 +1,16 @@
+{
+    "name": "TouhouHeartstone",
+    "references": [
+        "GUID:8d127f57985fd644ca5546f1641c002f",
+        "GUID:775f4b264035e5f4899e7e2905ae72a5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
