@@ -72,7 +72,6 @@ namespace Game
         }
         protected void Update()
         {
-            updateAnim();
             if (_tipTimer.isExpired())
             {
                 _tipTimer.reset();
@@ -82,6 +81,17 @@ namespace Game
             {
                 ui.TipText.setAlpha(1/*_tipTimer.getRemainedTime() / _tipTimer.duration*/);
             }
+
+            if (game == null)
+                return;
+            if (game.turnTimer != null && game.turnTimer.remainedTime <= 15)
+            {
+                ui.TimeoutSlider.display();
+                ui.TimeoutSlider.value = game.turnTimer.remainedTime / 15;
+            }
+            else
+                ui.TimeoutSlider.hide();
+            updateAnim();
         }
         /// <summary>
         /// 设置游戏对象和玩家并初始化UI
@@ -108,6 +118,8 @@ namespace Game
             ui.EnemyHandList.clearItems();
             ui.AttackArrowImage.hide();
             ui.Fatigue.hide();
+            ui.Discover.Button.onClick.set(onDiscoverHideButtonClick);
+            ui.Discover.hide();
             _animationQueue.Clear();
 
             if (game != null)
@@ -115,6 +127,7 @@ namespace Game
                 game.triggers.onEventBefore -= onEventBefore;
                 game.triggers.onEventAfter -= onEventAfter;
                 game.answers.onRequest -= onRequest;
+                game.answers.onResponse -= onResponse;
             }
             this.game = game;
             if (game != null)
@@ -122,6 +135,7 @@ namespace Game
                 game.triggers.onEventBefore += onEventBefore;
                 game.triggers.onEventAfter += onEventAfter;
                 game.answers.onRequest += onRequest;
+                game.answers.onResponse += onResponse;
             }
             this.player = player;
         }
@@ -142,6 +156,17 @@ namespace Game
                 addAnim(anim);
             else
                 UberDebug.LogWarningChannel("UI", "没有与" + obj + "相应的动画");
+        }
+        void onResponse(IResponse response)
+        {
+            switch (response)
+            {
+                case DiscoverResponse _:
+                    closeDiscoverDialog();
+                    break;
+                default:
+                    break;
+            }
         }
         /// <summary>
         /// 事件前处理
@@ -687,7 +712,7 @@ namespace Game
             {
                 HandListItem usingHand = getHand(usingCard);
                 usingHand.Card.display();
-                usingHand.Card.onFaceupControllerTrue.Invoke();
+                usingHand.Card.isFaceup = true;
                 usingHand.Card.rectTransform.localScale = Vector3.one;
                 usingHand.Card.rectTransform.localPosition = Vector2.zero;
             }
@@ -758,16 +783,12 @@ namespace Game
             ui.CostPropNumber.asText.text = card.getCost().ToString();
             if (card.define.type == CardDefineType.SERVANT)
             {
-                // ui.TypeController = UI.Card.Type.Servant;
                 ui.onTypeControllerServant?.Invoke();
                 ui.AttackPropNumber.asText.text = card.getAttack().ToString();
                 ui.LifePropNumber.asText.text = card.getLife().ToString();
             }
             else
-            {
-                // ui.TypeController = UI.Card.Type.Spell;
                 ui.onTypeControllerSpell?.Invoke();
-            }
 
             if (isFaceup)
             {
@@ -775,13 +796,11 @@ namespace Game
                 ui.Image.sprite = skin.image;
                 ui.NameText.text = skin.name;
                 ui.DescText.text = skin.desc;
-                // ui.IsFaceupController = UI.Card.IsFaceup.True;
-                ui.onFaceupControllerTrue?.Invoke();
+                ui.isFaceup = true;
             }
             else
             {
-                // ui.IsFaceupController = UI.Card.IsFaceup.False;
-                ui.onFaceupControllerFalse?.Invoke();
+                ui.isFaceup = false;
             }
         }
         Dictionary<TouhouCardEngine.Card, Servant> cardServantDic { get; } = new Dictionary<TouhouCardEngine.Card, Servant>();
@@ -1044,9 +1063,45 @@ namespace Game
             ui.ServantPlaceHolder.Servant.hide();
             ui.ServantPlaceHolder.hide();
         }
-        void onDiscover()
+        public void displayDiscoverDialog(int[] cardIdArray)
         {
-
+            ui.Discover.display();
+            ui.Discover.HoriCardList.clearItems();
+            foreach (var cardId in cardIdArray)
+            {
+                var card = game.getCard(cardId);
+                var item = ui.Discover.HoriCardList.addItem();
+                setCard(item.Card, card, true);
+                item.asButton.onClick.set(() =>
+                {
+                    game.answers.answer(player.id, new DiscoverResponse()
+                    {
+                        cardId = card.id
+                    });
+                    closeDiscoverDialog();
+                });
+            }
+        }
+        void onDiscoverHideButtonClick()
+        {
+            if (ui.Discover.PanelImage.gameObject.activeSelf)
+            {
+                ui.Discover.Button.setText("显示");
+                ui.Discover.PanelImage.hide();
+            }
+            else
+            {
+                ui.Discover.Button.setText("隐藏");
+                ui.Discover.PanelImage.display();
+                foreach (var item in ui.Discover.HoriCardList)
+                {
+                    item.Card.isFaceup = true;
+                }
+            }
+        }
+        void closeDiscoverDialog()
+        {
+            ui.Discover.hide();
         }
         [SerializeField]
         BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer();

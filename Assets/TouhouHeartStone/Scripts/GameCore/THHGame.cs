@@ -395,6 +395,7 @@ namespace TouhouHeartstone
                         }
                     }
                 }
+                answers.cancel(answers.getRequests(player.id));
                 return Task.CompletedTask;
             });
             time.cancel(turnTimer);

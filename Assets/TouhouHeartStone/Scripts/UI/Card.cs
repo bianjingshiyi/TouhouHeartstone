@@ -19,7 +19,7 @@ namespace UI
             if (card.define.type == CardDefineType.SERVANT)
             {
                 // TypeController = Type.Servant;
-                onTypeControllerServant?.Invoke();
+                //onTypeControllerServant?.Invoke();
                 AttackPropNumber.asText.text = card.getAttack().ToString();
                 LifePropNumber.asText.text = card.getLife().ToString();
             }
@@ -35,12 +35,12 @@ namespace UI
                 NameText.text = skin.name;
                 DescText.text = skin.desc;
                 // IsFaceupController = IsFaceup.True;
-                onFaceupControllerTrue?.Invoke();
+                isFaceup = true;
             }
             else
             {
                 // IsFaceupController = IsFaceup.False;
-                onFaceupControllerFalse?.Invoke();
+                isFaceup = false;
             }
         }
         public void update(CardDefine card, CardSkinData skin)
@@ -53,7 +53,7 @@ namespace UI
             NameText.text = skin.name;
             DescText.text = skin.desc;
             // IsFaceupController = IsFaceup.True;
-            onFaceupControllerTrue?.Invoke();
+            isFaceup = true;
         }
         [SerializeField]
         AnimationCurve _useCurve = new AnimationCurve();
@@ -67,21 +67,46 @@ namespace UI
         {
             get { return _drawCurve; }
         }
-
+        public bool isFaceup
+        {
+            set
+            {
+                if (value)
+                {
+                    _onFaceupControllerTrue.Invoke();
+                    AttackPropNumber.display();
+                    LifePropNumber.display();
+                }
+                else
+                {
+                    _onFaceupControllerFalse.Invoke();
+                    AttackPropNumber.hide();
+                    LifePropNumber.hide();
+                }
+            }
+        }
+        public string type
+        {
+            set
+            {
+                switch (value)
+                {
+                    //case CardCategory
+                    default://SERVANT
+                        _onTypeControllerServant.Invoke();
+                        break;
+                }
+            }
+        }
         [SerializeField]
         private UnityEvent _onTypeControllerSpell;
         public UnityEvent onTypeControllerSpell => _onTypeControllerSpell;
 
         [SerializeField]
         private UnityEvent _onTypeControllerServant;
-        public UnityEvent onTypeControllerServant => _onTypeControllerServant;
-
         [SerializeField]
         private UnityEvent _onFaceupControllerFalse;
-        public UnityEvent onFaceupControllerFalse => _onFaceupControllerFalse;
-
         [SerializeField]
         private UnityEvent _onFaceupControllerTrue;
-        public UnityEvent onFaceupControllerTrue => _onFaceupControllerTrue;
     }
 }

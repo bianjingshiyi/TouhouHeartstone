@@ -26,6 +26,7 @@ namespace Game
                 main.display(main.NetworkingPage);
                 network.displayLANPanel();
             });
+            main.display(main.Loading);
         }
         protected void Start()
         {

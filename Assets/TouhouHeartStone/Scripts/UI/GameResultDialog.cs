@@ -12,7 +12,7 @@ using BJSYGameCore;
 
 namespace UI
 {
-    public partial class GameResultDialog : UIObject
+    public partial class GameResultDialog
     {
         public UnityEvent onGameSuccess;
         public UnityEvent onGameFail;
