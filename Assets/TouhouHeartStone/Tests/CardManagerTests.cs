@@ -46,7 +46,7 @@ namespace Tests
             string xlsFile = Path.Combine(Application.streamingAssetsPath, fileName);
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
 
-            await cm.Load(new string[] { fileName });
+            await cm.load(new string[] { fileName });
 
             File.Delete(xlsFile);
             return cm;
@@ -75,7 +75,7 @@ namespace Tests
 
             string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
-            var task = cm.Load(new string[] { "Cards/*.xls" });
+            var task = cm.load(new string[] { "Cards/*.xls" });
 
             yield return new WaitUntil(() => task.IsCompleted);
             Assert.IsNull(task.Exception);

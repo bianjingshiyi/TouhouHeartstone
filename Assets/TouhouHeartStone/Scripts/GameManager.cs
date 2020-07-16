@@ -30,10 +30,16 @@ namespace Game
         public List<DeckItem> deckList = new List<DeckItem>();
         public int[] toIdArray()
         {
-            List<int> list = new List<int>();
-            list.Add(master);
+            List<int> list = new List<int>
+            {
+                master
+            };
             foreach (var item in deckList)
             {
+                if (item.id < 1)
+                    continue;
+                if (item.count < 1)
+                    continue;
                 list.AddRange(Enumerable.Repeat(item.id, item.count));
             }
             return list.ToArray();
@@ -98,8 +104,12 @@ namespace Game
         {
             if (gameTask != null)
             {
-                if (!game.isRunning || gameTask.IsCompleted || gameTask.IsCanceled || gameTask.IsFaulted)
+                if (gameTask.IsCanceled || gameTask.IsFaulted)
                 {
+                    if (gameTask.Exception != null)
+                        UberDebug.LogErrorChannel("Game", "游戏因异常退出：" + gameTask.Exception);
+                    else
+                        UberDebug.LogErrorChannel("Game", "游戏因未知异常退出");
                     quitGame();
                 }
             }
@@ -131,8 +141,6 @@ namespace Game
             displayGameUI(localPlayer);
             //AI玩家用AI
             new AI(game, aiPlayer);
-
-            game.triggers.onEventAfter += onEventAfter;
             gameTask = game.run();
         }
         public void startRemoteGame(ClientManager client, GameOption option, RoomPlayerInfo[] players)
@@ -155,7 +163,6 @@ namespace Game
                 if (client.id == info.id)
                     displayGameUI(player);
             }
-            game.triggers.onEventAfter += onEventAfter;
             gameTask = game.run();
         }
         private void checkDeckValid(int[] deck)
@@ -196,13 +203,6 @@ namespace Game
                 _ui.display(_ui.MainMenu);
                 gameTask = null;
                 onGameEnd?.Invoke();
-            }
-        }
-        private void onEventAfter(TouhouCardEngine.Interfaces.IEventArg obj)
-        {
-            if (obj is THHGame.GameEndEventArg)
-            {
-                quitGame();
             }
         }
         public event Action onGameEnd;

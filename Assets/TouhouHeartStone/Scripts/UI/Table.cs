@@ -88,6 +88,11 @@ namespace UI
             if (opponent == null)
                 return;
         }
+        public void clickNoWhere(PointerEventData pointer)
+        {
+            onClickNoWhere.invoke(this, pointer);
+        }
+        public ActionEvent<Table, PointerEventData> onClickNoWhere { get; } = new ActionEvent<Table, PointerEventData>();
         public void onClickMaster(Master master, PointerEventData pointer)
         {
             if (isSelectingTarget)

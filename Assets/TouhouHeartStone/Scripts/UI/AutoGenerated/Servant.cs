@@ -30,8 +30,8 @@ namespace UI
             this._Image_3 = this.transform.Find("Root").Find("Taunt").Find("GameObject (2)").Find("Image (3)").GetComponent<Image>();
             this._HighlightImage = this.transform.Find("Root").Find("Highlight").GetComponent<Image>();
             this._BackgroundImage = this.transform.Find("Root").Find("Background").GetComponent<Image>();
-            this._Mask = this.transform.Find("Root").Find("Mask").GetComponent<Mask>();
-            this._Image = this.transform.Find("Root").Find("Mask").Find("Image").GetComponent<Image>();
+            this._ImageMask = this.transform.Find("Root").Find("ImageMask").GetComponent<Mask>();
+            this._Image = this.transform.Find("Root").Find("ImageMask").Find("Image").GetComponent<Image>();
             this._MaskImage = this.transform.Find("Root").Find("Mask").GetComponent<Image>();
             this._BorderImage = this.transform.Find("Root").Find("Border").GetComponent<Image>();
             this._AtkImage = this.transform.Find("Root").Find("Atk").GetComponent<Image>();
@@ -115,16 +115,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Mask _Mask;
-        public Mask Mask
+        private Mask _ImageMask;
+        public Mask ImageMask
         {
             get
             {
-                if ((this._Mask == null))
+                if ((this._ImageMask == null))
                 {
-                    this._Mask = this.transform.Find("Root").Find("Mask").GetComponent<Mask>();
+                    this._ImageMask = this.transform.Find("Root").Find("ImageMask").GetComponent<Mask>();
                 }
-                return this._Mask;
+                return this._ImageMask;
             }
         }
         [SerializeField()]
@@ -135,7 +135,7 @@ namespace UI
             {
                 if ((this._Image == null))
                 {
-                    this._Image = this.transform.Find("Root").Find("Mask").Find("Image").GetComponent<Image>();
+                    this._Image = this.transform.Find("Root").Find("ImageMask").Find("Image").GetComponent<Image>();
                 }
                 return this._Image;
             }
@@ -351,9 +351,9 @@ namespace UI
         partial void onAwake();
         public enum Highlight
         {
-            None,
-            Green,
-            Yellow,
+            Highlight_None,
+            Highlight_Green,
+            Highlight_Yellow,
         }
         public Highlight HighlightController
         {

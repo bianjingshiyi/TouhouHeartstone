@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using UI;
+using System.Reflection;
 using TouhouCardEngine;
 using Game;
 namespace TouhouHeartstone
@@ -29,7 +30,14 @@ namespace TouhouHeartstone
                 label.text = getCardDefines()[index - 1].GetType().Name;
             if (GUI.Button(position, label))
             {
-                getMenu(property).DropDown(position);
+                if (UnityEngine.Event.current.button == 0)
+                    getMenu(property).DropDown(position);
+                else
+                {
+                    GenericMenu menu = new GenericMenu();
+                    menu.AddItem(new GUIContent("ReloadCards"), false, () => EditorCardDefineHelper.loadCards());
+                    menu.DropDown(position);
+                }
             }
         }
 
@@ -37,7 +45,11 @@ namespace TouhouHeartstone
         {
             int id = property.intValue;
             GenericMenu menu = new GenericMenu();
-            menu.AddItem(new GUIContent("None"), id == 0, () => property.intValue = 0);
+            menu.AddItem(new GUIContent("None"), id == 0, () =>
+            {
+                property.intValue = 0;
+                property.serializedObject.ApplyModifiedProperties();
+            });
             foreach (var group in getCardDefines().GroupBy(c => c.getCharacterID()))
             {
                 CardDefine character = getCardDefines().FirstOrDefault(c => c.id == group.Key);
@@ -79,10 +91,16 @@ namespace TouhouHeartstone
         {
             if (_cardDefines == null)
             {
-                _cardDefines = CardHelper.getCardDefines(null);
+                loadCards();
             }
             return _cardDefines;
         }
+
+        public static void loadCards()
+        {
+            _cardDefines = CardHelper.getCardDefines(new Assembly[] { typeof(THHGame).Assembly }, null);
+        }
+
         public static CardDefine getCardDefine(int id)
         {
             return getCardDefines().FirstOrDefault(c => c.id == id);

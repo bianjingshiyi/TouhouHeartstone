@@ -128,6 +128,8 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool canAttack(this Card card, THHGame game)
         {
+            if (card.pile.name != PileName.FIELD)//你只能在战场上进行攻击。是不是必须得活着，这是个哲学问题。
+                return false;
             if (card.getAttack() <= 0)//没有攻击力
                 return false;
             if (!card.isReady()//还没准备好
@@ -271,6 +273,14 @@ namespace TouhouHeartstone
         public static void setFreeze(this Card card, bool value)
         {
             card.setProp(Keyword.FREEZE, value);
+        }
+        public static bool isUnique(this Card card)
+        {
+            return card.getProp<bool>(Keyword.UNIQUE);
+        }
+        public static void setUnique(this Card card, bool value)
+        {
+            card.setProp(Keyword.UNIQUE, value);
         }
 
         public static int getSpellDamage(this Card card)

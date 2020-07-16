@@ -6,6 +6,7 @@ namespace Game
     {
         Animator _animator;
         string _animName;
+        bool _isPlayed = false;
         public AnimAnim(Animator animator, string animName)
         {
             _animator = animator;
@@ -16,8 +17,9 @@ namespace Game
             if (!_animator.HasState(0, Animator.StringToHash(_animName)))
                 return true;
             AnimatorStateInfo state = _animator.GetCurrentAnimatorStateInfo(0);
-            if (!state.IsName(_animName))
+            if (!_isPlayed)
             {
+                _isPlayed = true;
                 _animator.Play(_animName);
             }
             if (state.normalizedTime < 1)

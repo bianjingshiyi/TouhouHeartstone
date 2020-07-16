@@ -215,7 +215,6 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 4 贤者之石 05 每当你使用一张法术，将一张随机元素法术置入你的手牌并使耐久-1。战吼：将一张随机元素法术置入你的手牌。
     /// </summary>
-    [Obsolete]
     public class PhilosopherStone : ItemCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.ITEM | 0x006;
@@ -357,7 +356,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x012;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 0;
+        public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 6;
         public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
@@ -423,11 +422,11 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class ElementSprite : ServantCardDefine
     {
-        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x015;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x015;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
-        public override int attack { get; set; } = 3;
-        public override int life { get; set; } = 2;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -470,7 +469,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class LibraryProtector : ServantCardDefine
     {
-        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x017;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x017;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;

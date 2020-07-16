@@ -33,10 +33,14 @@
         /// <summary>
         /// 魔免
         /// </summary>
-        public const string ELUSIVE = "Elusive";
+        public const string ELUSIVE = "elusive";
         /// <summary>
         /// 冰冻
         /// </summary>
-        public const string FREEZE = "Freeze";
+        public const string FREEZE = "freeze";
+        /// <summary>
+        /// 唯一
+        /// </summary>
+        public const string UNIQUE = "unique";
     }
 }

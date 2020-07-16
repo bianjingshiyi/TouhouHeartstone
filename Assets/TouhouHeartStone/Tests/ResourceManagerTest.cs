@@ -126,7 +126,7 @@ namespace Tests
             File.WriteAllBytes(filePath, tx.EncodeToPNG());
 
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
-            var task = manager.loadTexture(fileName, new PlatformCompability(RuntimePlatform.WindowsPlayer));
+            var task = manager.loadTexture(fileName, null, new PlatformCompability(RuntimePlatform.WindowsPlayer));
             yield return new WaitUntil(() => task.IsCompleted);
 
             File.Delete(filePath);
@@ -136,7 +136,7 @@ namespace Tests
         {
             const string fileName = "SomeNonExistFile.png";
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
-            Task<Texture2D> task = manager.loadTexture(fileName, new PlatformCompability(RuntimePlatform.WindowsEditor));
+            Task<Texture2D> task = manager.loadTexture(fileName, null, new PlatformCompability(RuntimePlatform.WindowsEditor));
             yield return new WaitUntil(() => task.IsCompleted);
             Assert.Throws<FileNotFoundException>(() =>
             {
@@ -159,7 +159,7 @@ namespace Tests
             File.WriteAllBytes(filePath, tx.EncodeToPNG());
 
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
-            var task = manager.loadTexture(fileName, new PlatformCompability(RuntimePlatform.Android));
+            var task = manager.loadTexture(fileName, null, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
 
             File.Delete(filePath);
@@ -170,7 +170,7 @@ namespace Tests
             const string fileName = "SomeNonExistFile.png";
 
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
-            Task<Texture2D> task = manager.loadTexture(fileName, new PlatformCompability(RuntimePlatform.Android));
+            Task<Texture2D> task = manager.loadTexture(fileName, null, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
             Assert.Throws<FileNotFoundException>(() =>
             {
@@ -195,7 +195,7 @@ namespace Tests
             File.WriteAllBytes(filePath, tx.EncodeToPNG());
 
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
-            var task = manager.loadTexture(fileNameFake, new PlatformCompability(RuntimePlatform.Android));
+            var task = manager.loadTexture(fileNameFake, null, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
 
             File.Delete(filePath);
@@ -212,7 +212,7 @@ namespace Tests
             File.WriteAllBytes(filePath, tx.EncodeToPNG());
 
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
-            var task = manager.loadTexture(fileNameFake, new PlatformCompability(RuntimePlatform.WindowsPlayer));
+            var task = manager.loadTexture(fileNameFake, null, new PlatformCompability(RuntimePlatform.WindowsPlayer));
             yield return new WaitUntil(() => task.IsCompleted);
 
             File.Delete(filePath);
@@ -223,7 +223,7 @@ namespace Tests
             const string TEX_NAME = "res:测试图片";
 
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
-            var task = manager.loadTexture(TEX_NAME);
+            var task = manager.loadTexture(TEX_NAME, null);
             yield return new WaitUntil(() => task.IsCompleted);
 
             Assert.NotNull(task.Result);

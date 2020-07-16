@@ -125,6 +125,9 @@ namespace TouhouHeartstone
                         case Keyword.ELUSIVE:
                             card.setElusive(true);
                             break;
+                        case Keyword.UNIQUE:
+                            card.setUnique(true);
+                            break;
                         default:
                             throw new UnknowKeywordException("未知关键词" + keyword);
                     }

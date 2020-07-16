@@ -5,12 +5,14 @@ using UnityEngine;
 using TouhouCardEngine;
 using BJSYGameCore;
 using UI;
+using System.IO;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Data;
 using IGensoukyo.Utilities;
 using TouhouHeartstone;
 using MongoDB.Bson;
+using System.IO;
 using MongoDB.Bson.Serialization;
 using ILogger = TouhouCardEngine.Interfaces.ILogger;
 namespace Game
@@ -18,7 +20,7 @@ namespace Game
     public class CardManager : Manager
     {
         [SerializeField]
-        string _defaultImagePath;
+        string _defaultImagePath = "Textures/砰砰博士.png";
         [SerializeField]
         Sprite _defaultImage;
         /// <summary>
@@ -29,7 +31,7 @@ namespace Game
         {
             if (_defaultImage == null)
             {
-                Texture2D texture = await getManager<ResourceManager>().loadTexture(_defaultImagePath);
+                Texture2D texture = await getManager<ResourceManager>().loadTexture(_defaultImagePath, null);
                 _defaultImage = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
             }
             return _defaultImage;
@@ -47,14 +49,14 @@ namespace Game
         /// <returns></returns>
         public Task load(Assembly[] assemblies = default, ILogger logger = null)
         {
-            return Load(_externalCardPaths, assemblies, logger);
+            return load(_externalCardPaths, assemblies, logger);
         }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
         /// </summary>
         /// <param name="excelPaths"></param>
         /// <returns></returns>
-        public async Task Load(string[] excelPaths, Assembly[] assemblies = default, ILogger logger = null)
+        public async Task load(string[] excelPaths, Assembly[] assemblies = default, ILogger logger = null)
         {
             //加载内置卡片
             if (assemblies == default)
@@ -226,7 +228,7 @@ namespace Game
                     string imagePath = datarow.ReadCol("Image", "");
                     try
                     {
-                        Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath);
+                        Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
                         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
                         skin.image = sprite;
                     }
