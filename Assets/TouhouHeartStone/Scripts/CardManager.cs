@@ -5,6 +5,7 @@ using UnityEngine;
 using TouhouCardEngine;
 using BJSYGameCore;
 using UI;
+using System.IO;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Data;
@@ -18,7 +19,7 @@ namespace Game
     public class CardManager : Manager
     {
         [SerializeField]
-        string _defaultImagePath;
+        string _defaultImagePath = "Textures/砰砰博士.png";
         [SerializeField]
         Sprite _defaultImage;
         /// <summary>
@@ -226,7 +227,7 @@ namespace Game
                     string imagePath = datarow.ReadCol("Image", "");
                     try
                     {
-                        Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath);
+                        Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath, curDir: Path.GetDirectoryName(path));
                         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
                         skin.image = sprite;
                     }

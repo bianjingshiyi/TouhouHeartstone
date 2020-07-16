@@ -16,7 +16,7 @@ namespace Game
     public class ResourceManager : Manager
     {
         [Obsolete("Use loadExcelAsDataSet instead.")]
-        public Task<Workbook> loadExcel(string path, PlatformCompability platform = null)
+        public Task<Workbook> loadExcel(string path, PlatformCompability platform = null, string curDir = null)
         {
             if (string.IsNullOrEmpty(path))
                 return null;
@@ -25,9 +25,9 @@ namespace Game
             if (platform.RequireWebRequest)
                 return loadExcelByWebRequest(path);
 
-            return loadExcelBySystemIO(path);
+            return loadExcelBySystemIO(curDir, path);
         }
-        public Task<Texture2D> loadTexture(string path, PlatformCompability platform = null)
+        public Task<Texture2D> loadTexture(string path, PlatformCompability platform = null, string curDir = null)
         {
             if (string.IsNullOrEmpty(path))
                 return null;
@@ -43,9 +43,9 @@ namespace Game
             if (platform.RequireWebRequest)
                 return loadTextureByWebRequestWithFallback(path);
 
-            return loadTextureBySystemIOWithFallback(path);
+            return loadTextureBySystemIOWithFallback(curDir, path);
         }
-        public Task<DataSet> loadDataSet(string path, PlatformCompability platform = null)
+        public Task<DataSet> loadDataSet(string path, PlatformCompability platform = null, string curDir = null)
         {
             if (string.IsNullOrEmpty(path))
                 return null;
@@ -60,11 +60,10 @@ namespace Game
             if (platform.RequireWebRequest)
                 return loadDataSetByWebRequest(path);
 
-            return loadDataSetBySystemIO(path);
-
+            return loadDataSetBySystemIO(curDir, path);
         }
 
-        public Task<DataSet> loadExcelAsDataSet(string path, PlatformCompability platform = null)
+        public Task<DataSet> loadExcelAsDataSet(string path, PlatformCompability platform = null, string curDir = null)
         {
             if (string.IsNullOrEmpty(path))
                 return null;
@@ -73,7 +72,7 @@ namespace Game
             if (platform.RequireWebRequest)
                 return loadExcelAsDataSetByWebRequest(path);
 
-            return loadExcelAsDataSetBySystemIO(path);
+            return loadExcelAsDataSetBySystemIO(curDir, path);
         }
 
         public async Task<Texture2D> loadTextureByWebRequestWithFallback(string path)
@@ -159,43 +158,43 @@ namespace Game
             };
             return tcs.Task;
         }
-        public async Task<Texture2D> loadTextureBySystemIOWithFallback(string path)
+        public Task<Texture2D> loadTextureBySystemIOWithFallback(string curDir, string path)
         {
             try
             {
-                return await loadTextureBySystemIO(path);
+                return loadTextureBySystemIO(curDir, path);
             }
             catch (FileNotFoundException)
             {
                 path = textureChangeExt(path);
-                return await loadTextureBySystemIO(path);
+                return loadTextureBySystemIO(curDir, path);
             }
         }
-        public async Task<Texture2D> loadTextureBySystemIO(string path)
+        public async Task<Texture2D> loadTextureBySystemIO(string curDir, string path)
         {
             Texture2D texture = new Texture2D(512, 512);
-            texture.LoadImage(await loadBytesBySystemIO(path));
+            texture.LoadImage(await loadBytesBySystemIO(curDir, path));
             return texture;
         }
 
-        public Task<Workbook> loadExcelBySystemIO(string path)
+        public Task<Workbook> loadExcelBySystemIO(string curDir, string path)
         {
-            using (FileStream stream = getFileStream(path))
+            using (FileStream stream = getFileStream(curDir, path))
             {
                 return Task.FromResult(Workbook.Load(stream));
             }
         }
-        public Task<DataSet> loadDataSetBySystemIO(string path)
+        public Task<DataSet> loadDataSetBySystemIO(string curDir, string path)
         {
-            using (FileStream stream = getFileStream(path))
+            using (FileStream stream = getFileStream(curDir, path))
             {
                 BinaryFormatter bf = new BinaryFormatter();
                 return Task.FromResult(bf.Deserialize(stream) as DataSet);
             }
         }
-        public Task<DataSet> loadExcelAsDataSetBySystemIO(string path)
+        public Task<DataSet> loadExcelAsDataSetBySystemIO(string currentDir, string path)
         {
-            using (FileStream stream = getFileStream(path))
+            using (FileStream stream = getFileStream(currentDir, path))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
@@ -249,16 +248,16 @@ namespace Game
                 }
             }
         }
-        private async Task<byte[]> loadBytesBySystemIO(string path)
+        private async Task<byte[]> loadBytesBySystemIO(string currentDir, string path)
         {
-            using (FileStream stream = getFileStream(path))
+            using (FileStream stream = getFileStream(currentDir, path))
             {
                 byte[] data = new byte[stream.Length];
                 await stream.ReadAsync(data, 0, (int)stream.Length);
                 return data;
             }
         }
-        private FileStream getFileStream(string path)
+        private FileStream getFileStream(string currentDir, string path)
         {
             string filePath = path;
             if (File.Exists(filePath))
@@ -266,6 +265,12 @@ namespace Game
             filePath = Application.streamingAssetsPath + "/" + path;
             if (File.Exists(filePath))
                 return new FileStream(filePath, FileMode.Open);
+            if (!string.IsNullOrEmpty(currentDir))
+            {
+                filePath = Path.Combine(Application.streamingAssetsPath, currentDir, path);
+                if (File.Exists(filePath))
+                    return new FileStream(filePath, FileMode.Open);
+            }
             throw new FileNotFoundException("File not found.", path);
         }
         private Task<byte[]> loadBytesByWebRequest(string path)
