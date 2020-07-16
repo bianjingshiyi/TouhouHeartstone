@@ -145,6 +145,8 @@ namespace Game
         /// <param name="obj"></param>
         private void onRequest(IRequest obj)
         {
+            if (!obj.playersId.Contains(player.id))
+                return;
             UIAnimation anim;
             switch (obj)
             {
@@ -159,6 +161,8 @@ namespace Game
         }
         void onResponse(IResponse response)
         {
+            if (response.playerId != player.id)
+                return;
             switch (response)
             {
                 case DiscoverResponse _:
@@ -781,16 +785,8 @@ namespace Game
         public void setCard(UI.Card ui, TouhouCardEngine.Card card, bool isFaceup)
         {
             ui.CostPropNumber.asText.text = card.getCost().ToString();
-            if (card.define.type == CardDefineType.SERVANT)
-            {
-                ui.onTypeControllerServant?.Invoke();
-                ui.AttackPropNumber.asText.text = card.getAttack().ToString();
-                ui.LifePropNumber.asText.text = card.getLife().ToString();
-            }
-            else
-                ui.onTypeControllerSpell?.Invoke();
 
-            if (isFaceup)
+            if (isFaceup)//因为isFaceup控制了很多GameObject的Active，所以它必须放在最上面。
             {
                 CardSkinData skin = getSkin(card);
                 ui.Image.sprite = skin.image;
@@ -802,6 +798,15 @@ namespace Game
             {
                 ui.isFaceup = false;
             }
+
+            if (card.define.type == CardDefineType.SERVANT)
+            {
+                ui.type = CardCategory.SERVANT;
+                ui.AttackPropNumber.asText.text = card.getAttack().ToString();
+                ui.LifePropNumber.asText.text = card.getLife().ToString();
+            }
+            else
+                ui.type = CardCategory.SPELL;
         }
         Dictionary<TouhouCardEngine.Card, Servant> cardServantDic { get; } = new Dictionary<TouhouCardEngine.Card, Servant>();
         /// <summary>
@@ -1093,10 +1098,7 @@ namespace Game
             {
                 ui.Discover.Button.setText("隐藏");
                 ui.Discover.PanelImage.display();
-                foreach (var item in ui.Discover.HoriCardList)
-                {
-                    item.Card.isFaceup = true;
-                }
+                displayDiscoverDialog(game.answers.getRequest<DiscoverRequest>(player.id).cardIdArray);
             }
         }
         void closeDiscoverDialog()

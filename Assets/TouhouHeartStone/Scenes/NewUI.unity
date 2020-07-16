@@ -2775,6 +2775,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _BlockerButton: {fileID: 298106363}
   _InitReplaceCardList: {fileID: 1923394221}
@@ -2868,6 +2869,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   m_as_Image: {fileID: 206789262}
   _Text: {fileID: 1492016985}
@@ -3804,6 +3806,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   m_as_Image: {fileID: 276880607}
   _LoadingText: {fileID: 1227819911}
@@ -5417,6 +5420,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _defaultItem: {fileID: 2133767291}
   m_as_HorizontalLayoutGroup: {fileID: 377822087}
@@ -7029,6 +7033,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   m_as_Button: {fileID: 569259662}
   m_as_Image: {fileID: 569259663}
@@ -7932,6 +7937,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   m_as_Image: {fileID: 645821708}
   _CreateRoomButton: {fileID: 2033751831}
@@ -8112,6 +8118,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _defaultItem: {fileID: 569259665}
   m_as_VerticalLayoutGroup: {fileID: 654382458}
@@ -8690,6 +8697,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _Card: {fileID: 803600011}
   _dragStartPosition: {x: 0, y: 0}
@@ -10142,6 +10150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   m_as_Image: {fileID: 844223603}
   _LabelSearchText: {fileID: 1279473760}
@@ -10961,6 +10970,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   m_as_Image: {fileID: 915309856}
   _Text: {fileID: 1916824320}
@@ -11782,6 +11792,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   m_as_Button: {fileID: 940313528}
   _Card: {fileID: 176164028}
@@ -12397,6 +12408,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   m_as_Image: {fileID: 992534733}
   _RoomPlayerListScrollRect: {fileID: 1505464934}
@@ -12771,6 +12783,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _FieldsImage: {fileID: 1043128927}
   _TurnEndButton: {fileID: 514370679}
@@ -14089,6 +14102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   m_as_Image: {fileID: 1105401796}
   _IPInputField: {fileID: 921863322}
@@ -14770,6 +14784,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _IPPanel: {fileID: 1105401798}
   _LANPanel: {fileID: 645821710}
@@ -15741,6 +15756,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _defaultItem: {fileID: 1281628503}
   m_as_ListLayoutGroup: {fileID: 1296244559}
@@ -17225,6 +17241,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _Servant: {fileID: 1295340017}
 --- !u!1 &1465279957
@@ -18579,7 +18596,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1540531350
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18657,6 +18674,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   m_as_Image: {fileID: 1540531351}
   _ReturnButton: {fileID: 1936398891}
@@ -19378,6 +19396,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _BuildDeckListItem: {fileID: 965955819}
   _Card: {fileID: 1797545272}
@@ -20244,6 +20263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _BackgroundImage: {fileID: 765537073}
   _ButtonPanelImage: {fileID: 933985}
@@ -22193,6 +22213,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _defaultItem: {fileID: 729916116}
   m_as_GridLayoutGroup: {fileID: 1866621720}
@@ -22843,6 +22864,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _defaultItem: {fileID: 940313527}
   m_as_ListLayoutGroup: {fileID: 1923394220}
@@ -23158,6 +23180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _BackgroundImage: {fileID: 868008359}
   _Table: {fileID: 1004327311}
@@ -23515,6 +23538,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _Game: {fileID: 1946881492}
   _Build: {fileID: 2029944168}
@@ -24104,6 +24128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _BackgroundImage: {fileID: 1503874244}
   _MasterButton: {fileID: 396496459}
@@ -25220,6 +25245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   m_as_Button: {fileID: 2133767292}
   m_as_Image: {fileID: 2133767293}

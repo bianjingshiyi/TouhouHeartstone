@@ -18,15 +18,16 @@ namespace UI
             CostPropNumber.asText.text = card.getCost().ToString();
             if (card.define.type == CardDefineType.SERVANT)
             {
+                type = CardCategory.SERVANT;
                 // TypeController = Type.Servant;
                 //onTypeControllerServant?.Invoke();
                 AttackPropNumber.asText.text = card.getAttack().ToString();
                 LifePropNumber.asText.text = card.getLife().ToString();
             }
-            else
+            else if (card.define.type == CardDefineType.SPELL)
             {
                 // TypeController = Type.Spell;
-                onTypeControllerSpell?.Invoke();
+                type = CardCategory.SPELL;
             }
 
             if (skin != null)
@@ -85,13 +86,15 @@ namespace UI
                 }
             }
         }
-        public string type
+        public int type
         {
             set
             {
                 switch (value)
                 {
-                    //case CardCategory
+                    case CardCategory.SPELL:
+                        _onTypeControllerSpell.Invoke();
+                        break;
                     default://SERVANT
                         _onTypeControllerServant.Invoke();
                         break;
@@ -100,8 +103,6 @@ namespace UI
         }
         [SerializeField]
         private UnityEvent _onTypeControllerSpell;
-        public UnityEvent onTypeControllerSpell => _onTypeControllerSpell;
-
         [SerializeField]
         private UnityEvent _onTypeControllerServant;
         [SerializeField]

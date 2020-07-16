@@ -265,6 +265,13 @@ namespace Tests
         {
             Assert.AreEqual(TestMaster.ID, CardCategory.getCharacterID(TestSkill.ID));
         }
+        [UnityTest]
+        public void discoverTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo);
+            var cards = you.deck.randomTake(game, 3);
+            var task = you.discover(game, cards);
+        }
     }
     static class TestExtension
     {
