@@ -95,9 +95,7 @@ namespace Game
         }
         protected void Start()
         {
-            host.start(_port);
             client.start();
-            _port = host.port;
         }
         protected void Update()
         {
@@ -111,18 +109,31 @@ namespace Game
         {
             if (obj is RoomInfo tHHRoom)
             {
-                int index = _LANRoomList.FindIndex(r => r.ip == tHHRoom.ip && r.port == tHHRoom.port);
+                int index = _LANRoomList.FindIndex(r => r.id == tHHRoom.id);
+
                 if (index < 0)
                 {
-                    _LANRoomList.Add(tHHRoom);
-                    RoomListItem item = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.addItem();
-                    refreshRoomListItem(item, tHHRoom);
+                    if (!obj.isSameRoom(host.room))
+                    {
+                        _LANRoomList.Add(tHHRoom);
+                        RoomListItem item = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.addItem();
+                        refreshRoomListItem(item, tHHRoom);
+                    }
                 }
                 else
                 {
-                    _LANRoomList[index] = tHHRoom;
-                    RoomListItem item = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.getItems()[index];
-                    refreshRoomListItem(item, tHHRoom);
+                    if (!obj.isSameRoom(host.room))
+                    {
+                        _LANRoomList[index] = tHHRoom;
+                        RoomListItem item = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.getItems()[index];
+                        refreshRoomListItem(item, tHHRoom);
+                    }
+                    else
+                    {
+                        _LANRoomList.RemoveAt(index);
+                        RoomList list = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList;
+                        list.removeItem(list.getItems()[index]);
+                    }
                 }
             }
         }
@@ -131,7 +142,7 @@ namespace Game
             RoomInfo newRoomInfo = await client.checkRoomInfo(roomInfo);
             if (newRoomInfo != null)
             {
-                int index = _LANRoomList.FindIndex(r => r.isOne(roomInfo));
+                int index = _LANRoomList.FindIndex(r => r.isSameRoom(roomInfo));
                 if (index >= -1)
                 {
                     _LANRoomList[index] = newRoomInfo;
@@ -142,7 +153,7 @@ namespace Game
             }
             else
             {
-                int index = _LANRoomList.FindIndex(r => r.isOne(roomInfo));
+                int index = _LANRoomList.FindIndex(r => r.isSameRoom(roomInfo));
                 if (index > -1)
                 {
                     _LANRoomList.RemoveAt(index);
@@ -184,6 +195,7 @@ namespace Game
         /// <returns></returns>
         public async Task createRoom()
         {
+            host.start(_port);
             RoomInfo room = host.openRoom(new RoomInfo());
             room.setOption(new GameOption()
             {
@@ -230,7 +242,7 @@ namespace Game
         }
         public void quitRoom()
         {
-            if (host.roomInfo != null)
+            if (host.RoomIsValid)
                 host.closeRoom();
             if (client.roomInfo != null)
                 client.quitRoom();
@@ -286,8 +298,7 @@ namespace Game
             {
                 flushLANRooms();
             });
-            lanPanel.CreateRoomButton.interactable = host.roomInfo == null;
-            lanPanel.CreateRoomButton.image.color = host.roomInfo == null ? Color.white : Color.gray;
+            lanPanel.CreateRoomButton.interactable = !host.RoomIsValid;
             lanPanel.CreateRoomButton.onClick.set(() =>
             {
                 _ = createRoom();
@@ -316,8 +327,6 @@ namespace Game
                     lanPanel.DescText.text = "描述:";
                 }
             });
-            item.Button.interactable = !obj.isOne(host.roomInfo);
-            item.Button.image.color = !obj.isOne(host.roomInfo) ? Color.white : Color.gray;
             item.Button.onClick.set(() =>
             {
                 _ = joinRoom(obj);
@@ -343,12 +352,12 @@ namespace Game
             roomPanel.TurnTimeInputField.text = room.getOption().timeoutForTurn.ToString();
             Debug.Log("刷新房间设定" + roomPanel.IsSortedToggle.isOn);
             roomPanel.IsSortedToggle.isOn = room.getOption().sortedPlayers != null;
-            if (host.roomInfo != null)
+            if (host.RoomIsValid)
             {
                 roomPanel.RandomSeedInputField.setSelectable(true);
                 roomPanel.RandomSeedInputField.onValueChanged.set(value =>
                 {
-                    if (host.roomInfo is RoomInfo roomInfo)
+                    if (host.room is RoomInfo roomInfo)
                     {
                         if (int.TryParse(value, out int i))
                         {
@@ -362,7 +371,7 @@ namespace Game
                 roomPanel.ShuffleToggle.setSelectable(true);
                 roomPanel.ShuffleToggle.onValueChanged.set(value =>
                 {
-                    if (host.roomInfo is RoomInfo roomInfo)
+                    if (host.room is RoomInfo roomInfo)
                     {
                         roomInfo.getOption().shuffle = value;
                         host.updateRoomInfo(roomInfo);
@@ -371,7 +380,7 @@ namespace Game
                 roomPanel.InitReplaceTimeInputField.setSelectable(true);
                 roomPanel.InitReplaceTimeInputField.onEndEdit.set(value =>
                 {
-                    if (host.roomInfo is RoomInfo roomInfo)
+                    if (host.room is RoomInfo roomInfo)
                     {
                         if (int.TryParse(value, out int i) && 5 < i)
                         {
@@ -387,7 +396,7 @@ namespace Game
                 roomPanel.TurnTimeInputField.setSelectable(true);
                 roomPanel.TurnTimeInputField.onEndEdit.set(value =>
                 {
-                    if (host.roomInfo is RoomInfo roomInfo)
+                    if (host.room is RoomInfo roomInfo)
                     {
                         if (int.TryParse(value, out int i) && 5 < i)
                         {
@@ -404,7 +413,7 @@ namespace Game
                 roomPanel.IsSortedToggle.onValueChanged.set(onValueChanged);
                 void onValueChanged(bool value)
                 {
-                    if (host.roomInfo is RoomInfo roomInfo)
+                    if (host.room is RoomInfo roomInfo)
                     {
                         Debug.Log("更新房间设定" + value);
                         roomInfo.setOption(new GameOption(roomInfo.getOption())
@@ -414,10 +423,10 @@ namespace Game
                         host.updateRoomInfo(roomInfo);
                     }
                 }
-                roomPanel.StartButton.setSelectable(room.isOne(host.roomInfo) && room.playerList.Count > 1);
+                roomPanel.StartButton.setSelectable(room.isSameRoom(host.room) && room.playerList.Count > 1);
                 roomPanel.StartButton.onClick.set(() =>
                 {
-                    _ = host.invokeAll<object>(host.roomInfo.playerList.Select(p => p.id).ToArray(), nameof(start));
+                    _ = host.invokeAll<object>(host.room.playerList.Select(p => p.id).ToArray(), nameof(start));
                 });
             }
             else
