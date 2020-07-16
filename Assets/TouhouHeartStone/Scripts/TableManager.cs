@@ -1044,6 +1044,10 @@ namespace Game
             ui.ServantPlaceHolder.Servant.hide();
             ui.ServantPlaceHolder.hide();
         }
+        void onDiscover()
+        {
+
+        }
         [SerializeField]
         BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer();
         /// <summary>
