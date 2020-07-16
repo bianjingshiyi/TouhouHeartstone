@@ -5,6 +5,7 @@ using UnityEngine;
 using TouhouCardEngine;
 using BJSYGameCore;
 using UI;
+using System.IO;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Data;
@@ -19,7 +20,7 @@ namespace Game
     public class CardManager : Manager
     {
         [SerializeField]
-        string _defaultImagePath;
+        string _defaultImagePath = "Textures/砰砰博士.png";
         [SerializeField]
         Sprite _defaultImage;
         /// <summary>

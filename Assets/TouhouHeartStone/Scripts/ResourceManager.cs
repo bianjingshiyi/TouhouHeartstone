@@ -60,9 +60,7 @@ namespace Game
             if (platform.RequireWebRequest)
                 return loadDataSetByWebRequest(path);
 
-            return loadDataSetBySystemIO(path, curDir);
-
-        }
+            return loadDataSetBySystemIO(path, curDir);        }
 
         public Task<DataSet> loadExcelAsDataSet(string path, PlatformCompability platform = null, string curDir = null)
         {
