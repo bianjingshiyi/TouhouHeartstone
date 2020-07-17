@@ -33,7 +33,8 @@ namespace TouhouHeartstone
             addPile(new Pile(game, "Skill", 1));
             this[PileName.SKILL].add(game, skill);
             this.deck = new Pile(game, "Deck");
-            this.deck.add(game, deck.Select(d => game.createCard(d)).ToArray());
+            if (deck != null)
+                this.deck.add(game, deck.Select(d => game.createCard(d)).ToArray());
             addPile(this.deck);
             init = new Pile(game, "Init", maxCount: 4);
             addPile(init);
@@ -104,30 +105,39 @@ namespace TouhouHeartstone
         {
             if (deck.count < 1)//无牌可抽，疲劳！
             {
-                return game.triggers.doEvent(new FatigueEventArg() { player = this }, arg =>
+                return game.triggers.doEvent(new FatigueEventArg() { player = this }, onFatigue);
+                async Task onFatigue(FatigueEventArg arg)
                 {
                     arg.player.fatigue++;
                     game.logger.log(arg.player + "已经没有卡牌了，当前疲劳值：" + arg.player.fatigue);
-                    return arg.player.master.damage(game, null, arg.player.fatigue);
-                });
+                    await arg.player.master.damage(game, null, arg.player.fatigue);
+                    await game.updateDeath();
+                }
             }
-            else if (hand.count >= hand.maxCount)
+            else
+                return draw(game, deck.top);
+        }
+        public Task draw(THHGame game, Card card)
+        {
+            if (!deck.Contains(card))
+                return Task.CompletedTask;
+            if (hand.count >= hand.maxCount)
             {
-                return game.triggers.doEvent(new BurnEventArg() { player = this }, arg =>
+                return game.triggers.doEvent(new BurnEventArg() { player = this, card = card }, arg =>
                 {
-                    arg.card = arg.player.deck.top;
-                    arg.player.deck.moveTo(game, arg.card, arg.player.grave, arg.player.grave.count);
-                    game.logger.log(arg.player + "的手牌已经满了，" + arg.card + "被送入墓地");
+                    card = arg.card;
+                    arg.player.deck.moveTo(game, card, arg.player.grave, arg.player.grave.count);
+                    game.logger.log(arg.player + "的手牌已经满了，" + card + "被送入墓地");
                     return Task.CompletedTask;
                 });
             }
             else
             {
-                return game.triggers.doEvent(new DrawEventArg() { player = this }, arg =>
+                return game.triggers.doEvent(new DrawEventArg() { player = this, card = card }, arg =>
                 {
-                    arg.card = arg.player.deck.top;
-                    arg.player.deck.moveTo(game, arg.card, arg.player.hand, arg.player.hand.count);
-                    game.logger.log(arg.player + "抽" + arg.card);
+                    card = arg.card;
+                    arg.player.deck.moveTo(game, card, arg.player.hand, arg.player.hand.count);
+                    game.logger.log(arg.player + "抽" + card);
                     return Task.CompletedTask;
                 });
             }

@@ -504,4 +504,18 @@ namespace Tests
             })
         };
     }
+    public class DiscoverCopy : SpellCardDefine
+    {
+        public const int ID = TestMaster.ID | CardCategory.SPELL | 0x013;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(async (game,card)=>
+            {
+                var discovered = await card.getOwner().discover(game,card.getOwner().hand);
+                await card.getOwner().hand.add(game,game.createCard(discovered.define));
+            })
+        };
+    }
 }

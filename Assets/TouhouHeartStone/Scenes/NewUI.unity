@@ -17161,7 +17161,7 @@ MonoBehaviour:
     shuffle: 1
     timeoutForInitReplace: 30
     timeoutForTurn: 75
-    startGem: 0
+    startGem: 9
   _ui: {fileID: 0}
   _useDefaultDeck: 1
   _defaultDeck:
@@ -17169,37 +17169,37 @@ MonoBehaviour:
     master: 4194304
     deckList:
     - id: 4202517
-      count: 0
+      count: 2
     - id: 4206614
-      count: 0
+      count: 20
     - id: 4202519
-      count: 0
+      count: 2
     - id: 4206594
-      count: 0
+      count: 2
     - id: 4206616
-      count: 0
+      count: 2
     - id: 4210694
-      count: 0
+      count: 1
     - id: 0
-      count: 0
+      count: 2
     - id: 4206601
-      count: 0
+      count: 2
     - id: 4206609
-      count: 0
+      count: 2
     - id: 4206600
-      count: 0
+      count: 2
     - id: 4206599
-      count: 0
+      count: 2
     - id: 4206608
-      count: 0
+      count: 2
     - id: 4202514
-      count: 0
+      count: 1
     - id: 4202501
-      count: 0
+      count: 2
     - id: 4206611
-      count: 0
+      count: 1
     - id: 4206612
-      count: 0
+      count: 1
     - id: 8194
       count: 5
     - id: 8198
@@ -20893,6 +20893,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79214c7855d04ed46b489c58e836e143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _editableAnims:
+  - _name: "\u6218\u543C\u52A8\u753B"
   _table: {fileID: 1004327311}
   _skillDragThreshold: 75
   _moveToFieldCurve:
