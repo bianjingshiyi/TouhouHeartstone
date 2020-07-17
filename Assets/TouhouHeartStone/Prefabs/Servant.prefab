@@ -383,6 +383,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates:
   - CanAttack/False
   - IsAttackable/False
