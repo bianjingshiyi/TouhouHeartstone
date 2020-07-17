@@ -79,6 +79,12 @@ namespace TouhouHeartstone.Builtin
             //    ));
             return Task.CompletedTask;
         }
+        //class RemoveBuffAfter<T> : THHEffectAfter<THHPlayer.UseEventArg>
+        //{
+        //    public RemoveBuffAfter() : base(pile, onCheckCondition, onCheckTarget, onExecute)
+        //    {
+        //    }
+        //}
         class CostFixer : PassiveEffect
         {
             public override string[] piles { get; } = new string[0];
