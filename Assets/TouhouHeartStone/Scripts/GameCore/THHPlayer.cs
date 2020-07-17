@@ -228,8 +228,9 @@ namespace TouhouHeartstone
         {
             if (count > 0)
                 cards = cards.randomTake(game, count);
-            int cardId = (await game.answers.ask(id, new DiscoverRequest(cards.Select(c => c.id).ToArray())) as DiscoverResponse).cardId;
-            return cards.First(c => c.id == cardId);
+            var task = game.answers.ask(id, new DiscoverRequest(cards.Select(c => c.id).ToArray()));
+            await task;
+            return cards.First(c => c.id == (task.Result as DiscoverResponse).cardId);
         }
         public class UseEventArg : EventArg
         {
@@ -358,11 +359,11 @@ namespace TouhouHeartstone
         {
             return game.surrender(this);
         }
-        public Task cmdDiscover(THHGame game, int select)
+        public Task cmdDiscover(THHGame game, int cardId)
         {
             return game.answers.answer(id, new DiscoverResponse()
             {
-                cardId = select
+                cardId = cardId
             });
         }
         #endregion
