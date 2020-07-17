@@ -53,12 +53,21 @@ namespace Game
                         simpleAnim = hand.onCostDown;
                 }
             }
+            if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator))
+                return false;
+            return true;
+        }
+    }
+    static class SimpleAnimHelper
+    {
+        public static bool update(TableManager table, ref AnimAnim anim, SimpleAnim simpleAnim, Animator animator)
+        {
             simpleAnim.beforeAnim.Invoke();
             if (!string.IsNullOrEmpty(simpleAnim.animName))
             {
-                if (_anim == null)
-                    _anim = new AnimAnim(animator, simpleAnim.animName);
-                if (!_anim.update(table))
+                if (anim == null)
+                    anim = new AnimAnim(animator, simpleAnim.animName);
+                if (!anim.update(table))
                     return false;
             }
             simpleAnim.afterAnim.Invoke();
