@@ -17187,7 +17187,7 @@ MonoBehaviour:
     - id: 4202517
       count: 2
     - id: 4206614
-      count: 20
+      count: 2
     - id: 4202519
       count: 2
     - id: 4206594
@@ -17199,7 +17199,7 @@ MonoBehaviour:
     - id: 0
       count: 2
     - id: 4206601
-      count: 2
+      count: 20
     - id: 4206609
       count: 2
     - id: 4206600
@@ -20914,7 +20914,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _editableAnims:
-  - _name: "\u6218\u543C\u52A8\u753B"
+  - _name: "\u589E\u52A0Buff\u52A8\u753B"
+    _eventType: TouhouCardEngine.Card+AddModiEventArg
   _table: {fileID: 1004327311}
   _skillDragThreshold: 75
   _moveToFieldCurve:

@@ -116,7 +116,7 @@ namespace Game
         [Serializable]
         class EditableAnim : TableAnimation
         {
-            [Type(typeof(EventArg))]
+            [TypeString(typeof(EventArg))]
             [SerializeField]
             string _eventType;
             public override bool update(TableManager table)
