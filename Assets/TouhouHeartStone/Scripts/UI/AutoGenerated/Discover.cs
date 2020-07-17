@@ -26,6 +26,7 @@ namespace UI
         public void autoBind()
         {
             this._PanelImage = this.transform.Find("Panel").GetComponent<Image>();
+            this._Text = this.transform.Find("Panel").Find("Text").GetComponent<Text>();
             this._HoriCardList = this.transform.Find("Panel").Find("HoriCardList").GetComponent<HoriCardList>();
             this._Button = this.transform.Find("Button").GetComponent<Button>();
         }
@@ -40,6 +41,19 @@ namespace UI
                     this._PanelImage = this.transform.Find("Panel").GetComponent<Image>();
                 }
                 return this._PanelImage;
+            }
+        }
+        [SerializeField()]
+        private Text _Text;
+        public Text Text
+        {
+            get
+            {
+                if ((this._Text == null))
+                {
+                    this._Text = this.transform.Find("Panel").Find("Text").GetComponent<Text>();
+                }
+                return this._Text;
             }
         }
         [SerializeField()]

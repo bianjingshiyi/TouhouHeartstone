@@ -26,15 +26,25 @@ namespace UI
         public void autoBind()
         {
             this.m_as_Image = this.GetComponent<Image>();
+            this._TitleBarImage = this.transform.Find("TitleBar").GetComponent<Image>();
+            this._TitleText = this.transform.Find("TitleBar").Find("Title").GetComponent<Text>();
+            this._IP_FieldImage = this.transform.Find("IP_Field").GetComponent<Image>();
+            this._IP_Field_TitleText = this.transform.Find("IP_Field").Find("Title").GetComponent<Text>();
+            this._IPInputField = this.transform.Find("IP_Field").Find("IPInputField").GetComponent<InputField>();
+            this._ConnectButton = this.transform.Find("IP_Field").Find("ConnectButton").GetComponent<Button>();
             this._CreateRoomButton = this.transform.Find("CreateRoomButton").GetComponent<Button>();
             this._FlushRoomButton = this.transform.Find("FlushRoomButton").GetComponent<Button>();
             this._RoomListPanelImage = this.transform.Find("RoomListPanel").GetComponent<Image>();
             this._RoomScrollView = this.transform.Find("RoomListPanel").Find("RoomScrollView").GetComponent<RoomScrollView>();
-            this._LANGameText = this.transform.Find("RoomListPanel").Find("LANGameText").GetComponent<Text>();
             this._RoomInfoPanelImage = this.transform.Find("RoomInfoPanel").GetComponent<Image>();
-            this._NameText = this.transform.Find("RoomInfoPanel").Find("NameText").GetComponent<Text>();
-            this._IPText = this.transform.Find("RoomInfoPanel").Find("IPText").GetComponent<Text>();
-            this._DescText = this.transform.Find("RoomInfoPanel").Find("DescText").GetComponent<Text>();
+            this._ContainerVerticalLayoutGroup = this.transform.Find("RoomInfoPanel").Find("Container").GetComponent<VerticalLayoutGroup>();
+            this._NameLabelText = this.transform.Find("RoomInfoPanel").Find("Container").Find("NameLabel").GetComponent<Text>();
+            this._NameText = this.transform.Find("RoomInfoPanel").Find("Container").Find("NameText").GetComponent<Text>();
+            this._IPLabelText = this.transform.Find("RoomInfoPanel").Find("Container").Find("IPLabel").GetComponent<Text>();
+            this._IPText = this.transform.Find("RoomInfoPanel").Find("Container").Find("IPText").GetComponent<Text>();
+            this._DescLabelText = this.transform.Find("RoomInfoPanel").Find("Container").Find("DescLabel").GetComponent<Text>();
+            this._DescText = this.transform.Find("RoomInfoPanel").Find("Container").Find("DescText").GetComponent<Text>();
+            this._ReturnBtnButton = this.transform.Find("ReturnBtn").GetComponent<Button>();
         }
         private Main _parent;
         public Main parent
@@ -55,6 +65,84 @@ namespace UI
                     this.m_as_Image = this.GetComponent<Image>();
                 }
                 return this.m_as_Image;
+            }
+        }
+        [SerializeField()]
+        private Image _TitleBarImage;
+        public Image TitleBarImage
+        {
+            get
+            {
+                if ((this._TitleBarImage == null))
+                {
+                    this._TitleBarImage = this.transform.Find("TitleBar").GetComponent<Image>();
+                }
+                return this._TitleBarImage;
+            }
+        }
+        [SerializeField()]
+        private Text _TitleText;
+        public Text TitleText
+        {
+            get
+            {
+                if ((this._TitleText == null))
+                {
+                    this._TitleText = this.transform.Find("TitleBar").Find("Title").GetComponent<Text>();
+                }
+                return this._TitleText;
+            }
+        }
+        [SerializeField()]
+        private Image _IP_FieldImage;
+        public Image IP_FieldImage
+        {
+            get
+            {
+                if ((this._IP_FieldImage == null))
+                {
+                    this._IP_FieldImage = this.transform.Find("IP_Field").GetComponent<Image>();
+                }
+                return this._IP_FieldImage;
+            }
+        }
+        [SerializeField()]
+        private Text _IP_Field_TitleText;
+        public Text IP_Field_TitleText
+        {
+            get
+            {
+                if ((this._IP_Field_TitleText == null))
+                {
+                    this._IP_Field_TitleText = this.transform.Find("IP_Field").Find("Title").GetComponent<Text>();
+                }
+                return this._IP_Field_TitleText;
+            }
+        }
+        [SerializeField()]
+        private InputField _IPInputField;
+        public InputField IPInputField
+        {
+            get
+            {
+                if ((this._IPInputField == null))
+                {
+                    this._IPInputField = this.transform.Find("IP_Field").Find("IPInputField").GetComponent<InputField>();
+                }
+                return this._IPInputField;
+            }
+        }
+        [SerializeField()]
+        private Button _ConnectButton;
+        public Button ConnectButton
+        {
+            get
+            {
+                if ((this._ConnectButton == null))
+                {
+                    this._ConnectButton = this.transform.Find("IP_Field").Find("ConnectButton").GetComponent<Button>();
+                }
+                return this._ConnectButton;
             }
         }
         [SerializeField()]
@@ -110,19 +198,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _LANGameText;
-        public Text LANGameText
-        {
-            get
-            {
-                if ((this._LANGameText == null))
-                {
-                    this._LANGameText = this.transform.Find("RoomListPanel").Find("LANGameText").GetComponent<Text>();
-                }
-                return this._LANGameText;
-            }
-        }
-        [SerializeField()]
         private Image _RoomInfoPanelImage;
         public Image RoomInfoPanelImage
         {
@@ -136,6 +211,32 @@ namespace UI
             }
         }
         [SerializeField()]
+        private VerticalLayoutGroup _ContainerVerticalLayoutGroup;
+        public VerticalLayoutGroup ContainerVerticalLayoutGroup
+        {
+            get
+            {
+                if ((this._ContainerVerticalLayoutGroup == null))
+                {
+                    this._ContainerVerticalLayoutGroup = this.transform.Find("RoomInfoPanel").Find("Container").GetComponent<VerticalLayoutGroup>();
+                }
+                return this._ContainerVerticalLayoutGroup;
+            }
+        }
+        [SerializeField()]
+        private Text _NameLabelText;
+        public Text NameLabelText
+        {
+            get
+            {
+                if ((this._NameLabelText == null))
+                {
+                    this._NameLabelText = this.transform.Find("RoomInfoPanel").Find("Container").Find("NameLabel").GetComponent<Text>();
+                }
+                return this._NameLabelText;
+            }
+        }
+        [SerializeField()]
         private Text _NameText;
         public Text NameText
         {
@@ -143,9 +244,22 @@ namespace UI
             {
                 if ((this._NameText == null))
                 {
-                    this._NameText = this.transform.Find("RoomInfoPanel").Find("NameText").GetComponent<Text>();
+                    this._NameText = this.transform.Find("RoomInfoPanel").Find("Container").Find("NameText").GetComponent<Text>();
                 }
                 return this._NameText;
+            }
+        }
+        [SerializeField()]
+        private Text _IPLabelText;
+        public Text IPLabelText
+        {
+            get
+            {
+                if ((this._IPLabelText == null))
+                {
+                    this._IPLabelText = this.transform.Find("RoomInfoPanel").Find("Container").Find("IPLabel").GetComponent<Text>();
+                }
+                return this._IPLabelText;
             }
         }
         [SerializeField()]
@@ -156,9 +270,22 @@ namespace UI
             {
                 if ((this._IPText == null))
                 {
-                    this._IPText = this.transform.Find("RoomInfoPanel").Find("IPText").GetComponent<Text>();
+                    this._IPText = this.transform.Find("RoomInfoPanel").Find("Container").Find("IPText").GetComponent<Text>();
                 }
                 return this._IPText;
+            }
+        }
+        [SerializeField()]
+        private Text _DescLabelText;
+        public Text DescLabelText
+        {
+            get
+            {
+                if ((this._DescLabelText == null))
+                {
+                    this._DescLabelText = this.transform.Find("RoomInfoPanel").Find("Container").Find("DescLabel").GetComponent<Text>();
+                }
+                return this._DescLabelText;
             }
         }
         [SerializeField()]
@@ -169,9 +296,22 @@ namespace UI
             {
                 if ((this._DescText == null))
                 {
-                    this._DescText = this.transform.Find("RoomInfoPanel").Find("DescText").GetComponent<Text>();
+                    this._DescText = this.transform.Find("RoomInfoPanel").Find("Container").Find("DescText").GetComponent<Text>();
                 }
                 return this._DescText;
+            }
+        }
+        [SerializeField()]
+        private Button _ReturnBtnButton;
+        public Button ReturnBtnButton
+        {
+            get
+            {
+                if ((this._ReturnBtnButton == null))
+                {
+                    this._ReturnBtnButton = this.transform.Find("ReturnBtn").GetComponent<Button>();
+                }
+                return this._ReturnBtnButton;
             }
         }
         partial void onAwake();

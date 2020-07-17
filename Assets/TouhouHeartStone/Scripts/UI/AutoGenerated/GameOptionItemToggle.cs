@@ -15,7 +15,7 @@ namespace UI
     using UnityEngine.UI;
     using BJSYGameCore.UI;
     
-    public partial class HoriCardListItem : UIObject
+    public partial class GameOptionItemToggle : UIObject
     {
         protected override void Awake()
         {
@@ -25,41 +25,33 @@ namespace UI
         }
         public void autoBind()
         {
-            this.m_as_Button = this.GetComponent<Button>();
-            this._Card = this.transform.Find("Card").GetComponent<Card>();
+            this.m_as_Image = this.GetComponent<Image>();
+            this._Toggle = this.transform.Find("Toggle").GetComponent<Toggle>();
         }
-        private Main _parent;
-        public Main parent
+        [SerializeField()]
+        private Image m_as_Image;
+        public Image asImage
         {
             get
             {
-                return this.transform.parent.parent.parent.parent.parent.parent.GetComponent<Main>();
+                if ((this.m_as_Image == null))
+                {
+                    this.m_as_Image = this.GetComponent<Image>();
+                }
+                return this.m_as_Image;
             }
         }
         [SerializeField()]
-        private Button m_as_Button;
-        public Button asButton
+        private Toggle _Toggle;
+        public Toggle Toggle
         {
             get
             {
-                if ((this.m_as_Button == null))
+                if ((this._Toggle == null))
                 {
-                    this.m_as_Button = this.GetComponent<Button>();
+                    this._Toggle = this.transform.Find("Toggle").GetComponent<Toggle>();
                 }
-                return this.m_as_Button;
-            }
-        }
-        [SerializeField()]
-        private Card _Card;
-        public Card Card
-        {
-            get
-            {
-                if ((this._Card == null))
-                {
-                    this._Card = this.transform.Find("Card").GetComponent<Card>();
-                }
-                return this._Card;
+                return this._Toggle;
             }
         }
         partial void onAwake();

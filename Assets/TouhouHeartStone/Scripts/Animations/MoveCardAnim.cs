@@ -18,10 +18,7 @@ namespace Game
                 if (eventArg.to.name == PileName.HAND)
                 {
                     //发现，印卡
-                    if (eventArg.to == table.player.hand)
-                    {
-                        table.createHand(eventArg.card);
-                    }
+                    table.createHand(eventArg.card);
                 }
             }
             else if (eventArg.from.name == PileName.DECK)
