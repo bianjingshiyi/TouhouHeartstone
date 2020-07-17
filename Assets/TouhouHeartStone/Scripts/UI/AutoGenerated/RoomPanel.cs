@@ -26,17 +26,18 @@ namespace UI
         public void autoBind()
         {
             this.m_as_Image = this.GetComponent<Image>();
+            this._TitleBarImage = this.transform.Find("TitleBar").GetComponent<Image>();
+            this._TitleText = this.transform.Find("TitleBar").Find("Title").GetComponent<Text>();
+            this._IPText = this.transform.Find("TitleBar").Find("IP").GetComponent<Text>();
             this._RoomPlayerListScrollRect = this.transform.Find("RoomPlayerListScrollRect").GetComponent<ScrollRect>();
             this._RoomPlayerList = this.transform.Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
             this._GameOptionPanelImage = this.transform.Find("GameOptionPanel").GetComponent<Image>();
-            this._RandomSeedText = this.transform.Find("GameOptionPanel").Find("RandomSeedText").GetComponent<Text>();
-            this._RandomSeedInputField = this.transform.Find("GameOptionPanel").Find("RandomSeedInputField").GetComponent<InputField>();
-            this._ShuffleToggle = this.transform.Find("GameOptionPanel").Find("ShuffleToggle").GetComponent<Toggle>();
-            this._InitReplaceTimeText = this.transform.Find("GameOptionPanel").Find("InitReplaceTimeText").GetComponent<Text>();
-            this._InitReplaceTimeInputField = this.transform.Find("GameOptionPanel").Find("InitReplaceTimeInputField").GetComponent<InputField>();
-            this._TurnTimeText = this.transform.Find("GameOptionPanel").Find("TurnTimeText").GetComponent<Text>();
-            this._TurnTimeInputField = this.transform.Find("GameOptionPanel").Find("TurnTimeInputField").GetComponent<InputField>();
-            this._IsSortedToggle = this.transform.Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<Toggle>();
+            this._GameOptionPanelVerticalLayoutGroup = this.transform.Find("GameOptionPanel").GetComponent<VerticalLayoutGroup>();
+            this._RandomSeedContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("RandomSeedContainer").GetComponent<GameOptionItemText>();
+            this._ShuffleContainerGameOptionItemToggle = this.transform.Find("GameOptionPanel").Find("ShuffleContainer").GetComponent<GameOptionItemToggle>();
+            this._InitReplacementContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("InitReplacementContainer").GetComponent<GameOptionItemText>();
+            this._TurnTimeContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("TurnTimeContainer").GetComponent<GameOptionItemText>();
+            this._IsSortedToggleGameOptionItemToggle = this.transform.Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<GameOptionItemToggle>();
             this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
             this._StartButton = this.transform.Find("StartButton").GetComponent<Button>();
         }
@@ -59,6 +60,45 @@ namespace UI
                     this.m_as_Image = this.GetComponent<Image>();
                 }
                 return this.m_as_Image;
+            }
+        }
+        [SerializeField()]
+        private Image _TitleBarImage;
+        public Image TitleBarImage
+        {
+            get
+            {
+                if ((this._TitleBarImage == null))
+                {
+                    this._TitleBarImage = this.transform.Find("TitleBar").GetComponent<Image>();
+                }
+                return this._TitleBarImage;
+            }
+        }
+        [SerializeField()]
+        private Text _TitleText;
+        public Text TitleText
+        {
+            get
+            {
+                if ((this._TitleText == null))
+                {
+                    this._TitleText = this.transform.Find("TitleBar").Find("Title").GetComponent<Text>();
+                }
+                return this._TitleText;
+            }
+        }
+        [SerializeField()]
+        private Text _IPText;
+        public Text IPText
+        {
+            get
+            {
+                if ((this._IPText == null))
+                {
+                    this._IPText = this.transform.Find("TitleBar").Find("IP").GetComponent<Text>();
+                }
+                return this._IPText;
             }
         }
         [SerializeField()]
@@ -101,107 +141,81 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _RandomSeedText;
-        public Text RandomSeedText
+        private VerticalLayoutGroup _GameOptionPanelVerticalLayoutGroup;
+        public VerticalLayoutGroup GameOptionPanelVerticalLayoutGroup
         {
             get
             {
-                if ((this._RandomSeedText == null))
+                if ((this._GameOptionPanelVerticalLayoutGroup == null))
                 {
-                    this._RandomSeedText = this.transform.Find("GameOptionPanel").Find("RandomSeedText").GetComponent<Text>();
+                    this._GameOptionPanelVerticalLayoutGroup = this.transform.Find("GameOptionPanel").GetComponent<VerticalLayoutGroup>();
                 }
-                return this._RandomSeedText;
+                return this._GameOptionPanelVerticalLayoutGroup;
             }
         }
         [SerializeField()]
-        private InputField _RandomSeedInputField;
-        public InputField RandomSeedInputField
+        private GameOptionItemText _RandomSeedContainerGameOptionItemText;
+        public GameOptionItemText RandomSeedContainerGameOptionItemText
         {
             get
             {
-                if ((this._RandomSeedInputField == null))
+                if ((this._RandomSeedContainerGameOptionItemText == null))
                 {
-                    this._RandomSeedInputField = this.transform.Find("GameOptionPanel").Find("RandomSeedInputField").GetComponent<InputField>();
+                    this._RandomSeedContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("RandomSeedContainer").GetComponent<GameOptionItemText>();
                 }
-                return this._RandomSeedInputField;
+                return this._RandomSeedContainerGameOptionItemText;
             }
         }
         [SerializeField()]
-        private Toggle _ShuffleToggle;
-        public Toggle ShuffleToggle
+        private GameOptionItemToggle _ShuffleContainerGameOptionItemToggle;
+        public GameOptionItemToggle ShuffleContainerGameOptionItemToggle
         {
             get
             {
-                if ((this._ShuffleToggle == null))
+                if ((this._ShuffleContainerGameOptionItemToggle == null))
                 {
-                    this._ShuffleToggle = this.transform.Find("GameOptionPanel").Find("ShuffleToggle").GetComponent<Toggle>();
+                    this._ShuffleContainerGameOptionItemToggle = this.transform.Find("GameOptionPanel").Find("ShuffleContainer").GetComponent<GameOptionItemToggle>();
                 }
-                return this._ShuffleToggle;
+                return this._ShuffleContainerGameOptionItemToggle;
             }
         }
         [SerializeField()]
-        private Text _InitReplaceTimeText;
-        public Text InitReplaceTimeText
+        private GameOptionItemText _InitReplacementContainerGameOptionItemText;
+        public GameOptionItemText InitReplacementContainerGameOptionItemText
         {
             get
             {
-                if ((this._InitReplaceTimeText == null))
+                if ((this._InitReplacementContainerGameOptionItemText == null))
                 {
-                    this._InitReplaceTimeText = this.transform.Find("GameOptionPanel").Find("InitReplaceTimeText").GetComponent<Text>();
+                    this._InitReplacementContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("InitReplacementContainer").GetComponent<GameOptionItemText>();
                 }
-                return this._InitReplaceTimeText;
+                return this._InitReplacementContainerGameOptionItemText;
             }
         }
         [SerializeField()]
-        private InputField _InitReplaceTimeInputField;
-        public InputField InitReplaceTimeInputField
+        private GameOptionItemText _TurnTimeContainerGameOptionItemText;
+        public GameOptionItemText TurnTimeContainerGameOptionItemText
         {
             get
             {
-                if ((this._InitReplaceTimeInputField == null))
+                if ((this._TurnTimeContainerGameOptionItemText == null))
                 {
-                    this._InitReplaceTimeInputField = this.transform.Find("GameOptionPanel").Find("InitReplaceTimeInputField").GetComponent<InputField>();
+                    this._TurnTimeContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("TurnTimeContainer").GetComponent<GameOptionItemText>();
                 }
-                return this._InitReplaceTimeInputField;
+                return this._TurnTimeContainerGameOptionItemText;
             }
         }
         [SerializeField()]
-        private Text _TurnTimeText;
-        public Text TurnTimeText
+        private GameOptionItemToggle _IsSortedToggleGameOptionItemToggle;
+        public GameOptionItemToggle IsSortedToggleGameOptionItemToggle
         {
             get
             {
-                if ((this._TurnTimeText == null))
+                if ((this._IsSortedToggleGameOptionItemToggle == null))
                 {
-                    this._TurnTimeText = this.transform.Find("GameOptionPanel").Find("TurnTimeText").GetComponent<Text>();
+                    this._IsSortedToggleGameOptionItemToggle = this.transform.Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<GameOptionItemToggle>();
                 }
-                return this._TurnTimeText;
-            }
-        }
-        [SerializeField()]
-        private InputField _TurnTimeInputField;
-        public InputField TurnTimeInputField
-        {
-            get
-            {
-                if ((this._TurnTimeInputField == null))
-                {
-                    this._TurnTimeInputField = this.transform.Find("GameOptionPanel").Find("TurnTimeInputField").GetComponent<InputField>();
-                }
-                return this._TurnTimeInputField;
-            }
-        }
-        [SerializeField()]
-        private Toggle _IsSortedToggle;
-        public Toggle IsSortedToggle
-        {
-            get
-            {
-                if ((this._IsSortedToggle == null))
-                {
-                    this._IsSortedToggle = this.transform.Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<Toggle>();
-                }
-                return this._IsSortedToggle;
+                return this._IsSortedToggleGameOptionItemToggle;
             }
         }
         [SerializeField()]

@@ -74,14 +74,11 @@ namespace Game
             client.onQuitRoom += Client_onQuitRoom;
             gameManager.onGameEnd += onGameEnd;
 
-            ui.LinkButton.onClick.set(() =>
-            {
-                displayIPPanel();
-            });
             ui.LANButton.onClick.set(() =>
             {
                 displayLANPanel();
             });
+
             ui.RoomButton.interactable = false;
             ui.RoomButton.image.color = Color.gray;
             ui.RoomButton.onClick.set(() =>
@@ -256,15 +253,30 @@ namespace Game
         {
             ui.NetworkingPageGroup.display(null);
         }
-        void displayIPPanel()
+        [SerializeField]
+        int _port;
+        public void displayLANPanel()
         {
-            IPPanel ipPanel = ui.NetworkingPageGroup.IPPanel;
-            ui.NetworkingPageGroup.display(ipPanel);
-            ipPanel.ConnectButton.onClick.set(() =>
+            LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
+            ui.NetworkingPageGroup.display(lanPanel);
+            lanPanel.FlushRoomButton.onClick.set(() =>
+            {
+                flushLANRooms();
+            });
+            lanPanel.CreateRoomButton.interactable = !host.RoomIsValid;
+            lanPanel.CreateRoomButton.onClick.set(() =>
+            {
+                _ = createRoom();
+            });
+            lanPanel.ReturnBtnButton.onClick.AddListener(() =>
+            {
+                ui.parent.display(ui.parent.MainMenu);
+            });
+            lanPanel.ConnectButton.onClick.set(() =>
             {
                 int port = _port;
                 string address = "";
-                var uri = new Uri("http://" + ipPanel.IPInputField.text);
+                var uri = new Uri("http://" + lanPanel.IPInputField.text);
 
                 if (uri.HostNameType == UriHostNameType.Dns)
                 {
@@ -286,23 +298,6 @@ namespace Game
 
                 // getManager<UIManager>().getObject<Dialog>().display("输入的地址格式有误", null);
             });
-            ipPanel.AddressText.text = "你的地址：\n" + string.Join("\n", addresses);
-        }
-        [SerializeField]
-        int _port;
-        public void displayLANPanel()
-        {
-            LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
-            ui.NetworkingPageGroup.display(lanPanel);
-            lanPanel.FlushRoomButton.onClick.set(() =>
-            {
-                flushLANRooms();
-            });
-            lanPanel.CreateRoomButton.interactable = !host.RoomIsValid;
-            lanPanel.CreateRoomButton.onClick.set(() =>
-            {
-                _ = createRoom();
-            });
             lanPanel.NameText.text = null;
             lanPanel.IPText.text = null;
             lanPanel.DescText.text = null;
@@ -322,9 +317,9 @@ namespace Game
                 }
                 else
                 {
-                    lanPanel.NameText.text = "房间";
-                    lanPanel.IPText.text = "IP:" + obj.ip;
-                    lanPanel.DescText.text = "描述:";
+                    lanPanel.NameText.text = obj.id.ToString();
+                    lanPanel.IPText.text = obj.ip;
+                    lanPanel.DescText.text = "描述";
                 }
             });
             item.Button.onClick.set(() =>
@@ -346,16 +341,16 @@ namespace Game
                     //TODO:查看卡组
                 });
             }
-            roomPanel.RandomSeedInputField.text = room.getOption().randomSeed.ToString();
-            roomPanel.ShuffleToggle.isOn = room.getOption().shuffle;
-            roomPanel.InitReplaceTimeInputField.text = room.getOption().timeoutForInitReplace.ToString();
-            roomPanel.TurnTimeInputField.text = room.getOption().timeoutForTurn.ToString();
-            Debug.Log("刷新房间设定" + roomPanel.IsSortedToggle.isOn);
-            roomPanel.IsSortedToggle.isOn = room.getOption().sortedPlayers != null;
+            roomPanel.RandomSeedContainerGameOptionItemText.InputField.text = room.getOption().randomSeed.ToString();
+            roomPanel.ShuffleContainerGameOptionItemToggle.Toggle.isOn = room.getOption().shuffle;
+            roomPanel.InitReplacementContainerGameOptionItemText.InputField.text = room.getOption().timeoutForInitReplace.ToString();
+            roomPanel.TurnTimeContainerGameOptionItemText.InputField.text = room.getOption().timeoutForTurn.ToString();
+            Debug.Log("刷新房间设定" + roomPanel.IsSortedToggleGameOptionItemToggle.Toggle.isOn);
+            roomPanel.IsSortedToggleGameOptionItemToggle.Toggle.isOn = room.getOption().sortedPlayers != null;
             if (host.RoomIsValid)
             {
-                roomPanel.RandomSeedInputField.setSelectable(true);
-                roomPanel.RandomSeedInputField.onValueChanged.set(value =>
+                roomPanel.RandomSeedContainerGameOptionItemText.InputField.setSelectable(true);
+                roomPanel.RandomSeedContainerGameOptionItemText.InputField.onValueChanged.set(value =>
                 {
                     if (host.room is RoomInfo roomInfo)
                     {
@@ -365,11 +360,11 @@ namespace Game
                             host.updateRoomInfo(roomInfo);
                         }
                         else
-                            roomPanel.RandomSeedInputField.text = roomInfo.getOption().randomSeed.ToString();
+                            roomPanel.RandomSeedContainerGameOptionItemText.InputField.text = roomInfo.getOption().randomSeed.ToString();
                     }
                 });
-                roomPanel.ShuffleToggle.setSelectable(true);
-                roomPanel.ShuffleToggle.onValueChanged.set(value =>
+                roomPanel.ShuffleContainerGameOptionItemToggle.Toggle.setSelectable(true);
+                roomPanel.ShuffleContainerGameOptionItemToggle.Toggle.onValueChanged.set(value =>
                 {
                     if (host.room is RoomInfo roomInfo)
                     {
@@ -377,8 +372,8 @@ namespace Game
                         host.updateRoomInfo(roomInfo);
                     }
                 });
-                roomPanel.InitReplaceTimeInputField.setSelectable(true);
-                roomPanel.InitReplaceTimeInputField.onEndEdit.set(value =>
+                roomPanel.InitReplacementContainerGameOptionItemText.InputField.setSelectable(true);
+                roomPanel.InitReplacementContainerGameOptionItemText.InputField.onEndEdit.set(value =>
                 {
                     if (host.room is RoomInfo roomInfo)
                     {
@@ -389,12 +384,12 @@ namespace Game
                         }
                         else
                         {
-                            roomPanel.InitReplaceTimeInputField.text = roomInfo.getOption().timeoutForInitReplace.ToString();
+                            roomPanel.InitReplacementContainerGameOptionItemText.InputField.text = roomInfo.getOption().timeoutForInitReplace.ToString();
                         }
                     }
                 });
-                roomPanel.TurnTimeInputField.setSelectable(true);
-                roomPanel.TurnTimeInputField.onEndEdit.set(value =>
+                roomPanel.TurnTimeContainerGameOptionItemText.InputField.setSelectable(true);
+                roomPanel.TurnTimeContainerGameOptionItemText.InputField.onEndEdit.set(value =>
                 {
                     if (host.room is RoomInfo roomInfo)
                     {
@@ -405,12 +400,12 @@ namespace Game
                         }
                         else
                         {
-                            roomPanel.TurnTimeInputField.text = roomInfo.getOption().timeoutForTurn.ToString();
+                            roomPanel.TurnTimeContainerGameOptionItemText.InputField.text = roomInfo.getOption().timeoutForTurn.ToString();
                         }
                     }
                 });
-                roomPanel.IsSortedToggle.setSelectable(true);
-                roomPanel.IsSortedToggle.onValueChanged.set(onValueChanged);
+                roomPanel.IsSortedToggleGameOptionItemToggle.Toggle.setSelectable(true);
+                roomPanel.IsSortedToggleGameOptionItemToggle.Toggle.onValueChanged.set(onValueChanged);
                 void onValueChanged(bool value)
                 {
                     if (host.room is RoomInfo roomInfo)
@@ -431,11 +426,11 @@ namespace Game
             }
             else
             {
-                roomPanel.RandomSeedInputField.setSelectable(false);
-                roomPanel.ShuffleToggle.setSelectable(false);
-                roomPanel.InitReplaceTimeInputField.setSelectable(false);
-                roomPanel.TurnTimeInputField.setSelectable(false);
-                roomPanel.IsSortedToggle.setSelectable(false);
+                roomPanel.RandomSeedContainerGameOptionItemText.InputField.setSelectable(false);
+                roomPanel.ShuffleContainerGameOptionItemToggle.Toggle.setSelectable(false);
+                roomPanel.InitReplacementContainerGameOptionItemText.InputField.setSelectable(false);
+                roomPanel.TurnTimeContainerGameOptionItemText.InputField.setSelectable(false);
+                roomPanel.IsSortedToggleGameOptionItemToggle.Toggle.setSelectable(false);
                 roomPanel.StartButton.setSelectable(false);
             }
             roomPanel.QuitButton.onClick.set(() =>
@@ -449,6 +444,7 @@ namespace Game
         private void displayRoomPanel()
         {
             ui.NetworkingPageGroup.display(ui.NetworkingPageGroup.RoomPanel);
+            ui.NetworkingPageGroup.RoomPanel.IPText.text = "IP：" + string.Join(", ", addresses);
         }
         #endregion
     }
