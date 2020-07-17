@@ -4203,7 +4203,7 @@ PrefabInstance:
     - target: {fileID: 3170431878261831260, guid: 86e69600efd1f0845a7f7349704e6dd4,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3170431878261831260, guid: 86e69600efd1f0845a7f7349704e6dd4,
         type: 3}
@@ -7158,8 +7158,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 933.6373, y: -45}
-  m_SizeDelta: {x: 1857.2747, y: 80}
+  m_AnchoredPosition: {x: 393.9566, y: -45}
+  m_SizeDelta: {x: 777.9132, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &569259662
 MonoBehaviour:
@@ -12352,7 +12352,7 @@ PrefabInstance:
     - target: {fileID: 1346752698259717397, guid: 1089f64c6a549a847826c6dbb32f1dfc,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1346752698259717397, guid: 1089f64c6a549a847826c6dbb32f1dfc,
         type: 3}
@@ -13157,7 +13157,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -204, y: -57.69928}
+  m_AnchoredPosition: {x: -204, y: -57.69934}
   m_SizeDelta: {x: -471.2, y: -178.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1033873265
@@ -13646,7 +13646,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 964475760}
   m_HandleRect: {fileID: 964475759}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -16682,37 +16682,37 @@ MonoBehaviour:
     master: 4194304
     deckList:
     - id: 4202517
-      count: 0
+      count: 2
     - id: 4206614
-      count: 0
+      count: 2
     - id: 4202519
-      count: 0
+      count: 2
     - id: 4206594
-      count: 0
+      count: 20
     - id: 4206616
-      count: 0
+      count: 2
     - id: 4210694
-      count: 0
+      count: 1
     - id: 0
-      count: 0
+      count: 2
     - id: 4206601
-      count: 0
+      count: 2
     - id: 4206609
-      count: 0
+      count: 2
     - id: 4206600
-      count: 0
+      count: 2
     - id: 4206599
-      count: 0
+      count: 2
     - id: 4206608
-      count: 0
+      count: 2
     - id: 4202514
-      count: 0
+      count: 1
     - id: 4202501
-      count: 0
+      count: 2
     - id: 4206611
-      count: 0
+      count: 1
     - id: 4206612
-      count: 0
+      count: 1
     - id: 8194
       count: 5
     - id: 8198
@@ -21971,7 +21971,7 @@ PrefabInstance:
     - target: {fileID: 3170431878261831260, guid: 86e69600efd1f0845a7f7349704e6dd4,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3170431878261831260, guid: 86e69600efd1f0845a7f7349704e6dd4,
         type: 3}
@@ -26233,7 +26233,7 @@ PrefabInstance:
     - target: {fileID: 1346752698259717397, guid: 1089f64c6a549a847826c6dbb32f1dfc,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1346752698259717397, guid: 1089f64c6a549a847826c6dbb32f1dfc,
         type: 3}
@@ -26363,7 +26363,7 @@ PrefabInstance:
     - target: {fileID: 3170431878261831260, guid: 86e69600efd1f0845a7f7349704e6dd4,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3170431878261831260, guid: 86e69600efd1f0845a7f7349704e6dd4,
         type: 3}

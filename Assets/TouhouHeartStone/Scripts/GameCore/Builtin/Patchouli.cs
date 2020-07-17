@@ -74,7 +74,9 @@ namespace TouhouHeartstone.Builtin
         };
         static Task effect(THHGame game, Card card)
         {
-            //card.getOwner().master.addBuff(game, new GeneratedBuff(ID,));
+            //card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
+            //    new Halo(new GeneratedBuff(ID, new CostModifier(-5)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master),
+            //    ));
             return Task.CompletedTask;
         }
         class CostFixer : PassiveEffect
