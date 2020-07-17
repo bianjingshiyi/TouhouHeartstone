@@ -266,11 +266,26 @@ namespace Tests
             Assert.AreEqual(TestMaster.ID, CardCategory.getCharacterID(TestSkill.ID));
         }
         [UnityTest]
-        public void discoverTest()
+        public IEnumerator discoverTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo);
             var cards = you.deck.randomTake(game, 3);
             var task = you.discover(game, cards);
+            yield return new WaitForSeconds(.5f);
+            you.cmdDiscover(game, cards.First().id);
+            Assert.True(task.IsCompleted);
+            Assert.AreEqual(cards.First(), task.Result);
+        }
+        [UnityTest]
+        public IEnumerator discoverTest_Cancel()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo);
+            var cards = you.deck.randomTake(game, 3);
+            var task = you.discover(game, cards);
+            yield return new WaitForSeconds(.5f);
+            game.answers.cancelAll();
+            //yield return task.wait();
+            //Assert.True(cards.Contains(task.Result));
         }
     }
     static class TestExtension
