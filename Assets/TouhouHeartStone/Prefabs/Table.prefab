@@ -427,11 +427,12 @@ MonoBehaviour:
   _BlockerButton: {fileID: 6780271590443168022}
   _SelfHandList: {fileID: 4277185728030709594}
   _InitReplaceDialog: {fileID: 6780271590991245141}
-  _TipText: {fileID: 6780271591202186819}
   _LargeCard: {fileID: 5656552602970528448}
+  _TipText: {fileID: 6780271591202186819}
   _Fatigue: {fileID: 6780271590992414775}
   _TurnTipImage: {fileID: 6780271591599197780}
   _TurnTipText: {fileID: 6780271591215759655}
+  _Discover: {fileID: 0}
   _defaultProjectile: {fileID: 3622927314571081998, guid: 126ef8e97874d134a8fd0e8ffa1dd7a8,
     type: 3}
   _usingHand: {fileID: 0}
@@ -651,6 +652,7 @@ MonoBehaviour:
   _useController: 0
   _initStates: []
   _BlockerButton: {fileID: 6780271591035072348}
+  _Text: {fileID: 0}
   _InitReplaceCardList: {fileID: 6780271591620179978}
   _ConfirmButton: {fileID: 6780271591893578663}
 --- !u!1 &6780271590992414763
@@ -2193,6 +2195,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2808020363247688099, guid: 342566f47cf9c75408b37d91993c373a,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2808020363247688099, guid: 342566f47cf9c75408b37d91993c373a,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2808020363247688099, guid: 342566f47cf9c75408b37d91993c373a,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2808020364982502619, guid: 342566f47cf9c75408b37d91993c373a,
         type: 3}
@@ -4659,6 +4676,21 @@ PrefabInstance:
     - target: {fileID: 2808020363229608805, guid: 342566f47cf9c75408b37d91993c373a,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2808020363247688099, guid: 342566f47cf9c75408b37d91993c373a,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2808020363247688099, guid: 342566f47cf9c75408b37d91993c373a,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2808020363247688099, guid: 342566f47cf9c75408b37d91993c373a,
+        type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2808020363538443096, guid: 342566f47cf9c75408b37d91993c373a,
