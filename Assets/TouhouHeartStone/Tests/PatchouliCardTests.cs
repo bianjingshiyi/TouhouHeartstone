@@ -94,9 +94,9 @@ namespace Tests
                 new KeyValuePair<int, int>(SylphyHorn.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<SylphyHorn>().cost);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<SylphyHorn>().cost+1);
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<SylphyHorn>(), targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<SylphyHorn>(), targets: you.master);
             game.Dispose();
         }
 
@@ -200,6 +200,7 @@ namespace Tests
             );
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<ElementSprite>().cost);
             you.cmdUse(game, you.hand.getCard<ElementSprite>());
+            
             game.Dispose();
         }
 
@@ -410,7 +411,7 @@ namespace Tests
                 new KeyValuePair<int, int>(SproutingWalkingDead.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<DefaultServant>().cost);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 10);
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
             you.cmdUse(game, you.hand.getCard<SproutingWalkingDead>(), targets: you.field[0]);
             you.field[0].die(game);
