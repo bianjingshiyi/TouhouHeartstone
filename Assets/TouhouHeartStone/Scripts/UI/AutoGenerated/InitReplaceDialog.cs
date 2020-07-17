@@ -26,6 +26,7 @@ namespace UI
         public void autoBind()
         {
             this._BlockerButton = this.transform.Find("Blocker").GetComponent<Button>();
+            this._Text = this.transform.Find("Text").GetComponent<Text>();
             this._InitReplaceCardList = this.transform.Find("InitReplaceCardList").GetComponent<InitReplaceCardList>();
             this._ConfirmButton = this.transform.Find("Confirm").GetComponent<Button>();
         }
@@ -48,6 +49,19 @@ namespace UI
                     this._BlockerButton = this.transform.Find("Blocker").GetComponent<Button>();
                 }
                 return this._BlockerButton;
+            }
+        }
+        [SerializeField()]
+        private Text _Text;
+        public Text Text
+        {
+            get
+            {
+                if ((this._Text == null))
+                {
+                    this._Text = this.transform.Find("Text").GetComponent<Text>();
+                }
+                return this._Text;
             }
         }
         [SerializeField()]

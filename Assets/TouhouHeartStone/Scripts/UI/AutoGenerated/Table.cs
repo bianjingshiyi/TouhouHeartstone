@@ -50,11 +50,11 @@ namespace UI
             this._SelfHandList = this.transform.Find("SelfHand").GetComponent<HandList>();
             this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
             this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
-            this._Discover = this.transform.Find("Discover").GetComponent<Discover>();
             this._TipText = this.transform.Find("TipText").GetComponent<Text>();
             this._Fatigue = this.transform.Find("Fatigue").GetComponent<Fatigue>();
             this._TurnTipImage = this.transform.Find("TurnTipImage").GetComponent<Image>();
             this._TurnTipText = this.transform.Find("TurnTipImage").Find("TurnTipText").GetComponent<Text>();
+            this._Discover = this.transform.Find("Discover").GetComponent<Discover>();
         }
         private Main _parent;
         public Main parent
@@ -390,19 +390,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Discover _Discover;
-        public Discover Discover
-        {
-            get
-            {
-                if ((this._Discover == null))
-                {
-                    this._Discover = this.transform.Find("Discover").GetComponent<Discover>();
-                }
-                return this._Discover;
-            }
-        }
-        [SerializeField()]
         private Text _TipText;
         public Text TipText
         {
@@ -452,6 +439,19 @@ namespace UI
                     this._TurnTipText = this.transform.Find("TurnTipImage").Find("TurnTipText").GetComponent<Text>();
                 }
                 return this._TurnTipText;
+            }
+        }
+        [SerializeField()]
+        private Discover _Discover;
+        public Discover Discover
+        {
+            get
+            {
+                if ((this._Discover == null))
+                {
+                    this._Discover = this.transform.Find("Discover").GetComponent<Discover>();
+                }
+                return this._Discover;
             }
         }
         partial void onAwake();

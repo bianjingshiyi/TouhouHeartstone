@@ -26,6 +26,7 @@ namespace UI
         public void autoBind()
         {
             this.m_as_Image = this.GetComponent<Image>();
+            this._Image = this.transform.Find("Image").GetComponent<Image>();
             this._ReturnButton = this.transform.Find("ReturnButton").GetComponent<Button>();
             this._LinkButton = this.transform.Find("LinkButton").GetComponent<Button>();
             this._LANButton = this.transform.Find("LANButton").GetComponent<Button>();
@@ -59,6 +60,19 @@ namespace UI
                     this.m_as_Image = this.GetComponent<Image>();
                 }
                 return this.m_as_Image;
+            }
+        }
+        [SerializeField()]
+        private Image _Image;
+        public Image Image
+        {
+            get
+            {
+                if ((this._Image == null))
+                {
+                    this._Image = this.transform.Find("Image").GetComponent<Image>();
+                }
+                return this._Image;
             }
         }
         [SerializeField()]

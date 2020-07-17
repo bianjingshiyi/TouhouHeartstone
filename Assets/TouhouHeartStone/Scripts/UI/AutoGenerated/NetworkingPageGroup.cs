@@ -25,7 +25,6 @@ namespace UI
         }
         public void autoBind()
         {
-            this._IPPanel = this.transform.Find("IPPanel").GetComponent<IPPanel>();
             this._LANPanel = this.transform.Find("LANPanel").GetComponent<LANPanel>();
             this._RoomPanel = this.transform.Find("RoomPanel").GetComponent<RoomPanel>();
         }
@@ -35,19 +34,6 @@ namespace UI
             get
             {
                 return this.transform.parent.parent.GetComponent<Main>();
-            }
-        }
-        [SerializeField()]
-        private IPPanel _IPPanel;
-        public IPPanel IPPanel
-        {
-            get
-            {
-                if ((this._IPPanel == null))
-                {
-                    this._IPPanel = this.transform.Find("IPPanel").GetComponent<IPPanel>();
-                }
-                return this._IPPanel;
             }
         }
         [SerializeField()]
@@ -79,7 +65,6 @@ namespace UI
         public override UIObject[] getPages()
         {
             return new UIObject[] {
-                    this.IPPanel,
                     this.LANPanel,
                     this.RoomPanel};
         }
