@@ -175,7 +175,7 @@ namespace UI
         public ActionEvent<Servant, PointerEventData> onClick { get; } = new ActionEvent<Servant, PointerEventData>();
         [SerializeField]
         string _targetAnimName = "Targeted";
-        public string targetedAnimName => _targetAnimName;        [SerializeField]
+        public string targetedAnimName => _targetAnimName;[SerializeField]
         private UnityEvent _onHighlightControllerNone;
         public UnityEvent onHighlightControllerNone => _onHighlightControllerNone;
 
@@ -185,5 +185,7 @@ namespace UI
 
         [SerializeField]
         private UnityEvent _onHighlightControllerGreen;
-        public UnityEvent onHighlightControllerGreen => _onHighlightControllerGreen;    }
+        public UnityEvent onHighlightControllerGreen => _onHighlightControllerGreen;
+        public SimpleAnim onAddModi;
+    }
 }

@@ -30,21 +30,21 @@ namespace TouhouHeartstone
             addPile(new Pile(game, PileName.MASTER, 1));
             getPile(PileName.MASTER).add(game, this.master);
             skill = game.createCardById(master.skillID);
-            addPile(new Pile(game, "Skill", 1));
+            addPile(new Pile(game, PileName.SKILL, 1));
             this[PileName.SKILL].add(game, skill);
-            this.deck = new Pile(game, "Deck");
+            this.deck = new Pile(game, PileName.DECK);
             if (deck != null)
                 this.deck.add(game, deck.Select(d => game.createCard(d)).ToArray());
             addPile(this.deck);
-            init = new Pile(game, "Init", maxCount: 4);
+            init = new Pile(game, PileName.INIT, maxCount: 4);
             addPile(init);
-            hand = new Pile(game, "Hand", maxCount: 10);
+            hand = new Pile(game, PileName.HAND, maxCount: 10);
             addPile(hand);
-            field = new Pile(game, "Field", maxCount: 7);
+            field = new Pile(game, PileName.FIELD, maxCount: 7);
             addPile(field);
-            grave = new Pile(game, "Grave");
+            grave = new Pile(game, PileName.GRAVE);
             addPile(grave);
-            warp = new Pile(game, "Warp");
+            warp = new Pile(game, PileName.WARP);
             addPile(warp);
         }
         internal async Task initReplace(THHGame game, params Card[] cards)

@@ -21,6 +21,14 @@ namespace Game
                     table.createHand(eventArg.card);
                 }
             }
+            else if (eventArg.from.name == PileName.INIT)
+            {
+                if (eventArg.to.name == PileName.HAND)
+                {
+                    //初始手牌
+                    table.createHand(eventArg.card);
+                }
+            }
             else if (eventArg.from.name == PileName.DECK)
             {
                 if (eventArg.to.name == PileName.HAND)
