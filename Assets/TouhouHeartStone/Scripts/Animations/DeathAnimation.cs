@@ -25,7 +25,8 @@ namespace Game
                 {
                     if (table.tryGetServant(p.Key, out var servant))//尝试获取死亡的随从的随从UI
                     {
-                        _animList.Add(new AnimAnim(servant.animator, "Servant_Death"));
+                        servant.onDeath.beforeAnim.Invoke();
+                        _animList.Add(new AnimAnim(servant.animator, servant.onDeath.animName));
                         //table.ui.SelfFieldList.removeItem(servant);//从自己的场上移除随从UI
                         //table.ui.EnemyFieldList.removeItem(servant);//从敌人的场上移除随从UI
                     }
@@ -43,6 +44,7 @@ namespace Game
             {
                 if (table.tryGetServant(p.Key, out var servant))//尝试获取死亡的随从的随从UI
                 {
+                    servant.onDeath.afterAnim.Invoke();
                     table.ui.SelfFieldList.removeItem(servant);//从自己的场上移除随从UI
                     table.ui.EnemyFieldList.removeItem(servant);//从敌人的场上移除随从UI
                 }
