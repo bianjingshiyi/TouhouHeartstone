@@ -238,7 +238,7 @@ namespace Game
         protected void OnGUI()
         {
 #if UNITY_EDITOR
-            Time.timeScale = GUILayout.HorizontalSlider(Time.timeScale, 0, 1, GUILayout.Width(200));
+            Time.timeScale = GUILayout.HorizontalSlider(Time.timeScale, 0, 3, GUILayout.Width(300));
 #endif
         }
     }

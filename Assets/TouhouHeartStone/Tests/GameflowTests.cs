@@ -72,6 +72,7 @@ namespace Tests
                 time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
                 logger = logger
             };
+            game.answers.game = game;
             (game.triggers as TriggerManager).logger = game.logger;
             return game;
         }

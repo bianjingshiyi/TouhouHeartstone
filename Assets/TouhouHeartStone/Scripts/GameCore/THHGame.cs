@@ -368,9 +368,6 @@ namespace TouhouHeartstone
                         Card target = getCard(attack.targetId);
                         await card.tryAttack(this, player, target);
                         break;
-                    case DiscoverResponse discover:
-                        
-                        break;
                     case TurnEndResponse _:
                         return;
                     case SurrenderResponse _:

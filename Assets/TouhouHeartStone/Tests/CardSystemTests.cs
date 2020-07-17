@@ -284,8 +284,8 @@ namespace Tests
             var task = you.discover(game, cards);
             yield return new WaitForSeconds(.5f);
             game.answers.cancelAll();
-            //yield return task.wait();
-            //Assert.True(cards.Contains(task.Result));
+            yield return task.wait();
+            Assert.True(cards.Contains(task.Result));
         }
     }
     static class TestExtension
