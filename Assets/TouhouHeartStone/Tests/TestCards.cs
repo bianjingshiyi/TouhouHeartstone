@@ -116,6 +116,7 @@ namespace Tests
                 new AttackModifier(1),
                 new LifeModifier(1)
             };
+            public override IPassiveEffect[] effects { get; }
             public override Buff clone()
             {
                 return new TestBuff();
