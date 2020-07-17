@@ -37,6 +37,7 @@ namespace Game
             if (!_timer.isExpired())
                 return false;
             table.ui.TurnTipImage.hide();
+            table.ui.TurnEndButton.interactable = eventArg.player == table.player;
             return true;
         }
     }

@@ -15,68 +15,6 @@ using UnityEngine.TestTools;
 using BJSYGameCore;
 namespace Tests
 {
-    public static class TestGameflow
-    {
-        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, params KeyValuePair<int, int>[] yourDeck)
-        {
-            game = initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            IEnumerable<CardDefine> yourTrueDeck = yourDeck.Length > 0 ?
- Enumerable.Repeat(game.getCardDefine(yourDeck[0].Key), yourDeck[0].Value) :
- Enumerable.Repeat(game.getCardDefine(DefaultServant.ID), 30);
-            for (int i = 1; i < yourDeck.Length; i++)
-            {
-                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getCardDefine(yourDeck[i].Key), yourDeck[i].Value));
-            }
-            int count = yourTrueDeck.Count();
-            if (count < 30)
-                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getCardDefine<DefaultServant>(), 30 - count));
-            yourTrueDeck = yourTrueDeck.Reverse();
-            you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), yourTrueDeck);
-            oppo = game.createPlayer(2, "玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
-        }
-        public static THHGame initStandardGame(string name = null, int deckCount = 30, int[] playersId = null, GameOption option = null)
-        {
-            return initStandardGame(name, playersId,
-                Enumerable.Repeat(new TestMaster(), 2).ToArray(),
-                Enumerable.Repeat(Enumerable.Repeat(new TestServant(), deckCount).ToArray(), 2).ToArray(),
-                option);
-        }
-        public static THHGame initStandardGame(string name, int[] playersId, MasterCardDefine[] masters, CardDefine[][] decks, GameOption option)
-        {
-            THHGame game = initGameWithoutPlayers(name, option);
-            if (playersId == null)
-                playersId = new int[] { 1, 2 };
-            if (masters == null)
-                masters = Enumerable.Repeat(game.getCardDefine<TestMaster>(), playersId.Length).ToArray();
-            if (decks == null)
-                decks = Enumerable.Repeat(Enumerable.Repeat(game.getCardDefine<TestServant>(), 30).ToArray(), playersId.Length).ToArray();
-            if (option == null)
-                option = GameOption.Default;
-            for (int i = 0; i < playersId.Length; i++)
-            {
-                game.createPlayer(playersId[i], "玩家" + playersId[i], masters[i], decks[i]);
-            }
-            return game;
-        }
-        public static THHGame initGameWithoutPlayers(string name, GameOption option)
-        {
-            TaskExceptionHandler.register();
-            ULogger logger = new ULogger(name) { blackList = new List<string>() { "Load" } };
-            THHGame game = new THHGame(option != null ? option : GameOption.Default, CardHelper.getCardDefines(logger))
-            {
-                answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
-                triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
-                time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
-                logger = logger
-            };
-            game.answers.game = game;
-            (game.triggers as TriggerManager).logger = game.logger;
-            return game;
-        }
-    }
     public class GameflowTests
     {
         [UnityTest]
@@ -211,6 +149,45 @@ namespace Tests
             game.Dispose();
             yield break;
         }
+        [Test]
+        public void turnEndTest_Timeout()
+        {
+            TestGameflow.createGameWithoutDeck(out var game, out var you, out _);
+            game.skipTurnUntil(() => !game.isRunning);
+            var fatigue = game.triggers.getRecordedEvents().OfType<THHPlayer.FatigueEventArg>().Last();
+            Assert.NotNull(fatigue);
+            var damage = game.triggers.getRecordedEvents().skipUntil(e => e == fatigue).OfType<THHCard.DamageEventArg>().First();
+            Assert.NotNull(damage);
+            var death = game.triggers.getRecordedEvents().skipUntil(e => e == damage).OfType<THHCard.DeathEventArg>().First();
+            Assert.NotNull(death);
+            var gameEnd = game.triggers.getRecordedEvents().skipUntil(e => e == death).OfType<THHGame.GameEndEventArg>().First();
+            Assert.NotNull(gameEnd);
+        }
+        [UnityTest]
+        public IEnumerator turnEndTest_TimeoutWhenUsing()
+        {
+            TestGameflow.createGame(out var game, out var you, out _, new GameOption()
+            {
+                shuffle = false,
+                timeoutForTurn = 1
+            }, new KeyValuePair<int, int>(DiscoverCopy.ID, 1));
+            game.skipTurnUntil(() => game.currentPlayer == you);
+            you.cmdUse(game, you.hand.getCard<DiscoverCopy>());
+            Assert.AreEqual(1, game.answers.getRequests(you.id).Length);
+            Assert.NotNull(game.answers.getRequest<DiscoverRequest>(you.id));
+            //挂机的阿凯
+            yield return new WaitForSeconds(1.1f);
+            Assert.AreNotEqual(game.currentPlayer, you);
+            //整理一下这里的逻辑
+            //超时导致取消所有询问
+            //此时的询问中应该只包括发现
+            //发现取消，使用继续，TurnLoop继续，导致回合不能结束，继续FreeAct
+
+            //但是正确的情况应该是如何？
+            //正确的情况应该是Discover被取消，继续FreeAct
+            //然后强制回合结束，这个时候再取消FreeAct，TurnLoop退出
+            //到了原本的TurnEnd，但是因为这个时候Turn已经End了，就不会再次触发TurnEnd了
+        }
         [UnityTest]
         public IEnumerator burnTest()
         {
@@ -261,6 +238,11 @@ namespace Tests
             Assert.AreEqual(1, damage.value);
 
             game.Dispose();
+        }
+        [Test]
+        public void fatigueTest_UntilDeath()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo);
         }
         [UnityTest]
         public IEnumerator attackTest()
