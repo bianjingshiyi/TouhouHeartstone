@@ -28,6 +28,31 @@ namespace Game
                         simpleAnim = servant.onLifeDown;
                 }
             }
+            else if (table.tryGetHand(eventArg.card, out var hand))
+            {
+                animator = hand.animator;
+                if (eventArg.modifier is AttackModifier atkMod)
+                {
+                    if (atkMod.value > 0)
+                        simpleAnim = hand.onAttackUp;
+                    else
+                        simpleAnim = hand.onAttackDown;
+                }
+                else if (eventArg.modifier is LifeModifier lifMod)
+                {
+                    if (lifMod.value > 0)
+                        simpleAnim = hand.onLifeUp;
+                    else
+                        simpleAnim = hand.onLifeDown;
+                }
+                else if (eventArg.modifier is CostModifier costMod)
+                {
+                    if (costMod.value > 0)
+                        simpleAnim = hand.onCostUp;
+                    else
+                        simpleAnim = hand.onCostDown;
+                }
+            }
             simpleAnim.beforeAnim.Invoke();
             if (!string.IsNullOrEmpty(simpleAnim.animName))
             {

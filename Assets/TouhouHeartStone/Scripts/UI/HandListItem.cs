@@ -53,5 +53,11 @@ namespace UI
             _isDragging = false;
         }
         public ActionEvent<HandListItem, PointerEventData> onEndDrag = new ActionEvent<HandListItem, PointerEventData>();
+        public SimpleAnim onAttackUp;
+        public SimpleAnim onAttackDown;
+        public SimpleAnim onLifeUp;
+        public SimpleAnim onLifeDown;
+        public SimpleAnim onCostUp;
+        public SimpleAnim onCostDown;
     }
 }

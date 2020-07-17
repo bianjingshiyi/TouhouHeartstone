@@ -761,6 +761,13 @@ namespace Game
                 throw new ActorNotFoundException(card);
             return hand;
         }
+        public bool tryGetHand(TouhouCardEngine.Card card, out HandListItem hand)
+        {
+            hand = getHand(card);
+            if (hand == null)
+                return false;
+            return true;
+        }
         /// <summary>
         /// 从UI手牌引用获取对应的牌
         /// </summary>
