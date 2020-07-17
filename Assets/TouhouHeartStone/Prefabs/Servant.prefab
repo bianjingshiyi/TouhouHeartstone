@@ -479,11 +479,67 @@ MonoBehaviour:
           m_StringArgument: Highlight_Green
           m_BoolArgument: 0
         m_CallState: 2
-  onAddModi:
+  onAttackUp:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
     animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onAttackDown:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onLifeUp:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onLifeDown:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onDamage:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onHeal:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onSummon:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onDeath:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: Servant_Death
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
