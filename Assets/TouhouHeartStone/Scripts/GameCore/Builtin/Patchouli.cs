@@ -72,9 +72,10 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static Task effect(THHGame game, Card card)
         {
-            new CostFixer().onEnable(game, card);
+            //card.getOwner().master.addBuff(game, new GeneratedBuff(ID,));
+            return Task.CompletedTask;
         }
         class CostFixer : PassiveEffect
         {
@@ -440,6 +441,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -463,17 +465,12 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.triggers.doEvent(new THHPlayer.DrawEventArg() { player = card.getOwner() }, arg =>
+            for (int i = 0; i < 2; i++)
             {
-                for (int i = 0; i < 2; i++)
-                {
-                    arg.card = arg.player.deck.Where(c => c.isSpell()).First();
-                    arg.player.deck.moveTo(game, arg.card, arg.player.hand, arg.player.hand.count);
-                    game.logger.log(arg.player + "抽" + arg.card);
-                    arg.card.addBuff(game, new GeneratedBuff(ID, new CostModifier(-1)));
-                }
-                return Task.CompletedTask;
-            });
+                await card.getOwner().draw(game);
+                var drawed = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
+                drawed.addBuff(game, new GeneratedBuff(ID, new CostModifier(-1)));
+            }
         }
     }
     /// <summary>
