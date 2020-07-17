@@ -225,9 +225,9 @@ namespace UI
         partial void onAwake();
         public enum Highlight
         {
-            Green,
-            None,
-            Yellow,
+            Highlight_Green,
+            Highlight_None,
+            Highlight_Yellow,
         }
         public Highlight HighlightController
         {

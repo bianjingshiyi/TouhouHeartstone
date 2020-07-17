@@ -76,6 +76,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _defaultItem: {fileID: 4473286118112807490}
   m_as_ListLayoutGroup: {fileID: 338048915273267804}
@@ -195,6 +196,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Servant
+      objectReference: {fileID: 0}
+    - target: {fileID: 2470481776923723665, guid: bd48d7e356732cd469d20040748a8023,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2470481776923723665, guid: bd48d7e356732cd469d20040748a8023,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2470481776923723665, guid: bd48d7e356732cd469d20040748a8023,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4225699940084520048, guid: bd48d7e356732cd469d20040748a8023,
         type: 3}

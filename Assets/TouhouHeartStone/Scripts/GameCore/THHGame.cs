@@ -368,6 +368,9 @@ namespace TouhouHeartstone
                         Card target = getCard(attack.targetId);
                         await card.tryAttack(this, player, target);
                         break;
+                    case DiscoverResponse discover:
+                        
+                        break;
                     case TurnEndResponse _:
                         return;
                     case SurrenderResponse _:
@@ -395,6 +398,7 @@ namespace TouhouHeartstone
                         }
                     }
                 }
+                answers.cancel(answers.getRequests(player.id));
                 return Task.CompletedTask;
             });
             time.cancel(turnTimer);

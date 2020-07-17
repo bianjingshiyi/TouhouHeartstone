@@ -141,8 +141,8 @@ namespace UI
         partial void onAwake();
         public enum IsUsable
         {
-            False,
-            True,
+            IsUsable_False,
+            IsUsable_True,
         }
         public IsUsable IsUsableController
         {
@@ -157,8 +157,8 @@ namespace UI
         }
         public enum IsUsed
         {
-            False,
-            True,
+            IsUsed_False,
+            IsUsed_True,
         }
         public IsUsed IsUsedController
         {

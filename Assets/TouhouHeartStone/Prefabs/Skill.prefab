@@ -393,7 +393,7 @@ MonoBehaviour:
   _FrameImage: {fileID: 434557653808379024}
   _Frame_Image: {fileID: 1173695748}
   _CostImage: {fileID: 434557654802033961}
-  _CostPropNumber: {fileID: 0}
+  _CostPropNumber: {fileID: 99574484131838334}
   _BackImage: {fileID: 6951483999445456410}
   _onIsUsableTrue:
     m_PersistentCalls:
@@ -797,3 +797,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 6584928324277899281}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &99574484131838334 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+    type: 3}
+  m_PrefabInstance: {fileID: 6584928324277899281}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce39e50f19c7e154983cdf45d620c0aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

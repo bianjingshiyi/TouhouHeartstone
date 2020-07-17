@@ -54,6 +54,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
+  _useController: 0
   _initStates: []
   _Card_1: {fileID: 4483114517091356762}
   _Card_2: {fileID: 4483114518052685112}

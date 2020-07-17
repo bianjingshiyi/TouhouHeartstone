@@ -57,7 +57,7 @@ namespace TouhouHeartstone
 
         public void logError(string msg)
         {
-            logError(msg);
+            logError(null, msg);
         }
 
         public void logError(string channel, string msg)
