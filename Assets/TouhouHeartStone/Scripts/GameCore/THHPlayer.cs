@@ -20,6 +20,10 @@ namespace TouhouHeartstone
         /// 正在使用的法术卡都会被置入亚空间
         /// </summary>
         public Pile warp { get; }
+        public Card item
+        {
+            get { return this[PileName.ITEM].count > 0 ? this[PileName.ITEM][0] : null; }
+        }
         public bool isPrepared { get; set; } = false;
         public int gem { get; private set; } = 0;
         public int maxGem { get; private set; } = 0;
@@ -46,6 +50,7 @@ namespace TouhouHeartstone
             addPile(grave);
             warp = new Pile(game, PileName.WARP);
             addPile(warp);
+            addPile(new Pile(game, PileName.ITEM));
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
         {
@@ -223,9 +228,37 @@ namespace TouhouHeartstone
                     }
                     await player.warp.moveTo(game, card, player.grave);
                 }
+                else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == CardDefineType.ITEM))
+                {
+                    //物品卡，置入物品栏
+                    await player.equip(game, card);
+                    ITriggerEffect triggerEffect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    if (triggerEffect != null)
+                    {
+                        await triggerEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    }
+                    IActiveEffect activeEffect = arg.card.define.getActiveEffect();
+                    if (activeEffect != null)
+                    {
+                        await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    }
+                }
             });
             await game.updateDeath();
             return true;
+        }
+        public Task equip(THHGame game, Card item)
+        {
+            if (this[PileName.ITEM].isFull)
+                destroyItem(game);
+            item.setCurrentLife(item.getLife(game));
+            return hand.moveTo(game, item, this[PileName.ITEM]);
+        }
+        public Task destroyItem(THHGame game)
+        {
+            if (this[PileName.ITEM].count > 0 && this[PileName.ITEM][0] is Card item)
+                return this[PileName.ITEM].moveTo(game, item, grave);
+            return Task.CompletedTask;
         }
         /// <summary>
         /// 从给出的卡牌中发现一张牌，默认是从中挑三张

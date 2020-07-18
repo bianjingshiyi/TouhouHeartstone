@@ -69,7 +69,7 @@ namespace TouhouHeartstone
             card.setProp(nameof(ServantCardDefine.life), value);
         }
         /// <summary>
-        /// 一个随从是否已经死了？除了生命值小于等于0以外，还有一个isDead的属性来控制卡片是否在死亡结算当中。
+        /// 一个随从/物品/英雄是否已经死了？除了生命值小于等于0以外，还有一个isDead的属性来控制卡片是否在死亡结算当中。
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
@@ -599,6 +599,16 @@ namespace TouhouHeartstone
                         });
                         card.pile.moveTo(game, card, card.getOwner().grave);
                         game.logger.log(card + "阵亡");
+                    }
+                    else if (card.pile.name == PileName.ITEM)//装备摧毁
+                    {
+                        infoDic.Add(card, new DeathEventArg.Info()
+                        {
+                            player = card.getOwner(),
+                            position = card.pile.indexOf(card)
+                        });
+                        card.pile.moveTo(game, card, card.getOwner().grave);
+                        game.logger.log(card + "摧毁");
                     }
                 }
                 arg.infoDic = infoDic;

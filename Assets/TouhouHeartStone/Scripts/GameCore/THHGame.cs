@@ -424,6 +424,10 @@ namespace TouhouHeartstone
                 {
                     deathList.Add(player.master);
                 }
+                if (player.item != null && player.item.isDead(this))
+                {
+                    deathList.Add(player.item);
+                }
                 foreach (Card card in player.field)
                 {
                     if (card.isDead(this))
