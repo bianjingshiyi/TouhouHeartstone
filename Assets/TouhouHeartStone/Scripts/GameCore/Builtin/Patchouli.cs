@@ -814,7 +814,13 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { Keyword.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new CostFixer()
+            new THHEffectBefore<THHGame.TurnStartEventArg>(PileName.FIELD,(g1,c1,a1)=>
+            {
+                return a1.player==c1.getOwner();
+            },null,(g1,c1,a1)=>
+            {
+                return c1.getOwner().randomDiscard(g1);
+            })
         };
         class CostFixer : PassiveEffect
         {

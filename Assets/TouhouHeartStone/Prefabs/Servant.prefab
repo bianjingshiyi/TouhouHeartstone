@@ -360,6 +360,22 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
+  onTauntTrue:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: Servant_isTaunt
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onTauntFalse:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: Servant_Default
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!95 &163705352615757087
 Animator:
   serializedVersion: 3

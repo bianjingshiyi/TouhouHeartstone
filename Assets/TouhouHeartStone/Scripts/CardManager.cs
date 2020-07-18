@@ -97,7 +97,7 @@ namespace Game
                         if (older != null)
                         {
                             older.merge(card);
-                            UberDebug.LogChannel("Load", "数据覆盖：" + card.ToJson());
+                            UberDebug.LogDebugChannel("Load", "数据覆盖：" + card.ToJson());
                         }
                         else
                             cardList.Add(card);

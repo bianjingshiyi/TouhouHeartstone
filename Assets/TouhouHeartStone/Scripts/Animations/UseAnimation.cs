@@ -11,6 +11,7 @@ namespace Game
         Timer _timer = new Timer() { duration = 1f };
         HandToFieldAnim _handToField;
         Timer _targetingTimer = new Timer() { duration = .8f };
+        AnimAnim _useAnim;
         AnimAnim _targetedAnim;
         public override bool update(TableManager table, THHPlayer.UseEventArg eventArg)
         {
@@ -92,6 +93,23 @@ namespace Game
                 if (tryTargetedAnim(table, eventArg))
                     return false;
             }
+            else if (eventArg.card.isItem())
+            {
+                if (eventArg.player == table.player)
+                {
+                    table.setItem(table.ui.SelfItem, eventArg.card);
+                    if (!SimpleAnimHelper.update(table, ref _useAnim, table.ui.SelfItem.onEquip, table.ui.SelfItem.animator))
+                        return false;
+                }
+                else
+                {
+                    table.setItem(table.ui.EnemyItem, eventArg.card);
+                    if (!SimpleAnimHelper.update(table, ref _useAnim, table.ui.EnemyItem.onEquip, table.ui.EnemyItem.animator))
+                        return false;
+                }
+                if (tryTargetedAnim(table, eventArg))
+                    return false;
+            }
             return true;
         }
         bool tryTargetedAnim(TableManager table, THHPlayer.UseEventArg eventArg)
@@ -102,11 +120,11 @@ namespace Game
                 {
                     if (table.tryGetMaster(targetCard, out var targetMaster))
                     {
-                        _targetedAnim = new AnimAnim(targetMaster.animator, targetMaster.targetedAnimName);
+                        _targetedAnim = new AnimAnim(targetMaster.animator, targetMaster.targetedAnimName, next => false);
                     }
                     else if (table.tryGetServant(targetCard, out var targetServant))
                     {
-                        _targetedAnim = new AnimAnim(targetServant.animator, targetServant.targetedAnimName);
+                        _targetedAnim = new AnimAnim(targetServant.animator, targetServant.targetedAnimName, next => false);
                     }
                     else
                         throw new ActorNotFoundException(targetCard);

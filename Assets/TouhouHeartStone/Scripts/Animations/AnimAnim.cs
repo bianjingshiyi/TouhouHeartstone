@@ -1,5 +1,6 @@
 ﻿using UI;
 using UnityEngine;
+using System;
 namespace Game
 {
     class AnimAnim : TableAnimation
@@ -7,10 +8,12 @@ namespace Game
         Animator _animator;
         string _animName;
         bool _isPlayed = false;
-        public AnimAnim(Animator animator, string animName)
+        Func<UIAnimation, bool> _onBlockAnim;
+        public AnimAnim(Animator animator, string animName, Func<UIAnimation, bool> onBlockAnim = null)
         {
             _animator = animator;
             _animName = animName;
+            _onBlockAnim = onBlockAnim;
         }
         public override bool update(TableManager table)
         {
@@ -29,6 +32,12 @@ namespace Game
             if (state.normalizedTime < 1)
                 return false;
             return true;
+        }
+        public override bool blockAnim(UIAnimation nextAnim)
+        {
+            if (_onBlockAnim != null)
+                return _onBlockAnim(nextAnim);
+            return base.blockAnim(nextAnim);
         }
     }
 }
