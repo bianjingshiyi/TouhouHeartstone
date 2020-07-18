@@ -1127,7 +1127,7 @@ namespace Game
             ui.Discover.hide();
         }
         [SerializeField]
-        BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer();
+        BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer() { duration = 3 };
         /// <summary>
         /// 显示文本提示
         /// </summary>
