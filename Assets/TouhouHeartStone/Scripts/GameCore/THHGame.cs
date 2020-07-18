@@ -144,6 +144,10 @@ namespace TouhouHeartstone
             }
             return card;
         }
+        public Card createCardByRandom(IEnumerable<CardDefine> defines)
+        {
+            return createCard(defines.random(this));
+        }
         public Card[] findAllCardsInField(Func<Card, bool> filter)
         {
             List<Card> cardList = new List<Card>();

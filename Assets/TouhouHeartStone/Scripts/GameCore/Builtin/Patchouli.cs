@@ -109,74 +109,6 @@ namespace TouhouHeartstone.Builtin
             },new GeneratedBuff(ID,new CostModifier(-2),
                 new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.HAND,ID)))
         };
-        class AddBuffAfter<T> : THHEffectAfter<T> where T : IEventArg
-        {
-            public AddBuffAfter(string pile, CheckConditionDelegate onCheckCondition, Buff originBuff) : base(pile, onCheckCondition, null, (g, c, a) =>
-            {
-                c.addBuff(g, originBuff.clone());
-                return Task.CompletedTask;
-            })
-            {
-            }
-        }
-        class CostFixer : PassiveEffect
-        {
-            public override string[] piles { get; } = new string[] { PileName.HAND };
-            CostModifier _modifier = new CostModifier();
-            Trigger<THHPlayer.UseEventArg> onCardEnterHandTrigger { get; set; } = null;
-            Trigger<THHGame.TurnEndEventArg> TurnEndTrigger { get; set; } = null;
-            public override void onEnable(THHGame game, Card card)
-            {
-                if (onCardEnterHandTrigger == null)
-                {
-                    onCardEnterHandTrigger = new Trigger<THHPlayer.UseEventArg>(arg =>
-                    {
-                        if (arg.card.define is SpellCardDefine && arg.card.getCost(game) > 0)
-                        {
-                            if (card.owner == game.currentPlayer)
-                                card.addModifier(game, _modifier);
-                        }
-                        return Task.CompletedTask;
-                    });
-                    game.triggers.registerAfter(onCardEnterHandTrigger);
-                }
-                if (TurnEndTrigger == null)
-                {
-                    TurnEndTrigger = new Trigger<THHGame.TurnEndEventArg>(arg =>
-                    {
-                        _ = card.removeModifier(game, _modifier);
-                        return Task.CompletedTask;
-                    });
-                    game.triggers.registerAfter(TurnEndTrigger);
-                }
-            }
-            public override void onDisable(THHGame game, Card card)
-            {
-                if (onCardEnterHandTrigger != null)
-                {
-                    game.triggers.removeAfter(onCardEnterHandTrigger);
-                    onCardEnterHandTrigger = null;
-                }
-                if (TurnEndTrigger != null)
-                {
-                    game.triggers.removeAfter(TurnEndTrigger);
-                    TurnEndTrigger = null;
-                }
-                _ = card.removeModifier(game, _modifier);
-            }
-            class CostModifier : PropModifier<int>
-            {
-                public override string propName { get; } = nameof(ServantCardDefine.cost);
-                public override int calc(IGame game, Card card, int value)
-                {
-                    return value - 2;
-                }
-                public override PropModifier clone()
-                {
-                    return new CostModifier();
-                }
-            }
-        }
     }
     /// <summary>
     /// 4 贤者之石 05 每当你使用一张法术，将一张随机元素法术置入你的手牌并使耐久-1。战吼：将一张随机元素法术置入你的手牌。
@@ -246,15 +178,15 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getCardDefine<Boulder>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getCardDefine<RockElement>(), card.getOwner().field.count);
         }
     }
     /// <summary>
     /// 巨石 衍生随从，无法攻击
     /// </summary>
-    public class Boulder : ServantCardDefine
+    public class RockElement : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x657;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x657;
         public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override int cost { get; set; } = 5;
@@ -369,15 +301,9 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static Task effect(THHGame game, Card card)
         {
-            int[] ids = new int[] { SylphyHorn.ID, AgniShine.ID, PrincessUndine.ID, MetalFatigue.ID, TrilithonShake.ID };
-            Card spellcard = game.createCardById(ids[game.randomInt(0, ids.Length - 1)]);
-            if (!card.getOwner().hand.isFull)
-            {
-                await card.getOwner().hand.add(game, spellcard);
-                spellcard.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true)));
-            }
+            return card.getOwner().addRandomCardToHand(game, game.getCardDefines(new int[] { AutumnEdge.ID, SpringWind.ID, WinterElement.ID, SummerRed.ID, DoyouSpear.ID }));
         }
     }
     /// <summary>
@@ -483,7 +409,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 0 水符【冬之素】 使目标随从冻结
     /// </summary>
-    public class WinterSober : SpellCardDefine
+    public class WinterElement : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x020;
         public override int id { get; set; } = ID;
@@ -515,7 +441,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 0 金符【秋之刃】 随机对一个敌方随从造成2点伤害
     /// </summary>
-    public class AutumnBlade : SpellCardDefine
+    public class AutumnEdge : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x022;
         public override int id { get; set; } = ID;
@@ -535,7 +461,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 0 土符【土用之枪】 召唤一个1/1的宝石长枪
     /// </summary>
-    public class EarthGun : SpellCardDefine
+    public class DoyouSpear : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x023;
         public override int id { get; set; } = ID;
@@ -545,15 +471,15 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getCardDefine<GemLance>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getCardDefine<GemSpear>(), card.getOwner().field.count);
         }
     }
     /// <summary>
     /// 111 衍生随从 宝石长枪
     /// </summary>
-    public class GemLance : ServantCardDefine
+    public class GemSpear : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x658;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x658;
         public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override int cost { get; set; } = 1;
@@ -564,7 +490,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 4 金木符【元素收割者】 对所有敌方随从造成2点伤害，每消灭一个敌方随从使一个随机友方随从获得+1/1
     /// </summary>
-    public class ElementHarvester : SpellCardDefine
+    public class ElementalHarvester : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x024;
         public override int id { get; set; } = ID;
@@ -640,7 +566,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 6 木火符【森林大火】 使所有友方随从获得+2/2，你每控制一个随从便对目标造成1点伤害
     /// </summary>
-    public class ForestFire : SpellCardDefine
+    public class ForestBlaze : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x026;
         public override int id { get; set; } = ID;
@@ -659,7 +585,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 4 木土符【抽芽行尸】 使目标随从获得亡语：召唤一个目标随从的复制并使其获得+3+3
     /// </summary>
-    public class SproutingWalkingDead : SpellCardDefine
+    public class BurgeoningRise : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x027;
         public override int id { get; set; } = ID;
@@ -687,7 +613,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 6 水木符【水精灵】 使目标随从获得+3/6和嘲讽，并回复其所有生命值
     /// </summary>
-    public class WaterSpirit : SpellCardDefine
+    public class WaterElf : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x028;
         public override int id { get; set; } = ID;
@@ -703,7 +629,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 4 水火符【燃素之雨】 造成点6伤害，随机分配给所有敌方角色
     /// </summary>
-    public class BurningRain : SpellCardDefine
+    public class PhlogisticRain : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x029;
         public override int id { get; set; } = ID;
@@ -728,7 +654,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 火金符【圣爱尔摩火柱】 对目标随从造成6点伤害，并对其相邻的随从造成2点伤害
     /// </summary>
-    public class SanElmoFirePillar : SpellCardDefine
+    public class StElmoPillar : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x030;
         public override int id { get; set; } = ID;
@@ -744,7 +670,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 6 火土符【环状熔岩带】 召唤3个2/2并能在回合结束对随机敌方角色造成2点伤害的熔岩元素
     /// </summary>
-    public class RingLava : SpellCardDefine
+    public class LavaCromlech : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x031;
         public override int id { get; set; } = ID;
@@ -755,15 +681,15 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             for (int i = 0; i < 3; i++)
-                await card.getOwner().createToken(game, game.getCardDefine<Lavaelement>(), card.getOwner().field.count);
+                await card.getOwner().createToken(game, game.getCardDefine<LavaElement>(), card.getOwner().field.count);
         }
     }
     /// <summary>
     /// 衍生随从 熔岩元素 回合结束对随机敌方角色造成2点伤害
     /// </summary>
-    public class Lavaelement : ServantCardDefine
+    public class LavaElement : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x659;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x659;
         public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override int cost { get; set; } = 2;
@@ -787,7 +713,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 6 土金符【淡黄阵风】 每有一个敌方随从，便召唤一个3/1具有突袭的沙尘元素
     /// </summary>
-    public class Lightyellowgust : SpellCardDefine
+    public class GingerGust : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x032;
         public override int id { get; set; } = ID;
@@ -799,15 +725,15 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer opponent = game.getOpponent(card.getOwner());
             for (int i = 0; i < opponent.field.count; i++)
-                await card.getOwner().createToken(game, game.getCardDefine<Dustelement>(), card.getOwner().field.count);
+                await card.getOwner().createToken(game, game.getCardDefine<DustElement>(), card.getOwner().field.count);
         }
     }
     /// <summary>
     /// 衍生随从 沙尘元素 31突袭
     /// </summary>
-    public class Dustelement : ServantCardDefine
+    public class DustElement : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x660;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x660;
         public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override int cost { get; set; } = 3;
@@ -819,7 +745,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 土水符【诺亚洪水】 沉默所有随从，然后召唤1个2/2并具有嘲讽的洪水元素
     /// </summary>
-    public class NoahFlood : SpellCardDefine
+    public class NoachianDeluge : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x033;
         public override int id { get; set; } = ID;
@@ -833,15 +759,15 @@ namespace TouhouHeartstone.Builtin
             {
                 servant.define.effects = new IEffect[0];
             }
-            await card.getOwner().createToken(game, game.getCardDefine<Floodelement>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getCardDefine<FloodElement>(), card.getOwner().field.count);
         }
     }
     /// <summary>
     /// 衍生随从 洪水元素 嘲讽
     /// </summary>
-    public class Floodelement : ServantCardDefine
+    public class FloodElement : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x661;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x661;
         public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override int cost { get; set; } = 2;
