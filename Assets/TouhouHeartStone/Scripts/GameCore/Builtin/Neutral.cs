@@ -432,7 +432,7 @@ namespace TouhouHeartstone.Builtin
                 return true;
             },(game,card,targets)=>
             {
-                if(targets[0] is Card target && target.pile.name == PileName.FIELD && target.hasTag(CardTag.FAIRY))
+                if(targets[0] is Card target && target.pile.name == PileName.FIELD && target.hasTag(game,CardTag.FAIRY))
                     return true;
                 return false;
             },async (game,card,arg,targets)=>

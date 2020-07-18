@@ -28,9 +28,9 @@ namespace Tests
             THHGame.InitEventArg init = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.InitEventArg) as THHGame.InitEventArg;
             Assert.NotNull(init);
             Assert.AreEqual(TestMaster.ID, game.players[0].master.define.id);
-            Assert.AreEqual(30, game.players[0].master.getCurrentLife());
+            Assert.AreEqual(30, game.players[0].master.getCurrentLife(game));
             Assert.AreEqual(TestMaster.ID, game.players[1].master.define.id);
-            Assert.AreEqual(30, game.players[1].master.getCurrentLife());
+            Assert.AreEqual(30, game.players[1].master.getCurrentLife(game));
             Assert.AreEqual(2, game.sortedPlayers.Length);
             bool isFirstPlayer = game.getPlayerIndex(game.sortedPlayers[0]) == 0;
             Assert.AreEqual(isFirstPlayer ? 3 : 4, game.players[0].init.count);
@@ -509,14 +509,14 @@ namespace Tests
                 if (localGame.currentPlayer == localPlayer)
                 {
                     localPlayer.cmdAttack(localGame, localPlayer.field[0], localGame.getOpponent(localPlayer).master);
-                    yield return new WaitUntil(() => localPlayer.field[0].getAttackTimes() > 0);
+                    yield return new WaitUntil(() => localPlayer.field[0].getAttackTimes(localGame) > 0);
                     localPlayer.cmdTurnEnd(localGame);
                     yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
                 }
                 else if (remoteGame.currentPlayer == remotePlayer)
                 {
                     remotePlayer.cmdAttack(remoteGame, remotePlayer.field[0], remoteGame.getOpponent(remotePlayer).master);
-                    yield return new WaitUntil(() => remotePlayer.field[0].getAttackTimes() > 0);
+                    yield return new WaitUntil(() => remotePlayer.field[0].getAttackTimes(remoteGame) > 0);
                     remotePlayer.cmdTurnEnd(remoteGame);
                     yield return new WaitUntil(() => remoteGame.currentPlayer != remotePlayer);
                 }
@@ -543,7 +543,7 @@ namespace Tests
             game.sortedPlayers[0].cmdTurnEnd(game);
             yield return new WaitForSeconds(.1f);
 
-            Assert.True(game.sortedPlayers[0].field[0].getProp<bool>("TestResult"));
+            Assert.True(game.sortedPlayers[0].field[0].getProp<bool>(game, "TestResult"));
         }
         [Test]
         public void attackSelfTest()
@@ -561,9 +561,9 @@ namespace Tests
             game.sortedPlayers[1].cmdTurnEnd(game);
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[0].master);
-            Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife());
+            Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife(game));
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(7, game.sortedPlayers[0].field[1].getCurrentLife());
+            Assert.AreEqual(7, game.sortedPlayers[0].field[1].getCurrentLife(game));
         }
 
 
@@ -590,12 +590,12 @@ namespace Tests
             game.sortedPlayers[1].cmdTurnEnd(game);
             int gemNum = game.sortedPlayers[0].gem;
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].skill, 0, game.sortedPlayers[1].field[0]);
-            Assert.True(game.sortedPlayers[0].skill.isUsed());  //技能已使用
-            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife());    //敌方随从受到伤害
+            Assert.True(game.sortedPlayers[0].skill.isUsed(game));  //技能已使用
+            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife(game));    //敌方随从受到伤害
             Assert.AreEqual(1, gemNum - game.sortedPlayers[0].gem);     //水晶减1
             gemNum = game.sortedPlayers[0].gem;
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0, game.sortedPlayers[1].field[0]);
-            Assert.AreEqual(5, game.sortedPlayers[1].field[0].getCurrentLife());
+            Assert.AreEqual(5, game.sortedPlayers[1].field[0].getCurrentLife(game));
             Assert.AreEqual(1, gemNum - game.sortedPlayers[0].gem);     //水晶减1
         }
         [UnityTest]

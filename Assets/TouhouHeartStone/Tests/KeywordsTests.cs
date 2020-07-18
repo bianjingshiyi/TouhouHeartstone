@@ -86,10 +86,10 @@ namespace Tests
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].field[1]);
             Assert.AreEqual(1, game.sortedPlayers[0].field[1].getCurrentLife(game));    //变为非潜行状态后可以被攻击
             //game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
-            //Assert.True(game.sortedPlayers[1].field[1].isStealth());
+            //Assert.True(game.sortedPlayers[1].field[1].isStealth(game));
             //game.sortedPlayers[1].cmdTurnEnd(game);
-            //Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife());     //潜行随从在回合结束时对对方master造成伤害
-            //Assert.False(game.sortedPlayers[1].field[1].isStealth());               //潜行消失
+            //Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife(game));     //潜行随从在回合结束时对对方master造成伤害
+            //Assert.False(game.sortedPlayers[1].field[1].isStealth(game));               //潜行消失
         }
 
         /// <summary>
