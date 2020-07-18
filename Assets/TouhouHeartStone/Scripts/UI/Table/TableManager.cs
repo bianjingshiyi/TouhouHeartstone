@@ -923,7 +923,16 @@ namespace Game
                 // servant.HighlightController = Servant.Highlight.None;
                 servant.onHighlightControllerNone?.Invoke();
             }
-            //getChild("Root").getChild("Taunt").gameObject.SetActive(card.isTaunt());
+            if (card.isTaunt(game))
+            {
+                servant.onTauntTrue.beforeAnim.Invoke();
+                servant.onTauntTrue.afterAnim.Invoke();
+            }
+            else
+            {
+                servant.onTauntFalse.beforeAnim.Invoke();
+                servant.onTauntFalse.afterAnim.Invoke();
+            }
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
         }
         /// <summary>
@@ -1065,6 +1074,16 @@ namespace Game
             }
             servant.AttackTextPropNumber.asText.text = card.getAttack().ToString();
             servant.HpTextPropNumber.asText.text = card.getLife().ToString();
+            if (card.getProp<bool>("taunt"))
+            {
+                servant.onTauntTrue.beforeAnim.Invoke();
+                servant.onTauntTrue.afterAnim.Invoke();
+            }
+            else
+            {
+                servant.onTauntFalse.beforeAnim.Invoke();
+                servant.onTauntFalse.afterAnim.Invoke();
+            }
         }
         /// <summary>
         /// 从随从获取对应的卡
