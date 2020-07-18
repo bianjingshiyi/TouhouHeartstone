@@ -194,5 +194,7 @@ namespace UI
         public SimpleAnim onHeal;
         public SimpleAnim onSummon;
         public SimpleAnim onDeath;
+        public SimpleAnim onTauntTrue;
+        public SimpleAnim onTauntFalse;
     }
 }

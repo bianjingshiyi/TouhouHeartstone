@@ -122,15 +122,23 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 5;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            //new ItemTrigggerEffectAfter<THHPlayer.UseEventArg>((g1,c1,a1)=>
-            //{
-            //    return a1.player==c1.getOwner() && a1.card.isSpell();
-            //})
+            new ItemTrigggerEffectAfter<THHPlayer.UseEventArg>((g1,c1,a1)=>
+            {
+                return a1.player==c1.getOwner() && a1.card.isSpell();
+            },(g2,c2,a2)=>
+            {
+                return c2.getOwner().addRandomCardToHand(g2,g2.getCardDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
+            })
         };
         class ItemTrigggerEffectAfter<T> : THHEffectAfter<T> where T : IEventArg
         {
             public ItemTrigggerEffectAfter(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute)
-                : base(PileName.ITEM, onCheckCondition, null, onExecute)
+                : base(PileName.ITEM, onCheckCondition, null, async (g, c, a) =>
+                {
+                    await onExecute?.Invoke(g, c, a);
+                    c.setCurrentLife(c.getCurrentLife(g) - 1);
+                    await g.updateDeath();
+                })
             {
             }
         }

@@ -20,6 +20,10 @@ namespace TouhouHeartstone
         /// 正在使用的法术卡都会被置入亚空间
         /// </summary>
         public Pile warp { get; }
+        public Card item
+        {
+            get { return this[PileName.ITEM].count > 0 ? this[PileName.ITEM][0] : null; }
+        }
         public bool isPrepared { get; set; } = false;
         public int gem { get; private set; } = 0;
         public int maxGem { get; private set; } = 0;
@@ -247,6 +251,7 @@ namespace TouhouHeartstone
         {
             if (this[PileName.ITEM].isFull)
                 destroyItem(game);
+            item.setCurrentLife(item.getLife(game));
             return hand.moveTo(game, item, this[PileName.ITEM]);
         }
         public Task destroyItem(THHGame game)
