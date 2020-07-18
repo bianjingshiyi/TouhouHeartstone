@@ -323,6 +323,19 @@ namespace TouhouHeartstone
                     return false;
                 }
             }
+            if (card.define is ItemCardDefine item)
+            {
+                if (player.gem < card.getCost(game))//费用不够
+                {
+                    info = "你没有足够的法力值";
+                    return false;
+                }
+                if (player.item !=null)
+                {
+                    info = "你只能装备一个道具";
+                    return false;
+                }
+            }
             else if (card.define is SpellCardDefine spell)
             {
                 if (player.gem < card.getCost(game))
