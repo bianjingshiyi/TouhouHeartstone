@@ -378,11 +378,10 @@ namespace TouhouHeartstone
         {
             if (hand.count < 1)
                 return Task.CompletedTask;
-            if(hand.count<=count)
-            {
-                //hand.moveTo(game,hand,grave,)
-            }
-            return Task.CompletedTask;
+            else if (hand.count <= count)
+                return hand.moveTo(game, hand, grave);
+            else
+                return hand.moveTo(game, hand.randomTake(game, count), grave);
         }
         #region Command
         public Task cmdInitReplace(THHGame game, params Card[] cards)
