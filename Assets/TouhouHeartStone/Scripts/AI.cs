@@ -82,13 +82,13 @@ namespace Game
                             foreach (var target in targets)
                             {
                                 responseDic.Add(new UseResponse() { cardId = card.id, position = i, targetsId = new int[] { target.id } },
-                                    card.getAttack() + card.getLife());
+                                    card.getAttack(game) + card.getLife(game));
                             }
                         }
                         else
                         {
                             responseDic.Add(new UseResponse() { cardId = card.id, position = i },
-                                    card.getAttack() + card.getLife());
+                                    card.getAttack(game) + card.getLife(game));
                         }
                     }
                 }
@@ -100,13 +100,13 @@ namespace Game
                         foreach (var target in targets)
                         {
                             responseDic.Add(new UseResponse() { cardId = card.id, targetsId = new int[] { target.id } },
-                                card.getCost());
+                                card.getCost(game));
                         }
                     }
                     else
                     {
                         responseDic.Add(new UseResponse() { cardId = card.id },
-                            card.getCost());
+                            card.getCost(game));
                     }
                 }
             }
@@ -115,8 +115,8 @@ namespace Game
                 THHPlayer opponent = game.getOpponent(player);
                 if (player.master.isAttackable(game, player, opponent.master, out _))
                 {
-                    int value = player.master.getAttack() > opponent.master.getCurrentLife() ?
-                        opponent.master.getLife() : player.master.getAttack();
+                    int value = player.master.getAttack(game) > opponent.master.getCurrentLife(game) ?
+                        opponent.master.getLife(game) : player.master.getAttack(game);
                     responseDic.Add(new AttackResponse() { cardId = player.master.id, targetId = opponent.master.id },
                         value);
                 }
@@ -124,10 +124,10 @@ namespace Game
                 {
                     if (!player.master.isAttackable(game, player, target, out _))
                         continue;
-                    int value = player.master.getAttack() > target.getCurrentLife() ?
-                        target.getAttack() + target.getCurrentLife() : player.master.getAttack();
-                    value += player.master.getCurrentLife() > target.getAttack() ?
-                        -target.getAttack() : -player.master.getLife();
+                    int value = player.master.getAttack(game) > target.getCurrentLife(game) ?
+                        target.getAttack(game) + target.getCurrentLife(game) : player.master.getAttack(game);
+                    value += player.master.getCurrentLife(game) > target.getAttack(game) ?
+                        -target.getAttack(game) : -player.master.getLife(game);
                     responseDic.Add(new AttackResponse() { cardId = player.master.id, targetId = target.id },
                         value);
                 }
@@ -139,18 +139,18 @@ namespace Game
                 THHPlayer opponent = game.getOpponent(player);
                 if (servant.isAttackable(game, player, opponent.master, out _))
                 {
-                    int value = servant.getAttack() > opponent.master.getCurrentLife() ?
-                        opponent.master.getLife() : servant.getAttack();
+                    int value = servant.getAttack(game) > opponent.master.getCurrentLife(game) ?
+                        opponent.master.getLife(game) : servant.getAttack(game);
                     responseDic.Add(new AttackResponse() { cardId = servant.id, targetId = opponent.master.id }, value);
                 }
                 foreach (var target in opponent.field)
                 {
                     if (!servant.isAttackable(game, player, target, out _))
                         continue;
-                    int value = servant.getAttack() > target.getCurrentLife() ?
-                        target.getAttack() + target.getCurrentLife() : servant.getAttack();
-                    value += servant.getCurrentLife() > target.getAttack() ?
-                        -target.getAttack() : -servant.getLife();
+                    int value = servant.getAttack(game) > target.getCurrentLife(game) ?
+                        target.getAttack(game) + target.getCurrentLife(game) : servant.getAttack(game);
+                    value += servant.getCurrentLife(game) > target.getAttack(game) ?
+                        -target.getAttack(game) : -servant.getLife(game);
                     responseDic.Add(new AttackResponse() { cardId = servant.id, targetId = target.id }, value);
                 }
             }

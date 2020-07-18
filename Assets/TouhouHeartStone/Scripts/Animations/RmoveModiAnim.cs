@@ -20,7 +20,7 @@ namespace Game
                         simpleAnim = servant.onAttackDown;
                     else
                         simpleAnim = servant.onAttackUp;
-                    servant.AttackTextPropNumber.asText.text = eventArg.card.getAttack().ToString();
+                    servant.AttackTextPropNumber.asText.text = eventArg.card.getAttack(table.game).ToString();
                 }
                 else if (eventArg.modifier is LifeModifier lifMod)
                 {
@@ -28,7 +28,7 @@ namespace Game
                         simpleAnim = servant.onLifeDown;
                     else
                         simpleAnim = servant.onLifeUp;
-                    servant.HpTextPropNumber.asText.text = eventArg.card.getCurrentLife().ToString();
+                    servant.HpTextPropNumber.asText.text = eventArg.card.getCurrentLife(table.game).ToString();
                 }
             }
             else if (table.tryGetHand(eventArg.card, out var hand))
@@ -40,7 +40,7 @@ namespace Game
                         simpleAnim = hand.onAttackDown;
                     else
                         simpleAnim = hand.onAttackUp;
-                    hand.Card.AttackPropNumber.asText.text = eventArg.card.getAttack().ToString();
+                    hand.Card.AttackPropNumber.asText.text = eventArg.card.getAttack(table.game).ToString();
                 }
                 else if (eventArg.modifier is LifeModifier lifMod)
                 {
@@ -48,7 +48,7 @@ namespace Game
                         simpleAnim = hand.onLifeDown;
                     else
                         simpleAnim = hand.onLifeUp;
-                    hand.Card.LifePropNumber.asText.text = eventArg.card.getLife().ToString();
+                    hand.Card.LifePropNumber.asText.text = eventArg.card.getLife(table.game).ToString();
                 }
                 else if (eventArg.modifier is CostModifier costMod)
                 {
@@ -56,7 +56,7 @@ namespace Game
                         simpleAnim = hand.onCostDown;
                     else
                         simpleAnim = hand.onCostUp;
-                    hand.Card.CostPropNumber.asText.text = eventArg.card.getCost().ToString();
+                    hand.Card.CostPropNumber.asText.text = eventArg.card.getCost(table.game).ToString();
                 }
             }
             if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator))

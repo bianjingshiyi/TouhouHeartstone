@@ -28,7 +28,7 @@ namespace TouhouHeartstone.Builtin
                 return true;
             },(game,card,targets)=>
             {
-                if(targets[0] is Card target && target.getCurrentLife()<target.getLife())
+                if(targets[0] is Card target && target.getCurrentLife(game)<target.getLife(game))
                     return true;
                 return false;
 

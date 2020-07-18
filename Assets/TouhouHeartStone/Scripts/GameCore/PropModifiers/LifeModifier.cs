@@ -1,5 +1,5 @@
 ﻿using TouhouCardEngine;
-
+using TouhouCardEngine.Interfaces;
 namespace TouhouHeartstone
 {
     public class LifeModifier : IntPropModifier
@@ -14,17 +14,17 @@ namespace TouhouHeartstone
         {
 
         }
-        public override void beforeAdd(Card card)
+        public override void beforeAdd(IGame game, Card card)
         {
         }
-        public override void afterAdd(Card card)
+        public override void afterAdd(IGame game, Card card)
         {
             if (isSet)
                 card.setCurrentLife(value);
             else
-                card.setCurrentLife(card.getCurrentLife() + value);
+                card.setCurrentLife(card.getCurrentLife(game) + value);
         }
-        public override int calc(Card card, int value)
+        public override int calc(IGame game, Card card, int value)
         {
             if (isSet)
                 return this.value;
@@ -32,15 +32,15 @@ namespace TouhouHeartstone
                 return value + this.value;
         }
         bool resetCurrentLife { get; set; } = false;
-        public override void beforeRemove(Card card)
+        public override void beforeRemove(IGame game, Card card)
         {
-            resetCurrentLife = card.getCurrentLife() >= card.getLife();
+            resetCurrentLife = card.getCurrentLife(game) >= card.getLife(game);
         }
-        public override void afterRemove(Card card)
+        public override void afterRemove(IGame game, Card card)
         {
             if (resetCurrentLife)
             {
-                card.setCurrentLife(card.getLife());
+                card.setCurrentLife(card.getLife(game));
             }
         }
         public override PropModifier clone()

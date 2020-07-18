@@ -135,7 +135,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     onCardEnterHandTrigger = new Trigger<THHPlayer.UseEventArg>(arg =>
                     {
-                        if (arg.card.define is SpellCardDefine && arg.card.getCost() > 0)
+                        if (arg.card.define is SpellCardDefine && arg.card.getCost(game) > 0)
                         {
                             if (card.owner == game.currentPlayer)
                                 card.addModifier(game, _modifier);
@@ -582,7 +582,7 @@ namespace TouhouHeartstone.Builtin
             foreach (Card target in opponent.field)
             {
                 await target.damage(game, card, 2);
-                if (target.isDead())
+                if (target.isDead(game))
                 {
                     foreach (Card buffcard in card.getOwner().field.randomTake(game, 1))
                         buffcard.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
@@ -622,7 +622,7 @@ namespace TouhouHeartstone.Builtin
             public void onEnable(THHGame game, Card card)
             {
                 card.addBuff(game, buff);
-                if (card.getAttack() == 0)
+                if (card.getAttack(game) == 0)
                     card.setDead(true);
                 if (TurnEndTrigger == null)
                 {
@@ -700,7 +700,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect((game,card,target)=>
             {
                 target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3)));
-                return target.heal(game,target.getLife()-target.getCurrentLife());
+                return target.heal(game,target.getLife(game)-target.getCurrentLife(game));
             })
         };
     }
@@ -724,7 +724,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     target = game.getAllEnemies(card.getOwner()).randomTake(game, 1).ToArray();
                 }
-                while (target[0].getCurrentLife() == 0);
+                while (target[0].getCurrentLife(game) == 0);
                 await target[0].damage(game, card, 1);
             }
         }

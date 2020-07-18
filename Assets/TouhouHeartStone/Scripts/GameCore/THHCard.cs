@@ -23,7 +23,7 @@ namespace TouhouHeartstone
         {
             return card.owner as THHPlayer;
         }
-        public static int getCost(this Card card, THHGame game)
+        public static int getCost(this Card card, IGame game)
         {
             int result = card.getProp<int>(game, nameof(ServantCardDefine.cost));
             if (result < 0)
@@ -38,7 +38,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(nameof(ServantCardDefine.cost));
         }
-        public static int getAttack(this Card card, THHGame game)
+        public static int getAttack(this Card card, IGame game)
         {
             int result = card.getProp<int>(game, nameof(ServantCardDefine.attack));
             if (result < 0)
@@ -56,7 +56,7 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(ServantCardDefine.attack), value);
         }
-        public static int getLife(this Card card, THHGame game)
+        public static int getLife(this Card card, IGame game)
         {
             return card.getProp<int>(game, nameof(ServantCardDefine.life));
         }
@@ -73,7 +73,7 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public static bool isDead(this Card card, THHGame game)
+        public static bool isDead(this Card card, IGame game)
         {
             if (card.getCurrentLife(game) <= 0)
                 return true;
@@ -92,11 +92,11 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(THHCard.isDead), value);
         }
-        public static int getArmor(this Card card, THHGame game)
+        public static int getArmor(this Card card, IGame game)
         {
             return card.getProp<int>(game, "armor");
         }
-        public static int getCurrentLife(this Card card, THHGame game)
+        public static int getCurrentLife(this Card card, IGame game)
         {
             return card.getProp<int>(game, "currentLife");
         }
@@ -104,7 +104,7 @@ namespace TouhouHeartstone
         {
             card.setProp("currentLife", value);
         }
-        public static bool isReady(this Card card, THHGame game)
+        public static bool isReady(this Card card, IGame game)
         {
             return card.getProp<bool>(game, "isReady");
         }
@@ -112,7 +112,7 @@ namespace TouhouHeartstone
         {
             card.setProp("isReady", value);
         }
-        public static int getAttackTimes(this Card card, THHGame game)
+        public static int getAttackTimes(this Card card, IGame game)
         {
             return card.getProp<int>(game, "attackTimes");
         }
@@ -192,7 +192,7 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public static bool isUsed(this Card card, THHGame game)
+        public static bool isUsed(this Card card, IGame game)
         {
             return card.getProp<bool>(game, "isUsed");
         }
@@ -205,7 +205,7 @@ namespace TouhouHeartstone
         {
             card.setProp("isUsed", value);
         }
-        public static bool isTaunt(this Card card, THHGame game)
+        public static bool isTaunt(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.TAUNT);
         }
@@ -213,7 +213,7 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.TAUNT, value);
         }
-        public static bool isCharge(this Card card, THHGame game)
+        public static bool isCharge(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.CHARGE);
         }
@@ -221,7 +221,7 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.CHARGE, value);
         }
-        public static bool isRush(this Card card, THHGame game)
+        public static bool isRush(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.RUSH);
         }
@@ -229,7 +229,7 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.RUSH, value);
         }
-        public static bool isShield(this Card card, THHGame game)
+        public static bool isShield(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.SHIELD);
         }
@@ -237,7 +237,7 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.SHIELD, value);
         }
-        public static bool isStealth(this Card card, THHGame game)
+        public static bool isStealth(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.STEALTH);
         }
@@ -245,7 +245,7 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.STEALTH, value);
         }
-        public static bool isDrain(this Card card, THHGame game)
+        public static bool isDrain(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.DRAIN);
         }
@@ -253,7 +253,7 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.DRAIN, value);
         }
-        public static bool isPoisonous(this Card card, THHGame game)
+        public static bool isPoisonous(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.POISONOUS);
         }
@@ -261,7 +261,7 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.POISONOUS, value);
         }
-        public static bool isElusive(this Card card, THHGame game)
+        public static bool isElusive(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.ELUSIVE);
         }
@@ -269,7 +269,7 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.ELUSIVE, value);
         }
-        public static bool isFreeze(this Card card, THHGame game)
+        public static bool isFreeze(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.FREEZE);
         }
@@ -277,7 +277,7 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.FREEZE, value);
         }
-        public static bool isUnique(this Card card, THHGame game)
+        public static bool isUnique(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.UNIQUE);
         }
@@ -286,7 +286,7 @@ namespace TouhouHeartstone
             card.setProp(Keyword.UNIQUE, value);
         }
 
-        public static int getSpellDamage(this Card card, THHGame game)
+        public static int getSpellDamage(this Card card, IGame game)
         {
             return card.getProp<int>(game, nameof(ServantCardDefine.spellDamage));
         }
@@ -294,7 +294,7 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(ServantCardDefine.spellDamage), value);
         }
-        public static bool hasTag(this Card card, THHGame game, string tag)
+        public static bool hasTag(this Card card, IGame game, string tag)
         {
             return card.getProp<string[]>(game, nameof(ServantCardDefine.tags)).Contains(tag);
         }

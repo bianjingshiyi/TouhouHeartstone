@@ -19,21 +19,21 @@ namespace UI
             this.card = card;
 
             Image.sprite = skin.image;
-            LifePropNumber.asText.text = card.getCurrentLife().ToString();
+            LifePropNumber.asText.text = card.getCurrentLife(null).ToString();
             //if (card.getCurrentLife() == card.getLife())
             //    HpText.color = Color.white;
             //else
             //    HpText.color = Color.red;
-            if (card.getAttack() > 0)
+            if (card.getAttack(null) > 0)
             {
-                AttackPropNumber.asText.text = card.getAttack().ToString();
+                AttackPropNumber.asText.text = card.getAttack(null).ToString();
                 AttackPropNumber.asText.enabled = true;
             }
             else
                 AttackPropNumber.asText.enabled = false;
-            if (card.getArmor() > 0)
+            if (card.getArmor(null) > 0)
             {
-                ArmorPropNumber.asText.text = card.getArmor().ToString();
+                ArmorPropNumber.asText.text = card.getArmor(null).ToString();
                 ArmorPropNumber.asText.enabled = true;
             }
             else
