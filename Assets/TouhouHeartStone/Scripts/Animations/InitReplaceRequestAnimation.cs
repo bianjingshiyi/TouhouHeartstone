@@ -16,8 +16,7 @@ namespace Game
                 {
                     item.Card.update(card, table.getSkin(card));
                     item.MarkImage.enabled = false;
-                    item.asButton.onClick.RemoveAllListeners();
-                    item.asButton.onClick.AddListener(() =>
+                    item.asButton.onClick.set(() =>
                     {
                         item.MarkImage.enabled = !item.MarkImage.enabled;
                     });

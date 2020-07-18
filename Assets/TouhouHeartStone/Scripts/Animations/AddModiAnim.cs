@@ -51,6 +51,7 @@ namespace Game
                         simpleAnim = hand.onCostUp;
                     else
                         simpleAnim = hand.onCostDown;
+                    hand.Card.CostPropNumber.asText.text = eventArg.card.getCost().ToString();
                 }
             }
             if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator))

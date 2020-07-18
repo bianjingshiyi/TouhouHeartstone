@@ -25,7 +25,10 @@ namespace TouhouHeartstone
         }
         public static int getCost(this Card card)
         {
-            return card.getProp<int>(nameof(ServantCardDefine.cost));
+            int result = card.getProp<int>(nameof(ServantCardDefine.cost));
+            if (result < 0)
+                return 0;
+            return result;
         }
         public static void setCost(this Card card, int value)
         {
@@ -39,14 +42,14 @@ namespace TouhouHeartstone
         {
             int result = card.getProp<int>(nameof(ServantCardDefine.attack));
             if (result < 0)
-                result = 0;
+                return 0;
             return result;
         }
         public static int getAttack(this CardDefine card)
         {
             int result = card.getProp<int>(nameof(ServantCardDefine.attack));
             if (result < 0)
-                result = 0;
+                return 0;
             return result;
         }
         public static void setAttack(this Card card, int value)

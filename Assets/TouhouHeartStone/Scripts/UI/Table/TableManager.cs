@@ -181,6 +181,9 @@ namespace Game
             UIAnimation anim;
             switch (arg)
             {
+                case TouhouCardEngine.Card.AddModiEventArg addMod:
+                    anim = new AddModiAnim() { eventArg = addMod };
+                    break;
                 default:
                     anim = getEventAnim(arg);
                     break;

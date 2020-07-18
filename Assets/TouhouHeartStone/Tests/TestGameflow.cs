@@ -9,7 +9,7 @@ namespace Tests
     {
         public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, params KeyValuePair<int, int>[] yourDeck)
         {
-            createGame(out game, out you, out oppo, new GameOption() { shuffle = false });
+            createGame(out game, out you, out oppo, new GameOption() { shuffle = false }, yourDeck);
         }
         public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option, params KeyValuePair<int, int>[] yourDeck)
         {
