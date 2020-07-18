@@ -46,6 +46,7 @@ namespace TouhouHeartstone
             addPile(grave);
             warp = new Pile(game, PileName.WARP);
             addPile(warp);
+            addPile(new Pile(game, PileName.ITEM));
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
         {
@@ -222,6 +223,10 @@ namespace TouhouHeartstone
                         await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
                     }
                     await player.warp.moveTo(game, card, player.grave);
+                }
+                else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == CardDefineType.ITEM))
+                {
+                    //物品卡，置入物品栏
                 }
             });
             await game.updateDeath();

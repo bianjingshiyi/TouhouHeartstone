@@ -14,6 +14,7 @@ namespace TouhouHeartstone
         public const string FIELD = "Field";
         public const string GRAVE = "Grave";
         public const string WARP = "Warp";
+        public const string ITEM = "Item";
         public static string[] getPiles(this PileFlag flag)
         {
             List<string> pileList = new List<string>();
@@ -33,6 +34,8 @@ namespace TouhouHeartstone
                 pileList.Add(GRAVE);
             if (flag.HasFlag(PileFlag.warp))
                 pileList.Add(WARP);
+            if (flag.HasFlag(PileFlag.item))
+                pileList.Add(ITEM);
             return pileList.ToArray();
         }
         public static Pile[] getPiles(this PileFlag flag, THHGame game, Player player)
@@ -67,23 +70,26 @@ namespace TouhouHeartstone
                 pileList.Add(player[GRAVE]);
             if (flag.HasFlag(PileFlag.warp))
                 pileList.Add(player[WARP]);
+            if (flag.HasFlag(PileFlag.item))
+                pileList.Add(player[ITEM]);
         }
     }
     [Flags]
     public enum PileFlag
     {
-        none = 0b_0000000,
-        master = 0b_00000001,
-        init = 0b_00000010,
-        hand = 0b_00000100,
-        skill = 0b_00001000,
-        deck = 0b_00010000,
-        field = 0b_00100000,
-        grave = 0b_01000000,
-        warp = 0b_10000000,
+        none = 0b_00000000,
+        master = 0b_000000001,
+        init = 0b_000000010,
+        hand = 0b_000000100,
+        skill = 0b_000001000,
+        deck = 0b_000010000,
+        field = 0b_000100000,
+        grave = 0b_001000000,
+        warp = 0b_010000000,
+        item = 0b_100000000,
 
-        self = 0b_0100000000,
-        oppo = 0b_1000000000,
-        both = 0b_1100000000,
+        self = 0b_01000000000,
+        oppo = 0b_10000000000,
+        both = 0b_11000000000,
     }
 }

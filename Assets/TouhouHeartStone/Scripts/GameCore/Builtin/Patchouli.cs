@@ -120,7 +120,16 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 5;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+
+        };
+        //class ItemTrigggerEffectAfter<T> : THHEffectAfter<T> where T : IEventArg
+        //{
+        //    public ItemTrigggerEffectAfter() : base(PileName.ITEM, onCheckCondition, onCheckTarget, onExecute)
+        //    {
+        //    }
+        //}
     }
     /// <summary>
     /// 5 火神之光 元素法术，对目标造成7点伤害
