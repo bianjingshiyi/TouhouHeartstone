@@ -29,9 +29,9 @@ namespace UI
             this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
             this._FrameImage = this.transform.Find("Frame").GetComponent<Image>();
             this._AttackImage = this.transform.Find("Attack").GetComponent<Image>();
-            this._AttackText = this.transform.Find("Attack").Find("AttackText").GetComponent<Text>();
+            this._AttackPropNumber = this.transform.Find("Attack").Find("Attack").GetComponent<PropNumber>();
             this._DurabilityImage = this.transform.Find("Durability").GetComponent<Image>();
-            this._DurabilityText = this.transform.Find("Durability").Find("DurabilityText").GetComponent<Text>();
+            this._DurabilityPropNumber = this.transform.Find("Durability").Find("Durability").GetComponent<PropNumber>();
         }
         [SerializeField()]
         private Mask _Mask;
@@ -86,16 +86,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _AttackText;
-        public Text AttackText
+        private PropNumber _AttackPropNumber;
+        public PropNumber AttackPropNumber
         {
             get
             {
-                if ((this._AttackText == null))
+                if ((this._AttackPropNumber == null))
                 {
-                    this._AttackText = this.transform.Find("Attack").Find("AttackText").GetComponent<Text>();
+                    this._AttackPropNumber = this.transform.Find("Attack").Find("Attack").GetComponent<PropNumber>();
                 }
-                return this._AttackText;
+                return this._AttackPropNumber;
             }
         }
         [SerializeField()]
@@ -112,16 +112,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _DurabilityText;
-        public Text DurabilityText
+        private PropNumber _DurabilityPropNumber;
+        public PropNumber DurabilityPropNumber
         {
             get
             {
-                if ((this._DurabilityText == null))
+                if ((this._DurabilityPropNumber == null))
                 {
-                    this._DurabilityText = this.transform.Find("Durability").Find("DurabilityText").GetComponent<Text>();
+                    this._DurabilityPropNumber = this.transform.Find("Durability").Find("Durability").GetComponent<PropNumber>();
                 }
-                return this._DurabilityText;
+                return this._DurabilityPropNumber;
             }
         }
         partial void onAwake();

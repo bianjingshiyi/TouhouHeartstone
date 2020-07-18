@@ -305,6 +305,9 @@ namespace Game
         {
             CardSkinData skin = getSkin(card);
             item.Image.sprite = skin.image;
+
+            item.AttackPropNumber.asText.text = card.getAttack(game).ToString();
+            item.DurabilityPropNumber.asText.text = card.getCurrentLife(game).ToString();
         }
         /// <summary>
         /// 设置Skill的UI
@@ -1103,6 +1106,21 @@ namespace Game
                     return pair.Key;
             }
             return null;
+        }
+        public bool tryGetItem(TouhouCardEngine.Card card, out Item item)
+        {
+            if (player.item != null && player.item == card)
+            {
+                item = ui.SelfItem;
+                return true;
+            }
+            else if (game.getOpponent(player).item != null && game.getOpponent(player).item == card)
+            {
+                item = ui.EnemyItem;
+                return true;
+            }
+            item = null;
+            return false;
         }
         /// <summary>
         /// 隐藏随从的占位符
