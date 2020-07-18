@@ -145,6 +145,7 @@ namespace Game
                 for (int i = 0; i < _animationQueue.Count; i++)
                 {
                     UIAnimation anim = _animationQueue[i];
+                    anim.updateDebugContent();
                     bool isBlocked = false;
                     if (i == 0)
                     {

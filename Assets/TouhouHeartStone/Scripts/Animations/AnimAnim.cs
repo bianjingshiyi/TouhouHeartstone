@@ -15,13 +15,17 @@ namespace Game
         public override bool update(TableManager table)
         {
             if (!_animator.HasState(0, Animator.StringToHash(_animName)))
+            {
+                Debug.LogError(_animator + "中不存在动画状态" + _animName, _animator);
                 return true;
-            AnimatorStateInfo state = _animator.GetCurrentAnimatorStateInfo(0);
+            }
             if (!_isPlayed)
             {
                 _isPlayed = true;
                 _animator.Play(_animName);
+                return false;
             }
+            AnimatorStateInfo state = _animator.GetCurrentAnimatorStateInfo(0);
             if (state.normalizedTime < 1)
                 return false;
             return true;

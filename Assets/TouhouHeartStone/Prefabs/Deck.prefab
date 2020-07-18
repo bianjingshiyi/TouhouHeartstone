@@ -61,6 +61,14 @@ MonoBehaviour:
   _Card_3: {fileID: 4483114518794195516}
   _Card_4: {fileID: 4483114517585686732}
   _Card_5: {fileID: 4483114517503134596}
+  onFatigue:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!1001 &3364040964788926650
 PrefabInstance:
   m_ObjectHideFlags: 0

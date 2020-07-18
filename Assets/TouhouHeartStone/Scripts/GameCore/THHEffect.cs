@@ -455,8 +455,25 @@ namespace TouhouHeartstone
             buffDic.Clear();
         }
     }
+    public class AddBuffAfter<T> : THHEffectAfter<T> where T : IEventArg
+    {
+        public AddBuffAfter(string pile, CheckConditionDelegate onCheckCondition, Buff originBuff) : base(pile, onCheckCondition, null, (g, c, a) =>
+        {
+            c.addBuff(g, originBuff.clone());
+            return Task.CompletedTask;
+        })
+        {
+        }
+    }
     public class RemoveBuffBefore<T> : THHEffectBefore<T> where T : IEventArg
     {
+        public RemoveBuffBefore(string pile, int buffId) : base(pile, null, null, (game, card, arg) =>
+        {
+            card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+            return Task.CompletedTask;
+        })
+        {
+        }
         public RemoveBuffBefore(string pile, CheckConditionDelegate onCheckCondition, int buffId) : base(pile, onCheckCondition, null, (game, card, arg) =>
         {
             card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
