@@ -531,13 +531,14 @@ namespace Tests
                 new KeyValuePair<int, int>(DoyouSpear.ID, 4),
                 new KeyValuePair<int, int>(PhilosopherStone.ID, 5)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 10);
-
-            game.logger.log("cost:" + you.hand.getCard<PhilosopherStone>().getCost(game));
-            game.logger.log("life:" + you.hand.getCard<PhilosopherStone>().getLife(game));
-
-            you.cmdUse(game, you.hand.getCard<PhilosopherStone>());
-            you.cmdUse(game, you.hand.getCard<DoyouSpear>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<PhilosopherStone>().cost);
+            var handBeforeUse = you.hand.ToArray();
+            you.cmdUse(game, you.hand.getCard<PhilosopherStone>());//挂刀
+            Assert.IsInstanceOf<PhilosopherStone>(you.item.define);//挂上了
+            var getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
+            handBeforeUse = you.hand.ToArray();
+            you.cmdUse(game, you.hand.getCard<DoyouSpear>());//用牌 
+            getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
 
             game.Dispose();
         }
