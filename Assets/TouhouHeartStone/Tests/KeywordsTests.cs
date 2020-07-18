@@ -23,13 +23,13 @@ namespace Tests
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 1);
 
-            Assert.True(game.sortedPlayers[0].field[0].isRush());   //是否为突袭随从
+            Assert.True(game.sortedPlayers[0].field[0].isRush(game));   //是否为突袭随从
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[1], game.sortedPlayers[1].master);
-            Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife());     //普通随从没准备好无法攻击
+            Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife(game));     //普通随从没准备好无法攻击
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].master);
-            Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife());     //突袭的随从没准备好无法攻击master
+            Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife(game));     //突袭的随从没准备好无法攻击master
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].field[0]);
-            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife());    //突袭的随从可以攻击敌方随从
+            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife(game));    //突袭的随从可以攻击敌方随从
         }
 
         /// <summary>
@@ -48,12 +48,12 @@ namespace Tests
             game.sortedPlayers[1].cmdTurnEnd(game);
 
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].field[0]);
-            Assert.AreEqual(6, game.sortedPlayers[0].field[0].getCurrentLife());    //没圣盾的随从攻击后受到反伤
-            Assert.True(game.sortedPlayers[0].field[1].isShield());                 //圣盾随从带有圣盾
+            Assert.AreEqual(6, game.sortedPlayers[0].field[0].getCurrentLife(game));    //没圣盾的随从攻击后受到反伤
+            Assert.True(game.sortedPlayers[0].field[1].isShield(game));                 //圣盾随从带有圣盾
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[1], game.sortedPlayers[1].field[0]);
-            Debug.Log(game.sortedPlayers[0].field[1].getCurrentLife());
-            Assert.AreEqual(3, game.sortedPlayers[0].field[1].getCurrentLife());    //圣盾随从攻击后不受伤
-            Assert.False(game.sortedPlayers[0].field[1].isShield());                //圣盾随从攻击后圣盾消失
+            Debug.Log(game.sortedPlayers[0].field[1].getCurrentLife(game));
+            Assert.AreEqual(3, game.sortedPlayers[0].field[1].getCurrentLife(game));    //圣盾随从攻击后不受伤
+            Assert.False(game.sortedPlayers[0].field[1].isShield(game));                //圣盾随从攻击后圣盾消失
         }
 
         /// <summary>
@@ -69,27 +69,27 @@ namespace Tests
             game.sortedPlayers[1].cmdTurnEnd(game);
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
-            Assert.True(game.sortedPlayers[0].field[1].isStealth());
+            Assert.True(game.sortedPlayers[0].field[1].isStealth(game));
             game.sortedPlayers[0].cmdTurnEnd(game);
 
 
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].field[1]);
             //game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[1].master);
 
-            Assert.AreEqual(3, game.sortedPlayers[0].field[1].getCurrentLife());  //潜行的随从不会被攻击，因此血量不变
+            Assert.AreEqual(3, game.sortedPlayers[0].field[1].getCurrentLife(game));  //潜行的随从不会被攻击，因此血量不变
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].field[0]);
-            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife());  //非潜行随从可以被攻击
+            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife(game));  //非潜行随从可以被攻击
             game.sortedPlayers[1].cmdTurnEnd(game);
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[1], game.sortedPlayers[1].field[0]);
-            Assert.False(game.sortedPlayers[0].field[1].isStealth());   //潜行随从攻击后变为非潜行状态
+            Assert.False(game.sortedPlayers[0].field[1].isStealth(game));   //潜行随从攻击后变为非潜行状态
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(1, game.sortedPlayers[0].field[1].getCurrentLife());    //变为非潜行状态后可以被攻击
+            Assert.AreEqual(1, game.sortedPlayers[0].field[1].getCurrentLife(game));    //变为非潜行状态后可以被攻击
             //game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
-            //Assert.True(game.sortedPlayers[1].field[1].isStealth());
+            //Assert.True(game.sortedPlayers[1].field[1].isStealth(game));
             //game.sortedPlayers[1].cmdTurnEnd(game);
-            //Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife());     //潜行随从在回合结束时对对方master造成伤害
-            //Assert.False(game.sortedPlayers[1].field[1].isStealth());               //潜行消失
+            //Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife(game));     //潜行随从在回合结束时对对方master造成伤害
+            //Assert.False(game.sortedPlayers[1].field[1].isStealth(game));               //潜行消失
         }
 
         /// <summary>
@@ -106,14 +106,14 @@ namespace Tests
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
             game.sortedPlayers[1].cmdTurnEnd(game);
             game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].master);
-            Assert.AreEqual(29, game.sortedPlayers[1].master.getCurrentLife());  //被攻击后血量减少1
+            Assert.AreEqual(29, game.sortedPlayers[1].master.getCurrentLife(game));  //被攻击后血量减少1
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].master);
-            Assert.AreEqual(29, game.sortedPlayers[1].master.getCurrentLife());  //不会吸血的随从攻击后，master没有回血
+            Assert.AreEqual(29, game.sortedPlayers[1].master.getCurrentLife(game));  //不会吸血的随从攻击后，master没有回血
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[1], game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife());  //会吸血的随从攻击后，master回血
-            Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife());  //攻击吸血随从，敌方master回血
+            Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife(game));  //会吸血的随从攻击后，master回血
+            Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife(game));  //攻击吸血随从，敌方master回血
 
         }
 
@@ -135,14 +135,14 @@ namespace Tests
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].field[0]);
-            Assert.AreEqual(6, game.sortedPlayers[0].field[0].getCurrentLife());    //没有剧毒的随从攻击，受到伤害，不会即死
+            Assert.AreEqual(6, game.sortedPlayers[0].field[0].getCurrentLife(game));    //没有剧毒的随从攻击，受到伤害，不会即死
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[1], game.sortedPlayers[0].field[0]);
             Assert.AreEqual(0, game.sortedPlayers[0].field.count);      //有剧毒的随从攻击敌方随从，随从死亡
             game.sortedPlayers[1].cmdTurnEnd(game);
             game.sortedPlayers[0].cmdTurnEnd(game);
-            Assert.True(game.sortedPlayers[1].field[1].isPoisonous());
+            Assert.True(game.sortedPlayers[1].field[1].isPoisonous(game));
             game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[1], game.sortedPlayers[0].master);
-            Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife());     //剧毒随从攻击master，master受到伤害，不会即死
+            Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife(game));     //剧毒随从攻击master，master受到伤害，不会即死
 
         }
 
@@ -169,18 +169,18 @@ namespace Tests
 
             game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<TestSpellCard>().cost && game.currentPlayer == defaultPlayer);
             defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == TestSpellCard.ID), 0, defaultPlayer.field[0]);
-            Assert.AreEqual(6, defaultPlayer.field[0].getCurrentLife());//没有魔免的可以被法术指定
+            Assert.AreEqual(6, defaultPlayer.field[0].getCurrentLife(game));//没有魔免的可以被法术指定
             defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == TestSpellCard.ID), 0, elusivePlayer.field[0]);
-            Assert.AreEqual(3, elusivePlayer.field[0].getCurrentLife());//魔免无法被法术指定
+            Assert.AreEqual(3, elusivePlayer.field[0].getCurrentLife(game));//魔免无法被法术指定
 
             game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<TestDamageSkill>().cost && game.currentPlayer == elusivePlayer);
             elusivePlayer.cmdUse(game, elusivePlayer.skill, 0, defaultPlayer.field[0]);
-            Assert.AreEqual(5, defaultPlayer.field[0].getCurrentLife());//没有魔免的可以被技能指定
+            Assert.AreEqual(5, defaultPlayer.field[0].getCurrentLife(game));//没有魔免的可以被技能指定
             elusivePlayer.cmdTurnEnd(game);
 
             game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<TestDamageSkill>().cost && game.currentPlayer == elusivePlayer);
             elusivePlayer.cmdUse(game, elusivePlayer.skill, 0, elusivePlayer.field[0]);
-            Assert.AreEqual(3, elusivePlayer.field[0].getCurrentLife());//魔免无法被技能指定
+            Assert.AreEqual(3, elusivePlayer.field[0].getCurrentLife(game));//魔免无法被技能指定
 
             game.Dispose();
         }
@@ -214,7 +214,7 @@ namespace Tests
 
             game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
             defaultPlayer.cmdAttack(game, defaultPlayer.field[0], elusivePlayer.master);//已解除冰冻的随从可以攻击
-            Assert.AreEqual(29, elusivePlayer.master.getCurrentLife());
+            Assert.AreEqual(29, elusivePlayer.master.getCurrentLife(game));
 
             game.Dispose();
         }

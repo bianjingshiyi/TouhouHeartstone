@@ -83,7 +83,7 @@ namespace TouhouHeartstone
             foreach (TriggerTime time in triggers)
             {
                 string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
-                Trigger trigger = card.getProp<Trigger>(effectName);
+                Trigger trigger = card.getProp<Trigger>(game, effectName);
                 game.logger.log("Effect", card + "注销效果" + effectName);
                 game.triggers.remove(trigger);
             }
@@ -131,7 +131,7 @@ namespace TouhouHeartstone
             foreach (TriggerTime time in triggers)
             {
                 string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
-                Trigger<T> trigger = card.getProp<Trigger<T>>(effectName);
+                Trigger<T> trigger = card.getProp<Trigger<T>>(game, effectName);
                 game.logger.log("Effect", card + "注销效果" + effectName);
                 game.triggers.removeBefore(trigger);
             }
@@ -200,7 +200,7 @@ namespace TouhouHeartstone
             foreach (TriggerTime time in triggers)
             {
                 string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
-                Trigger<T> trigger = card.getProp<Trigger<T>>(effectName);
+                Trigger<T> trigger = card.getProp<Trigger<T>>(game, effectName);
                 game.logger.log("Effect", card + "注销效果" + effectName);
                 game.triggers.removeAfter(trigger);
             }
