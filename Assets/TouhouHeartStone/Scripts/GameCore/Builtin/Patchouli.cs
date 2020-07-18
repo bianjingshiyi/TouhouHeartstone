@@ -122,6 +122,10 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 5;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
+            new NoTargetEffect((g1,c1)=>
+            {
+                return c1.getOwner().addRandomCardToHand(g1,g1.getCardDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
+            }),
             new ItemTrigggerEffectAfter<THHPlayer.UseEventArg>((g1,c1,a1)=>
             {
                 return a1.player==c1.getOwner() && a1.card.isSpell();
