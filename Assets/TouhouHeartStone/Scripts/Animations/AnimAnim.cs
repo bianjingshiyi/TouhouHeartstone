@@ -17,7 +17,7 @@ namespace Game
         }
         public override bool update(TableManager table)
         {
-            if (!_animator.HasState(0, Animator.StringToHash(_animName)))
+            if (!hasAnim())
             {
                 Debug.LogError(_animator + "中不存在动画状态" + _animName, _animator);
                 return true;
@@ -28,10 +28,22 @@ namespace Game
                 _animator.Play(_animName);
                 return false;
             }
-            AnimatorStateInfo state = _animator.GetCurrentAnimatorStateInfo(0);
-            if (state.normalizedTime < 1)
-                return false;
+            for (int i = 0; i < _animator.layerCount; i++)
+            {
+                AnimatorStateInfo state = _animator.GetCurrentAnimatorStateInfo(i);
+                if (state.IsName(_animName) && state.normalizedTime < 1)
+                    return false;
+            }
             return true;
+        }
+        bool hasAnim()
+        {
+            for (int i = 0; i < _animator.layerCount; i++)
+            {
+                if (_animator.HasState(i, Animator.StringToHash(_animName)))
+                    return true;
+            }
+            return false;
         }
         public override bool blockAnim(UIAnimation nextAnim)
         {
