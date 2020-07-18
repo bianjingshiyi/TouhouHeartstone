@@ -326,6 +326,8 @@ namespace TouhouHeartstone
                     info = "你无法将更多的随从置入战场";
                     return false;
                 }
+                info = null;
+                return true;
             }
             if (card.define is ItemCardDefine item)
             {
@@ -334,11 +336,13 @@ namespace TouhouHeartstone
                     info = "你没有足够的法力值";
                     return false;
                 }
-                if (player.item !=null)
+                if (player.item != null)
                 {
                     info = "你只能装备一个道具";
                     return false;
                 }
+                info = null;
+                return true;
             }
             else if (card.define is SpellCardDefine spell)
             {
@@ -347,6 +351,8 @@ namespace TouhouHeartstone
                     info = "你没有足够的法力值";
                     return false;
                 }
+                info = null;
+                return true;
             }
             else if (card.define is SkillCardDefine skill)
             {
@@ -391,8 +397,6 @@ namespace TouhouHeartstone
                 info = "这是一张未知的卡牌";
                 return false;//不知道是什么卡
             }
-            info = null;
-            return true;
         }
         public static bool isNeedTarget(this Card card, THHGame game, out Card[] targets)
         {
