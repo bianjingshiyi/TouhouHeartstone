@@ -523,6 +523,24 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<NoachianDeluge>());
             game.Dispose();
         }
+
+        [Test]
+        public void PhilosopherStoneTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(DoyouSpear.ID, 4),
+                new KeyValuePair<int, int>(PhilosopherStone.ID, 5)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 10);
+
+            game.logger.log("cost:" + you.hand.getCard<PhilosopherStone>().getCost(game));
+            game.logger.log("life:" + you.hand.getCard<PhilosopherStone>().getLife(game));
+
+            you.cmdUse(game, you.hand.getCard<PhilosopherStone>());
+            you.cmdUse(game, you.hand.getCard<DoyouSpear>());
+
+            game.Dispose();
+        }
     }
 }
 

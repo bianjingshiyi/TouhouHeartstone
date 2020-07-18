@@ -230,6 +230,7 @@ namespace TouhouHeartstone
                 }
                 else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == CardDefineType.ITEM))
                 {
+                    
                     //物品卡，置入物品栏
                     await player.equip(game, card);
                     ITriggerEffect triggerEffect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
