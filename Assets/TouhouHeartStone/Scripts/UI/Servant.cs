@@ -27,8 +27,8 @@ namespace UI
             {
                 Image.sprite = skin.image;
             }
-            AttackTextPropNumber.asText.text = card.getAttack().ToString();
-            HpTextPropNumber.asText.text = card.getCurrentLife().ToString();
+            AttackTextPropNumber.asText.text = card.getAttack(null).ToString();
+            HpTextPropNumber.asText.text = card.getCurrentLife(null).ToString();
 
             if (table.selectableTargets != null && table.selectableTargets.Contains(this))
             {
@@ -45,8 +45,8 @@ namespace UI
                 // HighlightController = Highlight.None;
                 onHighlightControllerNone?.Invoke();
             }
-            getChild("Root").getChild("Taunt").gameObject.SetActive(card.isTaunt());
-            getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
+            getChild("Root").getChild("Taunt").gameObject.SetActive(card.isTaunt(null));
+            getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield(null));
         }
         public void update(CardDefine card, CardSkinData skin)
         {

@@ -26,9 +26,9 @@ namespace Tests
 
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
 
-            Assert.AreEqual(2, game.sortedPlayers[0].field[0].getAttack());
-            Assert.AreEqual(2, game.sortedPlayers[0].field[0].getLife());
-            Assert.AreEqual(2, game.sortedPlayers[0].field[0].getCurrentLife());
+            Assert.AreEqual(2, game.sortedPlayers[0].field[0].getAttack(game));
+            Assert.AreEqual(2, game.sortedPlayers[0].field[0].getLife(game));
+            Assert.AreEqual(2, game.sortedPlayers[0].field[0].getCurrentLife(game));
         }
         /// <summary>
         /// 加攻Buff测试
@@ -42,7 +42,7 @@ namespace Tests
             buff = new TestBuff(new AttackModifier(2));
             card.addBuff(null, buff);
 
-            Assert.AreEqual(4, card.getAttack());
+            Assert.AreEqual(4, card.getAttack(null));
         }
         /// <summary>
         /// 加攻Buff移除测试
@@ -58,7 +58,7 @@ namespace Tests
                 card.addBuff(null, buffs[i]);
             }
 
-            Assert.AreEqual(4, card.getAttack());
+            Assert.AreEqual(4, card.getAttack(null));
         }
         /// <summary>
         /// 加攻和设置攻击力Buff测试
@@ -75,7 +75,7 @@ namespace Tests
             buffs[2] = new TestBuff(new AttackModifier(2));
             card.addBuff(null, buffs[2]);
 
-            Assert.AreEqual(2, card.getAttack());
+            Assert.AreEqual(2, card.getAttack(null));
         }
         /// <summary>
         /// 加攻和设置攻击力Buff移除测试
@@ -92,11 +92,11 @@ namespace Tests
             buffs[2] = new TestBuff(new AttackModifier(2));
             card.addBuff(null, buffs[2]);
 
-            Assert.AreEqual(2, card.getAttack());
+            Assert.AreEqual(2, card.getAttack(null));
 
             card.removeBuff(null, buffs[1]);
 
-            Assert.AreEqual(4, card.getAttack());
+            Assert.AreEqual(4, card.getAttack(null));
         }
         /// <summary>
         /// 添加减攻Buff直到随从攻击力会被减为负数，获取随从攻击力为0，但是移除Buff的时候可以恢复成正确的数值。
@@ -112,13 +112,13 @@ namespace Tests
                 buffs[i] = new TestBuff(new AttackModifier(-2));
                 card.addBuff(null, buffs[i]);
             }
-            Assert.AreEqual(0, card.getAttack());
+            Assert.AreEqual(0, card.getAttack(null));
 
             for (int i = 0; i < buffs.Length; i++)
             {
                 card.removeBuff(null, buffs[i]);
             }
-            Assert.AreEqual(2, card.getAttack());
+            Assert.AreEqual(2, card.getAttack(null));
         }
         /// <summary>
         /// 领军生平测试
@@ -126,7 +126,7 @@ namespace Tests
         [Test]
         public void haloAndSetBuffTest()
         {
-            CardEngine game = new CardEngine(null, null, 0)
+            THHGame game = new THHGame()
             {
                 logger = new UnityLogger()
             };
@@ -141,8 +141,8 @@ namespace Tests
             card.removeBuff(game, haloBuff);
             card.addBuff(game, haloBuff);
 
-            Assert.AreEqual(2, card.getCurrentLife());
-            Assert.AreEqual(2, card.getLife());
+            Assert.AreEqual(2, card.getCurrentLife(game));
+            Assert.AreEqual(2, card.getLife(game));
         }
         /// <summary>
         /// 在移除Buff的时候，如果随从的生命值是满的，那么当前生命值变更为移除Buff之后的生命值。
@@ -150,7 +150,7 @@ namespace Tests
         [Test]
         public void removeBuffWhenInjureTest()
         {
-            CardEngine game = new CardEngine(null, null, 0)
+            THHGame game = new THHGame()
             {
                 logger = new UnityLogger()
             };
@@ -159,19 +159,19 @@ namespace Tests
             card.setCurrentLife(5);
             TestBuff buff = new TestBuff(new LifeModifier(3, true));
             card.addBuff(game, buff);
-            Assert.AreEqual(3, card.getLife());
-            Assert.AreEqual(3, card.getCurrentLife());
+            Assert.AreEqual(3, card.getLife(game));
+            Assert.AreEqual(3, card.getCurrentLife(game));
             card.removeBuff(game, buff);
-            Assert.AreEqual(5, card.getLife());
-            Assert.AreEqual(5, card.getCurrentLife());
+            Assert.AreEqual(5, card.getLife(game));
+            Assert.AreEqual(5, card.getCurrentLife(game));
             card.addBuff(game, buff);
-            Assert.AreEqual(3, card.getLife());
-            Assert.AreEqual(3, card.getCurrentLife());
+            Assert.AreEqual(3, card.getLife(game));
+            Assert.AreEqual(3, card.getCurrentLife(game));
             //不满血
             card.setCurrentLife(1);
             card.removeBuff(game, buff);
-            Assert.AreEqual(5, card.getLife());
-            Assert.AreEqual(1, card.getCurrentLife());
+            Assert.AreEqual(5, card.getLife(game));
+            Assert.AreEqual(1, card.getCurrentLife(game));
         }
         [Test]
         public void mountainGaintTest()
@@ -185,7 +185,7 @@ namespace Tests
 
             game.skipTurnWhen(() => game.sortedPlayers[0].hand.count < 10);
 
-            Assert.AreEqual(3, game.sortedPlayers[0].hand[0].getCost());
+            Assert.AreEqual(3, game.sortedPlayers[0].hand[0].getCost(game));
             int gemNow = game.sortedPlayers[0].gem;
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
             Assert.AreEqual(gemNow - 3, game.sortedPlayers[0].gem);
@@ -246,22 +246,22 @@ namespace Tests
                 game.currentPlayer == game.players[0] &&
                 game.players[0].gem >= game.getCardDefine<SorcererApprentice>().cost &&
                 game.players[0].hand.Any(c => c.define is SorcererApprentice));
-            Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost() == 4));//火球术全是4费
+            Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//火球术全是4费
             var task = game.players[0].cmdUse(game, game.players[0].hand.getCard<SorcererApprentice>());//使用哀绿
             yield return TestHelper.waitTask(task);
             Assert.True(game.players[0].field.Any(c => c.define is SorcererApprentice));
-            Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost() == 3));//火球术全是3费
+            Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 3));//火球术全是3费
             task = game.players[0].draw(game);//抽一张火球
             yield return TestHelper.waitTask(task);
             Card card = game.players[0].hand.right;
-            Assert.AreEqual(3, card.getCost());
+            Assert.AreEqual(3, card.getCost(game));
             task = card.pile.moveTo(game, card, game.players[0].grave);//把火球送入墓地
             yield return TestHelper.waitTask(task);
-            Assert.AreEqual(4, card.getCost());
+            Assert.AreEqual(4, card.getCost(game));
             yield return game.players[0].field[0].die(game).wait();//杀死哀绿
-            Assert.True(game.players[0].hand.getCards<FireBall>().All(c => c.getCost() == 4));
+            Assert.True(game.players[0].hand.getCards<FireBall>().All(c => c.getCost(game) == 4));
             yield return game.players[0].draw(game).wait();//再抽一张火球术
-            Assert.True(game.players[0].hand.getCards<FireBall>().All(c => c.getCost() == 4));
+            Assert.True(game.players[0].hand.getCards<FireBall>().All(c => c.getCost(game) == 4));
         }
         [Test]
         public void idTest()

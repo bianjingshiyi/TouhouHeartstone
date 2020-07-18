@@ -10,16 +10,16 @@ namespace UI
             this.card = card;
 
             Image.sprite = skin.image;
-            if (card.getAttack() > 0)
+            if (card.getAttack(null) > 0)
             {
-                AttackText.text = card.getAttack().ToString();
+                AttackText.text = card.getAttack(null).ToString();
                 AttackImage.gameObject.SetActive(true);
             }
             else
             {
                 AttackImage.gameObject.SetActive(false);
             }
-            DurabilityText.text = card.getCurrentLife().ToString();
+            DurabilityText.text = card.getCurrentLife(null).ToString();
         }
     }
 }
