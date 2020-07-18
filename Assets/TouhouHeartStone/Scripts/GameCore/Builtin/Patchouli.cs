@@ -75,10 +75,10 @@ namespace TouhouHeartstone.Builtin
         static Task effect(THHGame game, Card card)
         {
             card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
-                new Halo(new GeneratedBuff(ID, new CostModifier(-5)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master,(g1,c1)=>
-                {
-                    return c1.isSpell();
-                }),
+                new Halo(new GeneratedBuff(ID, new CostModifier(-5)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
+                 {
+                     return c1.isSpell();
+                 }),
                 new RemoveBuffBefore<THHPlayer.UseEventArg>(PileName.MASTER, (g, c, a) =>
                 {
                     return a.player == card.getOwner() && a.card.isSpell();
@@ -105,6 +105,24 @@ namespace TouhouHeartstone.Builtin
         {
             new CostFixer()
         };
+        class ConditionalModifier : PassiveEffect
+        {
+            public override string[] piles { get; } = null;
+            public PropModifier[] modifiers { get; } = null;
+            public ConditionalModifier(PileFlag pile, params PropModifier[] modifiers)
+            {
+                piles = PileName.getPiles(pile);
+                this.modifiers = modifiers;
+            }
+            public override void onEnable(THHGame game, Card card)
+            {
+                throw new NotImplementedException();
+            }
+            public override void onDisable(THHGame game, Card card)
+            {
+                throw new NotImplementedException();
+            }
+        }
         class CostFixer : PassiveEffect
         {
             public override string[] piles { get; } = new string[] { PileName.HAND };

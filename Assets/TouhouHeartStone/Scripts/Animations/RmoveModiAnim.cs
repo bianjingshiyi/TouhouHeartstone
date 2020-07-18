@@ -4,10 +4,10 @@ using TouhouHeartstone;
 
 namespace Game
 {
-    class AddModiAnim : EventAnimation<TouhouCardEngine.Card.AddModiEventArg>
+    class RmoveModiAnim : EventAnimation<TouhouCardEngine.Card.RemoveModiEventArg>
     {
         AnimAnim _anim;
-        public override bool update(TableManager table, TouhouCardEngine.Card.AddModiEventArg eventArg)
+        public override bool update(TableManager table, TouhouCardEngine.Card.RemoveModiEventArg eventArg)
         {
             SimpleAnim simpleAnim = null;
             Animator animator = null;
@@ -17,17 +17,17 @@ namespace Game
                 if (eventArg.modifier is AttackModifier atkMod)
                 {
                     if (atkMod.value > 0)
-                        simpleAnim = servant.onAttackUp;
-                    else
                         simpleAnim = servant.onAttackDown;
+                    else
+                        simpleAnim = servant.onAttackUp;
                     servant.AttackTextPropNumber.asText.text = eventArg.card.getAttack().ToString();
                 }
                 else if (eventArg.modifier is LifeModifier lifMod)
                 {
                     if (lifMod.value > 0)
-                        simpleAnim = servant.onLifeUp;
-                    else
                         simpleAnim = servant.onLifeDown;
+                    else
+                        simpleAnim = servant.onLifeUp;
                     servant.HpTextPropNumber.asText.text = eventArg.card.getCurrentLife().ToString();
                 }
             }
@@ -37,25 +37,25 @@ namespace Game
                 if (eventArg.modifier is AttackModifier atkMod)
                 {
                     if (atkMod.value > 0)
-                        simpleAnim = hand.onAttackUp;
-                    else
                         simpleAnim = hand.onAttackDown;
+                    else
+                        simpleAnim = hand.onAttackUp;
                     hand.Card.AttackPropNumber.asText.text = eventArg.card.getAttack().ToString();
                 }
                 else if (eventArg.modifier is LifeModifier lifMod)
                 {
                     if (lifMod.value > 0)
-                        simpleAnim = hand.onLifeUp;
-                    else
                         simpleAnim = hand.onLifeDown;
+                    else
+                        simpleAnim = hand.onLifeUp;
                     hand.Card.LifePropNumber.asText.text = eventArg.card.getLife().ToString();
                 }
                 else if (eventArg.modifier is CostModifier costMod)
                 {
                     if (costMod.value > 0)
-                        simpleAnim = hand.onCostUp;
-                    else
                         simpleAnim = hand.onCostDown;
+                    else
+                        simpleAnim = hand.onCostUp;
                     hand.Card.CostPropNumber.asText.text = eventArg.card.getCost().ToString();
                 }
             }
