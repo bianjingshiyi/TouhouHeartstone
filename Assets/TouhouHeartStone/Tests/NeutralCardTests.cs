@@ -21,7 +21,7 @@ namespace Tests
             game.sortedPlayers[1].cmdInitReplace(game);
 
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
-            Assert.True(game.sortedPlayers[0].field[0].isCharge());
+            Assert.True(game.sortedPlayers[0].field[0].isCharge(game));
             Assert.True(game.sortedPlayers[0].field[0].canAttack(game));
         }
         [Test]
@@ -41,7 +41,7 @@ namespace Tests
             game.sortedPlayers[1].cmdTurnEnd(game);
 
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
-            Assert.True(game.sortedPlayers[0].field[0].isTaunt());
+            Assert.True(game.sortedPlayers[0].field[0].isTaunt(game));
         }
         [Test]
         public void rifleHunterTest()
@@ -60,7 +60,7 @@ namespace Tests
             game.sortedPlayers[1].cmdTurnEnd(game);
 
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0, game.sortedPlayers[1].master);
-            Assert.AreEqual(28, game.sortedPlayers[1].master.getCurrentLife());
+            Assert.AreEqual(28, game.sortedPlayers[1].master.getCurrentLife(game));
         }
         [Test]
         public void missingSpecterTest()
@@ -181,7 +181,7 @@ namespace Tests
             game.skipTurnWhen(() => game.sortedPlayers[0].gem < 2);
 
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
-            Assert.True(game.sortedPlayers[0].field[0].isStealth());
+            Assert.True(game.sortedPlayers[0].field[0].isStealth(game));
         }
 
         [Test]
@@ -197,9 +197,9 @@ namespace Tests
             game.skipTurnWhen(() => game.sortedPlayers[0].gem < 3);
 
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
-            Assert.False(game.sortedPlayers[0].field[0].isStealth());   //default随从一开始没有潜行
+            Assert.False(game.sortedPlayers[0].field[0].isStealth(game));   //default随从一开始没有潜行
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 1, game.sortedPlayers[0].field[0]);
-            Assert.True(game.sortedPlayers[0].field[0].isStealth());    //露娜出场后default随从变为潜行状态
+            Assert.True(game.sortedPlayers[0].field[0].isStealth(game));    //露娜出场后default随从变为潜行状态
         }
 
         [Test]
@@ -218,11 +218,11 @@ namespace Tests
 
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);   //default
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[3], 1);   //斯塔
-            Assert.False(game.sortedPlayers[0].field[0].isStealth());   //没有桑尼和露娜，光环没起效
+            Assert.False(game.sortedPlayers[0].field[0].isStealth(game));   //没有桑尼和露娜，光环没起效
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 2);   //桑尼
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 3);   //露娜
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 4);
-            Assert.True(game.sortedPlayers[0].field[2].isStealth());    //露娜和桑尼在场，光环起效
+            Assert.True(game.sortedPlayers[0].field[2].isStealth(game));    //露娜和桑尼在场，光环起效
         }
 
         [Test]

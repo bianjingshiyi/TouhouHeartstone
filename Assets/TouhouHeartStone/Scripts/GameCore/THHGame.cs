@@ -387,10 +387,10 @@ namespace TouhouHeartstone
                 logger.log("Debug", currentPlayer + "回合结束");
                 foreach (Card servant in arg.player.field)
                 {
-                    if (servant.isFreeze())
+                    if (servant.isFreeze(this))
                     {
-                        servant.setAttackTimes(servant.getAttackTimes() + 1);
-                        if (servant.getMaxAttackTimes() - servant.getAttackTimes() >= 0)
+                        servant.setAttackTimes(servant.getAttackTimes(this) + 1);
+                        if (servant.getMaxAttackTimes() - servant.getAttackTimes(this) >= 0)
                         {
                             logger.log("被冻结的随从解除冰冻");
                             servant.setFreeze(false);
@@ -416,13 +416,13 @@ namespace TouhouHeartstone
             List<Card> deathList = new List<Card>();
             foreach (THHPlayer player in players)
             {
-                if (player.master.isDead())
+                if (player.master.isDead(this))
                 {
                     deathList.Add(player.master);
                 }
                 foreach (Card card in player.field)
                 {
-                    if (card.isDead())
+                    if (card.isDead(this))
                     {
                         deathList.Add(card);
                     }
