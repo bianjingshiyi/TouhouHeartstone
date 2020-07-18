@@ -249,6 +249,7 @@ MonoBehaviour:
   _useController: 0
   _initStates: []
   _PanelImage: {fileID: 6187455399198432317}
+  _Text: {fileID: 6659285124226945386}
   _HoriCardList: {fileID: 492325961256834477}
   _Button: {fileID: 3065209716924009997}
 --- !u!1 &4578229599500324086

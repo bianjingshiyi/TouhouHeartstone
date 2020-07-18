@@ -334,6 +334,13 @@ namespace TouhouHeartstone
             }
             return result;
         }
+        public Task addRandomCardToHand(THHGame game, IEnumerable<CardDefine> pool)
+        {
+            if (hand.isFull)//手牌满了
+                return Task.CompletedTask;
+            Card card = game.createCardByRandom(pool);
+            return hand.add(game, card);
+        }
         #region Command
         public Task cmdInitReplace(THHGame game, params Card[] cards)
         {

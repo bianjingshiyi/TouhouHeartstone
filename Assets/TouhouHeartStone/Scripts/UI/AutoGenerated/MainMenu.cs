@@ -33,6 +33,8 @@ namespace UI
             this._BuildButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<Button>();
             this._QuitButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<Button>();
             this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
+            this._VersionText = this.transform.Find("Version").GetComponent<Text>();
+            this._CopyrightText = this.transform.Find("Copyright").GetComponent<Text>();
         }
         private Main _parent;
         public Main parent
@@ -144,6 +146,32 @@ namespace UI
                     this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
                 }
                 return this._LogoImage;
+            }
+        }
+        [SerializeField()]
+        private Text _VersionText;
+        public Text VersionText
+        {
+            get
+            {
+                if ((this._VersionText == null))
+                {
+                    this._VersionText = this.transform.Find("Version").GetComponent<Text>();
+                }
+                return this._VersionText;
+            }
+        }
+        [SerializeField()]
+        private Text _CopyrightText;
+        public Text CopyrightText
+        {
+            get
+            {
+                if ((this._CopyrightText == null))
+                {
+                    this._CopyrightText = this.transform.Find("Copyright").GetComponent<Text>();
+                }
+                return this._CopyrightText;
             }
         }
         partial void onAwake();

@@ -15,6 +15,7 @@ namespace Game
                     return false;
             }
             simpleAnim.afterAnim.Invoke();
+            anim = null;
             return true;
         }
     }

@@ -421,6 +421,22 @@ MonoBehaviour:
           m_StringArgument: Highlight_Green
           m_BoolArgument: 0
         m_CallState: 2
+  onDamage:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onDeath:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!95 &2712425241954072648
 Animator:
   serializedVersion: 3

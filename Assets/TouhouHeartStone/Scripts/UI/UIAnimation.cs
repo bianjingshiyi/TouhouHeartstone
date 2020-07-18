@@ -6,7 +6,7 @@ using Game;
 namespace UI
 {
     [Serializable]
-    public abstract class UIAnimation
+    public class UIAnimation
     {
         [SerializeField]
         string _name;
@@ -14,21 +14,40 @@ namespace UI
         {
             get { return _name; }
         }
+#if UNITY_EDITOR
+        [SerializeField]
+        string _content;
+#endif
         public UIAnimation()
         {
             _name = GetType().Name;
+#if UNITY_EDITOR
+            _content = ToString();
+#endif
         }
         public UIAnimation(string name)
         {
             _name = name;
+#if UNITY_EDITOR
+            _content = ToString();
+#endif
         }
+#if UNITY_EDITOR
+        public void updateDebugContent()
+        {
+            _content = ToString();
+        }
+#endif
         /// <summary>
         /// 当播放动画时会在每一帧被调用，返回值为真表示动画结束，动画将被从队列中剔除。
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
         [Obsolete]
-        public abstract bool update(Table table);
+        public virtual bool update(Table table)
+        {
+            return true;
+        }
         /// <summary>
         /// 是否会阻挡下一个动画？
         /// </summary>
