@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using CustomBuilder;
 
 namespace UI
 {
@@ -17,6 +18,16 @@ namespace UI
                 UnityEditor.EditorApplication.isPlaying = false;
 #endif
             });
+            if (BuildInformation.Instance != null)
+            {
+                if (Application.version.StartsWith("0."))
+                    VersionText.text = "测试版本 ";
+                VersionText.text += BuildInformation.Instance.Version.Substring(BuildInformation.Instance.Version.Length - 7) + " - " + BuildInformation.Instance.BuildDate;
+            }
+            else
+            {
+                VersionText.text = "版本 " + Application.version;
+            }
         }
     }
 }
