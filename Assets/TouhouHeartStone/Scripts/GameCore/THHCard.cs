@@ -7,6 +7,10 @@ namespace TouhouHeartstone
 {
     public static class THHCard
     {
+        public static bool isItem(this Card card)
+        {
+            return card.define is ItemCardDefine;
+        }
         public static bool isSkill(this Card card)
         {
             return card.define is SkillCardDefine;

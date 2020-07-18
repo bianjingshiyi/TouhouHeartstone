@@ -35,6 +35,11 @@ namespace Game
                         master.onDeath.beforeAnim.Invoke();
                         _animList.Add(new AnimAnim(master.animator, master.onDeath.animName));
                     }
+                    else if (table.tryGetItem(card, out var item))
+                    {
+                        item.onDestroy.beforeAnim.Invoke();
+                        _animList.Add(new AnimAnim(item.animator, item.onDestroy.animName));
+                    }
                 }
             }
             bool isAllAnimDone = true;
@@ -45,17 +50,21 @@ namespace Game
             }
             if (!isAllAnimDone)
                 return false;
-            foreach (var p in eventArg.infoDic.Keys)//列举所有死亡的信息
+            foreach (var card in eventArg.infoDic.Keys)//列举所有死亡的信息
             {
-                if (table.tryGetServant(p, out var servant))//尝试获取死亡的随从的随从UI
+                if (table.tryGetServant(card, out var servant))//尝试获取死亡的随从的随从UI
                 {
                     servant.onDeath.afterAnim.Invoke();
                     table.ui.SelfFieldList.removeItem(servant);//从自己的场上移除随从UI
                     table.ui.EnemyFieldList.removeItem(servant);//从敌人的场上移除随从UI
                 }
-                else if (table.tryGetMaster(p, out var master))
+                else if (table.tryGetMaster(card, out var master))
                 {
                     master.onDeath.afterAnim.Invoke();
+                }
+                else if (table.tryGetItem(card, out var item))
+                {
+                    item.onDestroy.afterAnim.Invoke();
                 }
             }
             return true;
