@@ -186,7 +186,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class RockElement : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x657;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x657;
         public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override int cost { get; set; } = 5;
@@ -479,7 +479,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class GemSpear : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x658;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x658;
         public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override int cost { get; set; } = 1;
@@ -689,7 +689,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class LavaElement : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x659;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x659;
         public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override int cost { get; set; } = 2;
@@ -733,7 +733,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class DustElement : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x660;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x660;
         public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override int cost { get; set; } = 3;
@@ -767,7 +767,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class FloodElement : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x661;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x661;
         public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override int cost { get; set; } = 2;
