@@ -103,26 +103,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new CostFixer()
         };
-        class ConditionalModifier : PassiveEffect
-        {
-            public override string[] piles { get; } = null;
-            public PropModifier[] modifiers { get; } = null;
-            public ConditionalModifier(PileFlag pile, params PropModifier[] modifiers)
-            {
-                piles = PileName.getPiles(pile);
-                this.modifiers = modifiers;
-            }
-            public override void onEnable(THHGame game, Card card)
-            {
-                throw new NotImplementedException();
-            }
-            public override void onDisable(THHGame game, Card card)
-            {
-                throw new NotImplementedException();
-            }
-        }
         class CostFixer : PassiveEffect
         {
             public override string[] piles { get; } = new string[] { PileName.HAND };
