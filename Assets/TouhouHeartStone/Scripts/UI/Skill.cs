@@ -17,8 +17,8 @@ namespace UI
             this.card = card;
 
             Image.sprite = skin.image;
-            CostPropNumber.asText.text = card.getCost().ToString();
-            if (card.isUsed())
+            CostPropNumber.asText.text = card.getCost(null).ToString();
+            if (card.isUsed(null))
             {
                 // IsUsedController = IsUsed.True;
                 isUsed = true;

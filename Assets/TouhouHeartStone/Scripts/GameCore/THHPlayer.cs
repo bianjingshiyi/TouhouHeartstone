@@ -161,13 +161,13 @@ namespace TouhouHeartstone
             if (!card.isUsable(game, this, out _))
                 //卡牌不可用
                 return false;
-            if (targets.Any(t => t is Card targetCard && targetCard.isElusive() && (card.define is SkillCardDefine || card.define is SpellCardDefine)))
+            if (targets.Any(t => t is Card targetCard && targetCard.isElusive(game) && (card.define is SkillCardDefine || card.define is SpellCardDefine)))
                 //目标是魔免
                 return false;
             if (card.define is SkillCardDefine)
                 //使用技能
                 card.setUsed(true);
-            await setGem(game, gem - card.getCost());
+            await setGem(game, gem - card.getCost(game));
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>
             {
                 THHPlayer player = arg.player;
@@ -325,12 +325,12 @@ namespace TouhouHeartstone
             public int position;
             public Card card;
         }
-        public int getSpellDamage(int baseDamage)
+        public int getSpellDamage(THHGame game, int baseDamage)
         {
             int result = baseDamage;
             foreach (var card in field)
             {
-                result += card.getSpellDamage();
+                result += card.getSpellDamage(game);
             }
             return result;
         }

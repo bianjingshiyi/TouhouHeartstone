@@ -74,72 +74,20 @@ namespace TouhouHeartstone.Builtin
         };
         static Task effect(THHGame game, Card card)
         {
-            //card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
-            //    new Halo(new GeneratedBuff(ID, new CostModifier(-5)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master),
-            //    ));
+            card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
+                new Halo(new GeneratedBuff(ID, new CostModifier(-5)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
+                 {
+                     return c1.isSpell();
+                 }),
+                new RemoveBuffBefore<THHPlayer.UseEventArg>(PileName.MASTER, (g, c, a) =>
+                {
+                    return a.player == card.getOwner() && a.card.isSpell();
+                }, ID),
+                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.MASTER, (g2, c2, a2) =>
+                {
+                    return a2.player == card.getOwner();
+                }, ID)));
             return Task.CompletedTask;
-        }
-        //class RemoveBuffAfter<T> : THHEffectAfter<THHPlayer.UseEventArg>
-        //{
-        //    public RemoveBuffAfter() : base(pile, onCheckCondition, onCheckTarget, onExecute)
-        //    {
-        //    }
-        //}
-        class CostFixer : PassiveEffect
-        {
-            public override string[] piles { get; } = new string[0];
-            Trigger<THHPlayer.UseEventArg> UseTrigger { get; set; } = null;
-            Trigger<THHGame.TurnEndEventArg> TurnEndTrigger { get; set; } = null;
-            Buff buff = new GeneratedBuff(ID, new CostModifier(-5));
-            Dictionary<Card, Buff> buffDic { get; } = new Dictionary<Card, Buff>();
-            public override void onEnable(THHGame game, Card card)
-            {
-                foreach (var target in card.getOwner().hand.Where(c => c.define is SpellCardDefine))
-                {
-                    target.addBuff(game, buff);
-                    buffDic.Add(target, buff);
-                }
-                if (UseTrigger == null)
-                {
-                    UseTrigger = new Trigger<THHPlayer.UseEventArg>(arg =>
-                    {
-                        if (arg.card != card)
-                        {
-                            if (arg.card.define is SpellCardDefine)
-                                onDisable(game, card);
-                        }
-                        return Task.CompletedTask;
-                    });
-                    game.triggers.registerAfter(UseTrigger);
-                }
-                if (TurnEndTrigger == null)
-                {
-                    TurnEndTrigger = new Trigger<THHGame.TurnEndEventArg>(arg =>
-                    {
-                        if (arg.player == card.getOwner())
-                            onDisable(game, card);
-                        return Task.CompletedTask;
-                    });
-                    game.triggers.registerAfter(TurnEndTrigger);
-                }
-            }
-            public override void onDisable(THHGame game, Card card)
-            {
-                if (UseTrigger != null)
-                {
-                    game.triggers.removeAfter(UseTrigger);
-                    UseTrigger = null;
-                }
-                if (TurnEndTrigger != null)
-                {
-                    game.triggers.removeAfter(TurnEndTrigger);
-                    TurnEndTrigger = null;
-                }
-                foreach (var pair in buffDic)
-                {
-                    pair.Key.removeBuff(game, pair.Value);
-                }
-            }
         }
     }
     /// <summary>
@@ -157,6 +105,24 @@ namespace TouhouHeartstone.Builtin
         {
             new CostFixer()
         };
+        class ConditionalModifier : PassiveEffect
+        {
+            public override string[] piles { get; } = null;
+            public PropModifier[] modifiers { get; } = null;
+            public ConditionalModifier(PileFlag pile, params PropModifier[] modifiers)
+            {
+                piles = PileName.getPiles(pile);
+                this.modifiers = modifiers;
+            }
+            public override void onEnable(THHGame game, Card card)
+            {
+                throw new NotImplementedException();
+            }
+            public override void onDisable(THHGame game, Card card)
+            {
+                throw new NotImplementedException();
+            }
+        }
         class CostFixer : PassiveEffect
         {
             public override string[] piles { get; } = new string[] { PileName.HAND };
@@ -169,7 +135,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     onCardEnterHandTrigger = new Trigger<THHPlayer.UseEventArg>(arg =>
                     {
-                        if (arg.card.define is SpellCardDefine && arg.card.getCost() > 0)
+                        if (arg.card.define is SpellCardDefine && arg.card.getCost(game) > 0)
                         {
                             if (card.owner == game.currentPlayer)
                                 card.addModifier(game, _modifier);
@@ -616,7 +582,7 @@ namespace TouhouHeartstone.Builtin
             foreach (Card target in opponent.field)
             {
                 await target.damage(game, card, 2);
-                if (target.isDead())
+                if (target.isDead(game))
                 {
                     foreach (Card buffcard in card.getOwner().field.randomTake(game, 1))
                         buffcard.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
@@ -656,7 +622,7 @@ namespace TouhouHeartstone.Builtin
             public void onEnable(THHGame game, Card card)
             {
                 card.addBuff(game, buff);
-                if (card.getAttack() == 0)
+                if (card.getAttack(game) == 0)
                     card.setDead(true);
                 if (TurnEndTrigger == null)
                 {
@@ -734,7 +700,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect((game,card,target)=>
             {
                 target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3)));
-                return target.heal(game,target.getLife()-target.getCurrentLife());
+                return target.heal(game,target.getLife(game)-target.getCurrentLife(game));
             })
         };
     }
@@ -758,7 +724,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     target = game.getAllEnemies(card.getOwner()).randomTake(game, 1).ToArray();
                 }
-                while (target[0].getCurrentLife() == 0);
+                while (target[0].getCurrentLife(game) == 0);
                 await target[0].damage(game, card, 1);
             }
         }

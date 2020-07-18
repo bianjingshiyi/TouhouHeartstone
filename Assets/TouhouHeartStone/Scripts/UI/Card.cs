@@ -15,14 +15,14 @@ namespace UI
         {
             this.card = card;
 
-            CostPropNumber.asText.text = card.getCost().ToString();
+            CostPropNumber.asText.text = card.getCost(null).ToString();
             if (card.define.type == CardDefineType.SERVANT)
             {
                 type = CardCategory.SERVANT;
                 // TypeController = Type.Servant;
                 //onTypeControllerServant?.Invoke();
-                AttackPropNumber.asText.text = card.getAttack().ToString();
-                LifePropNumber.asText.text = card.getLife().ToString();
+                AttackPropNumber.asText.text = card.getAttack(null).ToString();
+                LifePropNumber.asText.text = card.getLife(null).ToString();
             }
             else if (card.define.type == CardDefineType.SPELL)
             {

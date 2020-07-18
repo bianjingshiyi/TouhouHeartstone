@@ -181,6 +181,9 @@ namespace Game
             UIAnimation anim;
             switch (arg)
             {
+                case TouhouCardEngine.Card.AddModiEventArg addMod:
+                    anim = new AddModiAnim() { eventArg = addMod };
+                    break;
                 default:
                     anim = getEventAnim(arg);
                     break;
@@ -254,14 +257,14 @@ namespace Game
         {
             CardSkinData skin = getSkin(card);
             master.Image.sprite = skin.image;
-            master.LifePropNumber.asText.text = card.getCurrentLife().ToString();
+            master.LifePropNumber.asText.text = card.getCurrentLife(game).ToString();
             //if (card.getCurrentLife() == card.getLife())
             //    HpText.color = Color.white;
             //else
             //    HpText.color = Color.red;
-            if (card.getAttack() > 0)
+            if (card.getAttack(game) > 0)
             {
-                master.AttackPropNumber.asText.text = card.getAttack().ToString();
+                master.AttackPropNumber.asText.text = card.getAttack(game).ToString();
                 master.AttackPropNumber.asText.display();
                 master.AttackPropNumber.asText.display();
             }
@@ -270,9 +273,9 @@ namespace Game
                 master.AttackPropNumber.asText.hide();
                 master.AtkImage.hide();
             }
-            if (card.getArmor() > 0)
+            if (card.getArmor(game) > 0)
             {
-                master.ArmorPropNumber.asText.text = card.getArmor().ToString();
+                master.ArmorPropNumber.asText.text = card.getArmor(game).ToString();
                 master.ArmorPropNumber.display();
                 master.ArmorImage.display();
             }
@@ -307,8 +310,8 @@ namespace Game
         {
             CardSkinData skin = getSkin(card);
             skill.Image.sprite = skin.image;
-            skill.CostPropNumber.asText.text = card.getCost().ToString();
-            if (card.isUsed())
+            skill.CostPropNumber.asText.text = card.getCost(game).ToString();
+            if (card.isUsed(game))
             {
                 // skill.IsUsedController = Skill.IsUsed.True;
                 skill.isUsed = true;
@@ -802,7 +805,7 @@ namespace Game
         /// <param name="isFaceup"></param>
         public void setCard(UI.Card ui, TouhouCardEngine.Card card, bool isFaceup)
         {
-            ui.CostPropNumber.asText.text = card.getCost().ToString();
+            ui.CostPropNumber.asText.text = card.getCost(game).ToString();
 
             if (isFaceup)//因为isFaceup控制了很多GameObject的Active，所以它必须放在最上面。
             {
@@ -820,8 +823,8 @@ namespace Game
             if (card.define.type == CardDefineType.SERVANT)
             {
                 ui.type = CardCategory.SERVANT;
-                ui.AttackPropNumber.asText.text = card.getAttack().ToString();
-                ui.LifePropNumber.asText.text = card.getLife().ToString();
+                ui.AttackPropNumber.asText.text = card.getAttack(game).ToString();
+                ui.LifePropNumber.asText.text = card.getLife(game).ToString();
             }
             else
                 ui.type = CardCategory.SPELL;
@@ -899,8 +902,8 @@ namespace Game
             {
                 servant.Image.sprite = skin.image;
             }
-            servant.AttackTextPropNumber.asText.text = card.getAttack().ToString();
-            servant.HpTextPropNumber.asText.text = card.getCurrentLife().ToString();
+            servant.AttackTextPropNumber.asText.text = card.getAttack(game).ToString();
+            servant.HpTextPropNumber.asText.text = card.getCurrentLife(game).ToString();
 
             servant.onDrag.remove(onDragServant);
             if (isSelectable)

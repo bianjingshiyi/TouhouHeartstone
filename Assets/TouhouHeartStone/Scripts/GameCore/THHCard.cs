@@ -23,9 +23,12 @@ namespace TouhouHeartstone
         {
             return card.owner as THHPlayer;
         }
-        public static int getCost(this Card card)
+        public static int getCost(this Card card, IGame game)
         {
-            return card.getProp<int>(nameof(ServantCardDefine.cost));
+            int result = card.getProp<int>(game, nameof(ServantCardDefine.cost));
+            if (result < 0)
+                return 0;
+            return result;
         }
         public static void setCost(this Card card, int value)
         {
@@ -35,27 +38,27 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(nameof(ServantCardDefine.cost));
         }
-        public static int getAttack(this Card card)
+        public static int getAttack(this Card card, IGame game)
         {
-            int result = card.getProp<int>(nameof(ServantCardDefine.attack));
+            int result = card.getProp<int>(game, nameof(ServantCardDefine.attack));
             if (result < 0)
-                result = 0;
+                return 0;
             return result;
         }
         public static int getAttack(this CardDefine card)
         {
             int result = card.getProp<int>(nameof(ServantCardDefine.attack));
             if (result < 0)
-                result = 0;
+                return 0;
             return result;
         }
         public static void setAttack(this Card card, int value)
         {
             card.setProp(nameof(ServantCardDefine.attack), value);
         }
-        public static int getLife(this Card card)
+        public static int getLife(this Card card, IGame game)
         {
-            return card.getProp<int>(nameof(ServantCardDefine.life));
+            return card.getProp<int>(game, nameof(ServantCardDefine.life));
         }
         public static int getLife(this CardDefine card)
         {
@@ -70,13 +73,13 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public static bool isDead(this Card card)
+        public static bool isDead(this Card card, IGame game)
         {
-            if (card.getCurrentLife() <= 0)
+            if (card.getCurrentLife(game) <= 0)
                 return true;
-            if (card.getLife() <= 0)
+            if (card.getLife(game) <= 0)
                 return true;
-            if (card.getProp<bool>(nameof(THHCard.isDead)))
+            if (card.getProp<bool>(game, nameof(THHCard.isDead)))
                 return true;
             return false;
         }
@@ -89,29 +92,29 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(THHCard.isDead), value);
         }
-        public static int getArmor(this Card card)
+        public static int getArmor(this Card card, IGame game)
         {
-            return card.getProp<int>("armor");
+            return card.getProp<int>(game, "armor");
         }
-        public static int getCurrentLife(this Card card)
+        public static int getCurrentLife(this Card card, IGame game)
         {
-            return card.getProp<int>("currentLife");
+            return card.getProp<int>(game, "currentLife");
         }
         public static void setCurrentLife(this Card card, int value)
         {
             card.setProp("currentLife", value);
         }
-        public static bool isReady(this Card card)
+        public static bool isReady(this Card card, IGame game)
         {
-            return card.getProp<bool>("isReady");
+            return card.getProp<bool>(game, "isReady");
         }
         public static void setReady(this Card card, bool value)
         {
             card.setProp("isReady", value);
         }
-        public static int getAttackTimes(this Card card)
+        public static int getAttackTimes(this Card card, IGame game)
         {
-            return card.getProp<int>("attackTimes");
+            return card.getProp<int>(game, "attackTimes");
         }
         public static void setAttackTimes(this Card card, int value)
         {
@@ -130,16 +133,16 @@ namespace TouhouHeartstone
         {
             if (card.pile.name != PileName.FIELD)//你只能在战场上进行攻击。是不是必须得活着，这是个哲学问题。
                 return false;
-            if (card.getAttack() <= 0)//没有攻击力
+            if (card.getAttack(game) <= 0)//没有攻击力
                 return false;
-            if (!card.isReady()//还没准备好
-                && !card.isCharge()//且没有冲锋
-                && !(card.isRush() && game.getOpponent(card.getOwner()).field.Any(c => card.isAttackable(game, card.getOwner(), c, out _)))//且并非有突袭且有可以攻击的敌方随从
+            if (!card.isReady(game)//还没准备好
+                && !card.isCharge(game)//且没有冲锋
+                && !(card.isRush(game) && game.getOpponent(card.getOwner()).field.Any(c => card.isAttackable(game, card.getOwner(), c, out _)))//且并非有突袭且有可以攻击的敌方随从
                 )
                 return false;
-            if (card.getAttackTimes() >= card.getMaxAttackTimes())//已经攻击过了
+            if (card.getAttackTimes(game) >= card.getMaxAttackTimes())//已经攻击过了
                 return false;
-            if (card.isFreeze())
+            if (card.isFreeze(game))
             {
                 game.logger.log(card + "被冰冻");
                 return false;
@@ -161,22 +164,22 @@ namespace TouhouHeartstone
                 tip = "你不能攻击友方角色";
                 return false;
             }
-            if (target.getCurrentLife() <= 0)
+            if (target.getCurrentLife(game) <= 0)
             {
                 tip = "目标随从已经死亡";
                 return false;
             }
-            if (game.getOpponent(player).field.Any(c => c.isTaunt()) && !target.isTaunt())
+            if (game.getOpponent(player).field.Any(c => c.isTaunt(game)) && !target.isTaunt(game))
             {
                 tip = "你必须先攻击具有嘲讽的随从";
                 return false;
             }
-            if (card.isRush() && !card.isReady() && game.players.Any(p => p.master == target) && !card.isCharge())
+            if (card.isRush(game) && !card.isReady(game) && game.players.Any(p => p.master == target) && !card.isCharge(game))
             {
                 tip = "具有突袭的随从在没有准备好的情况下不能攻击敌方英雄";//除非你具有冲锋
                 return false;
             }
-            if (target.isStealth())
+            if (target.isStealth(game))
             {
                 tip = "无法攻击潜行的目标";
                 return false;
@@ -189,9 +192,9 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public static bool isUsed(this Card card)
+        public static bool isUsed(this Card card, IGame game)
         {
-            return card.getProp<bool>("isUsed");
+            return card.getProp<bool>(game, "isUsed");
         }
         /// <summary>
         /// 设置技能是否使用过。
@@ -202,98 +205,98 @@ namespace TouhouHeartstone
         {
             card.setProp("isUsed", value);
         }
-        public static bool isTaunt(this Card card)
+        public static bool isTaunt(this Card card, IGame game)
         {
-            return card.getProp<bool>(Keyword.TAUNT);
+            return card.getProp<bool>(game, Keyword.TAUNT);
         }
         public static void setTaunt(this Card card, bool value)
         {
             card.setProp(Keyword.TAUNT, value);
         }
-        public static bool isCharge(this Card card)
+        public static bool isCharge(this Card card, IGame game)
         {
-            return card.getProp<bool>(Keyword.CHARGE);
+            return card.getProp<bool>(game, Keyword.CHARGE);
         }
         public static void setCharge(this Card card, bool value)
         {
             card.setProp(Keyword.CHARGE, value);
         }
-        public static bool isRush(this Card card)
+        public static bool isRush(this Card card, IGame game)
         {
-            return card.getProp<bool>(Keyword.RUSH);
+            return card.getProp<bool>(game, Keyword.RUSH);
         }
         public static void setRush(this Card card, bool value)
         {
             card.setProp(Keyword.RUSH, value);
         }
-        public static bool isShield(this Card card)
+        public static bool isShield(this Card card, IGame game)
         {
-            return card.getProp<bool>(Keyword.SHIELD);
+            return card.getProp<bool>(game, Keyword.SHIELD);
         }
         public static void setShield(this Card card, bool value)
         {
             card.setProp(Keyword.SHIELD, value);
         }
-        public static bool isStealth(this Card card)
+        public static bool isStealth(this Card card, IGame game)
         {
-            return card.getProp<bool>(Keyword.STEALTH);
+            return card.getProp<bool>(game, Keyword.STEALTH);
         }
         public static void setStealth(this Card card, bool value)
         {
             card.setProp(Keyword.STEALTH, value);
         }
-        public static bool isDrain(this Card card)
+        public static bool isDrain(this Card card, IGame game)
         {
-            return card.getProp<bool>(Keyword.DRAIN);
+            return card.getProp<bool>(game, Keyword.DRAIN);
         }
         public static void setDrain(this Card card, bool value)
         {
             card.setProp(Keyword.DRAIN, value);
         }
-        public static bool isPoisonous(this Card card)
+        public static bool isPoisonous(this Card card, IGame game)
         {
-            return card.getProp<bool>(Keyword.POISONOUS);
+            return card.getProp<bool>(game, Keyword.POISONOUS);
         }
         public static void setPoisonous(this Card card, bool value)
         {
             card.setProp(Keyword.POISONOUS, value);
         }
-        public static bool isElusive(this Card card)
+        public static bool isElusive(this Card card, IGame game)
         {
-            return card.getProp<bool>(Keyword.ELUSIVE);
+            return card.getProp<bool>(game, Keyword.ELUSIVE);
         }
         public static void setElusive(this Card card, bool value)
         {
             card.setProp(Keyword.ELUSIVE, value);
         }
-        public static bool isFreeze(this Card card)
+        public static bool isFreeze(this Card card, IGame game)
         {
-            return card.getProp<bool>(Keyword.FREEZE);
+            return card.getProp<bool>(game, Keyword.FREEZE);
         }
         public static void setFreeze(this Card card, bool value)
         {
             card.setProp(Keyword.FREEZE, value);
         }
-        public static bool isUnique(this Card card)
+        public static bool isUnique(this Card card, IGame game)
         {
-            return card.getProp<bool>(Keyword.UNIQUE);
+            return card.getProp<bool>(game, Keyword.UNIQUE);
         }
         public static void setUnique(this Card card, bool value)
         {
             card.setProp(Keyword.UNIQUE, value);
         }
 
-        public static int getSpellDamage(this Card card)
+        public static int getSpellDamage(this Card card, IGame game)
         {
-            return card.getProp<int>(nameof(ServantCardDefine.spellDamage));
+            return card.getProp<int>(game, nameof(ServantCardDefine.spellDamage));
         }
         public static void setSpellDamage(this Card card, int value)
         {
             card.setProp(nameof(ServantCardDefine.spellDamage), value);
         }
-        public static bool hasTag(this Card card, string tag)
+        public static bool hasTag(this Card card, IGame game, string tag)
         {
-            return card.getProp<string[]>(nameof(ServantCardDefine.tags)).Contains(tag);
+            return card.getProp<string[]>(game, nameof(ServantCardDefine.tags)).Contains(tag);
         }
         public static bool isUsable(this Card card, THHGame game, THHPlayer player, out string info)
         {
@@ -309,7 +312,7 @@ namespace TouhouHeartstone
             }
             if (card.define is ServantCardDefine servant)
             {
-                if (player.gem < card.getCost())//费用不够
+                if (player.gem < card.getCost(game))//费用不够
                 {
                     info = "你没有足够的法力值";
                     return false;
@@ -322,7 +325,7 @@ namespace TouhouHeartstone
             }
             else if (card.define is SpellCardDefine spell)
             {
-                if (player.gem < card.getCost())
+                if (player.gem < card.getCost(game))
                 {
                     info = "你没有足够的法力值";
                     return false;
@@ -330,12 +333,12 @@ namespace TouhouHeartstone
             }
             else if (card.define is SkillCardDefine skill)
             {
-                if (card.isUsed())//已经用过了
+                if (card.isUsed(game))//已经用过了
                 {
                     info = "你已经使用过技能了";
                     return false;
                 }
-                if (player.gem < card.getCost())//费用不够
+                if (player.gem < card.getCost(game))//费用不够
                 {
                     info = "你没有足够的法力值";
                     return false;
@@ -418,7 +421,7 @@ namespace TouhouHeartstone
         }
         public static bool isValidTarget(this Card card, THHGame game, Card target)
         {
-            if (target.isStealth())
+            if (target.isStealth(game))
                 return false;
             ITargetEffect targetEffect = card.define.getActiveEffect() as ITargetEffect;
             ITriggerEffect triggerEffect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
@@ -445,15 +448,15 @@ namespace TouhouHeartstone
             await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
             {
                 game.logger.log(arg.card + "攻击" + arg.target);
-                arg.card.setAttackTimes(arg.card.getAttackTimes() + 1);
-                if (arg.card.getAttack() > 0)
-                    await arg.target.damage(game, arg.card, arg.card.getAttack());
-                if (arg.target.getAttack() > 0)
-                    await arg.card.damage(game, arg.target, arg.target.getAttack());
-                if (arg.card.isDrain())
-                    await player.master.heal(game, arg.card.getAttack());
-                if (arg.target.isDrain())
-                    await (arg.target.owner as THHPlayer).master.heal(game, arg.target.getAttack());
+                arg.card.setAttackTimes(arg.card.getAttackTimes(game) + 1);
+                if (arg.card.getAttack(game) > 0)
+                    await arg.target.damage(game, arg.card, arg.card.getAttack(game));
+                if (arg.target.getAttack(game) > 0)
+                    await arg.card.damage(game, arg.target, arg.target.getAttack(game));
+                if (arg.card.isDrain(game))
+                    await player.master.heal(game, arg.card.getAttack(game));
+                if (arg.target.isDrain(game))
+                    await (arg.target.owner as THHPlayer).master.heal(game, arg.target.getAttack(game));
             });
             await game.updateDeath();
             return true;
@@ -474,31 +477,31 @@ namespace TouhouHeartstone
                 cards = arg.cards;
                 source = arg.source;
                 value = arg.value;
-                if (source != null && source.isStealth())
+                if (source != null && source.isStealth(game))
                     source.setStealth(false);
                 foreach (Card card in arg.cards)
                 {
-                    if (card.isShield())
+                    if (card.isShield(game))
                     {
                         card.setShield(false);
                         arg.infoDic.Add(card, new DamageEventArg.Info()
                         {
                             damagedValue = 0,
-                            currentLife = card.getCurrentLife()
+                            currentLife = card.getCurrentLife(game)
                         });
                         game.logger.log(card + "受到伤害，失去圣盾");
                     }
                     else
                     {
-                        card.setCurrentLife(card.getCurrentLife() - arg.value);
-                        if (source != null && source.isPoisonous())
+                        card.setCurrentLife(card.getCurrentLife(game) - arg.value);
+                        if (source != null && source.isPoisonous(game))
                             card.setDead(true);
                         arg.infoDic.Add(card, new DamageEventArg.Info()
                         {
                             damagedValue = value,
-                            currentLife = card.getCurrentLife()
+                            currentLife = card.getCurrentLife(game)
                         });
-                        game.logger.log(card + "受到" + arg.value + "点伤害，生命值=>" + card.getCurrentLife());
+                        game.logger.log(card + "受到" + arg.value + "点伤害，生命值=>" + card.getCurrentLife(game));
                     }
                 }
                 return Task.CompletedTask;
@@ -518,7 +521,7 @@ namespace TouhouHeartstone
         }
         public static async Task heal(this IEnumerable<Card> cards, THHGame game, int value)
         {
-            cards = cards.Where(c => c.getCurrentLife() < c.getLife());
+            cards = cards.Where(c => c.getCurrentLife(game) < c.getLife(game));
             if (cards.Count() < 1)
                 return;
             await game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(), value = value }, arg =>
@@ -527,24 +530,24 @@ namespace TouhouHeartstone
                 value = arg.value;
                 foreach (Card card in cards)
                 {
-                    if (card.getCurrentLife() + value < card.getLife())
+                    if (card.getCurrentLife(game) + value < card.getLife(game))
                     {
-                        card.setCurrentLife(card.getCurrentLife() + value);
+                        card.setCurrentLife(card.getCurrentLife(game) + value);
                         arg.infoDic.Add(card, new HealEventArg.Info()
                         {
                             healedValue = value
                         });
-                        game.logger.log(card + "恢复" + value + "点生命值，生命值=>" + card.getCurrentLife());
+                        game.logger.log(card + "恢复" + value + "点生命值，生命值=>" + card.getCurrentLife(game));
                     }
                     else
                     {
-                        int healedValue = card.getLife() - card.getCurrentLife();
-                        card.setCurrentLife(card.getLife());
+                        int healedValue = card.getLife(game) - card.getCurrentLife(game);
+                        card.setCurrentLife(card.getLife(game));
                         arg.infoDic.Add(card, new HealEventArg.Info()
                         {
                             healedValue = healedValue
                         });
-                        game.logger.log(card + "恢复" + healedValue + "点生命值，生命值=>" + card.getCurrentLife());
+                        game.logger.log(card + "恢复" + healedValue + "点生命值，生命值=>" + card.getCurrentLife(game));
                     }
                 }
                 return Task.CompletedTask;
