@@ -72,65 +72,22 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static Task effect(THHGame game, Card card)
         {
-            new CostFixer().onEnable(game, card);
-        }
-        class CostFixer : PassiveEffect
-        {
-            public override string[] piles { get; } = new string[0];
-            Trigger<THHPlayer.UseEventArg> UseTrigger { get; set; } = null;
-            Trigger<THHGame.TurnEndEventArg> TurnEndTrigger { get; set; } = null;
-            Buff buff = new GeneratedBuff(ID, new CostModifier(-5));
-            Dictionary<Card, Buff> buffDic { get; } = new Dictionary<Card, Buff>();
-            public override void onEnable(THHGame game, Card card)
-            {
-                foreach (var target in card.getOwner().hand.Where(c => c.define is SpellCardDefine))
+            card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
+                new Halo(new GeneratedBuff(ID, new CostModifier(-5)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
+                 {
+                     return c1.isSpell();
+                 }),
+                new RemoveBuffBefore<THHPlayer.UseEventArg>(PileName.MASTER, (g, c, a) =>
                 {
-                    target.addBuff(game, buff);
-                    buffDic.Add(target, buff);
-                }
-                if (UseTrigger == null)
+                    return a.player == card.getOwner() && a.card.isSpell();
+                }, ID),
+                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.MASTER, (g2, c2, a2) =>
                 {
-                    UseTrigger = new Trigger<THHPlayer.UseEventArg>(arg =>
-                    {
-                        if (arg.card != card)
-                        {
-                            if (arg.card.define is SpellCardDefine)
-                                onDisable(game, card);
-                        }
-                        return Task.CompletedTask;
-                    });
-                    game.triggers.registerAfter(UseTrigger);
-                }
-                if (TurnEndTrigger == null)
-                {
-                    TurnEndTrigger = new Trigger<THHGame.TurnEndEventArg>(arg =>
-                    {
-                        if (arg.player == card.getOwner())
-                            onDisable(game, card);
-                        return Task.CompletedTask;
-                    });
-                    game.triggers.registerAfter(TurnEndTrigger);
-                }
-            }
-            public override void onDisable(THHGame game, Card card)
-            {
-                if (UseTrigger != null)
-                {
-                    game.triggers.removeAfter(UseTrigger);
-                    UseTrigger = null;
-                }
-                if (TurnEndTrigger != null)
-                {
-                    game.triggers.removeAfter(TurnEndTrigger);
-                    TurnEndTrigger = null;
-                }
-                foreach (var pair in buffDic)
-                {
-                    pair.Key.removeBuff(game, pair.Value);
-                }
-            }
+                    return a2.player == card.getOwner();
+                }, ID)));
+            return Task.CompletedTask;
         }
     }
     /// <summary>
@@ -148,6 +105,24 @@ namespace TouhouHeartstone.Builtin
         {
             new CostFixer()
         };
+        class ConditionalModifier : PassiveEffect
+        {
+            public override string[] piles { get; } = null;
+            public PropModifier[] modifiers { get; } = null;
+            public ConditionalModifier(PileFlag pile, params PropModifier[] modifiers)
+            {
+                piles = PileName.getPiles(pile);
+                this.modifiers = modifiers;
+            }
+            public override void onEnable(THHGame game, Card card)
+            {
+                throw new NotImplementedException();
+            }
+            public override void onDisable(THHGame game, Card card)
+            {
+                throw new NotImplementedException();
+            }
+        }
         class CostFixer : PassiveEffect
         {
             public override string[] piles { get; } = new string[] { PileName.HAND };
@@ -255,24 +230,11 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,card,arg)=>
+            new LambdaSingleTargetEffect((game,card,target)=>
             {
-                return true;
-            },(game,card,targets)=>
-            {
-                if(targets[0] is Card target && target.pile.name == PileName.FIELD)
-                {
-                    return true;
-                }
-                return false;
-            },(game,card,arg,targets)=>
-            {
-                if (targets[0] is Card target)
-                {
-                    target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3),new LifeModifier(6)));
-                }
+                target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3),new LifeModifier(6)));
                 return Task.CompletedTask;
-            })
+            }, PileFlag.both | PileFlag.field)
         };
     }
     /// <summary>
@@ -438,7 +400,7 @@ namespace TouhouHeartstone.Builtin
             var discovered = await card.getOwner().discover(game, card.getOwner().deck.Where(c => c.isSpell()));
             if (!card.getOwner().hand.isFull)
             {
-                await card.getOwner().deck.moveTo(game, discovered, card.getOwner().hand);
+                await card.getOwner().draw(game, discovered);
                 discovered.addBuff(game, new GeneratedBuff(ID, new CostModifier(-1)));
             }
         }
@@ -453,6 +415,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -476,17 +439,12 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.triggers.doEvent(new THHPlayer.DrawEventArg() { player = card.getOwner() }, arg =>
+            for (int i = 0; i < 2; i++)
             {
-                for (int i = 0; i < 2; i++)
-                {
-                    arg.card = arg.player.deck.Where(c => c.isSpell()).First();
-                    arg.player.deck.moveTo(game, arg.card, arg.player.hand, arg.player.hand.count);
-                    game.logger.log(arg.player + "抽" + arg.card);
-                    arg.card.addBuff(game, new GeneratedBuff(ID, new CostModifier(-1)));
-                }
-                return Task.CompletedTask;
-            });
+                await card.getOwner().draw(game);
+                var drawed = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
+                drawed.addBuff(game, new GeneratedBuff(ID, new CostModifier(-1)));
+            }
         }
     }
     /// <summary>
@@ -511,12 +469,12 @@ namespace TouhouHeartstone.Builtin
             Buff buff = new GeneratedBuff(ID, new AttackModifier(2));
             public void onEnable(THHGame game, Card card)
             {
-                card.addBuff(game,buff);
+                card.addBuff(game, buff);
                 if (TurnEndTrigger == null)
                 {
                     TurnEndTrigger = new Trigger<THHGame.TurnEndEventArg>(arg =>
                     {
-                        card.removeBuff(game,buff);
+                        card.removeBuff(game, buff);
                         game.triggers.removeAfter(TurnEndTrigger);
                         TurnEndTrigger = null;
                         return Task.CompletedTask;
@@ -621,13 +579,13 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             THHPlayer opponent = game.getOpponent(card.getOwner());
-            foreach(Card target in opponent.field)
+            foreach (Card target in opponent.field)
             {
                 await target.damage(game, card, 2);
-                if(target.isDead())
+                if (target.isDead())
                 {
-                    foreach(Card buffcard in card.getOwner().field.randomTake(game, 1))
-                        buffcard.addBuff(game,new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
+                    foreach (Card buffcard in card.getOwner().field.randomTake(game, 1))
+                        buffcard.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
                 }
             }
         }
@@ -674,11 +632,11 @@ namespace TouhouHeartstone.Builtin
                         {
                             card.removeBuff(game, buff);
                             game.triggers.removeAfter(TurnEndTrigger);
-                            TurnEndTrigger = null;  
+                            TurnEndTrigger = null;
                         }
                         return Task.CompletedTask;
                     });
-                    game.triggers.registerAfter(TurnEndTrigger);   
+                    game.triggers.registerAfter(TurnEndTrigger);
                 }
             }
         }
@@ -762,7 +720,8 @@ namespace TouhouHeartstone.Builtin
             Card[] target;
             for (int i = 0; i < 6; i++)
             {
-                do{
+                do
+                {
                     target = game.getAllEnemies(card.getOwner()).randomTake(game, 1).ToArray();
                 }
                 while (target[0].getCurrentLife() == 0);
@@ -799,7 +758,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            for(int i =0;i<3;i++)
+            for (int i = 0; i < 3; i++)
                 await card.getOwner().createToken(game, game.getCardDefine<Lavaelement>(), card.getOwner().field.count);
         }
     }
@@ -874,7 +833,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            foreach(Card servant in game.getAllServants())
+            foreach (Card servant in game.getAllServants())
             {
                 servant.define.effects = new IEffect[0];
             }
@@ -900,7 +859,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class BiteTentacle : ServantCardDefine
     {
-        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x017;
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x034;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 6;
@@ -912,7 +871,7 @@ namespace TouhouHeartstone.Builtin
         };
         class CostFixer : PassiveEffect
         {
-            public override string[] piles { get; } = new string[] { PileName.FIELD};
+            public override string[] piles { get; } = new string[] { PileName.FIELD };
             Trigger<THHGame.TurnStartEventArg> TurnStartTrigger { get; set; } = null;
             public override void onEnable(THHGame game, Card card)
             {
@@ -922,7 +881,7 @@ namespace TouhouHeartstone.Builtin
                     {
                         if (arg.player == card.getOwner())
                         {
-                            Card[] spellcard = card.getOwner().hand.Where(c => c.isSpell()).ToArray().randomTake(game,1).ToArray();
+                            Card[] spellcard = card.getOwner().hand.Where(c => c.isSpell()).ToArray().randomTake(game, 1).ToArray();
                             card.getOwner().hand.moveTo(game, spellcard[0], card.getOwner().grave);
                         }
                         return Task.CompletedTask;

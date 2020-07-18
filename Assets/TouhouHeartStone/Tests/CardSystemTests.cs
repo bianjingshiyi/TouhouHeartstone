@@ -7,6 +7,8 @@ using System;
 using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
+
 namespace Tests
 {
     public class CardSystemTests
@@ -192,6 +194,7 @@ namespace Tests
         {
             public override int id { get; } = 0;
             public override PropModifier[] modifiers { get; } = null;
+            public override IPassiveEffect[] effects { get; }
             public TestBuff(params PropModifier[] modifiers)
             {
                 this.modifiers = modifiers;
@@ -284,8 +287,39 @@ namespace Tests
             var task = you.discover(game, cards);
             yield return new WaitForSeconds(.5f);
             game.answers.cancelAll();
-            //yield return task.wait();
-            //Assert.True(cards.Contains(task.Result));
+            yield return task.wait();
+            Assert.True(cards.Contains(task.Result));
+        }
+        [UnityTest]
+        public IEnumerator discoverTest_TurnEnd()
+        {
+            TestGameflow.createGame(out var game, out var you, out var _, new GameOption()
+            {
+                timeoutForTurn = 1
+            });
+            game.skipTurnUntil(() => game.currentPlayer == you);
+            var cards = you.hand.randomTake(game, 3);
+            var task = you.discover(game, cards);
+            Assert.NotNull(game.answers.getRequest<DiscoverRequest>(you.id));
+            THHGame.TurnEndEventArg turnEnd = null;
+            game.triggers.onEventBefore += obj =>
+            {
+                if (obj is THHGame.TurnEndEventArg)
+                    turnEnd = obj as THHGame.TurnEndEventArg;
+            };
+            DiscoverResponse discoverResponse = null;
+            game.answers.onResponse += response =>
+            {
+                if (response is DiscoverResponse)
+                    discoverResponse = response as DiscoverResponse;
+            };
+            yield return new WaitForSeconds(1.1f);
+            Assert.NotNull(turnEnd);
+            Assert.NotNull(discoverResponse);
+            Assert.AreNotEqual(you, game.currentPlayer);
+            Assert.Null(game.answers.getRequest<DiscoverRequest>(you.id));
+            Assert.True(task.IsCompleted);
+            Assert.True(cards.Contains(task.Result));
         }
     }
     static class TestExtension

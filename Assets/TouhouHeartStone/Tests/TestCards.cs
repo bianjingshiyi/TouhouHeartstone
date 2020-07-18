@@ -116,6 +116,7 @@ namespace Tests
                 new AttackModifier(1),
                 new LifeModifier(1)
             };
+            public override IPassiveEffect[] effects { get; }
             public override Buff clone()
             {
                 return new TestBuff();
@@ -501,6 +502,20 @@ namespace Tests
                         await character.damage(game, card, 1);
                     }
                 }
+            })
+        };
+    }
+    public class DiscoverCopy : SpellCardDefine
+    {
+        public const int ID = TestMaster.ID | CardCategory.SPELL | 0x013;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(async (game,card)=>
+            {
+                var discovered = await card.getOwner().discover(game,card.getOwner().hand);
+                await card.getOwner().hand.add(game,game.createCard(discovered.define));
             })
         };
     }

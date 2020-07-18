@@ -8,6 +8,8 @@ namespace Game
         {
             table.canControl = false;
             table.ui.TimeoutSlider.hide();
+            table.closeDiscoverDialog();
+            table.ui.TurnEndButton.interactable = false;
             return true;
         }
     }

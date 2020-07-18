@@ -41,6 +41,9 @@ namespace Game
                 case FreeActRequest _:
                     _ = game.answers.answer(player.id, calcNextAction(game, player));
                     break;
+                case DiscoverRequest discover:
+                    _ = game.answers.answer(player.id, discover.getDefaultResponse(game, player.id));
+                    break;
                 default:
                     UberDebug.LogChannel("AI", "AI未处理的询问：" + request);
                     break;

@@ -12,12 +12,17 @@ namespace Tests
                     return true;
                 if (task.IsFaulted)
                 {
-                    Debug.LogError("等待任务发生异常");
+                    Debug.LogError("等待任务失败");
                     return true;
                 }
                 if (task.IsCanceled)
                 {
                     Debug.LogWarning("等待任务被取消");
+                    return true;
+                }
+                if (task.Exception != null)
+                {
+                    Debug.LogError("等待任务发生异常：" + task.Exception);
                     return true;
                 }
                 return false;

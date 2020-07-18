@@ -121,5 +121,7 @@ namespace UI
         [SerializeField]
         private UnityEvent _onHighlightControllerGreen;
         public UnityEvent onHighlightControllerGreen => _onHighlightControllerGreen;
+        public SimpleAnim onDamage;
+        public SimpleAnim onDeath;
     }
 }

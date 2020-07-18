@@ -332,16 +332,16 @@ namespace TouhouHeartstone
                 }
             });
             //倒计时75秒
-            turnTimer = time.startTimer(75);
+            turnTimer = time.startTimer(option.timeoutForTurn);
             turnTimer.onExpired += onTurnTimeout;
         }
         public ITimer turnTimer { get; set; } = null;
         private void onTurnTimeout()
         {
             logger.log("Debug", currentPlayer + "回合超时");
+            turnTimer = null;
             answers.cancel(answers.getRequests(currentPlayer.id));
         }
-
         public class TurnStartEventArg : EventArg
         {
             public THHPlayer player;
@@ -353,6 +353,8 @@ namespace TouhouHeartstone
             for (int i = 0; i < 100; i++)
             {
                 if (!isRunning)
+                    return;
+                if (turnTimer == null)//超时，结束回合
                     return;
                 IResponse response = await answers.ask(player.id, new FreeActRequest(), option.timeoutForTurn * 2);
                 switch (response)
@@ -367,9 +369,6 @@ namespace TouhouHeartstone
                         card = getCard(attack.cardId);
                         Card target = getCard(attack.targetId);
                         await card.tryAttack(this, player, target);
-                        break;
-                    case DiscoverResponse discover:
-                        
                         break;
                     case TurnEndResponse _:
                         return;

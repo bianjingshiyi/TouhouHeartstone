@@ -30,20 +30,21 @@ namespace TouhouHeartstone
             addPile(new Pile(game, PileName.MASTER, 1));
             getPile(PileName.MASTER).add(game, this.master);
             skill = game.createCardById(master.skillID);
-            addPile(new Pile(game, "Skill", 1));
+            addPile(new Pile(game, PileName.SKILL, 1));
             this[PileName.SKILL].add(game, skill);
-            this.deck = new Pile(game, "Deck");
-            this.deck.add(game, deck.Select(d => game.createCard(d)).ToArray());
+            this.deck = new Pile(game, PileName.DECK);
+            if (deck != null)
+                this.deck.add(game, deck.Select(d => game.createCard(d)).ToArray());
             addPile(this.deck);
-            init = new Pile(game, "Init", maxCount: 4);
+            init = new Pile(game, PileName.INIT, maxCount: 4);
             addPile(init);
-            hand = new Pile(game, "Hand", maxCount: 10);
+            hand = new Pile(game, PileName.HAND, maxCount: 10);
             addPile(hand);
-            field = new Pile(game, "Field", maxCount: 7);
+            field = new Pile(game, PileName.FIELD, maxCount: 7);
             addPile(field);
-            grave = new Pile(game, "Grave");
+            grave = new Pile(game, PileName.GRAVE);
             addPile(grave);
-            warp = new Pile(game, "Warp");
+            warp = new Pile(game, PileName.WARP);
             addPile(warp);
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
@@ -104,30 +105,39 @@ namespace TouhouHeartstone
         {
             if (deck.count < 1)//无牌可抽，疲劳！
             {
-                return game.triggers.doEvent(new FatigueEventArg() { player = this }, arg =>
+                return game.triggers.doEvent(new FatigueEventArg() { player = this }, onFatigue);
+                async Task onFatigue(FatigueEventArg arg)
                 {
                     arg.player.fatigue++;
                     game.logger.log(arg.player + "已经没有卡牌了，当前疲劳值：" + arg.player.fatigue);
-                    return arg.player.master.damage(game, null, arg.player.fatigue);
-                });
+                    await arg.player.master.damage(game, null, arg.player.fatigue);
+                    await game.updateDeath();
+                }
             }
-            else if (hand.count >= hand.maxCount)
+            else
+                return draw(game, deck.top);
+        }
+        public Task draw(THHGame game, Card card)
+        {
+            if (!deck.Contains(card))
+                return Task.CompletedTask;
+            if (hand.count >= hand.maxCount)
             {
-                return game.triggers.doEvent(new BurnEventArg() { player = this }, arg =>
+                return game.triggers.doEvent(new BurnEventArg() { player = this, card = card }, arg =>
                 {
-                    arg.card = arg.player.deck.top;
-                    arg.player.deck.moveTo(game, arg.card, arg.player.grave, arg.player.grave.count);
-                    game.logger.log(arg.player + "的手牌已经满了，" + arg.card + "被送入墓地");
+                    card = arg.card;
+                    arg.player.deck.moveTo(game, card, arg.player.grave, arg.player.grave.count);
+                    game.logger.log(arg.player + "的手牌已经满了，" + card + "被送入墓地");
                     return Task.CompletedTask;
                 });
             }
             else
             {
-                return game.triggers.doEvent(new DrawEventArg() { player = this }, arg =>
+                return game.triggers.doEvent(new DrawEventArg() { player = this, card = card }, arg =>
                 {
-                    arg.card = arg.player.deck.top;
-                    arg.player.deck.moveTo(game, arg.card, arg.player.hand, arg.player.hand.count);
-                    game.logger.log(arg.player + "抽" + arg.card);
+                    card = arg.card;
+                    arg.player.deck.moveTo(game, card, arg.player.hand, arg.player.hand.count);
+                    game.logger.log(arg.player + "抽" + card);
                     return Task.CompletedTask;
                 });
             }
