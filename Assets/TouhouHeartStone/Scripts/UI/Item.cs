@@ -21,5 +21,7 @@ namespace UI
             }
             DurabilityText.text = card.getCurrentLife(null).ToString();
         }
+        public SimpleAnim onEquip;
+        public SimpleAnim onDestroy;
     }
 }

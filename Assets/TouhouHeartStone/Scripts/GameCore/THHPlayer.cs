@@ -257,7 +257,7 @@ namespace TouhouHeartstone
         public Task destroyItem(THHGame game)
         {
             if (this[PileName.ITEM].count > 0 && this[PileName.ITEM][0] is Card item)
-                return this[PileName.ITEM].moveTo(game, item, grave);
+                return item.die(game);
             return Task.CompletedTask;
         }
         /// <summary>
@@ -373,6 +373,16 @@ namespace TouhouHeartstone
                 return Task.CompletedTask;
             Card card = game.createCardByRandom(pool);
             return hand.add(game, card);
+        }
+        public Task randomDiscard(THHGame game, int count = 1)
+        {
+            if (hand.count < 1)
+                return Task.CompletedTask;
+            if(hand.count<=count)
+            {
+                //hand.moveTo(game,hand,grave,)
+            }
+            return Task.CompletedTask;
         }
         #region Command
         public Task cmdInitReplace(THHGame game, params Card[] cards)

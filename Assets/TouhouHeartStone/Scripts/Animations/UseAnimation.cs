@@ -92,6 +92,10 @@ namespace Game
                 if (tryTargetedAnim(table, eventArg))
                     return false;
             }
+            else if (eventArg.card.isItem())
+            {
+
+            }
             return true;
         }
         bool tryTargetedAnim(TableManager table, THHPlayer.UseEventArg eventArg)

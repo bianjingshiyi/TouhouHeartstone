@@ -301,6 +301,11 @@ namespace Game
                 master.onHighlightControllerNone?.Invoke();
             }
         }
+        public void setItem(Item item, TouhouCardEngine.Card card)
+        {
+            CardSkinData skin = getSkin(card);
+            item.Image.sprite = skin.image;
+        }
         /// <summary>
         /// 设置Skill的UI
         /// </summary>
