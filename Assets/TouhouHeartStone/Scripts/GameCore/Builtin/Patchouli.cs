@@ -103,26 +103,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new CostFixer()
         };
-        class ConditionalModifier : PassiveEffect
-        {
-            public override string[] piles { get; } = null;
-            public PropModifier[] modifiers { get; } = null;
-            public ConditionalModifier(PileFlag pile, params PropModifier[] modifiers)
-            {
-                piles = PileName.getPiles(pile);
-                this.modifiers = modifiers;
-            }
-            public override void onEnable(THHGame game, Card card)
-            {
-                throw new NotImplementedException();
-            }
-            public override void onDisable(THHGame game, Card card)
-            {
-                throw new NotImplementedException();
-            }
-        }
         class CostFixer : PassiveEffect
         {
             public override string[] piles { get; } = new string[] { PileName.HAND };
@@ -148,7 +129,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     TurnEndTrigger = new Trigger<THHGame.TurnEndEventArg>(arg =>
                     {
-                        card.removeModifier(game, _modifier);
+                        _ = card.removeModifier(game, _modifier);
                         return Task.CompletedTask;
                     });
                     game.triggers.registerAfter(TurnEndTrigger);
@@ -166,12 +147,12 @@ namespace TouhouHeartstone.Builtin
                     game.triggers.removeAfter(TurnEndTrigger);
                     TurnEndTrigger = null;
                 }
-                card.removeModifier(game, _modifier);
+                _ = card.removeModifier(game, _modifier);
             }
             class CostModifier : PropModifier<int>
             {
                 public override string propName { get; } = nameof(ServantCardDefine.cost);
-                public override int calc(Card card, int value)
+                public override int calc(IGame game, Card card, int value)
                 {
                     return value - 2;
                 }
@@ -206,7 +187,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect((game,card,target)=>
             {
-                return target.damage(game, card, card.getOwner().getSpellDamage(7));
+                return target.damage(game, card, card.getOwner().getSpellDamage(game, 7));
             })
         };
     }
@@ -295,7 +276,7 @@ namespace TouhouHeartstone.Builtin
         {
             foreach (Card target in game.getOpponent(card.owner as THHPlayer).field)
             {
-                await target.damage(game, card, card.getOwner().getSpellDamage(3));
+                await target.damage(game, card, card.getOwner().getSpellDamage(game, 3));
             }
         }
     }

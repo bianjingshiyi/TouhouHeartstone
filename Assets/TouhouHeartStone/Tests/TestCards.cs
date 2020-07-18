@@ -284,7 +284,7 @@ namespace Tests
             },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
-                    await target.damage(game, card, arg.player.getSpellDamage(1));
+                    await target.damage(game, card, arg.player.getSpellDamage(game,1));
             })
         };
     }
@@ -324,12 +324,12 @@ namespace Tests
             }
             public override void onDisable(THHGame game, Card card)
             {
-                card.removeModifier(game, _modifier);
+                _ = card.removeModifier(game, _modifier);
             }
             class CostModifier : PropModifier<int>
             {
                 public override string propName { get; } = nameof(ServantCardDefine.cost);
-                public override int calc(Card card, int value)
+                public override int calc(IGame game, Card card, int value)
                 {
                     return value - card.getOwner().hand.count + 1;
                 }
@@ -465,7 +465,7 @@ namespace Tests
         {
             new LambdaSingleTargetEffect((game,card,target)=>
             {
-                target.damage(game, card, card.getOwner().getSpellDamage(6));
+                target.damage(game, card, card.getOwner().getSpellDamage(game, 6));
                 return Task.CompletedTask;
             })
         };
