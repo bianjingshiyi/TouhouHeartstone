@@ -103,7 +103,22 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
+            new AddBuffAfter<THHPlayer.UseEventArg>(PileName.HAND,(g,c,a)=>
+            {
+                return a.player == c.getOwner() && a.card.isSpell() && a.card.getCost(g) > 0;
+            },new GeneratedBuff(ID,new CostModifier(-2),
+                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.HAND,ID)))
         };
+        class AddBuffAfter<T> : THHEffectAfter<T> where T : IEventArg
+        {
+            public AddBuffAfter(string pile, CheckConditionDelegate onCheckCondition, Buff originBuff) : base(pile, onCheckCondition, null, (g, c, a) =>
+            {
+                c.addBuff(g, originBuff.clone());
+                return Task.CompletedTask;
+            })
+            {
+            }
+        }
         class CostFixer : PassiveEffect
         {
             public override string[] piles { get; } = new string[] { PileName.HAND };

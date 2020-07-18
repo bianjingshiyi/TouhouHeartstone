@@ -457,6 +457,13 @@ namespace TouhouHeartstone
     }
     public class RemoveBuffBefore<T> : THHEffectBefore<T> where T : IEventArg
     {
+        public RemoveBuffBefore(string pile, int buffId) : base(pile, null, null, (game, card, arg) =>
+        {
+            card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+            return Task.CompletedTask;
+        })
+        {
+        }
         public RemoveBuffBefore(string pile, CheckConditionDelegate onCheckCondition, int buffId) : base(pile, onCheckCondition, null, (game, card, arg) =>
         {
             card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
