@@ -822,34 +822,5 @@ namespace TouhouHeartstone.Builtin
                 return c1.getOwner().randomDiscard(g1);
             })
         };
-        class CostFixer : PassiveEffect
-        {
-            public override string[] piles { get; } = new string[] { PileName.FIELD };
-            Trigger<THHGame.TurnStartEventArg> TurnStartTrigger { get; set; } = null;
-            public override void onEnable(THHGame game, Card card)
-            {
-                if (TurnStartTrigger == null)
-                {
-                    TurnStartTrigger = new Trigger<THHGame.TurnStartEventArg>(arg =>
-                    {
-                        if (arg.player == card.getOwner())
-                        {
-                            Card[] spellcard = card.getOwner().hand.Where(c => c.isSpell()).ToArray().randomTake(game, 1).ToArray();
-                            card.getOwner().hand.moveTo(game, spellcard[0], card.getOwner().grave);
-                        }
-                        return Task.CompletedTask;
-                    });
-                    game.triggers.registerAfter(TurnStartTrigger);
-                }
-            }
-            public override void onDisable(THHGame game, Card card)
-            {
-                if (TurnStartTrigger != null)
-                {
-                    game.triggers.removeAfter(TurnStartTrigger);
-                    TurnStartTrigger = null;
-                }
-            }
-        }
     }
 }

@@ -296,7 +296,7 @@ namespace TouhouHeartstone
             {
                 foreach (var pileName in ranges)
                 {
-                    foreach (var target in player.getPile(pileName))
+                    foreach (var target in player[pileName])
                     {
                         if (checkTarget(game, card, target))
                             return true;
