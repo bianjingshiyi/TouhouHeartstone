@@ -25,9 +25,6 @@ namespace UI
         }
         public void autoBind()
         {
-            this._Image_1 = this.transform.Find("Root").Find("Taunt").Find("GameObject").Find("Image (1)").GetComponent<Image>();
-            this._Image_2 = this.transform.Find("Root").Find("Taunt").Find("GameObject (1)").Find("Image (2)").GetComponent<Image>();
-            this._Image_3 = this.transform.Find("Root").Find("Taunt").Find("GameObject (2)").Find("Image (3)").GetComponent<Image>();
             this._HighlightImage = this.transform.Find("Root").Find("Highlight").GetComponent<Image>();
             this._BackgroundImage = this.transform.Find("Root").Find("Background").GetComponent<Image>();
             this._ImageMask = this.transform.Find("Root").Find("ImageMask").GetComponent<Mask>();
@@ -48,45 +45,6 @@ namespace UI
             this._DamageText = this.transform.Find("Root").Find("DamageImage").Find("DamageText").GetComponent<Text>();
             this._HealImage = this.transform.Find("Root").Find("HealImage").GetComponent<Image>();
             this._HealText = this.transform.Find("Root").Find("HealImage").Find("HealText").GetComponent<Text>();
-        }
-        [SerializeField()]
-        private Image _Image_1;
-        public Image Image_1
-        {
-            get
-            {
-                if ((this._Image_1 == null))
-                {
-                    this._Image_1 = this.transform.Find("Root").Find("Taunt").Find("GameObject").Find("Image (1)").GetComponent<Image>();
-                }
-                return this._Image_1;
-            }
-        }
-        [SerializeField()]
-        private Image _Image_2;
-        public Image Image_2
-        {
-            get
-            {
-                if ((this._Image_2 == null))
-                {
-                    this._Image_2 = this.transform.Find("Root").Find("Taunt").Find("GameObject (1)").Find("Image (2)").GetComponent<Image>();
-                }
-                return this._Image_2;
-            }
-        }
-        [SerializeField()]
-        private Image _Image_3;
-        public Image Image_3
-        {
-            get
-            {
-                if ((this._Image_3 == null))
-                {
-                    this._Image_3 = this.transform.Find("Root").Find("Taunt").Find("GameObject (2)").Find("Image (3)").GetComponent<Image>();
-                }
-                return this._Image_3;
-            }
         }
         [SerializeField()]
         private Image _HighlightImage;
