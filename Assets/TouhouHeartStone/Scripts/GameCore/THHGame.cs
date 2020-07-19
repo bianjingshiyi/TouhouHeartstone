@@ -142,6 +142,12 @@ namespace TouhouHeartstone
             {
                 card.setCost(skill.cost);
             }
+            else if (define is ItemCardDefine item)
+            {
+                card.setCost(item.cost);
+                card.setAttack(item.attack);
+                card.setLife(item.life);
+            }
             return card;
         }
         public Card createCardByRandom(IEnumerable<CardDefine> defines)

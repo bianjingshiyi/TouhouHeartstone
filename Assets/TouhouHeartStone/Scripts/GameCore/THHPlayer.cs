@@ -230,6 +230,7 @@ namespace TouhouHeartstone
                 }
                 else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == CardDefineType.ITEM))
                 {
+                    
                     //物品卡，置入物品栏
                     await player.equip(game, card);
                     ITriggerEffect triggerEffect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
@@ -378,11 +379,10 @@ namespace TouhouHeartstone
         {
             if (hand.count < 1)
                 return Task.CompletedTask;
-            if(hand.count<=count)
-            {
-                //hand.moveTo(game,hand,grave,)
-            }
-            return Task.CompletedTask;
+            else if (hand.count <= count)
+                return hand.moveTo(game, hand, grave);
+            else
+                return hand.moveTo(game, hand.randomTake(game, count), grave);
         }
         #region Command
         public Task cmdInitReplace(THHGame game, params Card[] cards)

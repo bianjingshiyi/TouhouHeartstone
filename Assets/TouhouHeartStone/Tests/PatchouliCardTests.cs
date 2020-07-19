@@ -523,6 +523,43 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<NoachianDeluge>());
             game.Dispose();
         }
+
+        [Test]
+        public void PhilosopherStoneTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(DoyouSpear.ID, 4),
+                new KeyValuePair<int, int>(PhilosopherStone.ID, 5)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<PhilosopherStone>().cost);
+            var handBeforeUse = you.hand.ToArray();
+            you.cmdUse(game, you.hand.getCard<PhilosopherStone>());//挂刀
+            Assert.IsInstanceOf<PhilosopherStone>(you.item.define);//挂上了
+            var getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
+            handBeforeUse = you.hand.ToArray();
+            you.cmdUse(game, you.hand.getCard<DoyouSpear>());//用牌 
+            getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
+
+            game.Dispose();
+        }
+
+        [Test]
+        public void BiteTentacleTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(BiteTentacle.ID, 2),
+                new KeyValuePair<int, int>(GingerGust.ID, 6)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<BiteTentacle>().cost);
+            you.cmdUse(game, you.hand.getCard<BiteTentacle>());
+            var handBeforeUse = you.hand.ToArray();
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 5);
+            Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>().LastOrDefault(c => c.to == you.grave);
+            Card throwcard = movecardevent.card;
+            Assert.True(handBeforeUse.Contains(throwcard));
+
+            game.Dispose();
+        }
     }
 }
 
