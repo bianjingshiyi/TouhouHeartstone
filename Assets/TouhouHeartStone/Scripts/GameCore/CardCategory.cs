@@ -18,6 +18,8 @@ namespace TouhouHeartstone
         public const int ITEM = 0x00004000;
         public const int CHARACTER_NEUTRAL = 0x00000000;
 
+        public const int TOKEN = 0x00000800;
+
         public static int getCharacterID(int id)
         {
             return id & CHARACTER_MASK;

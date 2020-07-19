@@ -566,22 +566,21 @@ namespace TouhouHeartstone.Builtin
         {
             Trigger<THHGame.TurnStartEventArg> TurnEndTrigger { get; set; } = null;
             Buff buff = new GeneratedBuff(ID, new AttackModifier(-3));
-            public void onEnable(THHGame game, Card card)
+            public async void onEnable(THHGame game, Card card)
             {
-                card.addBuff(game, buff);
+                await card.addBuff(game, buff);
                 if (card.getAttack(game) == 0)
                     card.setDead(true);
                 if (TurnEndTrigger == null)
                 {
-                    TurnEndTrigger = new Trigger<THHGame.TurnStartEventArg>(arg =>
+                    TurnEndTrigger = new Trigger<THHGame.TurnStartEventArg>(async arg =>
                     {
                         if (game.currentPlayer != card.getOwner())
                         {
-                            card.removeBuff(game, buff);
+                            await card.removeBuff(game, buff);
                             game.triggers.removeAfter(TurnEndTrigger);
                             TurnEndTrigger = null;
                         }
-                        return Task.CompletedTask;
                     });
                     game.triggers.registerAfter(TurnEndTrigger);
                 }
@@ -597,13 +596,13 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override IEffect[] effects { get; set; } = new IEffect[] {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 foreach(Card buffcard in card.getOwner().field)
                 {
-                    buffcard.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
+                    await buffcard.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
                 }
-                return target.damage(game,card,card.getOwner().field.count);
+                await target.damage(game,card,card.getOwner().field.count);
             })
         };
     }
@@ -644,10 +643,10 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override IEffect[] effects { get; set; } = new IEffect[] {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3)));
-                return target.heal(game,target.getLife(game)-target.getCurrentLife(game));
+                await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3)));
+                await target.heal(game,target.getLife(game)-target.getCurrentLife(game));
             })
         };
     }
@@ -828,7 +827,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class MultiCast : SpellCardDefine
     {
-        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x35;
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x035;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -836,8 +835,23 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(async (g1,c1)=>
             {
                 await c1.getOwner().hand.random(g1).addBuff(g1,new GeneratedBuff(ID,new CostModifier(-2)));
-                //await c1.getOwner().addCardToHand(g1,g1.getCardDefine<>());
+                c1.getOwner().setProp(nameof(Asthma),c1.getOwner().getProp<int>(nameof(Asthma))+1);
+                Card asthma = g1.createCard<Asthma>();
+                asthma.setProp("damage",c1.getOwner().getProp<int>(nameof(Asthma)));
+                await c1.getOwner().shuffleCardToDeck(g1,g1.getCardDefine<Asthma>());
+                await c1.getOwner().addCardToHand<MultiCast>(g1);
             })
         };
+    }
+    /// <summary>
+    /// 哮喘 1 抽到自动释放，对你的英雄造成{damage}点伤害
+    /// </summary>
+    public class Asthma : SpellCardDefine
+    {
+        public const int ID = MultiCast.ID | CardCategory.TOKEN | 0x000;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { };
+        public override bool isToken { get; set; } = true;
     }
 }

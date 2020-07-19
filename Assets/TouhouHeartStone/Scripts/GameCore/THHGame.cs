@@ -150,6 +150,10 @@ namespace TouhouHeartstone
             }
             return card;
         }
+        public Card createCard<T>() where T : CardDefine
+        {
+            return createCard(getCardDefine<T>());
+        }
         public Card createCardByRandom(IEnumerable<CardDefine> defines)
         {
             return createCard(defines.random(this));

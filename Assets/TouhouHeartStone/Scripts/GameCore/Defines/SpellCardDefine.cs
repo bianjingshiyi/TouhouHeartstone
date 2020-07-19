@@ -6,6 +6,8 @@ namespace TouhouHeartstone
     {
         public override string type { get; set; } = CardDefineType.SPELL;
         public abstract int cost { get; set; }
+        public virtual string[] keywords { get; set; } = new string[0];
+        public virtual bool isToken { get; set; } = false;
         public override T getProp<T>(string propName)
         {
             if (propName == nameof(cost))
