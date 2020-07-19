@@ -207,7 +207,7 @@ namespace TouhouHeartstone
             }
         }
     }
-    public abstract class PassiveEffect : IPassiveEffect
+    public abstract class PassiveEffect : IPileEffect
     {
         public string[] events => throw new NotImplementedException();
         public abstract string[] piles { get; }
@@ -490,50 +490,63 @@ namespace TouhouHeartstone
         {
         }
     }
-    public class DeathRattle : PassiveEffect
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// 亡语的本质是什么？首先亡语本身，是一个静态的效果，和卡片无关的，它具有执行逻辑：
+    /// 它具有激活，和禁用两种行为，然后激活行为具有一个时机（入场），但是似乎没有禁用，也不会被重复的激活，是否已经激活是卡片自己应该记录的状态。
+    /// 它和被动效果冲突的地方在于，被动效果具有作用域，离开作用域被动效果就会被禁用。但是亡语在时机触发这一点上和战吼非常相似，但是它肯定是一个触发效果而不是使用效果。
+    /// 然后还有一个同一个卡怎么记录自己同时注册的N个亡语的问题。亡语不是实例，但是卡片是，BUFF是，那么Buff效果也会是效果吗？
+    /// 这他妈是在无限套娃。
+    /// 不行了，我放弃，自毁程序启动。
+    /// </remarks>
+    public class DeathRattle : IPassiveEffect
     {
-        int _index;
-        public sealed override string[] piles { get; } = new string[] { PileName.FIELD, PileName.GRAVE };
-        CheckConditionDelegate _onCheckCondition;
+        public int id { get; }
+        public string[] piles { get; } = new string[] { PileName.FIELD };
+        public CheckConditionDelegate onCheckCondition { get; }
         public delegate Task ExecuteDelegate(THHGame game, Card card, int position);
-        ExecuteDelegate _onExecute;
-        public DeathRattle(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null)
+        public ExecuteDelegate onExecute { get; }
+        public DeathRattle(int id, ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null)
         {
-            _onCheckCondition = onCheckCondition;
-            _onExecute = onExecute;
+            this.id = id;
+            this.onExecute = onExecute;
+            this.onCheckCondition = onCheckCondition;
         }
-        public override void onEnable(THHGame game, Card card)
+        public void onEnable(IGame game, ICard card)
         {
-            Trigger<THHCard.DeathEventArg> trigger = new Trigger<THHCard.DeathEventArg>(arg =>
+            onEnable(game as THHGame, card as Card);
+        }
+        public virtual void onEnable(THHGame game, Card card)
+        {
+            string triggerName = "DeathTrigger<" + id + ">";//TODO:要考虑Buff贴亡语，贴好几个一样的亡语的情况。
+            Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
+            if (trigger != null)
+                return;
+            game.logger.log("Effect", card + "注册亡语" + triggerName);
+            trigger = new Trigger<THHCard.DeathEventArg>(arg =>
             {
-                if (!arg.infoDic.ContainsKey(card))//死的不是你
+                if (!arg.infoDic.ContainsKey(card))
                     return Task.CompletedTask;
-                if (_onCheckCondition != null && !_onCheckCondition(game, card))
-                    return Task.CompletedTask;
-                return _onExecute?.Invoke(game, card, arg.infoDic[card].position);
+                if (onExecute != null)
+                    return onExecute(game, card, arg.infoDic[card].position);
+                return Task.CompletedTask;
             });
-            List<Trigger<THHCard.DeathEventArg>> deathRattleList = card.getProp<List<Trigger<THHCard.DeathEventArg>>>(game, nameof(DeathRattle));
-            if (deathRattleList == null)
-            {
-                deathRattleList = new List<Trigger<THHCard.DeathEventArg>>();
-                card.setProp(nameof(DeathRattle), deathRattleList);
-            }
-            _index = deathRattleList.Count;
-            deathRattleList.Add(trigger);
-            game.logger.log("Effect", card + "注册亡语" + ToString());
+            card.setProp(triggerName, trigger);
             game.triggers.registerAfter(trigger);
         }
-        public override void onDisable(THHGame game, Card card)
+        public void onDisable(IGame game, ICard card)
         {
-            List<Trigger<THHCard.DeathEventArg>> deathRattleList = card.getProp<List<Trigger<THHCard.DeathEventArg>>>(game, nameof(DeathRattle));
-            Trigger<THHCard.DeathEventArg> trigger = deathRattleList[_index];
-            game.logger.log("Effect", card + "注销亡语" + ToString());
-            game.triggers.removeAfter(trigger);
-            deathRattleList.Remove(trigger);
+            onDisable(game as THHGame, card as Card);
         }
-        public override string ToString()
+        public virtual void onDisable(THHGame game, Card card)
         {
-            return GetType().Name + "(" + _index + ")";
+            string triggerName = "DeathTrigger<" + id + ">";//暂时不考虑Buff贴亡语这种情况。
+            Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
+            game.logger.log("Effect", card + "注销亡语" + triggerName);
+            game.triggers.removeAfter(trigger);
+            card.setProp<Trigger<THHCard.DamageEventArg>>(triggerName, null);
         }
     }
 }

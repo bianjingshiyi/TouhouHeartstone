@@ -64,15 +64,9 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.DeathEventArg>(PileName.GRAVE,(game,card,arg)=>
+            new DeathRattle(ID,(g1,c1,p)=>
             {
-                return arg.infoDic.Any(p=>p.Key==card);
-            },(game,card,targets)=>
-            {
-                return true;
-            },async (game,card,arg)=>
-            {
-                await arg.infoDic[card].player.createToken(game,game.getCardDefine<LostSpecter>(),arg.infoDic[card].position);
+                return c1.getOwner().createToken(g1,g1.getCardDefine<LostSpecter>(),p);
             })
         };
     }
@@ -379,7 +373,7 @@ namespace TouhouHeartstone.Builtin
             new AttackModifier(2)
         };
 
-        public override IPassiveEffect[] effects { get; }
+        public override IPileEffect[] effects { get; }
 
         public override Buff clone()
         {

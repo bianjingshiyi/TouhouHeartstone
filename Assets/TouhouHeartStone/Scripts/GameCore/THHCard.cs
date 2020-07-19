@@ -319,7 +319,7 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(silence), true);
             await card.removeBuff(game, card.getBuffs());
-            foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
+            foreach (var effect in card.define.effects.OfType<IPileEffect>())
             {
                 effect.onDisable(game, card);
             }

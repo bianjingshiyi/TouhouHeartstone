@@ -9,7 +9,11 @@ namespace Game
         float _time;
         [SerializeField]
         RectTransform _targetTransform;
-        [SerializeField]
+        public RectTransform targetTransofrm
+        {
+            get { return _targetTransform; }
+            set { _targetTransform = value; }
+        }
         Vector3 _startPosition;
         protected void OnEnable()
         {
@@ -17,8 +21,11 @@ namespace Game
         }
         protected void Update()
         {
-            RectTransform transform = GetComponent<RectTransform>();
-            transform.position = Vector3.Lerp(_startPosition, _targetTransform.position, _time);
+            if (targetTransofrm != null)
+            {
+                RectTransform transform = GetComponent<RectTransform>();
+                transform.position = Vector3.Lerp(_startPosition, targetTransofrm.position, _time);
+            }
         }
         protected void Reset()
         {

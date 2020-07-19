@@ -194,7 +194,7 @@ namespace Tests
         {
             public override int id { get; } = 0;
             public override PropModifier[] modifiers { get; } = null;
-            public override IPassiveEffect[] effects { get; }
+            public override IPileEffect[] effects { get; }
             public TestBuff(params PropModifier[] modifiers)
             {
                 this.modifiers = modifiers;
