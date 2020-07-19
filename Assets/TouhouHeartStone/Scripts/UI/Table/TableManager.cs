@@ -982,6 +982,8 @@ namespace Game
             {
                 if (tryGetMaster(target, out var master))
                 {
+                    master.onSelectableTrue.beforeAnim.Invoke();
+                    master.onSelectableTrue.afterAnim.Invoke();
                     setMaster(master, target, true);
                     master.onClick.add(onClickMaster);
                 }

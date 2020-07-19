@@ -194,5 +194,9 @@ namespace UI
         public SimpleAnim onDeath;
         public SimpleAnim onTauntTrue;
         public SimpleAnim onTauntFalse;
+        public SimpleAnim onCanAttackTrue;
+        public SimpleAnim onCanAttackFalse;
+        public SimpleAnim onSelectableTrue;
+        public SimpleAnim onSelectableFalse;
     }
 }
