@@ -42,5 +42,9 @@
         /// 唯一
         /// </summary>
         public const string UNIQUE = "unique";
+        /// <summary>
+        /// 抽到时自动施放
+        /// </summary>
+        public const string AUTOCAST = "autocast";
     }
 }

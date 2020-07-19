@@ -844,14 +844,21 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 哮喘 1 抽到自动释放，对你的英雄造成{damage}点伤害
+    /// 哮喘 1 抽到自动释放，对你的英雄造成{card:damage}点伤害
     /// </summary>
     public class Asthma : SpellCardDefine
     {
         public const int ID = MultiCast.ID | CardCategory.TOKEN | 0x000;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { };
+        public override string[] keywords { get; set; } = new string[] { Keyword.AUTOCAST };
         public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect((g1,c1)=>
+            {
+                return c1.getOwner().master.damage(g1,c1,c1.getProp<int>(g1,"damage"));
+            })
+        };
     }
 }
