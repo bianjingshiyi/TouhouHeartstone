@@ -45,6 +45,8 @@ namespace UI
             this._DescLabelText = this.transform.Find("RoomInfoPanel").Find("Container").Find("DescLabel").GetComponent<Text>();
             this._DescText = this.transform.Find("RoomInfoPanel").Find("Container").Find("DescText").GetComponent<Text>();
             this._ReturnBtnButton = this.transform.Find("ReturnBtn").GetComponent<Button>();
+            this._LoadingPanelImage = this.transform.Find("LoadingPanel").GetComponent<Image>();
+            this._LoadingText = this.transform.Find("LoadingPanel").Find("LoadingText").GetComponent<Text>();
         }
         private Main _parent;
         public Main parent
@@ -312,6 +314,32 @@ namespace UI
                     this._ReturnBtnButton = this.transform.Find("ReturnBtn").GetComponent<Button>();
                 }
                 return this._ReturnBtnButton;
+            }
+        }
+        [SerializeField()]
+        private Image _LoadingPanelImage;
+        public Image LoadingPanelImage
+        {
+            get
+            {
+                if ((this._LoadingPanelImage == null))
+                {
+                    this._LoadingPanelImage = this.transform.Find("LoadingPanel").GetComponent<Image>();
+                }
+                return this._LoadingPanelImage;
+            }
+        }
+        [SerializeField()]
+        private Text _LoadingText;
+        public Text LoadingText
+        {
+            get
+            {
+                if ((this._LoadingText == null))
+                {
+                    this._LoadingText = this.transform.Find("LoadingPanel").Find("LoadingText").GetComponent<Text>();
+                }
+                return this._LoadingText;
             }
         }
         partial void onAwake();

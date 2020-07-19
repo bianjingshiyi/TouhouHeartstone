@@ -405,7 +405,7 @@ namespace TouhouHeartstone.Builtin
             {
                 new BuffFixer().onEnable(game,target);
                 return Task.CompletedTask;
-            })
+            },PileFlag.both | PileFlag.field)
         };
         class BuffFixer
         {
@@ -455,7 +455,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async(game,card,target)=>
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(2)));
-            })
+            },PileFlag.both | PileFlag.field)
         };
     }
     /// <summary>
@@ -598,7 +598,7 @@ namespace TouhouHeartstone.Builtin
                     await buffcard.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
                 }
                 await target.damage(game,card,card.getOwner().field.count);
-            })
+            },PileFlag.both | PileFlag.field)
         };
     }
     /// <summary>
@@ -614,7 +614,7 @@ namespace TouhouHeartstone.Builtin
             {
                 target.define.effects = target.define.effects.Concat(addeffect).ToArray();
                 return Task.CompletedTask;
-            })
+            },PileFlag.both | PileFlag.field)
         };
         private static IEffect[] addeffect = new IEffect[]{new THHEffectAfter<THHCard.DeathEventArg>(PileName.GRAVE, (game, card, arg) =>
         {
@@ -625,7 +625,6 @@ namespace TouhouHeartstone.Builtin
         }, async (game, card, arg) =>
         {
             await arg.infoDic[card].player.createToken(game, game.getCardDefine(card.define.id), arg.infoDic[card].position);
-
         })
         };
     }
@@ -642,8 +641,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3)));
                 await target.heal(game,target.getLife(game)-target.getCurrentLife(game));
-            })
-        };
+            }, PileFlag.both | PileFlag.field)};
     }
     /// <summary>
     /// 4 水火符【燃素之雨】 造成点6伤害，随机分配给所有敌方角色
@@ -683,7 +681,7 @@ namespace TouhouHeartstone.Builtin
             {
                 target.damage(game,card,6);
                 return target.getNearbyCards().damage(game,card,2);
-            })
+            }, PileFlag.both | PileFlag.field)
         };
     }
     /// <summary>

@@ -190,7 +190,7 @@ namespace Game
         /// 创建一个房间
         /// </summary>
         /// <returns></returns>
-        public async Task createRoom()
+        public void createRoom()
         {
             host.start(_port);
             RoomInfo room = host.openRoom(new RoomInfo());
@@ -201,7 +201,7 @@ namespace Game
             displayLoadingPanel();
             RoomPlayerInfo playerInfo = new RoomPlayerInfo();
             playerInfo.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
-            await client.joinRoom(room, playerInfo);
+            Task.Run(async () => { await client.joinRoom(room, playerInfo); });
             ui.RoomButton.interactable = true;
             ui.RoomButton.image.color = Color.white;
         }
@@ -260,6 +260,7 @@ namespace Game
         {
             LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
             ui.NetworkingPageGroup.display(lanPanel);
+            lanPanel.LoadingPanelImage.gameObject.SetActive(false);
             lanPanel.FlushRoomButton.onClick.set(() =>
             {
                 flushLANRooms();
@@ -267,7 +268,8 @@ namespace Game
             lanPanel.CreateRoomButton.interactable = !host.RoomIsValid;
             lanPanel.CreateRoomButton.onClick.set(() =>
             {
-                _ = createRoom();
+                lanPanel.LoadingPanelImage.gameObject.SetActive(true);
+                createRoom();
             });
             lanPanel.ReturnBtnButton.onClick.AddListener(() =>
             {
