@@ -160,6 +160,7 @@ GameObject:
   - component: {fileID: 4225699940084520048}
   - component: {fileID: 163705352615757087}
   - component: {fileID: 8827540942291511058}
+  - component: {fileID: 9209755263661626938}
   m_Layer: 5
   m_Name: Servant
   m_TagString: Untagged
@@ -294,7 +295,7 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
-    animName: 
+    animName: Servant_Attack1
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -557,6 +558,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &9209755263661626938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2470481776497400558}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5af8e0da8d439a84ebdc0312e716d0c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _time: 0
+  _targetTransform: {fileID: 0}
+  _startPosition: {x: 862.5, y: 468.75, z: 0}
 --- !u!1 &2470481776923723670
 GameObject:
   m_ObjectHideFlags: 0

@@ -56,9 +56,10 @@ namespace Game
         /// </summary>
         /// <param name="excelPaths"></param>
         /// <returns></returns>
-        public async Task load(string[] excelPaths, Assembly[] assemblies = default, ILogger logger = null)
+        public async Task load(string[] excelPaths, Assembly[] assemblies = default, ILogger logger = null, ILogger screenLogger = null)
         {
             //加载内置卡片
+            screenLogger?.log("加载内置卡片");
             if (assemblies == default)
                 assemblies = AppDomain.CurrentDomain.GetAssemblies();
             List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies, logger));
@@ -90,6 +91,8 @@ namespace Game
             {
                 try
                 {
+                    screenLogger?.log("加载卡片集：" + Path.GetFileNameWithoutExtension(path));
+
                     CardDefine[] cards = await loadCards(path);
                     foreach (var card in cards)
                     {
@@ -129,7 +132,7 @@ namespace Game
             {
                 try
                 {
-                    CardSkinData[] skins = await loadSkins(path);
+                    CardSkinData[] skins = await loadSkins(path, logger: screenLogger);
                     foreach (var skin in skins)
                     {
                         if (skinDic.ContainsKey(skin.id))
@@ -197,8 +200,10 @@ namespace Game
         /// 加载文件中的皮肤
         /// </summary>
         /// <param name="path"></param>
+        /// <param name="platform">当前平台</param>
+        /// <param name="logger">提示用Logger</param>
         /// <returns></returns>
-        public async Task<CardSkinData[]> loadSkins(string path, PlatformCompability platform = null)
+        public async Task<CardSkinData[]> loadSkins(string path, PlatformCompability platform = null, ILogger logger = null)
         {
             platform = platform ?? PlatformCompability.Current;
 
@@ -225,6 +230,8 @@ namespace Game
                         name = datarow.ReadCol<string>("Name"),
                         desc = datarow.ReadCol<string>("Desc", "")
                     };
+
+                    logger?.log("加载卡片资源: " + skin.name);
                     string imagePath = datarow.ReadCol("Image", "");
                     try
                     {

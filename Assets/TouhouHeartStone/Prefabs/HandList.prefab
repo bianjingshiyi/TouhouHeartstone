@@ -251,6 +251,14 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
+  onDiscard:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!1001 &2432038109325251202
 PrefabInstance:
   m_ObjectHideFlags: 0

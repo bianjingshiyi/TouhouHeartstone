@@ -5,6 +5,7 @@ using System.Linq;
 using TouhouHeartstone;
 using TouhouCardEngine;
 using TouhouHeartstone.Builtin;
+using System.Collections.Generic;
 namespace Tests
 {
     public class NeutralCardTests
@@ -91,6 +92,15 @@ namespace Tests
             Assert.AreEqual(1, game.sortedPlayers[0].field.count);
             Assert.AreEqual(1, game.sortedPlayers[1].field.count);
         }
+        //[Test]
+        //public void missingSpecterTest()
+        //{
+        //    TestGameflow.createGame(out var game, out var you, out var oppo,
+        //        new KeyValuePair<int, int>(MissingSpecter.ID, 30));
+        //    game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<MissingSpecter>().cost);
+        //    you.cmdUse(game, you.hand[0], 0);
+
+        //}
         [Test]
         public void drizzleFairyTest()
         {

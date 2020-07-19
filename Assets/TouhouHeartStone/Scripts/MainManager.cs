@@ -4,6 +4,8 @@ using UI;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
 using TouhouHeartstone;
+using TouhouCardEngine;
+
 namespace Game
 {
     public class MainManager : Manager
@@ -12,6 +14,8 @@ namespace Game
         public UIManager ui => getManager<UIManager>();
         public NetworkingManager network => getManager<NetworkingManager>();
         public GameManager game => getManager<GameManager>();
+
+        Main mainUI => ui.getObject<Main>();
         protected override void onAwake()
         {
             base.onAwake();
@@ -30,7 +34,12 @@ namespace Game
         }
         protected void Start()
         {
-            _loadCardTask = getManager<CardManager>().load(new string[] { "Cards/Cards.xls", "Cards/Patchouli.xls" }, new System.Reflection.Assembly[] { typeof(THHGame).Assembly });
+            _loadCardTask = getManager<CardManager>().load(
+                new string[] { "Cards/Cards.xls", "Cards/Patchouli.xls" },
+                new System.Reflection.Assembly[] { typeof(THHGame).Assembly },
+                null,
+                mainUI.Loading.LoggerText.GetComponent<ScreenLogger>()
+            );
         }
         protected void Update()
         {
