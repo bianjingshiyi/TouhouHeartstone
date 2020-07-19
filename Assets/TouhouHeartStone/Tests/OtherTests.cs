@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
+using System.Text.RegularExpressions;
 namespace Tests
 {
     public class OtherTests
@@ -183,6 +184,23 @@ namespace Tests
         class JsonTarget
         {
             public int i;
+        }
+        [Test]
+        public void regexReplaceTest()
+        {
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            dic.Add("damage", 2);
+            string input = "对你的英雄造成{dic:damage}点伤害";
+            string result = Regex.Replace(input, @"{(?<obj>\w+):(?<name>.+)}", m =>
+            {
+                string obj = m.Groups["obj"].Value;
+                string name = m.Groups["name"].Value;
+                if (obj == "dic")
+                    return dic[name].ToString();
+                else
+                    return "???";
+            });
+            Assert.AreEqual("对你的英雄造成2点伤害", result);
         }
     }
 }

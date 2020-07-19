@@ -828,7 +828,7 @@ namespace Game
                 CardSkinData skin = getSkin(card);
                 ui.Image.sprite = skin.image;
                 ui.NameText.text = skin.name;
-                ui.DescText.text = skin.desc;
+                ui.DescText.text = CardDescHelper.replace(skin.desc, game, player, card);
                 ui.isFaceup = true;
             }
             else
@@ -872,6 +872,8 @@ namespace Game
             servant.onClick.add(onClickServant);
             servant.onDrag.add(onDragServant);
             servant.onDragEnd.add(onDragEndServant);
+            servant.onExitServant.set(onExitServant);
+            servant.onEnterServant.set(onEnterServant);
             cardServantDic.Add(card, servant);
             return servant;
         }
@@ -957,6 +959,14 @@ namespace Game
                 servant.onTauntFalse.afterAnim.Invoke();
             }
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
+        }
+        void onEnterServant(Servant servant, PointerEventData pointer)
+        {
+            displayLargeCard(pointer.position.x < Screen.width / 2, getCard(servant));
+        }
+        void onExitServant(Servant servant, PointerEventData pointer)
+        {
+            hideLargeCard();
         }
         /// <summary>
         /// 随从拖拽处理
@@ -1199,6 +1209,19 @@ namespace Game
             ui.TipText.gameObject.SetActive(true);
             ui.TipText.text = tip;
             _tipTimer.start();
+        }
+        public void displayLargeCard(bool isRight, TouhouCardEngine.Card card)
+        {
+            if (isRight)
+                ui.LargeCard.rectTransform.localPosition = new Vector3(250, 0);
+            else
+                ui.LargeCard.rectTransform.localPosition = new Vector3(-250, 0);
+            ui.LargeCard.display();
+            setCard(ui.LargeCard, card, true);
+        }
+        public void hideLargeCard()
+        {
+            ui.LargeCard.hide();
         }
         void onTurnEndButtonClick()
         {

@@ -14,7 +14,7 @@ namespace Game
                 table.ui.InitReplaceDialog.InitReplaceCardList.clearItems();
                 table.ui.InitReplaceDialog.InitReplaceCardList.updateItems(table.player.init, (i, c) => i.Card.card == c, (item, card) =>
                 {
-                    item.Card.update(card, table.getSkin(card));
+                    table.setCard(item.Card, card, true);
                     item.MarkImage.enabled = false;
                     item.asButton.onClick.set(() =>
                     {
