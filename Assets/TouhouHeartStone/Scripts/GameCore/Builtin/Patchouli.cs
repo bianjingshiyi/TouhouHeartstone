@@ -823,4 +823,21 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+    /// <summary>
+    /// 多重施法 1 随机使一张手牌中的法术牌花费-2，将一张伤害递增的“哮喘”洗入牌库，将另一张“多重施法”置入你的手牌。
+    /// </summary>
+    public class MultiCast : SpellCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x35;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(async (g1,c1)=>
+            {
+                await c1.getOwner().hand.random(g1).addBuff(g1,new GeneratedBuff(ID,new CostModifier(-2)));
+                //await c1.getOwner().addCardToHand(g1,g1.getCardDefine<>());
+            })
+        };
+    }
 }

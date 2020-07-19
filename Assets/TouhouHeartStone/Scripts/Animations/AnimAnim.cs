@@ -8,6 +8,7 @@ namespace Game
         Animator _animator;
         string _animName;
         bool _isPlayed = false;
+        public bool isFinished { get; private set; } = false;
         Func<UIAnimation, bool> _onBlockAnim;
         public AnimAnim(Animator animator, string animName, Func<UIAnimation, bool> onBlockAnim = null)
         {
@@ -17,6 +18,8 @@ namespace Game
         }
         public override bool update(TableManager table)
         {
+            if (isFinished)
+                return true;
             if (!hasAnim())
             {
                 Debug.LogError(_animator + "中不存在动画状态" + _animName, _animator);
@@ -34,6 +37,7 @@ namespace Game
                 if (state.IsName(_animName) && state.normalizedTime < 1)
                     return false;
             }
+            isFinished = true;
             return true;
         }
         bool hasAnim()

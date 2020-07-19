@@ -63,6 +63,8 @@ namespace UI
         }
         public ActionEvent<Master, PointerEventData> onClick { get; } = new ActionEvent<Master, PointerEventData>();
         public SimpleAnim onTargeted;
+        public SimpleAnim onAttack;
+        public SimpleAnim onAttacked;
         public SimpleAnim onDamage;
         public SimpleAnim onDeath;
         public SimpleAnim onCanAttackTrue;
