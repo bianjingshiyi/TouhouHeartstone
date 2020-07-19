@@ -833,7 +833,7 @@ namespace TouhouHeartstone.Builtin
                 c1.getOwner().setProp(nameof(Asthma),c1.getOwner().getProp<int>(nameof(Asthma))+1);
                 Card asthma = g1.createCard<Asthma>();
                 asthma.setProp("damage",c1.getOwner().getProp<int>(nameof(Asthma)));
-                await c1.getOwner().shuffleCardToDeck(g1,g1.getCardDefine<Asthma>());
+                await c1.getOwner().shuffleCardToDeck(g1,asthma);
                 await c1.getOwner().addCardToHand<MultiCast>(g1);
             })
         };

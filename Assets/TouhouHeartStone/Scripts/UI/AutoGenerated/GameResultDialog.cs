@@ -27,9 +27,12 @@ namespace UI
         {
             this.m_as_Image = this.GetComponent<Image>();
             this._Image = this.transform.Find("Image").GetComponent<Image>();
+            this._WinImage = this.transform.Find("Image").Find("Win").GetComponent<Image>();
             this._Text = this.transform.Find("Image").Find("Win").Find("Text").GetComponent<Text>();
+            this._FailImage = this.transform.Find("Image").Find("Fail").GetComponent<Image>();
             this._Fail_Text = this.transform.Find("Image").Find("Fail").Find("Text").GetComponent<Text>();
             this._Button = this.transform.Find("Image").Find("Button").GetComponent<Button>();
+            this._Image_Text = this.transform.Find("Image").Find("Text").GetComponent<Text>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -58,6 +61,19 @@ namespace UI
             }
         }
         [SerializeField()]
+        private Image _WinImage;
+        public Image WinImage
+        {
+            get
+            {
+                if ((this._WinImage == null))
+                {
+                    this._WinImage = this.transform.Find("Image").Find("Win").GetComponent<Image>();
+                }
+                return this._WinImage;
+            }
+        }
+        [SerializeField()]
         private Text _Text;
         public Text Text
         {
@@ -68,6 +84,19 @@ namespace UI
                     this._Text = this.transform.Find("Image").Find("Win").Find("Text").GetComponent<Text>();
                 }
                 return this._Text;
+            }
+        }
+        [SerializeField()]
+        private Image _FailImage;
+        public Image FailImage
+        {
+            get
+            {
+                if ((this._FailImage == null))
+                {
+                    this._FailImage = this.transform.Find("Image").Find("Fail").GetComponent<Image>();
+                }
+                return this._FailImage;
             }
         }
         [SerializeField()]
@@ -94,6 +123,19 @@ namespace UI
                     this._Button = this.transform.Find("Image").Find("Button").GetComponent<Button>();
                 }
                 return this._Button;
+            }
+        }
+        [SerializeField()]
+        private Text _Image_Text;
+        public Text Image_Text
+        {
+            get
+            {
+                if ((this._Image_Text == null))
+                {
+                    this._Image_Text = this.transform.Find("Image").Find("Text").GetComponent<Text>();
+                }
+                return this._Image_Text;
             }
         }
         partial void onAwake();

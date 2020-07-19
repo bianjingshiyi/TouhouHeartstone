@@ -298,6 +298,19 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(ServantCardDefine.spellDamage), value);
         }
+        public static async Task silence(this Card card, THHGame game)
+        {
+            card.setProp(nameof(silence), true);
+            await card.removeBuff(game, card.getBuffs());
+            foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
+            {
+                effect.onDisable(game, card);
+            }
+        }
+        public static bool isSilenced(this Card card, IGame game)
+        {
+            return card.getProp<bool>(game, nameof(silence));
+        }
         public static bool hasTag(this Card card, IGame game, string tag)
         {
             return card.getProp<string[]>(game, nameof(ServantCardDefine.tags)).Contains(tag);
@@ -453,6 +466,19 @@ namespace TouhouHeartstone
             if (triggerEffect != null && triggerEffect.checkTargets(game, card, null, new object[] { target }))
                 return false;
             return true;
+        }
+        public static async Task activeEffect(this Card card, THHGame game, THHPlayer player, Card[] targets)
+        {
+            ITriggerEffect triggerEffect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            if (triggerEffect != null)
+            {
+                await triggerEffect.execute(game, card, new object[] { new THHPlayer.ActiveEventArg(player, card, targets) }, targets);
+            }
+            IActiveEffect activeEffect = card.define.getActiveEffect();
+            if (activeEffect != null)
+            {
+                await activeEffect.execute(game, card, new object[] { new THHPlayer.ActiveEventArg(player, card, targets) }, targets);
+            }
         }
         public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {

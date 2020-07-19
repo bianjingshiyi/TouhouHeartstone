@@ -241,6 +241,7 @@ namespace Game
         {
             if (host.RoomIsValid)
                 host.closeRoom();
+            host.stop();
             if (client.roomInfo != null)
                 client.quitRoom();
             ui.RoomButton.interactable = false;
@@ -301,7 +302,14 @@ namespace Game
             lanPanel.NameText.text = null;
             lanPanel.IPText.text = null;
             lanPanel.DescText.text = null;
-            findLANRooms();
+            if (host.RoomIsValid)
+            {
+                displayRoomPanel();
+            }
+            else
+            {
+                findLANRooms();
+            }
         }
         private void refreshRoomListItem(RoomListItem item, RoomInfo obj)
         {

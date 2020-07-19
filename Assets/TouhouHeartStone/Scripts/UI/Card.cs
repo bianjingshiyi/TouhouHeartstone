@@ -3,13 +3,29 @@ using System;
 using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.Events;
-
+using System.Text.RegularExpressions;
 namespace UI
 {
+    public static class CardDescHelper
+    {
+        public static string replace(string desc, THHGame game, THHPlayer player, TouhouCardEngine.Card card)
+        {
+            string result = Regex.Replace(desc, @"{(?<obj>\w+):(?<name>.+)}", m =>
+            {
+                string obj = m.Groups["obj"].Value;
+                string name = m.Groups["name"].Value;
+                if (obj == "card")
+                    return card.getProp(game, name).ToString();
+                else
+                    return "???";
+            });
+            return result;
+        }
+    }
     partial class Card
     {
         [Obsolete]
-        public TouhouCardEngine.Card card { get; private set; }
+        public TouhouCardEngine.Card card { get; set; }
         [Obsolete]
         public void update(TouhouCardEngine.Card card, CardSkinData skin)
         {
@@ -34,6 +50,7 @@ namespace UI
             {
                 Image.sprite = skin.image;
                 NameText.text = skin.name;
+                //{card:damage}
                 DescText.text = skin.desc;
                 // IsFaceupController = IsFaceup.True;
                 isFaceup = true;

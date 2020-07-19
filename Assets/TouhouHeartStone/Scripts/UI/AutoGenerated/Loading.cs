@@ -27,6 +27,8 @@ namespace UI
         {
             this.m_as_Image = this.GetComponent<Image>();
             this._LoadingText = this.transform.Find("LoadingText").GetComponent<Text>();
+            this._Text = this.transform.Find("Text").GetComponent<Text>();
+            this._LoggerText = this.transform.Find("Logger").GetComponent<Text>();
         }
         private Main _parent;
         public Main parent
@@ -60,6 +62,32 @@ namespace UI
                     this._LoadingText = this.transform.Find("LoadingText").GetComponent<Text>();
                 }
                 return this._LoadingText;
+            }
+        }
+        [SerializeField()]
+        private Text _Text;
+        public Text Text
+        {
+            get
+            {
+                if ((this._Text == null))
+                {
+                    this._Text = this.transform.Find("Text").GetComponent<Text>();
+                }
+                return this._Text;
+            }
+        }
+        [SerializeField()]
+        private Text _LoggerText;
+        public Text LoggerText
+        {
+            get
+            {
+                if ((this._LoggerText == null))
+                {
+                    this._LoggerText = this.transform.Find("Logger").GetComponent<Text>();
+                }
+                return this._LoggerText;
             }
         }
         partial void onAwake();
