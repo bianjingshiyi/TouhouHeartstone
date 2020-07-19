@@ -117,5 +117,9 @@ namespace UI
         public SimpleAnim onTargeted;
         public SimpleAnim onDamage;
         public SimpleAnim onDeath;
+        public SimpleAnim onCanAttackTrue;
+        public SimpleAnim onCanAttackFalse;
+        public SimpleAnim onSelectableTrue;
+        public SimpleAnim onSelectableFalse;
     }
 }

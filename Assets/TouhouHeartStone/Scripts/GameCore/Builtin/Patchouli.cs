@@ -819,7 +819,7 @@ namespace TouhouHeartstone.Builtin
                 return a1.player==c1.getOwner();
             },null,(g1,c1,a1)=>
             {
-                return c1.getOwner().randomDiscard(g1);
+                return c1.getOwner().randomDiscard(g1,1,c2=>c2.isSpell());
             })
         };
     }

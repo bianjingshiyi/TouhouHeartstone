@@ -375,14 +375,15 @@ namespace TouhouHeartstone
             Card card = game.createCardByRandom(pool);
             return hand.add(game, card);
         }
-        public Task randomDiscard(THHGame game, int count = 1)
+        public Task randomDiscard(THHGame game, int count = 1, Func<Card, bool> filter = null)
         {
-            if (hand.count < 1)
+            var cards = filter == null ? hand : hand.Where(c => filter(c));
+            if (cards.Count() < 1)
                 return Task.CompletedTask;
-            else if (hand.count <= count)
-                return discard(game, hand);
+            else if (cards.Count() <= count)
+                return discard(game, cards);
             else
-                return discard(game, hand.randomTake(game, count));
+                return discard(game, cards.randomTake(game, count));
         }
         public Task discard(THHGame game, IEnumerable<Card> cards)
         {
