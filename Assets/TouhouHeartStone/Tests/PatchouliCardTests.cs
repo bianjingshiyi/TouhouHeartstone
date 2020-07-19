@@ -560,6 +560,18 @@ namespace Tests
 
             game.Dispose();
         }
+
+        [Test]
+        public void MultiCastTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(MultiCast.ID, 2),
+                new KeyValuePair<int, int>(GingerGust.ID, 6)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<MultiCast>().cost);
+            you.cmdUse(game, you.hand.getCard<MultiCast>());
+            game.Dispose();
+        }
     }
 }
 
