@@ -260,6 +260,7 @@ namespace Game
         {
             LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
             ui.NetworkingPageGroup.display(lanPanel);
+            lanPanel.LoadingPanelImage.gameObject.SetActive(false);
             lanPanel.FlushRoomButton.onClick.set(() =>
             {
                 flushLANRooms();
@@ -267,6 +268,7 @@ namespace Game
             lanPanel.CreateRoomButton.interactable = !host.RoomIsValid;
             lanPanel.CreateRoomButton.onClick.set(() =>
             {
+                lanPanel.LoadingPanelImage.gameObject.SetActive(true);
                 _ = createRoom();
             });
             lanPanel.ReturnBtnButton.onClick.AddListener(() =>

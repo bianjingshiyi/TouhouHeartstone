@@ -221,9 +221,12 @@ MonoBehaviour:
   _initStates: []
   m_as_Image: {fileID: 1501993715688349023}
   _Image: {fileID: 4261853265823479250}
+  _WinImage: {fileID: 4199529031015848365}
   _Text: {fileID: 1501993716775651601}
+  _FailImage: {fileID: 273877028315909841}
   _Fail_Text: {fileID: 8744560358568584023}
   _Button: {fileID: 995873916972280770}
+  _Image_Text: {fileID: 6506344133093278924}
   onGameSuccess:
     m_PersistentCalls:
       m_Calls:
