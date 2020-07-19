@@ -147,6 +147,8 @@ namespace UI
         public SimpleAnim onLifeUp;
         public SimpleAnim onLifeDown;
         public SimpleAnim onTargeted;
+        public SimpleAnim onAttack;
+        public SimpleAnim onAttacked;
         public SimpleAnim onDamage;
         public SimpleAnim onHeal;
         public SimpleAnim onSummon;

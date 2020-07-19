@@ -368,6 +368,11 @@ namespace TouhouHeartstone
             }
             return result;
         }
+        public Task shuffleCardToDeck(THHGame game, CardDefine define)
+        {
+            Card card = game.createCard(define);
+            return deck.insert(game, card, game.randomInt(0, deck.count));
+        }
         public Task addRandomCardToHand(THHGame game, IEnumerable<CardDefine> pool)
         {
             if (hand.isFull)//手牌满了
