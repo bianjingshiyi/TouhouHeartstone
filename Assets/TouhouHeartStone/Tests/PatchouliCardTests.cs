@@ -542,6 +542,24 @@ namespace Tests
 
             game.Dispose();
         }
+
+        [Test]
+        public void BiteTentacleTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(BiteTentacle.ID, 2),
+                new KeyValuePair<int, int>(GingerGust.ID, 6)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<BiteTentacle>().cost);
+            you.cmdUse(game, you.hand.getCard<BiteTentacle>());
+            var handBeforeUse = you.hand.ToArray();
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 5);
+            Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>().LastOrDefault(c => c.to == you.grave);
+            Card throwcard = movecardevent.card;
+            Assert.True(handBeforeUse.Contains(throwcard));
+
+            game.Dispose();
+        }
     }
 }
 
