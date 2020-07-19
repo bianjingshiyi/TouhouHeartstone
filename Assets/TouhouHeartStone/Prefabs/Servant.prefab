@@ -250,34 +250,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _attackThreshold: 70
-  _onHighlightControllerYellow:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 163705352615757087}
-        m_MethodName: Play
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Highlight_Yellow
-          m_BoolArgument: 0
-        m_CallState: 2
-  _onHighlightControllerGreen:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 163705352615757087}
-        m_MethodName: Play
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Highlight_Green
-          m_BoolArgument: 0
-        m_CallState: 2
   onAttackUp:
     beforeAnim:
       m_PersistentCalls:
@@ -363,6 +335,82 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     animName: Servant_Default
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onCanAttackTrue:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolTrue
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: CanAttack
+            m_BoolArgument: 0
+          m_CallState: 2
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onCanAttackFalse:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolFalse
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: CanAttack
+            m_BoolArgument: 0
+          m_CallState: 2
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onSelectableTrue:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolTrue
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: Selectable
+            m_BoolArgument: 0
+          m_CallState: 2
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onSelectableFalse:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolFalse
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: Selectable
+            m_BoolArgument: 0
+          m_CallState: 2
+    animName: 
     afterAnim:
       m_PersistentCalls:
         m_Calls: []

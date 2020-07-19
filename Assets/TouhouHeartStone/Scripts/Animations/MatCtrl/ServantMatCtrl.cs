@@ -17,8 +17,9 @@ namespace Game
             material.SetFloat(nameof(_Gray), _Gray);
             material.SetColor(nameof(_Color), _Color);
         }
-        protected void Reset()
+        protected override void Reset()
         {
+            base.Reset();
             _Gray = material.GetFloat(nameof(_Gray));
             _Color = material.GetColor(nameof(_Color));
         }

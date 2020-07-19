@@ -27,8 +27,9 @@ namespace Animations
             base.material.SetFloat("_Gray", this._Gray);
             base.material.SetTexture("_texcoord", this._texcoord);
         }
-        protected virtual void Reset()
+        protected override void Reset()
         {
+            base.Reset();
             this._MainTex = base.material.GetTexture("_MainTex");
             this._Color = base.material.GetColor("_Color");
             this._StencilComp = base.material.GetFloat("_StencilComp");

@@ -10,47 +10,6 @@ namespace UI
     {
         [Obsolete]
         public TouhouCardEngine.Card card { get; private set; } = null;
-        public void update(Table table, THHPlayer player, TouhouCardEngine.Card card, CardSkinData skin)
-        {
-            this.card = card;
-
-            Image.sprite = skin.image;
-            LifePropNumber.asText.text = card.getCurrentLife(null).ToString();
-            //if (card.getCurrentLife() == card.getLife())
-            //    HpText.color = Color.white;
-            //else
-            //    HpText.color = Color.red;
-            if (card.getAttack(null) > 0)
-            {
-                AttackPropNumber.asText.text = card.getAttack(null).ToString();
-                AttackPropNumber.asText.enabled = true;
-            }
-            else
-                AttackPropNumber.asText.enabled = false;
-            if (card.getArmor(null) > 0)
-            {
-                ArmorPropNumber.asText.text = card.getArmor(null).ToString();
-                ArmorPropNumber.asText.enabled = true;
-            }
-            else
-                ArmorPropNumber.asText.enabled = false;
-
-            if (table.selectableTargets != null && table.selectableTargets.Contains(this))
-            {
-                // HighlightController = Highlight.Yellow;
-                onHighlightControllerYellow?.Invoke();
-            }
-            else if (table.player == player && table.game.currentPlayer == player && card.canAttack(table.game))
-            {
-                // HighlightController = Highlight.Green;
-                onHighlightControllerGreen?.Invoke();
-            }
-            else
-            {
-                // HighlightController = Highlight.None;
-                onHighlightControllerNone?.Invoke();
-            }
-        }
         [SerializeField]
         float _attackThreshold = 50;
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
@@ -103,17 +62,6 @@ namespace UI
             onClick.invoke(this, eventData);
         }
         public ActionEvent<Master, PointerEventData> onClick { get; } = new ActionEvent<Master, PointerEventData>();
-        [SerializeField]
-        private UnityEvent _onHighlightControllerNone;
-        public UnityEvent onHighlightControllerNone => _onHighlightControllerNone;
-
-        [SerializeField]
-        private UnityEvent _onHighlightControllerYellow;
-        public UnityEvent onHighlightControllerYellow => _onHighlightControllerYellow;
-
-        [SerializeField]
-        private UnityEvent _onHighlightControllerGreen;
-        public UnityEvent onHighlightControllerGreen => _onHighlightControllerGreen;
         public SimpleAnim onTargeted;
         public SimpleAnim onDamage;
         public SimpleAnim onDeath;

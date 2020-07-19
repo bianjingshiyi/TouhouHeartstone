@@ -30,12 +30,12 @@ namespace UI
             this._BackgroundImage = this.transform.Find("CardFace").Find("Background").GetComponent<Image>();
             this._Mask = this.transform.Find("CardFace").Find("Mask").GetComponent<Mask>();
             this._Image = this.transform.Find("CardFace").Find("Mask").Find("Image").GetComponent<Image>();
-            this._NameShadowImage = this.transform.Find("CardFace").Find("Mask").Find("NameShadow").GetComponent<Image>();
-            this._NameText = this.transform.Find("CardFace").Find("Mask").Find("NameText").GetComponent<Text>();
-            this._SubNameText = this.transform.Find("CardFace").Find("Mask").Find("SubNameText").GetComponent<Text>();
-            this._DescShadowImage = this.transform.Find("CardFace").Find("Mask").Find("DescShadow").GetComponent<Image>();
-            this._DescText = this.transform.Find("CardFace").Find("Mask").Find("DescText").GetComponent<Text>();
-            this._RaceText = this.transform.Find("CardFace").Find("Mask").Find("RaceText").GetComponent<Text>();
+            this._NameShadowImage = this.transform.Find("CardFace").Find("NameShadow").GetComponent<Image>();
+            this._NameText = this.transform.Find("CardFace").Find("NameText").GetComponent<Text>();
+            this._DescShadowImage = this.transform.Find("CardFace").Find("DescShadow").GetComponent<Image>();
+            this._SubNameText = this.transform.Find("CardFace").Find("SubNameText").GetComponent<Text>();
+            this._DescText = this.transform.Find("CardFace").Find("DescText").GetComponent<Text>();
+            this._RaceText = this.transform.Find("CardFace").Find("RaceText").GetComponent<Text>();
             this._BorderImage = this.transform.Find("CardFace").Find("Border").GetComponent<Image>();
             this._CardFace_Image = this.transform.Find("CardFace").Find("Image").GetComponent<Image>();
             this._CostImage = this.transform.Find("CardFace").Find("CostImage").GetComponent<Image>();
@@ -119,7 +119,7 @@ namespace UI
             {
                 if ((this._NameShadowImage == null))
                 {
-                    this._NameShadowImage = this.transform.Find("CardFace").Find("Mask").Find("NameShadow").GetComponent<Image>();
+                    this._NameShadowImage = this.transform.Find("CardFace").Find("NameShadow").GetComponent<Image>();
                 }
                 return this._NameShadowImage;
             }
@@ -132,22 +132,9 @@ namespace UI
             {
                 if ((this._NameText == null))
                 {
-                    this._NameText = this.transform.Find("CardFace").Find("Mask").Find("NameText").GetComponent<Text>();
+                    this._NameText = this.transform.Find("CardFace").Find("NameText").GetComponent<Text>();
                 }
                 return this._NameText;
-            }
-        }
-        [SerializeField()]
-        private Text _SubNameText;
-        public Text SubNameText
-        {
-            get
-            {
-                if ((this._SubNameText == null))
-                {
-                    this._SubNameText = this.transform.Find("CardFace").Find("Mask").Find("SubNameText").GetComponent<Text>();
-                }
-                return this._SubNameText;
             }
         }
         [SerializeField()]
@@ -158,9 +145,22 @@ namespace UI
             {
                 if ((this._DescShadowImage == null))
                 {
-                    this._DescShadowImage = this.transform.Find("CardFace").Find("Mask").Find("DescShadow").GetComponent<Image>();
+                    this._DescShadowImage = this.transform.Find("CardFace").Find("DescShadow").GetComponent<Image>();
                 }
                 return this._DescShadowImage;
+            }
+        }
+        [SerializeField()]
+        private Text _SubNameText;
+        public Text SubNameText
+        {
+            get
+            {
+                if ((this._SubNameText == null))
+                {
+                    this._SubNameText = this.transform.Find("CardFace").Find("SubNameText").GetComponent<Text>();
+                }
+                return this._SubNameText;
             }
         }
         [SerializeField()]
@@ -171,7 +171,7 @@ namespace UI
             {
                 if ((this._DescText == null))
                 {
-                    this._DescText = this.transform.Find("CardFace").Find("Mask").Find("DescText").GetComponent<Text>();
+                    this._DescText = this.transform.Find("CardFace").Find("DescText").GetComponent<Text>();
                 }
                 return this._DescText;
             }
@@ -184,7 +184,7 @@ namespace UI
             {
                 if ((this._RaceText == null))
                 {
-                    this._RaceText = this.transform.Find("CardFace").Find("Mask").Find("RaceText").GetComponent<Text>();
+                    this._RaceText = this.transform.Find("CardFace").Find("RaceText").GetComponent<Text>();
                 }
                 return this._RaceText;
             }

@@ -288,17 +288,25 @@ namespace Game
             if (isSelectable)
             {
                 // master.HighlightController = Master.Highlight.Yellow;
-                master.onHighlightControllerYellow?.Invoke();
+                master.onSelectableTrue.beforeAnim.Invoke();
+                master.onSelectableTrue.afterAnim.Invoke();
             }
-            else if (card.getOwner() == player && game.currentPlayer == player && card.canAttack(game))
+            else
+            {
+                master.onSelectableFalse.beforeAnim.Invoke();
+                master.onSelectableFalse.afterAnim.Invoke();
+            }
+            if (card.getOwner() == player && game.currentPlayer == player && card.canAttack(game))
             {
                 // master.HighlightController = Master.Highlight.Green;
-                master.onHighlightControllerGreen?.Invoke();
+                master.onCanAttackTrue.beforeAnim.Invoke();
+                master.onCanAttackTrue.afterAnim.Invoke();
             }
             else
             {
                 // master.HighlightController = Master.Highlight.None;
-                master.onHighlightControllerNone?.Invoke();
+                master.onCanAttackFalse.beforeAnim.Invoke();
+                master.onCanAttackFalse.afterAnim.Invoke();
             }
         }
         public void setItem(Item item, TouhouCardEngine.Card card)
@@ -916,20 +924,27 @@ namespace Game
             servant.onDrag.remove(onDragServant);
             if (isSelectable)
             {
-                // servant.HighlightController = Servant.Highlight.Yellow;
-                servant.onHighlightControllerYellow?.Invoke();
+                servant.onSelectableTrue.beforeAnim.Invoke();
+                servant.onSelectableTrue.afterAnim.Invoke();
             }
-            else if (player == card.getOwner() && game.currentPlayer == player && card.canAttack(game))
+            else
+            {
+                servant.onSelectableFalse.beforeAnim.Invoke();
+                servant.onSelectableFalse.afterAnim.Invoke();
+            }
+            if (player == card.getOwner() && game.currentPlayer == player && card.canAttack(game))
             {
                 // servant.HighlightController = Servant.Highlight.Green;
-                servant.onHighlightControllerGreen?.Invoke();
+                servant.onCanAttackTrue.beforeAnim.Invoke();
+                servant.onCanAttackTrue.afterAnim.Invoke();
                 servant.onDrag.add(onDragServant);
                 servant.onDragEnd.add(onDragEndServant);
             }
             else
             {
                 // servant.HighlightController = Servant.Highlight.None;
-                servant.onHighlightControllerNone?.Invoke();
+                servant.onCanAttackFalse.beforeAnim.Invoke();
+                servant.onCanAttackFalse.afterAnim.Invoke();
             }
             if (card.isTaunt(game))
             {
@@ -984,12 +999,12 @@ namespace Game
                 {
                     master.onSelectableTrue.beforeAnim.Invoke();
                     master.onSelectableTrue.afterAnim.Invoke();
-                    setMaster(master, target, true);
                     master.onClick.add(onClickMaster);
                 }
                 else if (tryGetServant(target, out var servant))
                 {
-                    setServant(servant, target, true);
+                    servant.onSelectableTrue.beforeAnim.Invoke();
+                    servant.onSelectableTrue.afterAnim.Invoke();
                     servant.onClick.add(onClickServant);
                 }
             }
@@ -999,16 +1014,19 @@ namespace Game
         /// </summary>
         void removeHighlights()
         {
-            setMaster(ui.SelfMaster, player.master, false);
-            THHPlayer opponent = game.getOpponent(player);
-            setMaster(ui.EnemyMaster, opponent.master, false);
+            ui.SelfMaster.onSelectableFalse.beforeAnim.Invoke();
+            ui.SelfMaster.onSelectableFalse.afterAnim.Invoke();
+            ui.EnemyMaster.onSelectableFalse.beforeAnim.Invoke();
+            ui.EnemyMaster.onSelectableFalse.afterAnim.Invoke();
             foreach (var servant in ui.SelfFieldList)
             {
-                setServant(servant, getCard(servant), false);
+                servant.onSelectableFalse.beforeAnim.Invoke();
+                servant.onSelectableFalse.afterAnim.Invoke();
             }
             foreach (var servant in ui.EnemyFieldList)
             {
-                setServant(servant, getCard(servant), false);
+                servant.onSelectableFalse.beforeAnim.Invoke();
+                servant.onSelectableFalse.afterAnim.Invoke();
             }
         }
         /// <summary>
