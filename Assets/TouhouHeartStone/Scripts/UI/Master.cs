@@ -6,11 +6,7 @@ using TouhouHeartstone;
 using System.Linq;
 namespace UI
 {
-    interface ITargetedAnim
-    {
-        string targetedAnimName { get; }
-    }
-    partial class Master : IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, ITargetedAnim
+    partial class Master : IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
     {
         [Obsolete]
         public TouhouCardEngine.Card card { get; private set; } = null;
@@ -108,9 +104,6 @@ namespace UI
         }
         public ActionEvent<Master, PointerEventData> onClick { get; } = new ActionEvent<Master, PointerEventData>();
         [SerializeField]
-        string _targetedAnimName = "Targetd";
-        public string targetedAnimName => _targetedAnimName;
-        [SerializeField]
         private UnityEvent _onHighlightControllerNone;
         public UnityEvent onHighlightControllerNone => _onHighlightControllerNone;
 
@@ -121,6 +114,7 @@ namespace UI
         [SerializeField]
         private UnityEvent _onHighlightControllerGreen;
         public UnityEvent onHighlightControllerGreen => _onHighlightControllerGreen;
+        public SimpleAnim onTargeted;
         public SimpleAnim onDamage;
         public SimpleAnim onDeath;
     }

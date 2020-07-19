@@ -1,16 +1,19 @@
 ﻿using UI;
 using UnityEngine;
+using System;
 namespace Game
 {
     static class SimpleAnimHelper
     {
-        public static bool update(TableManager table, ref AnimAnim anim, SimpleAnim simpleAnim, Animator animator)
+        public static bool update(TableManager table, ref AnimAnim anim, SimpleAnim simpleAnim, Animator animator, Func<UIAnimation, bool> onBlockAnim = null)
         {
+            if (simpleAnim == null)
+                return true; ;
             simpleAnim.beforeAnim.Invoke();
-            if (!string.IsNullOrEmpty(simpleAnim.animName))
+            if (!string.IsNullOrEmpty(simpleAnim.animName) && animator != null)
             {
                 if (anim == null)
-                    anim = new AnimAnim(animator, simpleAnim.animName);
+                    anim = new AnimAnim(animator, simpleAnim.animName, onBlockAnim);
                 if (!anim.update(table))
                     return false;
             }

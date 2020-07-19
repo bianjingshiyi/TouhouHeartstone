@@ -205,9 +205,6 @@ MonoBehaviour:
   - CanAttack/False
   - IsAttackable/False
   - Highlight/Highlight_None
-  _Image_1: {fileID: 0}
-  _Image_2: {fileID: 0}
-  _Image_3: {fileID: 0}
   _HighlightImage: {fileID: 2593902375022216909}
   _BackgroundImage: {fileID: 4712789771521229126}
   _ImageMask: {fileID: 2470481777276467000}
@@ -253,21 +250,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _attackThreshold: 70
-  _targetAnimName: Servant_Targeted
-  _onHighlightControllerNone:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 163705352615757087}
-        m_MethodName: Play
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Highlight_None
-          m_BoolArgument: 0
-        m_CallState: 2
   _onHighlightControllerYellow:
     m_PersistentCalls:
       m_Calls:
@@ -328,11 +310,19 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
+  onTargeted:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: Servant_Targeted
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
   onDamage:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
-    animName: Servant_Dam
+    animName: Servant_Damage
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
