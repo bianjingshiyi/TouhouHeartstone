@@ -59,13 +59,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.3764706, b: 0.7490196, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0ca41f6c2b653fc48b2e081273ddc7c1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 17d361e5e66d7f047ac1e44eea04200a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -223,9 +223,9 @@ MonoBehaviour:
   _Image: {fileID: 7368762269767551752}
   _FrameImage: {fileID: 7368762270740186328}
   _AttackImage: {fileID: 7368762270283885302}
-  _AttackText: {fileID: 0}
+  _AttackPropNumber: {fileID: 0}
   _DurabilityImage: {fileID: 7368762269333698099}
-  _DurabilityText: {fileID: 0}
+  _DurabilityPropNumber: {fileID: 0}
   onEquip:
     beforeAnim:
       m_PersistentCalls:
