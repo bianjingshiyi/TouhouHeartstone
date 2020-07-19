@@ -294,7 +294,7 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
-    animName: 
+    animName: Servant_Attack
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
