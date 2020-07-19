@@ -240,7 +240,6 @@ GameObject:
   - component: {fileID: 4192561273210197444}
   - component: {fileID: 9121299813857040853}
   - component: {fileID: 6046089851005868003}
-  - component: {fileID: 5224735113393699104}
   m_Layer: 5
   m_Name: DescShadow
   m_TagString: Untagged
@@ -304,31 +303,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5224735113393699104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1284782018953066426}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1cade339ec0210409d35e0011dcf408, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _MainTex: {fileID: 0}
-  _Color: {r: 1, g: 1, b: 1, a: 1}
-  _StencilComp: 8
-  _Stencil: 0
-  _StencilOp: 0
-  _StencilWriteMask: 255
-  _StencilReadMask: 255
-  _ColorMask: 15
-  _UseUIAlphaClip: 0
-  _Color1: {r: 0, g: 0, b: 0, a: 0.78431374}
-  _Color2: {r: 0, g: 0, b: 0, a: 0}
-  _Direction: {x: 0, y: 1, z: 0, w: 0}
-  _Arg: 4
 --- !u!1 &1679613855683109319
 GameObject:
   m_ObjectHideFlags: 0
@@ -1248,8 +1222,8 @@ MonoBehaviour:
   _Image: {fileID: 6724395705441483877}
   _NameShadowImage: {fileID: 896383926161244298}
   _NameText: {fileID: 5938416541120205926}
-  _SubNameText: {fileID: 4780553373060387644}
   _DescShadowImage: {fileID: 6046089851005868003}
+  _SubNameText: {fileID: 4780553373060387644}
   _DescText: {fileID: 3032609579816535311}
   _RaceText: {fileID: 7141724517573644477}
   _BorderImage: {fileID: 4064673707873042981}
