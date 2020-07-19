@@ -25,7 +25,7 @@ namespace UI
     partial class Card
     {
         [Obsolete]
-        public TouhouCardEngine.Card card { get; private set; }
+        public TouhouCardEngine.Card card { get; set; }
         [Obsolete]
         public void update(TouhouCardEngine.Card card, CardSkinData skin)
         {

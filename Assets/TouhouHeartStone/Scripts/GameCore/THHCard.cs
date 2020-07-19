@@ -298,6 +298,19 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(ServantCardDefine.spellDamage), value);
         }
+        public static async Task silence(this Card card, THHGame game)
+        {
+            card.setProp(nameof(silence), true);
+            await card.removeBuff(game, card.getBuffs());
+            foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
+            {
+                effect.onDisable(game, card);
+            }
+        }
+        public static bool isSilenced(this Card card, IGame game)
+        {
+            return card.getProp<bool>(game, nameof(silence));
+        }
         public static bool hasTag(this Card card, IGame game, string tag)
         {
             return card.getProp<string[]>(game, nameof(ServantCardDefine.tags)).Contains(tag);

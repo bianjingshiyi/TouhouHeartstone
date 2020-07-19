@@ -99,39 +99,9 @@ namespace TouhouHeartstone
                 {
                     if (string.IsNullOrEmpty(keyword))
                         continue;
-                    switch (keyword)
-                    {
-                        case Keyword.TAUNT:
-                            card.setTaunt(true);
-                            break;
-                        case Keyword.CHARGE:
-                            card.setCharge(true);
-                            break;
-                        case Keyword.RUSH:
-                            card.setRush(true);
-                            break;
-                        case Keyword.SHIELD:
-                            card.setShield(true);
-                            break;
-                        case Keyword.STEALTH:
-                            card.setStealth(true);
-                            break;
-                        case Keyword.DRAIN:
-                            card.setDrain(true);
-                            break;
-                        case Keyword.POISONOUS:
-                            card.setPoisonous(true);
-                            break;
-                        case Keyword.ELUSIVE:
-                            card.setElusive(true);
-                            break;
-                        case Keyword.UNIQUE:
-                            card.setUnique(true);
-                            break;
-                        default:
-                            throw new UnknowKeywordException("未知关键词" + keyword);
-                    }
+                    card.setProp(keyword, true);
                 }
+                card.setProp(nameof(ServantCardDefine.keywords), servant.keywords);
                 card.setProp(nameof(ServantCardDefine.tags), servant.tags);
             }
             else if (define is SpellCardDefine spell)
