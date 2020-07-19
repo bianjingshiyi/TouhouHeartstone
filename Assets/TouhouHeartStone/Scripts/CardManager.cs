@@ -94,7 +94,6 @@ namespace Game
                     screenLogger?.log("加载卡片集：" + Path.GetFileNameWithoutExtension(path));
 
                     CardDefine[] cards = await loadCards(path);
-                    logger.log("Load", "");
                     foreach (var card in cards)
                     {
                         CardDefine older = cardList.Find(c => c.id == card.id);
