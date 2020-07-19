@@ -240,6 +240,7 @@ GameObject:
   - component: {fileID: 4192561273210197444}
   - component: {fileID: 9121299813857040853}
   - component: {fileID: 6046089851005868003}
+  - component: {fileID: 5224735113393699104}
   m_Layer: 5
   m_Name: DescShadow
   m_TagString: Untagged
@@ -286,7 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: ce526bb2cdb109f49b2dc591bac4ab7e, type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
@@ -303,6 +304,31 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5224735113393699104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284782018953066426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1cade339ec0210409d35e0011dcf408, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _MainTex: {fileID: 0}
+  _Color: {r: 1, g: 1, b: 1, a: 1}
+  _StencilComp: 8
+  _Stencil: 0
+  _StencilOp: 0
+  _StencilWriteMask: 255
+  _StencilReadMask: 255
+  _ColorMask: 15
+  _UseUIAlphaClip: 0
+  _Color1: {r: 0, g: 0, b: 0, a: 0.78039217}
+  _Color2: {r: 0, g: 0, b: 0, a: 0}
+  _Direction: {x: 0, y: 1, z: 0, w: 0}
+  _Arg: 4
 --- !u!1 &1679613855683109319
 GameObject:
   m_ObjectHideFlags: 0
@@ -1750,10 +1776,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3639996476798694622}
     m_Modifications:
+    - target: {fileID: 635103427995462404, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_EffectColor.a
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2872538149249012041, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: m_Name
       value: Attack
+      objectReference: {fileID: 0}
+    - target: {fileID: 7176695291515966001, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7289702440878097739, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
@@ -1817,10 +1853,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3639996476798694622}
     m_Modifications:
+    - target: {fileID: 635103427995462404, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_EffectColor.a
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2872538149249012041, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: m_Name
       value: Cost
+      objectReference: {fileID: 0}
+    - target: {fileID: 7176695291515966001, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7289702440878097739, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
@@ -1954,6 +2000,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3639996476798694622}
     m_Modifications:
+    - target: {fileID: 635103427995462404, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_EffectColor.a
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2872538149249012041, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: m_Name
@@ -1962,6 +2013,11 @@ PrefabInstance:
     - target: {fileID: 2872538149249012041, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7176695291515966001, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_Color.a
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7289702440878097739, guid: 26e94d6f26f17604e8a1fa704b48f146,
