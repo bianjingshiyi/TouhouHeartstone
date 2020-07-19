@@ -11,6 +11,7 @@ namespace Game
         Vector3 _startPosition;
         Timer _timer = new Timer() { duration = .4f };
         HandListItem _item;
+        AnimAnim _anim;
         public override bool update(TableManager table, Pile.MoveCardEventArg eventArg)
         {
             if (eventArg.from == null)
@@ -52,6 +53,23 @@ namespace Game
                     _item.Card.rectTransform.position = Vector3.Lerp(_startPosition, _item.rectTransform.position, _item.Card.drawCurve.Evaluate(_timer.progress));
                     if (!_timer.isExpired())
                         return false;
+                }
+            }
+            else if (eventArg.from.name == PileName.HAND)
+            {
+                HandListItem hand = table.getHand(eventArg.card);
+                if (eventArg.to.name == PileName.GRAVE)
+                {
+                    //弃牌
+                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onDiscard, hand.animator, next =>
+                        {
+                            if (next is MoveCardAnim moveCard && moveCard.tEventArg.card != eventArg.card)
+                                return true;
+                            return false;
+                        }))
+                        return false;
+                    table.ui.SelfHandList.removeItem(hand);
+                    table.ui.EnemyHandList.removeItem(hand);
                 }
             }
             return true;

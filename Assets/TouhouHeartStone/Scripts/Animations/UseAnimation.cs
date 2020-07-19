@@ -116,20 +116,24 @@ namespace Game
         {
             if (eventArg.targets != null && eventArg.targets.Length > 0 && eventArg.targets[0] is var targetCard)
             {
+                SimpleAnim simpleAnim = null;
+                Animator animator = null;
                 if (_targetedAnim == null)
                 {
                     if (table.tryGetMaster(targetCard, out var targetMaster))
                     {
-                        _targetedAnim = new AnimAnim(targetMaster.animator, targetMaster.targetedAnimName, next => false);
+                        simpleAnim = targetMaster.onTargeted;
+                        animator = targetMaster.animator;
                     }
                     else if (table.tryGetServant(targetCard, out var targetServant))
                     {
-                        _targetedAnim = new AnimAnim(targetServant.animator, targetServant.targetedAnimName, next => false);
+                        simpleAnim = targetServant.onTargeted;
+                        animator = targetServant.animator;
                     }
                     else
                         throw new ActorNotFoundException(targetCard);
                 }
-                if (!_targetedAnim.update(table))
+                if (!SimpleAnimHelper.update(table, ref _targetedAnim, simpleAnim, animator, next => false))
                     return true;
             }
             return false;
