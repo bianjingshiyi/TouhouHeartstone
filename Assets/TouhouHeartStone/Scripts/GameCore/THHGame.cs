@@ -137,6 +137,12 @@ namespace TouhouHeartstone
             else if (define is SpellCardDefine spell)
             {
                 card.setCost(spell.cost);
+                foreach (var keyword in spell.keywords)
+                {
+                    if (string.IsNullOrEmpty(keyword))
+                        continue;
+                    card.setProp(keyword, true);
+                }
             }
             else if (define is SkillCardDefine skill)
             {
@@ -149,6 +155,10 @@ namespace TouhouHeartstone
                 card.setLife(item.life);
             }
             return card;
+        }
+        public Card createCard<T>() where T : CardDefine
+        {
+            return createCard(getCardDefine<T>());
         }
         public Card createCardByRandom(IEnumerable<CardDefine> defines)
         {

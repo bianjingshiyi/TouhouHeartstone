@@ -371,7 +371,18 @@ namespace TouhouHeartstone
         public Task shuffleCardToDeck(THHGame game, CardDefine define)
         {
             Card card = game.createCard(define);
+            return shuffleCardToDeck(game, card);
+        }
+        public Task shuffleCardToDeck(THHGame game, Card card)
+        {
             return deck.insert(game, card, game.randomInt(0, deck.count));
+        }
+        public Task addCardToHand<T>(THHGame game) where T : CardDefine
+        {
+            if (hand.isFull)
+                return Task.CompletedTask;
+            Card card = game.createCard<T>();
+            return hand.add(game, card);
         }
         public Task addRandomCardToHand(THHGame game, IEnumerable<CardDefine> pool)
         {

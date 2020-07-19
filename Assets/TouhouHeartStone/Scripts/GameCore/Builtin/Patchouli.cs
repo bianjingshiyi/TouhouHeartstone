@@ -72,9 +72,9 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static Task effect(THHGame game, Card card)
+        static async Task effect(THHGame game, Card card)
         {
-            card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
+            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
                 new Halo(new GeneratedBuff(ID, new CostModifier(-5)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
                  {
                      return c1.isSpell();
@@ -87,7 +87,6 @@ namespace TouhouHeartstone.Builtin
                 {
                     return a2.player == card.getOwner();
                 }, ID)));
-            return Task.CompletedTask;
         }
     }
     /// <summary>
@@ -183,10 +182,9 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async(game,card,target)=>
             {
-                target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3),new LifeModifier(6)));
-                return Task.CompletedTask;
+                await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3),new LifeModifier(6)));
             }, PileFlag.both | PileFlag.field)
         };
     }
@@ -348,7 +346,7 @@ namespace TouhouHeartstone.Builtin
             if (!card.getOwner().hand.isFull)
             {
                 await card.getOwner().draw(game, discovered);
-                discovered.addBuff(game, new GeneratedBuff(ID, new CostModifier(-1)));
+                await discovered.addBuff(game, new GeneratedBuff(ID, new CostModifier(-1)));
             }
         }
     }
@@ -367,10 +365,9 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static Task effect(THHGame game, Card card)
+        static async Task effect(THHGame game, Card card)
         {
-            card.addBuff(game, new GeneratedBuff(ID, new LifeModifier(card.getOwner().hand.Where(c => c.isSpell()).Count() - 1)));
-            return Task.CompletedTask;
+            await card.addBuff(game, new GeneratedBuff(ID, new LifeModifier(card.getOwner().hand.Where(c => c.isSpell()).Count() - 1)));
         }
     }
     /// <summary>
@@ -390,7 +387,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await card.getOwner().draw(game);
                 var drawed = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
-                drawed.addBuff(game, new GeneratedBuff(ID, new CostModifier(-1)));
+                await drawed.addBuff(game, new GeneratedBuff(ID, new CostModifier(-1)));
             }
         }
     }
@@ -414,17 +411,16 @@ namespace TouhouHeartstone.Builtin
         {
             Trigger<THHGame.TurnEndEventArg> TurnEndTrigger { get; set; } = null;
             Buff buff = new GeneratedBuff(ID, new AttackModifier(2));
-            public void onEnable(THHGame game, Card card)
+            public async void onEnable(THHGame game, Card card)
             {
-                card.addBuff(game, buff);
+                await card.addBuff(game, buff);
                 if (TurnEndTrigger == null)
                 {
-                    TurnEndTrigger = new Trigger<THHGame.TurnEndEventArg>(arg =>
+                    TurnEndTrigger = new Trigger<THHGame.TurnEndEventArg>(async arg =>
                     {
-                        card.removeBuff(game, buff);
+                        await card.removeBuff(game, buff);
                         game.triggers.removeAfter(TurnEndTrigger);
                         TurnEndTrigger = null;
-                        return Task.CompletedTask;
                     });
                     game.triggers.registerAfter(TurnEndTrigger);
                 }
@@ -456,10 +452,9 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override IEffect[] effects { get; set; } = new IEffect[] {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async(game,card,target)=>
             {
-                target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(2)));
-                return Task.CompletedTask;
+                await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(2)));
             })
         };
     }
@@ -532,7 +527,7 @@ namespace TouhouHeartstone.Builtin
                 if (target.isDead(game))
                 {
                     foreach (Card buffcard in card.getOwner().field.randomTake(game, 1))
-                        buffcard.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
+                        await buffcard.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
                 }
             }
         }
@@ -566,22 +561,21 @@ namespace TouhouHeartstone.Builtin
         {
             Trigger<THHGame.TurnStartEventArg> TurnEndTrigger { get; set; } = null;
             Buff buff = new GeneratedBuff(ID, new AttackModifier(-3));
-            public void onEnable(THHGame game, Card card)
+            public async void onEnable(THHGame game, Card card)
             {
-                card.addBuff(game, buff);
+                await card.addBuff(game, buff);
                 if (card.getAttack(game) == 0)
                     card.setDead(true);
                 if (TurnEndTrigger == null)
                 {
-                    TurnEndTrigger = new Trigger<THHGame.TurnStartEventArg>(arg =>
+                    TurnEndTrigger = new Trigger<THHGame.TurnStartEventArg>(async arg =>
                     {
                         if (game.currentPlayer != card.getOwner())
                         {
-                            card.removeBuff(game, buff);
+                            await card.removeBuff(game, buff);
                             game.triggers.removeAfter(TurnEndTrigger);
                             TurnEndTrigger = null;
                         }
-                        return Task.CompletedTask;
                     });
                     game.triggers.registerAfter(TurnEndTrigger);
                 }
@@ -597,13 +591,13 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override IEffect[] effects { get; set; } = new IEffect[] {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 foreach(Card buffcard in card.getOwner().field)
                 {
-                    buffcard.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
+                    await buffcard.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
                 }
-                return target.damage(game,card,card.getOwner().field.count);
+                await target.damage(game,card,card.getOwner().field.count);
             })
         };
     }
@@ -644,10 +638,10 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override IEffect[] effects { get; set; } = new IEffect[] {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3)));
-                return target.heal(game,target.getLife(game)-target.getCurrentLife(game));
+                await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3)));
+                await target.heal(game,target.getLife(game)-target.getCurrentLife(game));
             })
         };
     }
@@ -828,7 +822,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class MultiCast : SpellCardDefine
     {
-        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x35;
+        public const int ID = Patchouli.ID | CardCategory.SPELL | 0x035;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -836,7 +830,29 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(async (g1,c1)=>
             {
                 await c1.getOwner().hand.random(g1).addBuff(g1,new GeneratedBuff(ID,new CostModifier(-2)));
-                //await c1.getOwner().addCardToHand(g1,g1.getCardDefine<>());
+                c1.getOwner().setProp(nameof(Asthma),c1.getOwner().getProp<int>(nameof(Asthma))+1);
+                Card asthma = g1.createCard<Asthma>();
+                asthma.setProp("damage",c1.getOwner().getProp<int>(nameof(Asthma)));
+                await c1.getOwner().shuffleCardToDeck(g1,g1.getCardDefine<Asthma>());
+                await c1.getOwner().addCardToHand<MultiCast>(g1);
+            })
+        };
+    }
+    /// <summary>
+    /// 哮喘 1 抽到自动释放，对你的英雄造成{card:damage}点伤害
+    /// </summary>
+    public class Asthma : SpellCardDefine
+    {
+        public const int ID = MultiCast.ID | CardCategory.TOKEN | 0x000;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { Keyword.AUTOCAST };
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect((g1,c1)=>
+            {
+                return c1.getOwner().master.damage(g1,c1,c1.getProp<int>(g1,"damage"));
             })
         };
     }
