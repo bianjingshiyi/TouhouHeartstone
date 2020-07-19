@@ -28,6 +28,7 @@ namespace UI
             this._Game = this.transform.Find("Game").GetComponent<Game>();
             this._Build = this.transform.Find("Build").GetComponent<Build>();
             this._MainMenu = this.transform.Find("MainMenu").GetComponent<MainMenu>();
+            this._AboutPage = this.transform.Find("AboutPage").GetComponent<AboutPage>();
             this._NetworkingPage = this.transform.Find("NetworkingPage").GetComponent<NetworkingPage>();
             this._Loading = this.transform.Find("Loading").GetComponent<Loading>();
             this._Dialog = this.transform.Find("Dialog").GetComponent<Dialog>();
@@ -69,6 +70,19 @@ namespace UI
                     this._MainMenu = this.transform.Find("MainMenu").GetComponent<MainMenu>();
                 }
                 return this._MainMenu;
+            }
+        }
+        [SerializeField()]
+        private AboutPage _AboutPage;
+        public AboutPage AboutPage
+        {
+            get
+            {
+                if ((this._AboutPage == null))
+                {
+                    this._AboutPage = this.transform.Find("AboutPage").GetComponent<AboutPage>();
+                }
+                return this._AboutPage;
             }
         }
         [SerializeField()]
@@ -116,6 +130,7 @@ namespace UI
                     this.Game,
                     this.Build,
                     this.MainMenu,
+                    this.AboutPage,
                     this.NetworkingPage,
                     this.Loading,
                     this.Dialog};

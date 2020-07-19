@@ -1,0 +1,28 @@
+Button_Click.wav
+Tip_Error.wav
+Author: KillaMaaki
+License: CC-BY 3.0
+
+Card_Draw.wav
+Author: HaelDB
+License: CC0
+
+Card_Flip.wav
+Author: Voltiment555
+License: CC0
+
+Servant_Attack.flac
+Author: Independent.nu
+License: CC0
+
+Servant_StateUp.mp3
+Author: wobbleboxx
+License: CC0
+
+Skill_Active.mp3
+Author: ViRiX (David McKee) 
+License: CC-BY 3.0
+
+Targeted.wav
+Author: Lokif
+License: CC0

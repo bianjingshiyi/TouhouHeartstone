@@ -28,6 +28,10 @@ namespace UI
             {
                 VersionText.text = "版本 " + Application.version;
             }
+            AboutButton.onClick.AddListener(() =>
+            {
+                parent.display(parent.AboutPage);
+            });
         }
     }
 }
