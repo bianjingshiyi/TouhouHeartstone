@@ -138,12 +138,21 @@ namespace TouhouHeartstone
             }
             else
             {
-                return game.triggers.doEvent(new DrawEventArg() { player = this, card = card }, arg =>
+                return game.triggers.doEvent(new DrawEventArg() { player = this, card = card }, async arg =>
                 {
+                    THHPlayer player = arg.player;
                     card = arg.card;
-                    arg.player.deck.moveTo(game, card, arg.player.hand, arg.player.hand.count);
-                    game.logger.log(arg.player + "抽" + card);
-                    return Task.CompletedTask;
+                    if (card.define is SpellCardDefine spell && card.getProp<bool>(game, Keyword.AUTOCAST))
+                    {
+                        await player.deck.moveTo(game, card, player.warp);
+                        await card.activeEffect(game, player, new Card[0]);
+                        await player.warp.moveTo(game, card, player.grave);
+                    }
+                    else
+                    {
+                        await player.deck.moveTo(game, card, player.hand, player.hand.count);
+                        game.logger.log(player + "抽" + card);
+                    }
                 });
             }
         }
@@ -216,16 +225,7 @@ namespace TouhouHeartstone
                 {
                     //法术卡，释放效果然后丢进墓地
                     await player.hand.moveTo(game, card, player.warp);
-                    ITriggerEffect triggerEffect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    if (triggerEffect != null)
-                    {
-                        await triggerEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
-                    }
-                    IActiveEffect activeEffect = arg.card.define.getActiveEffect();
-                    if (activeEffect != null)
-                    {
-                        await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
-                    }
+                    await card.activeEffect(game, player, targets);
                     await player.warp.moveTo(game, card, player.grave);
                 }
                 else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == CardDefineType.ITEM))

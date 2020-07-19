@@ -454,6 +454,19 @@ namespace TouhouHeartstone
                 return false;
             return true;
         }
+        public static async Task activeEffect(this Card card, THHGame game, THHPlayer player, Card[] targets)
+        {
+            ITriggerEffect triggerEffect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            if (triggerEffect != null)
+            {
+                await triggerEffect.execute(game, card, new object[] { new THHPlayer.ActiveEventArg(player, card, targets) }, targets);
+            }
+            IActiveEffect activeEffect = card.define.getActiveEffect();
+            if (activeEffect != null)
+            {
+                await activeEffect.execute(game, card, new object[] { new THHPlayer.ActiveEventArg(player, card, targets) }, targets);
+            }
+        }
         public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
             if (!card.canAttack(game))

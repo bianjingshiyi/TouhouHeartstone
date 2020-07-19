@@ -113,30 +113,14 @@ namespace UI
         }
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            if (card == null)
-                return;
-            displayLargeCard(eventData.position.x < Screen.width / 2);
-        }
-        private void displayLargeCard(bool isRight)
-        {
-            Table table = GetComponentInParent<Table>();
-            if (isRight)
-                table.LargeCard.rectTransform.localPosition = new Vector3(250, 0);
-            else
-                table.LargeCard.rectTransform.localPosition = new Vector3(-250, 0);
-            table.LargeCard.display();
-            table.LargeCard.update(card, table.getSkin(card));
+            onEnterServant.invoke(this, eventData);
         }
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-            hideLargeCard();
+            onExitServant.invoke(this, eventData);
         }
-        private void hideLargeCard()
-        {
-            Table table = GetComponentInParent<Table>();
-            table.LargeCard.hide();
-        }
-
+        public ActionEvent<Servant, PointerEventData> onEnterServant { get; } = new ActionEvent<Servant, PointerEventData>();
+        public ActionEvent<Servant, PointerEventData> onExitServant { get; } = new ActionEvent<Servant, PointerEventData>();
         public void OnPointerDown(PointerEventData eventData)
         {
             onClick.invoke(this, eventData);
