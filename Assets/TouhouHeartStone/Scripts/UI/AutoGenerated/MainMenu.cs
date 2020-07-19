@@ -31,6 +31,7 @@ namespace UI
             this._ManMachineButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("ManMachineButton").GetComponent<Button>();
             this._NetworkButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("NetworkButton").GetComponent<Button>();
             this._BuildButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<Button>();
+            this._AboutButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<Button>();
             this._QuitButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<Button>();
             this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
             this._VersionText = this.transform.Find("Version").GetComponent<Text>();
@@ -120,6 +121,19 @@ namespace UI
                     this._BuildButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<Button>();
                 }
                 return this._BuildButton;
+            }
+        }
+        [SerializeField()]
+        private Button _AboutButton;
+        public Button AboutButton
+        {
+            get
+            {
+                if ((this._AboutButton == null))
+                {
+                    this._AboutButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<Button>();
+                }
+                return this._AboutButton;
             }
         }
         [SerializeField()]
