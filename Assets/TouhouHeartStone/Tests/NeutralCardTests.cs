@@ -92,15 +92,18 @@ namespace Tests
             Assert.AreEqual(1, game.sortedPlayers[0].field.count);
             Assert.AreEqual(1, game.sortedPlayers[1].field.count);
         }
-        //[Test]
-        //public void missingSpecterTest()
-        //{
-        //    TestGameflow.createGame(out var game, out var you, out var oppo,
-        //        new KeyValuePair<int, int>(MissingSpecter.ID, 30));
-        //    game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<MissingSpecter>().cost);
-        //    you.cmdUse(game, you.hand[0], 0);
-
-        //}
+        [Test]
+        public void missingSpecterTest_disable()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(MissingSpecter.ID, 30));
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<MissingSpecter>().cost);
+            you.cmdUse(game, you.hand[0], 0);
+            Assert.IsInstanceOf<MissingSpecter>(you.field[0].define);
+            (you.field[0].define.effects[0] as DeathRattle).onDisable(game, you.field[0]);//类似沉默
+            you.field[0].die(game);//干掉它
+            Assert.AreEqual(0, you.field.count);
+        }
         [Test]
         public void drizzleFairyTest()
         {

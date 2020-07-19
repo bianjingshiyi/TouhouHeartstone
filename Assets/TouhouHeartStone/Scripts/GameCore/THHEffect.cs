@@ -38,6 +38,7 @@ namespace TouhouHeartstone
         }
         public delegate Task ExecuteDelegate(THHGame game, Card card, object[] vars, object[] targets);
         ExecuteDelegate onExecute { get; }
+        public bool enabled { get; set; }
         Task ITriggerEffect.execute(IGame game, ICard card, object[] vars, object[] targets)
         {
             if (onExecute != null)
@@ -208,19 +209,20 @@ namespace TouhouHeartstone
     }
     public abstract class PassiveEffect : IPassiveEffect
     {
-        public string[] events => throw new System.NotImplementedException();
+        public string[] events => throw new NotImplementedException();
         public abstract string[] piles { get; }
+        public bool enabled { get; set; }
         public bool checkCondition(IGame game, ICard card, object[] vars)
         {
             throw new System.NotImplementedException();
         }
         public bool checkTarget(IGame game, ICard card, object[] vars, object[] targets)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
         public Task execute(IGame game, ICard card, object[] vars, object[] targets)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
         public string[] getEvents(ITriggerManager manager)
         {
@@ -252,10 +254,10 @@ namespace TouhouHeartstone
         public abstract bool checkCondition(THHGame game, Card card);
         public abstract Task execute(IGame game, ICard card, object[] vars, object[] targets);
     }
+    public delegate Task ExecuteDelegate(THHGame game, Card card);
     public class NoTargetEffect : ActiveEffect
     {
         CheckConditionDelegate _onCheckCondition;
-        public delegate Task ExecuteDelegate(THHGame game, Card card);
         ExecuteDelegate _onExecute;
         public NoTargetEffect(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null)
         {
@@ -459,8 +461,7 @@ namespace TouhouHeartstone
     {
         public AddBuffAfter(string pile, CheckConditionDelegate onCheckCondition, Buff originBuff) : base(pile, onCheckCondition, null, (g, c, a) =>
         {
-            c.addBuff(g, originBuff.clone());
-            return Task.CompletedTask;
+            return c.addBuff(g, originBuff.clone());
         })
         {
         }
@@ -469,15 +470,13 @@ namespace TouhouHeartstone
     {
         public RemoveBuffBefore(string pile, int buffId) : base(pile, null, null, (game, card, arg) =>
         {
-            card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-            return Task.CompletedTask;
+            return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
         })
         {
         }
         public RemoveBuffBefore(string pile, CheckConditionDelegate onCheckCondition, int buffId) : base(pile, onCheckCondition, null, (game, card, arg) =>
         {
-            card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-            return Task.CompletedTask;
+            return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
         })
         {
         }
@@ -486,10 +485,55 @@ namespace TouhouHeartstone
     {
         public RemoveBuffAfter(string pile, CheckConditionDelegate onCheckCondition, int buffId) : base(pile, onCheckCondition, null, (game, card, arg) =>
         {
-            card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-            return Task.CompletedTask;
+            return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
         })
         {
+        }
+    }
+    public class DeathRattle : PassiveEffect
+    {
+        int _index;
+        public sealed override string[] piles { get; } = new string[] { PileName.FIELD, PileName.GRAVE };
+        CheckConditionDelegate _onCheckCondition;
+        public delegate Task ExecuteDelegate(THHGame game, Card card, int position);
+        ExecuteDelegate _onExecute;
+        public DeathRattle(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null)
+        {
+            _onCheckCondition = onCheckCondition;
+            _onExecute = onExecute;
+        }
+        public override void onEnable(THHGame game, Card card)
+        {
+            Trigger<THHCard.DeathEventArg> trigger = new Trigger<THHCard.DeathEventArg>(arg =>
+            {
+                if (!arg.infoDic.ContainsKey(card))//死的不是你
+                    return Task.CompletedTask;
+                if (_onCheckCondition != null && !_onCheckCondition(game, card))
+                    return Task.CompletedTask;
+                return _onExecute?.Invoke(game, card, arg.infoDic[card].position);
+            });
+            List<Trigger<THHCard.DeathEventArg>> deathRattleList = card.getProp<List<Trigger<THHCard.DeathEventArg>>>(game, nameof(DeathRattle));
+            if (deathRattleList == null)
+            {
+                deathRattleList = new List<Trigger<THHCard.DeathEventArg>>();
+                card.setProp(nameof(DeathRattle), deathRattleList);
+            }
+            _index = deathRattleList.Count;
+            deathRattleList.Add(trigger);
+            game.logger.log("Effect", card + "注册亡语" + ToString());
+            game.triggers.registerAfter(trigger);
+        }
+        public override void onDisable(THHGame game, Card card)
+        {
+            List<Trigger<THHCard.DeathEventArg>> deathRattleList = card.getProp<List<Trigger<THHCard.DeathEventArg>>>(game, nameof(DeathRattle));
+            Trigger<THHCard.DeathEventArg> trigger = deathRattleList[_index];
+            game.logger.log("Effect", card + "注销亡语" + ToString());
+            game.triggers.removeAfter(trigger);
+            deathRattleList.Remove(trigger);
+        }
+        public override string ToString()
+        {
+            return GetType().Name + "(" + _index + ")";
         }
     }
 }

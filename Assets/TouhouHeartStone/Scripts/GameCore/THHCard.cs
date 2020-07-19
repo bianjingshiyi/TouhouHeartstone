@@ -289,7 +289,24 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.UNIQUE, value);
         }
-
+        public static void setKeywords(this Card card, IGame game, string[] keywords)
+        {
+            if (keywords == null)
+                keywords = new string[0];
+            foreach (var keyword in card.getKeywords(game))
+            {
+                card.setProp(keyword, false);
+            }
+            card.setProp(nameof(ServantCardDefine.keywords), keywords);
+            foreach (var keyword in card.getKeywords(game))
+            {
+                card.setProp(keyword, true);
+            }
+        }
+        public static string[] getKeywords(this Card card, IGame game)
+        {
+            return card.getProp<string[]>(game, nameof(ServantCardDefine.keywords));
+        }
         public static int getSpellDamage(this Card card, IGame game)
         {
             return card.getProp<int>(game, nameof(ServantCardDefine.spellDamage));
@@ -306,6 +323,7 @@ namespace TouhouHeartstone
             {
                 effect.onDisable(game, card);
             }
+            card.setKeywords(game, new string[0]);
         }
         public static bool isSilenced(this Card card, IGame game)
         {
