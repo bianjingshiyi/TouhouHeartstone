@@ -475,6 +475,11 @@ namespace TouhouHeartstone
         {
             isRunning = false;
             answers.cancelAll();
+            if (turnTimer != null)
+            {
+                time.cancel(turnTimer);
+                turnTimer = null;
+            }
         }
         #endregion
         public void Dispose()

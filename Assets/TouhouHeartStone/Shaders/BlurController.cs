@@ -30,8 +30,9 @@ namespace Animations
             base.material.SetFloat("_LerpPow", this._LerpPow);
             base.material.SetFloat("_BlackWhite", this._BlackWhite);
         }
-        protected virtual void Reset()
+        protected override void Reset()
         {
+            base.Reset();
             this._MainTex = base.material.GetTexture("_MainTex");
             this._Color = base.material.GetColor("_Color");
             this._StencilComp = base.material.GetFloat("_StencilComp");

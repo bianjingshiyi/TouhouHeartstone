@@ -17,37 +17,6 @@ namespace UI
         {
             get { return _attackAnimationCurve; }
         }
-        [Obsolete]
-        public void update(THHPlayer player, TouhouCardEngine.Card card, CardSkinData skin)
-        {
-            this.card = card;
-
-            Table table = GetComponentInParent<Table>();
-            if (skin != null)
-            {
-                Image.sprite = skin.image;
-            }
-            AttackTextPropNumber.asText.text = card.getAttack(null).ToString();
-            HpTextPropNumber.asText.text = card.getCurrentLife(null).ToString();
-
-            if (table.selectableTargets != null && table.selectableTargets.Contains(this))
-            {
-                // HighlightController = Highlight.Yellow;
-                onHighlightControllerYellow?.Invoke();
-            }
-            else if (table.player == player && table.game.currentPlayer == player && card.canAttack(table.game))
-            {
-                // HighlightController = Highlight.Green;
-                onHighlightControllerGreen?.Invoke();
-            }
-            else
-            {
-                // HighlightController = Highlight.None;
-                onHighlightControllerNone?.Invoke();
-            }
-            getChild("Root").getChild("Taunt").gameObject.SetActive(card.isTaunt(null));
-            getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield(null));
-        }
         public void update(CardDefine card, CardSkinData skin)
         {
             if (skin != null)
@@ -173,16 +142,6 @@ namespace UI
             onClick.invoke(this, eventData);
         }
         public ActionEvent<Servant, PointerEventData> onClick { get; } = new ActionEvent<Servant, PointerEventData>();
-        private UnityEvent _onHighlightControllerNone;
-        public UnityEvent onHighlightControllerNone => _onHighlightControllerNone;
-
-        [SerializeField]
-        private UnityEvent _onHighlightControllerYellow;
-        public UnityEvent onHighlightControllerYellow => _onHighlightControllerYellow;
-
-        [SerializeField]
-        private UnityEvent _onHighlightControllerGreen;
-        public UnityEvent onHighlightControllerGreen => _onHighlightControllerGreen;
         public SimpleAnim onAttackUp;
         public SimpleAnim onAttackDown;
         public SimpleAnim onLifeUp;
