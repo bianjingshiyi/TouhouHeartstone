@@ -572,6 +572,21 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<MultiCast>());
             game.Dispose();
         }
+
+        [Test]
+        public void AsthmaTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(MultiCast.ID, 1)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 2);
+            for (int i = 0; i < 2; i++)
+            {
+                you.cmdUse(game, you.hand.getCard<MultiCast>());
+                you.draw(game, you.deck.Where(c => c.define is Asthma).ToArray()[0]);
+            }
+            game.Dispose();
+        }
     }
 }
 
