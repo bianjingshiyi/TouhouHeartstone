@@ -609,14 +609,15 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer opponent = game.getOpponent(card.getOwner());
+            THHPlayer player = card.getOwner();
+            THHPlayer opponent = game.getOpponent(player);
+            await opponent.field.damage(game, card, player.getSpellDamage(game, 2));
             foreach (Card target in opponent.field)
             {
-                await target.damage(game, card, 2);
                 if (target.isDead(game))
                 {
-                    foreach (Card buffcard in card.getOwner().field.randomTake(game, 1))
-                        await buffcard.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
+                    if (player.field.count > 0)
+                        await player.field.random(game).addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
                 }
             }
             await Patchouli.tryMix(game, card);
@@ -632,47 +633,22 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { CardTag.WATER, CardTag.METAL };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return false;
-            },async (game,card,arg,targets)=>
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(async (game,card)=>
             {
                 THHPlayer opponent = game.getOpponent(card.getOwner());
                 foreach(Card target in opponent.field)
                 {
-                    new BuffFixer().onEnable(game,target);
+                    await target.addBuff(game,
+                        new GeneratedBuff(ID,new AttackModifier(-3),
+                        new RemoveBuffBefore<THHGame.TurnStartEventArg>(PileName.FIELD,ID)));
+                    if(target.getAttack(game)<=0)
+                        target.setDead(true);
                 }
                 await Patchouli.tryMix(game, card);
             })
         };
-        class BuffFixer
-        {
-            Trigger<THHGame.TurnStartEventArg> TurnEndTrigger { get; set; } = null;
-            Buff buff = new GeneratedBuff(ID, new AttackModifier(-3));
-            public async void onEnable(THHGame game, Card card)
-            {
-                await card.addBuff(game, buff);
-                if (card.getAttack(game) == 0)
-                    card.setDead(true);
-                if (TurnEndTrigger == null)
-                {
-                    TurnEndTrigger = new Trigger<THHGame.TurnStartEventArg>(async arg =>
-                    {
-                        if (game.currentPlayer != card.getOwner())
-                        {
-                            await card.removeBuff(game, buff);
-                            game.triggers.removeAfter(TurnEndTrigger);
-                            TurnEndTrigger = null;
-                        }
-                    });
-                    game.triggers.registerAfter(TurnEndTrigger);
-                }
-            }
-        }
     }
     /// <summary>
     /// 6 木火符【森林大火】 使所有友方随从获得+2/2，你每控制一个随从便对目标造成1点伤害
@@ -709,7 +685,10 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                target.define.effects = target.define.effects.Concat(addeffect).ToArray();
+                await target.addBuff(game, new GeneratedBuff(ID,new DeathRattle(ID,async (g,c,p)=>
+                {
+                    await card.getOwner().createToken(game,c.define,p);
+                })));
                 await Patchouli.tryMix(game, card);
             },PileFlag.both | PileFlag.field)
         };
