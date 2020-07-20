@@ -270,6 +270,8 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public async Task<Card> discover(THHGame game, IEnumerable<Card> cards, int count = 3)
         {
+            if (cards.Count() < 1)
+                return null;
             if (count > 0)
                 cards = cards.randomTake(game, count);
             var task = game.answers.ask(id, new DiscoverRequest(cards.Select(c => c.id).ToArray()));

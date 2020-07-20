@@ -27,14 +27,6 @@ namespace UI
         {
             this._Card = this.transform.Find("Card").GetComponent<Card>();
         }
-        private Main _parent;
-        public Main parent
-        {
-            get
-            {
-                return this.transform.parent.parent.parent.parent.GetComponent<Main>();
-            }
-        }
         [SerializeField()]
         private Card _Card;
         public Card Card

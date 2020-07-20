@@ -180,7 +180,7 @@ namespace TouhouHeartstone.Builtin
             new SpellDamageModifier(1)
         };
 
-        public override IPileEffect[] effects { get; }
+        public override IPassiveEffect[] effects { get; }
 
         public override Buff clone()
         {

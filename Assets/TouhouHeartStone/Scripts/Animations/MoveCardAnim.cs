@@ -72,6 +72,17 @@ namespace Game
                     table.ui.EnemyHandList.removeItem(hand);
                 }
             }
+            else if (eventArg.from.name == PileName.GRAVE)
+            {
+                if (eventArg.to.name == PileName.HAND)
+                {
+                    //从墓地抽牌
+                    HandListItem hand = table.createHand(eventArg.card);
+                    hand.GetComponentInChildren<PositionLerp>().targetTransofrm = eventArg.from.owner == table.player ? table.ui.SelfGraveDeck.rectTransform : table.ui.EnemyGraveDeck.rectTransform;
+                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onGraveToHand, hand.animator))
+                        return false;
+                }
+            }
             return true;
         }
     }

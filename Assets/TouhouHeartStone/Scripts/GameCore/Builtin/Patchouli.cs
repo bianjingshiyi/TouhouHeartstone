@@ -303,11 +303,8 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            foreach (Card target in game.getOpponent(card.owner as THHPlayer).field)
-            {
-                target.define.effects = new IEffect[0];
-                target.setDead(true);
-            }
+            await game.getOpponent(card.getOwner()).field.silence(game);
+            await game.getOpponent(card.getOwner()).field.die(game);
         }
     }
     /// <summary>
