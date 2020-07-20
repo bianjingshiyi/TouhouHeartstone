@@ -60,5 +60,6 @@ namespace UI
         public SimpleAnim onCostUp;
         public SimpleAnim onCostDown;
         public SimpleAnim onDiscard;
+        public SimpleAnim onGraveToHand;
     }
 }

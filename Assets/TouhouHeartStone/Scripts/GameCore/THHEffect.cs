@@ -207,7 +207,7 @@ namespace TouhouHeartstone
             }
         }
     }
-    public abstract class PassiveEffect : IPileEffect
+    public abstract class PassiveEffect : IPassiveEffect
     {
         public string[] events => throw new NotImplementedException();
         public abstract string[] piles { get; }
@@ -500,11 +500,12 @@ namespace TouhouHeartstone
     /// 然后还有一个同一个卡怎么记录自己同时注册的N个亡语的问题。亡语不是实例，但是卡片是，BUFF是，那么Buff效果也会是效果吗？
     /// 这他妈是在无限套娃。
     /// 不行了，我放弃，自毁程序启动。
+    /// 发现关于这个问题有一个简单的解法，实际上问题在于被动效果在每次移动的时候都要禁用再激活。为什么呢？
     /// </remarks>
     public class DeathRattle : IPassiveEffect
     {
         public int id { get; }
-        public string[] piles { get; } = new string[] { PileName.FIELD };
+        public string[] piles { get; } = new string[] { PileName.FIELD, PileName.GRAVE };
         public CheckConditionDelegate onCheckCondition { get; }
         public delegate Task ExecuteDelegate(THHGame game, Card card, int position);
         public ExecuteDelegate onExecute { get; }

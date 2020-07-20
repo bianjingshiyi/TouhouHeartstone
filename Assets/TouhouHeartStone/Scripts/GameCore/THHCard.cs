@@ -315,15 +315,22 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(ServantCardDefine.spellDamage), value);
         }
-        public static async Task silence(this Card card, THHGame game)
+        public static async Task silence(this IEnumerable<Card> cards, THHGame game)
         {
-            card.setProp(nameof(silence), true);
-            await card.removeBuff(game, card.getBuffs());
-            foreach (var effect in card.define.effects.OfType<IPileEffect>())
+            foreach (var card in cards)
             {
-                effect.onDisable(game, card);
+                card.setProp(nameof(silence), true);
+                await card.removeBuff(game, card.getBuffs());
+                foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
+                {
+                    effect.onDisable(game, card);
+                }
+                card.setKeywords(game, new string[0]);
             }
-            card.setKeywords(game, new string[0]);
+        }
+        public static Task silence(this Card card, THHGame game)
+        {
+            return silence(new Card[] { card }, game);
         }
         public static bool isSilenced(this Card card, IGame game)
         {

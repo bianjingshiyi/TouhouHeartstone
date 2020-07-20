@@ -373,7 +373,7 @@ namespace TouhouHeartstone.Builtin
             new AttackModifier(2)
         };
 
-        public override IPileEffect[] effects { get; }
+        public override IPassiveEffect[] effects { get; }
 
         public override Buff clone()
         {
