@@ -78,7 +78,8 @@ namespace Game
                 {
                     //从墓地抽牌
                     HandListItem hand = table.createHand(eventArg.card);
-                    hand.GetComponentInChildren<PositionLerp>().targetTransofrm = eventArg.from.owner == table.player ? table.ui.SelfGraveDeck.rectTransform : table.ui.EnemyGraveDeck.rectTransform;
+                    var grave = eventArg.from.owner == table.player ? table.ui.SelfGraveDeck : table.ui.EnemyGraveDeck;
+                    hand.GetComponentInChildren<PositionLerp>().setTarget(grave.rectTransform, grave.rectTransform.sizeDelta.x / 2);
                     if (!SimpleAnimHelper.update(table, ref _anim, hand.onGraveToHand, hand.animator))
                         return false;
                 }
