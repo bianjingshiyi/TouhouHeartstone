@@ -20,12 +20,12 @@ namespace Game
         {
             base.onAwake();
             Main main = ui.getObject<Main>();
-            main.MainMenu.ManMachineButton.onClick.set(() =>
+            main.MainMenu.ManMachineButtonButtonBlack.asButton.onClick.set(() =>
             {
                 main.display(main.Game);
                 game.startLocalGame();
             });
-            main.MainMenu.NetworkButton.onClick.set(() =>
+            main.MainMenu.NetworkButtonButtonBlack.asButton.onClick.set(() =>
             {
                 main.display(main.NetworkingPage);
                 network.displayLANPanel();

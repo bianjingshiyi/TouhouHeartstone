@@ -3079,7 +3079,7 @@ MonoBehaviour:
   _BlockerButton: {fileID: 298106363}
   _Text: {fileID: 234957971}
   _InitReplaceCardList: {fileID: 1923394221}
-  _ConfirmButton: {fileID: 0}
+  _ConfirmButtonBlack: {fileID: 0}
 --- !u!1 &206789260
 GameObject:
   m_ObjectHideFlags: 0
@@ -4197,7 +4197,7 @@ MonoBehaviour:
   _initStates: []
   m_as_Image: {fileID: 276880607}
   _LoadingText: {fileID: 1227819911}
-  _Text: {fileID: 0}
+  _Text: {fileID: 1782682277}
   _LoggerText: {fileID: 1744200395}
 --- !u!1 &279603090
 GameObject:
@@ -8167,8 +8167,8 @@ MonoBehaviour:
   _IP_FieldImage: {fileID: 1325986273}
   _IP_Field_TitleText: {fileID: 1101222846}
   _IPInputField: {fileID: 921863322}
-  _ConnectButton: {fileID: 0}
-  _CreateRoomButton: {fileID: 0}
+  _ConnectButtonButtonBlack: {fileID: 0}
+  _CreateRoomButtonButtonBlack: {fileID: 0}
   _FlushRoomButton: {fileID: 1206176098}
   _RoomListPanelImage: {fileID: 1384590916}
   _RoomScrollView: {fileID: 1858960554}
@@ -8180,9 +8180,9 @@ MonoBehaviour:
   _IPText: {fileID: 2115817950}
   _DescLabelText: {fileID: 1270548798}
   _DescText: {fileID: 1898937820}
-  _ReturnBtnButton: {fileID: 0}
+  _ReturnBtnButtonBlack: {fileID: 0}
   _LoadingPanelImage: {fileID: 156492836}
-  _LoadingText: {fileID: 0}
+  _LoadingImage: {fileID: 0}
 --- !u!1 &654382455
 GameObject:
   m_ObjectHideFlags: 0
@@ -12601,8 +12601,8 @@ MonoBehaviour:
   _InitReplacementContainerGameOptionItemText: {fileID: 1141252900}
   _TurnTimeContainerGameOptionItemText: {fileID: 2038185071}
   _IsSortedToggleGameOptionItemToggle: {fileID: 1389128662}
-  _QuitButton: {fileID: 0}
-  _StartButton: {fileID: 0}
+  _QuitButtonButtonBlack: {fileID: 0}
+  _StartButtonButtonBlack: {fileID: 0}
 --- !u!1 &997284080
 GameObject:
   m_ObjectHideFlags: 0
@@ -12961,7 +12961,6 @@ MonoBehaviour:
   _Weather: {fileID: 608791640}
   _SelfFieldList: {fileID: 2025087093}
   _EnemyFieldList: {fileID: 2096220191}
-  _AttackArrowImage: {fileID: 2021928788}
   _ServantPlaceHolder: {fileID: 1452065511}
   _EnemyHandList: {fileID: 304797391}
   _EnemyGem: {fileID: 1031994276}
@@ -12980,6 +12979,7 @@ MonoBehaviour:
   _SelfHandList: {fileID: 2432038108468695176}
   _InitReplaceDialog: {fileID: 203521522}
   _LargeCard: {fileID: 336116705}
+  _AttackArrowImage: {fileID: 2021928788}
   _TipText: {fileID: 466793700}
   _Fatigue: {fileID: 206789264}
   _TurnTipImage: {fileID: 1885641971}
@@ -13832,7 +13832,7 @@ PrefabInstance:
     - target: {fileID: 490584239171898832, guid: 8f87f95af032014448691606aece594a,
         type: 3}
       propertyPath: m_Name
-      value: Button
+      value: ConnectButton
       objectReference: {fileID: 0}
     - target: {fileID: 4153854023219715718, guid: 8f87f95af032014448691606aece594a,
         type: 3}
@@ -18637,7 +18637,7 @@ PrefabInstance:
     - target: {fileID: 1501993715688349022, guid: 0c8c633ea15226d40890e4c5844a5577,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1501993715688349022, guid: 0c8c633ea15226d40890e4c5844a5577,
         type: 3}
@@ -18718,8 +18718,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
-        type: 2}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c8c633ea15226d40890e4c5844a5577, type: 3}
 --- !u!114 &1503601216 stripped
@@ -21043,11 +21042,11 @@ MonoBehaviour:
   _BackgroundImage: {fileID: 765537073}
   _ButtonPanelImage: {fileID: 933985}
   _ButtonsVerticalLayoutGroup: {fileID: 729623763}
-  _ManMachineButton: {fileID: 0}
-  _NetworkButton: {fileID: 0}
-  _BuildButton: {fileID: 0}
-  _AboutButton: {fileID: 0}
-  _QuitButton: {fileID: 0}
+  _ManMachineButtonButtonBlack: {fileID: 0}
+  _NetworkButtonButtonBlack: {fileID: 0}
+  _BuildButtonButtonBlack: {fileID: 0}
+  _AboutButtonButtonBlack: {fileID: 0}
+  _QuitButtonButtonBlack: {fileID: 0}
   _LogoImage: {fileID: 231583817}
   _VersionText: {fileID: 1330733103}
   _CopyrightText: {fileID: 196645866}
@@ -21313,12 +21312,12 @@ MonoBehaviour:
   _TitleText: {fileID: 1486430554}
   _Scroll_View: {fileID: 478058694}
   _ContentVerticalLayoutGroup: {fileID: 1123314441}
-  _StaffText: {fileID: 0}
+  _StaffText: {fileID: 1760120114}
   _Right_TitleText: {fileID: 54720940}
   _Container_Scroll_View: {fileID: 976009626}
   _Viewport_ContentVerticalLayoutGroup: {fileID: 185128152}
-  _LicenseText: {fileID: 0}
-  _BackButton: {fileID: 0}
+  _LicenseText: {fileID: 1714584207}
+  _BackButtonBlack: {fileID: 0}
 --- !u!1 &1722421531
 GameObject:
   m_ObjectHideFlags: 0
@@ -24533,7 +24532,7 @@ MonoBehaviour:
   _initStates: []
   _BackgroundImage: {fileID: 868008359}
   _Table: {fileID: 1004327311}
-  _QuitButton: {fileID: 0}
+  _QuitButtonButtonGlass: {fileID: 0}
   _GameResultDialog: {fileID: 1503601216}
 --- !u!224 &1950091995 stripped
 RectTransform:

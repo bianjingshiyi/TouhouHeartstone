@@ -15,7 +15,7 @@ namespace UI
     using UnityEngine.UI;
     using BJSYGameCore.UI;
     
-    public partial class RoomListItem : UIObject
+    public partial class ButtonBlack : UIObject
     {
         protected override void Awake()
         {
@@ -27,16 +27,7 @@ namespace UI
         {
             this.m_as_Button = this.GetComponent<Button>();
             this.m_as_Image = this.GetComponent<Image>();
-            this._RoomNameText = this.transform.Find("RoomName").GetComponent<Text>();
-            this._ButtonButtonBlack = this.transform.Find("Button").GetComponent<ButtonBlack>();
-        }
-        private RoomList _parent;
-        public RoomList parent
-        {
-            get
-            {
-                return this.transform.parent.GetComponent<RoomList>();
-            }
+            this._Text = this.transform.Find("Text").GetComponent<Text>();
         }
         [SerializeField()]
         private Button m_as_Button;
@@ -65,29 +56,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _RoomNameText;
-        public Text RoomNameText
+        private Text _Text;
+        public Text Text
         {
             get
             {
-                if ((this._RoomNameText == null))
+                if ((this._Text == null))
                 {
-                    this._RoomNameText = this.transform.Find("RoomName").GetComponent<Text>();
+                    this._Text = this.transform.Find("Text").GetComponent<Text>();
                 }
-                return this._RoomNameText;
-            }
-        }
-        [SerializeField()]
-        private ButtonBlack _ButtonButtonBlack;
-        public ButtonBlack ButtonButtonBlack
-        {
-            get
-            {
-                if ((this._ButtonButtonBlack == null))
-                {
-                    this._ButtonButtonBlack = this.transform.Find("Button").GetComponent<ButtonBlack>();
-                }
-                return this._ButtonButtonBlack;
+                return this._Text;
             }
         }
         partial void onAwake();

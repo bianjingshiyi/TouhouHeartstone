@@ -5,7 +5,7 @@ namespace UI
     {
         partial void onAwake()
         {
-            QuitButton.onClick.AddListener(() =>
+            QuitButtonButtonGlass.asButton.onClick.AddListener(() =>
             {
                 parent.game.game.Dispose();
                 parent.display(parent.MainMenu);

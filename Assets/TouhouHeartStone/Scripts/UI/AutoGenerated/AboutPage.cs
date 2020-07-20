@@ -35,7 +35,7 @@ namespace UI
             this._Container_Scroll_View = this.transform.Find("About").Find("Right").Find("Container").Find("Scroll View").GetComponent<ScrollRect>();
             this._Viewport_ContentVerticalLayoutGroup = this.transform.Find("About").Find("Right").Find("Container").Find("Scroll View").Find("Viewport").Find("Content").GetComponent<VerticalLayoutGroup>();
             this._LicenseText = this.transform.Find("About").Find("Right").Find("Container").Find("Scroll View").Find("Viewport").Find("Content").Find("LicenseText").GetComponent<Text>();
-            this._BackButton = this.transform.Find("About").Find("Back").GetComponent<Button>();
+            this._BackButtonBlack = this.transform.Find("About").Find("Back").GetComponent<ButtonBlack>();
         }
         private Main _parent;
         public Main parent
@@ -176,16 +176,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Button _BackButton;
-        public Button BackButton
+        private ButtonBlack _BackButtonBlack;
+        public ButtonBlack BackButtonBlack
         {
             get
             {
-                if ((this._BackButton == null))
+                if ((this._BackButtonBlack == null))
                 {
-                    this._BackButton = this.transform.Find("About").Find("Back").GetComponent<Button>();
+                    this._BackButtonBlack = this.transform.Find("About").Find("Back").GetComponent<ButtonBlack>();
                 }
-                return this._BackButton;
+                return this._BackButtonBlack;
             }
         }
         partial void onAwake();
