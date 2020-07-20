@@ -63,6 +63,9 @@ namespace Game
             set { _isSelectingTarget = value; }
         }
         public TouhouCardEngine.Card attackingCard { get; set; } = null;
+
+        [SerializeField]
+        Gradient timeoutGradient = new Gradient();
         protected override void onAwake()
         {
             base.onAwake();
@@ -88,6 +91,7 @@ namespace Game
             {
                 ui.TimeoutSlider.display();
                 ui.TimeoutSlider.value = game.turnTimer.remainedTime / 15;
+                ui.TimeoutSlider.fillRect.GetComponent<Image>().color = timeoutGradient.Evaluate(1 - ui.TimeoutSlider.value);
             }
             else
                 ui.TimeoutSlider.hide();
