@@ -269,16 +269,16 @@ namespace TouhouHeartstone
         {
             if (!isRunning)
                 return;
-            await triggers.doEvent(new StartEventArg(), arg =>
+            await triggers.doEvent(new StartEventArg(), async arg =>
             {
                 logger.log("Debug", "游戏开始");
                 foreach (THHPlayer player in sortedPlayers)
                 {
-                    player.setMaxGem(this, option.startGem);
-                    player.init.moveTo(this, player.init[0, player.init.count - 1], player.hand, 0);
+                    await player.setMaxGem(this, option.startGem);
+                    await player.init.moveTo(this, player.init[0, player.init.count - 1], player.hand, 0);
                     if (player != sortedPlayers[0])
                     {
-                        player.hand.add(this, createCard(getCardDefine<LuckyCoin>()));
+                        await player.hand.add(this, createCard(getCardDefine<LuckyCoin>()));
                         logger.log("由于后手行动" + player + "获得一张幸运币");
                     }
                     arg.startHandDic.Add(player, new StartEventArg.StartInfo()
@@ -287,7 +287,6 @@ namespace TouhouHeartstone
                         hands = player.hand.ToArray()
                     });
                 }
-                return Task.CompletedTask;
             });
         }
         public class StartEventArg : EventArg

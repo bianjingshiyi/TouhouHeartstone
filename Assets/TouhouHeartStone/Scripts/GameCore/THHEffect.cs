@@ -422,9 +422,9 @@ namespace TouhouHeartstone
                     if (ranges.Contains(arg.to) &&
                        (filter == null || filter(game, arg.card)))
                     {
-                        Buff buff = this.buff.clone();
-                        arg.card.addBuff(game, buff);
-                        buffDic.Add(arg.card, buff);
+                        Buff b = this.buff.clone();
+                        arg.card.addBuff(game, b);
+                        buffDic.Add(arg.card, b);
                     }
                     else if (ranges.Contains(arg.from) &&
                         (filter == null || filter(game, arg.card)))
@@ -533,7 +533,7 @@ namespace TouhouHeartstone
         {
             string triggerName;
             if (buff == null)
-                triggerName = "DeathTrigger<" + id + ">";//TODO:要考虑Buff贴亡语，贴好几个一样的亡语的情况。
+                triggerName = "DeathTrigger<" + id + ">";
             else
                 triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
             Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
@@ -557,7 +557,11 @@ namespace TouhouHeartstone
         }
         public virtual void onDisable(THHGame game, Card card, Buff buff)
         {
-            string triggerName = "DeathTrigger<" + id + ">";//暂时不考虑Buff贴亡语这种情况。
+            string triggerName;
+            if (buff == null)
+                triggerName = "DeathTrigger<" + id + ">";
+            else
+                triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
             Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
             game.logger.log("Effect", card + "注销亡语" + triggerName);
             game.triggers.removeAfter(trigger);

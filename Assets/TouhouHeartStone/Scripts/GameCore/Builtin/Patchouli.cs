@@ -685,7 +685,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await target.addBuff(game, new GeneratedBuff(ID,new DeathRattle(ID,async (g,c,p)=>
+                await target.addBuff(game, new GeneratedBuff(ID,new DeathRattle(ID,async (g,c,b,p)=>
                 {
                     var createToken = await card.getOwner().createToken(game,c.define,p);
                     if(createToken!=null)
@@ -693,17 +693,6 @@ namespace TouhouHeartstone.Builtin
                 })));
                 await Patchouli.tryMix(game, card);
             },PileFlag.both | PileFlag.field)
-        };
-        private static IEffect[] addeffect = new IEffect[]{new THHEffectAfter<THHCard.DeathEventArg>(PileName.GRAVE, (game, card, arg) =>
-        {
-            return arg.infoDic.Any(p => p.Key == card);
-        }, (game, card, targets) =>
-        {
-            return true;
-        }, async (game, card, arg) =>
-        {
-            await arg.infoDic[card].player.createToken(game, game.getCardDefine(card.define.id), arg.infoDic[card].position);
-        })
         };
     }
     /// <summary>
@@ -716,13 +705,15 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { CardTag.WATER, CardTag.WOOD };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3)));
                 await target.heal(game,target.getLife(game)-target.getCurrentLife(game));
                 await Patchouli.tryMix(game, card);
-            }, PileFlag.both | PileFlag.field)};
+            }, PileFlag.both | PileFlag.field)
+        };
     }
     /// <summary>
     /// 4 水火符【燃素之雨】 造成点6伤害，随机分配给所有敌方角色
