@@ -26,3 +26,7 @@ License: CC-BY 3.0
 Targeted.wav
 Author: Lokif
 License: CC0
+
+Button.MP3
+Author: http://www.aigei.com/s?q=%E6%8C%89%E9%92%AE&type=cc_sound
+License: CC0
