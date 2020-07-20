@@ -14,6 +14,11 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = SummerFire.ID;
         public override IEffect[] effects { get; set; } = new IEffect[0];
+        public const string METAL = "Metal";
+        public const string WOOD = "Wood";
+        public const string WATER = "Water";
+        public const string FIRE = "Fire";
+        public const string EARTH = "Earth";
     }
     /// <summary>
     /// 知识引流
@@ -155,11 +160,13 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x007;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
+        public override string[] tags { get; set; } = new string[] { "Fire" };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.damage(game, card, card.getOwner().getSpellDamage(game, 7));
+
             })
         };
     }
