@@ -6,6 +6,7 @@ namespace TouhouHeartstone
     [Serializable]
     public class DiscoverRequest : Request
     {
+        public string title;
         public int[] cardIdArray;
         public override IResponse getDefaultResponse(IGame game, int playerId)
         {
@@ -15,9 +16,10 @@ namespace TouhouHeartstone
         {
             return response is DiscoverResponse;
         }
-        public DiscoverRequest(int[] cardIdArray)
+        public DiscoverRequest(int[] cardIdArray, string title)
         {
             this.cardIdArray = cardIdArray;
+            this.title = title;
         }
     }
 }

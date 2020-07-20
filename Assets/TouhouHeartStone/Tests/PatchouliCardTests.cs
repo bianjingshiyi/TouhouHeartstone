@@ -608,6 +608,14 @@ namespace Tests
             }
             game.Dispose();
         }
+        [Test]
+        public void getMixCardsTest()
+        {
+            TestGameflow.createGame(out var game, out _, out _);
+            CardDefine[] mixedCards = Patchouli.getMixCards(game, game.getCardDefine<PhlogisticRain>(), game.getCardDefine<BurgeoningRise>());
+            Debug.Log(string.Join<CardDefine>("，", mixedCards));
+            Assert.AreEqual(4, mixedCards.Length);
+        }
     }
 }
 

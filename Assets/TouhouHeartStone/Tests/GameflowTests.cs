@@ -12,7 +12,6 @@ using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using UnityEngine;
 using UnityEngine.TestTools;
-using BJSYGameCore;
 namespace Tests
 {
     public class GameflowTests

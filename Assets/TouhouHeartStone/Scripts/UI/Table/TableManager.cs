@@ -1164,9 +1164,10 @@ namespace Game
             ui.ServantPlaceHolder.Servant.hide();
             ui.ServantPlaceHolder.hide();
         }
-        public void displayDiscoverDialog(int[] cardIdArray)
+        public void displayDiscoverDialog(int[] cardIdArray, string title)
         {
             ui.Discover.display();
+            ui.Discover.Text.text = title;
             ui.Discover.HoriCardList.clearItems();
             foreach (var cardId in cardIdArray)
             {
@@ -1194,7 +1195,7 @@ namespace Game
             {
                 ui.Discover.Button.setText("隐藏");
                 ui.Discover.PanelImage.display();
-                displayDiscoverDialog(game.answers.getRequest<DiscoverRequest>(player.id).cardIdArray);
+                displayDiscoverDialog(game.answers.getRequest<DiscoverRequest>(player.id).cardIdArray, ui.Discover.Text.text);
             }
         }
         public void closeDiscoverDialog()
