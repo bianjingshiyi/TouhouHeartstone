@@ -336,15 +336,16 @@ namespace TouhouHeartstone
             public Card card;
             public int position;
         }
-        public async Task<bool> createToken(THHGame game, CardDefine define, int position)
+        public async Task<CreateTokenEventArg> createToken(THHGame game, CardDefine define, int position)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));
             if (define == null)
                 throw new ArgumentNullException(nameof(define));
             if (field.count >= field.maxCount)
-                return false;
-            await game.triggers.doEvent(new CreateTokenEventArg() { player = this, define = define, position = position }, async arg =>
+                return null;
+            CreateTokenEventArg eventArg = new CreateTokenEventArg() { player = this, define = define, position = position };
+            await game.triggers.doEvent(eventArg, async arg =>
             {
                 THHPlayer player = arg.player;
                 define = arg.define;
@@ -355,7 +356,7 @@ namespace TouhouHeartstone
                 arg.card = game.createCard(define);
                 await tryPutIntoField(game, null, arg.card, position);
             });
-            return true;
+            return eventArg;
         }
         public class CreateTokenEventArg : EventArg
         {

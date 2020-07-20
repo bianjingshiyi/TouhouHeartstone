@@ -30,6 +30,8 @@ namespace Game
         [SerializeField]
         AnimationCurve _moveToFieldCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
         public AnimationCurve handToFieldCurve => _moveToFieldCurve;
+        [SerializeField]
+        Gradient timeoutGradient = new Gradient();
         [Header("State")]
         [SerializeField]
         bool _canControl = true;
@@ -88,6 +90,7 @@ namespace Game
             {
                 ui.TimeoutSlider.display();
                 ui.TimeoutSlider.value = game.turnTimer.remainedTime / 15;
+                ui.TimeoutSlider.fillRect.GetComponent<Image>().color = timeoutGradient.Evaluate(1 - ui.TimeoutSlider.value);
             }
             else
                 ui.TimeoutSlider.hide();

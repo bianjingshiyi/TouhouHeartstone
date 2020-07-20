@@ -100,7 +100,7 @@ namespace Tests
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<MissingSpecter>().cost);
             you.cmdUse(game, you.hand[0], 0);
             Assert.IsInstanceOf<MissingSpecter>(you.field[0].define);
-            (you.field[0].define.effects[0] as DeathRattle).onDisable(game, you.field[0]);//类似沉默
+            (you.field[0].define.effects[0] as DeathRattle).onDisable(game, you.field[0], null);//类似沉默
             you.field[0].die(game);//干掉它
             Assert.AreEqual(0, you.field.count);
         }

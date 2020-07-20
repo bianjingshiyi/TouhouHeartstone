@@ -195,6 +195,9 @@ namespace Tests
             public override int id { get; } = 0;
             public override PropModifier[] modifiers { get; } = null;
             public override IPassiveEffect[] effects { get; }
+
+            public override int instanceID { get; set; } = 0;
+
             public TestBuff(params PropModifier[] modifiers)
             {
                 this.modifiers = modifiers;

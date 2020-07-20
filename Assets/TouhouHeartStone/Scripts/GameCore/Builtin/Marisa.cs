@@ -179,8 +179,8 @@ namespace TouhouHeartstone.Builtin
             new LifeModifier(1),
             new SpellDamageModifier(1)
         };
-
         public override IPassiveEffect[] effects { get; }
+        public override int instanceID { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         public override Buff clone()
         {

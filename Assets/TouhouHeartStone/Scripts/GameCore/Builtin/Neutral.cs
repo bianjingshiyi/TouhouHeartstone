@@ -372,8 +372,8 @@ namespace TouhouHeartstone.Builtin
         {
             new AttackModifier(2)
         };
-
         public override IPassiveEffect[] effects { get; }
+        public override int instanceID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public override Buff clone()
         {

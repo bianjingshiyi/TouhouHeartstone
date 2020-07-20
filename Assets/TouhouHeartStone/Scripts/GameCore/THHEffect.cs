@@ -62,7 +62,7 @@ namespace TouhouHeartstone
             this.onCheckTarget = onCheckTarget;
             this.onExecute = onExecute;
         }
-        public virtual void onEnable(IGame game, ICard card)
+        public virtual void onEnable(IGame game, ICard card, IBuff buff)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -79,7 +79,7 @@ namespace TouhouHeartstone
                 game.triggers.register(time.getEventName(game.triggers), trigger);
             }
         }
-        public virtual void onDisable(IGame game, ICard card)
+        public virtual void onDisable(IGame game, ICard card, IBuff buff)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -110,7 +110,7 @@ namespace TouhouHeartstone
             })
         {
         }
-        public override void onEnable(IGame game, ICard card)
+        public override void onEnable(IGame game, ICard card, IBuff buff)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -127,7 +127,7 @@ namespace TouhouHeartstone
                 game.triggers.registerBefore(trigger);
             }
         }
-        public override void onDisable(IGame game, ICard card)
+        public override void onDisable(IGame game, ICard card, IBuff buff)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -179,7 +179,7 @@ namespace TouhouHeartstone
             })
         {
         }
-        public override void onEnable(IGame game, ICard card)
+        public override void onEnable(IGame game, ICard card, IBuff buff)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -196,7 +196,7 @@ namespace TouhouHeartstone
                 game.triggers.registerAfter(trigger);
             }
         }
-        public override void onDisable(IGame game, ICard card)
+        public override void onDisable(IGame game, ICard card, IBuff buff)
         {
             foreach (TriggerTime time in triggers)
             {
@@ -228,16 +228,16 @@ namespace TouhouHeartstone
         {
             return new string[0];
         }
-        void IPassiveEffect.onEnable(IGame game, ICard card)
+        void IPassiveEffect.onEnable(IGame game, ICard card, IBuff buff)
         {
-            onEnable(game as THHGame, card as Card);
+            onEnable(game as THHGame, card as Card, buff as Buff);
         }
-        public abstract void onEnable(THHGame game, Card card);
-        void IPassiveEffect.onDisable(IGame game, ICard card)
+        public abstract void onEnable(THHGame game, Card card, Buff buff);
+        void IPassiveEffect.onDisable(IGame game, ICard card, IBuff buff)
         {
-            onDisable(game as THHGame, card as Card);
+            onDisable(game as THHGame, card as Card, buff as Buff);
         }
-        public abstract void onDisable(THHGame game, Card card);
+        public abstract void onDisable(THHGame game, Card card, Buff buff);
     }
     public abstract class ActiveEffect : IActiveEffect
     {
@@ -410,7 +410,7 @@ namespace TouhouHeartstone
             this.filter = filter;
             this.buff = buff;
         }
-        public override void onEnable(THHGame game, Card card)
+        public override void onEnable(THHGame game, Card card, Buff buff)
         {
             Pile[] ranges = getRange != null ? getRange(game, card) : null;
             if (onCardEnterHandTrigger == null)
@@ -422,9 +422,9 @@ namespace TouhouHeartstone
                     if (ranges.Contains(arg.to) &&
                        (filter == null || filter(game, arg.card)))
                     {
-                        Buff buff = this.buff.clone();
-                        arg.card.addBuff(game, buff);
-                        buffDic.Add(arg.card, buff);
+                        Buff b = this.buff.clone();
+                        arg.card.addBuff(game, b);
+                        buffDic.Add(arg.card, b);
                     }
                     else if (ranges.Contains(arg.from) &&
                         (filter == null || filter(game, arg.card)))
@@ -438,12 +438,12 @@ namespace TouhouHeartstone
             }
             foreach (var target in card.getOwner().hand.Where(c => filter == null || filter(game, c)))
             {
-                Buff buff = this.buff.clone();
-                target.addBuff(game, buff);
-                buffDic.Add(target, buff);
+                Buff b = this.buff.clone();
+                target.addBuff(game, b);
+                buffDic.Add(target, b);
             }
         }
-        public override void onDisable(THHGame game, Card card)
+        public override void onDisable(THHGame game, Card card, Buff buff)
         {
             if (onCardEnterHandTrigger != null)
             {
@@ -509,19 +509,33 @@ namespace TouhouHeartstone
         public CheckConditionDelegate onCheckCondition { get; }
         public delegate Task ExecuteDelegate(THHGame game, Card card, int position);
         public ExecuteDelegate onExecute { get; }
+        public delegate bool CheckConditionBuffedDelegate(THHGame game, Card card, Buff buff);
+        public CheckConditionBuffedDelegate onCheckConditionBuffed { get; } = null;
+        public delegate Task ExecuteBuffedDelegate(THHGame game, Card card, Buff buff, int position);
+        public ExecuteBuffedDelegate onExecuteBuffed { get; } = null;
         public DeathRattle(int id, ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null)
         {
             this.id = id;
             this.onExecute = onExecute;
             this.onCheckCondition = onCheckCondition;
         }
-        public void onEnable(IGame game, ICard card)
+        public DeathRattle(int id, ExecuteBuffedDelegate onExecuteBuffed, CheckConditionBuffedDelegate onCheckConditionBuffed = null)
         {
-            onEnable(game as THHGame, card as Card);
+            this.id = id;
+            this.onExecuteBuffed = onExecuteBuffed;
+            this.onCheckConditionBuffed = onCheckConditionBuffed;
         }
-        public virtual void onEnable(THHGame game, Card card)
+        public void onEnable(IGame game, ICard card, IBuff buff)
         {
-            string triggerName = "DeathTrigger<" + id + ">";//TODO:要考虑Buff贴亡语，贴好几个一样的亡语的情况。
+            onEnable(game as THHGame, card as Card, buff as Buff);
+        }
+        public virtual void onEnable(THHGame game, Card card, Buff buff)
+        {
+            string triggerName;
+            if (buff == null)
+                triggerName = "DeathTrigger<" + id + ">";
+            else
+                triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
             Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
             if (trigger != null)
                 return;
@@ -537,13 +551,17 @@ namespace TouhouHeartstone
             card.setProp(triggerName, trigger);
             game.triggers.registerAfter(trigger);
         }
-        public void onDisable(IGame game, ICard card)
+        public void onDisable(IGame game, ICard card, IBuff buff)
         {
-            onDisable(game as THHGame, card as Card);
+            onDisable(game as THHGame, card as Card, buff as Buff);
         }
-        public virtual void onDisable(THHGame game, Card card)
+        public virtual void onDisable(THHGame game, Card card, Buff buff)
         {
-            string triggerName = "DeathTrigger<" + id + ">";//暂时不考虑Buff贴亡语这种情况。
+            string triggerName;
+            if (buff == null)
+                triggerName = "DeathTrigger<" + id + ">";
+            else
+                triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
             Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
             game.logger.log("Effect", card + "注销亡语" + triggerName);
             game.triggers.removeAfter(trigger);

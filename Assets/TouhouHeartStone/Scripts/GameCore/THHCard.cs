@@ -334,7 +334,7 @@ namespace TouhouHeartstone
                 await card.removeBuff(game, card.getBuffs());
                 foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
                 {
-                    effect.onDisable(game, card);
+                    effect.onDisable(game, card, null);
                 }
                 card.setKeywords(game, new string[0]);
             }
@@ -618,6 +618,25 @@ namespace TouhouHeartstone
                 }
                 return Task.CompletedTask;
             });
+        }
+        public static async Task<DamageEventArg> damageByRandom(this IEnumerable<Card> cards, THHGame game, Card source, int value)
+        {
+            if (cards.All(c => c.isDead(game)))
+                return null;
+            DamageEventArg eventArg = new DamageEventArg()
+            {
+                cards = cards.ToArray(),
+                source = source,
+                value = value,
+            };
+            await game.triggers.doEvent(eventArg, arg =>
+            {
+                cards = arg.cards;
+                source = arg.source;
+                value = arg.value;
+                return Task.CompletedTask;
+            });
+            return eventArg;
         }
         public class DamageEventArg : EventArg
         {
