@@ -15,7 +15,7 @@ namespace UI
     using UnityEngine.UI;
     using BJSYGameCore.UI;
     
-    public partial class RoomListItem : UIObject
+    public partial class ScrollbarVertical : UIObject
     {
         protected override void Awake()
         {
@@ -25,31 +25,9 @@ namespace UI
         }
         public void autoBind()
         {
-            this.m_as_Button = this.GetComponent<Button>();
             this.m_as_Image = this.GetComponent<Image>();
-            this._RoomNameText = this.transform.Find("RoomName").GetComponent<Text>();
-            this._ButtonButtonBlack = this.transform.Find("Button").GetComponent<ButtonBlack>();
-        }
-        private RoomList _parent;
-        public RoomList parent
-        {
-            get
-            {
-                return this.transform.parent.GetComponent<RoomList>();
-            }
-        }
-        [SerializeField()]
-        private Button m_as_Button;
-        public Button asButton
-        {
-            get
-            {
-                if ((this.m_as_Button == null))
-                {
-                    this.m_as_Button = this.GetComponent<Button>();
-                }
-                return this.m_as_Button;
-            }
+            this.m_as_Scrollbar = this.GetComponent<Scrollbar>();
+            this._HandleImage = this.transform.Find("Sliding Area").Find("Handle").GetComponent<Image>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -65,29 +43,29 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _RoomNameText;
-        public Text RoomNameText
+        private Scrollbar m_as_Scrollbar;
+        public Scrollbar asScrollbar
         {
             get
             {
-                if ((this._RoomNameText == null))
+                if ((this.m_as_Scrollbar == null))
                 {
-                    this._RoomNameText = this.transform.Find("RoomName").GetComponent<Text>();
+                    this.m_as_Scrollbar = this.GetComponent<Scrollbar>();
                 }
-                return this._RoomNameText;
+                return this.m_as_Scrollbar;
             }
         }
         [SerializeField()]
-        private ButtonBlack _ButtonButtonBlack;
-        public ButtonBlack ButtonButtonBlack
+        private Image _HandleImage;
+        public Image HandleImage
         {
             get
             {
-                if ((this._ButtonButtonBlack == null))
+                if ((this._HandleImage == null))
                 {
-                    this._ButtonButtonBlack = this.transform.Find("Button").GetComponent<ButtonBlack>();
+                    this._HandleImage = this.transform.Find("Sliding Area").Find("Handle").GetComponent<Image>();
                 }
-                return this._ButtonButtonBlack;
+                return this._HandleImage;
             }
         }
         partial void onAwake();

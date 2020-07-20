@@ -31,8 +31,8 @@ namespace UI
             this._IP_FieldImage = this.transform.Find("IP_Field").GetComponent<Image>();
             this._IP_Field_TitleText = this.transform.Find("IP_Field").Find("Title").GetComponent<Text>();
             this._IPInputField = this.transform.Find("IP_Field").Find("IPInputField").GetComponent<InputField>();
-            this._ConnectButton = this.transform.Find("IP_Field").Find("ConnectButton").GetComponent<Button>();
-            this._CreateRoomButton = this.transform.Find("CreateRoomButton").GetComponent<Button>();
+            this._ConnectButtonButtonBlack = this.transform.Find("IP_Field").Find("ConnectButton").GetComponent<ButtonBlack>();
+            this._CreateRoomButtonButtonBlack = this.transform.Find("CreateRoomButton").GetComponent<ButtonBlack>();
             this._FlushRoomButton = this.transform.Find("FlushRoomButton").GetComponent<Button>();
             this._RoomListPanelImage = this.transform.Find("RoomListPanel").GetComponent<Image>();
             this._RoomScrollView = this.transform.Find("RoomListPanel").Find("RoomScrollView").GetComponent<RoomScrollView>();
@@ -44,9 +44,9 @@ namespace UI
             this._IPText = this.transform.Find("RoomInfoPanel").Find("Container").Find("IPText").GetComponent<Text>();
             this._DescLabelText = this.transform.Find("RoomInfoPanel").Find("Container").Find("DescLabel").GetComponent<Text>();
             this._DescText = this.transform.Find("RoomInfoPanel").Find("Container").Find("DescText").GetComponent<Text>();
-            this._ReturnBtnButton = this.transform.Find("ReturnBtn").GetComponent<Button>();
+            this._ReturnBtnButtonBlack = this.transform.Find("ReturnBtn").GetComponent<ButtonBlack>();
             this._LoadingPanelImage = this.transform.Find("LoadingPanel").GetComponent<Image>();
-            this._LoadingText = this.transform.Find("LoadingPanel").Find("LoadingText").GetComponent<Text>();
+            this._LoadingImage = this.transform.Find("LoadingPanel").Find("LoadingImage").GetComponent<Image>();
         }
         private Main _parent;
         public Main parent
@@ -135,29 +135,29 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Button _ConnectButton;
-        public Button ConnectButton
+        private ButtonBlack _ConnectButtonButtonBlack;
+        public ButtonBlack ConnectButtonButtonBlack
         {
             get
             {
-                if ((this._ConnectButton == null))
+                if ((this._ConnectButtonButtonBlack == null))
                 {
-                    this._ConnectButton = this.transform.Find("IP_Field").Find("ConnectButton").GetComponent<Button>();
+                    this._ConnectButtonButtonBlack = this.transform.Find("IP_Field").Find("ConnectButton").GetComponent<ButtonBlack>();
                 }
-                return this._ConnectButton;
+                return this._ConnectButtonButtonBlack;
             }
         }
         [SerializeField()]
-        private Button _CreateRoomButton;
-        public Button CreateRoomButton
+        private ButtonBlack _CreateRoomButtonButtonBlack;
+        public ButtonBlack CreateRoomButtonButtonBlack
         {
             get
             {
-                if ((this._CreateRoomButton == null))
+                if ((this._CreateRoomButtonButtonBlack == null))
                 {
-                    this._CreateRoomButton = this.transform.Find("CreateRoomButton").GetComponent<Button>();
+                    this._CreateRoomButtonButtonBlack = this.transform.Find("CreateRoomButton").GetComponent<ButtonBlack>();
                 }
-                return this._CreateRoomButton;
+                return this._CreateRoomButtonButtonBlack;
             }
         }
         [SerializeField()]
@@ -304,16 +304,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Button _ReturnBtnButton;
-        public Button ReturnBtnButton
+        private ButtonBlack _ReturnBtnButtonBlack;
+        public ButtonBlack ReturnBtnButtonBlack
         {
             get
             {
-                if ((this._ReturnBtnButton == null))
+                if ((this._ReturnBtnButtonBlack == null))
                 {
-                    this._ReturnBtnButton = this.transform.Find("ReturnBtn").GetComponent<Button>();
+                    this._ReturnBtnButtonBlack = this.transform.Find("ReturnBtn").GetComponent<ButtonBlack>();
                 }
-                return this._ReturnBtnButton;
+                return this._ReturnBtnButtonBlack;
             }
         }
         [SerializeField()]
@@ -330,16 +330,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _LoadingText;
-        public Text LoadingText
+        private Image _LoadingImage;
+        public Image LoadingImage
         {
             get
             {
-                if ((this._LoadingText == null))
+                if ((this._LoadingImage == null))
                 {
-                    this._LoadingText = this.transform.Find("LoadingPanel").Find("LoadingText").GetComponent<Text>();
+                    this._LoadingImage = this.transform.Find("LoadingPanel").Find("LoadingImage").GetComponent<Image>();
                 }
-                return this._LoadingText;
+                return this._LoadingImage;
             }
         }
         partial void onAwake();

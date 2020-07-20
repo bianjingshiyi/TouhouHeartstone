@@ -28,11 +28,11 @@ namespace UI
             this._BackgroundImage = this.transform.Find("BackgroundContainer").Find("Background").GetComponent<Image>();
             this._ButtonPanelImage = this.transform.Find("ButtonPanel").GetComponent<Image>();
             this._ButtonsVerticalLayoutGroup = this.transform.Find("ButtonPanel").Find("Buttons").GetComponent<VerticalLayoutGroup>();
-            this._ManMachineButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("ManMachineButton").GetComponent<Button>();
-            this._NetworkButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("NetworkButton").GetComponent<Button>();
-            this._BuildButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<Button>();
-            this._AboutButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<Button>();
-            this._QuitButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<Button>();
+            this._ManMachineButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("ManMachineButton").GetComponent<ButtonBlack>();
+            this._NetworkButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("NetworkButton").GetComponent<ButtonBlack>();
+            this._BuildButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<ButtonBlack>();
+            this._AboutButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<ButtonBlack>();
+            this._QuitButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<ButtonBlack>();
             this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
             this._VersionText = this.transform.Find("Version").GetComponent<Text>();
             this._CopyrightText = this.transform.Find("Copyright").GetComponent<Text>();
@@ -85,68 +85,68 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Button _ManMachineButton;
-        public Button ManMachineButton
+        private ButtonBlack _ManMachineButtonButtonBlack;
+        public ButtonBlack ManMachineButtonButtonBlack
         {
             get
             {
-                if ((this._ManMachineButton == null))
+                if ((this._ManMachineButtonButtonBlack == null))
                 {
-                    this._ManMachineButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("ManMachineButton").GetComponent<Button>();
+                    this._ManMachineButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("ManMachineButton").GetComponent<ButtonBlack>();
                 }
-                return this._ManMachineButton;
+                return this._ManMachineButtonButtonBlack;
             }
         }
         [SerializeField()]
-        private Button _NetworkButton;
-        public Button NetworkButton
+        private ButtonBlack _NetworkButtonButtonBlack;
+        public ButtonBlack NetworkButtonButtonBlack
         {
             get
             {
-                if ((this._NetworkButton == null))
+                if ((this._NetworkButtonButtonBlack == null))
                 {
-                    this._NetworkButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("NetworkButton").GetComponent<Button>();
+                    this._NetworkButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("NetworkButton").GetComponent<ButtonBlack>();
                 }
-                return this._NetworkButton;
+                return this._NetworkButtonButtonBlack;
             }
         }
         [SerializeField()]
-        private Button _BuildButton;
-        public Button BuildButton
+        private ButtonBlack _BuildButtonButtonBlack;
+        public ButtonBlack BuildButtonButtonBlack
         {
             get
             {
-                if ((this._BuildButton == null))
+                if ((this._BuildButtonButtonBlack == null))
                 {
-                    this._BuildButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<Button>();
+                    this._BuildButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<ButtonBlack>();
                 }
-                return this._BuildButton;
+                return this._BuildButtonButtonBlack;
             }
         }
         [SerializeField()]
-        private Button _AboutButton;
-        public Button AboutButton
+        private ButtonBlack _AboutButtonButtonBlack;
+        public ButtonBlack AboutButtonButtonBlack
         {
             get
             {
-                if ((this._AboutButton == null))
+                if ((this._AboutButtonButtonBlack == null))
                 {
-                    this._AboutButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<Button>();
+                    this._AboutButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<ButtonBlack>();
                 }
-                return this._AboutButton;
+                return this._AboutButtonButtonBlack;
             }
         }
         [SerializeField()]
-        private Button _QuitButton;
-        public Button QuitButton
+        private ButtonBlack _QuitButtonButtonBlack;
+        public ButtonBlack QuitButtonButtonBlack
         {
             get
             {
-                if ((this._QuitButton == null))
+                if ((this._QuitButtonButtonBlack == null))
                 {
-                    this._QuitButton = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<Button>();
+                    this._QuitButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<ButtonBlack>();
                 }
-                return this._QuitButton;
+                return this._QuitButtonButtonBlack;
             }
         }
         [SerializeField()]

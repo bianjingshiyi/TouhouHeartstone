@@ -13,8 +13,9 @@ GameObject:
   - component: {fileID: 7585412073753697559}
   - component: {fileID: 1286695113556157963}
   - component: {fileID: 3915239270206451303}
+  - component: {fileID: 1815665823035459475}
   m_Layer: 5
-  m_Name: Button
+  m_Name: ButtonBlack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -228,6 +229,24 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1815665823035459475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 490584239171898832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7097e034c463e0849bb806592af71867, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ui: {fileID: 0}
+  _useController: 0
+  _initStates: []
+  m_as_Button: {fileID: 1286695113556157963}
+  m_as_Image: {fileID: 7585412073753697559}
+  _Text: {fileID: 7178206965447266958}
 --- !u!1 &2041035203158414731
 GameObject:
   m_ObjectHideFlags: 0

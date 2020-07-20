@@ -28,7 +28,7 @@ namespace UI
             this._BlockerButton = this.transform.Find("Blocker").GetComponent<Button>();
             this._Text = this.transform.Find("Text").GetComponent<Text>();
             this._InitReplaceCardList = this.transform.Find("InitReplaceCardList").GetComponent<InitReplaceCardList>();
-            this._ConfirmButton = this.transform.Find("Confirm").GetComponent<Button>();
+            this._ConfirmButtonBlack = this.transform.Find("Confirm").GetComponent<ButtonBlack>();
         }
         private Main _parent;
         public Main parent
@@ -78,16 +78,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Button _ConfirmButton;
-        public Button ConfirmButton
+        private ButtonBlack _ConfirmButtonBlack;
+        public ButtonBlack ConfirmButtonBlack
         {
             get
             {
-                if ((this._ConfirmButton == null))
+                if ((this._ConfirmButtonBlack == null))
                 {
-                    this._ConfirmButton = this.transform.Find("Confirm").GetComponent<Button>();
+                    this._ConfirmButtonBlack = this.transform.Find("Confirm").GetComponent<ButtonBlack>();
                 }
-                return this._ConfirmButton;
+                return this._ConfirmButtonBlack;
             }
         }
         partial void onAwake();
