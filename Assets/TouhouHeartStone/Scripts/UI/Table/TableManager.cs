@@ -782,10 +782,13 @@ namespace Game
         }
         public bool tryGetHand(TouhouCardEngine.Card card, out HandListItem hand)
         {
-            hand = getHand(card);
-            if (hand == null)
-                return false;
-            return true;
+            if (cardHandDic.ContainsKey(card))
+            {
+                hand = cardHandDic[card];
+                return true;
+            }
+            hand = null;
+            return false;
         }
         /// <summary>
         /// 从UI手牌引用获取对应的牌
