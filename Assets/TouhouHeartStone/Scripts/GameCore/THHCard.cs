@@ -559,7 +559,7 @@ namespace TouhouHeartstone
                 value = arg.value;
                 if (source != null && source.isStealth(game))
                     source.setStealth(false);
-                foreach (Card card in arg.cards)
+                foreach (Card card in cards)
                 {
                     if (card.isShield(game))
                     {
@@ -573,7 +573,10 @@ namespace TouhouHeartstone
                     }
                     else
                     {
-                        card.setCurrentLife(card.getCurrentLife(game) - arg.value);
+                        value -= card.getDamageReduce(game);
+                        if (value < 0)
+                            value = 0;
+                        card.setCurrentLife(card.getCurrentLife(game) - value);
                         if (source != null && source.isPoisonous(game))
                             card.setDead(true);
                         arg.infoDic.Add(card, new DamageEventArg.Info()
@@ -581,7 +584,7 @@ namespace TouhouHeartstone
                             damagedValue = value,
                             currentLife = card.getCurrentLife(game)
                         });
-                        game.logger.log(card + "受到" + arg.value + "点伤害，生命值=>" + card.getCurrentLife(game));
+                        game.logger.log(card + "受到" + value + "点伤害，生命值=>" + card.getCurrentLife(game));
                     }
                 }
                 return Task.CompletedTask;
