@@ -92,10 +92,19 @@ namespace Tests
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 8);
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
             you.cmdUse(game, you.hand.getCard<PrincessUndine>());
-            you.cmdUse(game, you.hand.getCard<SummerFire>(),targets:you.field[0]);
+            var buff = you.master.getBuffs()[0];
+            Assert.AreEqual(PrincessUndine.ID, buff.id);
+            you.cmdUse(game, you.hand.getCard<SummerFire>(), targets: you.field[0]);
             Assert.True(you.field[0].getCurrentLife(game) == 7);
             you.field[0].damage(game, you.master, 4);
             Assert.True(you.field[0].getCurrentLife(game) == 6);
+            you.cmdTurnEnd(game);
+            Assert.AreEqual(1, you.master.getBuffs().Length);
+            you.master.damage(game, null, 4);
+            Assert.AreEqual(1, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().infoDic[you.master].damagedValue);
+            oppo.cmdTurnEnd(game);
+            Assert.AreEqual(0, you.master.getBuffs().Length);
+
             game.Dispose();
         }
 

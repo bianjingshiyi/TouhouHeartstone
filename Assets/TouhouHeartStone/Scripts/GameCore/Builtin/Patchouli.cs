@@ -158,9 +158,9 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FIRE };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                return target.damage(game, card, card.getOwner().getSpellDamage(game, 7));
+                await target.damage(game, card, card.getOwner().getSpellDamage(game, 7));
             })
         };
     }
@@ -179,12 +179,18 @@ namespace TouhouHeartstone.Builtin
             {
                 await card.getOwner().master.addBuff(game,new GeneratedBuff(ID,
                     new DamageReduceModifier(3),
-                    new RemoveBuffBefore<THHGame.TurnStartEventArg>(PileName.MASTER,ID)));
+                    new RemoveBuffBefore<THHGame.TurnStartEventArg>(PileName.MASTER,(g,c,a)=>
+                    {
+                        return a.player == card.getOwner();
+                    },ID)));
                 foreach (var servant in card.getOwner().field)
                 {
                     await servant.addBuff(game,new GeneratedBuff(ID,
                         new DamageReduceModifier(3),
-                        new RemoveBuffBefore<THHGame.TurnStartEventArg>(PileName.FIELD,ID)));
+                        new RemoveBuffBefore<THHGame.TurnStartEventArg>(PileName.FIELD,(g,c,a)=>
+                        {
+                            return a.player == card.getOwner();
+                        },ID)));
                 }
             })
         };
@@ -423,7 +429,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.METAL }; 
+        public override string[] tags { get; set; } = new string[] { CardTag.METAL };
         public override IEffect[] effects { get; set; } = new IEffect[] {
 
              new LambdaSingleTargetEffect((game,card,target)=>
@@ -550,7 +556,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.METAL,CardTag.WOOD };
+        public override string[] tags { get; set; } = new string[] { CardTag.METAL, CardTag.WOOD };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
