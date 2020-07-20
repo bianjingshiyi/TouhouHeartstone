@@ -730,16 +730,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            Card[] target;
-            for (int i = 0; i < 6; i++)
-            {
-                do
-                {
-                    target = game.getAllEnemies(card.getOwner()).randomTake(game, 1).ToArray();
-                }
-                while (target[0].getCurrentLife(game) == 0);
-                await target[0].damage(game, card, 1);
-            }
+            await game.getOpponent(card.getOwner()).field.damageByRandom(game, card, card.getOwner().getSpellDamage(game, 6));
             await Patchouli.tryMix(game, card);
         }
     }
@@ -779,12 +770,12 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             for (int i = 0; i < 3; i++)
-                await card.getOwner().createToken(game, game.getCardDefine<LavaElement>(), card.getOwner().field.count);
+                await card.getOwner().createToken(game, game.getCardDefine<LavaElement>());
             await Patchouli.tryMix(game, card);
         }
     }
     /// <summary>
-    /// 衍生随从 熔岩元素 回合结束对随机敌方角色造成2点伤害
+    /// 衍生随从 熔岩元素 当你的回合结束时对随机敌方角色造成2点伤害
     /// </summary>
     public class LavaElement : ServantCardDefine
     {
@@ -797,17 +788,9 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.ELEMENT };
         public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
         public override IEffect[] effects { get; set; } = new IEffect[]{
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,null,null,async(game,card,arg)=>
             {
-                if(card.getOwner() != game.currentPlayer)
-                    return false;
-                return true;
-            },(game,card,targets)=>
-            {
-                return false;
-            },async(game,card,arg)=>
-            {
-                await game.getAllEnemies(card.getOwner()).randomTake(game, 1).damage(game, card, 2);
+                await game.getAllEnemies(card.getOwner()).random(game).damage(game, card, 2);
             })
         };
     }
@@ -828,7 +811,7 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer opponent = game.getOpponent(card.getOwner());
             for (int i = 0; i < opponent.field.count; i++)
-                await card.getOwner().createToken(game, game.getCardDefine<DustElement>(), card.getOwner().field.count);
+                await card.getOwner().createToken(game, game.getCardDefine<DustElement>());
             await Patchouli.tryMix(game, card);
         }
     }
@@ -862,11 +845,8 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            foreach (Card servant in game.getAllServants())
-            {
-                servant.define.effects = new IEffect[0];
-            }
-            await card.getOwner().createToken(game, game.getCardDefine<FloodElement>(), card.getOwner().field.count);
+            await game.getAllServants().silence(game);
+            await card.getOwner().createToken(game, game.getCardDefine<FloodElement>());
             await Patchouli.tryMix(game, card);
         }
     }
