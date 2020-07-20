@@ -117,6 +117,8 @@ namespace Tests
                 new LifeModifier(1)
             };
             public override IPassiveEffect[] effects { get; }
+            public override int instanceID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
             public override Buff clone()
             {
                 return new TestBuff();
@@ -318,11 +320,11 @@ namespace Tests
         {
             public override string[] piles { get; } = new string[] { PileName.HAND };
             CostModifier _modifier = new CostModifier();
-            public override void onEnable(THHGame game, Card card)
+            public override void onEnable(THHGame game, Card card, Buff buff)
             {
                 card.addModifier(game, _modifier);
             }
-            public override void onDisable(THHGame game, Card card)
+            public override void onDisable(THHGame game, Card card, Buff buff)
             {
                 _ = card.removeModifier(game, _modifier);
             }
