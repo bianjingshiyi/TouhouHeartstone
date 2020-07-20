@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
 using System.IO;
 using System;
@@ -64,8 +63,9 @@ namespace IGensoukyo.Utilities
         public string Content;
     }
 
-    [CustomEditor(typeof(LicenseFinder))]
-    public class TestScriptableEditor : Editor
+#if UNITY_EDITOR
+    [UnityEditor.CustomEditor(typeof(LicenseFinder))]
+    public class TestScriptableEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
@@ -78,6 +78,7 @@ namespace IGensoukyo.Utilities
             }
         }
     }
+#endif
 }
 
  
