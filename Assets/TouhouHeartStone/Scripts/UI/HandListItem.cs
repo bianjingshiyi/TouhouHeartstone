@@ -62,5 +62,6 @@ namespace UI
         public SimpleAnim onDiscard;
         public SimpleAnim onGraveToHand;
         public SimpleAnim onCreate;
+        public SimpleAnim onEnemyUse;
     }
 }
