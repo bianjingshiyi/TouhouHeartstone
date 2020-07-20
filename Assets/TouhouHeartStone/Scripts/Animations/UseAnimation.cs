@@ -64,21 +64,10 @@ namespace Game
                 else
                 {
                     HandListItem hand = table.getHand(eventArg.card);
-                    if (hand != null)
-                    {
-                        if (!_timer.isStarted)
-                        {
-                            table.setCard(hand.Card, eventArg.card, true);
-                            _startPosition = hand.Card.rectTransform.position;
-                            _timer.start();
-                        }
-                        if (_timer.progress <= .4f)
-                            hand.Card.rectTransform.position = Vector3.Lerp(_startPosition, table.ui.getChild("SpellDisplay").position, hand.Card.useCurve.Evaluate(_timer.progress / .4f));
-                        else
-                            hand.Card.rectTransform.position = table.ui.getChild("SpellDisplay").position;
-                        if (!_timer.isExpired())
-                            return false;
-                    }
+                    table.setCard(hand.Card, eventArg.card, true);
+                    hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
+                    if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator))
+                        return false;
                     table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
                     if (tryTargetedAnim(table, eventArg))
                         return false;
