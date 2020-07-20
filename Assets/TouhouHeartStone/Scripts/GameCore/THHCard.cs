@@ -564,13 +564,14 @@ namespace TouhouHeartstone
             public Card card;
             public Card target;
         }
-        public static Task damage(this Card card, THHGame game, Card source, int value)
+        public static Task<DamageEventArg> damage(this Card card, THHGame game, Card source, int value)
         {
             return damage(new Card[] { card }, game, source, value);
         }
-        public static async Task damage(this IEnumerable<Card> cards, THHGame game, Card source, int value)
+        public static async Task<DamageEventArg> damage(this IEnumerable<Card> cards, THHGame game, Card source, int value)
         {
-            await game.triggers.doEvent(new DamageEventArg() { cards = cards.ToArray(), source = source, value = value }, arg =>
+            DamageEventArg eventArg = new DamageEventArg() { cards = cards.ToArray(), source = source, value = value };
+            await game.triggers.doEvent(eventArg, arg =>
             {
                 cards = arg.cards;
                 source = arg.source;
@@ -618,25 +619,20 @@ namespace TouhouHeartstone
                 }
                 return Task.CompletedTask;
             });
-        }
-        public static async Task<DamageEventArg> damageByRandom(this IEnumerable<Card> cards, THHGame game, Card source, int value)
-        {
-            if (cards.All(c => c.isDead(game)))
-                return null;
-            DamageEventArg eventArg = new DamageEventArg()
-            {
-                cards = cards.ToArray(),
-                source = source,
-                value = value,
-            };
-            await game.triggers.doEvent(eventArg, arg =>
-            {
-                cards = arg.cards;
-                source = arg.source;
-                value = arg.value;
-                return Task.CompletedTask;
-            });
             return eventArg;
+        }
+        public static async Task<DamageEventArg[]> damageByRandom(this IEnumerable<Card> cards, THHGame game, Card source, int value)
+        {
+            List<DamageEventArg> list = new List<DamageEventArg>();
+            for (int i = 0; i < value; i++)
+            {
+                Card target = cards.Where(c => !c.isDead(game)).random(game);
+                if (target != null)
+                {
+                    list.Add(await target.damage(game, source, 1));
+                }
+            }
+            return list.ToArray();
         }
         public class DamageEventArg : EventArg
         {
