@@ -19,6 +19,30 @@ namespace TouhouHeartstone.Builtin
         public const string WATER = "Water";
         public const string FIRE = "Fire";
         public const string EARTH = "Earth";
+        public static string[] getElements(CardDefine define)
+        {
+            List<string> list = new List<string>();
+            if (define.hasTag(METAL))
+                list.Add(METAL);
+            if (define.hasTag(WOOD))
+                list.Add(WOOD);
+            if (define.hasTag(WATER))
+                list.Add(WATER);
+            if (define.hasTag(FIRE))
+                list.Add(FIRE);
+            if (define.hasTag(EARTH))
+                list.Add(EARTH);
+            return list.ToArray();
+        }
+        public static CardDefine[] getMixCards(THHGame game)
+        {
+            return game.getCardDefines().Where(c => getElements(c).Length > 1).ToArray();
+        }
+        public static CardDefine[] getMixCards(THHGame game, CardDefine a, CardDefine b)
+        {
+            var elements = getElements(a).Concat(getElements(b)).Distinct().ToArray();
+            return getMixCards(game).Where(c => elements.isSubset(getElements(c)) && c.id != a.id && c.id != b.id).ToArray();
+        }
     }
     /// <summary>
     /// 知识引流
@@ -160,13 +184,12 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x007;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override string[] tags { get; set; } = new string[] { "Fire" };
+        public override string[] tags { get; set; } = new string[] { Patchouli.FIRE };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.damage(game, card, card.getOwner().getSpellDamage(game, 7));
-
             })
         };
     }

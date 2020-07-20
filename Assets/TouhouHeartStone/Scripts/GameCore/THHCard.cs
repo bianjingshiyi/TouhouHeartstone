@@ -351,6 +351,21 @@ namespace TouhouHeartstone
         {
             return card.getProp<string[]>(game, nameof(ServantCardDefine.tags)).Contains(tag);
         }
+        public static bool hasTag(this CardDefine define, string tag)
+        {
+            string[] tags = define.getProp<string[]>(nameof(ServantCardDefine.tags));
+            if (tags == null)
+                return false;
+            return tags.Contains(tag);
+        }
+        public static string getTag(this Card card, IGame game, int index)
+        {
+            return card.getTags(game)[index];
+        }
+        public static string[] getTags(this Card card, IGame game)
+        {
+            return card.getProp<string[]>(game, nameof(ServantCardDefine.tags));
+        }
         public static bool isUsable(this Card card, THHGame game, THHPlayer player, out string info)
         {
             if (game.currentPlayer != player)//不是你的回合
