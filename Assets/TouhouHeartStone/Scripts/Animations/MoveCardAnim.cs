@@ -19,7 +19,9 @@ namespace Game
                 if (eventArg.to.name == PileName.HAND)
                 {
                     //发现，印卡
-                    table.createHand(eventArg.card);
+                    var hand = table.createHand(eventArg.card);
+                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onCreate, hand.animator))
+                        return false;
                 }
             }
             else if (eventArg.from.name == PileName.INIT)

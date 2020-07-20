@@ -43,6 +43,19 @@ namespace TouhouHeartstone.Builtin
             var elements = getElements(a).Concat(getElements(b)).Distinct().ToArray();
             return getMixCards(game).Where(c => elements.isSubset(getElements(c)) && c.id != a.id && c.id != b.id).ToArray();
         }
+        public static async Task tryMix(THHGame game, Card card)
+        {
+            THHPlayer player = card.getOwner();
+            var mixableCards = player.hand.Where(c => getMixCards(game, card.define, c.define).Length > 0).ToArray();//检查手牌中有没有可以融合的牌
+            if (mixableCards.Length > 0)
+            {
+                var mixCard = await player.discover(game, mixableCards, -1, "选择一张卡片进行元素融合");
+                var mixedResults = getMixCards(game, card.define, mixCard.define).Select(define => game.createCard(define)).ToArray();
+                var mixedResult = await player.discover(game, mixedResults, -1, "选择一张融合元素法术加入你的手牌");
+                await player.discard(game, mixCard);
+                await player.tryAddCardToHand(game, mixedResult);
+            }
+        }
     }
     /// <summary>
     /// 知识引流
@@ -190,6 +203,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.damage(game, card, card.getOwner().getSpellDamage(game, 7));
+                await Patchouli.tryMix(game,card);
             })
         };
     }
@@ -221,6 +235,7 @@ namespace TouhouHeartstone.Builtin
                             return a.player == card.getOwner();
                         },ID)));
                 }
+                await Patchouli.tryMix(game,card);
             })
         };
     }
@@ -238,6 +253,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async(game,card,target)=>
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3),new LifeModifier(6)));
+                await Patchouli.tryMix(game,card);
             }, PileFlag.both | PileFlag.field)
         };
     }
@@ -256,6 +272,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().createToken(game, game.getCardDefine<RockElement>(), card.getOwner().field.count);
+            await Patchouli.tryMix(game, card);
         }
     }
     /// <summary>
@@ -273,6 +290,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
+            //TODO:只需要一个关键字就可以了，不需要写的这么复杂
             new THHEffectAfter<THHGame.TurnStartEventArg>(PileName.FIELD,(game,card,arg)=>
             {
                 return true;
@@ -301,10 +319,8 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            foreach (Card target in game.getOpponent(card.owner as THHPlayer).field)
-            {
-                await target.damage(game, card, card.getOwner().getSpellDamage(game, 3));
-            }
+            await game.getOpponent(card.getOwner()).field.damage(game, card, card.getOwner().getSpellDamage(game, 3));
+            await Patchouli.tryMix(game, card);
         }
     }
     /// <summary>
@@ -461,12 +477,12 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.METAL };
         public override IEffect[] effects { get; set; } = new IEffect[] {
 
-             new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 new BuffFixer().onEnable(game,target);
-                return Task.CompletedTask;
+                await Patchouli.tryMix(game,card);
             },PileFlag.both | PileFlag.field)
-        };
+        };//TODO:这个Buff，不需要这么复杂。
         class BuffFixer
         {
             Trigger<THHGame.TurnEndEventArg> TurnEndTrigger { get; set; } = null;
@@ -498,10 +514,10 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { CardTag.WOOD };
         public override IEffect[] effects { get; set; } = new IEffect[] {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 target.setFreeze(true);
-                return Task.CompletedTask;
+                await Patchouli.tryMix(game,card);
             })
         };
     }
@@ -519,6 +535,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async(game,card,target)=>
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(2)));
+                await Patchouli.tryMix(game,card);
             },PileFlag.both | PileFlag.field)
         };
     }
@@ -539,9 +556,9 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer opponent = game.getOpponent(card.getOwner());
             if (opponent.field.count > 0)
-            {
-                await opponent.field.randomTake(game, 1).damage(game, card, 2);
-            }
+                return;
+            await opponent.field.randomTake(game, 1).damage(game, card, 2);
+            await Patchouli.tryMix(game, card);
         }
     }
     /// <summary>
@@ -560,6 +577,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().createToken(game, game.getCardDefine<GemSpear>(), card.getOwner().field.count);
+            await Patchouli.tryMix(game, card);
         }
     }
     /// <summary>
@@ -601,6 +619,7 @@ namespace TouhouHeartstone.Builtin
                         await buffcard.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
                 }
             }
+            await Patchouli.tryMix(game, card);
         }
     }
     /// <summary>
@@ -620,14 +639,14 @@ namespace TouhouHeartstone.Builtin
             },(game,card,targets)=>
             {
                 return false;
-            },(game,card,arg,targets)=>
+            },async (game,card,arg,targets)=>
             {
                 THHPlayer opponent = game.getOpponent(card.getOwner());
                 foreach(Card target in opponent.field)
                 {
                     new BuffFixer().onEnable(game,target);
                 }
-                return Task.CompletedTask;
+                await Patchouli.tryMix(game, card);
             })
         };
         class BuffFixer
@@ -673,6 +692,7 @@ namespace TouhouHeartstone.Builtin
                     await buffcard.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
                 }
                 await target.damage(game,card,card.getOwner().field.count);
+                await Patchouli.tryMix(game, card);
             },PileFlag.both | PileFlag.field)
         };
     }
@@ -687,10 +707,10 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { CardTag.EARTH, CardTag.WOOD };
         public override IEffect[] effects { get; set; } = new IEffect[] {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 target.define.effects = target.define.effects.Concat(addeffect).ToArray();
-                return Task.CompletedTask;
+                await Patchouli.tryMix(game, card);
             },PileFlag.both | PileFlag.field)
         };
         private static IEffect[] addeffect = new IEffect[]{new THHEffectAfter<THHCard.DeathEventArg>(PileName.GRAVE, (game, card, arg) =>
@@ -720,6 +740,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3)));
                 await target.heal(game,target.getLife(game)-target.getCurrentLife(game));
+                await Patchouli.tryMix(game, card);
             }, PileFlag.both | PileFlag.field)};
     }
     /// <summary>
@@ -747,6 +768,7 @@ namespace TouhouHeartstone.Builtin
                 while (target[0].getCurrentLife(game) == 0);
                 await target[0].damage(game, card, 1);
             }
+            await Patchouli.tryMix(game, card);
         }
     }
     /// <summary>
@@ -759,11 +781,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { CardTag.METAL, CardTag.FIRE };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
-            new LambdaSingleTargetEffect((game,card,target)=>
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                target.damage(game,card,6);
-                return target.getNearbyCards().damage(game,card,2);
+                await target.damage(game,card,6);
+                await target.getNearbyCards().damage(game,card,2);
+                await Patchouli.tryMix(game, card);
             }, PileFlag.both | PileFlag.field)
         };
     }
@@ -784,6 +808,7 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 3; i++)
                 await card.getOwner().createToken(game, game.getCardDefine<LavaElement>(), card.getOwner().field.count);
+            await Patchouli.tryMix(game, card);
         }
     }
     /// <summary>
@@ -832,6 +857,7 @@ namespace TouhouHeartstone.Builtin
             THHPlayer opponent = game.getOpponent(card.getOwner());
             for (int i = 0; i < opponent.field.count; i++)
                 await card.getOwner().createToken(game, game.getCardDefine<DustElement>(), card.getOwner().field.count);
+            await Patchouli.tryMix(game, card);
         }
     }
     /// <summary>
@@ -869,6 +895,7 @@ namespace TouhouHeartstone.Builtin
                 servant.define.effects = new IEffect[0];
             }
             await card.getOwner().createToken(game, game.getCardDefine<FloodElement>(), card.getOwner().field.count);
+            await Patchouli.tryMix(game, card);
         }
     }
     /// <summary>

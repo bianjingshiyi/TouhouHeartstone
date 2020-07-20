@@ -6,7 +6,7 @@ namespace Game
     {
         public override void display(TableManager table, DiscoverRequest request)
         {
-            table.displayDiscoverDialog(request.cardIdArray);
+            table.displayDiscoverDialog(request.cardIdArray, request.title);
         }
     }
 }

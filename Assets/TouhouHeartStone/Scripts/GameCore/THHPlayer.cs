@@ -268,15 +268,18 @@ namespace TouhouHeartstone
         /// <param name="cards"></param>
         /// <param name="count">如果小于等于0，则全都可以挑</param>
         /// <returns></returns>
-        public async Task<Card> discover(THHGame game, IEnumerable<Card> cards, int count = 3)
+        public async Task<Card> discover(THHGame game, IEnumerable<Card> cards, int count = 3, string title = null)
         {
             if (cards.Count() < 1)
                 return null;
             if (count > 0)
                 cards = cards.randomTake(game, count);
-            var task = game.answers.ask(id, new DiscoverRequest(cards.Select(c => c.id).ToArray()));
+            game.logger.log(this + "要从" + string.Join("，", cards) + "中选择一张卡片");
+            var task = game.answers.ask(id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title));
             await task;
-            return cards.First(c => c.id == (task.Result as DiscoverResponse).cardId);
+            Card selected = cards.First(c => c.id == (task.Result as DiscoverResponse).cardId);
+            game.logger.log(this + "选择" + selected);
+            return selected;
         }
         public class UseEventArg : EventArg
         {
@@ -386,6 +389,14 @@ namespace TouhouHeartstone
             Card card = game.createCard<T>();
             return hand.add(game, card);
         }
+        public async Task<bool> tryAddCardToHand(THHGame game, Card card)
+        {
+            if (hand.isFull)
+                return false;
+            game.logger.log("将" + card + "置入" + this + "的手牌");
+            await hand.add(game, card);
+            return true;
+        }
         public Task addRandomCardToHand(THHGame game, IEnumerable<CardDefine> pool)
         {
             if (hand.isFull)//手牌满了
@@ -402,6 +413,10 @@ namespace TouhouHeartstone
                 return discard(game, cards);
             else
                 return discard(game, cards.randomTake(game, count));
+        }
+        public Task discard(THHGame game, Card card)
+        {
+            return discard(game, new Card[] { card });
         }
         public Task discard(THHGame game, IEnumerable<Card> cards)
         {
