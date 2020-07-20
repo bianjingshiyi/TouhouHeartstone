@@ -155,6 +155,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x007;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
+        public override string[] tags { get; set; } = new string[] { CardTag.FIRE };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect((game,card,target)=>
@@ -171,6 +172,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x008;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
+        public override string[] tags { get; set; } = new string[] { CardTag.WATER };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(async (game,card)=>
@@ -195,6 +197,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x009;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
+        public override string[] tags { get; set; } = new string[] { CardTag.WOOD };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async(game,card,target)=>
@@ -211,6 +214,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x010;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
+        public override string[] tags { get; set; } = new string[] { CardTag.EARTH };
         public override IEffect[] effects { get; set; } = new IEffect[]{
             new NoTargetEffect(effect)
         };
@@ -255,6 +259,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x011;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
+        public override string[] tags { get; set; } = new string[] { CardTag.METAL };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
