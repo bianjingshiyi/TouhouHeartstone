@@ -315,6 +315,14 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(ServantCardDefine.spellDamage), value);
         }
+        public static int getDamageReduce(this Card card, IGame game)
+        {
+            return card.getProp<int>(game, nameof(ServantCardDefine.damageReduce));
+        }
+        public static void setDamageReduce(this Card card, int value)
+        {
+            card.setProp(nameof(ServantCardDefine.damageReduce), value);
+        }
         public static async Task silence(this IEnumerable<Card> cards, THHGame game)
         {
             foreach (var card in cards)

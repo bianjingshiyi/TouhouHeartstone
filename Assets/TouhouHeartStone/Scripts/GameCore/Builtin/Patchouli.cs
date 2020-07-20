@@ -170,7 +170,21 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x008;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(async (game,card)=>
+            {
+                await card.getOwner().master.addBuff(game,new GeneratedBuff(ID,
+                    new DamageReduceModifier(3),
+                    new RemoveBuffBefore<THHGame.TurnStartEventArg>(PileName.MASTER,ID)));
+                foreach (var servant in card.getOwner().field)
+                {
+                    await servant.addBuff(game,new GeneratedBuff(ID,
+                        new DamageReduceModifier(3),
+                        new RemoveBuffBefore<THHGame.TurnStartEventArg>(PileName.FIELD,ID)));
+                }
+            })
+        };
     }
     /// <summary>
     /// 5 风灵角笛 元素法术，使目标随从获得+3/+6
@@ -224,9 +238,10 @@ namespace TouhouHeartstone.Builtin
             },(game,card,targets)=>
             {
                 return false;
-            },async(game,card,arg)=>
+            },(game,card,arg)=>
             {
                 card.setReady(false);
+                return Task.CompletedTask;
             })
         };
     }
