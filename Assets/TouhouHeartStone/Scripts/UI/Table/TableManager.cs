@@ -30,6 +30,8 @@ namespace Game
         [SerializeField]
         AnimationCurve _moveToFieldCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
         public AnimationCurve handToFieldCurve => _moveToFieldCurve;
+        [SerializeField]
+        Gradient timeoutGradient = new Gradient();
         [Header("State")]
         [SerializeField]
         bool _canControl = true;
@@ -63,9 +65,6 @@ namespace Game
             set { _isSelectingTarget = value; }
         }
         public TouhouCardEngine.Card attackingCard { get; set; } = null;
-
-        [SerializeField]
-        Gradient timeoutGradient = new Gradient();
         protected override void onAwake()
         {
             base.onAwake();
