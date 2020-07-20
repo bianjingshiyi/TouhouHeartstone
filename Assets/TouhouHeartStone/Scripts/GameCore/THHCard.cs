@@ -317,7 +317,10 @@ namespace TouhouHeartstone
         }
         public static int getDamageReduce(this Card card, IGame game)
         {
-            return card.getProp<int>(game, nameof(ServantCardDefine.damageReduce));
+            int result = card.getProp<int>(game, nameof(ServantCardDefine.damageReduce));
+            if (result < 0)
+                return 0;
+            return result;
         }
         public static void setDamageReduce(this Card card, int value)
         {
@@ -559,32 +562,43 @@ namespace TouhouHeartstone
                 value = arg.value;
                 if (source != null && source.isStealth(game))
                     source.setStealth(false);
+                if (value < 1)
+                {
+                    arg.isCanceled = true;
+                    return Task.CompletedTask;
+                }
                 foreach (Card card in cards)
                 {
                     if (card.isShield(game))
                     {
-                        card.setShield(false);
-                        arg.infoDic.Add(card, new DamageEventArg.Info()
-                        {
-                            damagedValue = 0,
-                            currentLife = card.getCurrentLife(game)
-                        });
                         game.logger.log(card + "受到伤害，失去圣盾");
+                        card.setShield(false);
                     }
                     else
                     {
-                        value -= card.getDamageReduce(game);
-                        if (value < 0)
-                            value = 0;
-                        card.setCurrentLife(card.getCurrentLife(game) - value);
-                        if (source != null && source.isPoisonous(game))
-                            card.setDead(true);
-                        arg.infoDic.Add(card, new DamageEventArg.Info()
+                        int damageReduce = card.getDamageReduce(game);
+                        int damage;
+                        if (damageReduce > 0)
                         {
-                            damagedValue = value,
-                            currentLife = card.getCurrentLife(game)
-                        });
-                        game.logger.log(card + "受到" + value + "点伤害，生命值=>" + card.getCurrentLife(game));
+                            damage = value - damageReduce;
+                            game.logger.log(card + "的伤害抵消" + damageReduce + "使伤害" + value + "=>" + damage);
+                        }
+                        else
+                            damage = value;
+                        if (damage > 0)
+                        {
+                            card.setCurrentLife(card.getCurrentLife(game) - damage);
+                            game.logger.log(card + "受到" + damage + "点伤害，生命值=>" + card.getCurrentLife(game));
+                            if (source != null && source.isPoisonous(game))
+                                card.setDead(true);
+                            arg.infoDic.Add(card, new DamageEventArg.Info()
+                            {
+                                damagedValue = damage,
+                                currentLife = card.getCurrentLife(game)
+                            });
+                        }
+                        else
+                            game.logger.log(card + "的伤害" + value + "被减伤" + damageReduce + "抵消");
                     }
                 }
                 return Task.CompletedTask;
