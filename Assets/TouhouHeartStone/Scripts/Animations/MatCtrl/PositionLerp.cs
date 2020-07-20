@@ -12,8 +12,9 @@ namespace Game
         public RectTransform targetTransofrm
         {
             get { return _targetTransform; }
-            set { _targetTransform = value; }
         }
+        [SerializeField]
+        float _stopDistance;
         Vector3 _startPosition;
         protected void OnEnable()
         {
@@ -24,8 +25,14 @@ namespace Game
             if (targetTransofrm != null)
             {
                 RectTransform transform = GetComponent<RectTransform>();
-                transform.position = Vector3.Lerp(_startPosition, targetTransofrm.position, _time);
+                Vector3 targetPosition = Vector3.MoveTowards(targetTransofrm.position, _startPosition, _stopDistance);
+                transform.position = Vector3.Lerp(_startPosition, targetPosition, _time);
             }
+        }
+        public void setTarget(RectTransform target, float stopDistance = 0)
+        {
+            _targetTransform = target;
+            _stopDistance = stopDistance;
         }
         protected void Reset()
         {

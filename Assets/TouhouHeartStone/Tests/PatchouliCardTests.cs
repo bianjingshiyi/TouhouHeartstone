@@ -81,10 +81,22 @@ namespace Tests
             game.Dispose();
         }
 
-        //[Test]
+        [Test]
         public void PatchouliPrincessUndineTest()
         {
-
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(PrincessUndine.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 4),
+                new KeyValuePair<int, int>(SummerFire.ID, 3)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 8);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.hand.getCard<PrincessUndine>());
+            you.cmdUse(game, you.hand.getCard<SummerFire>(),targets:you.field[0]);
+            Assert.True(you.field[0].getCurrentLife(game) == 7);
+            you.field[0].damage(game, you.master, 4);
+            Assert.True(you.field[0].getCurrentLife(game) == 6);
+            game.Dispose();
         }
 
         [Test]
