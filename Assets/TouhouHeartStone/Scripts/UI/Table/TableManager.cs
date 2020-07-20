@@ -109,6 +109,13 @@ namespace Game
             ui.SelfSkill.onDragEnd.set(onDragSkillEnd);
             ui.SelfItem.hide();
             ui.SelfHandList.clearItems();
+            ui.SelfHandList.asButton.onClick.set(() =>
+            {
+                if (ui.SelfHandList.isExpanded)
+                    ui.SelfHandList.shrink();
+                else
+                    ui.SelfHandList.expand();
+            });
             ui.SelfFieldList.clearItems();
             ui.TurnEndButton.onClick.set(onTurnEndButtonClick);
             ui.TipText.hide();

@@ -31,13 +31,6 @@ namespace UI
         }
         partial void onAwake()
         {
-            SelfHandList.asButton.onClick.AddListener(() =>
-            {
-                if (SelfHandList.isExpanded)
-                    SelfHandList.shrink();
-                else
-                    SelfHandList.expand();
-            });
         }
         public void setGame(THHGame game, THHPlayer player)
         {

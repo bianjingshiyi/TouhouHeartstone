@@ -64,6 +64,10 @@ namespace Game
         bool _useDefaultDeck = true;
         [SerializeField]
         Deck _defaultDeck;
+        [SerializeField]
+        bool _useTestDeck = true;
+        [SerializeField]
+        Deck _testDeck;
         [CardDefineID]
         [SerializeField]
         int[] _deck = new int[31];
@@ -82,6 +86,8 @@ namespace Game
         {
 #if !UNITY_EDITOR
             tryLoadDeckFromPrefs();
+            if (_useDefaultDeck)
+                _deck = _defaultDeck.toIdArray();
 #else
             if (_testRandomDeck)
             {
@@ -94,11 +100,11 @@ namespace Game
                 }
                 _deck = randomDeck.ToArray();
             }
-            if (_defaultDeck.deckList.Count > 0)
-                _deck = _defaultDeck.toIdArray();
-#endif
             if (_useDefaultDeck)
                 _deck = _defaultDeck.toIdArray();
+            if (_useTestDeck)
+                _deck = _testDeck.toIdArray();
+#endif
         }
         private void Update()
         {
