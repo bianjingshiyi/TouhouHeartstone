@@ -265,17 +265,17 @@ namespace Game
             {
                 flushLANRooms();
             });
-            lanPanel.CreateRoomButton.interactable = !host.RoomIsValid;
-            lanPanel.CreateRoomButton.onClick.set(() =>
+            lanPanel.CreateRoomButtonButtonBlack.asButton.interactable = !host.RoomIsValid;
+            lanPanel.CreateRoomButtonButtonBlack.asButton.onClick.set(() =>
             {
                 lanPanel.LoadingPanelImage.gameObject.SetActive(true);
                 createRoom();
             });
-            lanPanel.ReturnBtnButton.onClick.AddListener(() =>
+            lanPanel.ReturnBtnButtonBlack.asButton.onClick.AddListener(() =>
             {
                 ui.parent.display(ui.parent.MainMenu);
             });
-            lanPanel.ConnectButton.onClick.set(() =>
+            lanPanel.ConnectButtonButtonBlack.asButton.onClick.set(() =>
             {
                 int port = _port;
                 string address = "";
@@ -332,7 +332,7 @@ namespace Game
                     lanPanel.DescText.text = "描述";
                 }
             });
-            item.Button.onClick.set(() =>
+            item.ButtonButtonBlack.asButton.onClick.set(() =>
             {
                 _ = joinRoom(obj);
             });
@@ -346,7 +346,7 @@ namespace Game
                 var item = roomPanel.RoomPlayerList.addItem();
                 item.NameText.text = player.name;
                 item.CharacterText.text = getManager<CardManager>().getSkin(player.getProp<int[]>(RoomPlayerInfoName.DECK_INTARRAY)[0]).name;
-                item.Button.onClick.AddListener(() =>
+                item.ButtonButtonBlack.asButton.onClick.AddListener(() =>
                 {
                     //TODO:查看卡组
                 });
@@ -428,8 +428,8 @@ namespace Game
                         host.updateRoomInfo(roomInfo);
                     }
                 }
-                roomPanel.StartButton.setSelectable(room.isSameRoom(host.room) && room.playerList.Count > 1);
-                roomPanel.StartButton.onClick.set(() =>
+                roomPanel.StartButtonButtonBlack.asButton.setSelectable(room.isSameRoom(host.room) && room.playerList.Count > 1);
+                roomPanel.StartButtonButtonBlack.asButton.onClick.set(() =>
                 {
                     _ = host.invokeAll<object>(host.room.playerList.Select(p => p.id).ToArray(), nameof(start));
                 });
@@ -441,9 +441,9 @@ namespace Game
                 roomPanel.InitReplacementContainerGameOptionItemText.InputField.setSelectable(false);
                 roomPanel.TurnTimeContainerGameOptionItemText.InputField.setSelectable(false);
                 roomPanel.IsSortedToggleGameOptionItemToggle.Toggle.setSelectable(false);
-                roomPanel.StartButton.setSelectable(false);
+                roomPanel.StartButtonButtonBlack.asButton.setSelectable(false);
             }
-            roomPanel.QuitButton.onClick.set(() =>
+            roomPanel.QuitButtonButtonBlack.asButton.onClick.set(() =>
             {
                 quitRoom();
             });

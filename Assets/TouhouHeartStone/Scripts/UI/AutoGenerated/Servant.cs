@@ -25,6 +25,7 @@ namespace UI
         }
         public void autoBind()
         {
+            this._TauntImage = this.transform.Find("Root").Find("Taunt").GetComponent<Image>();
             this._HighlightImage = this.transform.Find("Root").Find("Highlight").GetComponent<Image>();
             this._BackgroundImage = this.transform.Find("Root").Find("Background").GetComponent<Image>();
             this._ImageMask = this.transform.Find("Root").Find("ImageMask").GetComponent<Mask>();
@@ -45,6 +46,19 @@ namespace UI
             this._DamageText = this.transform.Find("Root").Find("DamageImage").Find("DamageText").GetComponent<Text>();
             this._HealImage = this.transform.Find("Root").Find("HealImage").GetComponent<Image>();
             this._HealText = this.transform.Find("Root").Find("HealImage").Find("HealText").GetComponent<Text>();
+        }
+        [SerializeField()]
+        private Image _TauntImage;
+        public Image TauntImage
+        {
+            get
+            {
+                if ((this._TauntImage == null))
+                {
+                    this._TauntImage = this.transform.Find("Root").Find("Taunt").GetComponent<Image>();
+                }
+                return this._TauntImage;
+            }
         }
         [SerializeField()]
         private Image _HighlightImage;

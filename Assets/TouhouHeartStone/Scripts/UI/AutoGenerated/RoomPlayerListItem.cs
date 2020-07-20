@@ -29,15 +29,7 @@ namespace UI
             this.m_as_Image = this.GetComponent<Image>();
             this._NameText = this.transform.Find("NameText").GetComponent<Text>();
             this._CharacterText = this.transform.Find("CharacterText").GetComponent<Text>();
-            this._Button = this.transform.Find("Button").GetComponent<Button>();
-        }
-        private RoomPlayerList _parent;
-        public RoomPlayerList parent
-        {
-            get
-            {
-                return this.transform.parent.GetComponent<RoomPlayerList>();
-            }
+            this._ButtonButtonBlack = this.transform.Find("Button").GetComponent<ButtonBlack>();
         }
         [SerializeField()]
         private Button m_as_Button;
@@ -92,16 +84,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Button _Button;
-        public Button Button
+        private ButtonBlack _ButtonButtonBlack;
+        public ButtonBlack ButtonButtonBlack
         {
             get
             {
-                if ((this._Button == null))
+                if ((this._ButtonButtonBlack == null))
                 {
-                    this._Button = this.transform.Find("Button").GetComponent<Button>();
+                    this._ButtonButtonBlack = this.transform.Find("Button").GetComponent<ButtonBlack>();
                 }
-                return this._Button;
+                return this._ButtonButtonBlack;
             }
         }
         partial void onAwake();

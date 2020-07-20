@@ -13,7 +13,7 @@ namespace UI
 
         partial void onAwake()
         {
-            BackButton.onClick.AddListener(() =>
+            BackButtonBlack.asButton.onClick.AddListener(() =>
             {
                 parent.display(parent.MainMenu);
             });

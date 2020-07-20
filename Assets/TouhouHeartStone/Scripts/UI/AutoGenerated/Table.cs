@@ -31,7 +31,6 @@ namespace UI
             this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
             this._SelfFieldList = this.transform.Find("Fields").Find("SelfField").GetComponent<FieldList>();
             this._EnemyFieldList = this.transform.Find("Fields").Find("EnemyField").GetComponent<FieldList>();
-            this._AttackArrowImage = this.transform.Find("Fields").Find("AttackArrow").GetComponent<Image>();
             this._ServantPlaceHolder = this.transform.Find("Fields").Find("ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
             this._EnemyHandList = this.transform.Find("EnemyHand").GetComponent<HandList>();
             this._EnemyGem = this.transform.Find("EnemyGem").GetComponent<Gem>();
@@ -50,6 +49,7 @@ namespace UI
             this._SelfHandList = this.transform.Find("SelfHand").GetComponent<HandList>();
             this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
             this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
+            this._AttackArrowImage = this.transform.Find("AttackArrow").GetComponent<Image>();
             this._TipText = this.transform.Find("TipText").GetComponent<Text>();
             this._Fatigue = this.transform.Find("Fatigue").GetComponent<Fatigue>();
             this._TurnTipImage = this.transform.Find("TurnTipImage").GetComponent<Image>();
@@ -140,19 +140,6 @@ namespace UI
                     this._EnemyFieldList = this.transform.Find("Fields").Find("EnemyField").GetComponent<FieldList>();
                 }
                 return this._EnemyFieldList;
-            }
-        }
-        [SerializeField()]
-        private Image _AttackArrowImage;
-        public Image AttackArrowImage
-        {
-            get
-            {
-                if ((this._AttackArrowImage == null))
-                {
-                    this._AttackArrowImage = this.transform.Find("Fields").Find("AttackArrow").GetComponent<Image>();
-                }
-                return this._AttackArrowImage;
             }
         }
         [SerializeField()]
@@ -387,6 +374,19 @@ namespace UI
                     this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
                 }
                 return this._LargeCard;
+            }
+        }
+        [SerializeField()]
+        private Image _AttackArrowImage;
+        public Image AttackArrowImage
+        {
+            get
+            {
+                if ((this._AttackArrowImage == null))
+                {
+                    this._AttackArrowImage = this.transform.Find("AttackArrow").GetComponent<Image>();
+                }
+                return this._AttackArrowImage;
             }
         }
         [SerializeField()]

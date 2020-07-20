@@ -38,8 +38,8 @@ namespace UI
             this._InitReplacementContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("InitReplacementContainer").GetComponent<GameOptionItemText>();
             this._TurnTimeContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("TurnTimeContainer").GetComponent<GameOptionItemText>();
             this._IsSortedToggleGameOptionItemToggle = this.transform.Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<GameOptionItemToggle>();
-            this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
-            this._StartButton = this.transform.Find("StartButton").GetComponent<Button>();
+            this._QuitButtonButtonBlack = this.transform.Find("QuitButton").GetComponent<ButtonBlack>();
+            this._StartButtonButtonBlack = this.transform.Find("StartButton").GetComponent<ButtonBlack>();
         }
         private Main _parent;
         public Main parent
@@ -219,29 +219,29 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Button _QuitButton;
-        public Button QuitButton
+        private ButtonBlack _QuitButtonButtonBlack;
+        public ButtonBlack QuitButtonButtonBlack
         {
             get
             {
-                if ((this._QuitButton == null))
+                if ((this._QuitButtonButtonBlack == null))
                 {
-                    this._QuitButton = this.transform.Find("QuitButton").GetComponent<Button>();
+                    this._QuitButtonButtonBlack = this.transform.Find("QuitButton").GetComponent<ButtonBlack>();
                 }
-                return this._QuitButton;
+                return this._QuitButtonButtonBlack;
             }
         }
         [SerializeField()]
-        private Button _StartButton;
-        public Button StartButton
+        private ButtonBlack _StartButtonButtonBlack;
+        public ButtonBlack StartButtonButtonBlack
         {
             get
             {
-                if ((this._StartButton == null))
+                if ((this._StartButtonButtonBlack == null))
                 {
-                    this._StartButton = this.transform.Find("StartButton").GetComponent<Button>();
+                    this._StartButtonButtonBlack = this.transform.Find("StartButton").GetComponent<ButtonBlack>();
                 }
-                return this._StartButton;
+                return this._StartButtonButtonBlack;
             }
         }
         partial void onAwake();

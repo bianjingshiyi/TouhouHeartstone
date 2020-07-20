@@ -7,11 +7,11 @@ namespace UI
     {
         partial void onAwake()
         {
-            BuildButton.onClick.AddListener(() =>
+            BuildButtonButtonBlack.asButton.onClick.AddListener(() =>
             {
                 parent.display(parent.Build);
             });
-            QuitButton.onClick.AddListener(() =>
+            QuitButtonButtonBlack.asButton.onClick.AddListener(() =>
             {
                 Application.Quit();
 #if UNITY_EDITOR
@@ -28,7 +28,7 @@ namespace UI
             {
                 VersionText.text = "版本 " + Application.version;
             }
-            AboutButton.onClick.AddListener(() =>
+            AboutButtonButtonBlack.asButton.onClick.AddListener(() =>
             {
                 parent.display(parent.AboutPage);
             });
