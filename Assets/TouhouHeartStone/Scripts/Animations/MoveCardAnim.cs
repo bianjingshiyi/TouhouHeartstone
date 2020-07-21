@@ -40,7 +40,7 @@ namespace Game
                 if (eventArg.to.name == PileName.HAND)
                 {
                     //抽牌
-                    if (table.tryGetHand(eventArg.card, out var hand))
+                    if (!table.tryGetHand(eventArg.card, out var hand))
                     {
                         hand = table.createHand(eventArg.card);
                         hand.GetComponentInChildren<PositionLerp>().setTarget(deckTransform);
