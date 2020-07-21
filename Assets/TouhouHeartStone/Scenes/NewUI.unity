@@ -14754,7 +14754,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 539.4344}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1123314440
@@ -21925,6 +21925,7 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  _cardPrefab: {fileID: 0}
   _canControl: 1
   _usingPosition: 0
   _isSelectingTarget: 0
