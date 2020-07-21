@@ -212,14 +212,23 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.41666666
-        value: 1
+        time: 0.3
+        value: 1.0163577
         inSlope: 9.532105
         outSlope: -1.5976396
         tangentMode: 1
         weightedMode: 0
         inWeight: 0.079426005
         outWeight: 0.04662826
+      - serializedVersion: 3
+        time: 0.31666666
+        value: 0.8977311
+        inSlope: -7.2330112
+        outSlope: -6.056586
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.80374116
+        outWeight: 0.05522568
       - serializedVersion: 3
         time: 0.7
         value: 0
@@ -598,14 +607,23 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.41666666
-        value: 1
+        time: 0.3
+        value: 1.0163577
         inSlope: 9.532105
         outSlope: -1.5976396
         tangentMode: 1
         weightedMode: 0
         inWeight: 0.079426005
         outWeight: 0.04662826
+      - serializedVersion: 3
+        time: 0.31666666
+        value: 0.8977311
+        inSlope: -7.2330112
+        outSlope: -6.056586
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.80374116
+        outWeight: 0.05522568
       - serializedVersion: 3
         time: 0.7
         value: 0
@@ -626,7 +644,7 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.41666666
+  - time: 0.25
     functionName: PlaySE
     data: ServantAttack
     objectReferenceParameter: {fileID: 0}
