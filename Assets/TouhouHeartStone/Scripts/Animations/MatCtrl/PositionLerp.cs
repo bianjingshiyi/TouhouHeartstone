@@ -26,7 +26,7 @@ namespace Game
         }
         protected void OnDisable()
         {
-            tryLerp();
+            //tryLerp();//好吧，看来不能在这里Lerp，因为Lerp的参数可能已经被重置了
         }
         private void tryLerp()
         {
