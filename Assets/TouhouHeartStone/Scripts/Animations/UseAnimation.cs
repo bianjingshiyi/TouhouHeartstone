@@ -91,18 +91,11 @@ namespace Game
             }
             else if (eventArg.card.isItem())
             {
-                if (eventArg.player == table.player)
-                {
-                    table.setItem(table.ui.SelfItem, eventArg.card);
-                    if (!SimpleAnimHelper.update(table, ref _useAnim, table.ui.SelfItem.onEquip, table.ui.SelfItem.animator))
-                        return false;
-                }
-                else
-                {
-                    table.setItem(table.ui.EnemyItem, eventArg.card);
-                    if (!SimpleAnimHelper.update(table, ref _useAnim, table.ui.EnemyItem.onEquip, table.ui.EnemyItem.animator))
-                        return false;
-                }
+                Item item = eventArg.player == table.player ? table.ui.SelfItem : table.ui.EnemyItem;
+                if (!item.isDisplaying)
+                    table.setItem(item, eventArg.card);
+                if (!SimpleAnimHelper.update(table, ref _useAnim, table.ui.EnemyItem.onEquip, table.ui.EnemyItem.animator))
+                    return false;
                 if (tryTargetedAnim(table, eventArg))
                     return false;
             }

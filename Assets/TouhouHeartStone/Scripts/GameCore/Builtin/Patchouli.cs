@@ -182,7 +182,7 @@ namespace TouhouHeartstone.Builtin
                 : base(PileName.ITEM, onCheckCondition, null, async (g, c, a) =>
                 {
                     await onExecute?.Invoke(g, c, a);
-                    c.setCurrentLife(c.getCurrentLife(g) - 1);
+                    await c.damage(g, c, 1);
                     await g.updateDeath();
                 })
             {

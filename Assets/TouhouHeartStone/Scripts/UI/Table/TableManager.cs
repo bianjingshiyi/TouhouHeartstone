@@ -323,8 +323,29 @@ namespace Game
                 master.onCanAttackFalse.afterAnim.Invoke();
             }
         }
-        public void setItem(Item item, TouhouCardEngine.Card card)
+        public bool tryGetItem(Card card, out Item item)
         {
+            if (player.item == card)
+            {
+                item = ui.SelfItem;
+                return false;
+            }
+            else if (game.getOpponent(player).item == card)
+            {
+                item = ui.EnemyItem;
+                return true;
+            }
+            item = null;
+            return false;
+        }
+        public void setItem(Item item, Card card)
+        {
+            if (card == null)
+            {
+                item.hide();
+                return;
+            }
+            item.display();
             CardSkinData skin = getSkin(card);
             item.Image.sprite = skin.image;
 
@@ -1169,21 +1190,6 @@ namespace Game
                     return pair.Key;
             }
             return null;
-        }
-        public bool tryGetItem(TouhouCardEngine.Card card, out Item item)
-        {
-            if (player.item != null && player.item == card)
-            {
-                item = ui.SelfItem;
-                return true;
-            }
-            else if (game.getOpponent(player).item != null && game.getOpponent(player).item == card)
-            {
-                item = ui.EnemyItem;
-                return true;
-            }
-            item = null;
-            return false;
         }
         /// <summary>
         /// 隐藏随从的占位符

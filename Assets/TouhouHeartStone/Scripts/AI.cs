@@ -198,6 +198,14 @@ namespace Game
                     value = calcServantValue(game, player, opponent, 1, 1);
                 else if (card.define is MultiCast)
                     value = player.hand.Where(c => c.isSpell()).Count() > 0 ? 2 : 0;
+                else if (card.define is TheGreatLibrary)
+                    value = 1;
+                else if (card.define is BestMagic)
+                    value = 5;
+                else if (card.define is ArcaneKnowledge)
+                    value = 4;
+                else if (card.define is PhilosopherStone)
+                    value = 2;
             }
             return value;
         }
