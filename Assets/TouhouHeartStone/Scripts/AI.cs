@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 using TouhouHeartstone;
 using TouhouCardEngine.Interfaces;
 using System.Linq;
+using Card = TouhouCardEngine.Card;
+using TouhouHeartstone.Builtin;
+
 namespace Game
 {
     public class AI
@@ -51,8 +54,8 @@ namespace Game
         }
         public Response calcNextAction(THHGame game, THHPlayer player)
         {
-            var actions = calcActions(game, player);
-            if (actions.Count > 0)
+            var actions = calcActions(game, player).Where(p => p.Value > 0);
+            if (actions.Count() > 0)
             {
                 return actions.OrderByDescending(p => p.Value).First().Key;
             }
@@ -68,6 +71,20 @@ namespace Game
         public Dictionary<Response, float> calcActions(THHGame game, THHPlayer player)
         {
             Dictionary<Response, float> responseDic = new Dictionary<Response, float>();
+            if (player.skill.isUsable(game, player, out _))
+            {
+                if (player.skill.isNeedTarget(game, out var targets))
+                {
+                    foreach (var target in targets)
+                    {
+                        responseDic.Add(new UseResponse() { cardId = player.skill.id, targetsId = new int[] { target.id } }, player.skill.define.getCost());
+                    }
+                }
+                else
+                {
+                    responseDic.Add(new UseResponse() { cardId = player.skill.id }, player.skill.define.getCost());
+                }
+            }
             foreach (var card in player.hand)
             {
                 if (!card.isUsable(game, player, out _))
@@ -155,6 +172,35 @@ namespace Game
                 }
             }
             return responseDic;
+        }
+        public float calcActionValue(Response response, THHGame game, THHPlayer player, THHPlayer opponent)
+        {
+            float value = 0;
+            if (response is UseResponse use)
+            {
+                Card card = game.getCard(use.cardId);
+                Card target = use.targetsId.Length > 0 ? game.getCard(use.targetsId[0]) : null;
+                value = card.getCost(game);
+                if (card.define is SummerFire)
+                {
+                    value = calcDamageValue(game, player, opponent, target, 1);
+                }
+            }
+            return value;
+        }
+        float calcBuffValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int attack, int life)
+        {
+            float value = 0;
+            return value;
+        }
+        float calcDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int damage)
+        {
+            float value = 0;
+            if (target == opponent.master)
+                value = target.getCurrentLife(game) > damage ? damage : float.MaxValue;
+            else if (opponent.field.Contains(target))
+                value = target.getCurrentLife(game) > damage ? target.getAttack(game) * damage : target.getAttack(game) * target.getCurrentLife(game) + 1;
+            return value;
         }
     }
 }

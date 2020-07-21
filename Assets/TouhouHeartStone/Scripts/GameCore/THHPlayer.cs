@@ -444,6 +444,13 @@ namespace TouhouHeartstone
             public THHPlayer player;
             public Card[] cards;
         }
+        public bool isFriend(Card card)
+        {
+            if (card.getOwner() == this)
+                return true;
+            else
+                return false;
+        }
         #region Command
         public Task cmdInitReplace(THHGame game, params Card[] cards)
         {
