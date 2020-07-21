@@ -8,7 +8,8 @@ namespace Game
         AnimAnim _anim;
         public override bool update(TableManager table, THHPlayer.MoveEventArg eventArg)
         {
-            var servant = table.createServant(eventArg.card, eventArg.position);
+            if (!table.tryGetServant(eventArg.card, out var servant))
+                servant = table.createServant(eventArg.card, eventArg.position);
             if (!SimpleAnimHelper.update(table, ref _anim, servant.onSummon, servant.animator))
                 return false;
             return true;
