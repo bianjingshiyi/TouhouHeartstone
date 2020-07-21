@@ -427,17 +427,24 @@ namespace Tests
         }
 
         [Test]
-        public void SproutingWalkingDeadTest()
+        public void BurgeoningRiseTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(BurgeoningRise.ID, 1),
-                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+                new KeyValuePair<int, int>(BurgeoningRise.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 10);
+            game.skipUntilCanUse<DefaultServant>(you);
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse<BurgeoningRise>(you);
             you.cmdUse(game, you.hand.getCard<BurgeoningRise>(), targets: you.field[0]);
             you.field[0].die(game);
-            you.cmdTurnEnd(game);
+            Assert.AreEqual(1, you.field.count);
+            var dead = you.field[0];
+            Assert.IsInstanceOf<DefaultServant>(dead.define);
+            Buff buff = dead.getBuffs()[0];
+            Assert.NotNull(buff);
+            Assert.AreEqual(game.getCardDefine<DefaultServant>().attack + 3, dead.getAttack(game));
+            Assert.AreEqual(game.getCardDefine<DefaultServant>().life + 3, dead.getLife(game));
+
             game.Dispose();
         }
 

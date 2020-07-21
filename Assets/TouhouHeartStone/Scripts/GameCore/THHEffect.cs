@@ -544,7 +544,13 @@ namespace TouhouHeartstone
             {
                 if (!arg.infoDic.ContainsKey(card))
                     return Task.CompletedTask;
-                if (onExecute != null)
+                if (onCheckConditionBuffed != null && !onCheckConditionBuffed(game, card, buff))
+                    return Task.CompletedTask;
+                else if (onCheckCondition != null && !onCheckCondition(game, card))
+                    return Task.CompletedTask;
+                if (onExecuteBuffed != null)
+                    return onExecuteBuffed(game, card, buff, arg.infoDic[card].position);
+                else if (onExecute != null)
                     return onExecute(game, card, arg.infoDic[card].position);
                 return Task.CompletedTask;
             });

@@ -374,9 +374,9 @@ namespace Tests
                     throw new StackOverflowException();
             }
         }
-        public static void skipUntilCanUse<T>(this THHGame game, THHPlayer you) where T : SpellCardDefine
+        public static void skipUntilCanUse<T>(this THHGame game, THHPlayer you) where T : CardDefine
         {
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<T>().cost);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<T>().getProp<int>(nameof(ServantCardDefine.cost)));
         }
         public static void skipUntilCanUse(this THHGame game, THHPlayer you, Card card)
         {

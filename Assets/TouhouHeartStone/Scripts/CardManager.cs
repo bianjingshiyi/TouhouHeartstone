@@ -136,11 +136,8 @@ namespace Game
                     foreach (var skin in skins)
                     {
                         if (skinDic.ContainsKey(skin.id))
-                        {
                             Debug.LogWarning("存在重复ID的皮肤" + skinDic[skin.id] + "和" + skin);
-                            continue;
-                        }
-                        skinDic.Add(skin.id, skin);
+                        skinDic[skin.id] = skin;
                     }
                 }
                 catch (Exception e)
