@@ -68,7 +68,7 @@ namespace Game
                 }
                 else if (eventArg.to.name == PileName.WARP)
                 {
-                    if (table.tryGetHand(eventArg.card, out var hand))
+                    if (!table.tryGetHand(eventArg.card, out var hand))
                     {
                         hand = table.createHand(eventArg.card);
                         hand.GetComponentInChildren<PositionLerp>().setTarget(deckTransform);
