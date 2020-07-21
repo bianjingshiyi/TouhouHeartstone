@@ -170,7 +170,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    animName: 
+    animName: HandCard_SpellReady
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
