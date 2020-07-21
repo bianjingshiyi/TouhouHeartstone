@@ -12,6 +12,7 @@ namespace Game
         Timer _timer = new Timer() { duration = .4f };
         HandListItem _item;
         AnimAnim _anim;
+        AnimAnim _anim2;
         public override bool update(TableManager table, Pile.MoveCardEventArg eventArg)
         {
             if (eventArg.from == null)
@@ -35,27 +36,49 @@ namespace Game
             }
             else if (eventArg.from.name == PileName.DECK)
             {
+                RectTransform deckTransform = eventArg.from == table.player.deck ? table.ui.SelfDeck.rectTransform : table.ui.EnemyDeck.rectTransform;
                 if (eventArg.to.name == PileName.HAND)
                 {
                     //抽牌
-                    if (!_timer.isStarted)
+                    if (table.tryGetHand(eventArg.card, out var hand))
                     {
-                        _item = table.createHand(eventArg.card);
-                        if (eventArg.from.owner == table.player)
-                        {
-                            _item.Card.rectTransform.position = table.ui.SelfDeck.rectTransform.position;
-                            _startPosition = table.ui.SelfDeck.rectTransform.position;
-                        }
-                        else
-                        {
-                            _item.Card.rectTransform.position = table.ui.EnemyDeck.rectTransform.position;
-                            _startPosition = table.ui.EnemyDeck.rectTransform.position;
-                        }
-                        _timer.start();
+                        hand = table.createHand(eventArg.card);
+                        hand.GetComponentInChildren<PositionLerp>().setTarget(deckTransform);
                     }
-                    _item.Card.rectTransform.position = Vector3.Lerp(_startPosition, _item.rectTransform.position, _item.Card.drawCurve.Evaluate(_timer.progress));
-                    if (!_timer.isExpired())
+                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator))
                         return false;
+                    //if (!_timer.isStarted)
+                    //{
+                    //    _item = table.createHand(eventArg.card);
+                    //    if (eventArg.from.owner == table.player)
+                    //    {
+                    //        _item.Card.rectTransform.position = table.ui.SelfDeck.rectTransform.position;
+                    //        _startPosition = table.ui.SelfDeck.rectTransform.position;
+                    //    }
+                    //    else
+                    //    {
+                    //        _item.Card.rectTransform.position = table.ui.EnemyDeck.rectTransform.position;
+                    //        _startPosition = table.ui.EnemyDeck.rectTransform.position;
+                    //    }
+                    //    _timer.start();
+                    //}
+                    //_item.Card.rectTransform.position = Vector3.Lerp(_startPosition, _item.rectTransform.position, _item.Card.drawCurve.Evaluate(_timer.progress));
+                    //if (!_timer.isExpired())
+                    //    return false;
+                }
+                else if (eventArg.to.name == PileName.WARP)
+                {
+                    if (table.tryGetHand(eventArg.card, out var hand))
+                    {
+                        hand = table.createHand(eventArg.card);
+                        hand.GetComponentInChildren<PositionLerp>().setTarget(deckTransform);
+                    }
+                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator))
+                        return false;
+                    if (!SimpleAnimHelper.update(table, ref _anim2, hand.onDiscard, hand.animator))
+                        return false;
+                    table.ui.SelfHandList.removeItem(hand);
+                    table.ui.EnemyHandList.removeItem(hand);
                 }
             }
             else if (eventArg.from.name == PileName.HAND)
