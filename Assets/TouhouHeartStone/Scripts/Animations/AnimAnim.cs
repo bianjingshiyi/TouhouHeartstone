@@ -24,7 +24,7 @@ namespace Game
                 return true;
             if (isFinished)
                 return true;
-            if (!hasAnim())
+            if (!hasAnim(out var layer))
             {
                 Debug.LogError(_animator + "中不存在动画状态" + _animName, _animator);
                 return true;
@@ -32,7 +32,7 @@ namespace Game
             if (!_isPlayed)
             {
                 _isPlayed = true;
-                _animator.Play(_animName);
+                _animator.Play(_animName, layer, 0);
                 return false;
             }
             for (int i = 0; i < _animator.layerCount; i++)
@@ -44,13 +44,17 @@ namespace Game
             isFinished = true;
             return true;
         }
-        bool hasAnim()
+        bool hasAnim(out int layer)
         {
             for (int i = 0; i < _animator.layerCount; i++)
             {
                 if (_animator.HasState(i, Animator.StringToHash(_animName)))
+                {
+                    layer = i;
                     return true;
+                }
             }
+            layer = -1;
             return false;
         }
         public override bool blockAnim(UIAnimation nextAnim)

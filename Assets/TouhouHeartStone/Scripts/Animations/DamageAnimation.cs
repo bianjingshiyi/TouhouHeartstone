@@ -68,8 +68,8 @@ namespace Game
                 return true;
             if (nextAnim is TurnEndAnimation)
                 return true;
-            if (nextAnim is DamageAnimation damage && damage.tEventArg.cards.Intersect(tEventArg.cards).Count() > 0)
-                return true;
+            //if (nextAnim is DamageAnimation damage && damage.tEventArg.cards.Intersect(tEventArg.cards).Count() > 0)
+            //    return true;
             return false;
         }
     }
