@@ -206,6 +206,33 @@ namespace Game
                     value = 4;
                 else if (card.define is PhilosopherStone)
                     value = 2;
+                else if (card.define is MetalFatigue)
+                    value = calcAOEDamageValue(game, player, opponent, opponent.field, 3);
+                else if (card.define is SylphyHorn)
+                    value = calcBuffValue(game, player, opponent, target, 3, 6);
+                else if (card.define is PrincessUndine)
+                    value = calcAOEDamageValue(game, player, opponent, player.field, 3);
+                else if (card.define is AgniShine)
+                    value = calcDamageValue(game, player, opponent, target, 7);
+                else if (card.define is TrilithonShake)
+                    value = calcServantValue(game, player, opponent, 3, 9);
+                else if (card.define is RoyalFlare)
+                    value = calcDamageValue(game, player, opponent, opponent.master, 15);
+                else if (card.define is SilentSelene)
+                    value = calcServantsValue(game, player, opponent, opponent.field);
+                else if (card.define is ElementalHarvester)
+                    value = calcAOEDamageValue(game, player, opponent, opponent.field, 2);
+                else if (card.define is BurgeoningRise)
+                    value = calcBuffValue(game, player, opponent, target, 3, 3) + calcServantValue(game, player, opponent, target) - 1;
+                else if (card.define is PhlogisticRain)
+                    value = calcRandomDamageValue(game, player, opponent, opponent.field.Append(opponent.master), 1) * 6;
+                else if (card.define is StElmoPillar)
+                    value = calcDamageValue(game, player, opponent, target, 6);
+                else if (card.define is NoachianDeluge)
+                    value = calcServantValue(game, player, opponent, 2, 2) + 1;
+                else if (card.define is MercuryPoison)
+                    value = calcAOEDamageValue(game, player, opponent, opponent.field, 3);
+
             }
             return value;
         }
@@ -218,6 +245,10 @@ namespace Game
                 value = calcServantValue(game, player, opponent, target.getAttack(game) + attack, target.getCurrentLife(game) + life)
                     - calcServantValue(game, player, opponent, target.getAttack(game), target.getLife(game));
             return value;
+        }
+        float calcAOEDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets, int damage)
+        {
+            return targets.Sum(c => calcDamageValue(game, player, opponent, c, damage));
         }
         float calcRandomDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets, int damage)
         {
@@ -237,6 +268,14 @@ namespace Game
             else if (opponent.field.Contains(target))
                 value = target.getCurrentLife(game) > damage ? target.getAttack(game) * damage : target.getAttack(game) * target.getCurrentLife(game) + 1;
             return value;
+        }
+        float calcServantsValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> servants)
+        {
+            return servants.Sum(s => calcServantValue(game, player, opponent, s));
+        }
+        float calcServantValue(THHGame game, THHPlayer player, THHPlayer opponent, Card servant)
+        {
+            return calcServantValue(game, player, opponent, servant.getAttack(game), servant.getCurrentLife(game));
         }
         float calcServantValue(THHGame game, THHPlayer player, THHPlayer opponent, int attack, int life)
         {
