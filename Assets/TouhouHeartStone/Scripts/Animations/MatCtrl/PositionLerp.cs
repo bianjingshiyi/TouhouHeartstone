@@ -22,6 +22,14 @@ namespace Game
         }
         protected void Update()
         {
+            tryLerp();
+        }
+        protected void OnDisable()
+        {
+            tryLerp();
+        }
+        private void tryLerp()
+        {
             if (targetTransofrm != null)
             {
                 RectTransform transform = GetComponent<RectTransform>();
