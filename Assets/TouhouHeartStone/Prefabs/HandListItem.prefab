@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _time: 0
-  _targetTransform: {fileID: 8986990992199740243}
+  _targetTransform: {fileID: 0}
   _stopDistance: 0
 --- !u!1 &2634264027146421539
 GameObject:
