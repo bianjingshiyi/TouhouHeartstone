@@ -566,6 +566,8 @@ namespace TouhouHeartstone
         }
         public static Task<DamageEventArg> damage(this Card card, THHGame game, Card source, int value)
         {
+            if (card == null)
+                return Task.FromResult(default(DamageEventArg));
             return damage(new Card[] { card }, game, source, value);
         }
         public static async Task<DamageEventArg> damage(this IEnumerable<Card> cards, THHGame game, Card source, int value)

@@ -223,7 +223,7 @@ namespace Game
                 else if (card.define is ElementalHarvester)
                     value = calcAOEDamageValue(game, player, opponent, opponent.field, 2);
                 else if (card.define is BurgeoningRise)
-                    value = calcBuffValue(game, player, opponent, target, 3, 3) + calcServantValue(game, player, opponent, target) - 1;
+                    value = calcBuffValue(game, player, opponent, target, 3, 3) + (target.getOwner() == player ? calcServantValue(game, player, opponent, target) - 1 : 0);
                 else if (card.define is PhlogisticRain)
                     value = calcRandomDamageValue(game, player, opponent, opponent.field.Append(opponent.master), 1) * 6;
                 else if (card.define is StElmoPillar)

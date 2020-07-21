@@ -43,7 +43,8 @@ namespace Game
                     if (!table.tryGetHand(eventArg.card, out var hand))
                     {
                         hand = table.createHand(eventArg.card);
-                        hand.GetComponentInChildren<PositionLerp>().setTarget(deckTransform);
+                        hand.rectTransform.position = deckTransform.position;
+                        hand.GetComponentInChildren<PositionLerp>().setTarget(hand.rectTransform);
                     }
                     if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator))
                         return false;
@@ -102,14 +103,17 @@ namespace Game
             }
             else if (eventArg.from.name == PileName.GRAVE)
             {
+                RectTransform graveTransform = eventArg.from == table.player.grave ? table.ui.SelfGraveDeck.rectTransform : table.ui.EnemyGraveDeck.rectTransform;
                 if (eventArg.to.name == PileName.HAND)
                 {
                     //从墓地抽牌
                     if (!table.tryGetHand(eventArg.card, out var hand))
+                    {
                         hand = table.createHand(eventArg.card);
-                    var grave = eventArg.from.owner == table.player ? table.ui.SelfGraveDeck : table.ui.EnemyGraveDeck;
-                    hand.GetComponentInChildren<PositionLerp>().setTarget(grave.rectTransform, grave.rectTransform.sizeDelta.x / 2);
-                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onGraveToHand, hand.animator))
+                        hand.rectTransform.position = graveTransform.position;
+                        hand.GetComponentInChildren<PositionLerp>().setTarget(hand.rectTransform);
+                    }
+                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator))
                         return false;
                 }
             }

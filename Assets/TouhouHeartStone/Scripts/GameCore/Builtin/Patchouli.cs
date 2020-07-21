@@ -555,9 +555,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             THHPlayer opponent = game.getOpponent(card.getOwner());
-            if (opponent.field.count > 0)
-                return;
-            await opponent.field.randomTake(game, 1).damage(game, card, 2);
+            await opponent.field.random(game).damage(game, card, 2);
             await Patchouli.tryMix(game, card);
         }
     }
