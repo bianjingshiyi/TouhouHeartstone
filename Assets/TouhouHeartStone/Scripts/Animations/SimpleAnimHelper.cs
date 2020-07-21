@@ -8,15 +8,14 @@ namespace Game
         public static bool update(TableManager table, ref AnimAnim anim, SimpleAnim simpleAnim, Animator animator, Func<UIAnimation, bool> onBlockAnim = null)
         {
             if (simpleAnim == null)
-                return true; ;
-            simpleAnim.beforeAnim.Invoke();
-            if (!string.IsNullOrEmpty(simpleAnim.animName) && animator != null)
+                return true;
+            if (anim == null)
             {
-                if (anim == null)
-                    anim = new AnimAnim(animator, simpleAnim.animName, onBlockAnim);
-                if (!anim.update(table))
-                    return false;
+                simpleAnim.beforeAnim.Invoke();
+                anim = new AnimAnim(animator, simpleAnim.animName, onBlockAnim);
             }
+            if (!anim.update(table))
+                return false;
             simpleAnim.afterAnim.Invoke();
             anim = null;
             return true;

@@ -20,6 +20,8 @@ namespace Game
         {
             if (_animator == null)
                 return true;
+            if (string.IsNullOrEmpty(_animName))
+                return true;
             if (isFinished)
                 return true;
             if (!hasAnim())
