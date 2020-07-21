@@ -71,18 +71,21 @@ namespace Game
         public Dictionary<Response, float> calcActions(THHGame game, THHPlayer player)
         {
             Dictionary<Response, float> responseDic = new Dictionary<Response, float>();
+            UseResponse use;
             if (player.skill.isUsable(game, player, out _))
             {
                 if (player.skill.isNeedTarget(game, out var targets))
                 {
                     foreach (var target in targets)
                     {
-                        responseDic.Add(new UseResponse() { cardId = player.skill.id, targetsId = new int[] { target.id } }, player.skill.define.getCost());
+                        use = new UseResponse() { cardId = player.skill.id, targetsId = new int[] { target.id } };
+                        responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
                     }
                 }
                 else
                 {
-                    responseDic.Add(new UseResponse() { cardId = player.skill.id }, player.skill.define.getCost());
+                    use = new UseResponse() { cardId = player.skill.id };
+                    responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
                 }
             }
             foreach (var card in player.hand)
@@ -116,14 +119,14 @@ namespace Game
                     {
                         foreach (var target in targets)
                         {
-                            responseDic.Add(new UseResponse() { cardId = card.id, targetsId = new int[] { target.id } },
-                                card.getCost(game));
+                            use = new UseResponse() { cardId = card.id, targetsId = new int[] { target.id } };
+                            responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
                         }
                     }
                     else
                     {
-                        responseDic.Add(new UseResponse() { cardId = card.id },
-                            card.getCost(game));
+                        use = new UseResponse() { cardId = card.id };
+                        responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
                     }
                 }
             }
@@ -173,7 +176,7 @@ namespace Game
             }
             return responseDic;
         }
-        public float calcActionValue(Response response, THHGame game, THHPlayer player, THHPlayer opponent)
+        float calcActionValue(Response response, THHGame game, THHPlayer player, THHPlayer opponent)
         {
             float value = 0;
             if (response is UseResponse use)
@@ -182,15 +185,48 @@ namespace Game
                 Card target = use.targetsId.Length > 0 ? game.getCard(use.targetsId[0]) : null;
                 value = card.getCost(game);
                 if (card.define is SummerFire)
-                {
                     value = calcDamageValue(game, player, opponent, target, 1);
-                }
+                else if (card.define is AutumnEdge)
+                    value = calcRandomDamageValue(game, player, opponent, opponent.field, 2);
+                else if (card.define is SpringWind)
+                    value = calcBuffValue(game, player, opponent, target, 0, 2);
+                else if (card.define is WinterElement)
+                    value = calcFreezeValue(game, player, opponent, target);
+                else if (card.define is SummerFire)
+                    value = calcBuffValue(game, player, opponent, target, 2, 0);
+                else if (card.define is DoyouSpear)
+                    value = calcServantValue(game, player, opponent, 1, 1);
+                else if (card.define is MultiCast)
+                    value = player.hand.Where(c => c.isSpell()).Count() > 0 ? 2 : 0;
+                else if (card.define is TheGreatLibrary)
+                    value = 1;
+                else if (card.define is BestMagic)
+                    value = 5;
+                else if (card.define is ArcaneKnowledge)
+                    value = 4;
+                else if (card.define is PhilosopherStone)
+                    value = 2;
             }
             return value;
         }
         float calcBuffValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int attack, int life)
         {
             float value = 0;
+            if (target == player.master)
+                value = attack * target.getCurrentLife(game) + life;
+            else if (player.field.Contains(target))
+                value = calcServantValue(game, player, opponent, target.getAttack(game) + attack, target.getCurrentLife(game) + life)
+                    - calcServantValue(game, player, opponent, target.getAttack(game), target.getLife(game));
+            return value;
+        }
+        float calcRandomDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets, int damage)
+        {
+            float value = 0;
+            foreach (var target in targets)
+            {
+                value += calcDamageValue(game, player, opponent, target, damage);
+            }
+            value /= targets.Count();
             return value;
         }
         float calcDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int damage)
@@ -201,6 +237,14 @@ namespace Game
             else if (opponent.field.Contains(target))
                 value = target.getCurrentLife(game) > damage ? target.getAttack(game) * damage : target.getAttack(game) * target.getCurrentLife(game) + 1;
             return value;
+        }
+        float calcServantValue(THHGame game, THHPlayer player, THHPlayer opponent, int attack, int life)
+        {
+            return attack * life + 1;
+        }
+        float calcFreezeValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
+        {
+            return target.getAttack(game);
         }
     }
 }

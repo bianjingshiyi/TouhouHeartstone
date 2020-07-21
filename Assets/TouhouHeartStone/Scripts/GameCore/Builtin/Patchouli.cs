@@ -182,7 +182,7 @@ namespace TouhouHeartstone.Builtin
                 : base(PileName.ITEM, onCheckCondition, null, async (g, c, a) =>
                 {
                     await onExecute?.Invoke(g, c, a);
-                    c.setCurrentLife(c.getCurrentLife(g) - 1);
+                    await c.damage(g, c, 1);
                     await g.updateDeath();
                 })
             {
@@ -898,11 +898,13 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(async (g1,c1)=>
             {
-                await c1.getOwner().hand.random(g1).addBuff(g1,new GeneratedBuff(ID,new CostModifier(-2)));
+                Card card = c1.getOwner().hand.Where(c=>c.isSpell()).random(g1);
+                if(card!=null)
+                    await card.addBuff(g1, new GeneratedBuff(ID, new CostModifier(-2)));
                 c1.getOwner().setProp(nameof(Asthma),c1.getOwner().getProp<int>(nameof(Asthma))+1);
                 Card asthma = g1.createCard<Asthma>();
                 asthma.setProp("damage",c1.getOwner().getProp<int>(nameof(Asthma)));
-                await c1.getOwner().shuffleCardToDeck(g1,asthma);
+                await c1.getOwner().shuffleCardToDeck(g1, asthma);
                 await c1.getOwner().addCardToHand<MultiCast>(g1);
             })
         };

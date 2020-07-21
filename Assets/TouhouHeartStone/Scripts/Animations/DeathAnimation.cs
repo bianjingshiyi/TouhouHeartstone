@@ -65,6 +65,7 @@ namespace Game
                 else if (table.tryGetItem(card, out var item))
                 {
                     item.onDestroy.afterAnim.Invoke();
+                    item.hide();
                 }
             }
             return true;

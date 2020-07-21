@@ -10,6 +10,7 @@ using TouhouCardEngine;
 using System.Linq;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Card = TouhouCardEngine.Card;
 namespace Game
 {
     public partial class TableManager : Manager
@@ -32,6 +33,9 @@ namespace Game
         public AnimationCurve handToFieldCurve => _moveToFieldCurve;
         [SerializeField]
         Gradient timeoutGradient = new Gradient();
+        [SerializeField]
+        UI.Card _cardPrefab;
+        public UI.Card cardPrefab => _cardPrefab;
         [Header("State")]
         [SerializeField]
         bool _canControl = true;
@@ -46,7 +50,7 @@ namespace Game
         /// <summary>
         /// 当前正在使用的卡片的引用
         /// </summary>
-        public TouhouCardEngine.Card usingCard { get; set; } = null;
+        public Card usingCard { get; set; } = null;
         [SerializeField]
         int _usingPosition = -1;
         public int usingPosition
@@ -319,8 +323,29 @@ namespace Game
                 master.onCanAttackFalse.afterAnim.Invoke();
             }
         }
-        public void setItem(Item item, TouhouCardEngine.Card card)
+        public bool tryGetItem(Card card, out Item item)
         {
+            if (player.item == card)
+            {
+                item = ui.SelfItem;
+                return false;
+            }
+            else if (game.getOpponent(player).item == card)
+            {
+                item = ui.EnemyItem;
+                return true;
+            }
+            item = null;
+            return false;
+        }
+        public void setItem(Item item, Card card)
+        {
+            if (card == null)
+            {
+                item.hide();
+                return;
+            }
+            item.display();
             CardSkinData skin = getSkin(card);
             item.Image.sprite = skin.image;
 
@@ -836,13 +861,19 @@ namespace Game
             else
                 return game.getOpponent(player).master;
         }
+        public UI.Card createCard(Card card)
+        {
+            var ui = Instantiate(cardPrefab, this.ui.FieldsImage.rectTransform);
+            setCard(ui, card, true);
+            return ui;
+        }
         /// <summary>
         /// 设置卡片UI
         /// </summary>
         /// <param name="ui"></param>
         /// <param name="card"></param>
         /// <param name="isFaceup"></param>
-        public void setCard(UI.Card ui, TouhouCardEngine.Card card, bool isFaceup)
+        public void setCard(UI.Card ui, Card card, bool isFaceup)
         {
             ui.CostPropNumber.asText.text = card.getCost(game).ToString();
 
@@ -1159,21 +1190,6 @@ namespace Game
                     return pair.Key;
             }
             return null;
-        }
-        public bool tryGetItem(TouhouCardEngine.Card card, out Item item)
-        {
-            if (player.item != null && player.item == card)
-            {
-                item = ui.SelfItem;
-                return true;
-            }
-            else if (game.getOpponent(player).item != null && game.getOpponent(player).item == card)
-            {
-                item = ui.EnemyItem;
-                return true;
-            }
-            item = null;
-            return false;
         }
         /// <summary>
         /// 隐藏随从的占位符

@@ -29,6 +29,12 @@ namespace Game
                         master.onDamage.beforeAnim.Invoke();
                         _animList.Add(new AnimAnim(master.animator, master.onDamage.animName));
                     }
+                    else if (table.tryGetItem(card, out var item))
+                    {
+                        item.DurabilityPropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
+                        item.onLifeDown.beforeAnim.Invoke();
+                        _animList.Add(new AnimAnim(item.animator, item.onLifeDown.animName));
+                    }
                 }
             }
             bool isAllAnimDone = true;
@@ -48,6 +54,10 @@ namespace Game
                 else if (table.tryGetMaster(card, out Master master))
                 {
                     master.onDamage.afterAnim.Invoke();
+                }
+                else if (table.tryGetItem(card, out var item))
+                {
+                    item.onLifeDown.afterAnim.Invoke();
                 }
             }
             return true;
