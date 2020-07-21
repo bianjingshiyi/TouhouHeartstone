@@ -18,6 +18,8 @@ namespace Game
         }
         public override bool update(TableManager table)
         {
+            if (_animator == null)
+                return true;
             if (isFinished)
                 return true;
             if (!hasAnim())

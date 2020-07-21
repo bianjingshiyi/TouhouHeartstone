@@ -730,7 +730,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.getOwner()).field.damageByRandom(game, card, card.getOwner().getSpellDamage(game, 6));
+            await game.getAllEnemies(card.getOwner()).damageByRandom(game, card, card.getOwner().getSpellDamage(game, 6));
             await Patchouli.tryMix(game, card);
         }
     }
@@ -809,9 +809,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer opponent = game.getOpponent(card.getOwner());
-            for (int i = 0; i < opponent.field.count; i++)
-                await card.getOwner().createToken(game, game.getCardDefine<DustElement>());
+            await card.getOwner().createToken(game, game.getOpponent(card.getOwner()).field.count, game.getCardDefine<DustElement>());
             await Patchouli.tryMix(game, card);
         }
     }
@@ -873,7 +871,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x034;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override int attack { get; set; } = 6;
+        public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
         public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
         public override string[] keywords { get; set; } = new string[] { Keyword.RUSH };

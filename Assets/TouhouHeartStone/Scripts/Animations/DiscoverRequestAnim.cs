@@ -4,9 +4,17 @@ namespace Game
 {
     class DiscoverRequestAnim : RequestAnimation<DiscoverRequest>
     {
-        public override void display(TableManager table, DiscoverRequest request)
+        bool _isOpened = false;
+        public override bool display(TableManager table, DiscoverRequest request)
         {
-            table.displayDiscoverDialog(request.cardIdArray, request.title);
+            if (!_isOpened)
+            {
+                _isOpened = true;
+                table.displayDiscoverDialog(request.cardIdArray, request.title);
+            }
+            if (table.ui.Discover.isDisplaying)
+                return false;
+            return true;
         }
     }
 }

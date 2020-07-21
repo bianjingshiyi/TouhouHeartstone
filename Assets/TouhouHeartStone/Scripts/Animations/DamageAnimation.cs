@@ -54,9 +54,15 @@ namespace Game
         }
         public override bool blockAnim(UIAnimation nextAnim)
         {
-            if (nextAnim is DamageAnimation damage && damage.tEventArg.cards.Intersect(tEventArg.cards).Count() == 0)
-                return false;
-            return base.blockAnim(nextAnim);
+            if (nextAnim is RequestAnimation)
+                return true;
+            if (nextAnim is DamageAnimation damage && damage.tEventArg.cards.Intersect(tEventArg.cards).Count() > 0)
+                return true;
+            return false;
         }
+    }
+    public interface IActorAnimation
+    {
+
     }
 }

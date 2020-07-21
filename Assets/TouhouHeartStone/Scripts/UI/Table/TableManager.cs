@@ -489,8 +489,13 @@ namespace Game
         {
             if (cardHandDic.ContainsKey(card))
             {
-                UberDebug.LogErrorChannel("UI", "手牌中已经存在" + card + "对应UI" + cardHandDic[card]);
-                return cardHandDic[card];
+                if (cardHandDic[card] != null)
+                {
+                    UberDebug.LogErrorChannel("UI", "手牌中已经存在" + card + "对应UI" + cardHandDic[card]);
+                    return cardHandDic[card];
+                }
+                else
+                    cardHandDic[card] = null;
             }
             UberDebug.LogChannel("UI", "创建手牌UI：" + card);
             HandListItem item;
@@ -794,8 +799,13 @@ namespace Game
         {
             if (cardHandDic.ContainsKey(card))
             {
-                hand = cardHandDic[card];
-                return true;
+                if (cardHandDic[card] != null)
+                {
+                    hand = cardHandDic[card];
+                    return true;
+                }
+                else
+                    cardHandDic.Remove(card);
             }
             hand = null;
             return false;

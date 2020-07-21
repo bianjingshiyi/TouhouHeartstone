@@ -360,6 +360,15 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
+        public async Task<CreateTokenEventArg[]> createToken(THHGame game, int count, CardDefine define, int position = -1)
+        {
+            List<CreateTokenEventArg> list = new List<CreateTokenEventArg>();
+            for (int i = 0; i < count; i++)
+            {
+                list.Add(await createToken(game, define, position));
+            }
+            return list.ToArray();
+        }
         public class CreateTokenEventArg : EventArg
         {
             public THHPlayer player;

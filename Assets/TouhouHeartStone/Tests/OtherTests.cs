@@ -202,5 +202,12 @@ namespace Tests
             });
             Assert.AreEqual("对你的英雄造成2点伤害", result);
         }
+        [Test]
+        public void resourceSpriteLoadTest()
+        {
+            var sprites = Resources.LoadAll<Sprite>("Textures/Patchouli/淡黄阵风");
+            Assert.AreEqual(2, sprites.Length);
+            Assert.True(sprites.Any(s => s.name == "淡黄阵风_Token"));
+        }
     }
 }

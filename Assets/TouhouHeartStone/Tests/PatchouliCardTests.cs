@@ -12,30 +12,31 @@ namespace Tests
 {
     public class PatchouliCardTests
     {
-        [Test]
-        public void PatchouliSkillTest()
-        {
-            THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
-                Enumerable.Repeat(new Patchouli(), 2).ToArray(),
-                Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
-                new GameOption() { });
-            game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdTurnEnd(game);
+        //过期测试
+        //[Test]
+        //public void PatchouliSkillTest()
+        //{
+        //    THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
+        //        Enumerable.Repeat(new Patchouli(), 2).ToArray(),
+        //        Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
+        //        new GameOption() { });
+        //    game.run();
+        //    game.sortedPlayers[0].cmdInitReplace(game);
+        //    game.sortedPlayers[1].cmdInitReplace(game);
+        //    game.sortedPlayers[0].cmdTurnEnd(game);
+        //    game.sortedPlayers[1].cmdTurnEnd(game);
+        //    game.sortedPlayers[0].cmdTurnEnd(game);
 
-            int preHand = game.sortedPlayers[1].hand.count;
-            int preDeck = game.sortedPlayers[1].deck.count;
-            int preLife = game.sortedPlayers[1].master.getCurrentLife(game);
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 0, game.sortedPlayers[1].master);
+        //    int preHand = game.sortedPlayers[1].hand.count;
+        //    int preDeck = game.sortedPlayers[1].deck.count;
+        //    int preLife = game.sortedPlayers[1].master.getCurrentLife(game);
+        //    game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 0, game.sortedPlayers[1].master);
 
-            Assert.AreEqual(1, game.sortedPlayers[1].hand.count - preHand);
-            Assert.AreEqual(-1, game.sortedPlayers[1].deck.count - preDeck);
-            Assert.AreEqual(-2, game.sortedPlayers[1].master.getCurrentLife(game) - preLife);
+        //    Assert.AreEqual(1, game.sortedPlayers[1].hand.count - preHand);
+        //    Assert.AreEqual(-1, game.sortedPlayers[1].deck.count - preDeck);
+        //    Assert.AreEqual(-2, game.sortedPlayers[1].master.getCurrentLife(game) - preLife);
 
-        }
+        //}
 
         [Test]
         public void PatchouliBestMagicTest()
@@ -364,21 +365,21 @@ namespace Tests
         public void ElementHarvesterTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(ElementalHarvester.ID, 1),
-                new KeyValuePair<int, int>(DoyouSpear.ID, 20)
+                new KeyValuePair<int, int>(ElementalHarvester.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 3);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<DefaultServant>().cost * 3);
             for (int i = 0; i < 3; i++)
             {
-                you.cmdUse(game, you.hand.getCard<DoyouSpear>());
+                you.cmdUse(game, you.hand.getCard<DefaultServant>());
             }
             you.cmdTurnEnd(game);
             for (int i = 0; i < 3; i++)
             {
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
                 oppo.field[i].setCurrentLife(2);
             }
             oppo.cmdTurnEnd(game);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<ElementalHarvester>().cost);
             you.cmdUse(game, you.hand.getCard<ElementalHarvester>());
             game.Dispose();
         }
@@ -456,11 +457,10 @@ namespace Tests
         }
 
         [Test]
-        public void BurningRainTest()
+        public void PhlogisticRainTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(PhlogisticRain.ID, 1),
-                new KeyValuePair<int, int>(DefaultServant.ID, 20)
+                new KeyValuePair<int, int>(PhlogisticRain.ID, 1)
             );
             game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
             for (int i = 0; i < 3; i++)
@@ -468,8 +468,10 @@ namespace Tests
                 oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
             }
             oppo.cmdTurnEnd(game);
-
+            game.skipUntilCanUse<PhlogisticRain>(you);
+            int totalLife = oppo.master.getCurrentLife(game) + oppo.field.Sum(s => s.getCurrentLife(game));
             you.cmdUse(game, you.hand.getCard<PhlogisticRain>());
+            Assert.AreEqual(totalLife - 6, oppo.master.getCurrentLife(game) + oppo.field.Sum(s => s.getCurrentLife(game)));
             game.Dispose();
         }
 
@@ -522,10 +524,10 @@ namespace Tests
             game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
             for (int i = 0; i < 3; i++)
             {
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
             }
             oppo.cmdTurnEnd(game);
-
+            game.skipUntilCanUse<GingerGust>(you);
             you.cmdUse(game, you.hand.getCard<GingerGust>());
             you.cmdAttack(game, you.field[0], oppo.field[1]);
             you.cmdTurnEnd(game);
@@ -549,7 +551,6 @@ namespace Tests
         public void PhilosopherStoneTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(DoyouSpear.ID, 4),
                 new KeyValuePair<int, int>(PhilosopherStone.ID, 5)
             );
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<PhilosopherStone>().cost);
@@ -557,8 +558,9 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<PhilosopherStone>());//挂刀
             Assert.IsInstanceOf<PhilosopherStone>(you.item.define);//挂上了
             var getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
+            game.skipUntilCanUse(you, getCard);
             handBeforeUse = you.hand.ToArray();
-            you.cmdUse(game, you.hand.getCard<DoyouSpear>());//用牌 
+            you.cmdUse(game, getCard);//用牌 
             getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
 
             game.Dispose();

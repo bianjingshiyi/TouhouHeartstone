@@ -126,7 +126,7 @@ namespace Game
             {
                 if (skin.image == null)
                     skin.image = await getDefaultSprite();
-                skinDic.Add(skin.id, skin);
+                skinDic[skin.id] = skin;
             }
             foreach (string path in pathList)
             {

@@ -338,6 +338,7 @@ namespace Tests
                 game.sortedPlayers[0].cmdInitReplace(game);
                 game.sortedPlayers[1].cmdInitReplace(game);
             }
+            int count = 0;
             while (condition())
             {
                 if (game.currentPlayer == game.sortedPlayers[0])
@@ -346,6 +347,9 @@ namespace Tests
                     return;
                 if (game.currentPlayer == game.sortedPlayers[1])
                     game.sortedPlayers[1].cmdTurnEnd(game);
+                count++;
+                if (count > 100)
+                    throw new StackOverflowException();
             }
         }
         public static void skipTurnUntil(this THHGame game, Func<bool> condition)
@@ -369,6 +373,14 @@ namespace Tests
                 if (count > 1000)
                     throw new StackOverflowException();
             }
+        }
+        public static void skipUntilCanUse<T>(this THHGame game, THHPlayer you) where T : SpellCardDefine
+        {
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<T>().cost);
+        }
+        public static void skipUntilCanUse(this THHGame game, THHPlayer you, Card card)
+        {
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= card.getCost(game));
         }
     }
 }

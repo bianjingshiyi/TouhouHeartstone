@@ -21,9 +21,8 @@ namespace UI
         }
         public override bool update(TableManager table)
         {
-            display(table, request is T t ? t : default);
-            return true;
+            return display(table, request is T t ? t : default);
         }
-        public abstract void display(TableManager table, T request);
+        public abstract bool display(TableManager table, T request);
     }
 }

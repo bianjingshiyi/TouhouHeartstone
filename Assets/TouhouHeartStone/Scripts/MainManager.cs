@@ -19,6 +19,7 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             Main main = ui.getObject<Main>();
             main.MainMenu.ManMachineButtonButtonBlack.asButton.onClick.set(() =>
             {
@@ -58,6 +59,25 @@ namespace Game
                 ui.getObject<Dialog>().display("游戏资源加载失败！请重新启动游戏", () => Application.Quit());
                 _loadCardTask = null;
             }
+        }
+        private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            if (e.Exception != null)
+            {
+                if (e.Exception.InnerException != null)
+                    Debug.LogError(e.Exception.InnerException);
+                else if (e.Exception.InnerExceptions != null)
+                {
+                    foreach (var exception in e.Exception.InnerExceptions)
+                    {
+                        Debug.LogError(exception);
+                    }
+                }
+                else
+                    Debug.LogError(e.Exception);
+            }
+            else
+                Debug.LogError(e);
         }
     }
 }

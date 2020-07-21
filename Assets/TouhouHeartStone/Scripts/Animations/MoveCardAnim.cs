@@ -60,19 +60,21 @@ namespace Game
             }
             else if (eventArg.from.name == PileName.HAND)
             {
-                HandListItem hand = table.getHand(eventArg.card);
-                if (eventArg.to.name == PileName.GRAVE)
+                if (table.tryGetHand(eventArg.card, out var hand))
                 {
-                    //弃牌
-                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onDiscard, hand.animator, next =>
+                    if (eventArg.to.name == PileName.GRAVE)
+                    {
+                        //弃牌
+                        if (!SimpleAnimHelper.update(table, ref _anim, hand.onDiscard, hand.animator, next =>
                         {
                             if (next is MoveCardAnim moveCard && moveCard.tEventArg.card != eventArg.card)
                                 return true;
                             return false;
                         }))
-                        return false;
-                    table.ui.SelfHandList.removeItem(hand);
-                    table.ui.EnemyHandList.removeItem(hand);
+                            return false;
+                        table.ui.SelfHandList.removeItem(hand);
+                        table.ui.EnemyHandList.removeItem(hand);
+                    }
                 }
             }
             else if (eventArg.from.name == PileName.GRAVE)
@@ -80,7 +82,8 @@ namespace Game
                 if (eventArg.to.name == PileName.HAND)
                 {
                     //从墓地抽牌
-                    HandListItem hand = table.createHand(eventArg.card);
+                    if (!table.tryGetHand(eventArg.card, out var hand))
+                        hand = table.createHand(eventArg.card);
                     var grave = eventArg.from.owner == table.player ? table.ui.SelfGraveDeck : table.ui.EnemyGraveDeck;
                     hand.GetComponentInChildren<PositionLerp>().setTarget(grave.rectTransform, grave.rectTransform.sizeDelta.x / 2);
                     if (!SimpleAnimHelper.update(table, ref _anim, hand.onGraveToHand, hand.animator))

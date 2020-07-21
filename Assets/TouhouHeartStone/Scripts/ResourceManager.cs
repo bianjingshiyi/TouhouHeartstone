@@ -33,11 +33,7 @@ namespace Game
                 return null;
 
             if (path.StartsWith("res:"))
-            {
-                TaskCompletionSource<Texture2D> tcs = new TaskCompletionSource<Texture2D>();
-                tcs.SetResult(Resources.Load<Texture2D>(path.Replace("res:", "")));
-                return tcs.Task;
-            }
+                return Task.FromResult(Resources.Load<Texture2D>(path.Replace("res:", "")));
 
             platform = platform ?? PlatformCompability.Current;
             if (platform.RequireWebRequest)
@@ -60,7 +56,8 @@ namespace Game
             if (platform.RequireWebRequest)
                 return loadDataSetByWebRequest(path);
 
-            return loadDataSetBySystemIO(path, curDir);        }
+            return loadDataSetBySystemIO(path, curDir);
+        }
 
         public Task<DataSet> loadExcelAsDataSet(string path, PlatformCompability platform = null, string curDir = null)
         {

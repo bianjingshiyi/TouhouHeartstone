@@ -14,37 +14,6 @@ using System.Collections.Generic;
 
 namespace Game
 {
-    [Serializable]
-    public class Deck
-    {
-        public string name;
-        [CardDefineID]
-        public int master;
-        [Serializable]
-        public struct DeckItem
-        {
-            [CardDefineID]
-            public int id;
-            public int count;
-        }
-        public List<DeckItem> deckList = new List<DeckItem>();
-        public int[] toIdArray()
-        {
-            List<int> list = new List<int>
-            {
-                master
-            };
-            foreach (var item in deckList)
-            {
-                if (item.id < 1)
-                    continue;
-                if (item.count < 1)
-                    continue;
-                list.AddRange(Enumerable.Repeat(item.id, item.count));
-            }
-            return list.ToArray();
-        }
-    }
     public class GameManager : Manager
     {
         [SerializeField]
@@ -58,7 +27,7 @@ namespace Game
             base.onAwake();
             _ui = this.findInstance<Main>();
             _ui.game = this;
-            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+            _ui.Game.GameResultDialog.ButtonGlass.asButton.onClick.set(quitGame);
         }
         [SerializeField]
         bool _useDefaultDeck = true;
@@ -125,6 +94,8 @@ namespace Game
         /// </summary>
         public void startLocalGame()
         {
+            _ui.Game.GameResultDialog.hide();
+
             game = new THHGame(_option, getManager<CardManager>().GetCardDefines())
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
@@ -151,6 +122,8 @@ namespace Game
         }
         public void startRemoteGame(ClientManager client, GameOption option, RoomPlayerInfo[] players)
         {
+            _ui.Game.GameResultDialog.hide();
+
             game = new THHGame(option, getManager<CardManager>().GetCardDefines())
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
@@ -221,25 +194,6 @@ namespace Game
             {
                 _deck[i] = PlayerPrefs.GetInt("Deck" + i);
             }
-        }
-        private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
-        {
-            if (e.Exception != null)
-            {
-                if (e.Exception.InnerException != null)
-                    Debug.LogError(e.Exception.InnerException);
-                else if (e.Exception.InnerExceptions != null)
-                {
-                    foreach (var exception in e.Exception.InnerExceptions)
-                    {
-                        Debug.LogError(exception);
-                    }
-                }
-                else
-                    Debug.LogError(e.Exception);
-            }
-            else
-                Debug.LogError(e);
         }
         protected void OnGUI()
         {

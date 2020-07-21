@@ -57,18 +57,25 @@ namespace Game
             {
                 if (eventArg.player == table.player)
                 {
-                    table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
+                    if (table.tryGetHand(eventArg.card, out var hand))
+                    {
+                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onSelfUse, hand.animator))
+                            return false;
+                        table.ui.SelfHandList.removeItem(hand);
+                    }
                     if (tryTargetedAnim(table, eventArg))
                         return false;
                 }
                 else
                 {
-                    HandListItem hand = table.getHand(eventArg.card);
-                    table.setCard(hand.Card, eventArg.card, true);
-                    hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
-                    if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator))
-                        return false;
-                    table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
+                    if (table.tryGetHand(eventArg.card, out var hand))
+                    {
+                        table.setCard(hand.Card, eventArg.card, true);
+                        hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
+                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator))
+                            return false;
+                        table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
+                    }
                     if (tryTargetedAnim(table, eventArg))
                         return false;
                 }

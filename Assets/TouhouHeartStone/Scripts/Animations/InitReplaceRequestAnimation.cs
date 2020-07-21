@@ -6,7 +6,7 @@ namespace Game
 {
     class InitReplaceRequestAnimation : RequestAnimation<InitReplaceRequest>
     {
-        public override void display(TableManager table, InitReplaceRequest request)
+        public override bool display(TableManager table, InitReplaceRequest request)
         {
             if (!table.ui.InitReplaceDialog.isDisplaying)
             {
@@ -33,6 +33,7 @@ namespace Game
                     table.ui.InitReplaceDialog.ConfirmButtonBlack.asButton.setSelectable(false);
                 });
             }
+            return true;
         }
     }
 }
