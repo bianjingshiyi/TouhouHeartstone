@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BJSYGameCore.UI;
 using TouhouHeartstone;
 using TouhouCardEngine;
+using UnityEngine.Events;
 
 namespace Game
 {
@@ -14,6 +15,9 @@ namespace Game
         public UIManager ui => getManager<UIManager>();
         public NetworkingManager network => getManager<NetworkingManager>();
         public GameManager game => getManager<GameManager>();
+
+        [SerializeField]
+        UnityEvent onLoadingFinish;
 
         Main mainUI => ui.getObject<Main>();
         protected override void onAwake()
@@ -51,6 +55,7 @@ namespace Game
                 UIManager ui = getManager<UIManager>();
                 Main main = ui.getObject<Main>();
                 main.display(main.MainMenu);
+                onLoadingFinish?.Invoke();
                 _loadCardTask = null;
             }
             else if (_loadCardTask.IsFaulted || _loadCardTask.IsCanceled)
