@@ -44,7 +44,7 @@ namespace Game
         {
             if (currentList != null)
             {
-                if (Audio.clip != null &&  Audio.time >= Audio.clip.length)
+                if (Audio.clip != null && Audio.time >= Audio.clip.length - 0.25)
                 {
                     currentPlaybackIndex = (currentPlaybackIndex + 1) % currentList.Value.musics.Length;
                     Audio.clip = currentList.Value.musics[currentPlaybackIndex];
