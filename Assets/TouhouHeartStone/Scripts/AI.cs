@@ -232,9 +232,20 @@ namespace Game
                     value = calcServantValue(game, player, opponent, 2, 2) + 1;
                 else if (card.define is MercuryPoison)
                     value = calcAOEDamageValue(game, player, opponent, opponent.field, 3);
-
+                else if (card.define is ForestBlaze)
+                    value = calcBuffAllValue(game, player, opponent, player.field, 2, 2) + calcRandomDamageValue(game, player, opponent, opponent.field, 1) * player.field.count;
+                else if (card.define is WaterElf)
+                    value = calcBuffValue(game, player, opponent, target, 3, 6 + target.getLife(game) - target.getCurrentLife(game)) + 1;
+                else if (card.define is LavaCromlech)
+                    value = (calcServantValue(game, player, opponent, 2, 2) + calcRandomDamageValue(game, player, opponent, opponent.field, 2)) * 3;
+                else if (card.define is GingerGust)
+                    value = (calcServantValue(game, player, opponent, 3, 1) + 1) * opponent.field.count;
             }
             return value;
+        }
+        float calcBuffAllValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets, int attack, int life)
+        {
+            return targets.Sum(c => calcBuffValue(game, player, opponent, c, attack, life));
         }
         float calcBuffValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int attack, int life)
         {
