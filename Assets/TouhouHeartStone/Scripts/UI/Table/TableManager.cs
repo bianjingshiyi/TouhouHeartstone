@@ -948,12 +948,18 @@ namespace Game
         /// <param name="card"></param>
         /// <param name="servant"></param>
         /// <returns></returns>
-        public bool tryGetServant(TouhouCardEngine.Card card, out Servant servant)
+        public bool tryGetServant(Card card, out Servant servant)
         {
             if (cardServantDic.ContainsKey(card))
             {
-                servant = cardServantDic[card];
-                return true;
+                if (cardServantDic[card] != null)
+                {
+                    servant = cardServantDic[card];
+                    return true;
+                }
+                cardServantDic.Remove(card);
+                servant = null;
+                return false;
             }
             else
             {

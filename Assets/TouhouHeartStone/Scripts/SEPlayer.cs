@@ -9,7 +9,11 @@ namespace Game
         string se_name;
         public void Play()
         {
-            this.findInstance<SEManager>().PlaySE(se_name);
+            PlaySE(se_name);
+        }
+        public void PlaySE(string name)
+        {
+            this.findInstance<SEManager>().PlaySE(name);
         }
     }
 }
