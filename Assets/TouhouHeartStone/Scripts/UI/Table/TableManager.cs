@@ -170,7 +170,7 @@ namespace Game
             }
             if (anim != null)
                 addAnim(anim);
-            else
+            else if (!(obj is FreeActRequest))
                 UberDebug.LogWarningChannel("UI", "没有与" + obj + "相应的动画");
         }
         void onResponse(IResponse response)
@@ -235,7 +235,7 @@ namespace Game
         /// <param name="card"></param>
         /// <param name="master"></param>
         /// <returns></returns>
-        public bool tryGetMaster(TouhouCardEngine.Card card, out Master master)
+        public bool tryGetMaster(Card card, out Master master)
         {
             if (player.master == card)
             {
