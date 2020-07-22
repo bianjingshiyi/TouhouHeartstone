@@ -146,7 +146,7 @@ namespace TouhouHeartstone.Builtin
         {
             new AddBuffAfter<THHPlayer.UseEventArg>(PileName.HAND,(g,c,a)=>
             {
-                return a.player == c.getOwner() && a.card.isSpell() && a.card.getCost(g) > 0;
+                return a.player == c.getOwner() && a.card.isSpell() && a.card.getCost(g) > 0 && !c.containBuff(ID);
             },new GeneratedBuff(ID,new CostModifier(-2),
                 new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.HAND,ID)))
         };
