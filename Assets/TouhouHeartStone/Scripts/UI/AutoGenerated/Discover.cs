@@ -28,7 +28,7 @@ namespace UI
             this._PanelImage = this.transform.Find("Panel").GetComponent<Image>();
             this._Text = this.transform.Find("Panel").Find("Text").GetComponent<Text>();
             this._HoriCardList = this.transform.Find("Panel").Find("HoriCardList").GetComponent<HoriCardList>();
-            this._Button = this.transform.Find("Button").GetComponent<Button>();
+            this._ButtonButtonBlack = this.transform.Find("Button").GetComponent<ButtonBlack>();
         }
         [SerializeField()]
         private Image _PanelImage;
@@ -70,16 +70,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Button _Button;
-        public Button Button
+        private ButtonBlack _ButtonButtonBlack;
+        public ButtonBlack ButtonButtonBlack
         {
             get
             {
-                if ((this._Button == null))
+                if ((this._ButtonButtonBlack == null))
                 {
-                    this._Button = this.transform.Find("Button").GetComponent<Button>();
+                    this._ButtonButtonBlack = this.transform.Find("Button").GetComponent<ButtonBlack>();
                 }
-                return this._Button;
+                return this._ButtonButtonBlack;
             }
         }
         partial void onAwake();

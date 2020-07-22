@@ -132,7 +132,7 @@ namespace Game
             ui.EnemyHandList.clearItems();
             ui.AttackArrowImage.hide();
             ui.Fatigue.hide();
-            ui.Discover.Button.onClick.set(onDiscoverHideButtonClick);
+            ui.Discover.ButtonButtonBlack.asButton.onClick.set(onDiscoverHideButtonClick);
             ui.Discover.hide();
             _animationQueue.Clear();
 
@@ -1251,12 +1251,12 @@ namespace Game
         {
             if (ui.Discover.PanelImage.gameObject.activeSelf)
             {
-                ui.Discover.Button.setText("显示");
+                ui.Discover.ButtonButtonBlack.asButton.setText("显示");
                 ui.Discover.PanelImage.hide();
             }
             else
             {
-                ui.Discover.Button.setText("隐藏");
+                ui.Discover.ButtonButtonBlack.asButton.setText("隐藏");
                 ui.Discover.PanelImage.display();
                 displayDiscoverDialog(game.answers.getRequest<DiscoverRequest>(player.id).cardIdArray, ui.Discover.Text.text);
             }
