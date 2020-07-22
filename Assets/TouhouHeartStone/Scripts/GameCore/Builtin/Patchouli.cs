@@ -881,7 +881,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(async (g1,c1)=>
             {
-                Card card = c1.getOwner().hand.Where(c=>c.isSpell()).random(g1);
+                Card card = c1.getOwner().hand.Where(c=>c.isSpell()&&c.getCost(g1)>0).random(g1);
                 if(card!=null)
                     await card.addBuff(g1, new GeneratedBuff(ID, new CostModifier(-2)));
                 c1.getOwner().setProp(nameof(Asthma),c1.getOwner().getProp<int>(nameof(Asthma))+1);

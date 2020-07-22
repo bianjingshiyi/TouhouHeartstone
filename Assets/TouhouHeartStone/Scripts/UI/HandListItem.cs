@@ -58,6 +58,7 @@ namespace UI
         public SimpleAnim onLifeUp;
         public SimpleAnim onLifeDown;
         public SimpleAnim onCostUp;
+        public SimpleAnim onCostResume;
         public SimpleAnim onCostDown;
         public SimpleAnim onDiscard;
         public SimpleAnim onGraveToHand;

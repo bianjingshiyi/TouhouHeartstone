@@ -114,6 +114,14 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
+  onCostResume:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    animName: HandCard_CostNormal
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
   onCostDown:
     beforeAnim:
       m_PersistentCalls:
