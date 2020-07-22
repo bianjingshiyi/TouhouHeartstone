@@ -232,9 +232,16 @@ namespace Game
                     string imagePath = datarow.ReadCol("Image", "");
                     try
                     {
-                        Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
-                        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
-                        skin.image = sprite;
+                        if (imagePath.StartsWith("res:"))
+                        {
+                            skin.image = Resources.Load<Sprite>(imagePath.Replace("res:", string.Empty));
+                        }
+                        else
+                        {
+                            Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
+                            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+                            skin.image = sprite;
+                        }
                     }
                     catch (Exception e)
                     {
