@@ -33,7 +33,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PropNumber_Buffed_Green
+  m_Name: mber_Buffed_Green_Green
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []

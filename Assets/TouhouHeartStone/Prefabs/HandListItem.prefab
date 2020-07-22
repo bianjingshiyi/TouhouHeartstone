@@ -118,7 +118,7 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
-    animName: 
+    animName: HandCard_CostDown
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -280,6 +280,21 @@ PrefabInstance:
     - target: {fileID: 686813434887037659, guid: 92b5566bce81a774fb9bb22f1b342b2e,
         type: 3}
       propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 686813434887037659, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 686813434887037659, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 686813434887037659, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_Color.b
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 896383926161244298, guid: 92b5566bce81a774fb9bb22f1b342b2e,
@@ -446,6 +461,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7115938400412244974, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_EffectColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7115938400412244974, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_EffectColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7115938400412244974, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_EffectColor.b
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7141724517573644477, guid: 92b5566bce81a774fb9bb22f1b342b2e,
         type: 3}
