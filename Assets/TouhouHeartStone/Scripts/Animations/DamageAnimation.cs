@@ -3,6 +3,7 @@ using BJSYGameCore;
 using System.Linq;
 using UI;
 using System.Collections.Generic;
+using Card = TouhouCardEngine.Card;
 namespace Game
 {
     class DamageAnimation : EventAnimation<THHCard.DamageEventArg>
