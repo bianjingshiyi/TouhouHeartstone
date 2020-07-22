@@ -35,8 +35,9 @@ namespace Game
                         master.onDeath.beforeAnim.Invoke();
                         _animList.Add(new AnimAnim(master.animator, master.onDeath.animName));
                     }
-                    else if (table.tryGetItem(card, out var item))
+                    else if (card.isItem())
                     {
+                        Item item = card.getOwner() == table.player ? table.ui.SelfItem : table.ui.EnemyItem;
                         item.onDestroy.beforeAnim.Invoke();
                         _animList.Add(new AnimAnim(item.animator, item.onDestroy.animName));
                     }
@@ -62,8 +63,9 @@ namespace Game
                 {
                     master.onDeath.afterAnim.Invoke();
                 }
-                else if (table.tryGetItem(card, out var item))
+                else if (card.isItem())
                 {
+                    Item item = card.getOwner() == table.player ? table.ui.SelfItem : table.ui.EnemyItem;
                     item.onDestroy.afterAnim.Invoke();
                     item.hide();
                 }

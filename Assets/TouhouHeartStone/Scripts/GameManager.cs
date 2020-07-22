@@ -17,6 +17,8 @@ namespace Game
     public class GameManager : Manager
     {
         [SerializeField]
+        bool _useTimeAsRandomSeed = true;
+        [SerializeField]
         GameOption _option = new GameOption();
         [SerializeField]
         Main _ui;
@@ -95,7 +97,8 @@ namespace Game
         public void startLocalGame()
         {
             _ui.Game.GameResultDialog.hide();
-
+            if (_useTimeAsRandomSeed)
+                _option.randomSeed = (int)DateTime.Now.ToBinary();
             game = new THHGame(_option, getManager<CardManager>().GetCardDefines())
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),

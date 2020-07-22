@@ -13440,7 +13440,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   onLoadingFinish:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2065785357}
+        m_MethodName: PlayList
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Menu
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &1038691141
 Transform:
   m_ObjectHideFlags: 0
@@ -17954,8 +17965,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b11df8564741fd64ab47d452fd9fda8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _useTimeAsRandomSeed: 0
   _option:
-    randomSeed: 0
+    randomSeed: 1455466707
     sortedPlayers: 
     shuffle: 1
     timeoutForInitReplace: 30
@@ -18012,36 +18024,10 @@ MonoBehaviour:
     name: TestPatchouli
     master: 4194304
     deckList:
-    - id: 4202548
-      count: 0
-    - id: 4206614
-      count: 0
-    - id: 4206609
+    - id: 4210694
+      count: 1
+    - id: 4206627
       count: 5
-    - id: 4206599
-      count: 5
-    - id: 4206600
-      count: 5
-    - id: 4206631
-      count: 0
-    - id: 4206633
-      count: 0
-    - id: 4206643
-      count: 0
-    - id: 4206632
-      count: 0
-    - id: 4206641
-      count: 0
-    - id: 4206641
-      count: 0
-    - id: 4206641
-      count: 0
-    - id: 4206641
-      count: 0
-    - id: 4206641
-      count: 0
-    - id: 4206641
-      count: 0
   _deck: 00004000012000000120000001200000012000000120000002200000022000000220000002200000022000000220000002200000032000000320000003200000032000000320000003200000122040001220400007304000073040001220400006200000062000000620000006200000062000000620000006200000
   _testRandomDeck: 0
 --- !u!4 &1441166624
@@ -24747,10 +24733,32 @@ MonoBehaviour:
   _GameResultDialog: {fileID: 1503601216}
   onPageOpen:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2065785357}
+        m_MethodName: PlayList
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Game
+          m_BoolArgument: 0
+        m_CallState: 2
   onPageClose:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2065785357}
+        m_MethodName: PlayList
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Menu
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!224 &1950091995 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 25190989478303461, guid: 58890de216835d646bf78dbe5d177bb5,

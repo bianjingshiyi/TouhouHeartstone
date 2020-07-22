@@ -23,7 +23,7 @@ namespace Game
 
             platform = platform ?? PlatformCompability.Current;
             if (platform.RequireWebRequest)
-                return loadExcelByWebRequest(path);
+                return loadExcelByWebRequest(path, curDir);
 
             return loadExcelBySystemIO(path, curDir);
         }
@@ -37,7 +37,7 @@ namespace Game
 
             platform = platform ?? PlatformCompability.Current;
             if (platform.RequireWebRequest)
-                return loadTextureByWebRequestWithFallback(path);
+                return loadTextureByWebRequestWithFallback(path, curDir);
 
             return loadTextureBySystemIOWithFallback(path, curDir);
         }
@@ -54,7 +54,7 @@ namespace Game
             platform = platform ?? PlatformCompability.Current;
 
             if (platform.RequireWebRequest)
-                return loadDataSetByWebRequest(path);
+                return loadDataSetByWebRequest(path, curDir);
 
             return loadDataSetBySystemIO(path, curDir);
         }
@@ -66,20 +66,22 @@ namespace Game
 
             platform = platform ?? PlatformCompability.Current;
             if (platform.RequireWebRequest)
-                return loadExcelAsDataSetByWebRequest(path);
+                return loadExcelAsDataSetByWebRequest(path, curDir);
 
             return loadExcelAsDataSetBySystemIO(path, curDir);
         }
 
-        public async Task<Texture2D> loadTextureByWebRequestWithFallback(string path)
+        public async Task<Texture2D> loadTextureByWebRequestWithFallback(string path, string currDir)
         {
-            var task = loadTextureByWebRequest(path);
-            var result = await task;
-            if (task.IsCompleted)
-                return result;
-
-            path = textureChangeExt(path);
-            return await loadTextureByWebRequest(path);
+            try
+            {
+                return await loadTextureByWebRequest(path, currDir);
+            }
+            catch (FileNotFoundException e)
+            {
+                path = textureChangeExt(path);
+                return await loadTextureByWebRequest(path, currDir);
+            }
         }
 
         private static string textureChangeExt(string path)
@@ -123,6 +125,22 @@ namespace Game
                 encodedFiles.Add(streaming.MakeRelativeUri(abs).ToString());
             }
             return encodedFiles.ToArray();
+        }
+
+        public async Task<Texture2D> loadTextureByWebRequest(string path, string basePath)
+        {
+            try
+            {
+                return await loadTextureByWebRequest(path);
+            }
+            catch (FileNotFoundException e)
+            {
+                if (string.IsNullOrEmpty(basePath))
+                {
+                    throw e;
+                }
+                return await loadTextureByWebRequest(Path.Combine(basePath, path));
+            }
         }
 
         public Task<Texture2D> loadTextureByWebRequest(string path)
@@ -207,26 +225,26 @@ namespace Game
                 }
             }
         }
-        private async Task<Workbook> loadExcelByWebRequest(string path)
+        private async Task<Workbook> loadExcelByWebRequest(string path, string currDir)
         {
-            byte[] data = await loadBytesByWebRequest(path);
+            byte[] data = await loadBytesByWebRequest(path, currDir);
             using (MemoryStream stream = new MemoryStream(data))
             {
                 return Workbook.Load(stream);
             }
         }
-        private async Task<DataSet> loadDataSetByWebRequest(string path)
+        private async Task<DataSet> loadDataSetByWebRequest(string path, string currDir)
         {
-            byte[] data = await loadBytesByWebRequest(path);
+            byte[] data = await loadBytesByWebRequest(path, currDir);
             using (MemoryStream stream = new MemoryStream(data))
             {
                 BinaryFormatter bf = new BinaryFormatter();
                 return bf.Deserialize(stream) as DataSet;
             }
         }
-        private async Task<DataSet> loadExcelAsDataSetByWebRequest(string path)
+        private async Task<DataSet> loadExcelAsDataSetByWebRequest(string path, string currDir)
         {
-            byte[] data = await loadBytesByWebRequest(path);
+            byte[] data = await loadBytesByWebRequest(path, currDir);
             using (MemoryStream stream = new MemoryStream(data))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
@@ -268,6 +286,21 @@ namespace Game
                     return new FileStream(filePath, FileMode.Open);
             }
             throw new FileNotFoundException("File not found.", path);
+        }
+        private async Task<byte[]> loadBytesByWebRequest(string path, string currDir)
+        {
+            try
+            {
+                return await loadBytesByWebRequest(path);
+            }
+            catch (FileNotFoundException e)
+            {
+                if (string.IsNullOrEmpty(currDir))
+                {
+                    throw e;
+                }
+                return await loadBytesByWebRequest(Path.Combine(currDir, path));
+            }
         }
         private Task<byte[]> loadBytesByWebRequest(string path)
         {

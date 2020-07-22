@@ -46,5 +46,9 @@
         /// 抽到时自动施放
         /// </summary>
         public const string AUTOCAST = "autocast";
+        /// <summary>
+        /// 无法攻击
+        /// </summary>
+        public const string CANTATTACK = "cantattack";
     }
 }

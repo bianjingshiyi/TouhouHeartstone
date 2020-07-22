@@ -123,26 +123,18 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliTrilithonShakeTest()
+        public void TrilithonShakeTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
-            .Concat(Enumerable.Repeat(game.getCardDefine<RockElement>(), 2)));
+            TestGameflow.createGame(out var game, out var you, out _, new KeyValuePair<int, int>(TrilithonShake.ID, 1));
+            game.skipUntilCanUse<TrilithonShake>(you);
+            you.cmdUse(game, you.hand.getCard<TrilithonShake>());
+            you.cmdTurnEnd(game);
+            game.skipTurnUntil(() => game.currentPlayer == you);
+            Assert.False(you.field[0].canAttack(game));
+            Assert.True(you.field[0].getKeywords(game).Contains(Keyword.CANTATTACK));
+            you.field[0].silence(game);
+            Assert.True(you.field[0].canAttack(game));
 
-            defaultPlayer.cmdTurnEnd(game);
-
-            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<RockElement>().cost && game.currentPlayer == elusivePlayer);
-            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == RockElement.ID), 0);
-
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
-
-            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<TrilithonShake>().cost && game.currentPlayer == elusivePlayer);
-            elusivePlayer.cmdAttack(game, elusivePlayer.field[0], defaultPlayer.field[0]);
             game.Dispose();
         }
 

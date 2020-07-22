@@ -22,12 +22,11 @@ namespace TouhouHeartstone
             get { return base.answers as AnswerManager; }
             set { base.answers = value; }
         }
-        Dictionary<Player, IFrontend> dicPlayerFrontend { get; } = new Dictionary<Player, IFrontend>();
         public THHGame(params CardDefine[] defines) : base(null, null, GameOption.Default.randomSeed, defines)
         {
             option = GameOption.Default;
         }
-        public THHGame(GameOption option, params CardDefine[] defines) : base(null, null, GameOption.Default.randomSeed, defines)
+        public THHGame(GameOption option, params CardDefine[] defines) : base(null, null, option.randomSeed, defines)
         {
             this.option = option;
         }

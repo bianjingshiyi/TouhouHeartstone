@@ -328,7 +328,7 @@ namespace Game
             if (player.item == card)
             {
                 item = ui.SelfItem;
-                return false;
+                return true;
             }
             else if (game.getOpponent(player).item == card)
             {
@@ -709,6 +709,27 @@ namespace Game
                     }
                 }
                 else if (usingCard.define is SpellCardDefine)
+                {
+                    if (usingCard.isNeedTarget(game, out _))
+                    {
+                        //进入选择目标状态，高亮可以选择的目标
+                        if (isOnTarget(pointer, out var target))
+                        {
+                            if (usingCard.isUsable(game, player, out info) && usingCard.isValidTarget(game, target))
+                                player.cmdUse(game, usingCard, 0, target);
+                            else
+                                showTip(info);
+                        }
+                        resetUse(true, false);
+                    }
+                    else
+                    {
+                        //使用无目标随从牌
+                        player.cmdUse(game, usingCard, 0);
+                        resetUse(false, false);
+                    }
+                }
+                else if (usingCard.isItem())
                 {
                     if (usingCard.isNeedTarget(game, out _))
                     {

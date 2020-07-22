@@ -146,7 +146,7 @@ namespace TouhouHeartstone.Builtin
         {
             new AddBuffAfter<THHPlayer.UseEventArg>(PileName.HAND,(g,c,a)=>
             {
-                return a.player == c.getOwner() && a.card.isSpell() && a.card.getCost(g) > 0;
+                return a.player == c.getOwner() && a.card.isSpell() && a.card.getCost(g) > 0 && !c.containBuff(ID);
             },new GeneratedBuff(ID,new CostModifier(-2),
                 new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.HAND,ID)))
         };
@@ -287,22 +287,7 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 9;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { CardTag.ELEMENT };
-        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            //TODO:只需要一个关键字就可以了，不需要写的这么复杂
-            new THHEffectAfter<THHGame.TurnStartEventArg>(PileName.FIELD,(game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return false;
-            },(game,card,arg)=>
-            {
-                card.setReady(false);
-                return Task.CompletedTask;
-            })
-        };
+        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT, Keyword.CANTATTACK };
     }
     /// <summary>
     /// 5 金属疲劳 元素法术，对所有敌方随从造成3点伤害

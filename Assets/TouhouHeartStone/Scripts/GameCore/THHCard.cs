@@ -147,10 +147,9 @@ namespace TouhouHeartstone
             if (card.getAttackTimes(game) >= card.getMaxAttackTimes())//已经攻击过了
                 return false;
             if (card.isFreeze(game))
-            {
-                game.logger.log(card + "被冰冻");
                 return false;
-            }
+            if (card.getKeywords(game).Contains(Keyword.CANTATTACK))
+                return false;
             return true;
         }
         /// <summary>
@@ -326,20 +325,30 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(ServantCardDefine.damageReduce), value);
         }
-        public static async Task silence(this IEnumerable<Card> cards, THHGame game)
+        public static async Task<SilenceEventArg> silence(this IEnumerable<Card> cards, THHGame game)
         {
-            foreach (var card in cards)
+            SilenceEventArg eventArg = new SilenceEventArg() { cards = cards.ToArray() };
+            await game.triggers.doEvent(eventArg, async arg =>
             {
-                card.setProp(nameof(silence), true);
-                await card.removeBuff(game, card.getBuffs());
-                foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
+                cards = arg.cards;
+                foreach (var card in cards)
                 {
-                    effect.onDisable(game, card, null);
+                    card.setProp(nameof(silence), true);
+                    await card.removeBuff(game, card.getBuffs());
+                    foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
+                    {
+                        effect.onDisable(game, card, null);
+                    }
+                    card.setKeywords(game, new string[0]);
                 }
-                card.setKeywords(game, new string[0]);
-            }
+            });
+            return eventArg;
         }
-        public static Task silence(this Card card, THHGame game)
+        public class SilenceEventArg : EventArg
+        {
+            public Card[] cards;
+        }
+        public static Task<SilenceEventArg> silence(this Card card, THHGame game)
         {
             return silence(new Card[] { card }, game);
         }

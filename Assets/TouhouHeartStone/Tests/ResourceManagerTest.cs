@@ -184,6 +184,21 @@ namespace Tests
             });
         }
         [UnityTest]
+        public IEnumerator loadTexture_Android_Relative()
+        {
+            const string fileName = "TestFile.png";
+            string filePath = Application.streamingAssetsPath + "/Textures/" + fileName;
+
+            Texture2D tx = new Texture2D(512, 512);
+            File.WriteAllBytes(filePath, tx.EncodeToPNG());
+
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            var task = manager.loadTexture(fileName, "Textures", new PlatformCompability(RuntimePlatform.Android));
+            yield return new WaitUntil(() => task.IsCompleted);
+
+            File.Delete(filePath);
+        }
+        [UnityTest]
         public IEnumerator loadTexture_Android_Fallback()
         {
             const string fileName = "TestFile.png";
@@ -196,6 +211,23 @@ namespace Tests
 
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
             var task = manager.loadTexture(fileNameFake, null, new PlatformCompability(RuntimePlatform.Android));
+            yield return new WaitUntil(() => task.IsCompleted);
+
+            File.Delete(filePath);
+        }
+        [UnityTest]
+        public IEnumerator loadTexture_Android_Fallback_Relative()
+        {
+            const string fileName = "TestFile.png";
+            const string fileNameFake = "TestFile.jpg";
+
+            string filePath = Application.streamingAssetsPath + "/Textures/" + fileName;
+
+            Texture2D tx = new Texture2D(512, 512);
+            File.WriteAllBytes(filePath, tx.EncodeToPNG());
+
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            var task = manager.loadTexture(fileNameFake, "Textures", new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
 
             File.Delete(filePath);
