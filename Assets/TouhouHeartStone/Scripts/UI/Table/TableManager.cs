@@ -328,7 +328,7 @@ namespace Game
             if (player.item == card)
             {
                 item = ui.SelfItem;
-                return false;
+                return true;
             }
             else if (game.getOpponent(player).item == card)
             {

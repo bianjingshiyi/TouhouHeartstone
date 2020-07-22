@@ -17965,9 +17965,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b11df8564741fd64ab47d452fd9fda8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _useTimeAsRandomSeed: 1
+  _useTimeAsRandomSeed: 0
   _option:
-    randomSeed: 0
+    randomSeed: 1455466707
     sortedPlayers: 
     shuffle: 1
     timeoutForInitReplace: 30
