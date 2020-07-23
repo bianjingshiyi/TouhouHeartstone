@@ -152,7 +152,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 4 贤者之石 05 每当你使用一张法术，将一张随机元素法术置入你的手牌并使耐久-1。战吼：将一张随机元素法术置入你的手牌。
+    /// 4 贤者之石 04 每当回合结束，随机将一张花费大于0的元素法术置入你的手牌，耐久-1。战吼：将一张随机元素法术置入你的手牌。
     /// </summary>
     public class PhilosopherStone : ItemCardDefine
     {
@@ -168,9 +168,9 @@ namespace TouhouHeartstone.Builtin
             {
                 return c1.getOwner().addRandomCardToHand(g1,g1.getCardDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
             }),
-            new ItemTrigggerEffectAfter<THHPlayer.UseEventArg>((g1,c1,a1)=>
+            new ItemTrigggerEffectBefore<THHGame.TurnEndEventArg>((g1,c1,a1)=>
             {
-                return a1.player==c1.getOwner() && a1.card.isSpell();
+                return a1.player==c1.getOwner();
             },(g2,c2,a2)=>
             {
                 return c2.getOwner().addRandomCardToHand(g2,g2.getCardDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
@@ -179,6 +179,18 @@ namespace TouhouHeartstone.Builtin
         class ItemTrigggerEffectAfter<T> : THHEffectAfter<T> where T : IEventArg
         {
             public ItemTrigggerEffectAfter(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute)
+                : base(PileName.ITEM, onCheckCondition, null, async (g, c, a) =>
+                {
+                    await onExecute?.Invoke(g, c, a);
+                    await c.damage(g, c, 1);
+                    await g.updateDeath();
+                })
+            {
+            }
+        }
+        class ItemTrigggerEffectBefore<T> : THHEffectBefore<T> where T : IEventArg
+        {
+            public ItemTrigggerEffectBefore(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute)
                 : base(PileName.ITEM, onCheckCondition, null, async (g, c, a) =>
                 {
                     await onExecute?.Invoke(g, c, a);
@@ -539,8 +551,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer opponent = game.getOpponent(card.getOwner());
-            await opponent.field.random(game).damage(game, card, 2);
+            await game.getOpponent(card.getOwner()).field.random(game).damage(game, card, 2);
             await Patchouli.tryMix(game, card);
         }
     }

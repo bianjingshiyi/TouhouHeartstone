@@ -114,7 +114,7 @@ namespace Game
                 }
                 else
                 {
-                    if (card.isNeedTarget(game,out var targets))
+                    if (card.isNeedTarget(game, out var targets))
                     {
                         foreach (var target in targets)
                         {
@@ -196,7 +196,7 @@ namespace Game
                 else if (card.define is DoyouSpear)
                     value = calcServantValue(game, player, opponent, 1, 1);
                 else if (card.define is MultiCast)
-                    value = player.hand.Where(c => c.isSpell()).Count() > 0 ? 2 : 0;
+                    value = player.hand.Where(c => c.isSpell() && !(c.define is MultiCast)).Count() > 0 ? 2 : 0;
                 else if (card.define is TheGreatLibrary)
                     value = 1;
                 else if (card.define is BestMagic)
@@ -293,7 +293,9 @@ namespace Game
         }
         float calcFreezeValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
         {
-            return target.getAttack(game);
+            if (target == opponent.master || opponent.field.Contains(target))
+                return target.getAttack(game);
+            return 0;
         }
     }
 }

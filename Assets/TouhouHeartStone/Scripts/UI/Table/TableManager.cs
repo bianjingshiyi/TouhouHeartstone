@@ -1279,13 +1279,15 @@ namespace Game
             ui.TipText.text = tip;
             _tipTimer.start();
         }
-        public void displayLargeCard(bool isRight, TouhouCardEngine.Card card)
+        public void displayLargeCard(bool isRight, Card card)
         {
             if (isRight)
                 ui.LargeCard.rectTransform.localPosition = new Vector3(250, 0);
             else
                 ui.LargeCard.rectTransform.localPosition = new Vector3(-250, 0);
             ui.LargeCard.display();
+            if (tryGetServant(card, out var servant))
+                setServant(servant, card);
             setCard(ui.LargeCard, card, true);
         }
         public void hideLargeCard()
