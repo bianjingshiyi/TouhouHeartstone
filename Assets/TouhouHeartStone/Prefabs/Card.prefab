@@ -570,7 +570,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AspectMode: 4
-  m_AspectRatio: 1.2342657
+  m_AspectRatio: 1.0127388
 --- !u!1 &2821792485326690568
 GameObject:
   m_ObjectHideFlags: 0
@@ -1331,6 +1331,10 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
     afterAnim:
       m_PersistentCalls:

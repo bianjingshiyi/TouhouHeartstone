@@ -34,7 +34,6 @@ namespace UI
             this._AboutButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<ButtonBlack>();
             this._QuitButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<ButtonBlack>();
             this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
-            this._VersionText = this.transform.Find("Version").GetComponent<Text>();
             this._CopyrightText = this.transform.Find("Copyright").GetComponent<Text>();
         }
         private Main _parent;
@@ -160,19 +159,6 @@ namespace UI
                     this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
                 }
                 return this._LogoImage;
-            }
-        }
-        [SerializeField()]
-        private Text _VersionText;
-        public Text VersionText
-        {
-            get
-            {
-                if ((this._VersionText == null))
-                {
-                    this._VersionText = this.transform.Find("Version").GetComponent<Text>();
-                }
-                return this._VersionText;
             }
         }
         [SerializeField()]

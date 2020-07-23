@@ -29,7 +29,7 @@ namespace Game
             base.onAwake();
             _ui = this.findInstance<Main>();
             _ui.game = this;
-            _ui.Game.GameResultDialog.ButtonGlass.asButton.onClick.set(quitGame);
+            _ui.Game.GameResultDialog.ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
         }
         [SerializeField]
         bool _useDefaultDeck = true;

@@ -60,7 +60,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 0.78431374, b: 0, a: 0.49803922}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -134,7 +133,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -206,7 +204,7 @@ MonoBehaviour:
   - CanAttack/False
   - IsAttackable/False
   - Highlight/Highlight_None
-  _TauntImage: {fileID: 0}
+  _TauntImage: {fileID: 3552094936353891942}
   _HighlightImage: {fileID: 2593902375022216909}
   _BackgroundImage: {fileID: 4712789771521229126}
   _ImageMask: {fileID: 2470481777276467000}
@@ -256,6 +254,10 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: Servant_AtkUp
     afterAnim:
       m_PersistentCalls:
@@ -264,6 +266,10 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
     afterAnim:
       m_PersistentCalls:
@@ -272,6 +278,10 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: Servant_HealthUp
     afterAnim:
       m_PersistentCalls:
@@ -280,6 +290,10 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
     afterAnim:
       m_PersistentCalls:
@@ -288,6 +302,10 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: Servant_Targeted
     afterAnim:
       m_PersistentCalls:
@@ -296,6 +314,10 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: Servant_Attack1
     afterAnim:
       m_PersistentCalls:
@@ -304,6 +326,10 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
     afterAnim:
       m_PersistentCalls:
@@ -312,6 +338,10 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: Servant_Damage
     afterAnim:
       m_PersistentCalls:
@@ -320,6 +350,10 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
     afterAnim:
       m_PersistentCalls:
@@ -340,6 +374,10 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: Servant_Summon
     afterAnim:
       m_PersistentCalls:
@@ -348,6 +386,10 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: Servant_Death
     afterAnim:
       m_PersistentCalls:
@@ -367,6 +409,10 @@ MonoBehaviour:
             m_StringArgument: Taunt
             m_BoolArgument: 0
           m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
     afterAnim:
       m_PersistentCalls:
@@ -386,6 +432,10 @@ MonoBehaviour:
             m_StringArgument: Taunt
             m_BoolArgument: 0
           m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
     afterAnim:
       m_PersistentCalls:
@@ -405,6 +455,10 @@ MonoBehaviour:
             m_StringArgument: CanAttack
             m_BoolArgument: 0
           m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
     afterAnim:
       m_PersistentCalls:
@@ -424,6 +478,10 @@ MonoBehaviour:
             m_StringArgument: CanAttack
             m_BoolArgument: 0
           m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
     afterAnim:
       m_PersistentCalls:
@@ -443,6 +501,10 @@ MonoBehaviour:
             m_StringArgument: Selectable
             m_BoolArgument: 0
           m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
     afterAnim:
       m_PersistentCalls:
@@ -462,6 +524,10 @@ MonoBehaviour:
             m_StringArgument: Selectable
             m_BoolArgument: 0
           m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
     afterAnim:
       m_PersistentCalls:
@@ -655,7 +721,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -683,7 +748,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AspectMode: 4
-  m_AspectRatio: 1.2342657
+  m_AspectRatio: 1.0127388
 --- !u!1 &2470481777276467006
 GameObject:
   m_ObjectHideFlags: 0
@@ -746,7 +811,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -834,7 +898,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -927,7 +990,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 0, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1005,7 +1067,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1079,7 +1140,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1153,7 +1213,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1227,7 +1286,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0.78431374, b: 1, a: 0.49803922}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1301,7 +1359,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1375,7 +1432,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1450,7 +1506,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1524,7 +1579,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1599,7 +1653,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1673,7 +1726,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.49803922}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1748,7 +1800,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1822,7 +1873,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 0, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1964,7 +2014,6 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

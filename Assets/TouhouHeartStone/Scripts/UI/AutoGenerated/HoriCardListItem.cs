@@ -28,12 +28,12 @@ namespace UI
             this.m_as_Button = this.GetComponent<Button>();
             this._Card = this.transform.Find("Card").GetComponent<Card>();
         }
-        private Discover _parent;
-        public Discover parent
+        private Main _parent;
+        public Main parent
         {
             get
             {
-                return this.transform.parent.parent.parent.GetComponent<Discover>();
+                return this.transform.parent.parent.parent.parent.parent.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]
