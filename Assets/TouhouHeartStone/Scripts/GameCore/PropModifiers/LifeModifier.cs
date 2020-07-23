@@ -44,8 +44,10 @@ namespace TouhouHeartstone
                 game?.logger?.log("由于" + card + "没有受伤，在移除" + this + "之后重置生命值为" + life);
                 card.setCurrentLife(life);
             }
-            if (card.getCurrentLife(game) > life)
+            else if (card.getCurrentLife(game) > life)
                 card.setCurrentLife(life);
+            else
+                game?.logger?.log("由于" + card + "受伤了，在移除" + this + "之后生命值仍为" + card.getCurrentLife(game));
         }
         public override PropModifier clone()
         {
