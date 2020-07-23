@@ -210,27 +210,15 @@ namespace TouhouHeartstone
         }
         public static bool isTaunt(this Card card, IGame game)
         {
-            return card.hasTag(game, Keyword.TAUNT);
-        }
-        public static void setTaunt(this Card card, bool value)
-        {
-            card.setProp(Keyword.TAUNT, value);
+            return card.hasKeywords(game, Keyword.TAUNT);//TODO:把所有关键词改为检查关键词中是否有这个。
         }
         public static bool isCharge(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.CHARGE);
         }
-        public static void setCharge(this Card card, bool value)
-        {
-            card.setProp(Keyword.CHARGE, value);
-        }
         public static bool isRush(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.RUSH);
-        }
-        public static void setRush(this Card card, bool value)
-        {
-            card.setProp(Keyword.RUSH, value);
         }
         public static bool isShield(this Card card, IGame game)
         {
@@ -306,6 +294,10 @@ namespace TouhouHeartstone
         {
             return card.getProp<string[]>(game, nameof(ServantCardDefine.keywords));
         }
+        public static bool hasKeywords(this Card card, IGame game, string keyword)
+        {
+            return card.getKeywords(game).Contains(keyword);
+        }
         public static int getSpellDamage(this Card card, IGame game)
         {
             return card.getProp<int>(game, nameof(ServantCardDefine.spellDamage));
@@ -377,6 +369,10 @@ namespace TouhouHeartstone
         public static string[] getTags(this Card card, IGame game)
         {
             return card.getProp<string[]>(game, nameof(ServantCardDefine.tags));
+        }
+        public static void setTags(this Card card, string[] tags)
+        {
+            card.setProp(nameof(ServantCardDefine.tags), tags);
         }
         public static bool isUsable(this Card card, THHGame game, THHPlayer player, out string info)
         {

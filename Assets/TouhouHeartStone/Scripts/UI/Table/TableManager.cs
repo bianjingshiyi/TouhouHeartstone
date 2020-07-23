@@ -1131,7 +1131,7 @@ namespace Game
         {
             if (!canControl)//不是你的回合
                 return;
-            TouhouCardEngine.Card card = getCard(servant);
+            Card card = getCard(servant);
             if (card.owner != player)//不是你的卡
                 return;
             if (!card.canAttack(game))//不能攻击
@@ -1142,7 +1142,7 @@ namespace Game
                 if (card.isAttackable(game, player, target, out var tip))
                     player.cmdAttack(game, card, target);
                 else
-                    ui.showTip(tip);
+                    showTip(tip);
             }
             //取消选中和攻击
             cancelAttack();
