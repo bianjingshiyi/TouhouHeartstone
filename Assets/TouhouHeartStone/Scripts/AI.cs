@@ -196,7 +196,7 @@ namespace Game
                 else if (card.define is DoyouSpear)
                     value = calcServantValue(game, player, opponent, 1, 1);
                 else if (card.define is MultiCast)
-                    value = player.hand.Where(c => c.isSpell() && !(c.define is MultiCast)).Count() > 0 ? 2 : 0;
+                    value = player.hand.Where(c => c.isSpell() && c.getCost(game) > 1).Count() > 0 ? 2 : 0;
                 else if (card.define is TheGreatLibrary)
                     value = 1;
                 else if (card.define is BestMagic)

@@ -340,7 +340,7 @@ namespace TouhouHeartstone.Builtin
         {
             var discovered = await card.getOwner().discover(game, card.getOwner().grave.Where(c => c.isSpell()));
             if (!card.getOwner().hand.isFull)
-            	await card.getOwner().grave.moveTo(game, discovered, card.getOwner().hand);
+                await card.getOwner().grave.moveTo(game, discovered, card.getOwner().hand);
         }
     }
     /// <summary>
@@ -471,7 +471,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.METAL };
+        public override string[] tags { get; set; } = new string[] { Patchouli.FIRE };
         public override IEffect[] effects { get; set; } = new IEffect[] {
 
             new LambdaSingleTargetEffect(async (game,card,target)=>
@@ -509,7 +509,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.WOOD };
+        public override string[] tags { get; set; } = new string[] { Patchouli.WATER };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
@@ -527,7 +527,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.WATER };
+        public override string[] tags { get; set; } = new string[] { Patchouli.WOOD };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async(game,card,target)=>
             {
@@ -545,7 +545,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.FIRE };
+        public override string[] tags { get; set; } = new string[] { Patchouli.METAL };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
