@@ -441,7 +441,7 @@ namespace Tests
         }
 
         [Test]
-        public void WaterSpiritTest()
+        public void WaterElfTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(WaterElf.ID, 1),
@@ -452,6 +452,7 @@ namespace Tests
             you.field[0].damage(game, you.master, 4);
             you.cmdUse(game, you.hand.getCard<WaterElf>(), targets: you.field[0]);
             Assert.True(you.field[0].getCurrentLife(game) == 13);
+            Assert.True(you.field[0].hasTag(game, Keyword.TAUNT));
             game.Dispose();
         }
 

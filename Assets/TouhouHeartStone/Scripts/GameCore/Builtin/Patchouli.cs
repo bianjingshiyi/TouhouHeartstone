@@ -703,7 +703,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3)));
+                await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3),new TagsModifier(TagsModifier.ModifyType.add,Keyword.TAUNT)));
                 await target.heal(game,target.getLife(game)-target.getCurrentLife(game));
                 await Patchouli.tryMix(game, card);
             }, PileFlag.both | PileFlag.field)
