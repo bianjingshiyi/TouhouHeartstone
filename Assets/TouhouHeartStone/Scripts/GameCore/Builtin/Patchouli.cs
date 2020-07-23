@@ -227,7 +227,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x008;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override string[] tags { get; set; } = new string[] { CardTag.WATER };
+        public override string[] tags { get; set; } = new string[] { Patchouli.WATER };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(async (game,card)=>
@@ -259,7 +259,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x009;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override string[] tags { get; set; } = new string[] { CardTag.WOOD };
+        public override string[] tags { get; set; } = new string[] { Patchouli.WOOD };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async(game,card,target)=>
@@ -277,7 +277,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x010;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override string[] tags { get; set; } = new string[] { CardTag.EARTH };
+        public override string[] tags { get; set; } = new string[] { Patchouli.EARTH };
         public override IEffect[] effects { get; set; } = new IEffect[]{
             new NoTargetEffect(effect)
         };
@@ -309,7 +309,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CardCategory.SPELL | 0x011;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override string[] tags { get; set; } = new string[] { CardTag.METAL };
+        public override string[] tags { get; set; } = new string[] { Patchouli.METAL };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -564,7 +564,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.EARTH };
+        public override string[] tags { get; set; } = new string[] { Patchouli.EARTH };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
@@ -626,7 +626,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.WATER, CardTag.METAL };
+        public override string[] tags { get; set; } = new string[] { Patchouli.WATER, Patchouli.METAL };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(async (game,card)=>
@@ -653,7 +653,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.FIRE, CardTag.WOOD };
+        public override string[] tags { get; set; } = new string[] { Patchouli.FIRE, Patchouli.WOOD };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
@@ -675,7 +675,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.EARTH, CardTag.WOOD };
+        public override string[] tags { get; set; } = new string[] { Patchouli.EARTH, Patchouli.WOOD };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
@@ -698,7 +698,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.WATER, CardTag.WOOD };
+        public override string[] tags { get; set; } = new string[] { Patchouli.WATER, Patchouli.WOOD };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
@@ -718,7 +718,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.WATER, CardTag.FIRE };
+        public override string[] tags { get; set; } = new string[] { Patchouli.WATER, Patchouli.FIRE };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
@@ -737,7 +737,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.METAL, CardTag.FIRE };
+        public override string[] tags { get; set; } = new string[] { Patchouli.METAL, Patchouli.FIRE };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
@@ -749,7 +749,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 6 火土符【环状熔岩带】 召唤3个2/2并能在回合结束对随机敌方角色造成2点伤害的熔岩元素
+    /// 6 火土符【环状熔岩带】 召唤2个2/2具有嘲讽并能在回合结束对随机敌方角色造成2点伤害的熔岩元素。
     /// </summary>
     public class LavaCromlech : SpellCardDefine
     {
@@ -757,13 +757,13 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.FIRE, CardTag.EARTH };
+        public override string[] tags { get; set; } = new string[] { Patchouli.FIRE, Patchouli.EARTH };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
         static async Task effect(THHGame game, Card card)
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 2; i++)
                 await card.getOwner().createToken(game, game.getCardDefine<LavaElement>());
             await Patchouli.tryMix(game, card);
         }
@@ -797,7 +797,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.METAL, CardTag.EARTH };
+        public override string[] tags { get; set; } = new string[] { Patchouli.METAL, Patchouli.EARTH };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
@@ -831,7 +831,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.EARTH, CardTag.WATER };
+        public override string[] tags { get; set; } = new string[] { Patchouli.EARTH, Patchouli.WATER };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };

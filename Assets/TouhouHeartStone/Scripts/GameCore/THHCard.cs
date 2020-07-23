@@ -210,7 +210,7 @@ namespace TouhouHeartstone
         }
         public static bool isTaunt(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.TAUNT);
+            return card.hasTag(game, Keyword.TAUNT);
         }
         public static void setTaunt(this Card card, bool value)
         {
@@ -358,7 +358,10 @@ namespace TouhouHeartstone
         }
         public static bool hasTag(this Card card, IGame game, string tag)
         {
-            return card.getProp<string[]>(game, nameof(ServantCardDefine.tags)).Contains(tag);
+            string[] tags = card.getProp<string[]>(game, nameof(ServantCardDefine.tags));
+            if (tags == null)
+                return false;
+            return tags.Contains(tag);
         }
         public static bool hasTag(this CardDefine define, string tag)
         {

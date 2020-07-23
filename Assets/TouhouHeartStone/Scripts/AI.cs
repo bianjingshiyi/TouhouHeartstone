@@ -5,7 +5,7 @@ using TouhouCardEngine.Interfaces;
 using System.Linq;
 using Card = TouhouCardEngine.Card;
 using TouhouHeartstone.Builtin;
-
+using System;
 namespace Game
 {
     public class AI
@@ -54,13 +54,19 @@ namespace Game
         }
         public Response calcNextAction(THHGame game, THHPlayer player)
         {
-            var actions = calcActions(game, player).Where(p => p.Value > 0);
-            if (actions.Count() > 0)
+            try
             {
-                return actions.OrderByDescending(p => p.Value).First().Key;
+                var actions = calcActions(game, player).Where(p => p.Value > 0);
+                if (actions.Count() > 0)
+                    return actions.OrderByDescending(p => p.Value).First().Key;
+                else
+                    return new TurnEndResponse();
             }
-            else
+            catch (Exception e)
+            {
+                game.logger.logError("AI", "AI只能空过了，因为它触发了异常：" + e);
                 return new TurnEndResponse();
+            }
         }
         /// <summary>
         /// 计算出可以选择的行动，不包括结束回合。
