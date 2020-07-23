@@ -574,4 +574,20 @@ namespace TouhouHeartstone
             card.setProp<Trigger<THHCard.DamageEventArg>>(triggerName, null);
         }
     }
+    public class BeforeYourTurnEnd : THHEffectBefore<THHGame.TurnEndEventArg>
+    {
+        public BeforeYourTurnEnd(ExecuteDelegate onExecute) : base(PileName.FIELD, (game, card, arg) =>
+        {
+            return arg.player == card.getOwner();
+        }, null, async (game, card, arg) =>
+        {
+            if (onExecute != null)
+            {
+                await onExecute.Invoke(game, card, arg);
+                await game.updateDeath();
+            }
+        })
+        {
+        }
+    }
 }

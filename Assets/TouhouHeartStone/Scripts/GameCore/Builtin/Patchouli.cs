@@ -340,7 +340,7 @@ namespace TouhouHeartstone.Builtin
         {
             var discovered = await card.getOwner().discover(game, card.getOwner().grave.Where(c => c.isSpell()));
             if (!card.getOwner().hand.isFull)
-                await card.getOwner().grave.moveTo(game, discovered, card.getOwner().hand);
+            	await card.getOwner().grave.moveTo(game, discovered, card.getOwner().hand);
         }
     }
     /// <summary>
@@ -438,7 +438,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.addBuff(game, new GeneratedBuff(ID, new LifeModifier(card.getOwner().hand.Where(c => c.isSpell()).Count() - 1)));
+            await card.addBuff(game, new GeneratedBuff(ID, new LifeModifier(card.getOwner().hand.Where(c => c.isSpell()).Count())));
         }
     }
     /// <summary>
@@ -782,7 +782,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.ELEMENT };
         public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
         public override IEffect[] effects { get; set; } = new IEffect[]{
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,null,null,async(game,card,arg)=>
+            new BeforeYourTurnEnd(async(game,card,arg)=>
             {
                 await game.getAllEnemies(card.getOwner()).random(game).damage(game, card, 2);
             })

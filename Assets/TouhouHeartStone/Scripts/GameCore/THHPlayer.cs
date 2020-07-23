@@ -147,6 +147,7 @@ namespace TouhouHeartstone
                         await player.deck.moveTo(game, card, player.warp);
                         await card.activeEffect(game, player, new Card[0]);
                         await player.warp.moveTo(game, card, player.grave);
+                        await game.updateDeath();
                     }
                     else
                     {
@@ -227,10 +228,10 @@ namespace TouhouHeartstone
                     await player.hand.moveTo(game, card, player.warp);
                     await card.activeEffect(game, player, targets);
                     await player.warp.moveTo(game, card, player.grave);
+                    await card.removeBuff(game);
                 }
                 else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == CardDefineType.ITEM))
                 {
-
                     //物品卡，置入物品栏
                     await player.equip(game, card);
                     ITriggerEffect triggerEffect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
