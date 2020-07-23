@@ -56,7 +56,7 @@ MonoBehaviour:
   _PanelImage: {fileID: 6187455399198432317}
   _Text: {fileID: 6659285124226945386}
   _HoriCardList: {fileID: 492325961256834477}
-  _Button: {fileID: 0}
+  _ButtonButtonBlack: {fileID: 8265174392098317219}
 --- !u!1 &4578229599500324086
 GameObject:
   m_ObjectHideFlags: 0
@@ -355,6 +355,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 756007816383381120}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8265174392098317219 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8704944933680700707, guid: f85d347e47e809640b67ef5a900aaae4,
+    type: 3}
+  m_PrefabInstance: {fileID: 756007816383381120}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7097e034c463e0849bb806592af71867, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5043417603480812223
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -522,6 +522,11 @@ PrefabInstance:
       propertyPath: m_Color.a
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6775156639724210257, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_AspectRatio
+      value: 1.0127388
+      objectReference: {fileID: 0}
     - target: {fileID: 7115938400412244974, guid: 92b5566bce81a774fb9bb22f1b342b2e,
         type: 3}
       propertyPath: m_EffectColor.r

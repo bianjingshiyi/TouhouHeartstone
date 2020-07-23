@@ -27,7 +27,7 @@ namespace UI
         {
             this._BackgroundImage = this.transform.Find("Background").GetComponent<Image>();
             this._Table = this.transform.Find("Table").GetComponent<Table>();
-            this._QuitButtonButtonGlass = this.transform.Find("QuitButton").GetComponent<ButtonGlass>();
+            this._QuitButtonButtonBlack = this.transform.Find("QuitButton").GetComponent<ButtonBlack>();
             this._GameResultDialog = this.transform.Find("GameResultDialog").GetComponent<GameResultDialog>();
         }
         private Main _parent;
@@ -65,16 +65,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private ButtonGlass _QuitButtonButtonGlass;
-        public ButtonGlass QuitButtonButtonGlass
+        private ButtonBlack _QuitButtonButtonBlack;
+        public ButtonBlack QuitButtonButtonBlack
         {
             get
             {
-                if ((this._QuitButtonButtonGlass == null))
+                if ((this._QuitButtonButtonBlack == null))
                 {
-                    this._QuitButtonButtonGlass = this.transform.Find("QuitButton").GetComponent<ButtonGlass>();
+                    this._QuitButtonButtonBlack = this.transform.Find("QuitButton").GetComponent<ButtonBlack>();
                 }
-                return this._QuitButtonButtonGlass;
+                return this._QuitButtonButtonBlack;
             }
         }
         [SerializeField()]
