@@ -2829,7 +2829,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 20, y: 40}
-  m_SizeDelta: {x: 1200, y: 80}
+  m_SizeDelta: {x: 800, y: 80}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &196645864
 MonoBehaviour:
@@ -2893,7 +2893,7 @@ MonoBehaviour:
   m_Material: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -17103,7 +17103,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 20, y: 10}
-  m_SizeDelta: {x: 1200, y: 40}
+  m_SizeDelta: {x: 800, y: 40}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1330733101
 MonoBehaviour:
@@ -17167,7 +17167,7 @@ MonoBehaviour:
   m_Material: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -18176,7 +18176,7 @@ MonoBehaviour:
       count: 0
     - id: 8196
       count: 0
-  _useTestDeck: 1
+  _useTestDeck: 0
   _testDeck:
     name: TestPatchouli
     master: 4194304
@@ -21520,7 +21520,6 @@ MonoBehaviour:
   _AboutButtonButtonBlack: {fileID: 258132843}
   _QuitButtonButtonBlack: {fileID: 1085225502}
   _LogoImage: {fileID: 231583817}
-  _CopyrightText: {fileID: 0}
 --- !u!95 &1696150522
 Animator:
   serializedVersion: 3
