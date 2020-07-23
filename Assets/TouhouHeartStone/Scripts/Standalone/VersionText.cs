@@ -17,8 +17,6 @@ namespace IGensoukyo.Utilities
         {
             if (BuildInformation.Instance != null)
             {
-                if (Application.version.StartsWith("0."))
-                    GetComponent<Text>().text = "测试版本 ";
                 GetComponent<Text>().text += versionPrefix + BuildInformation.Instance.Version.Substring(BuildInformation.Instance.Version.Length - 7);
 
                 if (includeBuildDate)
