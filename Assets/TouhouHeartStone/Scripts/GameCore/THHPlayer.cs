@@ -325,6 +325,8 @@ namespace TouhouHeartstone
                     card.setCurrentLife(servant.life);
                     card.setReady(false);
                 }
+                arg.attack = card.getAttack(game);
+                arg.life = card.getLife(game);
                 return Task.CompletedTask;
             }
             return true;
@@ -335,6 +337,8 @@ namespace TouhouHeartstone
             public Pile from;
             public Card card;
             public int position;
+            public int attack;
+            public int life;
         }
         public async Task<CreateTokenEventArg> createToken(THHGame game, CardDefine define, int position = -1)
         {

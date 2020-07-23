@@ -114,8 +114,7 @@ namespace Game
                 }
                 else
                 {
-                    TouhouCardEngine.Card[] targets = card.getAvaliableTargets(game);
-                    if (targets != null && targets.Length > 0)
+                    if (card.isNeedTarget(game,out var targets))
                     {
                         foreach (var target in targets)
                         {

@@ -111,6 +111,7 @@ namespace Game
             ui.InitReplaceDialog.hide();
             ui.TurnTipImage.hide();
             initMaster(ui.SelfMaster);
+            ui.SelfGem.Text.text = "0";
             ui.SelfSkill.asButton.onClick.set(onClickSkill);
             ui.SelfSkill.onDrag.set(onDragSkill);
             ui.SelfSkill.onDragEnd.set(onDragSkillEnd);
@@ -127,6 +128,7 @@ namespace Game
             ui.TurnEndButton.onClick.set(onTurnEndButtonClick);
             ui.TipText.hide();
             initMaster(ui.EnemyMaster);
+            ui.EnemyGem.Text.text = "0";
             ui.EnemyItem.hide();
             ui.EnemyFieldList.clearItems();
             ui.EnemyHandList.clearItems();
@@ -302,24 +304,24 @@ namespace Game
             if (isSelectable)
             {
                 // master.HighlightController = Master.Highlight.Yellow;
-                master.onSelectableTrue.beforeAnim.Invoke();
+                master.onSelectableTrue.invokeBeforeAnim();
                 master.onSelectableTrue.afterAnim.Invoke();
             }
             else
             {
-                master.onSelectableFalse.beforeAnim.Invoke();
+                master.onSelectableFalse.invokeBeforeAnim();
                 master.onSelectableFalse.afterAnim.Invoke();
             }
             if (card.getOwner() == player && game.currentPlayer == player && card.canAttack(game))
             {
                 // master.HighlightController = Master.Highlight.Green;
-                master.onCanAttackTrue.beforeAnim.Invoke();
+                master.onCanAttackTrue.invokeBeforeAnim();
                 master.onCanAttackTrue.afterAnim.Invoke();
             }
             else
             {
                 // master.HighlightController = Master.Highlight.None;
-                master.onCanAttackFalse.beforeAnim.Invoke();
+                master.onCanAttackFalse.invokeBeforeAnim();
                 master.onCanAttackFalse.afterAnim.Invoke();
             }
         }
@@ -927,7 +929,7 @@ namespace Game
         /// <param name="card"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        public Servant createServant(TouhouCardEngine.Card card, int position)
+        public Servant createServant(Card card, int position, int attack = -1, int life = -1)
         {
             Servant servant;
             if (card.getOwner() == player)
@@ -943,7 +945,7 @@ namespace Game
             UberDebug.LogChannel(servant, "UI", "为" + card + "创建" + servant);
             servant.gameObject.name = card.ToString();
             servant.rectTransform.SetSiblingIndex(position + 1);
-            setServant(servant, card);
+            setServant(servant, card, false, attack, life);
             servant.onClick.add(onClickServant);
             servant.onDrag.add(onDragServant);
             servant.onDragEnd.add(onDragEndServant);
@@ -994,31 +996,31 @@ namespace Game
         /// <param name="servant"></param>
         /// <param name="card"></param>
         /// <param name="isSelectable"></param>
-        public void setServant(Servant servant, TouhouCardEngine.Card card, bool isSelectable = false)
+        public void setServant(Servant servant, Card card, bool isSelectable = false, int attack = -1, int life = -1)
         {
             CardSkinData skin = getSkin(card);
             if (skin != null)
             {
                 servant.Image.sprite = skin.image;
             }
-            servant.AttackTextPropNumber.asText.text = card.getAttack(game).ToString();
-            servant.HpTextPropNumber.asText.text = card.getCurrentLife(game).ToString();
+            servant.AttackTextPropNumber.asText.text = attack < 0 ? card.getAttack(game).ToString() : attack.ToString();
+            servant.HpTextPropNumber.asText.text = life < 0 ? card.getCurrentLife(game).ToString() : life.ToString();
 
             servant.onDrag.remove(onDragServant);
             if (isSelectable)
             {
-                servant.onSelectableTrue.beforeAnim.Invoke();
+                servant.onSelectableTrue.invokeBeforeAnim();
                 servant.onSelectableTrue.afterAnim.Invoke();
             }
             else
             {
-                servant.onSelectableFalse.beforeAnim.Invoke();
+                servant.onSelectableFalse.invokeBeforeAnim();
                 servant.onSelectableFalse.afterAnim.Invoke();
             }
             if (player == card.getOwner() && game.currentPlayer == player && card.canAttack(game))
             {
                 // servant.HighlightController = Servant.Highlight.Green;
-                servant.onCanAttackTrue.beforeAnim.Invoke();
+                servant.onCanAttackTrue.invokeBeforeAnim();
                 servant.onCanAttackTrue.afterAnim.Invoke();
                 servant.onDrag.add(onDragServant);
                 servant.onDragEnd.add(onDragEndServant);
@@ -1026,17 +1028,17 @@ namespace Game
             else
             {
                 // servant.HighlightController = Servant.Highlight.None;
-                servant.onCanAttackFalse.beforeAnim.Invoke();
+                servant.onCanAttackFalse.invokeBeforeAnim();
                 servant.onCanAttackFalse.afterAnim.Invoke();
             }
             if (card.isTaunt(game))
             {
-                servant.onTauntTrue.beforeAnim.Invoke();
+                servant.onTauntTrue.invokeBeforeAnim();
                 servant.onTauntTrue.afterAnim.Invoke();
             }
             else
             {
-                servant.onTauntFalse.beforeAnim.Invoke();
+                servant.onTauntFalse.invokeBeforeAnim();
                 servant.onTauntFalse.afterAnim.Invoke();
             }
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
@@ -1088,13 +1090,13 @@ namespace Game
             {
                 if (tryGetMaster(target, out var master))
                 {
-                    master.onSelectableTrue.beforeAnim.Invoke();
+                    master.onSelectableTrue.invokeBeforeAnim();
                     master.onSelectableTrue.afterAnim.Invoke();
                     master.onClick.add(onClickMaster);
                 }
                 else if (tryGetServant(target, out var servant))
                 {
-                    servant.onSelectableTrue.beforeAnim.Invoke();
+                    servant.onSelectableTrue.invokeBeforeAnim();
                     servant.onSelectableTrue.afterAnim.Invoke();
                     servant.onClick.add(onClickServant);
                 }
@@ -1105,18 +1107,18 @@ namespace Game
         /// </summary>
         void removeHighlights()
         {
-            ui.SelfMaster.onSelectableFalse.beforeAnim.Invoke();
+            ui.SelfMaster.onSelectableFalse.invokeBeforeAnim();
             ui.SelfMaster.onSelectableFalse.afterAnim.Invoke();
-            ui.EnemyMaster.onSelectableFalse.beforeAnim.Invoke();
+            ui.EnemyMaster.onSelectableFalse.invokeBeforeAnim();
             ui.EnemyMaster.onSelectableFalse.afterAnim.Invoke();
             foreach (var servant in ui.SelfFieldList)
             {
-                servant.onSelectableFalse.beforeAnim.Invoke();
+                servant.onSelectableFalse.invokeBeforeAnim();
                 servant.onSelectableFalse.afterAnim.Invoke();
             }
             foreach (var servant in ui.EnemyFieldList)
             {
-                servant.onSelectableFalse.beforeAnim.Invoke();
+                servant.onSelectableFalse.invokeBeforeAnim();
                 servant.onSelectableFalse.afterAnim.Invoke();
             }
         }
@@ -1195,12 +1197,12 @@ namespace Game
             servant.HpTextPropNumber.asText.text = card.getLife().ToString();
             if (card.getProp<bool>("taunt"))
             {
-                servant.onTauntTrue.beforeAnim.Invoke();
+                servant.onTauntTrue.invokeBeforeAnim();
                 servant.onTauntTrue.afterAnim.Invoke();
             }
             else
             {
-                servant.onTauntFalse.beforeAnim.Invoke();
+                servant.onTauntFalse.invokeBeforeAnim();
                 servant.onTauntFalse.afterAnim.Invoke();
             }
         }
