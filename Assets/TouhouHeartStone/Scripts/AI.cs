@@ -183,7 +183,9 @@ namespace Game
                 Card card = game.getCard(use.cardId);
                 Card target = use.targetsId.Length > 0 ? game.getCard(use.targetsId[0]) : null;
                 value = card.getCost(game);
-                if (card.define is SummerFire)
+                if (card.define is LuckyCoin)
+                    value = 1;
+                else if (card.define is SummerFire)
                     value = calcDamageValue(game, player, opponent, target, 1);
                 else if (card.define is AutumnEdge)
                     value = calcRandomDamageValue(game, player, opponent, opponent.field, 2);

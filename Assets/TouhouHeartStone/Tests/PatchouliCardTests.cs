@@ -618,6 +618,32 @@ namespace Tests
             Debug.Log(string.Join<CardDefine>("，", mixedCards));
             Assert.AreEqual(4, mixedCards.Length);
         }
+        [Test]
+        public void caseLibraryProtectorBuffedSilenceHPWontResumeTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var _,
+                new KeyValuePair<int, int>(LibraryProtector.ID, 1),
+                new KeyValuePair<int, int>(SylphyHorn.ID, 1),
+                new KeyValuePair<int, int>(DoyouSpear.ID, 1),
+                new KeyValuePair<int, int>(NoachianDeluge.ID, 1));
+            game.skipUntilCanUse<LibraryProtector>(you);
+            you.cmdUse(game, you.hand.getCard<LibraryProtector>());
+            int defineLife = game.getCardDefine<LibraryProtector>().life;
+            int lifeWhenUsed = you.field[0].getCurrentLife(game);
+            Assert.Greater(lifeWhenUsed, defineLife);
+            game.skipUntilCanUse<SylphyHorn>(you);
+            you.cmdUse(game, you.hand.getCard<SylphyHorn>(), 0, you.field[0]);
+            Assert.Greater(you.field[0].getCurrentLife(game), lifeWhenUsed);
+            you.cmdDiscover(game, you.hand.getCard<DoyouSpear>().id);
+            you.cmdDiscover(game, game.answers.getRequest<DiscoverRequest>(you.id).cardIdArray[0]);
+            game.skipUntilCanUse<NoachianDeluge>(you);
+            you.cmdUse(game, you.hand.getCard<NoachianDeluge>());
+            Assert.False(you.field[0].hasTag(game, Keyword.TAUNT));
+            Assert.AreEqual(defineLife, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(defineLife, you.field[0].getLife(game));
+
+            game.Dispose();
+        }
     }
 }
 
