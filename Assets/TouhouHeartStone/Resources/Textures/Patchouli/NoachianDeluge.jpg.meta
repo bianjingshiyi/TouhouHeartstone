@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: 27927af03cef9814ea047e9dd03356dd
+guid: d48829b649856754a972fa1dd3881db3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3372380452410354906
-    second: RockElement
+      213: -7651729995787831006
+    second: FloodElement
+  - first:
+      213: -7651729995787831006
+    second: NoachianDeluge_0
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -102,13 +105,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: RockElement
+      name: NoachianDeluge_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 770
-        width: 1599
-        height: 2327
+        y: 116
+        width: 326
+        height: 483
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -116,8 +119,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: adce361672a1dce20800000000000000
-      internalID: 3372380452410354906
+      spriteID: 2297dd30c189fc590800000000000000
+      internalID: -7651729995787831006
       vertices: []
       indices: 
       edges: []

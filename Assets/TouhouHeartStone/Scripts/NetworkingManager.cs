@@ -184,6 +184,8 @@ namespace Game
         private void onGameEnd()
         {
             client.quitRoom();
+            host.closeRoom();
+            host.stop();
         }
         #region Logic
         /// <summary>

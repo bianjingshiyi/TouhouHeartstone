@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: 40ae718547bea62478890d4b8c009638
+guid: f11a2116ced122a4a8407bb5df8358cb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1565917534116930634
-    second: Koakuma
+      213: 5463529596168271131
+    second: DustElement
+  - first:
+      213: -6611758077452769230
+    second: "\u6DE1\u9EC4\u9635\u98CE"
+  - first:
+      213: 8656118197819504128
+    second: GingerGust_0
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -39,7 +45,7 @@ TextureImporter:
     mipBias: -100
     wrapU: 1
     wrapV: 1
-    wrapW: 1
+    wrapW: -1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -60,14 +66,14 @@ TextureImporter:
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
-  applyGammaDecoding: 0
+  applyGammaDecoding: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -79,7 +85,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -91,7 +97,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -102,13 +108,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Koakuma
+      name: DustElement
       rect:
         serializedVersion: 2
-        x: 391
-        y: 24
-        width: 353
-        height: 286
+        x: 0
+        y: 1541
+        width: 1139
+        height: 1632
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -116,8 +122,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6bb976f9c4eb44ae0800000000000000
-      internalID: -1565917534116930634
+      spriteID: b15717f783b52db40800000000000000
+      internalID: 5463529596168271131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GingerGust_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 241
+        width: 245
+        height: 402
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00673da83a5b02870800000000000000
+      internalID: 8656118197819504128
       vertices: []
       indices: 
       edges: []

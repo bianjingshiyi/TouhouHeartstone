@@ -25,20 +25,20 @@ namespace Game
                 {
                     if (table.tryGetServant(card, out var servant))//尝试获取死亡的随从的随从UI
                     {
-                        servant.onDeath.beforeAnim.Invoke();
+                        servant.onDeath.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(servant.animator, servant.onDeath.animName));
                         //table.ui.SelfFieldList.removeItem(servant);//从自己的场上移除随从UI
                         //table.ui.EnemyFieldList.removeItem(servant);//从敌人的场上移除随从UI
                     }
                     else if (table.tryGetServant(card, out var master))
                     {
-                        master.onDeath.beforeAnim.Invoke();
+                        master.onDeath.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(master.animator, master.onDeath.animName));
                     }
                     else if (card.isItem())
                     {
                         Item item = card.getOwner() == table.player ? table.ui.SelfItem : table.ui.EnemyItem;
-                        item.onDestroy.beforeAnim.Invoke();
+                        item.onDestroy.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(item.animator, item.onDestroy.animName));
                     }
                 }

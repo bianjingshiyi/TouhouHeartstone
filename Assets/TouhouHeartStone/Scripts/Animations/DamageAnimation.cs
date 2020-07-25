@@ -20,20 +20,20 @@ namespace Game
                     {
                         servant.DamageText.text = "-" + eventArg.value;
                         servant.HpTextPropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
-                        servant.onDamage.beforeAnim.Invoke();
+                        servant.onDamage.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(servant.animator, servant.onDamage.animName));
                     }
                     else if (table.tryGetMaster(card, out Master master))
                     {
                         master.DamageText.text = "-" + eventArg.value;
                         master.LifePropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
-                        master.onDamage.beforeAnim.Invoke();
+                        master.onDamage.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(master.animator, master.onDamage.animName));
                     }
                     else if (table.tryGetItem(card, out var item))
                     {
                         item.DurabilityPropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
-                        item.onLifeDown.beforeAnim.Invoke();
+                        item.onLifeDown.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(item.animator, item.onLifeDown.animName));
                     }
                 }

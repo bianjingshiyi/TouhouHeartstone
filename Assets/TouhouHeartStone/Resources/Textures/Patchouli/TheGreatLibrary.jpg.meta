@@ -1,12 +1,12 @@
 fileFormatVersion: 2
-guid: 89ea0aa5449eadc4ca2e02733095f2fe
+guid: 02dbd37f2bfc8794f93fd7417f4dba06
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1256000664291922148
-    second: Patchouli
+      213: -4207819239759269741
+    second: TheGreatLibrary
   externalObjects: {}
-  serializedVersion: 10
+  serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -60,6 +60,7 @@ TextureImporter:
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  applyGammaDecoding: 0
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -101,13 +102,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Patchouli
+      name: TheGreatLibrary
       rect:
         serializedVersion: 2
-        x: 0
-        y: 689
-        width: 749
-        height: 961
+        x: 100
+        y: 121
+        width: 295
+        height: 280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +116,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c1fa937ec0ac19ee0800000000000000
-      internalID: -1256000664291922148
+      spriteID: 390381702b2da95c0800000000000000
+      internalID: -4207819239759269741
       vertices: []
       indices: 
       edges: []

@@ -11,7 +11,7 @@ namespace Game
                 return true;
             if (anim == null)
             {
-                simpleAnim.beforeAnim.Invoke();
+                simpleAnim.invokeBeforeAnim();
                 anim = new AnimAnim(animator, simpleAnim.animName, onBlockAnim);
             }
             if (!anim.update(table))

@@ -5,7 +5,7 @@ using TouhouCardEngine.Interfaces;
 using System.Linq;
 using Card = TouhouCardEngine.Card;
 using TouhouHeartstone.Builtin;
-
+using System;
 namespace Game
 {
     public class AI
@@ -54,13 +54,19 @@ namespace Game
         }
         public Response calcNextAction(THHGame game, THHPlayer player)
         {
-            var actions = calcActions(game, player).Where(p => p.Value > 0);
-            if (actions.Count() > 0)
+            try
             {
-                return actions.OrderByDescending(p => p.Value).First().Key;
+                var actions = calcActions(game, player).Where(p => p.Value > 0);
+                if (actions.Count() > 0)
+                    return actions.OrderByDescending(p => p.Value).First().Key;
+                else
+                    return new TurnEndResponse();
             }
-            else
+            catch (Exception e)
+            {
+                game.logger.logError("AI", "AI只能空过了，因为它触发了异常：" + e);
                 return new TurnEndResponse();
+            }
         }
         /// <summary>
         /// 计算出可以选择的行动，不包括结束回合。
@@ -114,8 +120,7 @@ namespace Game
                 }
                 else
                 {
-                    TouhouCardEngine.Card[] targets = card.getAvaliableTargets(game);
-                    if (targets != null && targets.Length > 0)
+                    if (card.isNeedTarget(game, out var targets))
                     {
                         foreach (var target in targets)
                         {
@@ -184,7 +189,9 @@ namespace Game
                 Card card = game.getCard(use.cardId);
                 Card target = use.targetsId.Length > 0 ? game.getCard(use.targetsId[0]) : null;
                 value = card.getCost(game);
-                if (card.define is SummerFire)
+                if (card.define is LuckyCoin)
+                    value = 1;
+                else if (card.define is SummerFire)
                     value = calcDamageValue(game, player, opponent, target, 1);
                 else if (card.define is AutumnEdge)
                     value = calcRandomDamageValue(game, player, opponent, opponent.field, 2);
@@ -197,7 +204,7 @@ namespace Game
                 else if (card.define is DoyouSpear)
                     value = calcServantValue(game, player, opponent, 1, 1);
                 else if (card.define is MultiCast)
-                    value = player.hand.Where(c => c.isSpell()).Count() > 0 ? 2 : 0;
+                    value = player.hand.Where(c => c.isSpell() && c.getCost(game) > 1).Count() > 0 ? 2 : 0;
                 else if (card.define is TheGreatLibrary)
                     value = 1;
                 else if (card.define is BestMagic)
@@ -294,7 +301,9 @@ namespace Game
         }
         float calcFreezeValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
         {
-            return target.getAttack(game);
+            if (target == opponent.master || opponent.field.Contains(target))
+                return target.getAttack(game);
+            return 0;
         }
     }
 }

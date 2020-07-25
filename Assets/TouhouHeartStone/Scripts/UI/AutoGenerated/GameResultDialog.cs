@@ -31,7 +31,7 @@ namespace UI
             this._Text = this.transform.Find("Image").Find("Win").Find("Text").GetComponent<Text>();
             this._FailImage = this.transform.Find("Image").Find("Fail").GetComponent<Image>();
             this._Fail_Text = this.transform.Find("Image").Find("Fail").Find("Text").GetComponent<Text>();
-            this._ButtonGlass = this.transform.Find("Image").Find("ButtonGlass").GetComponent<ButtonGlass>();
+            this._ButtonGlassButtonBlack = this.transform.Find("Image").Find("ButtonGlass").GetComponent<ButtonBlack>();
             this._Image_Text = this.transform.Find("Image").Find("Text").GetComponent<Text>();
         }
         [SerializeField()]
@@ -113,16 +113,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private ButtonGlass _ButtonGlass;
-        public ButtonGlass ButtonGlass
+        private ButtonBlack _ButtonGlassButtonBlack;
+        public ButtonBlack ButtonGlassButtonBlack
         {
             get
             {
-                if ((this._ButtonGlass == null))
+                if ((this._ButtonGlassButtonBlack == null))
                 {
-                    this._ButtonGlass = this.transform.Find("Image").Find("ButtonGlass").GetComponent<ButtonGlass>();
+                    this._ButtonGlassButtonBlack = this.transform.Find("Image").Find("ButtonGlass").GetComponent<ButtonBlack>();
                 }
-                return this._ButtonGlass;
+                return this._ButtonGlassButtonBlack;
             }
         }
         [SerializeField()]
