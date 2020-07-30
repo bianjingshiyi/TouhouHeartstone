@@ -148,6 +148,7 @@ namespace TouhouHeartstone
                         await card.activeEffect(game, player, new Card[0]);
                         await player.warp.moveTo(game, card, player.grave);
                         await game.updateDeath();
+                        await draw(game);
                     }
                     else
                     {
@@ -459,10 +460,13 @@ namespace TouhouHeartstone
         #region Command
         public Task cmdInitReplace(THHGame game, params Card[] cards)
         {
-            return game.answers.answer(id, new InitReplaceResponse()
+            InitReplaceResponse response = new InitReplaceResponse()
             {
+                playerId = id,
                 cardsId = cards.Select(c => c.id).ToArray()
-            });
+            };
+            //TODO:加一个玩家命令事件
+            return game.answers.answer(id, response);
         }
         public Task cmdUse(THHGame game, Card card, int position = 0, params Card[] targets)
         {

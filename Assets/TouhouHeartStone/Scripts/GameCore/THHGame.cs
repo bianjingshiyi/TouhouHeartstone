@@ -459,6 +459,7 @@ namespace TouhouHeartstone
                 turnTimer = null;
             }
         }
+        public event Action<int, Response> onPlayerResponse;
         #endregion
         public void Dispose()
         {
