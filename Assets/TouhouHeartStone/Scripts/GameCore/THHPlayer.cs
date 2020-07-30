@@ -465,42 +465,49 @@ namespace TouhouHeartstone
                 playerId = id,
                 cardsId = cards.Select(c => c.id).ToArray()
             };
-            //TODO:加一个玩家命令事件
+            game.logPlayerAction(id, response);
             return game.answers.answer(id, response);
         }
         public Task cmdUse(THHGame game, Card card, int position = 0, params Card[] targets)
         {
-            return game.answers.answer(id, new UseResponse()
+            var response = new UseResponse()
             {
                 cardId = card.id,
                 position = position,
                 targetsId = targets.Select(c => c.id).ToArray()
-            });
+            };
+            game.logPlayerAction(id, response);
+            return game.answers.answer(id, response);
         }
         public void cmdTurnEnd(THHGame game)
         {
-            game.answers.answer(id, new TurnEndResponse()
-            {
-            });
+            var resp = new TurnEndResponse() { };
+            game.logPlayerAction(id, resp);
+            game.answers.answer(id, resp);
         }
         public void cmdAttack(THHGame game, Card card, Card target)
         {
-            game.answers.answer(id, new AttackResponse()
+            var resp = new AttackResponse()
             {
                 cardId = card.id,
                 targetId = target.id
-            });
+            };
+            game.logPlayerAction(id, resp);
+            game.answers.answer(id, resp);
         }
         public Task cmdSurrender(THHGame game)
         {
+            game.logPlayerAction(id, new SurrenderResponse());
             return game.surrender(this);
         }
         public Task cmdDiscover(THHGame game, int cardId)
         {
-            return game.answers.answer(id, new DiscoverResponse()
+            var resp = new DiscoverResponse()
             {
                 cardId = cardId
-            });
+            };
+            game.logPlayerAction(id, resp);
+            return game.answers.answer(id, resp);
         }
         #endregion
     }

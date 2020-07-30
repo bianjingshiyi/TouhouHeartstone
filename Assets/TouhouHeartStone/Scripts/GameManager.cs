@@ -14,13 +14,6 @@ using System.Collections.Generic;
 
 namespace Game
 {
-    public class ReplayManager : Manager
-    {
-        void onPlayerResponse(int id, Response response)
-        {
-
-        }
-    }
     public class GameManager : Manager
     {
         [SerializeField]
@@ -98,6 +91,9 @@ namespace Game
                 }
             }
         }
+
+        public event Action onGameStart;
+
         /// <summary>
         /// 创建并开始本地游戏
         /// </summary>
@@ -128,6 +124,7 @@ namespace Game
             displayGameUI(localPlayer);
             //AI玩家用AI
             new AI(game, aiPlayer);
+            onGameStart?.Invoke();
             gameTask = game.run();
         }
         public void startRemoteGame(ClientManager client, GameOption option, RoomPlayerInfo[] players)
@@ -152,6 +149,7 @@ namespace Game
                 if (client.id == info.id)
                     displayGameUI(player);
             }
+            onGameStart?.Invoke();
             gameTask = game.run();
         }
         private void checkDeckValid(int[] deck)

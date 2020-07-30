@@ -459,7 +459,11 @@ namespace TouhouHeartstone
                 turnTimer = null;
             }
         }
-        public event Action<int, Response> onPlayerResponse;
+        public event Action<int, IResponse> onPlayerResponse;
+        public void logPlayerAction(int playerID, IResponse response)
+        {
+            onPlayerResponse?.Invoke(playerID, response);
+        }
         #endregion
         public void Dispose()
         {
