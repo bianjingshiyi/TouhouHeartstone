@@ -14,6 +14,13 @@ using System.Collections.Generic;
 
 namespace Game
 {
+    public class ReplayManager : Manager
+    {
+        void onPlayerResponse(int id, Response response)
+        {
+
+        }
+    }
     public class GameManager : Manager
     {
         [SerializeField]
