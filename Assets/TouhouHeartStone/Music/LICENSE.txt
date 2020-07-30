@@ -1,11 +1,11 @@
-ambi.mp3
-huzin_jazz.mp3
-koiiro_jazz_a.mp3
-master_ocha.mp3
-rarabai.mp3
-tenni_min.mp3
+緑豊かな幻想郷 (ambi.mp3)
+紅茶を飲みましょう (huzin_jazz.mp3)
+ジャズタイム (koiiro_jazz_a.mp3)
+日照雨 (master_ocha.mp3)
+ヴェネツィアワルツ (rarabai.mp3)
+とこれから (tenni_min.mp3)
 
-ajapaのBGM (http://ajapabgm.html.xdomain.jp/)
+Author: ajapaのBGM (http://ajapabgm.html.xdomain.jp/)
 
 音楽素材に関する利用規約
 - 作品を作る前に 上海アリス幻樂団創作物の二次創作・使用関連ページ をご確認下さい。

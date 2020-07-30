@@ -17,7 +17,7 @@ namespace IGensoukyo.Utilities
         {
             if (BuildInformation.Instance != null)
             {
-                GetComponent<Text>().text += versionPrefix + BuildInformation.Instance.Version.Substring(BuildInformation.Instance.Version.Length - 7);
+                GetComponent<Text>().text = versionPrefix + BuildInformation.Instance.Version.Substring(BuildInformation.Instance.Version.Length - 7);
 
                 if (includeBuildDate)
                     GetComponent<Text>().text += " - " + BuildInformation.Instance.BuildDate;
