@@ -465,6 +465,9 @@ namespace TouhouHeartstone
         })
         {
         }
+        public AddBuffAfter(string pile, CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(pile, onCheckCondition, null, onExecute)
+        {
+        }
     }
     public class RemoveBuffBefore<T> : THHEffectBefore<T> where T : IEventArg
     {
@@ -577,6 +580,22 @@ namespace TouhouHeartstone
     public class BeforeYourTurnEnd : THHEffectBefore<THHGame.TurnEndEventArg>
     {
         public BeforeYourTurnEnd(ExecuteDelegate onExecute) : base(PileName.FIELD, (game, card, arg) =>
+        {
+            return arg.player == card.getOwner();
+        }, null, async (game, card, arg) =>
+        {
+            if (onExecute != null)
+            {
+                await onExecute.Invoke(game, card, arg);
+                await game.updateDeath();
+            }
+        })
+        {
+        }
+    }
+    public class BeforeYourTurnStart : THHEffectBefore<THHGame.TurnStartEventArg>
+    {
+        public BeforeYourTurnStart(ExecuteDelegate onExecute) : base(PileName.FIELD, (game, card, arg) =>
         {
             return arg.player == card.getOwner();
         }, null, async (game, card, arg) =>

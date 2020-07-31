@@ -79,6 +79,10 @@ namespace TouhouHeartstone
         {
             return players.FirstOrDefault(p => p != player);
         }
+        public THHPlayer[] getAllPlayer()
+        {
+            return players;
+        }
         #endregion
         #region Card
         public override Card createCard(CardDefine define)

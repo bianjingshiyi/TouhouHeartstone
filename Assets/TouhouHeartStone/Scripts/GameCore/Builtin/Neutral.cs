@@ -470,4 +470,196 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+
+    /// <summary>
+    /// 111 大妖精 突袭，亡语：在本回合获得一个法力水晶
+    /// </summary>
+    public class Daiyousei2 : ServantCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x021;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { Keyword.RUSH };
+        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new DeathRattle(ID,(g1,c1,p)=>
+            {
+                return c1.getOwner().setGem(g1, c1.getOwner().gem + 1);
+                //return c1.getOwner().createToken(g1,g1.getCardDefine<LostSpecter>(),p);
+            })
+        };
+    }
+    /// <summary>
+    /// 121 琪露诺 战吼：冻结一个敌方角色。
+    /// </summary>
+    public class Cirno2 : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x022;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 1;
+        public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
+        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async(game,card,target)=>
+            {
+                target.setFreeze(true);
+            }, PileFlag.oppo | PileFlag.both)
+        };
+    }
+    /// <summary>
+    /// 222 琪露诺 战吼：冻结目标随从相邻的随从。
+    /// </summary>
+    public class Cirno3 : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x023;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
+        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async(game,card,target)=>
+            {
+                foreach(Card t in target.getNearbyCards())
+                    t.setFreeze(true);
+            }, PileFlag.both | PileFlag.field)
+        };
+    }
+    /// <summary>
+    /// 214 蕾蒂 双方使用的第一张牌法力值消耗增加1点。
+    /// </summary>
+    public class Letty : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x024;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 4;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect((g,c)=>
+            {
+                return c.getOwner().master.addBuff(g, new GeneratedBuff(ID,
+                    new Halo(new GeneratedBuff(ID, new CostModifier(1)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
+                    {
+                        return true;
+                    }),
+                    new RemoveBuffBefore<THHPlayer.UseEventArg>(PileName.MASTER, (g2, c2, a2) =>
+                    {
+                        return a2.player == c.getOwner();
+                    }, ID),
+                    new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.MASTER, (g2, c2, a2) =>
+                    {
+                        return a2.player == c.getOwner();
+                    }, ID)));
+            }),
+            new AddBuffAfter<THHGame.TurnStartEventArg>(PileName.FIELD,(g,c,a)=>
+            {
+                return true;
+            },(game, card, arg) =>
+            {
+                return arg.player.master.addBuff(game, new GeneratedBuff(ID,
+                    new Halo(new GeneratedBuff(ID, new CostModifier(1)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
+                    {
+                        return true;
+                    }),
+                    new RemoveBuffBefore<THHPlayer.UseEventArg>(PileName.MASTER, (g, c, a) =>
+                    {
+                        return a.player == arg.player;
+                    }, ID),
+                    new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.MASTER, (g2, c2, a2) =>
+                    {
+                        return a2.player == arg.player;
+                    }, ID)));
+            })
+        };
+    }
+    /// <summary>
+    /// 212 橙 战吼：本回合获得+2攻击力和突袭
+    /// </summary>
+    public class Chen : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x025;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
+        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(async (game,card)=>
+            {
+                await card.addBuff(game,new GeneratedBuff(ID,
+                    new AttackModifier(2),
+                    new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.MASTER,(g,c,a)=>
+                    {
+                        return a.player == card.getOwner();
+                    },ID)));
+            })
+        };
+    }
+    /// <summary>
+    /// 333 小恶魔 战吼：随机将一张墓地中的法术并置入你的手牌。
+    /// </summary>
+    public class Koakuma2 : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x026;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 3;
+        public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
+        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            if (!card.getOwner().hand.isFull)
+                await card.getOwner().grave.moveTo(game, card.getOwner().grave.Where(c => c.isSpell()).randomTake(game,1),card.getOwner().hand);
+        }
+    }
+    /// <summary>
+    /// 324 爱丽丝·玛格特洛依德 回合开始时，召唤一个1/1的人形。
+    /// </summary>
+    public class Alice_Margatroid : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x027;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 4;
+        public override bool isToken { get; set; } = true;
+        public override string[] tags { get; set; } = new string[] { CardTag.ELEMENT };
+        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
+        public override IEffect[] effects { get; set; } = new IEffect[]{
+            new BeforeYourTurnStart(async(game,card,arg)=>
+            {
+                await card.getOwner().createToken(game, game.getCardDefine<Dolls>());
+            })
+        };
+    }
+    /// <summary>
+    /// 衍生物 111 人形
+    /// </summary>
+    public class Dolls : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x028;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
 }
