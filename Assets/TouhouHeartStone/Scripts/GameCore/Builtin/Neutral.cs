@@ -593,6 +593,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(async (game,card)=>
             {
+                card.setRush(true);
                 await card.addBuff(game,new GeneratedBuff(ID,
                     new AttackModifier(2),
                     new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.MASTER,(g,c,a)=>

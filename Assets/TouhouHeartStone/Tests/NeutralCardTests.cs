@@ -328,5 +328,36 @@ namespace Tests
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<SummerFire>(), targets: you.master);
         }
+
+        [Test]
+        public void ChenTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Chen.ID, 2)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 2);
+            oppo.cmdUse(game, oppo.hand.First());
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<Chen>());
+            Assert.True(you.field[0].isRush(game)==true);
+            you.cmdAttack(game, you.field[0], oppo.field[0]);
+            you.cmdTurnEnd(game);
+            game.Dispose();
+        }
+
+        [Test]
+        public void Koakuma2Test()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Koakuma2.ID, 2),
+                new KeyValuePair<int, int>(SummerFire.ID, 2),
+                new KeyValuePair<int, int>(DoyouSpear.ID, 2)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 6);
+            you.cmdUse(game, you.hand.getCard<SummerFire>());
+            you.cmdUse(game, you.hand.getCard<DoyouSpear>());
+            you.cmdUse(game, you.hand.getCard<Koakuma2>());
+        }
+
     }
 }

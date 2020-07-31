@@ -221,7 +221,7 @@ namespace TouhouHeartstone
         }
         public static bool isRush(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.RUSH);
+            return card.getProp<bool>(game, Keyword.RUSH);
         }
         public static void setRush(this Card card, bool value)
         {
@@ -229,7 +229,7 @@ namespace TouhouHeartstone
         }
         public static bool isShield(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.SHIELD);
+            return card.getProp<bool>(game, Keyword.SHIELD);
         }
         public static void setShield(this Card card, bool value)
         {
@@ -237,7 +237,7 @@ namespace TouhouHeartstone
         }
         public static bool isStealth(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.STEALTH);
+            return card.getProp<bool>(game, Keyword.STEALTH);
         }
         public static void setStealth(this Card card, bool value)
         {
@@ -245,7 +245,7 @@ namespace TouhouHeartstone
         }
         public static bool isDrain(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.DRAIN);
+            return card.getProp<bool>(game, Keyword.DRAIN);
         }
         public static void setDrain(this Card card, bool value)
         {
@@ -253,7 +253,7 @@ namespace TouhouHeartstone
         }
         public static bool isPoisonous(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.POISONOUS);
+            return card.getProp<bool>(game, Keyword.POISONOUS);
         }
         public static void setPoisonous(this Card card, bool value)
         {
@@ -261,7 +261,7 @@ namespace TouhouHeartstone
         }
         public static bool isElusive(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.ELUSIVE);
+            return card.getProp<bool>(game, Keyword.ELUSIVE);
         }
         public static void setElusive(this Card card, bool value)
         {
@@ -269,7 +269,7 @@ namespace TouhouHeartstone
         }
         public static bool isFreeze(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.FREEZE);
+            return card.getProp<bool>(game, Keyword.FREEZE);
         }
         public static void setFreeze(this Card card, bool value)
         {
@@ -277,7 +277,7 @@ namespace TouhouHeartstone
         }
         public static bool isWindfury(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.WINDFURY);
+            return card.getProp<bool>(game, Keyword.WINDFURY);
         }
         public static void setWindfury(this Card card, bool value)
         {
@@ -285,7 +285,7 @@ namespace TouhouHeartstone
         }
         public static bool isUnique(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.UNIQUE);
+            return card.getProp<bool>(game, Keyword.UNIQUE);
         }
         public static void setUnique(this Card card, bool value)
         {
