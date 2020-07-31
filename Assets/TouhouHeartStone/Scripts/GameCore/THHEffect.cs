@@ -593,12 +593,9 @@ namespace TouhouHeartstone
         {
         }
     }
-    public class BeforeYourTurnStart : THHEffectBefore<THHGame.TurnStartEventArg>
+    public class BeforeTurnStart : THHEffectBefore<THHGame.TurnStartEventArg>
     {
-        public BeforeYourTurnStart(ExecuteDelegate onExecute) : base(PileName.FIELD, (game, card, arg) =>
-        {
-            return arg.player == card.getOwner();
-        }, null, async (game, card, arg) =>
+        public BeforeTurnStart(ExecuteDelegate onExecute,CheckConditionDelegate onCheckCondition = null) : base(PileName.FIELD, onCheckCondition, null, async (game, card, arg) =>
         {
             if (onExecute != null)
             {

@@ -488,7 +488,6 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID,(g1,c1,p)=>
             {
                 return c1.getOwner().setGem(g1, c1.getOwner().gem + 1);
-                //return c1.getOwner().createToken(g1,g1.getCardDefine<LostSpecter>(),p);
             })
         };
     }
@@ -502,8 +501,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
-        public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
-        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async(game,card,target)=>
@@ -522,8 +520,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
-        public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
-        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async(game,card,target)=>
@@ -592,8 +589,6 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
-        public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
-        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(async (game,card)=>
@@ -618,7 +613,6 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
-        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -639,11 +633,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
-        public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.ELEMENT };
-        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
         public override IEffect[] effects { get; set; } = new IEffect[]{
-            new BeforeYourTurnStart(async(game,card,arg)=>
+            new BeforeTurnStart(async(game,card,arg)=>
             {
                 await card.getOwner().createToken(game, game.getCardDefine<Dolls>());
             })
@@ -661,5 +652,186 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 1;
         public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+    /// <summary>
+    /// 433 帕秋莉·诺蕾姬 唯一，战吼：发现两张元素法术，将它们融合并置入手牌。
+    /// </summary>
+    public class Patchouli_Knowledge : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x029;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 3;
+        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+        }
+    }
+    /// <summary>
+    /// 423 莉莉白 当你的回合开始时，使你的其它随从获得+1/+1。
+    /// </summary>
+    public class Lily_White : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x030;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 4;
+        public override IEffect[] effects { get; set; } = new IEffect[]{
+            new BeforeTurnStart(async(game,card,arg)=>
+            {
+                foreach(var servant in card.getOwner().field.Where(c=>c!=card))
+                    await servant.addBuff(game,new GeneratedBuff(ID,new AttackModifier(1),new LifeModifier(1)));
+            },(game, card, arg) =>
+            {
+                return arg.player == card.getOwner();
+            })
+        };
+    }
+    /// <summary>
+    /// 534 魂魄妖梦 突袭，风怒。
+    /// </summary>
+    public class Youmu : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x031;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 4;
+        public override string[] keywords { get; set; } = new string[] { Keyword.RUSH,Keyword.WINDFURY };
+        public override IEffect[] effects { get; set; } = new IEffect[0];
+    }
+    /// <summary>
+    /// 646 蕾米莉亚·斯卡蕾特 唯一，战吼：弃三张牌，抽三张牌。
+    /// </summary>
+    public class RemiliaScarlet : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x032;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 6;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 6;
+        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]{
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().randomDiscard(game, 3);
+            for (int i = 0; i < 3; i++)
+            {
+                await card.getOwner().draw(game);
+            }
+        }
+    }
+    /// <summary>
+    /// 646 芙兰朵露·斯卡蕾特 唯一，战吼：弃一张牌，随机消灭一个敌方随从。
+    /// </summary>
+    public class FlandreScarlet : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x033;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 6;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 6;
+        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]{
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().randomDiscard(game, 1);
+            await game.getOpponent(card.getOwner()).field.random(game).die(game);
+        }
+    }
+    /// <summary>
+    /// 622 十六夜咲夜 战吼：抽一张牌，使其本回合法力值消耗变为0点。
+    /// </summary>
+    public class IzayoiSakuya : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x037;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 6;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+              await card.getOwner().draw(game);
+              var drawed = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
+              await drawed.addBuff(game, new GeneratedBuff(ID, new CostModifier(0,true),
+                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.HAND, ID)));
+        }
+    }
+    /// <summary>
+    /// 745 八云蓝 战吼：召唤橙，并使其获得+3/+1和突袭。
+    /// </summary>
+    public class YakumoRan : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x038;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 7;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 5;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().createToken(game, game.getCardDefine<Chen>());
+            var chen = game.triggers.getRecordedEvents().OfType<THHPlayer.CreateTokenEventArg>().Last().card;
+            await chen.addBuff(game, new GeneratedBuff(ID, new AttackModifier(3),new LifeModifier(1)));
+            chen.setRush(true);
+        }
+    }
+    /// <summary>
+    /// 888 西行寺幽幽子 唯一，战吼：吃掉一个随从。
+    /// </summary>
+    public class SaigyoujiYuyuko : ServantCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x039;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 8;
+        public override int attack { get; set; } = 8;
+        public override int life { get; set; } = 8;
+        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect((game,card,target)=>
+            {
+                return target.die(game);
+            })
+        };
+    }
+    /// <summary>
+    /// 745 紫妈 战吼：将其它随从移回其拥有者的手牌。
+    /// </summary>
+    public class YukariYakumo : ServantCardDefine
+    {
+        public const int ID = Patchouli.ID | CardCategory.SERVANT | 0x040;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override int attack { get; set; } = 8;
+        public override int life { get; set; } = 8;
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            foreach(Card c in card.getOwner().field)
+            {
+                if(!card.getOwner().hand.isFull)
+                    await card.getOwner().field.moveTo(game, card, card.getOwner().hand);
+                else
+                    await card.getOwner().field.moveTo(game, card, card.getOwner().grave, card.getOwner().grave.count);
+            }
+        }
     }
 }

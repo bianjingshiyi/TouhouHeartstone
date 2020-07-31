@@ -124,9 +124,12 @@ namespace TouhouHeartstone
         {
             card.setProp("attackTimes", value);
         }
-        public static int getMaxAttackTimes(this Card card)
+        public static int getMaxAttackTimes(this Card card, IGame game)
         {
-            return 1;
+            if (card.isWindfury(game))
+                return 2;
+            else
+                return 1;
         }
         /// <summary>
         /// 这个角色能否进行攻击？
@@ -144,7 +147,7 @@ namespace TouhouHeartstone
                 && !(card.isRush(game) && game.getOpponent(card.getOwner()).field.Any(c => card.isAttackable(game, card.getOwner(), c, out _)))//且并非有突袭且有可以攻击的敌方随从
                 )
                 return false;
-            if (card.getAttackTimes(game) >= card.getMaxAttackTimes())//已经攻击过了
+            if (card.getAttackTimes(game) >= card.getMaxAttackTimes(game))//已经攻击过了
                 return false;
             if (card.isFreeze(game))
                 return false;
@@ -214,15 +217,19 @@ namespace TouhouHeartstone
         }
         public static bool isCharge(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.CHARGE);
+            return card.hasKeywords(game, Keyword.CHARGE);
         }
         public static bool isRush(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.RUSH);
+            return card.hasKeywords(game, Keyword.RUSH);
+        }
+        public static void setRush(this Card card, bool value)
+        {
+            card.setProp(Keyword.RUSH, value);
         }
         public static bool isShield(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.SHIELD);
+            return card.hasKeywords(game, Keyword.SHIELD);
         }
         public static void setShield(this Card card, bool value)
         {
@@ -230,7 +237,7 @@ namespace TouhouHeartstone
         }
         public static bool isStealth(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.STEALTH);
+            return card.hasKeywords(game, Keyword.STEALTH);
         }
         public static void setStealth(this Card card, bool value)
         {
@@ -238,7 +245,7 @@ namespace TouhouHeartstone
         }
         public static bool isDrain(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.DRAIN);
+            return card.hasKeywords(game, Keyword.DRAIN);
         }
         public static void setDrain(this Card card, bool value)
         {
@@ -246,7 +253,7 @@ namespace TouhouHeartstone
         }
         public static bool isPoisonous(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.POISONOUS);
+            return card.hasKeywords(game, Keyword.POISONOUS);
         }
         public static void setPoisonous(this Card card, bool value)
         {
@@ -254,7 +261,7 @@ namespace TouhouHeartstone
         }
         public static bool isElusive(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.ELUSIVE);
+            return card.hasKeywords(game, Keyword.ELUSIVE);
         }
         public static void setElusive(this Card card, bool value)
         {
@@ -262,15 +269,23 @@ namespace TouhouHeartstone
         }
         public static bool isFreeze(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.FREEZE);
+            return card.hasKeywords(game, Keyword.FREEZE);
         }
         public static void setFreeze(this Card card, bool value)
         {
             card.setProp(Keyword.FREEZE, value);
         }
+        public static bool isWindfury(this Card card, IGame game)
+        {
+            return card.hasKeywords(game, Keyword.WINDFURY);
+        }
+        public static void setWindfury(this Card card, bool value)
+        {
+            card.setProp(Keyword.WINDFURY, value);
+        }
         public static bool isUnique(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.UNIQUE);
+            return card.hasKeywords(game, Keyword.UNIQUE);
         }
         public static void setUnique(this Card card, bool value)
         {

@@ -382,7 +382,7 @@ namespace TouhouHeartstone
                     if (servant.isFreeze(this))
                     {
                         servant.setAttackTimes(servant.getAttackTimes(this) + 1);
-                        if (servant.getMaxAttackTimes() - servant.getAttackTimes(this) >= 0)
+                        if (servant.getMaxAttackTimes(this) - servant.getAttackTimes(this) >= 0)
                         {
                             logger.log("被冻结的随从解除冰冻");
                             servant.setFreeze(false);
