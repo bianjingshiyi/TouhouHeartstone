@@ -36,16 +36,22 @@ namespace Game
             switch (request)
             {
                 case InitReplaceRequest _:
-                    _ = game.answers.answer(player.id, new InitReplaceResponse()
+                    IResponse resp = new InitReplaceResponse()
                     {
                         cardsId = new int[0]
-                    });
+                    };
+                    game.logPlayerAction(player.id, resp);
+                    _ = game.answers.answer(player.id, resp);
                     break;
                 case FreeActRequest _:
-                    _ = game.answers.answer(player.id, calcNextAction(game, player));
+                    resp = calcNextAction(game, player);
+                    game.logPlayerAction(player.id, resp);
+                    _ = game.answers.answer(player.id, resp);
                     break;
                 case DiscoverRequest discover:
-                    _ = game.answers.answer(player.id, discover.getDefaultResponse(game, player.id));
+                    resp = discover.getDefaultResponse(game, player.id);
+                    game.logPlayerAction(player.id, resp);
+                    _ = game.answers.answer(player.id, resp);
                     break;
                 default:
                     UberDebug.LogChannel("AI", "AI未处理的询问：" + request);

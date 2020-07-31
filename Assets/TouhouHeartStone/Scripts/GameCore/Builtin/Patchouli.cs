@@ -729,7 +729,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 火金符【圣爱尔摩火柱】 对目标随从造成6点伤害，并对其相邻的随从造成2点伤害
+    /// 火金符【圣爱尔摩火柱】 元素法术，对目标随从和敌方英雄造成3点伤害。
     /// </summary>
     public class StElmoPillar : SpellCardDefine
     {
@@ -742,8 +742,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await target.damage(game,card,6);
-                await target.getNearbyCards().damage(game,card,2);
+                await new Card[] { target, card.getOwner().master }.damage(game,card,card.getOwner().getSpellDamage(game,3));
                 await Patchouli.tryMix(game, card);
             }, PileFlag.both | PileFlag.field)
         };

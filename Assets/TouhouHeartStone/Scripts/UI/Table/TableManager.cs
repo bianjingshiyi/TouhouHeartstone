@@ -418,6 +418,7 @@ namespace Game
         /// <param name="pointer"></param>
         void onDragSkill(Skill skill, PointerEventData pointer)
         {
+            //TODO:按帧记录Replay
             if (!canControl)
                 return;
             // Stage2: 当前正在拖拽，判断距离以决定是否退出目标选择模式
