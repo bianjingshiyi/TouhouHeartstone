@@ -671,6 +671,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
+
         }
     }
     /// <summary>
@@ -731,7 +732,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 646 芙兰朵露·斯卡蕾特 唯一，战吼：弃一张牌，随机消灭一个敌方随从。
+    /// 6/4/6 芙兰朵露·斯卡蕾特 唯一，战吼：弃一张牌，随机消灭一个敌方随从。
     /// </summary>
     public class FlandreScarlet : ServantCardDefine
     {
@@ -751,7 +752,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 622 十六夜咲夜 战吼：抽一张牌，使其本回合法力值消耗变为0点。
+    /// 6/2/2 十六夜咲夜 战吼：抽一张牌，使其本回合法力值消耗变为0点。
     /// </summary>
     public class IzayoiSakuya : ServantCardDefine
     {
@@ -772,7 +773,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 745 八云蓝 战吼：召唤橙，并使其获得+3/+1和突袭。
+    /// 7/4/5 八云蓝 战吼：召唤橙，并使其获得+3/+1和突袭。
     /// </summary>
     public class YakumoRan : ServantCardDefine
     {
@@ -793,7 +794,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 888 西行寺幽幽子 唯一，战吼：吃掉一个随从。
+    /// 8/8/8 西行寺幽幽子 唯一，战吼：吃掉一个随从。
     /// </summary>
     public class SaigyoujiYuyuko : ServantCardDefine
     {
@@ -812,7 +813,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 745 紫妈 战吼：将其它随从移回其拥有者的手牌。
+    /// 10/8/8 紫妈 战吼：将其它随从移回其拥有者的手牌。
     /// </summary>
     public class YukariYakumo : ServantCardDefine
     {
@@ -826,13 +827,38 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            foreach(Card c in card.getOwner().field)
+            for(int i = game.getAllServants().Length-1; i>=0 ;i--)
             {
-                if(!card.getOwner().hand.isFull)
-                    await card.getOwner().field.moveTo(game, card, card.getOwner().hand);
-                else
-                    await card.getOwner().field.moveTo(game, card, card.getOwner().grave, card.getOwner().grave.count);
+                if(game.getAllServants()[i]!=card)
+                    await game.getAllServants()[i].backToHand(game);
             }
+
         }
+    }
+
+    /// <summary>
+    /// 1/1/1 假卡 亡语：获得敌方随机随从的控制权，并在敌方场上随机复活一个我方墓地中的随从。
+    /// </summary>
+    public class Fakecard : ServantCardDefine
+    {
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x41;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new DeathRattle(ID,async(g1,c1,p)=>
+            {
+                Card servant = c1.getOwner().grave.random(g1);
+                if(g1.getOpponent(c1.getOwner()).field != null)
+                {
+                    Card servant2 = g1.getOpponent(c1.getOwner()).field.random(g1);
+                    await g1.getOpponent(c1.getOwner()).field.moveTo(g1,servant2,c1.getOwner().field,p);//敌方随从过来
+                    await c1.getOwner().reborn(g1,servant,g1.getOpponent(c1.getOwner()).field);//复活
+                }
+            })
+        };
     }
 }
