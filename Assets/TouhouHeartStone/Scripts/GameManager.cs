@@ -152,6 +152,38 @@ namespace Game
             onGameStart?.Invoke();
             gameTask = game.run();
         }
+
+        public void startReplayGame(Replay rep)
+        {
+            _ui.Game.GameResultDialog.hide();
+
+            game = new THHGame(rep.option, getManager<CardManager>().GetCardDefines())
+            {
+                answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
+                triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
+                time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
+                logger = new ULogger()
+            };
+            (game.answers as AnswerManager).game = game;
+
+            foreach (var player in rep.players)
+            {
+                checkDeckValid(player.Deck);
+                checkDeckValid(new int[] { player.MasterCard });
+
+                THHPlayer p = game.createPlayer(
+                    player.ID,
+                    player.Name,
+                    game.getCardDefine(player.MasterCard) as MasterCardDefine,
+                    player.Deck.Select(c => game.getCardDefine(c)));
+            }
+
+            new ReplayPlayer(rep, game);
+
+            displayGameUI(game.players.Last());
+            gameTask = game.run();
+        }
+
         private void checkDeckValid(int[] deck)
         {
             if (deck == null)
