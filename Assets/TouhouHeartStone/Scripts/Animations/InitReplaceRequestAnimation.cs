@@ -26,10 +26,7 @@ namespace Game
                 table.ui.InitReplaceDialog.ConfirmButtonBlack.asButton.setSelectable(true);
                 table.ui.InitReplaceDialog.ConfirmButtonBlack.asButton.onClick.set(() =>
                 {
-                    table.game.answers.answer(table.player.id, new InitReplaceResponse()
-                    {
-                        cardsId = table.ui.InitReplaceDialog.InitReplaceCardList.Where(item => item.MarkImage.enabled).Select(item => item.Card.card.id).ToArray()
-                    });
+                    table.player.cmdInitReplace(table.game, table.ui.InitReplaceDialog.InitReplaceCardList.Where(item => item.MarkImage.enabled).Select(item => item.Card.card).ToArray());
                     table.ui.InitReplaceDialog.ConfirmButtonBlack.asButton.setSelectable(false);
                 });
             }
