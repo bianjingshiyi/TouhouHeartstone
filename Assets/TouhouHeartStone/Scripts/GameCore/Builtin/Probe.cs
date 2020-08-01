@@ -145,4 +145,47 @@ namespace TouhouHeartstone.Builtin{
         }
         
     }
+
+    /// <summary>
+    /// 机械哨兵
+    /// 4/2/4，战吼：召唤一个0/2具有嘲讽的幻象
+    /// 战吼召唤系随从
+    /// </summary>
+    public class Sentry : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SERVANT | 0x006;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4; 
+        public override int attack { get; set; } = 2;//随从的攻击力
+        public override int life { get; set; } = 4;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        //public override string[] tags { get; set; } = new string[];//种族标签
+        //public override string[] keywords { get; set; } = new string[] {Keyword.TAUNT};//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().createToken(game, game.getCardDefine<Vision>());
+        }
+    }
+
+    /// <summary>
+    /// 幻象
+    /// 0/0/2
+    /// 衍生物
+    /// </summary>
+    public class Vision : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SERVANT | 0x007;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0; 
+        public override int attack { get; set; } = 0;//随从的攻击力
+        public override int life { get; set; } = 2;//随从的血量上限
+        public override bool isToken { get; set; } = true;//是衍生物吗？
+        //public override string[] tags { get; set; } = new string[];//种族标签
+        public override string[] keywords { get; set; } = new string[] {Keyword.TAUNT};//关键词标签：
+        
+    }
 }
