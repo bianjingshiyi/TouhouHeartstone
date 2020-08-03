@@ -215,7 +215,7 @@ namespace Tests
             Assert.True(game.sortedPlayers[0].field[0].isStealth(game));    //露娜出场后default随从变为潜行状态
         }
 
-        [Test]
+        /*[Test]
         public void StarSphereTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
@@ -236,7 +236,7 @@ namespace Tests
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 3);   //露娜
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 4);
             Assert.True(game.sortedPlayers[0].field[2].isStealth(game));    //露娜和桑尼在场，光环起效
-        }
+        }*/
 
         [Test]
         public void BeerFairyTest()
@@ -256,6 +256,13 @@ namespace Tests
             Assert.True(game.sortedPlayers[0].hand.Contains(s));
             //TODO:落叶，这里就只有两个小熊猫相互测试，还不够。
             //还要测试手牌满了的情况下，小熊猫被挤死了
+            /*game.skipTurnWhen(() => game.sortedPlayers[0].gem < 10);
+            var ss = game.sortedPlayers[0].hand[0];
+            game.sortedPlayers[0].cmdUse(game, ss, 0);
+            Assert.True(game.sortedPlayers[0].field.Contains(ss));
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0, game.sortedPlayers[0].field[0]);
+            Assert.True(ss.isDead(game));*/
+
         }
 
         [Test]
@@ -313,24 +320,22 @@ namespace Tests
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption(){shuffle = false});
             THHPlayer you = game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<LettyWhiterock_N>() as CardDefine, 4)
-                .Concat(Enumerable.Repeat(game.getCardDefine<SummerFire>(), 4)));
-            THHPlayer oppo = game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<SummerFire>() as CardDefine, 30));
+                .Concat(Enumerable.Repeat(game.getCardDefine<ArcaneKnowledge>(), 4)));
+            THHPlayer oppo = game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<ArcaneKnowledge>() as CardDefine, 30));
 
-            game.skipTurnWhen(() => you.gem < 3);
+            game.skipTurnWhen(() => you.gem < 5);
 
             you.cmdUse(game, you.hand.getCard<LettyWhiterock_N>());
-            Assert.True(you.hand.Where(c => c.define is SummerFire).All(c => c.getCost(game) == 3));
             you.cmdTurnEnd(game);
-            Assert.True(you.hand.Where(c => c.define is SummerFire).All(c => c.getCost(game) == 2));
-            Assert.True(oppo.hand.Where(c => c.define is SummerFire).All(c => c.getCost(game) == 3));
-            oppo.cmdUse(game, oppo.hand.First(), targets: you.master);
-            Assert.True(oppo.hand.Where(c => c.define is SummerFire).All(c => c.getCost(game) == 2));
+            Assert.True(oppo.hand.Where(c => c.define is ArcaneKnowledge).All(c => c.getCost(game) == 5));
+            oppo.cmdUse(game, oppo.hand.First());
+            Assert.True(oppo.hand.Where(c => c.define is ArcaneKnowledge).All(c => c.getCost(game) == 4));
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<SummerFire>(), targets: you.master);
+            you.cmdUse(game, you.hand.getCard<ArcaneKnowledge>());
         }
 
         [Test]
-        public void ChenTest()
+        public void Chen_NTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Chen_N.ID, 2)
@@ -340,34 +345,40 @@ namespace Tests
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<Chen_N>());
             Assert.True(you.field[0].isRush(game)==true);
+            Assert.True(you.field[0].getAttack(game) == 4);
             you.cmdAttack(game, you.field[0], oppo.field[0]);
             you.cmdTurnEnd(game);
+            Assert.True(you.field[0].getAttack(game) == 2);
             game.Dispose();
         }
 
         [Test]
-        public void Koakuma2Test()
+        public void Koakuma_NTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Koakuma_N.ID, 2),
-                new KeyValuePair<int, int>(SummerFire.ID, 2),
                 new KeyValuePair<int, int>(DoyouSpear.ID, 2)
             );
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 6);
-            you.cmdUse(game, you.hand.getCard<SummerFire>());
             you.cmdUse(game, you.hand.getCard<DoyouSpear>());
+            Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>().LastOrDefault(c => c.to == you.grave);
             you.cmdUse(game, you.hand.getCard<Koakuma_N>());
+            Assert.True(you.hand.Contains(movecardevent.card));
+
         }
 
         [Test]
-        public void Alice_MargatroidTest()
+        public void AliceMargatroid_NTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(AliceMargatroid_N.ID, 5)
             );
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 3);
             you.cmdUse(game, you.hand.getCard<AliceMargatroid_N>());
+            game.skipTurnWhen(() => you.gem < 4);
+            Assert.IsInstanceOf<Doll_N>(you.field[1].define);
             game.skipTurnWhen(() => you.gem < 5);
+            Assert.IsInstanceOf<Doll_N>(you.field[2].define);
         }
 
         [Test]
@@ -381,11 +392,15 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<Doll_N>());
             you.cmdUse(game, you.hand.getCard<Doll_N>());
             you.cmdUse(game, you.hand.getCard<LilyWhite_N>());
-            game.skipTurnWhen(() => you.gem < 9);
+            game.skipTurnWhen(() => you.gem < 7);
+            var buff = you.field.getCard<Doll_N>().getBuffs()[0];
+            Assert.AreEqual(LilyWhite_N.ID, buff.id);
+            Assert.True(you.field[1].getCurrentLife(game) == 2);
+            Assert.True(you.field[1].getAttack(game) == 2);
         }
 
         [Test]
-        public void YoumuTest()
+        public void KonpakuYoumu_NTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(KonpakuYoumu_N.ID, 6)
@@ -394,9 +409,10 @@ namespace Tests
             oppo.cmdUse(game, oppo.hand.First());
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<KonpakuYoumu_N>());
+            Assert.True(you.field[0].getMaxAttackTimes(game) == 2);
             you.cmdAttack(game, you.field[0], oppo.field[0]);
             you.cmdAttack(game, you.field[0], oppo.field[0]);
-            you.cmdAttack(game, you.field[0], oppo.field[0]);
+            Assert.False(you.field[0].canAttack(game));
         }
 
         [Test]
@@ -407,7 +423,12 @@ namespace Tests
                 new KeyValuePair<int, int>(Doll_N.ID, 4)
             );
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 6);
+            var handBeforeUse = you.hand.ToArray();
             you.cmdUse(game, you.hand.getCard<RemiliaScarlet_N>());
+            Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>().LastOrDefault(c => c.to == you.grave);
+            Assert.AreEqual(4, game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>().Count(c => c.to == you.grave));//前面爆了一张牌，所以是4
+            Card throwcard = movecardevent.card;
+            Assert.True(handBeforeUse.Contains(throwcard));
         }
 
         [Test]
@@ -418,8 +439,14 @@ namespace Tests
             );
             game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 6);
             oppo.cmdUse(game, oppo.hand.First());
+            Card card = oppo.field[0];
             oppo.cmdTurnEnd(game);
+            var handBeforeUse = you.hand.ToArray();
             you.cmdUse(game, you.hand.getCard<FlandreScarlet_N>());
+            Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>().LastOrDefault(c => c.to == you.grave);
+            Card throwcard = movecardevent.card;
+            Assert.True(handBeforeUse.Contains(throwcard));
+            Assert.True(card.isDead(game));
         }
 
         [Test]
@@ -431,6 +458,9 @@ namespace Tests
             );
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 6);
             you.cmdUse(game, you.hand.getCard<IzayoiSakuya_N>());
+            Card card = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
+            Assert.True(you.hand.Contains(card));
+            Assert.AreEqual(0, card.getCost(game));
         }
 
         [Test]
@@ -443,6 +473,11 @@ namespace Tests
             oppo.cmdUse(game, oppo.hand.First());
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<YakumoRan_N>());
+            Card card = game.triggers.getRecordedEvents().OfType<THHPlayer.CreateTokenEventArg>().Last().card;
+            Assert.IsInstanceOf<Chen_N>(card.define);
+            Assert.True(you.field[1].hasTag(game, Keyword.RUSH));
+            var buff = you.field[1].getBuffs()[0];
+            Assert.AreEqual(YakumoRan_N.ID, buff.id);
         }
 
         [Test]
@@ -453,9 +488,10 @@ namespace Tests
             );
             game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 8);
             oppo.cmdUse(game, oppo.hand.First());
+            Card card = oppo.field[0];
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<SaigyoujiYuyuko_N>(), targets:oppo.field[0]);
-
+            Assert.True(card.isDead(game));
         }
 
         [Test]
@@ -467,11 +503,15 @@ namespace Tests
             );
             game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 9);
             oppo.cmdUse(game, oppo.hand.First());
+            Card oppocard = oppo.field[0];
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<Doll_N>());
+            Card youcard = you.field[0];
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<YakumoYukari_N>());
+            Assert.True(you.hand.Contains(youcard));
+            Assert.True(oppo.hand.Contains(oppocard));
         }
         //[Test]
         //public void FakecardTest()

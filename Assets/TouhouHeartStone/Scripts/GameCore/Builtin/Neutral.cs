@@ -907,7 +907,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class LyricaPrismriver_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x043;
+        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x044;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 2;
