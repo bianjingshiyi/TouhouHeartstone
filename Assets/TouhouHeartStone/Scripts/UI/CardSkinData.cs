@@ -21,6 +21,13 @@ namespace UI
             set { _name = value; }
         }
         [SerializeField]
+        string _subname;
+        public string subname
+        {
+            get { return _subname; }
+            set { _subname = value; }
+        }
+        [SerializeField]
         Sprite _image;
         public Sprite image
         {
@@ -34,9 +41,20 @@ namespace UI
             get { return _desc; }
             set { _desc = value; }
         }
+        [SerializeField]
+        AudioClip _sound_onUse;
+        public AudioClip sound_onUse
+        {
+            get { return _sound_onUse; }
+            set { _sound_onUse = value; }
+        }
         public override string ToString()
         {
-            return name + "<" + id + ">";
+            string name = this.name;
+            if (!string.IsNullOrEmpty(subname))
+                name += "-" + subname;
+            name += "<" + id + ">";
+            return name;
         }
     }
 }
