@@ -26,24 +26,29 @@ namespace UI
         public void autoBind()
         {
             this._BackgroundImage = this.transform.Find("Background").GetComponent<Image>();
-            this._MasterButton = this.transform.Find("MasterButton").GetComponent<Button>();
-            this._NameBkgImage = this.transform.Find("NameBkgImage").GetComponent<Image>();
-            this._MasterNameText = this.transform.Find("NameBkgImage").Find("MasterNameText").GetComponent<Text>();
-            this._DeckCountText = this.transform.Find("NameBkgImage").Find("DeckCountText").GetComponent<Text>();
-            this._DeckViewScroll = this.transform.Find("DeckView").GetComponent<ScrollRect>();
-            this._BuildDeckList = this.transform.Find("DeckView").Find("Viewport").Find("BuildDeckList").GetComponent<BuildDeckList>();
+            this._TitleBarImage = this.transform.Find("TitleBar").GetComponent<Image>();
+            this._TitleText = this.transform.Find("TitleBar").Find("Title").GetComponent<Text>();
+            this._BackButtonBlack = this.transform.Find("TitleBar").Find("Back").GetComponent<ButtonBlack>();
+            this._DeckListViewScroll = this.transform.Find("DeckListView").GetComponent<ScrollRect>();
+            this._DeckList = this.transform.Find("DeckListView").Find("Viewport").Find("DeckList").GetComponent<DeckList>();
+            this._DeckCardViewImage = this.transform.Find("DeckCardView").GetComponent<Image>();
+            this._EditingDeckDeckListItem = this.transform.Find("DeckCardView").Find("EditingDeck").GetComponent<DeckListItem>();
+            this._NameBkgImage = this.transform.Find("DeckCardView").Find("NameBkgImage").GetComponent<Image>();
+            this._MasterNameText = this.transform.Find("DeckCardView").Find("NameBkgImage").Find("MasterNameText").GetComponent<Text>();
+            this._DeckCountText = this.transform.Find("DeckCardView").Find("NameBkgImage").Find("DeckCountText").GetComponent<Text>();
+            this._DeckViewScroll = this.transform.Find("DeckCardView").Find("DeckView").GetComponent<ScrollRect>();
+            this._BuildDeckList = this.transform.Find("DeckCardView").Find("DeckView").Find("Viewport").Find("BuildDeckList").GetComponent<BuildDeckList>();
             this._CardViewScroll = this.transform.Find("CardView").GetComponent<ScrollRect>();
             this._BuildCardList = this.transform.Find("CardView").Find("Viewport").Find("BuildCardList").GetComponent<BuildCardList>();
-            this._ReturnButton = this.transform.Find("ReturnButton").GetComponent<Button>();
             this._DragCard = this.transform.Find("DragCard").GetComponent<DragCard>();
             this._FilterPanel = this.transform.Find("FilterPanel").GetComponent<FilterPanel>();
         }
-        private Main _parent;
-        public Main parent
+        private NewUI _parent;
+        public NewUI parent
         {
             get
             {
-                return this.transform.parent.GetComponent<Main>();
+                return this.transform.parent.parent.GetComponent<NewUI>();
             }
         }
         [SerializeField()]
@@ -60,16 +65,94 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Button _MasterButton;
-        public Button MasterButton
+        private Image _TitleBarImage;
+        public Image TitleBarImage
         {
             get
             {
-                if ((this._MasterButton == null))
+                if ((this._TitleBarImage == null))
                 {
-                    this._MasterButton = this.transform.Find("MasterButton").GetComponent<Button>();
+                    this._TitleBarImage = this.transform.Find("TitleBar").GetComponent<Image>();
                 }
-                return this._MasterButton;
+                return this._TitleBarImage;
+            }
+        }
+        [SerializeField()]
+        private Text _TitleText;
+        public Text TitleText
+        {
+            get
+            {
+                if ((this._TitleText == null))
+                {
+                    this._TitleText = this.transform.Find("TitleBar").Find("Title").GetComponent<Text>();
+                }
+                return this._TitleText;
+            }
+        }
+        [SerializeField()]
+        private ButtonBlack _BackButtonBlack;
+        public ButtonBlack BackButtonBlack
+        {
+            get
+            {
+                if ((this._BackButtonBlack == null))
+                {
+                    this._BackButtonBlack = this.transform.Find("TitleBar").Find("Back").GetComponent<ButtonBlack>();
+                }
+                return this._BackButtonBlack;
+            }
+        }
+        [SerializeField()]
+        private ScrollRect _DeckListViewScroll;
+        public ScrollRect DeckListViewScroll
+        {
+            get
+            {
+                if ((this._DeckListViewScroll == null))
+                {
+                    this._DeckListViewScroll = this.transform.Find("DeckListView").GetComponent<ScrollRect>();
+                }
+                return this._DeckListViewScroll;
+            }
+        }
+        [SerializeField()]
+        private DeckList _DeckList;
+        public DeckList DeckList
+        {
+            get
+            {
+                if ((this._DeckList == null))
+                {
+                    this._DeckList = this.transform.Find("DeckListView").Find("Viewport").Find("DeckList").GetComponent<DeckList>();
+                }
+                return this._DeckList;
+            }
+        }
+        [SerializeField()]
+        private Image _DeckCardViewImage;
+        public Image DeckCardViewImage
+        {
+            get
+            {
+                if ((this._DeckCardViewImage == null))
+                {
+                    this._DeckCardViewImage = this.transform.Find("DeckCardView").GetComponent<Image>();
+                }
+                return this._DeckCardViewImage;
+            }
+        }
+        [SerializeField()]
+        private DeckListItem _EditingDeckDeckListItem;
+        public DeckListItem EditingDeckDeckListItem
+        {
+            get
+            {
+                if ((this._EditingDeckDeckListItem == null))
+                {
+                    this._EditingDeckDeckListItem = this.transform.Find("DeckCardView").Find("EditingDeck").GetComponent<DeckListItem>();
+                }
+                return this._EditingDeckDeckListItem;
             }
         }
         [SerializeField()]
@@ -80,7 +163,7 @@ namespace UI
             {
                 if ((this._NameBkgImage == null))
                 {
-                    this._NameBkgImage = this.transform.Find("NameBkgImage").GetComponent<Image>();
+                    this._NameBkgImage = this.transform.Find("DeckCardView").Find("NameBkgImage").GetComponent<Image>();
                 }
                 return this._NameBkgImage;
             }
@@ -93,7 +176,7 @@ namespace UI
             {
                 if ((this._MasterNameText == null))
                 {
-                    this._MasterNameText = this.transform.Find("NameBkgImage").Find("MasterNameText").GetComponent<Text>();
+                    this._MasterNameText = this.transform.Find("DeckCardView").Find("NameBkgImage").Find("MasterNameText").GetComponent<Text>();
                 }
                 return this._MasterNameText;
             }
@@ -106,7 +189,7 @@ namespace UI
             {
                 if ((this._DeckCountText == null))
                 {
-                    this._DeckCountText = this.transform.Find("NameBkgImage").Find("DeckCountText").GetComponent<Text>();
+                    this._DeckCountText = this.transform.Find("DeckCardView").Find("NameBkgImage").Find("DeckCountText").GetComponent<Text>();
                 }
                 return this._DeckCountText;
             }
@@ -119,7 +202,7 @@ namespace UI
             {
                 if ((this._DeckViewScroll == null))
                 {
-                    this._DeckViewScroll = this.transform.Find("DeckView").GetComponent<ScrollRect>();
+                    this._DeckViewScroll = this.transform.Find("DeckCardView").Find("DeckView").GetComponent<ScrollRect>();
                 }
                 return this._DeckViewScroll;
             }
@@ -132,7 +215,7 @@ namespace UI
             {
                 if ((this._BuildDeckList == null))
                 {
-                    this._BuildDeckList = this.transform.Find("DeckView").Find("Viewport").Find("BuildDeckList").GetComponent<BuildDeckList>();
+                    this._BuildDeckList = this.transform.Find("DeckCardView").Find("DeckView").Find("Viewport").Find("BuildDeckList").GetComponent<BuildDeckList>();
                 }
                 return this._BuildDeckList;
             }
@@ -161,19 +244,6 @@ namespace UI
                     this._BuildCardList = this.transform.Find("CardView").Find("Viewport").Find("BuildCardList").GetComponent<BuildCardList>();
                 }
                 return this._BuildCardList;
-            }
-        }
-        [SerializeField()]
-        private Button _ReturnButton;
-        public Button ReturnButton
-        {
-            get
-            {
-                if ((this._ReturnButton == null))
-                {
-                    this._ReturnButton = this.transform.Find("ReturnButton").GetComponent<Button>();
-                }
-                return this._ReturnButton;
             }
         }
         [SerializeField()]

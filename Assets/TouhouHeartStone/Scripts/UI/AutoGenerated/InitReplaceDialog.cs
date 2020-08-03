@@ -30,12 +30,12 @@ namespace UI
             this._InitReplaceCardList = this.transform.Find("InitReplaceCardList").GetComponent<InitReplaceCardList>();
             this._ConfirmButtonBlack = this.transform.Find("Confirm").GetComponent<ButtonBlack>();
         }
-        private Main _parent;
-        public Main parent
+        private NewUI _parent;
+        public NewUI parent
         {
             get
             {
-                return this.transform.parent.parent.parent.GetComponent<Main>();
+                return this.transform.parent.parent.parent.parent.GetComponent<NewUI>();
             }
         }
         [SerializeField()]

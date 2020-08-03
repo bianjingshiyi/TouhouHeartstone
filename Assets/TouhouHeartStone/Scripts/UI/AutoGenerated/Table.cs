@@ -56,12 +56,12 @@ namespace UI
             this._TurnTipText = this.transform.Find("TurnTipImage").Find("TurnTipText").GetComponent<Text>();
             this._Discover = this.transform.Find("Discover").GetComponent<Discover>();
         }
-        private Main _parent;
-        public Main parent
+        private NewUI _parent;
+        public NewUI parent
         {
             get
             {
-                return this.transform.parent.parent.GetComponent<Main>();
+                return this.transform.parent.parent.parent.GetComponent<NewUI>();
             }
         }
         [SerializeField()]
