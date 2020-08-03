@@ -554,6 +554,36 @@ namespace TouhouHeartstone
                 return false;
             return true;
         }
+        /// <summary>
+        /// 重置卡牌
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static async Task resetCard(this Card card,THHGame game)
+        {
+            if (card.define is ServantCardDefine servant)
+            {
+                card.setDead(false);
+                card.setCurrentLife(servant.life);
+                card.setReady(false);
+                card.setCost(servant.cost);
+                card.setAttack(servant.attack);
+                card.setLife(servant.life);
+                card.setSpellDamage(servant.spellDamage);
+                await card.removeBuff(game, card.getBuffs());
+                card.setKeywords(game, new string[0]);
+                foreach (string keyword in servant.keywords)
+                {
+                    if (string.IsNullOrEmpty(keyword))
+                        continue;
+                    card.setProp(keyword, true);
+                }
+                card.setProp(nameof(ServantCardDefine.keywords), servant.keywords);
+                card.setProp(nameof(ServantCardDefine.tags), servant.tags);
+            }
+        }
+
         public static async Task activeEffect(this Card card, THHGame game, THHPlayer player, Card[] targets)
         {
             ITriggerEffect triggerEffect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
@@ -807,17 +837,19 @@ namespace TouhouHeartstone
                 return new Card[] { card.pile[card.pile.count - 2] };
             return new Card[] { card.pile[index - 1], card.pile[index + 1] };
         }
-        public static Task backToHand(this Card card, THHGame game)
+        public static async Task backToHand(this Card card, THHGame game)
         {
             if (card.getOwner().hand.isFull)
             {
                 game.logger.log(card.getOwner() + "的手牌已满，无法将" + card + "置入手牌");
-                return card.die(game);
+                await card.die(game);
             }
             else
             {
                 game.logger.log("将" + card + "置入" + card.getOwner() + "的手牌");
-                return card.getOwner().field.moveTo(game, card, card.getOwner().hand);
+                await card.resetCard(game);
+                await card.getOwner().field.moveTo(game, card, card.getOwner().hand);
+                
             }
         }
         public static async Task removeBuff(this IEnumerable<Card> cards, IGame game, int buffId)

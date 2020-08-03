@@ -708,7 +708,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 646 芙兰朵露·斯卡蕾特 唯一，战吼：弃一张牌，随机消灭一个敌方随从。
+    /// 6/4/6 芙兰朵露·斯卡蕾特 唯一，战吼：弃一张牌，随机消灭一个敌方随从。
     /// </summary>
     public class FlandreScarlet_N : ServantCardDefine
     {
@@ -728,7 +728,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 622 十六夜咲夜 战吼：抽一张牌，使其本回合法力值消耗变为0点。
+    /// 6/2/2 十六夜咲夜 战吼：抽一张牌，使其本回合法力值消耗变为0点。
     /// </summary>
     public class IzayoiSakuya_N : ServantCardDefine
     {
@@ -749,7 +749,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 745 八云蓝 战吼：召唤橙，并使其获得+3/+1和突袭。
+    /// 7/4/5 八云蓝 战吼：召唤橙，并使其获得+3/+1和突袭。
     /// </summary>
     public class YakumoRan_N : ServantCardDefine
     {
@@ -772,7 +772,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 888 西行寺幽幽子 唯一，战吼：吃掉一个随从。
+    /// 8/8/8 西行寺幽幽子 唯一，战吼：吃掉一个随从。
     /// </summary>
     public class SaigyoujiYuyuko_N : ServantCardDefine
     {
@@ -792,7 +792,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 745 紫妈 战吼：将其它随从移回其拥有者的手牌。
+    /// 10/8/8 紫妈 战吼：将其它随从移回其拥有者的手牌。
     /// </summary>
     public class YakumoYukari_N : ServantCardDefine
     {
@@ -806,9 +806,13 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            foreach (Card c in card.getOwner().field)
+            foreach (var player in game.players)
             {
-                await c.backToHand(game);
+                foreach (var servant in player.field)
+                {
+                    if (servant != card)
+                        await servant.backToHand(game);
+                }
             }
         }
     }

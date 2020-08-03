@@ -408,6 +408,34 @@ namespace TouhouHeartstone
             public int position;
             public Card card;
         }
+        public async Task<RebornEventArg> reborn(THHGame game, Card card, Pile pile, int position = -1)
+        {
+            if (game == null)
+                throw new ArgumentNullException(nameof(game));
+            if (field.count >= field.maxCount)
+                return null;
+            if (position < 0)
+                position = field.count;
+            RebornEventArg eventArg = new RebornEventArg() { player = this,card = card, pile= pile,position = position };
+            await game.triggers.doEvent(eventArg, async arg =>
+            {
+                THHPlayer player = arg.player;
+                position = arg.position;
+                if (field.count >= field.maxCount)
+                    return;
+                game.logger.log(player + "复活" + arg.card.define.GetType().Name + "位于" + position);
+                await arg.player.grave.moveTo(game, arg.card, arg.pile, position);
+                await arg.card.resetCard(game);
+            });
+            return eventArg;
+        }
+        public class RebornEventArg : EventArg
+        {
+            public THHPlayer player;
+            public int position;
+            public Card card;
+            public Pile pile;
+        }
         public int getSpellDamage(THHGame game, int baseDamage)
         {
             int result = baseDamage;

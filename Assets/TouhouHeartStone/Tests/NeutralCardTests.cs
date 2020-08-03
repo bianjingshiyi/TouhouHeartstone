@@ -359,5 +359,139 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<Koakuma_N>());
         }
 
+        [Test]
+        public void Alice_MargatroidTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(AliceMargatroid_N.ID, 5)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 3);
+            you.cmdUse(game, you.hand.getCard<AliceMargatroid_N>());
+            game.skipTurnWhen(() => you.gem < 5);
+        }
+
+        [Test]
+        public void Lily_WhiteTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(LilyWhite_N.ID, 5),
+                new KeyValuePair<int, int>(Doll_N.ID, 4)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 6);
+            you.cmdUse(game, you.hand.getCard<Doll_N>());
+            you.cmdUse(game, you.hand.getCard<Doll_N>());
+            you.cmdUse(game, you.hand.getCard<LilyWhite_N>());
+            game.skipTurnWhen(() => you.gem < 9);
+        }
+
+        [Test]
+        public void YoumuTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(KonpakuYoumu_N.ID, 6)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 5);
+            oppo.cmdUse(game, oppo.hand.First());
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<KonpakuYoumu_N>());
+            you.cmdAttack(game, you.field[0], oppo.field[0]);
+            you.cmdAttack(game, you.field[0], oppo.field[0]);
+            you.cmdAttack(game, you.field[0], oppo.field[0]);
+        }
+
+        [Test]
+        public void RemiliaScarletTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(RemiliaScarlet_N.ID, 5),
+                new KeyValuePair<int, int>(Doll_N.ID, 4)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 6);
+            you.cmdUse(game, you.hand.getCard<RemiliaScarlet_N>());
+        }
+
+        [Test]
+        public void FlandreScarletTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(FlandreScarlet_N.ID, 8)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 6);
+            oppo.cmdUse(game, oppo.hand.First());
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<FlandreScarlet_N>());
+        }
+
+        [Test]
+        public void IzayoiSakuyaTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(IzayoiSakuya_N.ID, 5),
+                new KeyValuePair<int, int>(Doll_N.ID, 4)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 6);
+            you.cmdUse(game, you.hand.getCard<IzayoiSakuya_N>());
+        }
+
+        [Test]
+        public void YakumoRanTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(YakumoRan_N.ID, 8)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 7);
+            oppo.cmdUse(game, oppo.hand.First());
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<YakumoRan_N>());
+        }
+
+        [Test]
+        public void SaigyoujiYuyukoTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(SaigyoujiYuyuko_N.ID, 9)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 8);
+            oppo.cmdUse(game, oppo.hand.First());
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<SaigyoujiYuyuko_N>(), targets:oppo.field[0]);
+
+        }
+
+        [Test]
+        public void YukariYakumoTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(YakumoYukari_N.ID, 6),
+                new KeyValuePair<int, int>(Doll_N.ID, 5)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 9);
+            oppo.cmdUse(game, oppo.hand.First());
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<Doll_N>());
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<YakumoYukari_N>());
+        }
+        //[Test]
+        //public void FakecardTest()
+        //{
+        //    TestGameflow.createGame(out var game, out var you, out var oppo,
+        //        new KeyValuePair<int, int>(Fakecard.ID, 2),
+        //        new KeyValuePair<int, int>(Chen.ID, 2)
+        //    );
+        //    game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+        //    oppo.cmdUse(game, oppo.hand.First());
+        //    oppo.cmdTurnEnd(game);
+        //    you.cmdUse(game, you.hand.getCard<Chen>());
+        //    you.cmdAttack(game, you.field.getCard<Chen>(), oppo.field[0]);
+        //    you.field.getCard<Chen>().damage(game,null,10);
+        //    you.field.getCard<Chen>().die(game);
+        //    you.cmdUse(game, you.hand.getCard<Fakecard>());
+        //    you.field.getCard<Fakecard>().damage(game, null, 10);
+        //    you.field.getCard<Fakecard>().die(game);
+        //    /*game.logger.log("我方场上：" + you.field[0] + "控制权：" + you.field[0].getOwner());
+        //    game.logger.log("敌方场上：" + oppo.field[0]+ "控制权：" + oppo.field[0].getOwner());*/
+        //}
     }
 }
