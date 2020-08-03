@@ -137,6 +137,10 @@ namespace TouhouHeartstone
         {
             return createCard(defines.random(this));
         }
+        public Card[] createCards(CardDefine[] defines)
+        {
+            return defines.Select(d => createCard(d)).ToArray();
+        }
         public Card[] findAllCardsInField(Func<Card, bool> filter)
         {
             List<Card> cardList = new List<Card>();

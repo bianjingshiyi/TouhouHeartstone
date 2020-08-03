@@ -3,23 +3,23 @@ using TouhouCardEngine.Interfaces;
 using System.Linq;
 namespace TouhouHeartstone
 {
-    public class TagsModifier : PropModifier<string[]>
+    public class KeywordsModifier : PropModifier<string[]>
     {
-        public override string propName { get; } = nameof(ServantCardDefine.tags);
-        public string[] tags { get; }
+        public override string propName { get; } = nameof(ServantCardDefine.keywords);
+        public string[] keywords { get; }
         public enum ModifyType
         {
             add, remove, set
         }
         public ModifyType modifyType { get; }
-        public TagsModifier(ModifyType modifyType, params string[] tags)
+        public KeywordsModifier(ModifyType modifyType, params string[] keywords)
         {
             this.modifyType = modifyType;
-            this.tags = tags;
+            this.keywords = keywords;
         }
-        protected TagsModifier(TagsModifier origin)
+        protected KeywordsModifier(KeywordsModifier origin)
         {
-            tags = origin.tags;
+            keywords = origin.keywords;
             modifyType = origin.modifyType;
         }
         public override string[] calc(IGame game, Card card, string[] value)
@@ -27,16 +27,16 @@ namespace TouhouHeartstone
             switch (modifyType)
             {
                 case ModifyType.set:
-                    return tags;
+                    return keywords;
                 case ModifyType.remove:
-                    return value.Except(tags).ToArray();
+                    return value.Except(keywords).ToArray();
                 default:
-                    return value.Union(tags).ToArray();
+                    return value.Union(keywords).ToArray();
             }
         }
         public override PropModifier clone()
         {
-            return new TagsModifier(this);
+            return new KeywordsModifier(this);
         }
     }
 }

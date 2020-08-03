@@ -69,12 +69,17 @@ namespace Game
         }
 
         public const string Extension = "zgrep";
-
+        [SerializeField]
+        Replay _currentReplay;
         public void Play(string fileName)
         {
             string str = File.ReadAllText(Path.Combine(ReplayFolder(), fileName));
             Replay readRep = BsonSerializer.Deserialize(str, typeof(Replay)) as Replay;
             getManager<GameManager>().startReplayGame(readRep);
+#if UNITY_EDITOR
+            _currentReplay = readRep;
+            _currentReplay.showContents();
+#endif
         }
     }
 
@@ -122,7 +127,7 @@ namespace Game
             }
 
             // 判断是否是自己的行动]
-            while(!obj.playersId.Contains(currentLog.player))
+            while (!obj.playersId.Contains(currentLog.player))
             {
                 UberDebug.LogChannel("Replay", $"顺序不正确，等待其他线程执行。当前requestID: {obj.playersId[0]}, logID: {currentLog.player}");
                 lineCounter++;
