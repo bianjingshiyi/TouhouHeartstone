@@ -188,4 +188,29 @@ namespace TouhouHeartstone.Builtin{
         public override string[] keywords { get; set; } = new string[] {Keyword.TAUNT};//关键词标签：
         
     }
+
+    /// <summary>
+    /// 先知机器人
+    /// 4/3/3，战吼：抽一张法力消耗最高的牌
+    /// 战吼定向检索随从
+    /// </summary>
+    public class Sentry : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SERVANT | 0x008;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4; 
+        public override int attack { get; set; } = 3;//随从的攻击力
+        public override int life { get; set; } = 3;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        //public override string[] tags { get; set; } = new string[];//种族标签
+        //public override string[] keywords { get; set; } = new string[] {Keyword.TAUNT};//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().createToken(game, game.getCardDefine<Vision>());
+        }
+    }
 }
