@@ -194,7 +194,7 @@ namespace TouhouHeartstone.Builtin{
     /// 4/3/3，战吼：抽一张法力消耗最高的牌
     /// 战吼定向检索随从
     /// </summary>
-    public class Sentry : ServantCardDefine
+    public class ProphetRobot : ServantCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x008;
         public override int id { get; set; } = ID;
@@ -210,7 +210,14 @@ namespace TouhouHeartstone.Builtin{
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getCardDefine<Vision>());
+            Card _card = card.getOwner().deck.top;
+            foreach(Card c in card.getOwner().deck)
+            {
+                if(c.getCost(game) > _card.getCost(game)){
+                    _card = c;
+                }
+            }
+            await card.getOwner().draw( game, _card);
         }
     }
 }
