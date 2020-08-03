@@ -47,9 +47,9 @@ namespace Game
         /// 加载配置路径中的所有卡片和皮肤。
         /// </summary>
         /// <returns></returns>
-        public Task load(Assembly[] assemblies = default, ILogger logger = null)
+        public Task load(Assembly[] assemblies = default, bool builtinOnly = false, ILogger logger = null)
         {
-            return load(_externalCardPaths, assemblies, logger);
+            return load(builtinOnly ? new string[0] : _externalCardPaths, assemblies, logger);
         }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
@@ -65,24 +65,27 @@ namespace Game
             List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies, logger));
 
             List<string> pathList = new List<string>();
-            foreach (var excelPath in excelPaths)
+            if (excelPaths != null)
             {
-                // 判断文件夹
-                if (excelPath.Contains("*") || excelPath.Contains("?"))
+                foreach (var excelPath in excelPaths)
                 {
-                    if (!PlatformCompability.Current.RequireWebRequest)
+                    // 判断文件夹
+                    if (excelPath.Contains("*") || excelPath.Contains("?"))
                     {
-                        var pathes = ResourceManager.GetDirectoryFiles(excelPath);
-                        // 去重
-                        foreach (var item in pathes)
+                        if (!PlatformCompability.Current.RequireWebRequest)
                         {
-                            if (!pathList.Contains(item)) pathList.Add(item);
+                            var pathes = ResourceManager.GetDirectoryFiles(excelPath);
+                            // 去重
+                            foreach (var item in pathes)
+                            {
+                                if (!pathList.Contains(item)) pathList.Add(item);
+                            }
                         }
                     }
-                }
-                else
-                {
-                    if (!pathList.Contains(excelPath)) pathList.Add(excelPath);
+                    else
+                    {
+                        if (!pathList.Contains(excelPath)) pathList.Add(excelPath);
+                    }
                 }
             }
 
@@ -155,9 +158,18 @@ namespace Game
         {
             platform = platform ?? PlatformCompability.Current;
 
-            DataSet dataset = platform.SupportExcelReading ?
+            DataSet dataset;
+            try
+            {
+                dataset = platform.SupportExcelReading ?
                 await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
                 await getManager<ResourceManager>().loadDataSet(path, platform);
+            }
+            catch (Exception e)
+            {
+                UberDebug.LogErrorChannel("Card", "读取" + path + "发生异常：" + e);
+                return new CardDefine[0];
+            }
 
             if (dataset.Tables.Count < 1) throw new Exception("空数据集");
             var table = dataset.Tables[0];

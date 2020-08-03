@@ -106,11 +106,14 @@ namespace TouhouHeartstone
             public THHPlayer player;
             public int value;
         }
-        public Task draw(THHGame game)
+        public Task draw(THHGame game, out DrawEventArg drawEvent, out BurnEventArg burnEvent, out FatigueEventArg fatigueEvent)
         {
             if (deck.count < 1)//无牌可抽，疲劳！
             {
-                return game.triggers.doEvent(new FatigueEventArg() { player = this }, onFatigue);
+                drawEvent = null;
+                burnEvent = null;
+                fatigueEvent = new FatigueEventArg() { player = this };
+                return game.triggers.doEvent(fatigueEvent, onFatigue);
                 async Task onFatigue(FatigueEventArg arg)
                 {
                     arg.player.fatigue++;
@@ -120,15 +123,32 @@ namespace TouhouHeartstone
                 }
             }
             else
-                return draw(game, deck.top);
+            {
+                fatigueEvent = null;
+                return draw(game, deck.top, out drawEvent, out burnEvent);
+            }
         }
-        public Task draw(THHGame game, Card card)
+        public Task draw(THHGame game, out DrawEventArg drawEvent)
+        {
+            return draw(game, out drawEvent, out _, out _);
+        }
+        public Task draw(THHGame game)
+        {
+            return draw(game, out _, out _, out _);
+        }
+        public Task draw(THHGame game, Card card, out DrawEventArg drawEvent, out BurnEventArg burnEvent)
         {
             if (!deck.Contains(card))
+            {
+                drawEvent = null;
+                burnEvent = null;
                 return Task.CompletedTask;
+            }
             if (hand.count >= hand.maxCount)
             {
-                return game.triggers.doEvent(new BurnEventArg() { player = this, card = card }, arg =>
+                drawEvent = null;
+                burnEvent = new BurnEventArg() { player = this, card = card };
+                return game.triggers.doEvent(burnEvent, arg =>
                 {
                     card = arg.card;
                     arg.player.deck.moveTo(game, card, arg.player.grave, arg.player.grave.count);
@@ -138,7 +158,9 @@ namespace TouhouHeartstone
             }
             else
             {
-                return game.triggers.doEvent(new DrawEventArg() { player = this, card = card }, async arg =>
+                drawEvent = new DrawEventArg() { player = this, card = card };
+                burnEvent = null;
+                return game.triggers.doEvent(drawEvent, async arg =>
                 {
                     THHPlayer player = arg.player;
                     card = arg.card;
@@ -157,6 +179,10 @@ namespace TouhouHeartstone
                     }
                 });
             }
+        }
+        public Task draw(THHGame game, Card card)
+        {
+            return draw(game, card, out _, out _);
         }
         public class DrawEventArg : EventArg
         {
@@ -193,7 +219,7 @@ namespace TouhouHeartstone
                 if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.SERVANT))
                 {
                     //随从卡，将卡置入战场
-                    await tryPutIntoField(game, arg.player.hand, arg.card, arg.position);
+                    await tryEnterField(game, arg.player.hand, arg.card, arg.position);
                     ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
                     if (effect != null)
                     {
@@ -302,12 +328,12 @@ namespace TouhouHeartstone
                 this.targets = targets;
             }
         }
-        public async Task<bool> tryPutIntoField(THHGame game, Pile from, Card card, int position)
+        public async Task<bool> tryEnterField(THHGame game, Pile from, Card card, int position)
         {
             if (field.count >= field.maxCount)//没位置了
                 return false;
-            await game.triggers.doEvent(new MoveEventArg() { player = this, from = from, card = card, position = position }, logic);
-            Task logic(MoveEventArg arg)
+            await game.triggers.doEvent(new MoveEventArg() { player = this, from = from, card = card, position = position }, onEnterField);
+            Task onEnterField(MoveEventArg arg)
             {
                 THHPlayer player = arg.player;
                 from = arg.from;
@@ -362,7 +388,7 @@ namespace TouhouHeartstone
                     return;
                 game.logger.log(player + "召唤" + define.GetType().Name + "位于" + position);
                 arg.card = game.createCard(define);
-                await tryPutIntoField(game, null, arg.card, position);
+                await tryEnterField(game, null, arg.card, position);
             });
             return eventArg;
         }
@@ -484,6 +510,23 @@ namespace TouhouHeartstone
                 return true;
             else
                 return false;
+        }
+        /// <summary>
+        /// 找到符合条件的卡片，无论它在哪里。
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        /// <remarks>但是其实并不会真的哪里都去找啦</remarks>
+        public Card[] findCardsWherever(THHGame game, Func<Card, bool> filter, PileFlag pile = PileFlag.field | PileFlag.hand | PileFlag.grave | PileFlag.deck)
+        {
+            if (filter == null)
+                throw new ArgumentNullException(nameof(filter));
+            List<Card> cardList = new List<Card>();
+            foreach (var p in pile.getPiles(game, this))
+            {
+                cardList.AddRange(p.Where(filter));
+            }
+            return cardList.ToArray();
         }
         #region Command
         public Task cmdInitReplace(THHGame game, params Card[] cards)

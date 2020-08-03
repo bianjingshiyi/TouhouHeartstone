@@ -275,6 +275,13 @@ namespace TouhouHeartstone
         {
             card.setProp(Keyword.FREEZE, value);
         }
+        public static void setFreeze(this IEnumerable<Card> cards, bool value)
+        {
+            foreach (var card in cards)
+            {
+                card.setFreeze(value);
+            }
+        }
         public static bool isWindfury(this Card card, IGame game)
         {
             return card.getProp<bool>(game, Keyword.WINDFURY);
@@ -311,7 +318,13 @@ namespace TouhouHeartstone
         }
         public static bool hasKeywords(this Card card, IGame game, string keyword)
         {
-            return card.getKeywords(game).Contains(keyword);
+            string[] keywords = card.getKeywords(game);
+            if (keywords == null)
+            {
+                game.logger.logWarn(card + "的关键词为null");
+                return false;
+            }
+            return keywords.Contains(keyword);
         }
         public static int getSpellDamage(this Card card, IGame game)
         {
@@ -837,6 +850,13 @@ namespace TouhouHeartstone
                 await card.resetCard(game);
                 await card.getOwner().field.moveTo(game, card, card.getOwner().hand);
                 
+            }
+        }
+        public static async Task removeBuff(this IEnumerable<Card> cards, IGame game, int buffId)
+        {
+            foreach (var card in cards)
+            {
+                await card.removeBuff(game, card.getBuffs(b => b.id == buffId));
             }
         }
     }
