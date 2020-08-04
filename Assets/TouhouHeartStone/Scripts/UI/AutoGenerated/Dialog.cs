@@ -29,12 +29,12 @@ namespace UI
             this._Text = this.transform.Find("Text").GetComponent<Text>();
             this._Button = this.transform.Find("Button").GetComponent<Button>();
         }
-        private Main _parent;
-        public Main parent
+        private NewUI _parent;
+        public NewUI parent
         {
             get
             {
-                return this.transform.parent.GetComponent<Main>();
+                return this.transform.parent.parent.GetComponent<NewUI>();
             }
         }
         [SerializeField()]

@@ -27,6 +27,8 @@ namespace UI
         {
             this.m_as_Canvas = this.GetComponent<Canvas>();
             this._Main = this.transform.Find("Main").GetComponent<Main>();
+            this._CopyrightText = this.transform.Find("Copyright").GetComponent<Text>();
+            this._VersionText = this.transform.Find("Version").GetComponent<Text>();
         }
         [SerializeField()]
         private Canvas m_as_Canvas;
@@ -52,6 +54,32 @@ namespace UI
                     this._Main = this.transform.Find("Main").GetComponent<Main>();
                 }
                 return this._Main;
+            }
+        }
+        [SerializeField()]
+        private Text _CopyrightText;
+        public Text CopyrightText
+        {
+            get
+            {
+                if ((this._CopyrightText == null))
+                {
+                    this._CopyrightText = this.transform.Find("Copyright").GetComponent<Text>();
+                }
+                return this._CopyrightText;
+            }
+        }
+        [SerializeField()]
+        private Text _VersionText;
+        public Text VersionText
+        {
+            get
+            {
+                if ((this._VersionText == null))
+                {
+                    this._VersionText = this.transform.Find("Version").GetComponent<Text>();
+                }
+                return this._VersionText;
             }
         }
         partial void onAwake();

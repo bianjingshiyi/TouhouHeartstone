@@ -33,6 +33,14 @@ namespace UI
             this._Loading = this.transform.Find("Loading").GetComponent<Loading>();
             this._Dialog = this.transform.Find("Dialog").GetComponent<Dialog>();
         }
+        private NewUI _parent;
+        public NewUI parent
+        {
+            get
+            {
+                return this.transform.parent.GetComponent<NewUI>();
+            }
+        }
         [SerializeField()]
         private Game _Game;
         public Game Game

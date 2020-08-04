@@ -7,14 +7,21 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using System.Reflection;
 using Game;
+using TouhouHeartstone.Builtin;
+
 namespace UI
 {
     partial class Build
     {
+
+        CardManager cm => parent.game.getManager<CardManager>();
+        DeckManager dm => parent.game.getManager<DeckManager>();
+
         partial void onAwake()
         {
-            ReturnButton.onClick.AddListener(() =>
+            BackButtonBlack.asButton.onClick.AddListener(() =>
             {
+                /**
                 PlayerPrefs.SetInt("DeckCount", BuildDeckList.Select(i => i.count).Sum() + 1);
                 int index = 1;
                 foreach (var item in BuildDeckList.getItems())
@@ -26,12 +33,29 @@ namespace UI
                         index++;
                     }
                 }
-                PlayerPrefs.Save();
+                PlayerPrefs.Save();*/
                 parent.display(parent.MainMenu);
             });
 
             FilterPanel.onFilterConditionChange += reloadCardList;
             FilterPanel.onSortChange += onSortChange;
+
+            EditingDeckDeckListItem.onDeckRename += onDeckRename;
+            EditingDeckDeckListItem.SetMode(DeckListItem.Mode.DeckTitle);
+            EditingDeckDeckListItem.onDeckSelect += (id) => {
+                dm.ClearDeck(id);
+                foreach (var item in BuildDeckList.getItems())
+                {
+                    for (int i = 0; i < item.count; i++)
+                    {
+                        dm.AddCard(id, item.card.id);
+                    }
+                }
+                uiModeSwitch(true); 
+            
+            }; // 卡组保存
+
+            uiModeSwitch(true);
         }
 
         private void onSortChange()
@@ -39,24 +63,95 @@ namespace UI
             BuildCardList.sortItems(FilterPanel.sortCompareMethod);
         }
 
+        void reloadDeckList()
+        {
+            var decks = dm.GetDecks();
+
+            DeckList.clearItems();
+
+            foreach (var deck in decks)
+            {
+                Sprite spr = cm.getSkin(getDeckMasterCard((int)deck.Key))?.image;
+
+                var item = DeckList.addItem();
+                item.SetContent((int)deck.Key, deck.Value, spr);
+                item.SetMode(DeckListItem.Mode.DeckListItem);
+
+                item.onDeckSelect += onDeckSelect;
+                item.onDeckRemove += onDeckRemove;
+            }
+
+            var addBtn = DeckList.addItem();
+            addBtn.SetMode(DeckListItem.Mode.AddDeck);
+            addBtn.onDeckAdd += onDeckAdd;
+        }
+
+        private int getDeckMasterCard(int deckID)
+        {
+            var cards = dm.GetDeckCards(deckID);
+            foreach (var card in cards)
+            {
+                if (cm.GetCardDefine((int)card.Value) is MasterCardDefine)
+                {
+                    return (int)card.Value;
+                }
+            }
+            return -1;
+        }
+
+        void onDeckSelect(int id)
+        {
+            var deckCards = dm.GetDeckCards(id);
+            deckEnterEditMode(deckCards, id);
+        }
+
+        void onDeckRemove(int id)
+        {
+            dm.RemoveDeck(id);
+            reloadDeckList();
+        }
+
+        void onDeckAdd()
+        {
+            var id = dm.CreateDeck("新牌组");
+            dm.AddCard(id, Patchouli.ID);
+            reloadDeckList();
+        }
+
+        void onDeckRename(int id, string name)
+        {
+            dm.RenameDeck(id, name);
+            reloadDeckList();
+        }
+
         CardDefine[] cards { get; set; } = null;
         protected override void onDisplay()
         {
             base.onDisplay();
-            //目前只有一个卡组
+
             cards = parent.game.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly);
-            int[] deck = parent.game.deck;
-            CardSkinData masterSkin = parent.game.cards.getSkin(deck[0]);
-            MasterButton.setSprite(masterSkin.image);
+
+            reloadDeckList();
+            reloadCardList();
+        }
+
+        /// <summary>
+        /// 使用卡组进入卡组编辑模式
+        /// </summary>
+        /// <param name="deck"></param>
+        private void deckEnterEditMode(Dictionary<long, long> deck, int deckID)
+        {
+            CardSkinData masterSkin = parent.game.cards.getSkin(getDeckMasterCard(deckID));
+            EditingDeckDeckListItem.SetContent(deckID, dm.GetDeckName(deckID), masterSkin.image);
             MasterNameText.text = masterSkin.name;
+
             BuildDeckList.clearItems();
-            foreach (var cards in deck.Skip(1).Select(id => cards.FirstOrDefault(c => c.id == id)).Where(c => c != null).GroupBy(c => c.id))
+            foreach (var cards in deck.Select(card => cards.FirstOrDefault(c => c.id == card.Value && !(c is MasterCardDefine))).Where(c => c != null).GroupBy(c => c.id))
             {
                 var item = BuildDeckList.addItem();
                 var skin = parent.game.cards.getSkin(cards.First().id);
                 item.update(cards.First(), skin, cards.Count());
             }
-            reloadCardList();
             BuildDeckList.sortItems((a, b) =>
             {
                 if (a.card.getCost() != b.card.getCost())
@@ -65,6 +160,25 @@ namespace UI
                     return a.card.id - b.card.id;
             });
             DragCard.hide();
+
+            uiModeSwitch(false);
+        }
+
+        /// <summary>
+        /// 当前是否位于卡组编辑模式
+        /// </summary>
+        bool isInDeckEditMode;
+
+        /// <summary>
+        /// 切换模式
+        /// </summary>
+        /// <param name="deckMode">卡组列表模式</param>
+        void uiModeSwitch(bool deckMode)
+        {
+            DeckListViewScroll.gameObject.SetActive(deckMode);
+            DeckCardViewImage.gameObject.SetActive(!deckMode);
+
+            isInDeckEditMode = !deckMode;
         }
 
         private void reloadCardList()
@@ -157,6 +271,8 @@ namespace UI
         }
         void onDragItem(CardDefine card, Vector2 position)
         {
+            if (!isInDeckEditMode) return;
+
             DragCard.display();
             DragCard.rectTransform.position = position;
             if (DeckViewScroll.GetComponent<RectTransform>().rect.Contains(DeckViewScroll.GetComponent<RectTransform>().InverseTransformPoint(position)))

@@ -81,8 +81,17 @@ namespace Game
         /// <param name="id"></param>
         public void RemoveDeck(long id)
         {
-            db.Execute($@"DELETE FROM {tableCards} WHERE deckID = ?", null, args: id); // 先清理卡定义
+            ClearDeck(id);
             db.Execute($@"DELETE FROM {tableDeck} WHERE deckID = ?", null, args: id); // 然后清理卡组定义
+        }
+
+        /// <summary>
+        /// 删除一个牌组里面的所有的牌
+        /// </summary>
+        /// <param name="id"></param>
+        public void ClearDeck(long id)
+        {
+            db.Execute($@"DELETE FROM {tableCards} WHERE deckID = ?", null, args: id); // 先清理卡定义
         }
 
         /// <summary>

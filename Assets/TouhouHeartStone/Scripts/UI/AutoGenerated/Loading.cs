@@ -30,12 +30,12 @@ namespace UI
             this._Text = this.transform.Find("Text").GetComponent<Text>();
             this._LoggerText = this.transform.Find("Logger").GetComponent<Text>();
         }
-        private Main _parent;
-        public Main parent
+        private NewUI _parent;
+        public NewUI parent
         {
             get
             {
-                return this.transform.parent.GetComponent<Main>();
+                return this.transform.parent.parent.GetComponent<NewUI>();
             }
         }
         [SerializeField()]
