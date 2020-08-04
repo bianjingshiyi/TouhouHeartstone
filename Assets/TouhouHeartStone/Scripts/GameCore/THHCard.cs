@@ -72,6 +72,14 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(ServantCardDefine.life), value);
         }
+        public static int getArmor(this CardDefine card)
+        {
+            return card.getProp<int>(nameof(ServantCardDefine.Armor));
+        }
+        public static void setArmor(this Card card, int value)
+        {
+            card.setProp(nameof(ServantCardDefine.Armor), value);
+        }
         /// <summary>
         /// 一个随从/物品/英雄是否已经死了？除了生命值小于等于0以外，还有一个isDead的属性来控制卡片是否在死亡结算当中。
         /// </summary>
@@ -289,6 +297,14 @@ namespace TouhouHeartstone
         public static void setWindfury(this Card card, bool value)
         {
             card.setProp(Keyword.WINDFURY, value);
+        }
+        public static bool isAccumulate(this Card card, IGame game)
+        {
+            return card.getProp<bool>(game, Keyword.ACCUMULATE);
+        }
+        public static void setAccumulate(this Card card, bool value)
+        {
+            card.setProp(Keyword.ACCUMULATE, value);
         }
         public static bool isUnique(this Card card, IGame game)
         {

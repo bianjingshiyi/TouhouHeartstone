@@ -513,25 +513,39 @@ namespace Tests
             Assert.True(you.hand.Contains(youcard));
             Assert.True(oppo.hand.Contains(oppocard));
         }
-        //[Test]
-        //public void FakecardTest()
-        //{
-        //    TestGameflow.createGame(out var game, out var you, out var oppo,
-        //        new KeyValuePair<int, int>(Fakecard.ID, 2),
-        //        new KeyValuePair<int, int>(Chen.ID, 2)
-        //    );
-        //    game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
-        //    oppo.cmdUse(game, oppo.hand.First());
-        //    oppo.cmdTurnEnd(game);
-        //    you.cmdUse(game, you.hand.getCard<Chen>());
-        //    you.cmdAttack(game, you.field.getCard<Chen>(), oppo.field[0]);
-        //    you.field.getCard<Chen>().damage(game,null,10);
-        //    you.field.getCard<Chen>().die(game);
-        //    you.cmdUse(game, you.hand.getCard<Fakecard>());
-        //    you.field.getCard<Fakecard>().damage(game, null, 10);
-        //    you.field.getCard<Fakecard>().die(game);
-        //    /*game.logger.log("我方场上：" + you.field[0] + "控制权：" + you.field[0].getOwner());
-        //    game.logger.log("敌方场上：" + oppo.field[0]+ "控制权：" + oppo.field[0].getOwner());*/
-        //}
+        [Test]
+        public void Rumia_NTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Rumia_N.ID, 6)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            oppo.cmdUse(game, oppo.hand.First(),0);//敌方杂鱼A
+            oppo.cmdUse(game, oppo.hand.First(),1);//敌方杂鱼B
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<Rumia_N>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
+            Assert.True(you.field.getCard<Rumia_N>().canAttack(game));
+            you.cmdAttack(game, you.field.getCard<Rumia_N>(), target: oppo.master);//尝试指脸
+            Card target = game.triggers.getRecordedEvents().OfType<THHCard.AttackEventArg>().Last().target;
+            game.logger.log("目标是：" + target);//真正的攻击目标
+            you.cmdTurnEnd(game);
+        }
+
+        [Test]
+        public void PrismriverTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(LunasaPrismriver_N.ID, 10),
+                new KeyValuePair<int, int>(MerlinPrismriver_N.ID, 10),
+                new KeyValuePair<int, int>(LyricaPrismriver_N.ID, 10)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 6);
+            you.cmdUse(game, you.hand.First());//从牌库或手牌召唤骚灵乐团...（一起召唤吗？）
+            Assert.True(you.field.Any(c => c.define is LunasaPrismriver_N));
+            Assert.True(you.field.Any(c => c.define is MerlinPrismriver_N));
+            Assert.True(you.field.Any(c => c.define is LyricaPrismriver_N));
+
+        }
     }
 }
