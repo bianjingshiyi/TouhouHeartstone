@@ -15,18 +15,19 @@ namespace UI
     using UnityEngine.UI;
     using BJSYGameCore.UI;
     
-    public partial class VerticalOverflowCardList : UIObject
+    public partial class VerticalOverflowCardList : UIList<VerticalOverflowCardListItem>
     {
         protected override void Awake()
         {
             base.Awake();
             this.autoBind();
+            this.defaultItem.gameObject.SetActive(false);
             this.onAwake();
         }
         public void autoBind()
         {
             this.m_as_ListLayoutGroup = this.GetComponent<ListLayoutGroup>();
-            this._Card = this.transform.Find("VerticalOverflowCardListItem").Find("Card").GetComponent<Card>();
+            this.defaultItem = this.transform.Find("VerticalOverflowCardListItem").GetComponent<VerticalOverflowCardListItem>();
         }
         [SerializeField()]
         private ListLayoutGroup m_as_ListLayoutGroup;
@@ -41,18 +42,9 @@ namespace UI
                 return this.m_as_ListLayoutGroup;
             }
         }
-        [SerializeField()]
-        private Card _Card;
-        public Card Card
+        protected override VerticalOverflowCardListItem getDefaultItem()
         {
-            get
-            {
-                if ((this._Card == null))
-                {
-                    this._Card = this.transform.Find("VerticalOverflowCardListItem").Find("Card").GetComponent<Card>();
-                }
-                return this._Card;
-            }
+            return this.transform.Find("VerticalOverflowCardListItem").GetComponent<VerticalOverflowCardListItem>();
         }
         partial void onAwake();
     }

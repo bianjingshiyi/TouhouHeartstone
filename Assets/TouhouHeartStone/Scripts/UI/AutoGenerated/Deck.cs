@@ -25,11 +25,25 @@ namespace UI
         }
         public void autoBind()
         {
+            this.m_as_Button = this.GetComponent<Button>();
             this._Card_1 = this.transform.Find("Card (1)").GetComponent<Card>();
             this._Card_2 = this.transform.Find("Card (2)").GetComponent<Card>();
             this._Card_3 = this.transform.Find("Card (3)").GetComponent<Card>();
             this._Card_4 = this.transform.Find("Card (4)").GetComponent<Card>();
             this._Card_5 = this.transform.Find("Card (5)").GetComponent<Card>();
+        }
+        [SerializeField()]
+        private Button m_as_Button;
+        public Button asButton
+        {
+            get
+            {
+                if ((this.m_as_Button == null))
+                {
+                    this.m_as_Button = this.GetComponent<Button>();
+                }
+                return this.m_as_Button;
+            }
         }
         [SerializeField()]
         private Card _Card_1;
