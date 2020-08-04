@@ -37,12 +37,12 @@ namespace UI
             this._LicenseText = this.transform.Find("About").Find("Right").Find("Container").Find("Scroll View").Find("Viewport").Find("Content").Find("LicenseText").GetComponent<Text>();
             this._BackButtonBlack = this.transform.Find("About").Find("Back").GetComponent<ButtonBlack>();
         }
-        private Main _parent;
-        public Main parent
+        private NewUI _parent;
+        public NewUI parent
         {
             get
             {
-                return this.transform.parent.GetComponent<Main>();
+                return this.transform.parent.parent.GetComponent<NewUI>();
             }
         }
         [SerializeField()]

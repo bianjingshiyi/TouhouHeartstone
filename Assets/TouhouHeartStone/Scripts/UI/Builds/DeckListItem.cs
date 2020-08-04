@@ -31,9 +31,10 @@ namespace UI
 
         public enum Mode
         {
-            DeckListItem,
-            DeckTitle,
-            AddDeck
+            DeckListItem, // 牌组列表
+            DeckTitle, // 当前编辑的牌组
+            AddDeck, // 添加牌组按钮
+            MasterSelect // 人物编辑
         }
 
         public void SetMode(Mode mode)
@@ -41,9 +42,9 @@ namespace UI
             ImageMask.gameObject.SetActive(mode != Mode.AddDeck);
             AddButtonBlack.gameObject.SetActive(mode == Mode.AddDeck);
 
-            DeckNameImage.gameObject.SetActive(mode == Mode.DeckListItem);
+            DeckNameImage.gameObject.SetActive(mode == Mode.DeckListItem || mode == Mode.MasterSelect);
             NameInputField.gameObject.SetActive(mode == Mode.DeckTitle);
-            // DeleteButtonBlack.gameObject.SetActive(mode == Mode.DeckListItem);
+            DeleteButtonBlack.gameObject.SetActive(mode == Mode.DeckListItem);
         }
     }
 }

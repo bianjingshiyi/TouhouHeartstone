@@ -41,12 +41,12 @@ namespace UI
             this._QuitButtonButtonBlack = this.transform.Find("QuitButton").GetComponent<ButtonBlack>();
             this._StartButtonButtonBlack = this.transform.Find("StartButton").GetComponent<ButtonBlack>();
         }
-        private Main _parent;
-        public Main parent
+        private NewUI _parent;
+        public NewUI parent
         {
             get
             {
-                return this.transform.parent.parent.parent.GetComponent<Main>();
+                return this.transform.parent.parent.parent.parent.GetComponent<NewUI>();
             }
         }
         [SerializeField()]

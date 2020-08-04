@@ -72,10 +72,10 @@ namespace UI
 
             foreach (var deck in decks)
             {
-                Sprite spr = cm.getSkin(getDeckMasterCard((int)deck.Key))?.image;
+                Sprite spr = cm.getSkin(deck.MasterID)?.image;
 
                 var item = DeckList.addItem();
-                item.SetContent((int)deck.Key, deck.Value, spr);
+                item.SetContent((int)deck.ID, deck.Name, spr);
                 item.SetMode(DeckListItem.Mode.DeckListItem);
 
                 item.onDeckSelect += onDeckSelect;
@@ -87,23 +87,9 @@ namespace UI
             addBtn.onDeckAdd += onDeckAdd;
         }
 
-        private int getDeckMasterCard(int deckID)
-        {
-            var cards = dm.GetDeckCards(deckID);
-            foreach (var card in cards)
-            {
-                if (cm.GetCardDefine((int)card.Value) is MasterCardDefine)
-                {
-                    return (int)card.Value;
-                }
-            }
-            return -1;
-        }
-
         void onDeckSelect(int id)
         {
-            var deckCards = dm.GetDeckCards(id);
-            deckEnterEditMode(deckCards, id);
+            deckEnterEditMode(id);
         }
 
         void onDeckRemove(int id)
@@ -114,8 +100,7 @@ namespace UI
 
         void onDeckAdd()
         {
-            var id = dm.CreateDeck("新牌组");
-            dm.AddCard(id, Patchouli.ID);
+            var id = dm.CreateDeck("新牌组", Patchouli.ID);
             reloadDeckList();
         }
 
@@ -140,14 +125,17 @@ namespace UI
         /// 使用卡组进入卡组编辑模式
         /// </summary>
         /// <param name="deck"></param>
-        private void deckEnterEditMode(Dictionary<long, long> deck, int deckID)
+        private void deckEnterEditMode(int deckID)
         {
-            CardSkinData masterSkin = ui.getManager<CardManager>().getSkin(getDeckMasterCard(deckID));
-            EditingDeckDeckListItem.SetContent(deckID, dm.GetDeckName(deckID), masterSkin.image);
+            var deck = dm.GetDeck(deckID);
+            var deckCards = dm.GetDeckCards(deckID);
+
+            CardSkinData masterSkin = ui.getManager<CardManager>().getSkin(deck.MasterID);
+            EditingDeckDeckListItem.SetContent(deckID, deck.Name, masterSkin.image);
             MasterNameText.text = masterSkin.name;
 
             BuildDeckList.clearItems();
-            foreach (var cards in deck.Select(card => cards.FirstOrDefault(c => c.id == card.Value && !(c is MasterCardDefine))).Where(c => c != null).GroupBy(c => c.id))
+            foreach (var cards in deckCards.Select(card => cards.FirstOrDefault(c => c.id == card.Value)).Where(c => c != null).GroupBy(c => c.id))
             {
                 var item = BuildDeckList.addItem();
                 var skin = ui.getManager<CardManager>().getSkin(cards.First().id);
