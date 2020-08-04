@@ -44,14 +44,6 @@ namespace UI
             this._FilterPanel = this.transform.Find("FilterPanel").GetComponent<FilterPanel>();
             this._MasterCardSelection = this.transform.Find("MasterCardSelection").GetComponent<MasterCardSelection>();
         }
-        private NewUI _parent;
-        public NewUI parent
-        {
-            get
-            {
-                return this.transform.parent.parent.GetComponent<NewUI>();
-            }
-        }
         [SerializeField()]
         private Image _BackgroundImage;
         public Image BackgroundImage

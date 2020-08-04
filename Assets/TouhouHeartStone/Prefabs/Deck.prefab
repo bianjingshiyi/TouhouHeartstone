@@ -57,7 +57,7 @@ MonoBehaviour:
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  m_as_Button: {fileID: 0}
+  m_as_Button: {fileID: 5277191508068643578}
   _Card_1: {fileID: 4483114517091356762}
   _Card_2: {fileID: 4483114518052685112}
   _Card_3: {fileID: 4483114518794195516}
