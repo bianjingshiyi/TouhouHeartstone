@@ -56,8 +56,8 @@ namespace Tests
             you.cmdTurnEnd(game);    
             game.skipUntilCanUse<PylonOverload>(you);
             you.cmdUse(game, you.hand.getCard<PylonOverload>());
-            Assert.True(you.field[0].canAttack(game));
-            Assert.True(you.field[1].canAttack(game));
+            Debug.Log( "第一个水晶塔是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
+            Debug.Log( "第二个水晶塔是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) );
             game.Dispose();
         }
 
