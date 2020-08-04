@@ -138,9 +138,10 @@ namespace TouhouHeartstone.Builtin{
             //buff
             foreach (var servant in card.getOwner().field)
             {
-                if(servant.id == Pylon.ID){
+                if(servant.define.id == Pylon.ID){
                     await servant.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3)));
                 }
+                
             }
         }
         
