@@ -55,13 +55,17 @@ namespace UI
                 uiModeSwitch(true);
 
             }; // 卡组保存
-
-            uiModeSwitch(true);
         }
 
         private void onSortChange()
         {
             BuildCardList.sortItems(FilterPanel.sortCompareMethod);
+        }
+
+        private void OnEnable()
+        {
+            MasterCardSelection.gameObject.SetActive(false);
+            uiModeSwitch(true);
         }
 
         void reloadDeckList()
@@ -100,14 +104,38 @@ namespace UI
 
         void onDeckAdd()
         {
-            var id = dm.CreateDeck("新牌组", Patchouli.ID);
-            reloadDeckList();
+            showMasterSelection();
         }
 
         void onDeckRename(int id, string name)
         {
             dm.RenameDeck(id, name);
             reloadDeckList();
+        }
+
+        void onMasterSelect(int id)
+        {
+            MasterCardSelection.gameObject.SetActive(false);
+            var skin = cm.getSkin(id);
+            dm.CreateDeck(skin?.name ?? "新牌组", id);
+            reloadDeckList();
+        }
+
+        void showMasterSelection()
+        {
+            MasterCardSelection.MasterCardList.clearItems();
+            foreach (var card in cards)
+            {
+                if (card is MasterCardDefine)
+                {
+                    var c = MasterCardSelection.MasterCardList.addItem();
+                    var skin = cm.getSkin(card.id);
+                    c.SetContent(card.id, skin?.name, skin?.image);
+                    c.SetMode(DeckListItem.Mode.MasterSelect);
+                    c.onDeckSelect += onMasterSelect;
+                }
+            }
+            MasterCardSelection.gameObject.SetActive(true);
         }
 
         CardDefine[] cards { get; set; } = null;
@@ -131,8 +159,8 @@ namespace UI
             var deckCards = dm.GetDeckCards(deckID);
 
             CardSkinData masterSkin = ui.getManager<CardManager>().getSkin(deck.MasterID);
-            EditingDeckDeckListItem.SetContent(deckID, deck.Name, masterSkin.image);
-            MasterNameText.text = masterSkin.name;
+            EditingDeckDeckListItem.SetContent(deckID, deck.Name, masterSkin?.image);
+            MasterNameText.text = masterSkin?.name;
 
             BuildDeckList.clearItems();
             foreach (var cards in deckCards.Select(card => cards.FirstOrDefault(c => c.id == card.Value)).Where(c => c != null).GroupBy(c => c.id))
