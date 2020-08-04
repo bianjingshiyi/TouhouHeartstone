@@ -817,7 +817,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 潜行，使用骰子决定攻击目标
+    /// 122 露米娅 潜行，使用骰子决定攻击目标
     /// </summary>
     public class Rumia_N : ServantCardDefine
     {
