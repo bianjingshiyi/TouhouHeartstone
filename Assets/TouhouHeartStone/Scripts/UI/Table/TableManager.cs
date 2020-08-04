@@ -1275,7 +1275,7 @@ namespace Game
         {
             ui.PilePanel.display("你的牌库");
             ui.PilePanel.VerticalOverflowCardList.clearItems();
-            foreach (var card in player.deck)
+            foreach (var card in player.deck.OrderBy(c => c.define.getCost()))
             {
                 var item = ui.PilePanel.VerticalOverflowCardList.addItem();
                 setCard(item.Card, card, true);
@@ -1284,6 +1284,12 @@ namespace Game
         void onGraveClick()
         {
             ui.PilePanel.display("你的墓地");
+            ui.PilePanel.VerticalOverflowCardList.clearItems();
+            foreach (var card in player.grave)
+            {
+                var item = ui.PilePanel.VerticalOverflowCardList.addItem();
+                setCard(item.Card, card, true);
+            }
         }
         [SerializeField]
         BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer() { duration = 3 };
