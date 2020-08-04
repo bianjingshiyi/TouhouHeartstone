@@ -48,12 +48,12 @@ namespace UI
             this._LoadingPanelImage = this.transform.Find("LoadingPanel").GetComponent<Image>();
             this._LoadingImage = this.transform.Find("LoadingPanel").Find("LoadingImage").GetComponent<Image>();
         }
-        private NewUI _parent;
-        public NewUI parent
+        private Main _parent;
+        public Main parent
         {
             get
             {
-                return this.transform.parent.parent.parent.parent.GetComponent<NewUI>();
+                return this.transform.parent.parent.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]

@@ -29,12 +29,12 @@ namespace UI
             this.m_as_HorizontalLayoutGroup = this.GetComponent<HorizontalLayoutGroup>();
             this.defaultItem = this.transform.Find("DialogButtonListItem").GetComponent<DialogButtonListItem>();
         }
-        private NewUI _parent;
-        public NewUI parent
+        private Main _parent;
+        public Main parent
         {
             get
             {
-                return this.transform.parent.parent.parent.parent.GetComponent<NewUI>();
+                return this.transform.parent.parent.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]

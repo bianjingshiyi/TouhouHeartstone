@@ -43,14 +43,6 @@ namespace UI
             this._DragCard = this.transform.Find("DragCard").GetComponent<DragCard>();
             this._FilterPanel = this.transform.Find("FilterPanel").GetComponent<FilterPanel>();
         }
-        private NewUI _parent;
-        public NewUI parent
-        {
-            get
-            {
-                return this.transform.parent.parent.GetComponent<NewUI>();
-            }
-        }
         [SerializeField()]
         private Image _BackgroundImage;
         public Image BackgroundImage

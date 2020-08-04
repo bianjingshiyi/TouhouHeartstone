@@ -35,12 +35,12 @@ namespace UI
             this._QuitButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<ButtonBlack>();
             this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
         }
-        private NewUI _parent;
-        public NewUI parent
+        private Main _parent;
+        public Main parent
         {
             get
             {
-                return this.transform.parent.parent.GetComponent<NewUI>();
+                return this.transform.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]

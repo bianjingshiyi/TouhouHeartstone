@@ -41,12 +41,12 @@ namespace UI
             this._Text = this.transform.Find("Remote").Find("Text").GetComponent<Text>();
             this._NetworkingPageGroup = this.transform.Find("NetworkingPageGroup").GetComponent<NetworkingPageGroup>();
         }
-        private NewUI _parent;
-        public NewUI parent
+        private Main _parent;
+        public Main parent
         {
             get
             {
-                return this.transform.parent.parent.GetComponent<NewUI>();
+                return this.transform.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]

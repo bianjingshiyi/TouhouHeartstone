@@ -13,9 +13,8 @@ namespace UI
 {
     partial class Build
     {
-
-        CardManager cm => parent.game.getManager<CardManager>();
-        DeckManager dm => parent.game.getManager<DeckManager>();
+        CardManager cm => ui.getManager<CardManager>();
+        DeckManager dm => ui.getManager<DeckManager>();
 
         partial void onAwake()
         {
@@ -34,7 +33,8 @@ namespace UI
                     }
                 }
                 PlayerPrefs.Save();*/
-                parent.display(parent.MainMenu);
+                Main main = GetComponentInParent<Main>();
+                main.display(main.MainMenu);
             });
 
             FilterPanel.onFilterConditionChange += reloadCardList;
@@ -42,7 +42,8 @@ namespace UI
 
             EditingDeckDeckListItem.onDeckRename += onDeckRename;
             EditingDeckDeckListItem.SetMode(DeckListItem.Mode.DeckTitle);
-            EditingDeckDeckListItem.onDeckSelect += (id) => {
+            EditingDeckDeckListItem.onDeckSelect += (id) =>
+            {
                 dm.ClearDeck(id);
                 foreach (var item in BuildDeckList.getItems())
                 {
@@ -51,8 +52,8 @@ namespace UI
                         dm.AddCard(id, item.card.id);
                     }
                 }
-                uiModeSwitch(true); 
-            
+                uiModeSwitch(true);
+
             }; // 卡组保存
 
             uiModeSwitch(true);
@@ -129,7 +130,7 @@ namespace UI
         {
             base.onDisplay();
 
-            cards = parent.game.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly);
+            cards = ui.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly);
 
             reloadDeckList();
             reloadCardList();
@@ -141,7 +142,7 @@ namespace UI
         /// <param name="deck"></param>
         private void deckEnterEditMode(Dictionary<long, long> deck, int deckID)
         {
-            CardSkinData masterSkin = parent.game.cards.getSkin(getDeckMasterCard(deckID));
+            CardSkinData masterSkin = ui.getManager<CardManager>().getSkin(getDeckMasterCard(deckID));
             EditingDeckDeckListItem.SetContent(deckID, dm.GetDeckName(deckID), masterSkin.image);
             MasterNameText.text = masterSkin.name;
 
@@ -149,7 +150,7 @@ namespace UI
             foreach (var cards in deck.Select(card => cards.FirstOrDefault(c => c.id == card.Value && !(c is MasterCardDefine))).Where(c => c != null).GroupBy(c => c.id))
             {
                 var item = BuildDeckList.addItem();
-                var skin = parent.game.cards.getSkin(cards.First().id);
+                var skin = ui.getManager<CardManager>().getSkin(cards.First().id);
                 item.update(cards.First(), skin, cards.Count());
             }
             BuildDeckList.sortItems((a, b) =>
@@ -190,7 +191,7 @@ namespace UI
                     )
                 )
             {
-                if (parent.game.cards.tryGetSkin(card.id, out var skin))
+                if (ui.getManager<CardManager>().tryGetSkin(card.id, out var skin))
                 {
                     if (FilterPanel.cardFilter(card, skin))
                     {
@@ -285,8 +286,8 @@ namespace UI
                 DragCard.Card.display();
                 DragCard.BuildDeckListItem.hide();
             }
-            DragCard.BuildDeckListItem.update(card, parent.game.cards.getSkin(card.id), 1);
-            DragCard.Card.update(card, parent.game.cards.getSkin(card.id));
+            DragCard.BuildDeckListItem.update(card, ui.getManager<CardManager>().getSkin(card.id), 1);
+            DragCard.Card.update(card, ui.getManager<CardManager>().getSkin(card.id));
         }
         private void onReleaseItem()
         {
@@ -305,7 +306,7 @@ namespace UI
             else
             {
                 var newItem = BuildDeckList.addItem();
-                newItem.update(DragCard.BuildDeckListItem.card, parent.game.cards.getSkin(DragCard.BuildDeckListItem.card.id), 1);
+                newItem.update(DragCard.BuildDeckListItem.card, ui.getManager<CardManager>().getSkin(DragCard.BuildDeckListItem.card.id), 1);
             }
             BuildDeckList.sortItems((a, b) =>
             {
