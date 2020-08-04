@@ -269,21 +269,22 @@ namespace TouhouHeartstone.Builtin{
 
     /// <summary>
     /// 普罗托斯
-    /// 5/1/2，唯一，战吼：召唤2个水晶塔
+    /// 5/0/3，唯一，所有随从获得+2攻击力，战吼：召唤2个水晶塔
     /// </summary>
     public class Protoss : ServantCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x011;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5; 
-        public override int attack { get; set; } = 1;//随从的攻击力
-        public override int life { get; set; } = 2;//随从的血量上限
+        public override int attack { get; set; } = 0;//随从的攻击力
+        public override int life { get; set; } = 3;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
         public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
         public override string[] keywords { get; set; } = new string[] {Keyword.UNIQUE};//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect(effect)
+            new NoTargetEffect(effect),
+            new Halo(new GeneratedBuff(ID,new AttackModifier(2)), PileFlag.self | PileFlag.field , PileFlag.self | PileFlag.field, null)
         };
         static async Task effect(THHGame game, Card card)
         {
