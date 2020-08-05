@@ -61,6 +61,29 @@ namespace Tests
             game.Dispose();
         }
 
+        //普罗托斯测试
+        [Test]
+        public void ProbeProtossTest(){
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(BulidPylon.ID, 1),
+                new KeyValuePair<int, int>(Protoss.ID, 1)
+
+            );
+            game.skipUntilCanUse<BulidPylon>(you);
+            // 回合结束
+            you.cmdTurnEnd(game);    
+            game.skipUntilCanUse<Protoss>(you);
+            you.cmdUse(game, you.hand.getCard<Protoss>());
+            Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
+            Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) );
+            Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
+            you.field[0].die(game);
+            Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
+            Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) );
+            Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
+            game.Dispose();
+        }
+
     }
     
 }

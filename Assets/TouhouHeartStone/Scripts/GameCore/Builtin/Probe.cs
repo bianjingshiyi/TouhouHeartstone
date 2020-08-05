@@ -285,7 +285,7 @@ namespace TouhouHeartstone.Builtin{
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect),
-            new Halo(new GeneratedBuff(ID,new AttackModifier(2)), PileFlag.self | PileFlag.field , PileFlag.self | PileFlag.field, null)
+            new Halo(new GeneratedBuff(ID,new AttackModifier(2)), PileFlag.self | PileFlag.field)
         };
         static async Task effect(THHGame game, Card card)
         {
