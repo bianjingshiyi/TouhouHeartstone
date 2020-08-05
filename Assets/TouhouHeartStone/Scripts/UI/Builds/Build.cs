@@ -120,7 +120,7 @@ namespace UI
                     var c = MasterCardSelection.MasterCardList.addItem();
                     var skin = cm.getSkin(card.id);
                     c.SetContent(card.id, skin?.name, skin?.image);
-                    c.SetMode(DeckListItem.Mode.MasterSelect);
+                    c.SetMode(DeckListItem.Mode.DeckSelect);
                     c.onDeckSelect += onMasterSelect;
                 }
             }
