@@ -28,11 +28,6 @@ namespace UI
         {
             this.m_as_GridLayoutGroup = this.GetComponent<GridLayoutGroup>();
             this.defaultItem = this.transform.Find("DeckListItem").GetComponent<DeckListItem>();
-            this._DeckListItem_1 = this.transform.Find("DeckListItem (1)").GetComponent<DeckListItem>();
-            this._DeckListItem_2 = this.transform.Find("DeckListItem (2)").GetComponent<DeckListItem>();
-            this._DeckListItem_3 = this.transform.Find("DeckListItem (3)").GetComponent<DeckListItem>();
-            this._DeckListItem_4 = this.transform.Find("DeckListItem (4)").GetComponent<DeckListItem>();
-            this._DeckListItem_5 = this.transform.Find("DeckListItem (5)").GetComponent<DeckListItem>();
         }
         [SerializeField()]
         private GridLayoutGroup m_as_GridLayoutGroup;
@@ -50,71 +45,6 @@ namespace UI
         protected override DeckListItem getDefaultItem()
         {
             return this.transform.Find("DeckListItem").GetComponent<DeckListItem>();
-        }
-        [SerializeField()]
-        private DeckListItem _DeckListItem_1;
-        public DeckListItem DeckListItem_1
-        {
-            get
-            {
-                if ((this._DeckListItem_1 == null))
-                {
-                    this._DeckListItem_1 = this.transform.Find("DeckListItem (1)").GetComponent<DeckListItem>();
-                }
-                return this._DeckListItem_1;
-            }
-        }
-        [SerializeField()]
-        private DeckListItem _DeckListItem_2;
-        public DeckListItem DeckListItem_2
-        {
-            get
-            {
-                if ((this._DeckListItem_2 == null))
-                {
-                    this._DeckListItem_2 = this.transform.Find("DeckListItem (2)").GetComponent<DeckListItem>();
-                }
-                return this._DeckListItem_2;
-            }
-        }
-        [SerializeField()]
-        private DeckListItem _DeckListItem_3;
-        public DeckListItem DeckListItem_3
-        {
-            get
-            {
-                if ((this._DeckListItem_3 == null))
-                {
-                    this._DeckListItem_3 = this.transform.Find("DeckListItem (3)").GetComponent<DeckListItem>();
-                }
-                return this._DeckListItem_3;
-            }
-        }
-        [SerializeField()]
-        private DeckListItem _DeckListItem_4;
-        public DeckListItem DeckListItem_4
-        {
-            get
-            {
-                if ((this._DeckListItem_4 == null))
-                {
-                    this._DeckListItem_4 = this.transform.Find("DeckListItem (4)").GetComponent<DeckListItem>();
-                }
-                return this._DeckListItem_4;
-            }
-        }
-        [SerializeField()]
-        private DeckListItem _DeckListItem_5;
-        public DeckListItem DeckListItem_5
-        {
-            get
-            {
-                if ((this._DeckListItem_5 == null))
-                {
-                    this._DeckListItem_5 = this.transform.Find("DeckListItem (5)").GetComponent<DeckListItem>();
-                }
-                return this._DeckListItem_5;
-            }
         }
         partial void onAwake();
     }

@@ -29,8 +29,7 @@ namespace UI
             this._BkgImage = this.transform.Find("Bkg").GetComponent<Image>();
             this._TitleText = this.transform.Find("Bkg").Find("Title").GetComponent<Text>();
             this._Scroll_View = this.transform.Find("Bkg").Find("Scroll View").GetComponent<ScrollRect>();
-            this._MasterCardListGridLayoutGroup = this.transform.Find("Bkg").Find("Scroll View").Find("Viewport").Find("MasterCardList").GetComponent<GridLayoutGroup>();
-            this._DeckListItem = this.transform.Find("Bkg").Find("Scroll View").Find("Viewport").Find("MasterCardList").Find("DeckListItem").GetComponent<DeckListItem>();
+            this._MasterCardList = this.transform.Find("Bkg").Find("Scroll View").Find("Viewport").Find("MasterCardList").GetComponent<MasterCardList>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -85,29 +84,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private GridLayoutGroup _MasterCardListGridLayoutGroup;
-        public GridLayoutGroup MasterCardListGridLayoutGroup
+        private MasterCardList _MasterCardList;
+        public MasterCardList MasterCardList
         {
             get
             {
-                if ((this._MasterCardListGridLayoutGroup == null))
+                if ((this._MasterCardList == null))
                 {
-                    this._MasterCardListGridLayoutGroup = this.transform.Find("Bkg").Find("Scroll View").Find("Viewport").Find("MasterCardList").GetComponent<GridLayoutGroup>();
+                    this._MasterCardList = this.transform.Find("Bkg").Find("Scroll View").Find("Viewport").Find("MasterCardList").GetComponent<MasterCardList>();
                 }
-                return this._MasterCardListGridLayoutGroup;
-            }
-        }
-        [SerializeField()]
-        private DeckListItem _DeckListItem;
-        public DeckListItem DeckListItem
-        {
-            get
-            {
-                if ((this._DeckListItem == null))
-                {
-                    this._DeckListItem = this.transform.Find("Bkg").Find("Scroll View").Find("Viewport").Find("MasterCardList").Find("DeckListItem").GetComponent<DeckListItem>();
-                }
-                return this._DeckListItem;
+                return this._MasterCardList;
             }
         }
         partial void onAwake();

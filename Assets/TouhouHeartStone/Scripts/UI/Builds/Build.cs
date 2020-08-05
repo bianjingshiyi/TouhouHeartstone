@@ -20,19 +20,6 @@ namespace UI
         {
             BackButtonBlack.asButton.onClick.AddListener(() =>
             {
-                /**
-                PlayerPrefs.SetInt("DeckCount", BuildDeckList.Select(i => i.count).Sum() + 1);
-                int index = 1;
-                foreach (var item in BuildDeckList.getItems())
-                {
-                    for (int i = 0; i < item.count; i++)
-                    {
-                        PlayerPrefs.SetInt("Deck" + index, item.card.id);
-                        parent.game.deck[index] = item.card.id;
-                        index++;
-                    }
-                }
-                PlayerPrefs.Save();*/
                 Main main = GetComponentInParent<Main>();
                 main.display(main.MainMenu);
             });
@@ -44,6 +31,7 @@ namespace UI
             EditingDeckDeckListItem.SetMode(DeckListItem.Mode.DeckTitle);
             EditingDeckDeckListItem.onDeckSelect += (id) =>
             {
+                // 卡组保存
                 dm.ClearDeck(id);
                 foreach (var item in BuildDeckList.getItems())
                 {
@@ -53,15 +41,18 @@ namespace UI
                     }
                 }
                 uiModeSwitch(true);
-
-            }; // 卡组保存
-
-            uiModeSwitch(true);
+            };
         }
 
         private void onSortChange()
         {
             BuildCardList.sortItems(FilterPanel.sortCompareMethod);
+        }
+
+        private void OnEnable()
+        {
+            MasterCardSelection.gameObject.SetActive(false);
+            uiModeSwitch(true);
         }
 
         void reloadDeckList()
@@ -100,14 +91,40 @@ namespace UI
 
         void onDeckAdd()
         {
-            var id = dm.CreateDeck("新牌组", Patchouli.ID);
-            reloadDeckList();
+            // 点击添加后，弹出人物选择窗口
+            showMasterSelection();
         }
 
         void onDeckRename(int id, string name)
         {
             dm.RenameDeck(id, name);
             reloadDeckList();
+        }
+
+        void onMasterSelect(int id)
+        {
+            // 然后在窗口选择之后再正式新建卡组
+            MasterCardSelection.gameObject.SetActive(false);
+            var skin = cm.getSkin(id);
+            dm.CreateDeck(skin?.name ?? "新牌组", id);
+            reloadDeckList();
+        }
+
+        void showMasterSelection()
+        {
+            MasterCardSelection.MasterCardList.clearItems();
+            foreach (var card in cards)
+            {
+                if (card is MasterCardDefine)
+                {
+                    var c = MasterCardSelection.MasterCardList.addItem();
+                    var skin = cm.getSkin(card.id);
+                    c.SetContent(card.id, skin?.name, skin?.image);
+                    c.SetMode(DeckListItem.Mode.MasterSelect);
+                    c.onDeckSelect += onMasterSelect;
+                }
+            }
+            MasterCardSelection.gameObject.SetActive(true);
         }
 
         CardDefine[] cards { get; set; } = null;
@@ -131,8 +148,8 @@ namespace UI
             var deckCards = dm.GetDeckCards(deckID);
 
             CardSkinData masterSkin = ui.getManager<CardManager>().getSkin(deck.MasterID);
-            EditingDeckDeckListItem.SetContent(deckID, deck.Name, masterSkin.image);
-            MasterNameText.text = masterSkin.name;
+            EditingDeckDeckListItem.SetContent(deckID, deck.Name, masterSkin?.image);
+            MasterNameText.text = masterSkin?.name;
 
             BuildDeckList.clearItems();
             foreach (var cards in deckCards.Select(card => cards.FirstOrDefault(c => c.id == card.Value)).Where(c => c != null).GroupBy(c => c.id))
