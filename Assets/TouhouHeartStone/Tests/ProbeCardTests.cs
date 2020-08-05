@@ -13,7 +13,9 @@ namespace Tests
 {
     public class ProbeCardTests
     {
-        //粒子光束测试
+        /// <summary>
+        /// 粒子光束测试
+        /// </summary>
         [Test]
         public void ProbeParticulateLaserTest()
         {
@@ -25,7 +27,9 @@ namespace Tests
             game.Dispose();
         }
 
-        // 召唤水晶塔测试
+        /// <summary>
+        /// 召唤水晶塔测试
+        /// </summary>
         [Test]
         public void ProbeBulidPylonTest(){
             TestGameflow.createGame(out var game, out var you, out var oppo,
@@ -42,7 +46,9 @@ namespace Tests
             game.Dispose();
         }
 
-        // 水晶塔过载测试
+        /// <summary>
+        /// 水晶塔过载测试
+        /// </summary>
         [Test]
         public void ProbePylonOverloadTest(){
             TestGameflow.createGame(out var game, out var you, out var oppo,
@@ -61,7 +67,9 @@ namespace Tests
             game.Dispose();
         }
 
-        //普罗托斯测试
+        /// <summary>
+        /// 普罗托斯测试
+        /// </summary>
         [Test]
         public void ProbeProtossTest(){
             TestGameflow.createGame(out var game, out var you, out var oppo,
@@ -83,7 +91,5 @@ namespace Tests
             Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
             game.Dispose();
         }
-
     }
-    
 }
