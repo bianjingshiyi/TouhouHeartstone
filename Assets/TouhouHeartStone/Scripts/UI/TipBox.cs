@@ -6,8 +6,11 @@ namespace UI
         public void display(string msg, Vector2 position)
         {
             Text.text = msg;
-            display();
             rectTransform.position = position;
+            display();
+            //刷新自适应
+            asVerticalLayoutGroup.enabled = false;
+            asVerticalLayoutGroup.enabled = true;
         }
     }
 }
