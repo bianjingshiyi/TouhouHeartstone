@@ -67,16 +67,7 @@ namespace UI
         }
         public static void setSelectable(this Selectable selectable, bool value)
         {
-            if (value)
-            {
-                selectable.interactable = true;
-                selectable.image.color = Color.white;
-            }
-            else
-            {
-                selectable.interactable = false;
-                selectable.image.color = Color.gray;
-            }
+            selectable.interactable = value;
         }
         public static Canvas getCanvas(this RectTransform transform)
         {
