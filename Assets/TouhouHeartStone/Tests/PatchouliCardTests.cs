@@ -39,7 +39,7 @@ namespace Tests
         //}
 
         [Test]
-        public void PatchouliBestMagicTest()
+        public void BestMagicTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(BestMagic.ID, 1),
@@ -56,7 +56,7 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliMegaReaverTest()
+        public void MegaReaverTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(MegaReaver.ID, 1),
@@ -72,7 +72,7 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliAgniShineTest()
+        public void AgniShineTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(AgniShine.ID, 3)
@@ -83,7 +83,7 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliPrincessUndineTest()
+        public void PrincessUndineTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(PrincessUndine.ID, 1),
@@ -110,7 +110,7 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliSylphyHornTest()
+        public void SylphyHornTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(SylphyHorn.ID, 1),
@@ -139,7 +139,7 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliMetalFatigueTest()
+        public void MetalFatigueTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -164,7 +164,7 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliKoakumaTest()
+        public void KoakumaTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Koakuma.ID, 1),
@@ -196,7 +196,7 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliRoyalFlareTest()
+        public void RoyalFlareTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
             new KeyValuePair<int, int>(RoyalFlare.ID, 3)
@@ -207,7 +207,7 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliElementSpriteTest()
+        public void ElementSpriteTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
             new KeyValuePair<int, int>(ElementSprite.ID, 3)
@@ -219,7 +219,7 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliTheGreatLibraryTest()
+        public void TheGreatLibraryTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(TheGreatLibrary.ID, 1),
@@ -238,7 +238,7 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliLibraryProtectorTest()
+        public void LibraryProtectorTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(LibraryProtector.ID, 1),
@@ -250,7 +250,7 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliArcaneKnowledgeTest()
+        public void ArcaneKnowledgeTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(ArcaneKnowledge.ID, 1),
@@ -262,7 +262,7 @@ namespace Tests
         }
 
         [Test]
-        public void PatchouliSilentSeleneTest()
+        public void SilentSeleneTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption() { shuffle = false });
             THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<MissingSpecter>() as CardDefine, 30));

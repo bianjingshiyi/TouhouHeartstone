@@ -171,7 +171,7 @@ MonoBehaviour:
   m_ChildAlignment: 4
   _layoutType: 0
   _averageSpacing: 1
-  _spacing: 80
+  _spacing: {x: 0, y: 0}
   _forceChildExpandWidth: 0
   _forceChildExpandHeight: 0
   _preferredSize: {x: 200, y: 100}

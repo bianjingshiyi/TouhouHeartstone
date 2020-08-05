@@ -67,16 +67,7 @@ namespace UI
         }
         public static void setSelectable(this Selectable selectable, bool value)
         {
-            if (value)
-            {
-                selectable.interactable = true;
-                selectable.image.color = Color.white;
-            }
-            else
-            {
-                selectable.interactable = false;
-                selectable.image.color = Color.gray;
-            }
+            selectable.interactable = value;
         }
         public static Canvas getCanvas(this RectTransform transform)
         {
@@ -93,6 +84,10 @@ namespace UI
         public static void setWidth(this RectTransform transform, float width)
         {
             transform.sizeDelta = new Vector2(width, transform.sizeDelta.y);
+        }
+        public static bool contains(this RectTransform transform, Vector2 point)
+        {
+            return transform.rect.Contains(transform.InverseTransformPoint(point));
         }
     }
 }

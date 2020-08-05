@@ -393,9 +393,9 @@ namespace TouhouHeartstone
         /// 简化的构造器
         /// </summary>
         /// <param name="buff">光环添加的buff</param>
-        /// <param name="range"></param>
-        /// <param name="pile"></param>
-        /// <param name="filter"></param>
+        /// <param name="range">光环的作用范围</param>
+        /// <param name="pile">光环拥有者必须位于起效范围内，光环才会起效。默认是位于己方的战场上。</param>
+        /// <param name="filter">光环的作用条件。</param>
         public Halo(Buff buff, PileFlag range, PileFlag pile = PileFlag.self | PileFlag.field, Func<THHGame, Card, bool> filter = null)
         {
             this.buff = buff;
@@ -422,9 +422,12 @@ namespace TouhouHeartstone
                     if (ranges.Contains(arg.to) &&
                        (filter == null || filter(game, arg.card)))
                     {
-                        Buff b = this.buff.clone();
-                        arg.card.addBuff(game, b);
-                        buffDic.Add(arg.card, b);
+                        if (!buffDic.ContainsKey(arg.card))
+                        {
+                            Buff b = this.buff.clone();
+                            arg.card.addBuff(game, b);
+                            buffDic.Add(arg.card, b);
+                        }
                     }
                     else if (ranges.Contains(arg.from) &&
                         (filter == null || filter(game, arg.card)))
@@ -436,11 +439,14 @@ namespace TouhouHeartstone
                 });
                 game.triggers.registerAfter(onCardEnterHandTrigger);
             }
-            foreach (var target in card.getOwner().hand.Where(c => filter == null || filter(game, c)))
+            foreach (var range in ranges)
             {
-                Buff b = this.buff.clone();
-                target.addBuff(game, b);
-                buffDic.Add(target, b);
+                foreach (var target in range.Where(c => filter == null || filter(game, c)))
+                {
+                    Buff b = this.buff.clone();
+                    target.addBuff(game, b);
+                    buffDic.Add(target, b);
+                }
             }
         }
         public override void onDisable(THHGame game, Card card, Buff buff)
@@ -463,6 +469,9 @@ namespace TouhouHeartstone
         {
             return c.addBuff(g, originBuff.clone());
         })
+        {
+        }
+        public AddBuffAfter(string pile, CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(pile, onCheckCondition, null, onExecute)
         {
         }
     }
@@ -587,6 +596,19 @@ namespace TouhouHeartstone
                 await game.updateDeath();
             }
         })
+        {
+        }
+    }
+    public class BeforeTurnStart : THHEffectBefore<THHGame.TurnStartEventArg>
+    {
+        public BeforeTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PileName.FIELD, onCheckCondition, null, async (game, card, arg) =>
+         {
+             if (onExecute != null)
+             {
+                 await onExecute.Invoke(game, card, arg);
+                 await game.updateDeath();
+             }
+         })
         {
         }
     }

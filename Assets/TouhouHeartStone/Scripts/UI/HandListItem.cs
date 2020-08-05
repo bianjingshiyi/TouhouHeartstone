@@ -6,7 +6,7 @@ using BJSYGameCore.UI;
 using System;
 namespace UI
 {
-    partial class HandListItem : IBeginDragHandler, IDragHandler, IEndDragHandler
+    partial class HandListItem : IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField]
         bool _isDragable = true;
@@ -21,6 +21,23 @@ namespace UI
         float _dragThreshold = 50;
         [SerializeField]
         bool _isDragging = false;
+        [SerializeField]
+        bool _isHovered = false;
+        public ActionEvent<HandListItem, PointerEventData> onPointerEnter { get; set; } = new ActionEvent<HandListItem, PointerEventData>();
+        public ActionEvent<HandListItem, PointerEventData> onPointerExit { get; set; } = new ActionEvent<HandListItem, PointerEventData>();
+        private void Update()
+        {
+            if (_isHovered)
+            {
+                Vector2 position;
+                position = EventSystem.current.currentInputModule.input.mousePosition;
+                if (!rectTransform.contains(position))
+                {
+                    _isHovered = false;
+                    onPointerExit.invoke(this, null);
+                }
+            }
+        }
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (!isDragable)
@@ -51,6 +68,16 @@ namespace UI
                 onEndDrag.invoke(this, eventData);
             }
             _isDragging = false;
+        }
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+        {
+            _isHovered = true;
+            onPointerEnter.invoke(this, eventData);
+        }
+        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        {
+            _isHovered = false;
+            onPointerExit.invoke(this, eventData);
         }
         public ActionEvent<HandListItem, PointerEventData> onEndDrag = new ActionEvent<HandListItem, PointerEventData>();
         public SimpleAnim onAttackUp;

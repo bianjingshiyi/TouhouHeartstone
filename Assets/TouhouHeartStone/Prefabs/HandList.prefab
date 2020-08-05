@@ -60,7 +60,7 @@ MonoBehaviour:
   m_ChildAlignment: 4
   _layoutType: 0
   _averageSpacing: 1
-  _spacing: 0
+  _spacing: {x: 0, y: 0}
   _forceChildExpandWidth: 0
   _forceChildExpandHeight: 1
   _preferredSize: {x: 0, y: 0}

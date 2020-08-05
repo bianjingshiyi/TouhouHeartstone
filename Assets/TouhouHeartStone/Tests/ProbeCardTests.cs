@@ -88,7 +88,7 @@ namespace Tests
             you.field[0].die(game);
             Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
             Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) );
-            Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
+            //Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
             game.Dispose();
         }
     }

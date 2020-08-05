@@ -55,14 +55,8 @@ namespace UI
             this._TurnTipImage = this.transform.Find("TurnTipImage").GetComponent<Image>();
             this._TurnTipText = this.transform.Find("TurnTipImage").Find("TurnTipText").GetComponent<Text>();
             this._Discover = this.transform.Find("Discover").GetComponent<Discover>();
-        }
-        private Main _parent;
-        public Main parent
-        {
-            get
-            {
-                return this.transform.parent.parent.GetComponent<Main>();
-            }
+            this._PilePanel = this.transform.Find("PilePanel").GetComponent<PilePanel>();
+            this._TipBox = this.transform.Find("TipBox").GetComponent<TipBox>();
         }
         [SerializeField()]
         private Image _FieldsImage;
@@ -452,6 +446,32 @@ namespace UI
                     this._Discover = this.transform.Find("Discover").GetComponent<Discover>();
                 }
                 return this._Discover;
+            }
+        }
+        [SerializeField()]
+        private PilePanel _PilePanel;
+        public PilePanel PilePanel
+        {
+            get
+            {
+                if ((this._PilePanel == null))
+                {
+                    this._PilePanel = this.transform.Find("PilePanel").GetComponent<PilePanel>();
+                }
+                return this._PilePanel;
+            }
+        }
+        [SerializeField()]
+        private TipBox _TipBox;
+        public TipBox TipBox
+        {
+            get
+            {
+                if ((this._TipBox == null))
+                {
+                    this._TipBox = this.transform.Find("TipBox").GetComponent<TipBox>();
+                }
+                return this._TipBox;
             }
         }
         partial void onAwake();

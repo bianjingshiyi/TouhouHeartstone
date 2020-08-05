@@ -27,9 +27,14 @@ namespace UI
         {
             this.m_as_Button = this.GetComponent<Button>();
             this.m_as_Image = this.GetComponent<Image>();
-            this._NameText = this.transform.Find("NameText").GetComponent<Text>();
-            this._CharacterText = this.transform.Find("CharacterText").GetComponent<Text>();
-            this._ButtonButtonBlack = this.transform.Find("Button").GetComponent<ButtonBlack>();
+            this._PlayerImage = this.transform.Find("Player").GetComponent<Image>();
+            this._NameText = this.transform.Find("Player").Find("NameText").GetComponent<Text>();
+            this._CharacterText = this.transform.Find("Player").Find("CharacterText").GetComponent<Text>();
+            this._ViewButtonBlack = this.transform.Find("Player").Find("View").GetComponent<ButtonBlack>();
+            this._SetButtonBlack = this.transform.Find("Player").Find("Set").GetComponent<ButtonBlack>();
+            this._RemoveButtonBlack = this.transform.Find("Player").Find("Remove").GetComponent<ButtonBlack>();
+            this._AddImage = this.transform.Find("Add").GetComponent<Image>();
+            this._Text = this.transform.Find("Add").Find("Text").GetComponent<Text>();
         }
         [SerializeField()]
         private Button m_as_Button;
@@ -58,6 +63,19 @@ namespace UI
             }
         }
         [SerializeField()]
+        private Image _PlayerImage;
+        public Image PlayerImage
+        {
+            get
+            {
+                if ((this._PlayerImage == null))
+                {
+                    this._PlayerImage = this.transform.Find("Player").GetComponent<Image>();
+                }
+                return this._PlayerImage;
+            }
+        }
+        [SerializeField()]
         private Text _NameText;
         public Text NameText
         {
@@ -65,7 +83,7 @@ namespace UI
             {
                 if ((this._NameText == null))
                 {
-                    this._NameText = this.transform.Find("NameText").GetComponent<Text>();
+                    this._NameText = this.transform.Find("Player").Find("NameText").GetComponent<Text>();
                 }
                 return this._NameText;
             }
@@ -78,22 +96,74 @@ namespace UI
             {
                 if ((this._CharacterText == null))
                 {
-                    this._CharacterText = this.transform.Find("CharacterText").GetComponent<Text>();
+                    this._CharacterText = this.transform.Find("Player").Find("CharacterText").GetComponent<Text>();
                 }
                 return this._CharacterText;
             }
         }
         [SerializeField()]
-        private ButtonBlack _ButtonButtonBlack;
-        public ButtonBlack ButtonButtonBlack
+        private ButtonBlack _ViewButtonBlack;
+        public ButtonBlack ViewButtonBlack
         {
             get
             {
-                if ((this._ButtonButtonBlack == null))
+                if ((this._ViewButtonBlack == null))
                 {
-                    this._ButtonButtonBlack = this.transform.Find("Button").GetComponent<ButtonBlack>();
+                    this._ViewButtonBlack = this.transform.Find("Player").Find("View").GetComponent<ButtonBlack>();
                 }
-                return this._ButtonButtonBlack;
+                return this._ViewButtonBlack;
+            }
+        }
+        [SerializeField()]
+        private ButtonBlack _SetButtonBlack;
+        public ButtonBlack SetButtonBlack
+        {
+            get
+            {
+                if ((this._SetButtonBlack == null))
+                {
+                    this._SetButtonBlack = this.transform.Find("Player").Find("Set").GetComponent<ButtonBlack>();
+                }
+                return this._SetButtonBlack;
+            }
+        }
+        [SerializeField()]
+        private ButtonBlack _RemoveButtonBlack;
+        public ButtonBlack RemoveButtonBlack
+        {
+            get
+            {
+                if ((this._RemoveButtonBlack == null))
+                {
+                    this._RemoveButtonBlack = this.transform.Find("Player").Find("Remove").GetComponent<ButtonBlack>();
+                }
+                return this._RemoveButtonBlack;
+            }
+        }
+        [SerializeField()]
+        private Image _AddImage;
+        public Image AddImage
+        {
+            get
+            {
+                if ((this._AddImage == null))
+                {
+                    this._AddImage = this.transform.Find("Add").GetComponent<Image>();
+                }
+                return this._AddImage;
+            }
+        }
+        [SerializeField()]
+        private Text _Text;
+        public Text Text
+        {
+            get
+            {
+                if ((this._Text == null))
+                {
+                    this._Text = this.transform.Find("Add").Find("Text").GetComponent<Text>();
+                }
+                return this._Text;
             }
         }
         partial void onAwake();

@@ -24,8 +24,24 @@ namespace Game
             db.Execute($@"
             CREATE TABLE IF NOT EXISTS {tableDeck}(
                 deckID INTEGER PRIMARY KEY AUTOINCREMENT,
-                name VARCHAR(64)
+                name VARCHAR(64),
+                masterID INTEGER
             );", null);
+
+            // 数据库更新定义
+            var hasRow = db.Read<bool>($@"SELECT sql FROM sqlite_master WHERE type='table' AND name='{tableDeck}';",
+            (r) =>
+            {
+                if (r.HasRows && r.Read())
+                {
+                    return r.Get<string>("sql").Contains("masterID");
+                }
+                return false;
+            });
+
+            if (!hasRow)
+                db.Execute($@"ALTER TABLE {tableDeck} ADD COLUMN masterID INTEGER;", null);
+            
 
             db.Execute($@"
             CREATE TABLE IF NOT EXISTS {tableCards}(
@@ -40,10 +56,38 @@ namespace Game
         /// </summary>
         /// <param name="name">牌组名称</param>
         /// <returns>新的牌组的ID</returns>
-        public long CreateDeck(string name)
+        public long CreateDeck(string name, int masterID)
         {
-            db.Execute($@"INSERT INTO {tableDeck} (name) VALUES (?)", null, name);
+            db.Execute($@"INSERT INTO {tableDeck} (name, masterID) VALUES (?,?)", null, name, masterID);
             return db.GetLastInsertID(tableDeck);
+        }
+
+        /// <summary>
+        /// 获取牌组的MasterCardID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int GetDeckMasterID(long id)
+        {
+            return db.Read<int>($@"SELECT masterID FROM {tableDeck} WHERE deckID = ?", (r) =>
+            {
+                if (r.HasRows)
+                {
+                    r.Read();
+                    return (int)r.Get<long>("masterID");
+                }
+                return null;
+            }, id);
+        }
+
+        /// <summary>
+        /// 设置牌组的MasterCardID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="masterID"></param>
+        public void SetDeckMasterID(long id, int masterID)
+        {
+            db.Execute($@"UPDATE {tableDeck} SET masterID = ? WHERE deckID = ?", null, masterID, id);
         }
 
         /// <summary>
@@ -81,30 +125,62 @@ namespace Game
         /// <param name="id"></param>
         public void RemoveDeck(long id)
         {
-            db.Execute($@"DELETE FROM {tableCards} WHERE deckID = ?", null, args: id); // 先清理卡定义
+            ClearDeck(id);
             db.Execute($@"DELETE FROM {tableDeck} WHERE deckID = ?", null, args: id); // 然后清理卡组定义
         }
 
         /// <summary>
-        /// 获取所有牌组名称
+        /// 删除一个牌组里面的所有的牌
+        /// </summary>
+        /// <param name="id"></param>
+        public void ClearDeck(long id)
+        {
+            db.Execute($@"DELETE FROM {tableCards} WHERE deckID = ?", null, args: id); // 先清理卡定义
+        }
+
+        /// <summary>
+        /// 获取所有牌组定义
         /// </summary>
         /// <returns></returns>
-        public Dictionary<long, string> GetDecks()
+        public IEnumerable<DeckDefine> GetDecks()
         {
-            return db.Read<Dictionary<long, string>>($@"SELECT * FROM {tableDeck}", (r) =>
+            return db.Read<IEnumerable<DeckDefine>>($@"SELECT * FROM {tableDeck}", (r) =>
             {
-                Dictionary<long, string> dict = new Dictionary<long, string>();
-
+                List<DeckDefine> list = new List<DeckDefine>();
                 if (r.HasRows)
                 {
                     while (r.Read())
                     {
-                        dict.Add(r.Get<long>("deckID"), r.Get<string>("name"));
+                        list.Add(new DeckDefine()
+                        {
+                            ID = r.Get<long>("deckID"),
+                            MasterID = (int)r.Get<long>("masterID"),
+                            Name = r.Get<string>("name")
+                        });
                     }
                 }
-
-                return dict;
+                return list;
             });
+        }
+
+        /// <summary>
+        /// 获取牌组定义
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public DeckDefine GetDeck(long id)
+        {
+            return db.Read<DeckDefine>($@"SELECT * FROM {tableDeck} WHERE deckID = ?", (r) =>
+            {
+                if (!r.HasRows) return null;
+                r.Read();
+                return new DeckDefine()
+                {
+                    ID = r.Get<long>("deckID"),
+                    MasterID = (int)r.Get<long>("masterID"),
+                    Name = r.Get<string>("name")
+                };
+            }, id);
         }
 
         /// <summary>
@@ -235,5 +311,12 @@ namespace Game
         /// 是否处于事务中
         /// </summary>
         public bool IsInTransation => tr != null;
+    }
+
+    public struct DeckDefine
+    {
+        public long ID;
+        public string Name;
+        public int MasterID;
     }
 }

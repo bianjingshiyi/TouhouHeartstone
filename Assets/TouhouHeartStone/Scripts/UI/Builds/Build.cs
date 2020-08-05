@@ -7,31 +7,41 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using System.Reflection;
 using Game;
+using TouhouHeartstone.Builtin;
+
 namespace UI
 {
     partial class Build
     {
+        CardManager cm => ui.getManager<CardManager>();
+        DeckManager dm => ui.getManager<DeckManager>();
+
         partial void onAwake()
         {
-            ReturnButton.onClick.AddListener(() =>
+            BackButtonBlack.asButton.onClick.AddListener(() =>
             {
-                PlayerPrefs.SetInt("DeckCount", BuildDeckList.Select(i => i.count).Sum() + 1);
-                int index = 1;
-                foreach (var item in BuildDeckList.getItems())
-                {
-                    for (int i = 0; i < item.count; i++)
-                    {
-                        PlayerPrefs.SetInt("Deck" + index, item.card.id);
-                        parent.game.deck[index] = item.card.id;
-                        index++;
-                    }
-                }
-                PlayerPrefs.Save();
-                parent.display(parent.MainMenu);
+                Main main = GetComponentInParent<Main>();
+                main.display(main.MainMenu);
             });
 
             FilterPanel.onFilterConditionChange += reloadCardList;
             FilterPanel.onSortChange += onSortChange;
+
+            EditingDeckDeckListItem.onDeckRename += onDeckRename;
+            EditingDeckDeckListItem.SetMode(DeckListItem.Mode.DeckTitle);
+            EditingDeckDeckListItem.onDeckSelect += (id) =>
+            {
+                // 卡组保存
+                dm.ClearDeck(id);
+                foreach (var item in BuildDeckList.getItems())
+                {
+                    for (int i = 0; i < item.count; i++)
+                    {
+                        dm.AddCard(id, item.card.id);
+                    }
+                }
+                uiModeSwitch(true);
+            };
         }
 
         private void onSortChange()
@@ -39,24 +49,115 @@ namespace UI
             BuildCardList.sortItems(FilterPanel.sortCompareMethod);
         }
 
+        private void OnEnable()
+        {
+            MasterCardSelection.gameObject.SetActive(false);
+            uiModeSwitch(true);
+        }
+
+        void reloadDeckList()
+        {
+            var decks = dm.GetDecks();
+
+            DeckList.clearItems();
+
+            foreach (var deck in decks)
+            {
+                Sprite spr = cm.getSkin(deck.MasterID)?.image;
+
+                var item = DeckList.addItem();
+                item.SetContent((int)deck.ID, deck.Name, spr);
+                item.SetMode(DeckListItem.Mode.DeckListItem);
+
+                item.onDeckSelect += onDeckSelect;
+                item.onDeckRemove += onDeckRemove;
+            }
+
+            var addBtn = DeckList.addItem();
+            addBtn.SetMode(DeckListItem.Mode.AddDeck);
+            addBtn.onDeckAdd += onDeckAdd;
+        }
+
+        void onDeckSelect(int id)
+        {
+            deckEnterEditMode(id);
+        }
+
+        void onDeckRemove(int id)
+        {
+            dm.RemoveDeck(id);
+            reloadDeckList();
+        }
+
+        void onDeckAdd()
+        {
+            // 点击添加后，弹出人物选择窗口
+            showMasterSelection();
+        }
+
+        void onDeckRename(int id, string name)
+        {
+            dm.RenameDeck(id, name);
+            reloadDeckList();
+        }
+
+        void onMasterSelect(int id)
+        {
+            // 然后在窗口选择之后再正式新建卡组
+            MasterCardSelection.gameObject.SetActive(false);
+            var skin = cm.getSkin(id);
+            dm.CreateDeck(skin?.name ?? "新牌组", id);
+            reloadDeckList();
+        }
+
+        void showMasterSelection()
+        {
+            MasterCardSelection.MasterCardList.clearItems();
+            foreach (var card in cards)
+            {
+                if (card is MasterCardDefine)
+                {
+                    var c = MasterCardSelection.MasterCardList.addItem();
+                    var skin = cm.getSkin(card.id);
+                    c.SetContent(card.id, skin?.name, skin?.image);
+                    c.SetMode(DeckListItem.Mode.DeckSelect);
+                    c.onDeckSelect += onMasterSelect;
+                }
+            }
+            MasterCardSelection.gameObject.SetActive(true);
+        }
+
         CardDefine[] cards { get; set; } = null;
         protected override void onDisplay()
         {
             base.onDisplay();
-            //目前只有一个卡组
-            cards = parent.game.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly);
-            int[] deck = parent.game.deck;
-            CardSkinData masterSkin = parent.game.cards.getSkin(deck[0]);
-            MasterButton.setSprite(masterSkin.image);
-            MasterNameText.text = masterSkin.name;
+
+            cards = ui.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly);
+
+            reloadDeckList();
+            reloadCardList();
+        }
+
+        /// <summary>
+        /// 使用卡组进入卡组编辑模式
+        /// </summary>
+        /// <param name="deck"></param>
+        private void deckEnterEditMode(int deckID)
+        {
+            var deck = dm.GetDeck(deckID);
+            var deckCards = dm.GetDeckCards(deckID);
+
+            CardSkinData masterSkin = ui.getManager<CardManager>().getSkin(deck.MasterID);
+            EditingDeckDeckListItem.SetContent(deckID, deck.Name, masterSkin?.image);
+            MasterNameText.text = masterSkin?.name;
+
             BuildDeckList.clearItems();
-            foreach (var cards in deck.Skip(1).Select(id => cards.FirstOrDefault(c => c.id == id)).Where(c => c != null).GroupBy(c => c.id))
+            foreach (var cards in deckCards.Select(card => cards.FirstOrDefault(c => c.id == card.Value)).Where(c => c != null).GroupBy(c => c.id))
             {
                 var item = BuildDeckList.addItem();
-                var skin = parent.game.cards.getSkin(cards.First().id);
+                var skin = ui.getManager<CardManager>().getSkin(cards.First().id);
                 item.update(cards.First(), skin, cards.Count());
             }
-            reloadCardList();
             BuildDeckList.sortItems((a, b) =>
             {
                 if (a.card.getCost() != b.card.getCost())
@@ -65,6 +166,25 @@ namespace UI
                     return a.card.id - b.card.id;
             });
             DragCard.hide();
+
+            uiModeSwitch(false);
+        }
+
+        /// <summary>
+        /// 当前是否位于卡组编辑模式
+        /// </summary>
+        bool isInDeckEditMode;
+
+        /// <summary>
+        /// 切换模式
+        /// </summary>
+        /// <param name="deckMode">卡组列表模式</param>
+        void uiModeSwitch(bool deckMode)
+        {
+            DeckListViewScroll.gameObject.SetActive(deckMode);
+            DeckCardViewImage.gameObject.SetActive(!deckMode);
+
+            isInDeckEditMode = !deckMode;
         }
 
         private void reloadCardList()
@@ -76,7 +196,7 @@ namespace UI
                     )
                 )
             {
-                if (parent.game.cards.tryGetSkin(card.id, out var skin))
+                if (ui.getManager<CardManager>().tryGetSkin(card.id, out var skin))
                 {
                     if (FilterPanel.cardFilter(card, skin))
                     {
@@ -157,6 +277,8 @@ namespace UI
         }
         void onDragItem(CardDefine card, Vector2 position)
         {
+            if (!isInDeckEditMode) return;
+
             DragCard.display();
             DragCard.rectTransform.position = position;
             if (DeckViewScroll.GetComponent<RectTransform>().rect.Contains(DeckViewScroll.GetComponent<RectTransform>().InverseTransformPoint(position)))
@@ -169,8 +291,8 @@ namespace UI
                 DragCard.Card.display();
                 DragCard.BuildDeckListItem.hide();
             }
-            DragCard.BuildDeckListItem.update(card, parent.game.cards.getSkin(card.id), 1);
-            DragCard.Card.update(card, parent.game.cards.getSkin(card.id));
+            DragCard.BuildDeckListItem.update(card, ui.getManager<CardManager>().getSkin(card.id), 1);
+            DragCard.Card.update(card, ui.getManager<CardManager>().getSkin(card.id));
         }
         private void onReleaseItem()
         {
@@ -189,7 +311,7 @@ namespace UI
             else
             {
                 var newItem = BuildDeckList.addItem();
-                newItem.update(DragCard.BuildDeckListItem.card, parent.game.cards.getSkin(DragCard.BuildDeckListItem.card.id), 1);
+                newItem.update(DragCard.BuildDeckListItem.card, ui.getManager<CardManager>().getSkin(DragCard.BuildDeckListItem.card.id), 1);
             }
             BuildDeckList.sortItems((a, b) =>
             {

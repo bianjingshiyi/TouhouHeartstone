@@ -36,6 +36,8 @@ namespace Game
         [SerializeField]
         UI.Card _cardPrefab;
         public UI.Card cardPrefab => _cardPrefab;
+        [SerializeField]
+        Vector2 _tipBoxOffset = new Vector2(20, 20);
         [Header("State")]
         [SerializeField]
         bool _canControl = true;
@@ -68,7 +70,7 @@ namespace Game
             get { return _isSelectingTarget; }
             set { _isSelectingTarget = value; }
         }
-        public TouhouCardEngine.Card attackingCard { get; set; } = null;
+        public Card attackingCard { get; set; } = null;
         protected override void onAwake()
         {
             base.onAwake();
@@ -125,6 +127,12 @@ namespace Game
                     ui.SelfHandList.expand();
             });
             ui.SelfFieldList.clearItems();
+            ui.SelfDeck.asButton.onClick.set(onDeckClick);
+            ui.SelfDeck.onPointerEnter.set(onDeckPointerEnter);
+            ui.SelfDeck.onPointerExit.set(onDeckPointerExit);
+            ui.SelfGraveDeck.asButton.onClick.set(onGraveClick);
+            ui.SelfGraveDeck.onPointerEnter.set(onGravePointerEnter);
+            ui.SelfGraveDeck.onPointerExit.set(onGravePointerExit);
             ui.TurnEndButton.onClick.set(onTurnEndButtonClick);
             ui.TipText.hide();
             initMaster(ui.EnemyMaster);
@@ -136,6 +144,8 @@ namespace Game
             ui.Fatigue.hide();
             ui.Discover.ButtonButtonBlack.asButton.onClick.set(onDiscoverHideButtonClick);
             ui.Discover.hide();
+            ui.PilePanel.hide();
+            ui.TipBox.hide();
             _animationQueue.Clear();
 
             if (game != null)
@@ -506,14 +516,14 @@ namespace Game
         /// <summary>
         /// 当前手牌列表
         /// </summary>
-        Dictionary<TouhouCardEngine.Card, HandListItem> cardHandDic { get; } = new Dictionary<TouhouCardEngine.Card, HandListItem>();
+        Dictionary<Card, HandListItem> cardHandDic { get; } = new Dictionary<Card, HandListItem>();
         /// <summary>
         /// 创建一张手牌
         /// </summary>
         /// <param name="card"></param>
         /// <param name="position">默认为-1也就是最右手</param>
         /// <returns></returns>
-        public HandListItem createHand(TouhouCardEngine.Card card, int position = -1)
+        public HandListItem createHand(Card card, int position = -1)
         {
             if (cardHandDic.ContainsKey(card))
             {
@@ -552,6 +562,8 @@ namespace Game
             item.gameObject.name = card.ToString();
             item.onDrag.set(onDragHand);
             item.onEndDrag.set(onDragHandEnd);
+            item.onPointerEnter.set(onHandPointerEnter);
+            item.onPointerExit.set(onHandPointerExit);
             cardHandDic.Add(card, item);
             return item;
         }
@@ -569,7 +581,7 @@ namespace Game
                 resetUse(true, true);
                 return;
             }
-            TouhouCardEngine.Card card = getCard(hand);
+            Card card = getCard(hand);
             if (usingCard != null && usingCard != card)
             {
                 resetUse(true, true);
@@ -826,7 +838,7 @@ namespace Game
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public HandListItem getHand(TouhouCardEngine.Card card)
+        public HandListItem getHand(Card card)
         {
             if (cardHandDic.ContainsKey(card))
                 return cardHandDic[card];
@@ -837,14 +849,14 @@ namespace Game
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public HandListItem tryGetHand(TouhouCardEngine.Card card)
+        public HandListItem tryGetHand(Card card)
         {
             var hand = getHand(card);
             if (hand == null)
                 throw new ActorNotFoundException(card);
             return hand;
         }
-        public bool tryGetHand(TouhouCardEngine.Card card, out HandListItem hand)
+        public bool tryGetHand(Card card, out HandListItem hand)
         {
             if (cardHandDic.ContainsKey(card))
             {
@@ -859,12 +871,24 @@ namespace Game
             hand = null;
             return false;
         }
+        void onHandPointerEnter(HandListItem handList, PointerEventData pointer)
+        {
+            if (!ui.SelfHandList.isExpanded &&
+                player.hand.count > 0)
+            {
+                ui.TipBox.display("你有" + player.hand.count + "张手牌", pointer.position + _tipBoxOffset);
+            }
+        }
+        void onHandPointerExit(HandListItem handList, PointerEventData pointer)
+        {
+            ui.TipBox.hide();
+        }
         /// <summary>
         /// 从UI手牌引用获取对应的牌
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public TouhouCardEngine.Card getCard(HandListItem item)
+        public Card getCard(HandListItem item)
         {
             foreach (var pair in cardHandDic)
             {
@@ -878,7 +902,7 @@ namespace Game
         /// </summary>
         /// <param name="master"></param>
         /// <returns></returns>
-        public TouhouCardEngine.Card getCard(Master master)
+        public Card getCard(Master master)
         {
             if (master == ui.SelfMaster)
                 return player.master;
@@ -923,7 +947,7 @@ namespace Game
             else
                 ui.type = CardCategory.SPELL;
         }
-        Dictionary<TouhouCardEngine.Card, Servant> cardServantDic { get; } = new Dictionary<TouhouCardEngine.Card, Servant>();
+        Dictionary<Card, Servant> cardServantDic { get; } = new Dictionary<Card, Servant>();
         /// <summary>
         /// 创建一个随从
         /// </summary>
@@ -960,7 +984,7 @@ namespace Game
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public Servant getServant(TouhouCardEngine.Card card)
+        public Servant getServant(Card card)
         {
             if (cardServantDic.ContainsKey(card))
                 return cardServantDic[card];
@@ -1085,7 +1109,7 @@ namespace Game
         /// 高亮所有指定的目标（标记为可选择）
         /// </summary>
         /// <param name="targets"></param>
-        void highlightTargets(TouhouCardEngine.Card[] targets)
+        void highlightTargets(Card[] targets)
         {
             foreach (var target in targets)
             {
@@ -1212,7 +1236,7 @@ namespace Game
         /// </summary>
         /// <param name="servant"></param>
         /// <returns></returns>
-        public TouhouCardEngine.Card getCard(Servant servant)
+        public Card getCard(Servant servant)
         {
             foreach (var pair in cardServantDic)
             {
@@ -1267,6 +1291,48 @@ namespace Game
         public void closeDiscoverDialog()
         {
             ui.Discover.hide();
+        }
+        void onDeckClick()
+        {
+            ui.PilePanel.display("你的牌库");
+            ui.PilePanel.VerticalOverflowCardList.clearItems();
+            foreach (var card in player.deck.OrderBy(c => c.define.getCost()))
+            {
+                var item = ui.PilePanel.VerticalOverflowCardList.addItem();
+                setCard(item.Card, card, true);
+            }
+        }
+        void onDeckPointerEnter(UI.Deck deck, PointerEventData pointer)
+        {
+            if (player.deck.count > 0)
+                ui.TipBox.display("你的牌库里有" + player.deck.count + "张牌，点击打开", pointer.position + _tipBoxOffset);
+            else
+                ui.TipBox.display("你已经没有卡牌了！", pointer.position + _tipBoxOffset);
+        }
+        void onDeckPointerExit(UI.Deck deck, PointerEventData pointer)
+        {
+            ui.TipBox.hide();
+        }
+        void onGraveClick()
+        {
+            ui.PilePanel.display("你的墓地");
+            ui.PilePanel.VerticalOverflowCardList.clearItems();
+            foreach (var card in player.grave)
+            {
+                var item = ui.PilePanel.VerticalOverflowCardList.addItem();
+                setCard(item.Card, card, true);
+            }
+        }
+        void onGravePointerEnter(UI.Deck deck, PointerEventData pointer)
+        {
+            if (player.grave.count > 0)
+                ui.TipBox.display("你的墓地里有" + player.deck.count + "张牌，点击打开", pointer.position + _tipBoxOffset);
+            else
+                ui.TipBox.display("你的墓地是空的，点击打开", pointer.position + _tipBoxOffset);
+        }
+        void onGravePointerExit(UI.Deck deck, PointerEventData pointer)
+        {
+            ui.TipBox.hide();
         }
         [SerializeField]
         BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer() { duration = 3 };
