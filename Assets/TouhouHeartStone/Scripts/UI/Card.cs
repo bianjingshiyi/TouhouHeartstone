@@ -7,7 +7,7 @@ namespace UI
 {
     partial class Card
     {
-        [Obsolete]
+        [Obsolete("Use table.getCard instead")]
         public TouhouCardEngine.Card card { get; set; }
         [Obsolete]
         public void update(TouhouCardEngine.Card card, CardSkinData skin)

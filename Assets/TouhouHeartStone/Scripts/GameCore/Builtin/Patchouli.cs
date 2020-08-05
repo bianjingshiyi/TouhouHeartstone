@@ -34,6 +34,10 @@ namespace TouhouHeartstone.Builtin
                 list.Add(EARTH);
             return list.ToArray();
         }
+        public static CardDefine[] getElementCards(THHGame game)
+        {
+            return game.getCardDefines().Where(c => getElements(c).Length == 1).ToArray();
+        }
         public static CardDefine[] getMixCards(THHGame game)
         {
             return game.getCardDefines().Where(c => getElements(c).Length > 1).ToArray();
@@ -55,6 +59,12 @@ namespace TouhouHeartstone.Builtin
                 await player.discard(game, mixCard);
                 await player.tryAddCardToHand(game, mixedResult);
             }
+        }
+        public static async Task tryMix(THHGame game, THHPlayer player, Card a, Card b)
+        {
+            var mixedResults = getMixCards(game, a.define, b.define).Select(define => game.createCard(define)).ToArray();
+            var mixedResult = await player.discover(game, mixedResults, -1, "选择一张融合元素法术加入你的手牌");
+            await player.tryAddCardToHand(game, mixedResult);
         }
     }
     /// <summary>
@@ -703,7 +713,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3),new TagsModifier(TagsModifier.ModifyType.add,Keyword.TAUNT)));
+                await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(6),new AttackModifier(3),new KeywordsModifier(KeywordsModifier.ModifyType.add,Keyword.TAUNT)));
                 await target.heal(game,target.getLife(game)-target.getCurrentLife(game));
                 await Patchouli.tryMix(game, card);
             }, PileFlag.both | PileFlag.field)

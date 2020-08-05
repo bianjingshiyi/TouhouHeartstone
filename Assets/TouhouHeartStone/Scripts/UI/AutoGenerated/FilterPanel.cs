@@ -26,26 +26,19 @@ namespace UI
         public void autoBind()
         {
             this.m_as_Image = this.GetComponent<Image>();
-            this._LabelSearchText = this.transform.Find("LabelSearch").GetComponent<Text>();
-            this._DropdownSort = this.transform.Find("DropdownSort").GetComponent<Dropdown>();
-            this._LabelCharacterText = this.transform.Find("LabelCharacter").GetComponent<Text>();
-            this._DropdownCharacter = this.transform.Find("DropdownCharacter").GetComponent<Dropdown>();
-            this._LabelCostText = this.transform.Find("LabelCost").GetComponent<Text>();
-            this._DropdownCost = this.transform.Find("DropdownCost").GetComponent<Dropdown>();
-            this._LabelRareText = this.transform.Find("LabelRare").GetComponent<Text>();
-            this._DropdownRare = this.transform.Find("DropdownRare").GetComponent<Dropdown>();
-            this._LabelTypeText = this.transform.Find("LabelType").GetComponent<Text>();
-            this._DropdownType = this.transform.Find("DropdownType").GetComponent<Dropdown>();
-            this._LabelSortText = this.transform.Find("LabelSort").GetComponent<Text>();
-            this._InputField = this.transform.Find("InputField").GetComponent<InputField>();
-        }
-        private Main _parent;
-        public Main parent
-        {
-            get
-            {
-                return this.transform.parent.parent.GetComponent<Main>();
-            }
+            this.m_as_HorizontalLayoutGroup = this.GetComponent<HorizontalLayoutGroup>();
+            this._LabelSortText = this.transform.Find("Sort").Find("LabelSort").GetComponent<Text>();
+            this._DropdownSort = this.transform.Find("Sort").Find("DropdownSort").GetComponent<Dropdown>();
+            this._LabelCharacterText = this.transform.Find("Character").Find("LabelCharacter").GetComponent<Text>();
+            this._DropdownCharacter = this.transform.Find("Character").Find("DropdownCharacter").GetComponent<Dropdown>();
+            this._LabelCostText = this.transform.Find("Cost").Find("LabelCost").GetComponent<Text>();
+            this._DropdownCost = this.transform.Find("Cost").Find("DropdownCost").GetComponent<Dropdown>();
+            this._LabelRareText = this.transform.Find("Rare").Find("LabelRare").GetComponent<Text>();
+            this._DropdownRare = this.transform.Find("Rare").Find("DropdownRare").GetComponent<Dropdown>();
+            this._LabelTypeText = this.transform.Find("Type").Find("LabelType").GetComponent<Text>();
+            this._DropdownType = this.transform.Find("Type").Find("DropdownType").GetComponent<Dropdown>();
+            this._LabelSearchText = this.transform.Find("Search").Find("LabelSearch").GetComponent<Text>();
+            this._InputField = this.transform.Find("Search").Find("InputField").GetComponent<InputField>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -61,16 +54,29 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _LabelSearchText;
-        public Text LabelSearchText
+        private HorizontalLayoutGroup m_as_HorizontalLayoutGroup;
+        public HorizontalLayoutGroup asHorizontalLayoutGroup
         {
             get
             {
-                if ((this._LabelSearchText == null))
+                if ((this.m_as_HorizontalLayoutGroup == null))
                 {
-                    this._LabelSearchText = this.transform.Find("LabelSearch").GetComponent<Text>();
+                    this.m_as_HorizontalLayoutGroup = this.GetComponent<HorizontalLayoutGroup>();
                 }
-                return this._LabelSearchText;
+                return this.m_as_HorizontalLayoutGroup;
+            }
+        }
+        [SerializeField()]
+        private Text _LabelSortText;
+        public Text LabelSortText
+        {
+            get
+            {
+                if ((this._LabelSortText == null))
+                {
+                    this._LabelSortText = this.transform.Find("Sort").Find("LabelSort").GetComponent<Text>();
+                }
+                return this._LabelSortText;
             }
         }
         [SerializeField()]
@@ -81,7 +87,7 @@ namespace UI
             {
                 if ((this._DropdownSort == null))
                 {
-                    this._DropdownSort = this.transform.Find("DropdownSort").GetComponent<Dropdown>();
+                    this._DropdownSort = this.transform.Find("Sort").Find("DropdownSort").GetComponent<Dropdown>();
                 }
                 return this._DropdownSort;
             }
@@ -94,7 +100,7 @@ namespace UI
             {
                 if ((this._LabelCharacterText == null))
                 {
-                    this._LabelCharacterText = this.transform.Find("LabelCharacter").GetComponent<Text>();
+                    this._LabelCharacterText = this.transform.Find("Character").Find("LabelCharacter").GetComponent<Text>();
                 }
                 return this._LabelCharacterText;
             }
@@ -107,7 +113,7 @@ namespace UI
             {
                 if ((this._DropdownCharacter == null))
                 {
-                    this._DropdownCharacter = this.transform.Find("DropdownCharacter").GetComponent<Dropdown>();
+                    this._DropdownCharacter = this.transform.Find("Character").Find("DropdownCharacter").GetComponent<Dropdown>();
                 }
                 return this._DropdownCharacter;
             }
@@ -120,7 +126,7 @@ namespace UI
             {
                 if ((this._LabelCostText == null))
                 {
-                    this._LabelCostText = this.transform.Find("LabelCost").GetComponent<Text>();
+                    this._LabelCostText = this.transform.Find("Cost").Find("LabelCost").GetComponent<Text>();
                 }
                 return this._LabelCostText;
             }
@@ -133,7 +139,7 @@ namespace UI
             {
                 if ((this._DropdownCost == null))
                 {
-                    this._DropdownCost = this.transform.Find("DropdownCost").GetComponent<Dropdown>();
+                    this._DropdownCost = this.transform.Find("Cost").Find("DropdownCost").GetComponent<Dropdown>();
                 }
                 return this._DropdownCost;
             }
@@ -146,7 +152,7 @@ namespace UI
             {
                 if ((this._LabelRareText == null))
                 {
-                    this._LabelRareText = this.transform.Find("LabelRare").GetComponent<Text>();
+                    this._LabelRareText = this.transform.Find("Rare").Find("LabelRare").GetComponent<Text>();
                 }
                 return this._LabelRareText;
             }
@@ -159,7 +165,7 @@ namespace UI
             {
                 if ((this._DropdownRare == null))
                 {
-                    this._DropdownRare = this.transform.Find("DropdownRare").GetComponent<Dropdown>();
+                    this._DropdownRare = this.transform.Find("Rare").Find("DropdownRare").GetComponent<Dropdown>();
                 }
                 return this._DropdownRare;
             }
@@ -172,7 +178,7 @@ namespace UI
             {
                 if ((this._LabelTypeText == null))
                 {
-                    this._LabelTypeText = this.transform.Find("LabelType").GetComponent<Text>();
+                    this._LabelTypeText = this.transform.Find("Type").Find("LabelType").GetComponent<Text>();
                 }
                 return this._LabelTypeText;
             }
@@ -185,22 +191,22 @@ namespace UI
             {
                 if ((this._DropdownType == null))
                 {
-                    this._DropdownType = this.transform.Find("DropdownType").GetComponent<Dropdown>();
+                    this._DropdownType = this.transform.Find("Type").Find("DropdownType").GetComponent<Dropdown>();
                 }
                 return this._DropdownType;
             }
         }
         [SerializeField()]
-        private Text _LabelSortText;
-        public Text LabelSortText
+        private Text _LabelSearchText;
+        public Text LabelSearchText
         {
             get
             {
-                if ((this._LabelSortText == null))
+                if ((this._LabelSearchText == null))
                 {
-                    this._LabelSortText = this.transform.Find("LabelSort").GetComponent<Text>();
+                    this._LabelSearchText = this.transform.Find("Search").Find("LabelSearch").GetComponent<Text>();
                 }
-                return this._LabelSortText;
+                return this._LabelSearchText;
             }
         }
         [SerializeField()]
@@ -211,7 +217,7 @@ namespace UI
             {
                 if ((this._InputField == null))
                 {
-                    this._InputField = this.transform.Find("InputField").GetComponent<InputField>();
+                    this._InputField = this.transform.Find("Search").Find("InputField").GetComponent<InputField>();
                 }
                 return this._InputField;
             }

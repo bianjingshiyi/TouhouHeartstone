@@ -68,7 +68,7 @@ namespace Game
             get { return _isSelectingTarget; }
             set { _isSelectingTarget = value; }
         }
-        public TouhouCardEngine.Card attackingCard { get; set; } = null;
+        public Card attackingCard { get; set; } = null;
         protected override void onAwake()
         {
             base.onAwake();
@@ -125,6 +125,8 @@ namespace Game
                     ui.SelfHandList.expand();
             });
             ui.SelfFieldList.clearItems();
+            ui.SelfDeck.asButton.onClick.set(onDeckClick);
+            ui.SelfGraveDeck.asButton.onClick.set(onGraveClick);
             ui.TurnEndButton.onClick.set(onTurnEndButtonClick);
             ui.TipText.hide();
             initMaster(ui.EnemyMaster);
@@ -136,6 +138,7 @@ namespace Game
             ui.Fatigue.hide();
             ui.Discover.ButtonButtonBlack.asButton.onClick.set(onDiscoverHideButtonClick);
             ui.Discover.hide();
+            ui.PilePanel.hide();
             _animationQueue.Clear();
 
             if (game != null)
@@ -506,14 +509,14 @@ namespace Game
         /// <summary>
         /// 当前手牌列表
         /// </summary>
-        Dictionary<TouhouCardEngine.Card, HandListItem> cardHandDic { get; } = new Dictionary<TouhouCardEngine.Card, HandListItem>();
+        Dictionary<Card, HandListItem> cardHandDic { get; } = new Dictionary<Card, HandListItem>();
         /// <summary>
         /// 创建一张手牌
         /// </summary>
         /// <param name="card"></param>
         /// <param name="position">默认为-1也就是最右手</param>
         /// <returns></returns>
-        public HandListItem createHand(TouhouCardEngine.Card card, int position = -1)
+        public HandListItem createHand(Card card, int position = -1)
         {
             if (cardHandDic.ContainsKey(card))
             {
@@ -878,7 +881,7 @@ namespace Game
         /// </summary>
         /// <param name="master"></param>
         /// <returns></returns>
-        public TouhouCardEngine.Card getCard(Master master)
+        public Card getCard(Master master)
         {
             if (master == ui.SelfMaster)
                 return player.master;
@@ -1267,6 +1270,26 @@ namespace Game
         public void closeDiscoverDialog()
         {
             ui.Discover.hide();
+        }
+        void onDeckClick()
+        {
+            ui.PilePanel.display("你的牌库");
+            ui.PilePanel.VerticalOverflowCardList.clearItems();
+            foreach (var card in player.deck.OrderBy(c => c.define.getCost()))
+            {
+                var item = ui.PilePanel.VerticalOverflowCardList.addItem();
+                setCard(item.Card, card, true);
+            }
+        }
+        void onGraveClick()
+        {
+            ui.PilePanel.display("你的墓地");
+            ui.PilePanel.VerticalOverflowCardList.clearItems();
+            foreach (var card in player.grave)
+            {
+                var item = ui.PilePanel.VerticalOverflowCardList.addItem();
+                setCard(item.Card, card, true);
+            }
         }
         [SerializeField]
         BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer() { duration = 3 };

@@ -50,5 +50,13 @@
         /// 无法攻击
         /// </summary>
         public const string CANTATTACK = "cantattack";
+        /// <summary>
+        /// 风怒
+        /// </summary>
+        public const string WINDFURY = "windfury";
+        /// <summary>
+        /// 蓄力
+        /// </summary>
+        public const string ACCUMULATE = "accumulate";
     }
 }

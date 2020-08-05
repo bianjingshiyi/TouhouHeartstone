@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using Game;
+using System.Linq;
 
 namespace Tests
 {
@@ -16,10 +17,13 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var id = dm.CreateDeck("测试卡组");
+            var id = dm.CreateDeck("测试卡组", 1);
+            var d = dm.GetDeck(id);
             var name = dm.GetDeckName(id);
 
             Assert.AreEqual("测试卡组", name);
+            Assert.AreEqual("测试卡组", d.Name);
+            Assert.AreEqual(1, d.MasterID);
 
             GameObject.Destroy(dm.gameObject);
         }
@@ -29,7 +33,7 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var deckID = dm.CreateDeck("测试卡组");
+            var deckID = dm.CreateDeck("测试卡组", 0);
 
             var instID1 = dm.AddCard(deckID, 1000);
             var instID2 = dm.AddCard(deckID, 1001);
@@ -43,7 +47,7 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var deckID = dm.CreateDeck("测试卡组");
+            var deckID = dm.CreateDeck("测试卡组", 0);
 
             var instID1 = dm.AddCard(deckID, 1000);
             var instID2 = dm.AddCard(deckID, 1001);
@@ -61,7 +65,7 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var deckID = dm.CreateDeck("测试卡组");
+            var deckID = dm.CreateDeck("测试卡组", 0);
 
             var instID1 = dm.AddCard(deckID, 1000);
             var instID2 = dm.AddCard(deckID, 1001);
@@ -80,7 +84,7 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var deckID = dm.CreateDeck("测试卡组");
+            var deckID = dm.CreateDeck("测试卡组", 0);
 
             var instID1 = dm.AddCard(deckID, 1000);
             var instID2 = dm.AddCard(deckID, 1001);
@@ -96,13 +100,18 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var deck1ID = dm.CreateDeck("测试卡组1");
-            var deck2ID = dm.CreateDeck("测试卡组2");
+            var deck1ID = dm.CreateDeck("测试卡组1", 1);
+            var deck2ID = dm.CreateDeck("测试卡组2", 2);
 
             var decks = dm.GetDecks();
-            Assert.AreEqual(decks.Count, 2);
-            Assert.AreEqual("测试卡组1", decks[deck1ID]);
-            Assert.AreEqual("测试卡组2", decks[deck2ID]);
+            Assert.AreEqual(2, decks.Count());
+
+            var d1 = decks.Where(d => d.ID == deck1ID).First();
+            var d2 = decks.Where(d => d.ID == deck2ID).First();
+            Assert.AreEqual("测试卡组1", d1.Name);
+            Assert.AreEqual("测试卡组2", d2.Name);
+            Assert.AreEqual(1, d1.MasterID);
+            Assert.AreEqual(2, d2.MasterID);
         }
 
         [Test]
@@ -110,7 +119,7 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var deckID = dm.CreateDeck("测试卡组");
+            var deckID = dm.CreateDeck("测试卡组", 0);
 
             var instID1 = dm.AddCard(deckID, 1000);
             var instID2 = dm.AddCard(deckID, 1001);

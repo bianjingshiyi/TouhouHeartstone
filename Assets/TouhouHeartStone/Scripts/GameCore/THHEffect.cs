@@ -393,9 +393,9 @@ namespace TouhouHeartstone
         /// 简化的构造器
         /// </summary>
         /// <param name="buff">光环添加的buff</param>
-        /// <param name="range"></param>
-        /// <param name="pile"></param>
-        /// <param name="filter"></param>
+        /// <param name="range">光环的作用范围</param>
+        /// <param name="pile">光环拥有者必须位于起效范围内，光环才会起效。默认是位于己方的战场上。</param>
+        /// <param name="filter">光环的作用条件。</param>
         public Halo(Buff buff, PileFlag range, PileFlag pile = PileFlag.self | PileFlag.field, Func<THHGame, Card, bool> filter = null)
         {
             this.buff = buff;
@@ -463,6 +463,9 @@ namespace TouhouHeartstone
         {
             return c.addBuff(g, originBuff.clone());
         })
+        {
+        }
+        public AddBuffAfter(string pile, CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(pile, onCheckCondition, null, onExecute)
         {
         }
     }
@@ -580,6 +583,19 @@ namespace TouhouHeartstone
         {
             return arg.player == card.getOwner();
         }, null, async (game, card, arg) =>
+        {
+            if (onExecute != null)
+            {
+                await onExecute.Invoke(game, card, arg);
+                await game.updateDeath();
+            }
+        })
+        {
+        }
+    }
+    public class BeforeTurnStart : THHEffectBefore<THHGame.TurnStartEventArg>
+    {
+        public BeforeTurnStart(ExecuteDelegate onExecute,CheckConditionDelegate onCheckCondition = null) : base(PileName.FIELD, onCheckCondition, null, async (game, card, arg) =>
         {
             if (onExecute != null)
             {

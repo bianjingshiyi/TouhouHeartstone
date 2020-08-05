@@ -15,6 +15,10 @@ namespace Game
 {
     public class ResourceManager : Manager
     {
+        public Task<AudioClip> loadAudio(string path, string curDir, PlatformCompability platform = null)
+        {
+            return null;
+        }
         [Obsolete("Use loadExcelAsDataSet instead.")]
         public Task<Workbook> loadExcel(string path, PlatformCompability platform = null, string curDir = null)
         {

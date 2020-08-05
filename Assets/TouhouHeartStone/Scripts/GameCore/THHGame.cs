@@ -79,6 +79,10 @@ namespace TouhouHeartstone
         {
             return players.FirstOrDefault(p => p != player);
         }
+        public THHPlayer[] getAllPlayer()
+        {
+            return players;
+        }
         #endregion
         #region Card
         public override Card createCard(CardDefine define)
@@ -132,6 +136,10 @@ namespace TouhouHeartstone
         public Card createCardByRandom(IEnumerable<CardDefine> defines)
         {
             return createCard(defines.random(this));
+        }
+        public Card[] createCards(CardDefine[] defines)
+        {
+            return defines.Select(d => createCard(d)).ToArray();
         }
         public Card[] findAllCardsInField(Func<Card, bool> filter)
         {
@@ -378,7 +386,7 @@ namespace TouhouHeartstone
                     if (servant.isFreeze(this))
                     {
                         servant.setAttackTimes(servant.getAttackTimes(this) + 1);
-                        if (servant.getMaxAttackTimes() - servant.getAttackTimes(this) >= 0)
+                        if (servant.getMaxAttackTimes(this) - servant.getAttackTimes(this) >= 0)
                         {
                             logger.log("被冻结的随从解除冰冻");
                             servant.setFreeze(false);
@@ -459,7 +467,11 @@ namespace TouhouHeartstone
                 turnTimer = null;
             }
         }
-        public event Action<int, Response> onPlayerResponse;
+        public event Action<int, IResponse> onPlayerResponse;
+        public void logPlayerAction(int playerID, IResponse response)
+        {
+            onPlayerResponse?.Invoke(playerID, response);
+        }
         #endregion
         public void Dispose()
         {

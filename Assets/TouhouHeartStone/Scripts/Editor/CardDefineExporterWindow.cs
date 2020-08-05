@@ -103,9 +103,9 @@ namespace TouhouHeartstone
                 }
             }
         }
-        void exportAsExcel(List<CardDefine> cardList)
+        async void exportAsExcel(List<CardDefine> cardList)
         {
-            _manager.load();
+            await _manager.load();
 
             _templatePath = EditorUtility.OpenFilePanel("选择模板文件",
                 File.Exists(_templatePath) ? Path.GetDirectoryName(_templatePath) : Application.dataPath, "xls");
@@ -117,13 +117,20 @@ namespace TouhouHeartstone
                     Worksheet worksheet = workbook.Worksheets[0];
                     _outputPath = EditorUtility.SaveFilePanel("选择输出路径",
                         File.Exists(_outputPath) ? Path.GetDirectoryName(_outputPath) : Application.streamingAssetsPath, "Cards", "xls");
-                    if (Directory.Exists(Path.GetDirectoryName(_outputPath)))
+                    if (!string.IsNullOrEmpty(_outputPath) && Directory.Exists(Path.GetDirectoryName(_outputPath)))
                     {
                         using (FileStream outputStream = new FileStream(_outputPath, FileMode.Create))
                         {
                             foreach (var card in cardList)
                             {
-                                saveCardToExcel(card, worksheet);
+                                try
+                                {
+                                    saveCardToExcel(card, worksheet);
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.LogError("导出" + card + "时发生异常：" + e);
+                                }
                             }
                             workbook.Save(outputStream);
                         }
@@ -135,9 +142,9 @@ namespace TouhouHeartstone
             else
                 Debug.LogError("不存在模板文件" + _templatePath);
         }
-        void overrideToExcel(List<CardDefine> cardList)
+        async void overrideToExcel(List<CardDefine> cardList)
         {
-            _manager.load();
+            await _manager.load();
 
             if (trySelectFilePath(ref _outputPath, "选择要覆盖的文件", "Cards", "xls"))
             {

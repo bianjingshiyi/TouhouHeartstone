@@ -87,6 +87,7 @@ namespace TouhouHeartstone
         grave = 0b_001000000,
         warp = 0b_010000000,
         item = 0b_100000000,
+        all = 0b_111111111,
 
         self = 0b_01000000000,
         oppo = 0b_10000000000,
