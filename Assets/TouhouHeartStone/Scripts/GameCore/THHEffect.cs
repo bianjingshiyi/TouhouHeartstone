@@ -422,9 +422,12 @@ namespace TouhouHeartstone
                     if (ranges.Contains(arg.to) &&
                        (filter == null || filter(game, arg.card)))
                     {
-                        Buff b = this.buff.clone();
-                        arg.card.addBuff(game, b);
-                        buffDic.Add(arg.card, b);
+                        if (!buffDic.ContainsKey(arg.card))
+                        {
+                            Buff b = this.buff.clone();
+                            arg.card.addBuff(game, b);
+                            buffDic.Add(arg.card, b);
+                        }
                     }
                     else if (ranges.Contains(arg.from) &&
                         (filter == null || filter(game, arg.card)))
