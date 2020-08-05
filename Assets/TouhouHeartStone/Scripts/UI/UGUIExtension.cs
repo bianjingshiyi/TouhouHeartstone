@@ -94,5 +94,9 @@ namespace UI
         {
             transform.sizeDelta = new Vector2(width, transform.sizeDelta.y);
         }
+        public static bool contains(this RectTransform transform, Vector2 point)
+        {
+            return transform.rect.Contains(transform.InverseTransformPoint(point));
+        }
     }
 }
