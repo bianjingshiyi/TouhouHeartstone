@@ -15,10 +15,6 @@ namespace Game
 {
     public class ResourceManager : Manager
     {
-        public Task<AudioClip> loadAudio(string path, string curDir, PlatformCompability platform = null)
-        {
-            return null;
-        }
         [Obsolete("Use loadExcelAsDataSet instead.")]
         public Task<Workbook> loadExcel(string path, PlatformCompability platform = null, string curDir = null)
         {
@@ -31,6 +27,16 @@ namespace Game
 
             return loadExcelBySystemIO(path, curDir);
         }
+        /// <summary>
+        /// 加载贴图
+        /// </summary>
+        /// <param name="path">
+        /// 贴图的路径。可以是相对于当前路径的相对路径，或是StreamingAssets下的绝对路径。
+        /// 以res:开头的请求将读取Resource文件夹
+        /// </param>
+        /// <param name="curDir">当前路径</param>
+        /// <param name="platform"></param>
+        /// <returns></returns>
         public Task<Texture2D> loadTexture(string path, string curDir, PlatformCompability platform = null)
         {
             if (string.IsNullOrEmpty(path))
@@ -45,6 +51,13 @@ namespace Game
 
             return loadTextureBySystemIOWithFallback(path, curDir);
         }
+        /// <summary>
+        /// 加载数据集
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="platform"></param>
+        /// <param name="curDir"></param>
+        /// <returns></returns>
         public Task<DataSet> loadDataSet(string path, PlatformCompability platform = null, string curDir = null)
         {
             if (string.IsNullOrEmpty(path))
@@ -75,19 +88,41 @@ namespace Game
             return loadExcelAsDataSetBySystemIO(path, curDir);
         }
 
-        public async Task<Texture2D> loadTextureByWebRequestWithFallback(string path, string currDir)
+        /// <summary>
+        /// 加载音频。
+        /// </summary>
+        /// <param name="path">
+        /// 路径。当前支持两种格式:
+        /// res:Name, 指从Resource文件夹读取对应的音频文件
+        /// se:Name, 指从SEManager读取对应的音效。
+        /// 建议不要使用se:Name读取，而是转而直接用SEManager播放对应音效。
+        /// </param>
+        /// <param name="curDir"></param>
+        /// <param name="platform"></param>
+        /// <returns></returns>
+        public Task<AudioClip> loadAudio(string path, string curDir = null, PlatformCompability platform = null)
         {
-            try
+            if (string.IsNullOrEmpty(path))
+                return null;
+
+            if (path.StartsWith("res:"))
             {
-                return await loadTextureByWebRequest(path, currDir);
+                return Task.FromResult(Resources.Load<AudioClip>(path.Replace("res:", "")));
             }
-            catch (FileNotFoundException e)
+
+            if (path.StartsWith("se:"))
             {
-                path = textureChangeExt(path);
-                return await loadTextureByWebRequest(path, currDir);
+                return Task.FromResult(getManager<SEManager>().GetSE(path.Replace("se:", "")));
             }
+
+            return null;
         }
 
+        /// <summary>
+        /// 尝试修改材质的扩展名，以便做Fallback
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         private static string textureChangeExt(string path)
         {
             string origExt = Path.GetExtension(path).ToLower();
@@ -129,6 +164,18 @@ namespace Game
                 encodedFiles.Add(streaming.MakeRelativeUri(abs).ToString());
             }
             return encodedFiles.ToArray();
+        }
+        public async Task<Texture2D> loadTextureByWebRequestWithFallback(string path, string currDir)
+        {
+            try
+            {
+                return await loadTextureByWebRequest(path, currDir);
+            }
+            catch (FileNotFoundException)
+            {
+                path = textureChangeExt(path);
+                return await loadTextureByWebRequest(path, currDir);
+            }
         }
 
         public async Task<Texture2D> loadTextureByWebRequest(string path, string basePath)

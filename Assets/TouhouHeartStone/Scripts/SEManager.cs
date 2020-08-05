@@ -18,20 +18,34 @@ namespace Game
         [SerializeField]
         SEItem[] se;
 
+        public SEItem[] SEs
+        {
+            get => se;
+            set => se = value;
+        }
+
         AudioSource _audio;
         AudioSource Audio { get { _audio = _audio ?? GetComponent<AudioSource>(); return _audio; } }
 
         public void PlaySE(string name)
         {
+            var clip = GetSE(name);
+            if (se != null)
+                Audio.PlayOneShot(clip);
+            else
+                Debug.LogWarning("Unable to find audio: " + name);
+        }
+
+        public AudioClip GetSE(string name)
+        {
             foreach (var item in se)
             {
                 if (item.name == name)
                 {
-                    Audio.PlayOneShot(item.audio);
-                    return;
+                    return item.audio;
                 }
             }
-            Debug.LogWarning("Unable to find audio: " + name);
+            return null;
         }
     }
 }
