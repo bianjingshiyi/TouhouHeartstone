@@ -102,12 +102,91 @@ namespace Tests
                 new KeyValuePair<int, int>(Protoss.ID, 15)
 
             );
-            game.skipUntilCanUse<ProphetRobot>(you);
+            //game.skipUntilCanUse<ProphetRobot>(you);
             // 回合结束
-            you.cmdTurnEnd(game);    
+            //you.cmdTurnEnd(game);    
             game.skipUntilCanUse<ProphetRobot>(you);
             you.cmdUse(game, you.hand.getCard<ProphetRobot>());
             
+            game.Dispose();
+        }
+
+
+        /// <summary>
+        /// 哨兵测试
+        /// </summary>
+        [Test]
+        public void ProbeSentryTest(){
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Sentry.ID, 1)
+
+            );
+            game.skipUntilCanUse<Sentry>(you);
+            // 回合结束
+           // you.cmdTurnEnd(game);    
+           // game.skipUntilCanUse<Sentry>(you);
+            you.cmdUse(game, you.hand.getCard<Sentry>());
+            Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
+            Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) );
+            //Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
+            game.Dispose();
+        }
+
+        /// <summary>
+        /// 灵能震荡测试
+        /// </summary>
+        [Test]
+        public void ProbePsionicShockTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(PsionicShock.ID, 1),
+                new KeyValuePair<int, int>(Sentry.ID, 1)
+            );
+            game.skipUntilCanUse<Sentry>(you);
+            you.cmdUse(game, you.hand.getCard<Sentry>());
+            you.cmdTurnEnd(game);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdTurnEnd(game);        
+            you.cmdUse(game, you.hand.getCard<PsionicShock>());
+            game.Dispose();
+        }
+
+        /// <summary>
+        /// 能量反馈测试
+        /// </summary>
+        [Test]
+        public void ProbeEnergyAutophagyTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(EnergyAutophagy.ID, 1)
+            );
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdTurnEnd(game);        
+            game.skipUntilCanUse<EnergyAutophagy>(you);
+            you.cmdUse(game, you.hand.getCard<EnergyAutophagy>(),targets: oppo.field[0]);
+            game.Dispose();
+        }
+
+
+        /// <summary>
+        /// 巨像测试
+        /// </summary>
+        [Test]
+        public void ProbeColossusTest(){
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Colossus.ID, 1)
+
+            );
+            game.skipUntilCanUse<Colossus>(you);
+            you.cmdUse(game, you.hand.getCard<Colossus>());
+            you.cmdTurnEnd(game); 
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdTurnEnd(game); 
+            you.cmdTurnEnd(game); 
+            //Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
             game.Dispose();
         }
     }
