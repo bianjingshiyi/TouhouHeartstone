@@ -45,6 +45,11 @@ namespace TouhouHeartstone
         public static int getAttack(this Card card, IGame game)
         {
             int result = card.getProp<int>(game, nameof(ServantCardDefine.attack));
+            if (card.define is MasterCardDefine)
+            {
+                if (card.getOwner().item != null)
+                    result += card.getOwner().item.getAttack(game);
+            }
             if (result < 0)
                 return 0;
             return result;
@@ -55,6 +60,7 @@ namespace TouhouHeartstone
             if (result < 0)
                 return 0;
             return result;
+            
         }
         public static void setAttack(this Card card, int value)
         {
@@ -138,8 +144,20 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool canAttack(this Card card, THHGame game)
         {
-            if (card.pile.name != PileName.FIELD)//你只能在战场上进行攻击。是不是必须得活着，这是个哲学问题。
-                return false;
+            if (card.define is ServantCardDefine)
+            {
+                if (card.pile.name != PileName.FIELD)//你只能在战场上进行攻击。是不是必须得活着，这是个哲学问题。
+                    return false;
+                if (card.getKeywords(game).Contains(Keyword.CANTATTACK))
+                    return false;
+            }
+            /*if(card.define is MasterCardDefine)
+            {
+                if(card.getOwner().item != null )
+                {
+                    card.setAttack(card.getAttack(game) + card.getOwner().item.getAttack(game));
+                }
+            }*/
             if (card.getAttack(game) <= 0)//没有攻击力
                 return false;
             if (!card.isReady(game)//还没准备好
@@ -150,8 +168,6 @@ namespace TouhouHeartstone
             if (card.getAttackTimes(game) >= card.getMaxAttackTimes(game))//已经攻击过了
                 return false;
             if (card.isFreeze(game))
-                return false;
-            if (card.getKeywords(game).Contains(Keyword.CANTATTACK))
                 return false;
             return true;
         }
@@ -297,6 +313,14 @@ namespace TouhouHeartstone
         public static void setAccumulate(this Card card, bool value)
         {
             card.setProp(Keyword.ACCUMULATE, value);
+        }
+        public static bool isImmunity(this Card card, IGame game)
+        {
+            return card.getProp<bool>(game, Keyword.IMMUNITY);
+        }
+        public static void setImmunity(this Card card, bool value)
+        {
+            card.setProp(Keyword.IMMUNITY, value);
         }
         public static bool isUnique(this Card card, IGame game)
         {
@@ -621,6 +645,8 @@ namespace TouhouHeartstone
             {
                 game.logger.log(arg.card + "攻击" + arg.target);
                 arg.card.setAttackTimes(arg.card.getAttackTimes(game) + 1);
+                if (arg.card.define is MasterCardDefine && arg.card.getOwner().item != null)
+                    await arg.card.getOwner().item.damage(game,arg.card,1);
                 if (arg.card.getAttack(game) > 0)
                     await arg.target.damage(game, arg.card, arg.card.getAttack(game));
                 if (arg.target.getAttack(game) > 0)
@@ -640,7 +666,7 @@ namespace TouhouHeartstone
         }
         public static Task<DamageEventArg> damage(this Card card, THHGame game, Card source, int value)
         {
-            if (card == null)
+            if (card == null || card.isImmunity(game))
                 return Task.FromResult(default(DamageEventArg));
             return damage(new Card[] { card }, game, source, value);
         }

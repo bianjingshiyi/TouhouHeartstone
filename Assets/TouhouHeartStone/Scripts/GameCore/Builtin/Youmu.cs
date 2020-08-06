@@ -23,6 +23,7 @@ namespace TouhouHeartstone.Builtin
                     return c1.getOwner().gem > c1.getCost(g1) && c1.getOwner() == a1.player;
                 }, null, async (g, c, a) =>
                 {
+                    g.logger.log(c + "蓄力完成");
                     c.setAccumulate(true);
                     await g.updateDeath();
                 })
@@ -77,7 +78,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x003;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 5;
+        public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
            new KonpakuYoumu.AccumulateTrigggerEffectBefore()
@@ -97,8 +98,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x004;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 5;
-        public override string[] keywords { get; set; } = new string[] { Keyword.ACCUMULATE };
+        public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
            new KonpakuYoumu.AccumulateTrigggerEffectBefore()
@@ -138,7 +138,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x005;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 5;
+        public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
@@ -196,7 +196,9 @@ namespace TouhouHeartstone.Builtin
             },null,(g,c,a)=>
             {
                 if(a.target.isDead(g))
+                {
                     c.getOwner().master.setAttackTimes(c.getOwner().master.getAttackTimes(g)-1);
+                }
                 return Task.CompletedTask;
             })
         };
@@ -295,13 +297,13 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHCard.AttackEventArg>(PileName.ITEM,(g,c,a)=>
+            new THHEffectBefore<THHCard.AttackEventArg>(PileName.FIELD,(g,c,a)=>
             {
                 return a.card == c.getOwner().master;
             },null,async(g,c,a)=>
             {
                 if(c.getOwner()[PileName.ITEM].isFull)
-                    await c.getOwner().item.addBuff(g, new GeneratedBuff(ID, new LifeModifier(1)));
+                    await c.getOwner().item.addBuff(g, new GeneratedBuff(ID, new AttackModifier(1)));
             })
         };
     }
