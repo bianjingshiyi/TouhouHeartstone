@@ -260,5 +260,33 @@ namespace Tests
 
             Assert.NotNull(task.Result);
         }
+
+        [UnityTest]
+        public IEnumerator loadAudio_Resource()
+        {
+            const string audioName = "res:测试音频";
+
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            var task = manager.loadAudio(audioName);
+            yield return new WaitUntil(() => task.IsCompleted);
+
+            Assert.NotNull(task.Result);
+        }
+
+        [UnityTest]
+        public IEnumerator loadAudio_SEManager()
+        {
+            const string audioName = "se:testAudio";
+
+            var clip = Resources.Load<AudioClip>("测试音频");
+            var sem = new GameObject(nameof(SEManager)).AddComponent<SEManager>();
+            sem.SEs = new SEManager.SEItem[1] { new SEManager.SEItem() { audio = clip, name = "testAudio" } };
+            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+
+            var task = manager.loadAudio(audioName);
+            yield return new WaitUntil(() => task.IsCompleted);
+
+            Assert.NotNull(task.Result);
+        }
     }
 }
