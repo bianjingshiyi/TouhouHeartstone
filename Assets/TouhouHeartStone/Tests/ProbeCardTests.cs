@@ -189,5 +189,28 @@ namespace Tests
             //Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
             game.Dispose();
         }
+
+        /// <summary>
+        /// 重构光线测试
+        /// 0费，完全修好一个友方机械。(警告:不要对机械以外的随从使用！)
+        /// </summary>
+        [Test]
+        public void ProbeReconstructRayTest(){
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(ReconstructRay.ID, 2),
+                new KeyValuePair<int, int>(Sentry.ID, 1),
+                new KeyValuePair<int, int>(EnergyAutophagy.ID, 1)
+            );
+            game.skipUntilCanUse<Sentry>(you);
+            you.cmdUse(game, you.hand.getCard<Sentry>());
+            you.cmdTurnEnd(game);
+            game.skipUntilCanUse<EnergyAutophagy>(you);
+            you.cmdUse(game, you.hand.getCard<EnergyAutophagy>(),targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<ReconstructRay>(),targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<ReconstructRay>(),targets: you.field[1]);
+            you.cmdTurnEnd(game);    
+            
+            game.Dispose();
+        }
     }
 }

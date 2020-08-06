@@ -38,7 +38,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 召唤水晶塔，法术
-    /// 2费，召唤一个0/8,带有嘲讽的水晶塔
+    /// 2费，召唤一个0/6,带有嘲讽的水晶塔
     /// 召唤系法术
     /// </summary>
     public class BulidPylon : SpellCardDefine
@@ -55,23 +55,23 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().createToken(game, game.getCardDefine<Pylon>(), card.getOwner().field.count);
         }
-
+        
     }
 
     /// <summary>
     /// 水晶塔，随从
-    /// 2/0/8,嘲讽
+    /// 2/0/6,嘲讽
     /// </summary>
     public class Pylon : ServantCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x002;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
+        public override int cost { get; set; } = 2; 
         public override int attack { get; set; } = 0;//随从的攻击力
-        public override int life { get; set; } = 8;//随从的血量上限
+        public override int life { get; set; } = 6;//随从的血量上限
         public override bool isToken { get; set; } = true;//是衍生物吗？（当然）
         //public override string[] tags { get; set; } = new string[];//种族标签
-        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };//关键词标签：
+        public override string[] keywords { get; set; } = new string[] {Keyword.TAUNT};//关键词标签：
     }
 
     /// <summary>
@@ -93,7 +93,7 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
-
+    
     /// <summary>
     /// 灵能震荡
     /// 4费，对所有角色造成3点伤害
@@ -112,7 +112,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             //双向法术这块必须整完！
-            await game.getAllCharacters().damage(game, card, card.getOwner().getSpellDamage(game, 3));
+            await game.getAllCharacters().damage(game, card, card.getOwner().getSpellDamage(game,3));
         }
     }
 
@@ -139,14 +139,13 @@ namespace TouhouHeartstone.Builtin
             //buff
             foreach (var servant in card.getOwner().field)
             {
-                if (servant.define.id == Pylon.ID)
-                {
-                    await servant.addBuff(game, new GeneratedBuff(ID, new AttackModifier(3)));
+                if(servant.define.id == Pylon.ID){
+                    await servant.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3)));
                 }
-
+                
             }
         }
-
+        
     }
 
     /// <summary>
@@ -158,7 +157,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x006;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 4;
+        public override int cost { get; set; } = 4; 
         public override int attack { get; set; } = 2;//随从的攻击力
         public override int life { get; set; } = 4;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
@@ -183,13 +182,13 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x007;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 0;
+        public override int cost { get; set; } = 0; 
         public override int attack { get; set; } = 0;//随从的攻击力
         public override int life { get; set; } = 2;//随从的血量上限
         public override bool isToken { get; set; } = true;//是衍生物吗？
         //public override string[] tags { get; set; } = new string[];//种族标签
-        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };//关键词标签：
-
+        public override string[] keywords { get; set; } = new string[] {Keyword.TAUNT};//关键词标签：
+        
     }
 
     /// <summary>
@@ -201,7 +200,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x008;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 4;
+        public override int cost { get; set; } = 4; 
         public override int attack { get; set; } = 3;//随从的攻击力
         public override int life { get; set; } = 3;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
@@ -215,14 +214,13 @@ namespace TouhouHeartstone.Builtin
         {
             //遍历牌库寻找法力消耗最高的牌
             Card _card = card.getOwner().deck.top;
-            foreach (Card c in card.getOwner().deck)
+            foreach(Card c in card.getOwner().deck)
             {
-                if (c.getCost(game) > _card.getCost(game))
-                {
+                if(c.getCost(game) > _card.getCost(game)){
                     _card = c;
                 }
             }
-            await card.getOwner().draw(game, _card);
+            await card.getOwner().draw( game, _card);
         }
     }
 
@@ -235,12 +233,12 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x009;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 8;
+        public override int cost { get; set; } = 8; 
         public override int attack { get; set; } = 8;//随从的攻击力
         public override int life { get; set; } = 8;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
         public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
-        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
+        public override string[] keywords { get; set; } = new string[] {Keyword.UNIQUE};//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]{
             //回合结束扳机
             new BeforeYourTurnEnd(async(game,card,arg)=>
@@ -252,14 +250,14 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 能量反馈
-    /// 2费，对一个随从造成等同其攻击力的伤害
+    /// 1费，对一个随从造成等同其攻击力的伤害
     /// 指向型特殊直伤法术
     /// </summary>
     public class EnergyAutophagy : SpellCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SPELL | 0x010;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
+        public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             //存在目标的法术
@@ -279,11 +277,12 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x011;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 5;
+        public override int cost { get; set; } = 5; 
         public override int attack { get; set; } = 0;//随从的攻击力
         public override int life { get; set; } = 3;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
         public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
-        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
+        public override string[] keywords { get; set; } = new string[] {Keyword.UNIQUE};//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect),
@@ -291,11 +290,35 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getCardDefine<Pylon>(), card.pile.indexOf(card) + 1);
-            int position = card.pile.indexOf(card) - 1;
-            if (position < 0)
-                position = 0;
-            await card.getOwner().createToken(game, game.getCardDefine<Pylon>(), position);
+            await card.getOwner().createToken(game, game.getCardDefine<Pylon>(), card.pile.indexOf(card)+1 );
+            await card.getOwner().createToken(game, game.getCardDefine<Pylon>(), card.pile.indexOf(card)-1 );
         }
     }
+
+
+    /// <summary>
+    /// 重构光线
+    /// 0费，完全修好一个友方机械。(警告:不要对机械以外的随从使用！)
+    /// </summary>
+    public class ReconstructRay : SpellCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SPELL | 0x012;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            //存在目标的法术
+            new LambdaSingleTargetEffect(async (game,card,target)=>
+            {
+                int heal = target.getLife(game);
+                if(((IList)target.getTags(game)).Contains(CardTag.MACHINE)){
+                    await target.heal(game,heal);
+                }else{
+                    await target.damage(game, card, card.getOwner().getSpellDamage(game, heal));
+                }
+                
+            }, PileFlag.self | PileFlag.field)//后缀表示只能指向随从
+        };
+    }
+    
 }
