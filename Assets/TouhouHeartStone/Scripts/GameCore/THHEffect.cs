@@ -422,9 +422,12 @@ namespace TouhouHeartstone
                     if (ranges.Contains(arg.to) &&
                        (filter == null || filter(game, arg.card)))
                     {
-                        Buff b = this.buff.clone();
-                        arg.card.addBuff(game, b);
-                        buffDic.Add(arg.card, b);
+                        if (!buffDic.ContainsKey(arg.card))
+                        {
+                            Buff b = this.buff.clone();
+                            arg.card.addBuff(game, b);
+                            buffDic.Add(arg.card, b);
+                        }
                     }
                     else if (ranges.Contains(arg.from) &&
                         (filter == null || filter(game, arg.card)))
@@ -436,11 +439,14 @@ namespace TouhouHeartstone
                 });
                 game.triggers.registerAfter(onCardEnterHandTrigger);
             }
-            foreach (var target in card.getOwner().hand.Where(c => filter == null || filter(game, c)))
+            foreach (var range in ranges)
             {
-                Buff b = this.buff.clone();
-                target.addBuff(game, b);
-                buffDic.Add(target, b);
+                foreach (var target in range.Where(c => filter == null || filter(game, c)))
+                {
+                    Buff b = this.buff.clone();
+                    target.addBuff(game, b);
+                    buffDic.Add(target, b);
+                }
             }
         }
         public override void onDisable(THHGame game, Card card, Buff buff)
@@ -595,14 +601,14 @@ namespace TouhouHeartstone
     }
     public class BeforeTurnStart : THHEffectBefore<THHGame.TurnStartEventArg>
     {
-        public BeforeTurnStart(ExecuteDelegate onExecute,CheckConditionDelegate onCheckCondition = null) : base(PileName.FIELD, onCheckCondition, null, async (game, card, arg) =>
-        {
-            if (onExecute != null)
-            {
-                await onExecute.Invoke(game, card, arg);
-                await game.updateDeath();
-            }
-        })
+        public BeforeTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PileName.FIELD, onCheckCondition, null, async (game, card, arg) =>
+         {
+             if (onExecute != null)
+             {
+                 await onExecute.Invoke(game, card, arg);
+                 await game.updateDeath();
+             }
+         })
         {
         }
     }
