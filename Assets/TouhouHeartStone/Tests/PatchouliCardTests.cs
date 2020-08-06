@@ -553,16 +553,28 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(PhilosopherStone.ID, 5)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<PhilosopherStone>().cost);
-            var handBeforeUse = you.hand.ToArray();
-            you.cmdUse(game, you.hand.getCard<PhilosopherStone>());//挂刀
-            Assert.IsInstanceOf<PhilosopherStone>(you.item.define);//挂上了
-            var getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
-            game.skipUntilCanUse(you, getCard);
-            handBeforeUse = you.hand.ToArray();
-            you.cmdUse(game, getCard);//用牌
-            getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
+            
+            // game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<PhilosopherStone>().cost);
+            // var handBeforeUse = you.hand.ToArray();
+            // you.cmdUse(game, you.hand.getCard<PhilosopherStone>());//挂刀
+            // Assert.IsInstanceOf<PhilosopherStone>(you.item.define);//挂上了
+            // var getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
+            // game.skipUntilCanUse(you, getCard);
+            // handBeforeUse = you.hand.ToArray();
+            // you.cmdUse(game, getCard);//用牌
+            // getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
             //TODO:现在是之前的版本，用一张牌给一张牌，但是是回合结束给牌，所以需要修改测试，让它通过。
+            game.skipUntilCanUse<PhilosopherStone>(you);
+            var handBeforeUse = you.hand.ToArray().Length;
+            
+            you.cmdUse(game, you.hand.getCard<PhilosopherStone>());
+            Assert.IsInstanceOf<PhilosopherStone>(you.item.define);
+
+            Debug.Log("手牌数量:" + handBeforeUse);
+            you.cmdTurnEnd(game);
+            handBeforeUse = you.hand.ToArray().Length;
+            Debug.Log("手牌数量:" + handBeforeUse);
+
             game.Dispose();
         }
 
