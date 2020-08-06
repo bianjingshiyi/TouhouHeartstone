@@ -212,5 +212,44 @@ namespace Tests
             
             game.Dispose();
         }
+
+        /// <summary>
+        /// 山寨版本
+        /// 3费，发现墓地里一张机械牌，召唤它并使其变为3/3
+        /// </summary>
+        [Test]
+        public void ProbeImitationTest(){
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Imitation.ID, 1),
+                new KeyValuePair<int, int>(Sentry.ID, 3)
+            );
+            game.skipUntilCanUse<Sentry>(you);
+            //召唤3个哨兵，然后把哨兵和幻象都消灭
+            you.cmdUse(game, you.hand.getCard<Sentry>());
+            you.field[0].die(game);
+            you.field[0].die(game);
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<Sentry>());
+            you.field[0].die(game);
+            you.field[0].die(game);
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<Sentry>());
+            you.field[0].die(game);
+            you.field[0].die(game);
+            you.cmdTurnEnd(game);
+
+            //快进到能使用山寨产品
+            game.skipUntilCanUse<Imitation>(you);
+            you.cmdUse(game, you.hand.getCard<Imitation>());
+            DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
+            int cardId = discoverRequest.cardIdArray[0];
+            Card card = you.grave.getCard(cardId);//随便选一张
+            you.cmdDiscover(game, cardId);//选
+            Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id );   
+            
+            game.Dispose();
+        }
     }
 }

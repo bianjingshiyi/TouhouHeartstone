@@ -320,5 +320,27 @@ namespace TouhouHeartstone.Builtin
             }, PileFlag.self | PileFlag.field)//后缀表示只能指向随从
         };
     }
-    
+
+    /// <summary>
+    /// 山寨版本
+    /// 3费，发现墓地里一张机械牌，召唤它并使其变为3/3
+    /// </summary>
+    public class Imitation  : SpellCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SPELL | 0x013;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            var discovered = await card.getOwner().discover(game, card.getOwner().grave.Where(c => c.isServant() && ((IList)c.getTags(game)).Contains(CardTag.MACHINE)));
+            var theReborned = (await card.getOwner().reborn(game, discovered, card.getOwner().field)).card;
+            await theReborned.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3,true),new LifeModifier(3,true)));
+
+        }
+    }
+
 }
