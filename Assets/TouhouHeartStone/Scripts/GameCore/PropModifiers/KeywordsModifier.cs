@@ -38,5 +38,17 @@ namespace TouhouHeartstone
         {
             return new KeywordsModifier(this);
         }
+        public override string ToString()
+        {
+            switch (modifyType)
+            {
+                case ModifyType.set:
+                    return "keywords = " + (keywords.Length > 0 ? string.Join(",", keywords) : "empty");
+                case ModifyType.remove:
+                    return "keywords - " + (keywords.Length > 0 ? string.Join(",", keywords) : "empty");
+                default:
+                    return "keywords + " + (keywords.Length > 0 ? string.Join(",", keywords) : "empty");
+            }
+        }
     }
 }

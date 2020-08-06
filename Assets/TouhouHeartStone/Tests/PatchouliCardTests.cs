@@ -452,7 +452,7 @@ namespace Tests
             you.field[0].damage(game, you.master, 4);
             you.cmdUse(game, you.hand.getCard<WaterElf>(), targets: you.field[0]);
             Assert.True(you.field[0].getCurrentLife(game) == 13);
-            Assert.True(you.field[0].hasTag(game, Keyword.TAUNT));
+            Assert.True(you.field[0].hasKeywords(game, Keyword.TAUNT));
             game.Dispose();
         }
 
@@ -560,9 +560,9 @@ namespace Tests
             var getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
             game.skipUntilCanUse(you, getCard);
             handBeforeUse = you.hand.ToArray();
-            you.cmdUse(game, getCard);//用牌 
+            you.cmdUse(game, getCard);//用牌
             getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
-
+            //TODO:现在是之前的版本，用一张牌给一张牌，但是是回合结束给牌，所以需要修改测试，让它通过。
             game.Dispose();
         }
 
