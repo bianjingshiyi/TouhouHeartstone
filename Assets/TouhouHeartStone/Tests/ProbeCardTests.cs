@@ -85,10 +85,29 @@ namespace Tests
             Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
             Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) );
             Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
-            you.field[0].die(game);
+            you.field[1].die(game);
             Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
             Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) );
             //Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
+            game.Dispose();
+        }
+
+        /// <summary>
+        /// 先知机器人测试
+        /// </summary>
+        [Test]
+        public void ProbeProphetRobotTest(){
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(ProphetRobot.ID, 15),
+                new KeyValuePair<int, int>(Protoss.ID, 15)
+
+            );
+            game.skipUntilCanUse<ProphetRobot>(you);
+            // 回合结束
+            you.cmdTurnEnd(game);    
+            game.skipUntilCanUse<ProphetRobot>(you);
+            you.cmdUse(game, you.hand.getCard<ProphetRobot>());
+            
             game.Dispose();
         }
     }
