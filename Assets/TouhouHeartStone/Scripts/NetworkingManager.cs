@@ -92,19 +92,6 @@ namespace Game
             {
                 ui.parent.display(ui.parent.MainMenu);
             });
-
-            roomPanel.OnQuitClick += quitRoom;
-            roomPanel.OnStartClick += () =>
-            {
-                _ = host.invokeAll<object>(host.room.playerList.Select(p => p.id).ToArray(), nameof(start));
-            };
-            roomPanel.OnRoomInfoUpdate += (info) =>
-            {
-                if (host.room is RoomInfo)
-                {
-                    host.updateRoomInfo(info);
-                }
-            };
         }
         protected void Start()
         {
@@ -217,9 +204,13 @@ namespace Game
                 randomSeed = (int)DateTime.Now.ToBinary()
             });
             displayLoadingPanel();
-            RoomPlayerInfo playerInfo = new RoomPlayerInfo();
-            playerInfo.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
-            Task.Run(async () => { await client.joinRoom(room, playerInfo); });
+            currentPlayer = new RoomPlayerInfo();
+            currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
+
+            Task.Run(async () => { await client.joinRoom(room, currentPlayer); });
+
+            roomPanel.SetSelfID(currentPlayer.id);
+
             ui.RoomButton.interactable = true;
             ui.RoomButton.image.color = Color.white;
         }
@@ -240,14 +231,17 @@ namespace Game
                 _ = updateRoomInfo(room);
             }
         }
+
+        RoomPlayerInfo currentPlayer;
+
         public async Task joinRoom(RoomInfo roomInfo)
         {
             if (roomInfo == null)
                 throw new ArgumentNullException(nameof(roomInfo));
             displayLoadingPanel();
-            RoomPlayerInfo playerInfo = new RoomPlayerInfo();
-            playerInfo.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
-            await client.joinRoom(roomInfo, playerInfo);
+            currentPlayer = new RoomPlayerInfo();
+            currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
+            await client.joinRoom(roomInfo, currentPlayer);
             ui.RoomButton.interactable = true;
             ui.RoomButton.image.color = Color.white;
         }
@@ -262,6 +256,8 @@ namespace Game
             host.stop();
             if (client.roomInfo != null)
                 client.quitRoom();
+            currentPlayer = null;
+
             ui.RoomButton.interactable = false;
             ui.RoomButton.image.color = Color.gray;
             updateAllRooms();
@@ -362,10 +358,37 @@ namespace Game
 
         private void displayRoomPanel()
         {
+            roomPanel.ResetEvents();
+
+            roomPanel.OnQuitClick += quitRoom;
+            roomPanel.OnStartClick += () =>
+            {
+                _ = host.invokeAll<object>(host.room.playerList.Select(p => p.id).ToArray(), nameof(start));
+            };
+            roomPanel.OnRoomInfoUpdate += (info) =>
+            {
+                if (host.RoomIsValid)
+                {
+                    host.updateRoomInfo(info);
+                }
+            };
+            roomPanel.OnPlayerRemove += (id) =>
+            {
+                if (host.RoomIsValid)
+                {
+                    // todo: 网络中踢出一个玩家
+                }
+            };
+            roomPanel.OnSetPlayerDeck += (id, cards) =>
+            {
+                currentPlayer.setDeck(cards);
+                _ = client.updatePlayerInfo(currentPlayer);
+            };
+
             ui.NetworkingPageGroup.display(roomPanel);
 
             roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
-            roomPanel.SetSide(host.RoomIsValid);
+            roomPanel.SetMode(host.RoomIsValid ? RoomPanel.Mode.NetworkingHost : RoomPanel.Mode.NetworkingClient);
         }
         #endregion
     }

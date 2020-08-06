@@ -29,6 +29,14 @@ namespace UI
             this.m_as_GridLayoutGroup = this.GetComponent<GridLayoutGroup>();
             this.defaultItem = this.transform.Find("DeckListItem").GetComponent<DeckListItem>();
         }
+        private RoomPanel _parent;
+        public RoomPanel parent
+        {
+            get
+            {
+                return this.transform.parent.parent.parent.parent.parent.GetComponent<RoomPanel>();
+            }
+        }
         [SerializeField()]
         private GridLayoutGroup m_as_GridLayoutGroup;
         public GridLayoutGroup asGridLayoutGroup

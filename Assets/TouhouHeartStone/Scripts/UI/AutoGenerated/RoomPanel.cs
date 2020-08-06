@@ -40,14 +40,8 @@ namespace UI
             this._IsSortedToggleGameOptionItemToggle = this.transform.Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<GameOptionItemToggle>();
             this._QuitButtonButtonBlack = this.transform.Find("QuitButton").GetComponent<ButtonBlack>();
             this._StartButtonButtonBlack = this.transform.Find("StartButton").GetComponent<ButtonBlack>();
-        }
-        private Main _parent;
-        public Main parent
-        {
-            get
-            {
-                return this.transform.parent.parent.parent.GetComponent<Main>();
-            }
+            this._DeckSelectionDeckListItem = this.transform.Find("DeckSelection").GetComponent<DeckListItem>();
+            this._DeckPanelMasterCardSelection = this.transform.Find("DeckPanel").GetComponent<MasterCardSelection>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -242,6 +236,32 @@ namespace UI
                     this._StartButtonButtonBlack = this.transform.Find("StartButton").GetComponent<ButtonBlack>();
                 }
                 return this._StartButtonButtonBlack;
+            }
+        }
+        [SerializeField()]
+        private DeckListItem _DeckSelectionDeckListItem;
+        public DeckListItem DeckSelectionDeckListItem
+        {
+            get
+            {
+                if ((this._DeckSelectionDeckListItem == null))
+                {
+                    this._DeckSelectionDeckListItem = this.transform.Find("DeckSelection").GetComponent<DeckListItem>();
+                }
+                return this._DeckSelectionDeckListItem;
+            }
+        }
+        [SerializeField()]
+        private MasterCardSelection _DeckPanelMasterCardSelection;
+        public MasterCardSelection DeckPanelMasterCardSelection
+        {
+            get
+            {
+                if ((this._DeckPanelMasterCardSelection == null))
+                {
+                    this._DeckPanelMasterCardSelection = this.transform.Find("DeckPanel").GetComponent<MasterCardSelection>();
+                }
+                return this._DeckPanelMasterCardSelection;
             }
         }
         partial void onAwake();
