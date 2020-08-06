@@ -43,8 +43,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.addBuff(game,
-                new GeneratedBuff(ID, new ArmorModifier(2)));
+            await card.getOwner().changeArmor(game, 2);
         }
     }
     /// <summary>
@@ -79,7 +78,6 @@ namespace TouhouHeartstone.Builtin
         public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x003;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override string[] keywords { get; set; } = new string[] { Keyword.ACCUMULATE };
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
            new KonpakuYoumu.AccumulateTrigggerEffectBefore()
@@ -108,12 +106,29 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             if (!card.isAccumulate(game))
-                await card.getOwner().master.addBuff(game,
-                     new GeneratedBuff(ID, new ArmorModifier(6),
-                    new RemoveBuffBefore<THHGame.TurnStartEventArg>(PileName.MASTER, ID)));
+            {
+                await card.getOwner().changeArmor(game, 6);
+                await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new ArmorEffectBefore<THHGame.TurnStartEventArg>((g1, c1, a1) =>
+                {
+                    return a1.player == c1.getOwner();
+                }, (g2, c2, a2) =>
+                {
+                    c2.getOwner().changeArmor(game, -6);
+                    return c2.getOwner().master.removeBuff(game, c2.getOwner().master.getBuffs().Where(b => b.id == ID));
+                })));
+            }
             else
-                await card.getOwner().master.addBuff(game,
-                    new GeneratedBuff(ID, new ArmorModifier(6)));
+                await card.getOwner().changeArmor(game, 6);
+        }
+        class ArmorEffectBefore<T> : THHEffectBefore<T> where T : IEventArg
+        {
+            public ArmorEffectBefore(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute)
+                : base(PileName.MASTER, onCheckCondition, null, async (g, c, a) =>
+                {
+                    await onExecute?.Invoke(g, c, a);
+                })
+            {
+            }
         }
     }
     /// <summary>
@@ -127,7 +142,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await target.damage(game,card,card.getOwner().master.getArmor(game));
+                await target.damage(game,card,card.getOwner().armor);
             })
         };
     }
@@ -201,7 +216,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().draw(game); 
-            if(card.getOwner().master.getArmor(game)>0)
+            if(card.getOwner().armor>0)
                 await card.getOwner().draw(game);
         }
     }
@@ -238,9 +253,9 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().master.getArmor(game)),
+            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().armor),
                 new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
-            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new ArmorModifier(0, true)));
+            await card.getOwner().changeArmor(game, 0, true);
         }
     }
     /// <summary>
@@ -307,9 +322,10 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            
+            await card.getOwner().item.addBuff(game, new GeneratedBuff(ID,
+                new KeywordsModifier(KeywordsModifier.ModifyType.add, Keyword.IMMUNITY),
+                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.ITEM, ID)));
         }
-
     }
     /// <summary>
     /// 323 列队游魂 当回合结束时，如果你的护甲值大于0，那么召唤一个1/1的幽灵。
@@ -344,7 +360,19 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            //...
+            new NoTargetEffect(async(g1,c1)=>
+            {
+                await c1.getOwner().item.addBuff(g1, new GeneratedBuff(ID,new AttackModifier(c1.getOwner().armor+c1.define.getAttack(),true)));
+                await c1.getOwner().item.addBuff(g1, new GeneratedBuff(ID,new LifeModifier(c1.getOwner().armor+c1.define.getLife(),true)));
+            }),
+            new THHEffectAfter<THHPlayer.ChangeArmorEventArg>(PileName.FIELD,(g,c,a)=>
+            {
+                return a.player == c.getOwner();
+            },null,async(g,c,a)=>
+            {
+                await c.getOwner().item.addBuff(g, new GeneratedBuff(ID,new AttackModifier(c.getOwner().armor+c.define.getAttack(),true)));
+                await c.getOwner().item.addBuff(g, new GeneratedBuff(ID,new LifeModifier(c.getOwner().armor+c.define.getLife(),true)));
+            })
         };
     }
     /// <summary>

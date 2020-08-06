@@ -12,7 +12,6 @@ namespace TouhouHeartstone
         /// 
         /// </summary>
         public virtual bool isActive { get; set; } = false;
-        public virtual int Armor { get; set; } = 0;
         public abstract int cost { get; set; }
         public abstract int attack { get; set; }
         public abstract int life { get; set; }

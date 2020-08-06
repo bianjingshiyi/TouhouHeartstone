@@ -26,6 +26,7 @@ namespace TouhouHeartstone
         }
         public bool isPrepared { get; set; } = false;
         public int gem { get; private set; } = 0;
+        public int armor { get; private set; } = 0;//护甲
         public int maxGem { get; private set; } = 0;
         public int fatigue { get; private set; } = 0;
         public THHPlayer(THHGame game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck) : base(id, name)
@@ -102,6 +103,25 @@ namespace TouhouHeartstone
             });
         }
         public class SetMaxGemEventArg : EventArg
+        {
+            public THHPlayer player;
+            public int value;
+        }
+        public Task changeArmor(THHGame game, int value , bool isSet = false)
+        {
+            return game.triggers.doEvent(new ChangeArmorEventArg() { player = this, value = value }, arg =>
+            {
+                if(!isSet)
+                    arg.player.armor += arg.value;
+                else
+                    arg.player.armor = arg.value;
+                if (arg.player.armor < 0)
+                    arg.player.armor = 0;
+                game.logger.log(arg.player + "的护甲值变为" + arg.player.armor);
+                return Task.CompletedTask;
+            });
+        }
+        public class ChangeArmorEventArg : EventArg
         {
             public THHPlayer player;
             public int value;

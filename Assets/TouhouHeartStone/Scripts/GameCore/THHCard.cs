@@ -72,14 +72,6 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(ServantCardDefine.life), value);
         }
-        public static int getArmor(this CardDefine card)
-        {
-            return card.getProp<int>(nameof(ServantCardDefine.Armor));
-        }
-        public static void setArmor(this Card card, int value)
-        {
-            card.setProp(nameof(ServantCardDefine.Armor), value);
-        }
         /// <summary>
         /// 一个随从/物品/英雄是否已经死了？除了生命值小于等于0以外，还有一个isDead的属性来控制卡片是否在死亡结算当中。
         /// </summary>
@@ -685,6 +677,15 @@ namespace TouhouHeartstone
                         }
                         else
                             damage = value;
+                        
+                        if(card.define is MasterCardDefine)
+                        {
+                            int armor = card.getOwner().armor;
+                            damage = damage - armor;
+                            if (damage < 0)
+                                card.getOwner().changeArmor(game, -damage,true);
+                        }
+
                         if (damage > 0)
                         {
                             card.setCurrentLife(card.getCurrentLife(game) - damage);
