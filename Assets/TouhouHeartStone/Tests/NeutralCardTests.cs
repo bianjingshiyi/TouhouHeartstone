@@ -317,20 +317,27 @@ namespace Tests
         [Test]
         public void LettyTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption() { shuffle = false });
-            THHPlayer you = game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<LettyWhiterock_N>() as CardDefine, 4)
-                .Concat(Enumerable.Repeat(game.getCardDefine<ArcaneKnowledge>(), 4)));
-            THHPlayer oppo = game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<ArcaneKnowledge>() as CardDefine, 30));
-
-            game.skipTurnWhen(() => you.gem < 5);
-
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(LettyWhiterock_N.ID, 30));
+            game.skipUntilCanUse<LettyWhiterock_N>(you);
             you.cmdUse(game, you.hand.getCard<LettyWhiterock_N>());
-            you.cmdTurnEnd(game);
-            Assert.True(oppo.hand.Where(c => c.define is ArcaneKnowledge).All(c => c.getCost(game) == 5));
-            oppo.cmdUse(game, oppo.hand.First());
-            Assert.True(oppo.hand.Where(c => c.define is ArcaneKnowledge).All(c => c.getCost(game) == 4));
-            oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<ArcaneKnowledge>());
+            Assert.AreEqual(game.getCardDefine<LettyWhiterock_N>().cost, you.hand.getCard<LettyWhiterock_N>().getCost(game));
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<LettyWhiterock_N>().cost * 2 + 1);
+            //Assert.AreEqual(game.getCardDefine<LettyWhiterock_N>().cost + 1, you.hand.getCard<LettyWhiterock_N>().getCost(game));
+            //THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption() { shuffle = false });
+            //THHPlayer you = game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<LettyWhiterock_N>() as CardDefine, 4)
+            //    .Concat(Enumerable.Repeat(game.getCardDefine<ArcaneKnowledge>(), 4)));
+            //THHPlayer oppo = game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<ArcaneKnowledge>() as CardDefine, 30));
+
+            //game.skipTurnWhen(() => you.gem < 5);
+
+            //you.cmdUse(game, you.hand.getCard<LettyWhiterock_N>());
+            //you.cmdTurnEnd(game);
+            //Assert.True(oppo.hand.Where(c => c.define is ArcaneKnowledge).All(c => c.getCost(game) == 5));
+            //oppo.cmdUse(game, oppo.hand.First());
+            //Assert.True(oppo.hand.Where(c => c.define is ArcaneKnowledge).All(c => c.getCost(game) == 4));
+            //oppo.cmdTurnEnd(game);
+            //you.cmdUse(game, you.hand.getCard<ArcaneKnowledge>());
         }
 
         [Test]
