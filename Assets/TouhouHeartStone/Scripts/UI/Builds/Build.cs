@@ -108,8 +108,9 @@ namespace UI
             // 然后在窗口选择之后再正式新建卡组
             MasterCardSelection.hide();
             var skin = cm.getSkin(id);
-            dm.CreateDeck(skin?.name ?? "新牌组", id);
+            var deckID = dm.CreateDeck(skin?.name ?? "新牌组", id);
             reloadDeckList();
+            onDeckSelect((int)deckID);
         }
 
         void showMasterSelection()
