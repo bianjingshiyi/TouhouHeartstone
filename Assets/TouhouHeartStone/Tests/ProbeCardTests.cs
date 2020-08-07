@@ -251,5 +251,33 @@ namespace Tests
             
             game.Dispose();
         }
+
+
+        /// <summary>
+        /// 守护之壳测试
+        /// 3费，使一个随从获得+3生命值，如果它是机械，再获得+4攻击力
+        /// </summary>
+        [Test]
+        public void ProbeProtectiveShellTest(){
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(ProtectiveShell.ID, 2),
+                new KeyValuePair<int, int>(Sentry.ID, 1)
+            );
+            game.skipUntilCanUse<Sentry>(you);
+            you.cmdUse(game, you.hand.getCard<Sentry>());
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            
+            game.skipUntilCanUse<ProtectiveShell>(you);
+            you.cmdUse(game, you.hand.getCard<ProtectiveShell>(),targets: you.field[0]);
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<ProtectiveShell>(),targets: you.field[1]);
+
+            Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id );
+            Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) + "的" + you.field[1].define.id );   
+            
+            game.Dispose();
+        }
     }
 }

@@ -343,4 +343,26 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
+    /// <summary>
+    /// 守护之壳
+    /// 3费，使一个随从获得+3生命值，如果它是机械，再获得+4攻击力
+    /// </summary>
+    public class ProtectiveShell : SpellCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SPELL | 0x014;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            //存在目标的法术
+            new LambdaSingleTargetEffect(async (game,card,target)=>
+            {
+                await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(3)));
+                if(((IList)target.getTags(game)).Contains(CardTag.MACHINE)){
+                    await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(4)));
+                }
+            }, PileFlag.self | PileFlag.field)//后缀表示只能指向随从
+        };
+    }
+
 }
