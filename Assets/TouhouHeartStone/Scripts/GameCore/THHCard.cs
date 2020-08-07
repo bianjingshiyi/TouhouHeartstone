@@ -230,7 +230,7 @@ namespace TouhouHeartstone
         }
         public static bool isRush(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.RUSH);
+            return hasKeywords(card, game, Keyword.RUSH);
         }
         public static void setRush(this Card card, bool value)
         {
