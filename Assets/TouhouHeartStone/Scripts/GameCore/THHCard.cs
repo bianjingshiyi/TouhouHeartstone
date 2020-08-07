@@ -151,13 +151,6 @@ namespace TouhouHeartstone
                 if (card.getKeywords(game).Contains(Keyword.CANTATTACK))
                     return false;
             }
-            /*if(card.define is MasterCardDefine)
-            {
-                if(card.getOwner().item != null )
-                {
-                    card.setAttack(card.getAttack(game) + card.getOwner().item.getAttack(game));
-                }
-            }*/
             if (card.getAttack(game) <= 0)//没有攻击力
                 return false;
             if (!card.isReady(game)//还没准备好
