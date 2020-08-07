@@ -25,36 +25,50 @@ namespace UI
         }
         public void autoBind()
         {
-            this.m_as_Image = this.GetComponent<Image>();
-            this._TitleBarImage = this.transform.Find("TitleBar").GetComponent<Image>();
-            this._TitleText = this.transform.Find("TitleBar").Find("Title").GetComponent<Text>();
-            this._IPText = this.transform.Find("TitleBar").Find("IP").GetComponent<Text>();
-            this._RoomPlayerListScrollRect = this.transform.Find("RoomPlayerListScrollRect").GetComponent<ScrollRect>();
-            this._RoomPlayerList = this.transform.Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
-            this._GameOptionPanelImage = this.transform.Find("GameOptionPanel").GetComponent<Image>();
-            this._GameOptionPanelVerticalLayoutGroup = this.transform.Find("GameOptionPanel").GetComponent<VerticalLayoutGroup>();
-            this._RandomSeedContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("RandomSeedContainer").GetComponent<GameOptionItemText>();
-            this._ShuffleContainerGameOptionItemToggle = this.transform.Find("GameOptionPanel").Find("ShuffleContainer").GetComponent<GameOptionItemToggle>();
-            this._InitReplacementContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("InitReplacementContainer").GetComponent<GameOptionItemText>();
-            this._TurnTimeContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("TurnTimeContainer").GetComponent<GameOptionItemText>();
-            this._IsSortedToggleGameOptionItemToggle = this.transform.Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<GameOptionItemToggle>();
-            this._QuitButtonButtonBlack = this.transform.Find("QuitButton").GetComponent<ButtonBlack>();
-            this._StartButtonButtonBlack = this.transform.Find("StartButton").GetComponent<ButtonBlack>();
-            this._DeckSelectionDeckListItem = this.transform.Find("DeckSelection").GetComponent<DeckListItem>();
-            this._DeckPanelMasterCardSelection = this.transform.Find("DeckPanel").GetComponent<MasterCardSelection>();
-            this._DeckViewMasterCardSelection = this.transform.Find("DeckView").GetComponent<MasterCardSelection>();
+            this._Image = this.transform.Find("Image").GetComponent<Image>();
+            this._ContainerImage = this.transform.Find("Container").GetComponent<Image>();
+            this._TitleBarImage = this.transform.Find("Container").Find("TitleBar").GetComponent<Image>();
+            this._TitleText = this.transform.Find("Container").Find("TitleBar").Find("Title").GetComponent<Text>();
+            this._IPText = this.transform.Find("Container").Find("TitleBar").Find("IP").GetComponent<Text>();
+            this._RoomPlayerListScrollRect = this.transform.Find("Container").Find("RoomPlayerListScrollRect").GetComponent<ScrollRect>();
+            this._RoomPlayerList = this.transform.Find("Container").Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
+            this._GameOptionPanelImage = this.transform.Find("Container").Find("GameOptionPanel").GetComponent<Image>();
+            this._GameOptionPanelVerticalLayoutGroup = this.transform.Find("Container").Find("GameOptionPanel").GetComponent<VerticalLayoutGroup>();
+            this._RandomSeedContainerGameOptionItemText = this.transform.Find("Container").Find("GameOptionPanel").Find("RandomSeedContainer").GetComponent<GameOptionItemText>();
+            this._ShuffleContainerGameOptionItemToggle = this.transform.Find("Container").Find("GameOptionPanel").Find("ShuffleContainer").GetComponent<GameOptionItemToggle>();
+            this._InitReplacementContainerGameOptionItemText = this.transform.Find("Container").Find("GameOptionPanel").Find("InitReplacementContainer").GetComponent<GameOptionItemText>();
+            this._TurnTimeContainerGameOptionItemText = this.transform.Find("Container").Find("GameOptionPanel").Find("TurnTimeContainer").GetComponent<GameOptionItemText>();
+            this._IsSortedToggleGameOptionItemToggle = this.transform.Find("Container").Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<GameOptionItemToggle>();
+            this._QuitButtonButtonBlack = this.transform.Find("Container").Find("QuitButton").GetComponent<ButtonBlack>();
+            this._StartButtonButtonBlack = this.transform.Find("Container").Find("StartButton").GetComponent<ButtonBlack>();
+            this._DeckSelectionDeckListItem = this.transform.Find("Container").Find("DeckSelection").GetComponent<DeckListItem>();
+            this._DeckPanelMasterCardSelection = this.transform.Find("Container").Find("DeckPanel").GetComponent<MasterCardSelection>();
+            this._DeckViewMasterCardSelection = this.transform.Find("Container").Find("DeckView").GetComponent<MasterCardSelection>();
         }
         [SerializeField()]
-        private Image m_as_Image;
-        public Image asImage
+        private Image _Image;
+        public Image Image
         {
             get
             {
-                if ((this.m_as_Image == null))
+                if ((this._Image == null))
                 {
-                    this.m_as_Image = this.GetComponent<Image>();
+                    this._Image = this.transform.Find("Image").GetComponent<Image>();
                 }
-                return this.m_as_Image;
+                return this._Image;
+            }
+        }
+        [SerializeField()]
+        private Image _ContainerImage;
+        public Image ContainerImage
+        {
+            get
+            {
+                if ((this._ContainerImage == null))
+                {
+                    this._ContainerImage = this.transform.Find("Container").GetComponent<Image>();
+                }
+                return this._ContainerImage;
             }
         }
         [SerializeField()]
@@ -65,7 +79,7 @@ namespace UI
             {
                 if ((this._TitleBarImage == null))
                 {
-                    this._TitleBarImage = this.transform.Find("TitleBar").GetComponent<Image>();
+                    this._TitleBarImage = this.transform.Find("Container").Find("TitleBar").GetComponent<Image>();
                 }
                 return this._TitleBarImage;
             }
@@ -78,7 +92,7 @@ namespace UI
             {
                 if ((this._TitleText == null))
                 {
-                    this._TitleText = this.transform.Find("TitleBar").Find("Title").GetComponent<Text>();
+                    this._TitleText = this.transform.Find("Container").Find("TitleBar").Find("Title").GetComponent<Text>();
                 }
                 return this._TitleText;
             }
@@ -91,7 +105,7 @@ namespace UI
             {
                 if ((this._IPText == null))
                 {
-                    this._IPText = this.transform.Find("TitleBar").Find("IP").GetComponent<Text>();
+                    this._IPText = this.transform.Find("Container").Find("TitleBar").Find("IP").GetComponent<Text>();
                 }
                 return this._IPText;
             }
@@ -104,7 +118,7 @@ namespace UI
             {
                 if ((this._RoomPlayerListScrollRect == null))
                 {
-                    this._RoomPlayerListScrollRect = this.transform.Find("RoomPlayerListScrollRect").GetComponent<ScrollRect>();
+                    this._RoomPlayerListScrollRect = this.transform.Find("Container").Find("RoomPlayerListScrollRect").GetComponent<ScrollRect>();
                 }
                 return this._RoomPlayerListScrollRect;
             }
@@ -117,7 +131,7 @@ namespace UI
             {
                 if ((this._RoomPlayerList == null))
                 {
-                    this._RoomPlayerList = this.transform.Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
+                    this._RoomPlayerList = this.transform.Find("Container").Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
                 }
                 return this._RoomPlayerList;
             }
@@ -130,7 +144,7 @@ namespace UI
             {
                 if ((this._GameOptionPanelImage == null))
                 {
-                    this._GameOptionPanelImage = this.transform.Find("GameOptionPanel").GetComponent<Image>();
+                    this._GameOptionPanelImage = this.transform.Find("Container").Find("GameOptionPanel").GetComponent<Image>();
                 }
                 return this._GameOptionPanelImage;
             }
@@ -143,7 +157,7 @@ namespace UI
             {
                 if ((this._GameOptionPanelVerticalLayoutGroup == null))
                 {
-                    this._GameOptionPanelVerticalLayoutGroup = this.transform.Find("GameOptionPanel").GetComponent<VerticalLayoutGroup>();
+                    this._GameOptionPanelVerticalLayoutGroup = this.transform.Find("Container").Find("GameOptionPanel").GetComponent<VerticalLayoutGroup>();
                 }
                 return this._GameOptionPanelVerticalLayoutGroup;
             }
@@ -156,7 +170,7 @@ namespace UI
             {
                 if ((this._RandomSeedContainerGameOptionItemText == null))
                 {
-                    this._RandomSeedContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("RandomSeedContainer").GetComponent<GameOptionItemText>();
+                    this._RandomSeedContainerGameOptionItemText = this.transform.Find("Container").Find("GameOptionPanel").Find("RandomSeedContainer").GetComponent<GameOptionItemText>();
                 }
                 return this._RandomSeedContainerGameOptionItemText;
             }
@@ -169,7 +183,7 @@ namespace UI
             {
                 if ((this._ShuffleContainerGameOptionItemToggle == null))
                 {
-                    this._ShuffleContainerGameOptionItemToggle = this.transform.Find("GameOptionPanel").Find("ShuffleContainer").GetComponent<GameOptionItemToggle>();
+                    this._ShuffleContainerGameOptionItemToggle = this.transform.Find("Container").Find("GameOptionPanel").Find("ShuffleContainer").GetComponent<GameOptionItemToggle>();
                 }
                 return this._ShuffleContainerGameOptionItemToggle;
             }
@@ -182,7 +196,7 @@ namespace UI
             {
                 if ((this._InitReplacementContainerGameOptionItemText == null))
                 {
-                    this._InitReplacementContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("InitReplacementContainer").GetComponent<GameOptionItemText>();
+                    this._InitReplacementContainerGameOptionItemText = this.transform.Find("Container").Find("GameOptionPanel").Find("InitReplacementContainer").GetComponent<GameOptionItemText>();
                 }
                 return this._InitReplacementContainerGameOptionItemText;
             }
@@ -195,7 +209,7 @@ namespace UI
             {
                 if ((this._TurnTimeContainerGameOptionItemText == null))
                 {
-                    this._TurnTimeContainerGameOptionItemText = this.transform.Find("GameOptionPanel").Find("TurnTimeContainer").GetComponent<GameOptionItemText>();
+                    this._TurnTimeContainerGameOptionItemText = this.transform.Find("Container").Find("GameOptionPanel").Find("TurnTimeContainer").GetComponent<GameOptionItemText>();
                 }
                 return this._TurnTimeContainerGameOptionItemText;
             }
@@ -208,7 +222,7 @@ namespace UI
             {
                 if ((this._IsSortedToggleGameOptionItemToggle == null))
                 {
-                    this._IsSortedToggleGameOptionItemToggle = this.transform.Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<GameOptionItemToggle>();
+                    this._IsSortedToggleGameOptionItemToggle = this.transform.Find("Container").Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<GameOptionItemToggle>();
                 }
                 return this._IsSortedToggleGameOptionItemToggle;
             }
@@ -221,7 +235,7 @@ namespace UI
             {
                 if ((this._QuitButtonButtonBlack == null))
                 {
-                    this._QuitButtonButtonBlack = this.transform.Find("QuitButton").GetComponent<ButtonBlack>();
+                    this._QuitButtonButtonBlack = this.transform.Find("Container").Find("QuitButton").GetComponent<ButtonBlack>();
                 }
                 return this._QuitButtonButtonBlack;
             }
@@ -234,7 +248,7 @@ namespace UI
             {
                 if ((this._StartButtonButtonBlack == null))
                 {
-                    this._StartButtonButtonBlack = this.transform.Find("StartButton").GetComponent<ButtonBlack>();
+                    this._StartButtonButtonBlack = this.transform.Find("Container").Find("StartButton").GetComponent<ButtonBlack>();
                 }
                 return this._StartButtonButtonBlack;
             }
@@ -247,7 +261,7 @@ namespace UI
             {
                 if ((this._DeckSelectionDeckListItem == null))
                 {
-                    this._DeckSelectionDeckListItem = this.transform.Find("DeckSelection").GetComponent<DeckListItem>();
+                    this._DeckSelectionDeckListItem = this.transform.Find("Container").Find("DeckSelection").GetComponent<DeckListItem>();
                 }
                 return this._DeckSelectionDeckListItem;
             }
@@ -260,7 +274,7 @@ namespace UI
             {
                 if ((this._DeckPanelMasterCardSelection == null))
                 {
-                    this._DeckPanelMasterCardSelection = this.transform.Find("DeckPanel").GetComponent<MasterCardSelection>();
+                    this._DeckPanelMasterCardSelection = this.transform.Find("Container").Find("DeckPanel").GetComponent<MasterCardSelection>();
                 }
                 return this._DeckPanelMasterCardSelection;
             }
@@ -273,7 +287,7 @@ namespace UI
             {
                 if ((this._DeckViewMasterCardSelection == null))
                 {
-                    this._DeckViewMasterCardSelection = this.transform.Find("DeckView").GetComponent<MasterCardSelection>();
+                    this._DeckViewMasterCardSelection = this.transform.Find("Container").Find("DeckView").GetComponent<MasterCardSelection>();
                 }
                 return this._DeckViewMasterCardSelection;
             }

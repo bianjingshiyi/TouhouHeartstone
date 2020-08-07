@@ -30,6 +30,7 @@ namespace UI
             this._MainMenu = this.transform.Find("MainMenu").GetComponent<MainMenu>();
             this._AboutPage = this.transform.Find("AboutPage").GetComponent<AboutPage>();
             this._NetworkingPage = this.transform.Find("NetworkingPage").GetComponent<NetworkingPage>();
+            this._RoomPanel = this.transform.Find("RoomPanel").GetComponent<RoomPanel>();
             this._Loading = this.transform.Find("Loading").GetComponent<Loading>();
             this._Dialog = this.transform.Find("Dialog").GetComponent<Dialog>();
         }
@@ -99,6 +100,19 @@ namespace UI
             }
         }
         [SerializeField()]
+        private RoomPanel _RoomPanel;
+        public RoomPanel RoomPanel
+        {
+            get
+            {
+                if ((this._RoomPanel == null))
+                {
+                    this._RoomPanel = this.transform.Find("RoomPanel").GetComponent<RoomPanel>();
+                }
+                return this._RoomPanel;
+            }
+        }
+        [SerializeField()]
         private Loading _Loading;
         public Loading Loading
         {
@@ -132,6 +146,7 @@ namespace UI
                     this.MainMenu,
                     this.AboutPage,
                     this.NetworkingPage,
+                    this.RoomPanel,
                     this.Loading,
                     this.Dialog};
         }

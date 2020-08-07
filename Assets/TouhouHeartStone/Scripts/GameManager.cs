@@ -127,6 +127,40 @@ namespace Game
             onGameStart?.Invoke();
             gameTask = game.run();
         }
+
+        public void startLocalGame(RoomInfo room)
+        {
+            _ui.Game.GameResultDialog.hide();
+            game = new THHGame(room.getOption(), getManager<CardManager>().GetCardDefines())
+            {
+                answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
+                triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
+                time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
+                logger = new UnityLogger()
+            };
+            (game.answers as AnswerManager).game = game;
+
+            //检查卡组合法性
+            int[] deckSelf = room.playerList[0].getDeck();
+            int[] deckAI = room.playerList[1].getDeck();
+            checkDeckValid(deckSelf);
+            checkDeckValid(deckAI);
+
+            foreach (var info in room.playerList)
+            {
+                checkDeckValid(info.getDeck());
+
+                THHPlayer player = game.createPlayer(info.id, info.name, game.getCardDefine(info.getDeck()[0]) as MasterCardDefine,
+                    info.getDeck().Skip(1).Select(id => game.getCardDefine(id)));
+                if (info.id == room.playerList[0].id) // 暂时的
+                    displayGameUI(player);
+                else
+                    new AI(game, player); //AI玩家用AI
+            }
+            onGameStart?.Invoke();
+            gameTask = game.run();
+        }
+
         public void startRemoteGame(ClientManager client, GameOption option, RoomPlayerInfo[] players)
         {
             _ui.Game.GameResultDialog.hide();

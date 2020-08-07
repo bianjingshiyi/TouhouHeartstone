@@ -74,6 +74,7 @@ MonoBehaviour:
   _startDragPosition: {x: 0, y: 0}
   _dragThreshold: 0
   _isDragging: 0
+  _isHovered: 0
   onAttackUp:
     beforeAnim:
       m_PersistentCalls:

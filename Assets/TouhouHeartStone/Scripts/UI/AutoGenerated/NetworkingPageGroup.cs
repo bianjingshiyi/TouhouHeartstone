@@ -26,7 +26,6 @@ namespace UI
         public void autoBind()
         {
             this._LANPanel = this.transform.Find("LANPanel").GetComponent<LANPanel>();
-            this._RoomPanel = this.transform.Find("RoomPanel").GetComponent<RoomPanel>();
         }
         private Main _parent;
         public Main parent
@@ -49,24 +48,10 @@ namespace UI
                 return this._LANPanel;
             }
         }
-        [SerializeField()]
-        private RoomPanel _RoomPanel;
-        public RoomPanel RoomPanel
-        {
-            get
-            {
-                if ((this._RoomPanel == null))
-                {
-                    this._RoomPanel = this.transform.Find("RoomPanel").GetComponent<RoomPanel>();
-                }
-                return this._RoomPanel;
-            }
-        }
         public override UIObject[] getPages()
         {
             return new UIObject[] {
-                    this.LANPanel,
-                    this.RoomPanel};
+                    this.LANPanel};
         }
         partial void onAwake();
     }
