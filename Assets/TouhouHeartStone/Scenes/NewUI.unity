@@ -5777,6 +5777,8 @@ MonoBehaviour:
     audio: {fileID: 8300000, guid: 81d48eb501ee9dc489405ff6e4b4e954, type: 3}
   - name: ServantAttack
     audio: {fileID: 8300000, guid: 6bb81ac1bd43dc140b30d3e4a0046110, type: 3}
+  - name: AgniShine
+    audio: {fileID: 8300000, guid: f174c03e42af40e409dde22ca5caff3b, type: 3}
 --- !u!82 &1159673834
 AudioSource:
   m_ObjectHideFlags: 0

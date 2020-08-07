@@ -114,8 +114,22 @@ namespace UI
 
         void showMasterSelection()
         {
-            MasterCardSelection.SetItems(cards.Where(c => c is MasterCardDefine));
+            MasterCardSelection.SetItems(cards.Where(c => isMaster(c)));
             MasterCardSelection.display();
+        }
+
+        private static bool isMaster(CardDefine c)
+        {
+            if (c.id == 0)
+                return false;
+            if (c.GetType().Assembly != typeof(THHGame).Assembly)
+                return false;
+            if (c is MasterCardDefine master)
+            {
+                return true;
+            }
+            else
+                return false;
         }
 
         CardDefine[] cards { get; set; } = null;

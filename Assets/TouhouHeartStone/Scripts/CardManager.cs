@@ -364,25 +364,28 @@ namespace Game
         }
         public bool isStandardCard(CardDefine c)
         {
-            if (c.id == 0)
+            if (c.id == 0)//非法卡片
                 return false;
-            if (c.GetType().Assembly != typeof(THHGame).Assembly)
+            if (c.GetType().Assembly != typeof(THHGame).Assembly)//非游戏用卡片
                 return false;
-            //if (!(c is SpellCardDefine))
-            //{
-            //    if (!(c is ServantCardDefine) && !(c is GeneratedCardDefine))
-            //        return false;
-            //}
-            if (!(c is ServantCardDefine) && !(c is GeneratedCardDefine))
+            if (c is MasterCardDefine)//不是英雄牌
                 return false;
-            if (c is ServantCardDefine servant)
+            else if (c is SkillCardDefine)//不是技能牌
+                return false;
+            else if (c is ServantCardDefine servant)
             {
                 if (servant.isToken)
                     return false;
             }
+            else if (c is SpellCardDefine spell)
+            {
+                if (spell.isToken)
+                    return false;
+            }
             else if (c is GeneratedCardDefine generated)
             {
-                if (generated.type != CardDefineType.SERVANT)
+                if (generated.type == CardDefineType.MASTER ||
+                    generated.type == CardDefineType.SKILL)
                     return false;
                 if (generated.getProp<bool>(nameof(ServantCardDefine.isToken)))
                     return false;
