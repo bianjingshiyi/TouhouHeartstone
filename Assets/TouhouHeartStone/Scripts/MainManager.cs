@@ -46,7 +46,7 @@ namespace Game
                 main.display(main.RoomPanel);
                 main.RoomPanel.OnStartClick += () =>
                 {
-                    game.startLocalGame();
+                    game.startLocalGame(currentRoomInfo);
                 };
                 main.RoomPanel.OnQuitClick += () =>
                 {
