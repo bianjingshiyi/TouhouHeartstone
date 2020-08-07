@@ -209,5 +209,19 @@ namespace Tests
             Assert.AreEqual(2, sprites.Length);
             Assert.True(sprites.Any(s => s.name == "淡黄阵风_Token"));
         }
+        [Test]
+        public void arrayTest()
+        {
+            string[] array = new string[] { "1", "2", "3" };
+            object obj = array;
+            Assert.True(obj is IEnumerable);
+            Assert.True(obj is IEnumerable<string>);
+            Assert.True(obj is Array);
+            IEnumerable c = obj as IEnumerable;
+            foreach (var e in c)
+            {
+                Debug.Log(e);
+            }
+        }
     }
 }
