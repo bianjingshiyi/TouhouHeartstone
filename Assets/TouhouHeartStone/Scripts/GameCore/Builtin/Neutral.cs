@@ -535,7 +535,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new ConditionalPassiveEffect(new Halo(new GeneratedBuff(ID,new CostModifier(1)), PileFlag.both | PileFlag.hand),
-                (g,c,b)=>g.triggers.getRecordedEvents().skipUntil)
+                (g,c,b)=>g.triggers.getRecordedEvents().skipUntilLast(e=>e is THHGame.TurnStartEventArg).OfType<THHPlayer.UseEventArg>().Count()<1)
             //new THHEffectBefore<THHGame.TurnStartEventArg>(PileName.FIELD,null,null,async (g,c,a)=>
             //{
             //    foreach (var player in g.players)
