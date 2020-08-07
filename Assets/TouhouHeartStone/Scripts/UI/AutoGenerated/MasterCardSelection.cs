@@ -25,11 +25,26 @@ namespace UI
         }
         public void autoBind()
         {
+            this.m_as_Button = this.GetComponent<Button>();
             this.m_as_Image = this.GetComponent<Image>();
             this._BkgImage = this.transform.Find("Bkg").GetComponent<Image>();
             this._TitleText = this.transform.Find("Bkg").Find("Title").GetComponent<Text>();
+            this._CloseButtonBlack = this.transform.Find("Bkg").Find("Close").GetComponent<ButtonBlack>();
             this._Scroll_View = this.transform.Find("Bkg").Find("Scroll View").GetComponent<ScrollRect>();
             this._MasterCardList = this.transform.Find("Bkg").Find("Scroll View").Find("Viewport").Find("MasterCardList").GetComponent<MasterCardList>();
+        }
+        [SerializeField()]
+        private Button m_as_Button;
+        public Button asButton
+        {
+            get
+            {
+                if ((this.m_as_Button == null))
+                {
+                    this.m_as_Button = this.GetComponent<Button>();
+                }
+                return this.m_as_Button;
+            }
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -68,6 +83,19 @@ namespace UI
                     this._TitleText = this.transform.Find("Bkg").Find("Title").GetComponent<Text>();
                 }
                 return this._TitleText;
+            }
+        }
+        [SerializeField()]
+        private ButtonBlack _CloseButtonBlack;
+        public ButtonBlack CloseButtonBlack
+        {
+            get
+            {
+                if ((this._CloseButtonBlack == null))
+                {
+                    this._CloseButtonBlack = this.transform.Find("Bkg").Find("Close").GetComponent<ButtonBlack>();
+                }
+                return this._CloseButtonBlack;
             }
         }
         [SerializeField()]

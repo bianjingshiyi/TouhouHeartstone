@@ -42,6 +42,8 @@ namespace UI
                 }
                 uiModeSwitch(true);
             };
+
+            MasterCardSelection.OnSelect += onMasterSelect;
         }
 
         private void onSortChange()
@@ -51,7 +53,7 @@ namespace UI
 
         private void OnEnable()
         {
-            MasterCardSelection.gameObject.SetActive(false);
+            MasterCardSelection.hide();
             uiModeSwitch(true);
         }
 
@@ -104,7 +106,7 @@ namespace UI
         void onMasterSelect(int id)
         {
             // 然后在窗口选择之后再正式新建卡组
-            MasterCardSelection.gameObject.SetActive(false);
+            MasterCardSelection.hide();
             var skin = cm.getSkin(id);
             dm.CreateDeck(skin?.name ?? "新牌组", id);
             reloadDeckList();
@@ -112,19 +114,8 @@ namespace UI
 
         void showMasterSelection()
         {
-            MasterCardSelection.MasterCardList.clearItems();
-            foreach (var card in cards)
-            {
-                if (card is MasterCardDefine)
-                {
-                    var c = MasterCardSelection.MasterCardList.addItem();
-                    var skin = cm.getSkin(card.id);
-                    c.SetContent(card.id, skin?.name, skin?.image);
-                    c.SetMode(DeckListItem.Mode.DeckSelect);
-                    c.onDeckSelect += onMasterSelect;
-                }
-            }
-            MasterCardSelection.gameObject.SetActive(true);
+            MasterCardSelection.SetItems(cards);
+            MasterCardSelection.display();
         }
 
         CardDefine[] cards { get; set; } = null;
