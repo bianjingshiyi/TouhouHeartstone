@@ -567,23 +567,29 @@ namespace TouhouHeartstone.Builtin
             public override string[] piles => effect.piles;
             public override void onEnable(THHGame game, Card card, Buff buff)
             {
-                game.triggers.registerAfter(new Trigger<THHGame.TurnStartEventArg>(arg =>
+                Trigger<THHGame.TurnStartEventArg> enableTrig = new Trigger<THHGame.TurnStartEventArg>(arg =>
                 {
                     if (condition == null || condition(game, card, buff))
                         effect.onEnable(game, card, buff);
                     return Task.CompletedTask;
-                }));
-                game.triggers.registerAfter(new Trigger<THHPlayer.UseEventArg>(arg =>
+                });
+                card.setProp(nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig", enableTrig);
+                game.triggers.registerAfter(enableTrig);
+                Trigger<THHPlayer.UseEventArg> disableTrig = new Trigger<THHPlayer.UseEventArg>(arg =>
                 {
                     if (condition != null && !condition(game, card, buff))
                         effect.onDisable(game, card, buff);
                     return Task.CompletedTask;
-                }));
+                });
+                card.setProp(nameof(ConditionalPassiveEffect) + GetHashCode() + "disableTrig", disableTrig);
+                game.triggers.registerAfter(disableTrig);
                 if (condition == null || condition(game, card, buff))
                     effect.onEnable(game, card, buff);
             }
             public override void onDisable(THHGame game, Card card, Buff buff)
             {
+                game.triggers.removeAfter(card.getProp<Trigger<THHGame.TurnStartEventArg>>(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig"));
+                game.triggers.removeAfter(card.getProp<Trigger<THHPlayer.UseEventArg>>(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "disableTrig"));
                 effect.onDisable(game, card, buff);
             }
         }
