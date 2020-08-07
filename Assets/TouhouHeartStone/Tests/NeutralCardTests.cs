@@ -289,9 +289,9 @@ namespace Tests
             game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 1);
             oppo.cmdUse(game, oppo.hand.First());
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<Cirno_N_YYM>(),targets: oppo.field[0]);
+            you.cmdUse(game, you.hand.getCard<Cirno_N_YYM>(), targets: oppo.field[0]);
             you.cmdTurnEnd(game);
-            Assert.True(oppo.field[0].canAttack(game)==false);
+            Assert.True(oppo.field[0].canAttack(game) == false);
             oppo.cmdAttack(game, oppo.field[0], you.master);//尝试攻击
             game.Dispose();
         }
@@ -303,7 +303,7 @@ namespace Tests
                 new KeyValuePair<int, int>(Cirno_N_HMX.ID, 2)
             );
             game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
-            for(int i=0;i<3;i++)
+            for (int i = 0; i < 3; i++)
                 oppo.cmdUse(game, oppo.hand.First());
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<Cirno_N_HMX>(), targets: oppo.field[1]);
@@ -317,7 +317,7 @@ namespace Tests
         [Test]
         public void LettyTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption(){shuffle = false});
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption() { shuffle = false });
             THHPlayer you = game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<LettyWhiterock_N>() as CardDefine, 4)
                 .Concat(Enumerable.Repeat(game.getCardDefine<ArcaneKnowledge>(), 4)));
             THHPlayer oppo = game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<ArcaneKnowledge>() as CardDefine, 30));
@@ -343,11 +343,8 @@ namespace Tests
             oppo.cmdUse(game, oppo.hand.First());
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<Chen_N>());
-            Assert.True(you.field[0].isRush(game)==true);
-            Assert.True(you.field[0].getAttack(game) == 4);
-            you.cmdAttack(game, you.field[0], oppo.field[0]);
-            you.cmdTurnEnd(game);
-            Assert.True(you.field[0].getAttack(game) == 2);
+            Assert.AreEqual(3, you.field[0].getAttack(game));
+            Assert.True(you.field[0].isRush(game));
             game.Dispose();
         }
 
@@ -489,7 +486,7 @@ namespace Tests
             oppo.cmdUse(game, oppo.hand.First());
             Card card = oppo.field[0];
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<SaigyoujiYuyuko_N>(), targets:oppo.field[0]);
+            you.cmdUse(game, you.hand.getCard<SaigyoujiYuyuko_N>(), targets: oppo.field[0]);
             Assert.True(card.isDead(game));
         }
 
@@ -519,8 +516,8 @@ namespace Tests
                 new KeyValuePair<int, int>(Rumia_N.ID, 6)
             );
             game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
-            oppo.cmdUse(game, oppo.hand.First(),0);//敌方杂鱼A
-            oppo.cmdUse(game, oppo.hand.First(),1);//敌方杂鱼B
+            oppo.cmdUse(game, oppo.hand.First(), 0);//敌方杂鱼A
+            oppo.cmdUse(game, oppo.hand.First(), 1);//敌方杂鱼B
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<Rumia_N>());
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);

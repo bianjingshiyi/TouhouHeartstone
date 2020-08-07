@@ -2,7 +2,7 @@
 using BJSYGameCore;
 using System;
 using UnityScript.Steps;
-
+using System.Linq;
 namespace Game
 {
     [RequireComponent(typeof(AudioSource))]
@@ -35,7 +35,11 @@ namespace Game
             else
                 Debug.LogWarning("Unable to find audio: " + name);
         }
-
+        public void playSE(AudioClip clip)
+        {
+            if (clip != null)
+                Audio.PlayOneShot(clip);
+        }
         public AudioClip GetSE(string name)
         {
             foreach (var item in se)
@@ -44,6 +48,15 @@ namespace Game
                 {
                     return item.audio;
                 }
+            }
+            return null;
+        }
+        public string getSEName(AudioClip clip)
+        {
+            foreach (var item in se)
+            {
+                if (item.audio == clip)
+                    return item.name;
             }
             return null;
         }

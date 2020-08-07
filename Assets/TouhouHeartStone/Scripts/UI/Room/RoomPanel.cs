@@ -21,7 +21,8 @@ namespace UI
             DeckSelectionDeckListItem.SetMode(DeckListItem.Mode.DeckSelect);
             DeckSelectionDeckListItem.onDeckSelect += (_) =>
             {
-                showDeckSelectionPanel((deckID) => {
+                showDeckSelectionPanel((deckID) =>
+                {
                     var deck = deckManager.GetDeck(deckID);
                     var skin = cardManager.getSkin(deck.MasterID);
                     DeckSelectionDeckListItem.SetContent(deckID, deck.Name, skin.image);
@@ -31,7 +32,10 @@ namespace UI
                     OnSetPlayerDeck?.Invoke(selfPlayerID, list.ToArray());
                 });
             };
-            DeckPanelMasterCardSelection.gameObject.SetActive(false);
+
+            DeckPanelMasterCardSelection.hide();
+            DeckViewMasterCardSelection.hide();
+
             initEvents();
         }
 
@@ -145,28 +149,28 @@ namespace UI
             selfPlayerID = id;
         }
 
+        /// <summary>
+        /// 查看卡组
+        /// </summary>
+        /// <param name="cards"></param>
         void viewDeck(int[] cards)
         {
-            // TODO: 查看卡组
+            DeckViewMasterCardSelection.SetItems(cards);
+            DeckViewMasterCardSelection.display();
         }
 
         void showDeckSelectionPanel(Action<int> onDeckSelect)
         {
-            DeckPanelMasterCardSelection.MasterCardList.clearItems();
             var decks = deckManager.GetDecks();
-            foreach (var deck in decks)
-            {
-                var c = DeckPanelMasterCardSelection.MasterCardList.addItem();
-                var skin = cardManager.getSkin(deck.MasterID);
-                c.SetContent((int)deck.ID, deck.Name, skin?.image);
-                c.SetMode(DeckListItem.Mode.DeckSelect);
-                c.onDeckSelect += (id) => {
-                    DeckPanelMasterCardSelection.gameObject.SetActive(false);
-                    onDeckSelect?.Invoke(id);
-                };
-            }
+            DeckPanelMasterCardSelection.SetItems(decks);
+            DeckPanelMasterCardSelection.display();
+            DeckPanelMasterCardSelection.ClearEvents();
 
-            DeckPanelMasterCardSelection.gameObject.SetActive(true);
+            DeckPanelMasterCardSelection.OnSelect += (id) =>
+            {
+                DeckPanelMasterCardSelection.hide();
+                onDeckSelect(id);
+            };
         }
 
         RoomPlayerInfo aiPlayer = null;
@@ -188,7 +192,8 @@ namespace UI
 
                 // 仅当自己是主机且此玩家不是自己时，设置为可以移除
                 item.SetRemoveable(isHost && selfPlayerID != player.id);
-                item.OnPlayerRemove += (id) => { 
+                item.OnPlayerRemove += (id) =>
+                {
                     if (id == aiPlayer?.id)
                         aiPlayer = null;
                     OnPlayerRemove?.Invoke(id);
@@ -199,7 +204,8 @@ namespace UI
                     item.SetMode(RoomPlayerListItem.PlayerListMode.AIPlayer);
                     item.OnSetAIDeck += () =>
                     {
-                        showDeckSelectionPanel((deckID) => {
+                        showDeckSelectionPanel((deckID) =>
+                        {
                             var deck = deckManager.GetDeck(deckID);
                             var skin = cardManager.getSkin(deck.MasterID);
 

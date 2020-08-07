@@ -42,6 +42,7 @@ namespace UI
             this._StartButtonButtonBlack = this.transform.Find("StartButton").GetComponent<ButtonBlack>();
             this._DeckSelectionDeckListItem = this.transform.Find("DeckSelection").GetComponent<DeckListItem>();
             this._DeckPanelMasterCardSelection = this.transform.Find("DeckPanel").GetComponent<MasterCardSelection>();
+            this._DeckViewMasterCardSelection = this.transform.Find("DeckView").GetComponent<MasterCardSelection>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -262,6 +263,19 @@ namespace UI
                     this._DeckPanelMasterCardSelection = this.transform.Find("DeckPanel").GetComponent<MasterCardSelection>();
                 }
                 return this._DeckPanelMasterCardSelection;
+            }
+        }
+        [SerializeField()]
+        private MasterCardSelection _DeckViewMasterCardSelection;
+        public MasterCardSelection DeckViewMasterCardSelection
+        {
+            get
+            {
+                if ((this._DeckViewMasterCardSelection == null))
+                {
+                    this._DeckViewMasterCardSelection = this.transform.Find("DeckView").GetComponent<MasterCardSelection>();
+                }
+                return this._DeckViewMasterCardSelection;
             }
         }
         partial void onAwake();

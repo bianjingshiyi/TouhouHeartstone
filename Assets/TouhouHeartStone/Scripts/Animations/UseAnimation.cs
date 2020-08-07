@@ -87,6 +87,7 @@ namespace Game
                     table.setSkill(table.ui.SelfSkill, eventArg.card);
                 else
                     table.setSkill(table.ui.EnemySkill, eventArg.card);
+                table.getManager<SEManager>().playSE(table.getSkin(eventArg.card).sound_onUse);
                 if (tryTargetedAnim(table, eventArg))
                     return false;
             }

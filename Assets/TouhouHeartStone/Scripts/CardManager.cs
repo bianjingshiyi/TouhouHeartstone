@@ -232,15 +232,14 @@ namespace Game
 
                     if (datarow.ReadCol("Ignore", false))
                         continue;
-
+                    //加载文字信息
                     var skin = new CardSkinData()
                     {
                         id = datarow.ReadCol<int>("ID"),
                         name = datarow.ReadCol<string>("Name"),
-                        desc = datarow.ReadCol<string>("Desc", "")
+                        desc = datarow.ReadCol("Desc", "")
                     };
-
-                    logger?.log("加载卡片资源: " + skin.name);
+                    //加载图片
                     string imagePath = datarow.ReadCol("Image", "");
                     try
                     {
@@ -260,7 +259,16 @@ namespace Game
                         Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
                         skin.image = await getDefaultSprite();
                     }
-
+                    //加载音效
+                    try
+                    {
+                        string soundPath = datarow.ReadCol("Sound_onUse", "");
+                        skin.sound_onUse = await getManager<ResourceManager>().loadAudio(soundPath);
+                    }
+                    catch (Exception e)
+                    {
+                        logger?.log("Card", "加载" + skin + "的音效失败");
+                    }
                     skins.Add(skin);
                 }
                 catch (Exception e)

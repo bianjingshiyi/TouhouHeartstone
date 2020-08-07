@@ -534,25 +534,65 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHGame.TurnStartEventArg>(PileName.FIELD,null,null,async (g,c,a)=>
-            {
-                foreach (var player in g.players)
-                {
-                    foreach (var card in player.hand)
-                    {
-                        await card.addBuff(g,new GeneratedBuff(ID,new CostModifier(1),
-                            new THHEffectAfter<THHPlayer.UseEventArg>(PileName.HAND,(g2,c2,a2)=>
-                            {
-                                return a2.player == c2.getOwner();
-                            },null,async (g3,c3,a3)=>
-                            {
-                                await c3.removeBuff(g3,ID);
-                                await c3.getOwner().hand.removeBuff(g3,ID);
-                            })));
-                    }
-                }
-            })
+            new ConditionalPassiveEffect(new Halo(new GeneratedBuff(ID,new CostModifier(1)), PileFlag.both | PileFlag.hand),
+                (g,c,b)=>g.triggers.getRecordedEvents().skipUntilLast(e=>e is THHGame.TurnStartEventArg).OfType<THHPlayer.UseEventArg>().Count()<1)
+            //new THHEffectBefore<THHGame.TurnStartEventArg>(PileName.FIELD,null,null,async (g,c,a)=>
+            //{
+            //    foreach (var player in g.players)
+            //    {
+            //        foreach (var card in player.hand)
+            //        {
+            //            await card.addBuff(g,new GeneratedBuff(ID,new CostModifier(1),
+            //                new THHEffectAfter<THHPlayer.UseEventArg>(PileName.HAND,(g2,c2,a2)=>
+            //                {
+            //                    return a2.player == c2.getOwner();
+            //                },null,async (g3,c3,a3)=>
+            //                {
+            //                    await c3.removeBuff(g3,ID);
+            //                    await c3.getOwner().hand.removeBuff(g3,ID);
+            //                })));
+            //        }
+            //    }
+            //})
         };
+        public class ConditionalPassiveEffect : PassiveEffect
+        {
+            Func<THHGame, Card, Buff, bool> condition { get; }
+            PassiveEffect effect { get; }
+            public ConditionalPassiveEffect(PassiveEffect effect, Func<THHGame, Card, Buff, bool> condition)
+            {
+                this.condition = condition;
+                this.effect = effect;
+            }
+            public override string[] piles => effect.piles;
+            public override void onEnable(THHGame game, Card card, Buff buff)
+            {
+                Trigger<THHGame.TurnStartEventArg> enableTrig = new Trigger<THHGame.TurnStartEventArg>(arg =>
+                {
+                    if (condition == null || condition(game, card, buff))
+                        effect.onEnable(game, card, buff);
+                    return Task.CompletedTask;
+                });
+                card.setProp(nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig", enableTrig);
+                game.triggers.registerAfter(enableTrig);
+                Trigger<THHPlayer.UseEventArg> disableTrig = new Trigger<THHPlayer.UseEventArg>(arg =>
+                {
+                    if (condition != null && !condition(game, card, buff))
+                        effect.onDisable(game, card, buff);
+                    return Task.CompletedTask;
+                });
+                card.setProp(nameof(ConditionalPassiveEffect) + GetHashCode() + "disableTrig", disableTrig);
+                game.triggers.registerAfter(disableTrig);
+                if (condition == null || condition(game, card, buff))
+                    effect.onEnable(game, card, buff);
+            }
+            public override void onDisable(THHGame game, Card card, Buff buff)
+            {
+                game.triggers.removeAfter(card.getProp<Trigger<THHGame.TurnStartEventArg>>(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig"));
+                game.triggers.removeAfter(card.getProp<Trigger<THHPlayer.UseEventArg>>(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "disableTrig"));
+                effect.onDisable(game, card, buff);
+            }
+        }
     }
     /// <summary>
     /// 212 橙 战吼：本回合获得+2攻击力和突袭
@@ -562,7 +602,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x025;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override int attack { get; set; } = 2;
+        public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
