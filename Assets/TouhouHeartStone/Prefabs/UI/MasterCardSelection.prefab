@@ -94,7 +94,7 @@ MonoBehaviour:
   _BkgImage: {fileID: 8332778213311343783}
   _TitleText: {fileID: 2650129693795318188}
   _Scroll_View: {fileID: 4571073480032697433}
-  _MasterCardList: {fileID: 0}
+  _MasterCardList: {fileID: 6492719679207165952}
 --- !u!1 &3467915332910126268
 GameObject:
   m_ObjectHideFlags: 0

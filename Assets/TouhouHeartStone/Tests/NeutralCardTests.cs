@@ -149,7 +149,6 @@ namespace Tests
             Assert.AreEqual(3, damage.value);
             Assert.AreEqual(1, game.sortedPlayers[0].field.count);
         }
-        //TODO:炎之妖精之后的中立卡组测试
         [Test]
         public void flameFairyTest()
         {
