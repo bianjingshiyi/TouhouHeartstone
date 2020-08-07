@@ -114,7 +114,7 @@ namespace UI
 
         void showMasterSelection()
         {
-            MasterCardSelection.SetItems(cards);
+            MasterCardSelection.SetItems(cards.Where(c => c is MasterCardDefine));
             MasterCardSelection.display();
         }
 
