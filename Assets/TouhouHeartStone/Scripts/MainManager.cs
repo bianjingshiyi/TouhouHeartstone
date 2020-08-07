@@ -20,6 +20,11 @@ namespace Game
         UnityEvent onLoadingFinish;
 
         Main mainUI => ui.getObject<Main>();
+
+        RoomInfo currentRoomInfo = new RoomInfo();
+
+
+
         protected override void onAwake()
         {
             base.onAwake();
@@ -27,8 +32,58 @@ namespace Game
             Main main = ui.getObject<Main>();
             main.MainMenu.ManMachineButtonButtonBlack.asButton.onClick.set(() =>
             {
-                main.display(main.Game);
-                game.startLocalGame();
+                currentRoomInfo = new RoomInfo();
+                var selfPlayer = new RoomPlayerInfo() { id = 0, name = "自己" };
+                currentRoomInfo.playerList.Add(selfPlayer);
+                currentRoomInfo.setOption(GameOption.Default);
+
+                main.RoomPanel.ResetEvents();
+                main.RoomPanel.SetMode(RoomPanel.Mode.Local);
+                main.RoomPanel.SetSelfID(selfPlayer.id);
+                main.RoomPanel.SetRightText("");
+                main.RoomPanel.SetInfo(currentRoomInfo);
+
+                main.display(main.RoomPanel);
+                main.RoomPanel.OnStartClick += () =>
+                {
+                    game.startLocalGame();
+                };
+                main.RoomPanel.OnQuitClick += () =>
+                {
+                    main.display(main.MainMenu);
+                };
+                main.RoomPanel.OnRoomInfoUpdate += (info) =>
+                {
+                    currentRoomInfo = info;
+                    main.RoomPanel.SetInfo(currentRoomInfo);
+                };
+                main.RoomPanel.OnPlayerRemove += (id) =>
+                {
+                    for (int i = 0; i < currentRoomInfo.playerList.Count; i++)
+                    {
+                        if (currentRoomInfo.playerList[i].id == id)
+                        {
+                            currentRoomInfo.playerList.RemoveAt(i--);
+                        }
+                    }
+                    main.RoomPanel.SetInfo(currentRoomInfo);
+                };
+                main.RoomPanel.OnAIPlayerAdd += (player) =>
+                {
+                    currentRoomInfo.playerList.Add(player);
+                    main.RoomPanel.SetInfo(currentRoomInfo);
+                };
+                main.RoomPanel.OnSetPlayerDeck += (id, deck) =>
+                {
+                    for (int i = 0; i < currentRoomInfo.playerList.Count; i++)
+                    {
+                        if (currentRoomInfo.playerList[i].id == id)
+                        {
+                            currentRoomInfo.playerList[i].setDeck(deck);
+                        }
+                    }
+                    main.RoomPanel.SetInfo(currentRoomInfo);
+                };
             });
             main.MainMenu.NetworkButtonButtonBlack.asButton.onClick.set(() =>
             {

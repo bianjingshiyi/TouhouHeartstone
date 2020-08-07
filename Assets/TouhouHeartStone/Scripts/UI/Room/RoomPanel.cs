@@ -2,6 +2,7 @@
 using BJSYGameCore;
 using Game;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
@@ -228,7 +229,7 @@ namespace UI
 
                 item.OnAddAIPlayer += () =>
                 {
-                    aiPlayer = new RoomPlayerInfo();
+                    aiPlayer = new RoomPlayerInfo() { name = "AI" };
                     OnAIPlayerAdd?.Invoke(aiPlayer);
                     // todo: 添加AI玩家
                 };
@@ -301,7 +302,10 @@ namespace UI
             RemoveButtonBlack.asButton.onClick.AddListener(() => OnPlayerRemove?.Invoke(playerInfo.id));
             ViewButtonBlack.asButton.onClick.AddListener(() =>
             {
-                OnPlayerViewDeck?.Invoke(playerInfo.getProp<int[]>(RoomPlayerInfoName.DECK_INTARRAY));
+                int[] deck;
+                bool exists = playerInfo.tryGetProp<int[]>(RoomPlayerInfoName.DECK_INTARRAY, out deck);
+                if (exists)
+                    OnPlayerViewDeck?.Invoke(deck);
             });
             asButton.onClick.AddListener(() =>
             {
@@ -324,7 +328,10 @@ namespace UI
             playerInfo = info;
 
             NameText.text = info.name;
-            CharacterText.text = this.findInstance<CardManager>().getSkin(info.getProp<int[]>(RoomPlayerInfoName.DECK_INTARRAY)[0]).name;
+            int[] deck;
+            bool exists = info.tryGetProp<int[]>(RoomPlayerInfoName.DECK_INTARRAY, out deck);
+
+            CharacterText.text = exists ? this.findInstance<CardManager>().getSkin(deck[0]).name : "";
         }
 
         /// <summary>

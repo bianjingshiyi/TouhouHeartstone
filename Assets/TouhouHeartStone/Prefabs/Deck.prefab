@@ -75,6 +75,7 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
+  _isHovered: 0
 --- !u!114 &5277191508068643578
 MonoBehaviour:
   m_ObjectHideFlags: 0

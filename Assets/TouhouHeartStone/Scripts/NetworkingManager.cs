@@ -57,7 +57,7 @@ namespace Game
             get { return getManager<UIManager>().getObject<NetworkingPage>(); }
         }
 
-        RoomPanel roomPanel => ui.NetworkingPageGroup.RoomPanel;
+        RoomPanel roomPanel => ui.parent.RoomPanel;
 
         [SerializeField]
         List<RoomInfo> _LANRoomList;
@@ -360,7 +360,10 @@ namespace Game
         {
             roomPanel.ResetEvents();
 
-            roomPanel.OnQuitClick += quitRoom;
+            roomPanel.OnQuitClick += () =>{
+                quitRoom();
+                ui.parent.display(ui);
+            };
             roomPanel.OnStartClick += () =>
             {
                 _ = host.invokeAll<object>(host.room.playerList.Select(p => p.id).ToArray(), nameof(start));
@@ -385,7 +388,7 @@ namespace Game
                 _ = client.updatePlayerInfo(currentPlayer);
             };
 
-            ui.NetworkingPageGroup.display(roomPanel);
+            ui.parent.display(roomPanel);
 
             roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
             roomPanel.SetMode(host.RoomIsValid ? RoomPanel.Mode.NetworkingHost : RoomPanel.Mode.NetworkingClient);
