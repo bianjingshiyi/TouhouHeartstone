@@ -17,7 +17,7 @@ namespace UI
             CloseButtonBlack.asButton.onClick.AddListener(hide);
         }
 
-        public void SetItems(IEnumerable<DeckDefine> decks)
+        public void SetItems(IEnumerable<DeckDefine> decks, Action<DeckDefine, DeckListItem> action = null)
         {
             MasterCardList.clearItems();
             foreach (var deck in decks)
@@ -29,6 +29,7 @@ namespace UI
                 c.onDeckSelect += (id) => {
                     OnSelect?.Invoke(id);
                 };
+                action?.Invoke(deck, c);
             }
         }
 

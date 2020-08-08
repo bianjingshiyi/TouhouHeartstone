@@ -163,7 +163,10 @@ namespace UI
         void showDeckSelectionPanel(Action<int> onDeckSelect)
         {
             var decks = deckManager.GetDecks();
-            DeckPanelMasterCardSelection.SetItems(decks);
+            DeckPanelMasterCardSelection.SetItems(decks, (def, item) =>
+            {
+                item.HeadImageButton.interactable = deckManager.GetDeckCards(def.ID).Count >= 30; // 只有30张卡的卡组才能选择
+            });
             DeckPanelMasterCardSelection.display();
             DeckPanelMasterCardSelection.ClearEvents();
 
@@ -231,7 +234,6 @@ namespace UI
                 {
                     aiPlayer = new RoomPlayerInfo() { name = "AI" };
                     OnAIPlayerAdd?.Invoke(aiPlayer);
-                    // todo: 添加AI玩家
                 };
             }
 
@@ -243,7 +245,19 @@ namespace UI
             Debug.Log("刷新房间设定" + IsSortedToggleGameOptionItemToggle.Toggle.isOn);
             IsSortedToggleGameOptionItemToggle.Toggle.isOn = room.getOption().sortedPlayers != null;
 
-            StartButtonButtonBlack.asButton.setSelectable(isHost && room.playerList.Count > 1);
+            // 判断是否可以开始游戏
+            bool startable = true;
+            if (isHost && room.playerList.Count > 1)
+            {
+                foreach (var item in room.playerList)
+                {
+                    if (item.getDeck().Length < 31) startable = false;
+                }
+            } else
+            {
+                startable = false;
+            }
+            StartButtonButtonBlack.asButton.setSelectable(startable);
         }
 
         /// <summary>
