@@ -365,4 +365,35 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
+    /// <summary>
+    /// 西塞尔
+    /// 7/2/2，唯一，战吼：获得一个机械的控制权，然后将其变为3/3
+    /// </summary>
+    public class Sissel : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SERVANT | 0x015;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 7; 
+        public override int attack { get; set; } = 2;//随从的攻击力
+        public override int life { get; set; } = 2;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        //public override string[] tags { get; set; } = new string[] {  };//种族标签
+        public override string[] keywords { get; set; } = new string[] {Keyword.UNIQUE};//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            //存在目标的法术
+            new LambdaSingleTargetEffect(async (game,card,target)=>
+            {
+                await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(3)));
+                if(((IList)target.getTags(game)).Contains(CardTag.MACHINE)){
+                    await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(4)));
+                }
+            }, PileFlag.oppo | PileFlag.field , CardTag.MACHINE )//后缀表示只能指向随从
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().createToken(game, game.getCardDefine<Pylon>(), card.pile.indexOf(card)+1 );
+            await card.getOwner().createToken(game, game.getCardDefine<Pylon>(), card.pile.indexOf(card)-1 );
+        }
+    }
 }
