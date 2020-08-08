@@ -77,7 +77,7 @@ namespace UI
             for (int i = 0; i < allCharacters.Length; i++)
             {
                 var id = allCharacters[i];
-                var name = id == 0 ? "中立" : cardManager.getSkin(id)?.name;
+                var name = id == CardCategory.CHARACTER_NEUTRAL ? "中立" : cardManager.getSkin(id)?.name;
                 DropdownCharacter.options.Add(new UnityEngine.UI.Dropdown.OptionData(name));
             }
         }

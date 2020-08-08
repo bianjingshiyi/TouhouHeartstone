@@ -74,6 +74,7 @@ namespace Game
             client.onJoinRoom += Client_onJoinRoom;
             client.onRoomInfoUpdate += Client_onRoomInfoUpdate;
             _LANUpdateTimer.start();
+            // todo: Client断开后退出房间
             client.onQuitRoom += Client_onQuitRoom;
             gameManager.onGameEnd += onGameEnd;
 
@@ -379,7 +380,7 @@ namespace Game
             {
                 if (host.RoomIsValid)
                 {
-                    // todo: 网络中踢出一个玩家
+                    host.removePlayer(id);
                 }
             };
             roomPanel.OnSetPlayerDeck += (id, cards) =>
