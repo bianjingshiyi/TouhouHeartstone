@@ -43,6 +43,7 @@ namespace UI
             this._DragCard = this.transform.Find("DragCard").GetComponent<DragCard>();
             this._FilterPanel = this.transform.Find("FilterPanel").GetComponent<FilterPanel>();
             this._MasterCardSelection = this.transform.Find("MasterCardSelection").GetComponent<MasterCardSelection>();
+            this._HintMessageText = this.transform.Find("HintMessage").GetComponent<Text>();
         }
         [SerializeField()]
         private Image _BackgroundImage;
@@ -276,6 +277,19 @@ namespace UI
                     this._MasterCardSelection = this.transform.Find("MasterCardSelection").GetComponent<MasterCardSelection>();
                 }
                 return this._MasterCardSelection;
+            }
+        }
+        [SerializeField()]
+        private Text _HintMessageText;
+        public Text HintMessageText
+        {
+            get
+            {
+                if ((this._HintMessageText == null))
+                {
+                    this._HintMessageText = this.transform.Find("HintMessage").GetComponent<Text>();
+                }
+                return this._HintMessageText;
             }
         }
         partial void onAwake();
