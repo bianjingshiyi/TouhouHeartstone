@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Game;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,8 @@ namespace UI
 {
     public partial class FilterPanel
     {
+        CardManager cardManager => ui.getManager<CardManager>();
+
         public event Action onFilterConditionChange;
         public event Action onSortChange;
 
@@ -38,6 +41,8 @@ namespace UI
         int filterRare = 0;
         int filterCharacter = 0;
 
+        int[] allCharacters = { };
+
         SortMethod sortMethod = 0;
 
         partial void onAwake()
@@ -64,8 +69,17 @@ namespace UI
                 DropdownSort.options.Add(new UnityEngine.UI.Dropdown.OptionData(sortMethodsName[i]));
             }
 
-            // todo: 填充角色列表
-
+            // 填充角色列表
+            var cards = cardManager.GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly);
+            allCharacters = cards.getCharactersID();
+            DropdownCharacter.options.Clear();
+            DropdownCharacter.options.Add(new UnityEngine.UI.Dropdown.OptionData("所有"));
+            for (int i = 0; i < allCharacters.Length; i++)
+            {
+                var id = allCharacters[i];
+                var name = id == 0 ? "中立" : cardManager.getSkin(id)?.name;
+                DropdownCharacter.options.Add(new UnityEngine.UI.Dropdown.OptionData(name));
+            }
         }
 
         public bool cardFilter(CardDefine cd, CardSkinData sd)
@@ -98,7 +112,7 @@ namespace UI
             // 过滤角色
             if (filterCharacter != 0)
             {
-                if (cd.getCharacterID() != filterCharacter)
+                if (cd.getCharacterID() != allCharacters?[filterCharacter - 1])
                     return false;
             }
 
@@ -107,7 +121,6 @@ namespace UI
             {
                 if (!sd.name.Contains(filterKeyword)) return false;
             }
-
 
             return true;
         }
@@ -126,7 +139,7 @@ namespace UI
 
         void onCharacterFilterChange(int id)
         {
-            // todo: 角色从属这个是真的没做
+            filterCharacter = id;
             onFilterConditionChange?.Invoke();
         }
 

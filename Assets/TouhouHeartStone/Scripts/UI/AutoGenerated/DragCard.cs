@@ -28,12 +28,12 @@ namespace UI
             this._BuildDeckListItem = this.transform.Find("BuildDeckListItem").GetComponent<BuildDeckListItem>();
             this._Card = this.transform.Find("Card").GetComponent<Card>();
         }
-        private Main _parent;
-        public Main parent
+        private Build _parent;
+        public Build parent
         {
             get
             {
-                return this.transform.parent.parent.GetComponent<Main>();
+                return this.transform.parent.GetComponent<Build>();
             }
         }
         [SerializeField()]

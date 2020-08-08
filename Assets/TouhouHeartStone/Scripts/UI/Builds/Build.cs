@@ -44,8 +44,13 @@ namespace UI
             };
 
             MasterCardSelection.OnSelect += onMasterSelect;
+
+            HintMessageText.gameObject.SetActive(false);
         }
 
+        /// <summary>
+        /// 修改了排序
+        /// </summary>
         private void onSortChange()
         {
             BuildCardList.sortItems(FilterPanel.sortCompareMethod);
@@ -57,6 +62,9 @@ namespace UI
             uiModeSwitch(true);
         }
 
+        /// <summary>
+        /// 重载当前卡组的列表
+        /// </summary>
         void reloadDeckList()
         {
             var decks = dm.GetDecks();
@@ -71,7 +79,7 @@ namespace UI
                 item.SetContent((int)deck.ID, deck.Name, spr);
                 item.SetMode(DeckListItem.Mode.DeckListItem);
 
-                item.onDeckSelect += onDeckSelect;
+                item.onDeckSelect += deckEnterEditMode;
                 item.onDeckRemove += onDeckRemove;
             }
 
@@ -80,11 +88,10 @@ namespace UI
             addBtn.onDeckAdd += onDeckAdd;
         }
 
-        void onDeckSelect(int id)
-        {
-            deckEnterEditMode(id);
-        }
-
+        /// <summary>
+        /// 移除卡组并重载列表
+        /// </summary>
+        /// <param name="id"></param>
         void onDeckRemove(int id)
         {
             dm.RemoveDeck(id);
@@ -110,7 +117,7 @@ namespace UI
             var skin = cm.getSkin(id);
             var deckID = dm.CreateDeck(skin?.name ?? "新牌组", id);
             reloadDeckList();
-            onDeckSelect((int)deckID);
+            deckEnterEditMode((int)deckID);
         }
 
         void showMasterSelection()
@@ -144,6 +151,8 @@ namespace UI
             reloadCardList();
         }
 
+        int currentEditingDeckMasterID = 0;
+
         /// <summary>
         /// 使用卡组进入卡组编辑模式
         /// </summary>
@@ -155,6 +164,8 @@ namespace UI
 
             CardSkinData masterSkin = ui.getManager<CardManager>().getSkin(deck.MasterID);
             EditingDeckDeckListItem.SetContent(deckID, deck.Name, masterSkin?.image);
+            currentEditingDeckMasterID = deck.MasterID;
+
             MasterNameText.text = masterSkin?.name;
 
             BuildDeckList.clearItems();
@@ -300,14 +311,45 @@ namespace UI
             DragCard.BuildDeckListItem.update(card, ui.getManager<CardManager>().getSkin(card.id), 1);
             DragCard.Card.update(card, ui.getManager<CardManager>().getSkin(card.id));
         }
+
+        void showMessage(string msg)
+        {
+            HintMessageText.text = msg;
+            HintMessageText.gameObject.SetActive(false);
+            HintMessageText.gameObject.SetActive(true);
+        }
+
         private void onReleaseItem()
         {
+            var card = DragCard.BuildDeckListItem.card;
+            var deckItem = BuildDeckList.getItems().FirstOrDefault(i => i.card == card);
+
+            // 最多30张牌
             if (BuildDeckList.Select(i => i.count).Sum() >= 30)
             {
-                //最多30张牌
+                showMessage("牌组已满");
                 return;
             }
-            var deckItem = BuildDeckList.getItems().FirstOrDefault(i => i.card == DragCard.BuildDeckListItem.card);
+            // 每类牌最多两张
+            if (deckItem?.count >= 2)
+            {
+                showMessage("最多携带两张相同的卡片");
+                return;
+            }
+            // 唯一
+            if (card.hasTag(Keyword.UNIQUE) && deckItem?.count >= 1)
+            {
+                showMessage("唯一的卡片只能携带一张");
+                return;
+            }
+            // 中立卡或自己的卡
+            if (card.getCharacterID() != CardCategory.CHARACTER_NEUTRAL
+                && card.getCharacterID() != EditingDeckDeckListItem.ID)
+            {
+                showMessage("只能选择角色对应的卡或中立卡");
+                return;
+            }
+
             if (deckItem != null)
             {
                 deckItem.count++;

@@ -11,6 +11,7 @@ namespace UI
         public Action onDeckAdd;
 
         int id;
+        public int ID => id;
 
         partial void onAwake()
         {
