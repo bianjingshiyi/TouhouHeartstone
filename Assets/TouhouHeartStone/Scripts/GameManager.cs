@@ -140,18 +140,18 @@ namespace Game
             };
             (game.answers as AnswerManager).game = game;
 
-            //检查卡组合法性
-            int[] deckSelf = room.playerList[0].getDeck();
-            int[] deckAI = room.playerList[1].getDeck();
-            checkDeckValid(deckSelf);
-            checkDeckValid(deckAI);
-
             foreach (var info in room.playerList)
             {
-                checkDeckValid(info.getDeck());
+                int[] deck = info.getDeck();
+                checkDeckValid(deck);
+#if UNITY_EDITOR
+                //检查卡组合法性
+                if (_useTestDeck)
+                    deck = _testDeck.toIdArray();
+#endif
 
-                THHPlayer player = game.createPlayer(info.id, info.name, game.getCardDefine(info.getDeck()[0]) as MasterCardDefine,
-                    info.getDeck().Skip(1).Select(id => game.getCardDefine(id)));
+                THHPlayer player = game.createPlayer(info.id, info.name, game.getCardDefine(deck[0]) as MasterCardDefine,
+                    deck.Skip(1).Select(id => game.getCardDefine(id)));
                 if (info.id == room.playerList[0].id) // 暂时的
                     displayGameUI(player);
                 else

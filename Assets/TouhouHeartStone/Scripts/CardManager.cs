@@ -131,6 +131,7 @@ namespace Game
                     skin.image = await getDefaultSprite();
                 skinDic[skin.id] = skin;
             }
+            //加载外置皮肤
             foreach (string path in pathList)
             {
                 try
@@ -193,7 +194,7 @@ namespace Game
                     card.setProp(nameof(ServantCardDefine.tags), datarow.ReadCol("Tags", "").Split(','));
                     card.setProp(nameof(ServantCardDefine.keywords), datarow.ReadCol("Keywords", "").Split(','));
                     card.setProp(nameof(ServantCardDefine.isToken), datarow.ReadCol("IsToken", false));
-                    card.setProp(nameof(ServantCardDefine.isActive), datarow.ReadCol("IsActive", false));
+                    card.setProp(nameof(ServantCardDefine.isActive), datarow.ReadCol("IsUnavailable", false));
 
                     cards.Add(card);
                 }

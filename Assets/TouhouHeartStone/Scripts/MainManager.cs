@@ -95,9 +95,8 @@ namespace Game
         protected void Start()
         {
             _loadCardTask = getManager<CardManager>().load(
-                new string[] { "Cards/Cards.xls", "Cards/Patchouli.xls" },
                 new System.Reflection.Assembly[] { typeof(THHGame).Assembly },
-                null,
+                false,
                 mainUI.Loading.LoggerText.GetComponent<ScreenLogger>()
             );
         }

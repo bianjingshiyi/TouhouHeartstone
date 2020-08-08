@@ -13,7 +13,7 @@ namespace UI
         public event Action onFilterConditionChange;
         public event Action onSortChange;
 
-        KeyValuePair<string, string>[] typeName = { 
+        KeyValuePair<string, string>[] typeName = {
             new KeyValuePair<string, string>("", "所有"),
             new KeyValuePair<string, string>("Master", "英雄"),
             new KeyValuePair<string, string>("Servant", "随从"),
@@ -98,7 +98,8 @@ namespace UI
             // 过滤角色
             if (filterCharacter != 0)
             {
-                // todo: 角色判断
+                if (cd.getCharacterID() != filterCharacter)
+                    return false;
             }
 
             // 过滤名字

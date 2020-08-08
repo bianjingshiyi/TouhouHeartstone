@@ -1,4 +1,6 @@
 ﻿using TouhouCardEngine;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace TouhouHeartstone
 {
@@ -24,9 +26,23 @@ namespace TouhouHeartstone
         {
             return id & CHARACTER_MASK;
         }
+        /// <summary>
+        /// 获取卡片的所属角色ID
+        /// </summary>
+        /// <param name="define"></param>
+        /// <returns></returns>
         public static int getCharacterID(this CardDefine define)
         {
             return getCharacterID(define.id);
+        }
+        /// <summary>
+        /// 获取给出的所有卡片定义的所属角色ID
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
+        public static int[] getCharactersID(this IEnumerable<CardDefine> cards)
+        {
+            return cards.GroupBy(c => c.getCharacterID()).Select(g => g.Key).ToArray();
         }
         public static int getCategory(int id)
         {
