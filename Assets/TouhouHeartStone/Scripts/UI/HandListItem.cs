@@ -25,12 +25,15 @@ namespace UI
         bool _isHovered = false;
         public ActionEvent<HandListItem, PointerEventData> onPointerEnter { get; set; } = new ActionEvent<HandListItem, PointerEventData>();
         public ActionEvent<HandListItem, PointerEventData> onPointerExit { get; set; } = new ActionEvent<HandListItem, PointerEventData>();
+        public ActionEvent<HandListItem, Vector2> onPointerMove { get; set; } = new ActionEvent<HandListItem, Vector2>();
+
         private void Update()
         {
             if (_isHovered)
             {
                 Vector2 position;
                 position = EventSystem.current.currentInputModule.input.mousePosition;
+                onPointerMove?.invoke(this, position);
                 if (!rectTransform.contains(position))
                 {
                     _isHovered = false;
@@ -79,6 +82,7 @@ namespace UI
             _isHovered = false;
             onPointerExit.invoke(this, eventData);
         }
+
         public ActionEvent<HandListItem, PointerEventData> onEndDrag = new ActionEvent<HandListItem, PointerEventData>();
         public SimpleAnim onAttackUp;
         public SimpleAnim onAttackDown;

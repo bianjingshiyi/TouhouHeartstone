@@ -130,9 +130,11 @@ namespace Game
             ui.SelfDeck.asButton.onClick.set(onDeckClick);
             ui.SelfDeck.onPointerEnter.set(onDeckPointerEnter);
             ui.SelfDeck.onPointerExit.set(onDeckPointerExit);
+            ui.SelfDeck.onPointerMove.set(onDeckPointerMove);
             ui.SelfGraveDeck.asButton.onClick.set(onGraveClick);
             ui.SelfGraveDeck.onPointerEnter.set(onGravePointerEnter);
             ui.SelfGraveDeck.onPointerExit.set(onGravePointerExit);
+            ui.SelfGraveDeck.onPointerMove.set(onDeckPointerMove);
             ui.TurnEndButton.onClick.set(onTurnEndButtonClick);
             ui.TipText.hide();
             initMaster(ui.EnemyMaster);
@@ -564,9 +566,11 @@ namespace Game
             item.onEndDrag.set(onDragHandEnd);
             item.onPointerEnter.set(onHandPointerEnter);
             item.onPointerExit.set(onHandPointerExit);
+            item.onPointerMove.set(onHandPointerMove);
             cardHandDic.Add(card, item);
             return item;
         }
+
         /// <summary>
         /// 手牌拖拽事件
         /// </summary>
@@ -878,6 +882,10 @@ namespace Game
             {
                 ui.TipBox.display("你有" + player.hand.count + "张手牌", pointer.position + _tipBoxOffset);
             }
+        }
+        void onHandPointerMove(HandListItem handList, Vector2 pointer)
+        {
+            ui.TipBox.updatePos(pointer);
         }
         void onHandPointerExit(HandListItem handList, PointerEventData pointer)
         {
@@ -1330,6 +1338,12 @@ namespace Game
             else
                 ui.TipBox.display("你的墓地是空的，点击打开", pointer.position + _tipBoxOffset);
         }
+
+        private void onDeckPointerMove(UI.Deck arg1, Vector2 arg2)
+        {
+            ui.TipBox.updatePos(arg2);
+        }
+
         void onGravePointerExit(UI.Deck deck, PointerEventData pointer)
         {
             ui.TipBox.hide();

@@ -20,6 +20,9 @@ namespace UI
         {
             BackButtonBlack.asButton.onClick.AddListener(() =>
             {
+                // 返回的时候也顺便保存
+                saveToDeck(EditingDeckDeckListItem.ID);
+
                 Main main = GetComponentInParent<Main>();
                 main.display(main.MainMenu);
             });
@@ -32,20 +35,25 @@ namespace UI
             EditingDeckDeckListItem.onDeckSelect += (id) =>
             {
                 // 卡组保存
-                dm.ClearDeck(id);
-                foreach (var item in BuildDeckList.getItems())
-                {
-                    for (int i = 0; i < item.count; i++)
-                    {
-                        dm.AddCard(id, item.card.id);
-                    }
-                }
+                saveToDeck(id);
                 uiModeSwitch(true);
             };
 
             MasterCardSelection.OnSelect += onMasterSelect;
 
             HintMessageText.gameObject.SetActive(false);
+        }
+
+        private void saveToDeck(int id)
+        {
+            dm.ClearDeck(id);
+            foreach (var item in BuildDeckList.getItems())
+            {
+                for (int i = 0; i < item.count; i++)
+                {
+                    dm.AddCard(id, item.card.id);
+                }
+            }
         }
 
         /// <summary>
@@ -344,7 +352,7 @@ namespace UI
             }
             // 中立卡或自己的卡
             if (card.getCharacterID() != CardCategory.CHARACTER_NEUTRAL
-                && card.getCharacterID() != EditingDeckDeckListItem.ID)
+                && card.getCharacterID() != currentEditingDeckMasterID)
             {
                 showMessage("只能选择角色对应的卡或中立卡");
                 return;

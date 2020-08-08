@@ -10,6 +10,8 @@ namespace UI
         bool _isHovered = false;
         public ActionEvent<Deck, PointerEventData> onPointerEnter { get; set; } = new ActionEvent<Deck, PointerEventData>();
         public ActionEvent<Deck, PointerEventData> onPointerExit { get; set; } = new ActionEvent<Deck, PointerEventData>();
+        public ActionEvent<Deck, Vector2> onPointerMove { get; set; } = new ActionEvent<Deck, Vector2>();
+
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
             _isHovered = true;
@@ -26,6 +28,7 @@ namespace UI
             {
                 Vector2 position;
                 position = EventSystem.current.currentInputModule.input.mousePosition;
+                onPointerMove?.invoke(this, position);
                 if (!rectTransform.contains(position))
                 {
                     _isHovered = false;

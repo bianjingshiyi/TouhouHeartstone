@@ -12,5 +12,10 @@ namespace UI
             asVerticalLayoutGroup.enabled = false;
             asVerticalLayoutGroup.enabled = true;
         }
+
+        public void updatePos(Vector2 pos)
+        {
+            rectTransform.position = pos;
+        }
     }
 }
