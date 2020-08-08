@@ -87,10 +87,11 @@ namespace TouhouHeartstone
         grave = 0b_001000000,
         warp = 0b_010000000,
         item = 0b_100000000,
-        all = 0b_111111111,
+        all = master | init | hand | skill | deck | field | grave | warp | item,
+        character = field | master,
 
         self = 0b_01000000000,
         oppo = 0b_10000000000,
-        both = 0b_11000000000,
+        both = self | oppo,
     }
 }

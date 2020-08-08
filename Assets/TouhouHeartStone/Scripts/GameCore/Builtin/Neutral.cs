@@ -499,7 +499,7 @@ namespace TouhouHeartstone.Builtin
             {
                 target.setFreeze(true);
                 return Task.CompletedTask;
-            }, PileFlag.oppo | PileFlag.both)
+            }, PileFlag.oppo | PileFlag.character)
         };
     }
     /// <summary>
