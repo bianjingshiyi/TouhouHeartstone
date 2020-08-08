@@ -47,9 +47,9 @@ namespace Game
         /// 加载配置路径中的所有卡片和皮肤。
         /// </summary>
         /// <returns></returns>
-        public Task load(Assembly[] assemblies = default, bool builtinOnly = false, ILogger logger = null)
+        public Task load(Assembly[] assemblies = default, bool builtinOnly = false, ILogger logger = null, ILogger screenLogger = null)
         {
-            return load(builtinOnly ? new string[0] : _externalCardPaths, assemblies, logger);
+            return load(builtinOnly ? new string[0] : _externalCardPaths, assemblies, logger, screenLogger);
         }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
@@ -63,7 +63,17 @@ namespace Game
             if (assemblies == default)
                 assemblies = AppDomain.CurrentDomain.GetAssemblies();
             List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies, logger));
-
+            foreach (CardDefine card in cardList)
+            {
+                if (defineDic.ContainsKey(card.id))
+                {
+                    Debug.LogWarning("存在重复ID的卡片" + defineDic[card.id] + "和" + card);
+                    continue;
+                }
+                defineDic.Add(card.id, card);
+            }
+            cardList.Clear();
+            //加载外置卡片
             List<string> pathList = new List<string>();
             if (excelPaths != null)
             {
@@ -88,8 +98,6 @@ namespace Game
                     }
                 }
             }
-
-            //加载外置卡片
             foreach (string path in pathList)
             {
                 try
@@ -99,7 +107,7 @@ namespace Game
                     CardDefine[] cards = await loadCards(path);
                     foreach (var card in cards)
                     {
-                        CardDefine older = cardList.Find(c => c.id == card.id);
+                        CardDefine older = defineDic.FirstOrDefault(p => p.Value.id == card.id).Value;
                         if (older != null)
                         {
                             older.merge(card);
@@ -123,6 +131,7 @@ namespace Game
                 }
                 defineDic.Add(card.id, card);
             }
+            cardList.Clear();
             //加载内置皮肤
             skinDic.Clear();
             foreach (CardSkinData skin in _skins)
@@ -183,7 +192,15 @@ namespace Game
                     var datarow = table.Rows[i];
 
                     if (datarow.ReadCol("Ignore", false))
+                    {
+                        int id = datarow.ReadCol<int>("ID");
+                        if (defineDic.ContainsKey(id))
+                        {
+                            Debug.Log("忽略卡牌" + defineDic[id]);
+                            defineDic.Remove(id);
+                        }
                         continue;
+                    }
 
                     var card = new GeneratedCardDefine();
                     card.id = datarow.ReadCol<int>("ID");

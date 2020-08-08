@@ -97,6 +97,7 @@ namespace Game
             _loadCardTask = getManager<CardManager>().load(
                 new System.Reflection.Assembly[] { typeof(THHGame).Assembly },
                 false,
+                null,
                 mainUI.Loading.LoggerText.GetComponent<ScreenLogger>()
             );
         }

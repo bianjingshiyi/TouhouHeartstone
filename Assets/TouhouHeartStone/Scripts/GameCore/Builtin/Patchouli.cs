@@ -752,7 +752,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await new Card[] { target, card.getOwner().master }.damage(game,card,card.getOwner().getSpellDamage(game,3));
+                await new Card[] { target, game.getOpponent(card.getOwner()).master }.damage(game,card,card.getOwner().getSpellDamage(game,3));
                 await Patchouli.tryMix(game, card);
             }, PileFlag.both | PileFlag.field)
         };
