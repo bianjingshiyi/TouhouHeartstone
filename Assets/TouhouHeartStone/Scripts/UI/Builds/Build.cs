@@ -227,6 +227,7 @@ namespace UI
                     {
                         var item = BuildCardList.addItem();
                         item.Card.setCard(card, skin);
+                        item.card = card;
                     }
                 }
                 else

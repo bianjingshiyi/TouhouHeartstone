@@ -12,7 +12,8 @@ namespace UI
         float _dragThreshold = 50f;
         [SerializeField]
         bool _isDragging = false;
-        public CardDefine card { get; private set; }
+        [Obsolete]
+        public CardDefine card { get; set; }
         [Obsolete]
         public void update(CardDefine card, CardSkinData skin)
         {
