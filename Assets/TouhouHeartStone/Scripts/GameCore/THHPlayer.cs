@@ -107,11 +107,11 @@ namespace TouhouHeartstone
             public THHPlayer player;
             public int value;
         }
-        public Task changeArmor(THHGame game, int value , bool isSet = false)
+        public Task changeArmor(THHGame game, int value, bool isSet = false)
         {
             return game.triggers.doEvent(new ChangeArmorEventArg() { player = this, value = value }, arg =>
             {
-                if(!isSet)
+                if (!isSet)
                     arg.player.armor += arg.value;
                 else
                     arg.player.armor = arg.value;
@@ -436,7 +436,7 @@ namespace TouhouHeartstone
                 return null;
             if (position < 0)
                 position = field.count;
-            RebornEventArg eventArg = new RebornEventArg() { player = this,card = card, pile= pile,position = position };
+            RebornEventArg eventArg = new RebornEventArg() { player = this, card = card, pile = pile, position = position };
             await game.triggers.doEvent(eventArg, async arg =>
             {
                 THHPlayer player = arg.player;
@@ -537,7 +537,7 @@ namespace TouhouHeartstone
         /// <param name="filter"></param>
         /// <returns></returns>
         /// <remarks>但是其实并不会真的哪里都去找啦</remarks>
-        public Card[] findCardsWherever(THHGame game, Func<Card, bool> filter, PileFlag pile = PileFlag.field | PileFlag.hand | PileFlag.grave | PileFlag.deck)
+        public Card[] findCardsWherever(THHGame game, Func<Card, bool> filter, PileFlag pile = PileFlag.self | PileFlag.field | PileFlag.hand | PileFlag.grave | PileFlag.deck)
         {
             if (filter == null)
                 throw new ArgumentNullException(nameof(filter));

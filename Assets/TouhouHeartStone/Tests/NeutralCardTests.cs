@@ -322,7 +322,11 @@ namespace Tests
             game.skipUntilCanUse<LettyWhiterock_N>(you);
             you.cmdUse(game, you.hand.getCard<LettyWhiterock_N>());
             Assert.AreEqual(game.getCardDefine<LettyWhiterock_N>().cost, you.hand.getCard<LettyWhiterock_N>().getCost(game));
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<LettyWhiterock_N>().cost * 2 + 1);
+            game.skipUntilHasGem(you, game.getCardDefine<LettyWhiterock_N>().cost * 2 + 1);
+            Assert.AreEqual(game.getCardDefine<LettyWhiterock_N>().cost + 1, you.hand.getCard<LettyWhiterock_N>().getCost(game));
+            you.cmdUse(game, you.hand.getCard<LettyWhiterock_N>());
+            Assert.AreEqual(game.getCardDefine<LettyWhiterock_N>().cost, you.hand.getCard<LettyWhiterock_N>().getCost(game));
+            //game.skipUntilCanUse<LettyWhiterock_N>(you);
             //Assert.AreEqual(game.getCardDefine<LettyWhiterock_N>().cost + 1, you.hand.getCard<LettyWhiterock_N>().getCost(game));
             //THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption() { shuffle = false });
             //THHPlayer you = game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<LettyWhiterock_N>() as CardDefine, 4)
@@ -478,7 +482,7 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<YakumoRan_N>());
             Card card = game.triggers.getRecordedEvents().OfType<THHPlayer.CreateTokenEventArg>().Last().card;
             Assert.IsInstanceOf<Chen_N>(card.define);
-            Assert.True(you.field[1].hasTag(game, Keyword.RUSH));
+            Assert.True(you.field[1].hasKeywords(game, Keyword.RUSH));
             var buff = you.field[1].getBuffs()[0];
             Assert.AreEqual(YakumoRan_N.ID, buff.id);
         }
@@ -501,20 +505,31 @@ namespace Tests
         public void YukariYakumoTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(YakumoYukari_N.ID, 6),
-                new KeyValuePair<int, int>(Doll_N.ID, 5)
+                new KeyValuePair<int, int>(YakumoYukari_N.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 9);
-            oppo.cmdUse(game, oppo.hand.First());
-            Card oppocard = oppo.field[0];
-            oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<Doll_N>());
-            Card youcard = you.field[0];
+            game.skipUntilCanUse<YakumoYukari_N>(you);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
             you.cmdTurnEnd(game);
+            for (int i = 0; i < 7; i++)
+            {
+                oppo.cmdUse(game, oppo.hand[0]);
+            }
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<YakumoYukari_N>());
-            Assert.True(you.hand.Contains(youcard));
-            Assert.True(oppo.hand.Contains(oppocard));
+            Assert.AreEqual(1, you.field.count);
+            Assert.IsInstanceOf<YakumoYukari_N>(you.field[0].define);
+            Assert.AreEqual(0, oppo.field.count);
+            Assert.AreEqual(10, oppo.hand.count);
+            //oppo.cmdUse(game, oppo.hand.First());
+            //Card oppocard = oppo.field[0];
+            //oppo.cmdTurnEnd(game);
+            //you.cmdUse(game, you.hand.getCard<Doll_N>());
+            //Card youcard = you.field[0];
+            //you.cmdTurnEnd(game);
+            //oppo.cmdTurnEnd(game);
+            //you.cmdUse(game, you.hand.getCard<YakumoYukari_N>());
+            //Assert.True(you.hand.Contains(youcard));
+            //Assert.True(oppo.hand.Contains(oppocard));
         }
         [Test]
         public void Rumia_NTest()
@@ -548,7 +563,6 @@ namespace Tests
             Assert.True(you.field.Any(c => c.define is LunasaPrismriver_N));
             Assert.True(you.field.Any(c => c.define is MerlinPrismriver_N));
             Assert.True(you.field.Any(c => c.define is LyricaPrismriver_N));
-
         }
     }
 }

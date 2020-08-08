@@ -429,8 +429,7 @@ namespace TouhouHeartstone
                             buffDic.Add(arg.card, b);
                         }
                     }
-                    else if (ranges.Contains(arg.from) &&
-                        (filter == null || filter(game, arg.card)))
+                    else if (ranges.Contains(arg.from) && (filter == null || filter(game, arg.card)))
                     {
                         if (buffDic.ContainsKey(arg.card))
                             arg.card.removeBuff(game, buffDic[arg.card]);
@@ -443,9 +442,12 @@ namespace TouhouHeartstone
             {
                 foreach (var target in range.Where(c => filter == null || filter(game, c)))
                 {
-                    Buff b = this.buff.clone();
-                    target.addBuff(game, b);
-                    buffDic.Add(target, b);
+                    if (!buffDic.ContainsKey(target))
+                    {
+                        Buff b = this.buff.clone();
+                        target.addBuff(game, b);
+                        buffDic.Add(target, b);
+                    }
                 }
             }
         }

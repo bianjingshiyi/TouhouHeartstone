@@ -60,7 +60,7 @@ namespace TouhouHeartstone
             if (result < 0)
                 return 0;
             return result;
-            
+
         }
         public static void setAttack(this Card card, int value)
         {
@@ -101,6 +101,13 @@ namespace TouhouHeartstone
         public static void setDead(this Card card, bool value)
         {
             card.setProp(nameof(THHCard.isDead), value);
+        }
+        public static void setDead(this IEnumerable<Card> cards, bool value)
+        {
+            foreach (var card in cards)
+            {
+                card.setProp(nameof(THHCard.isDead), value);
+            }
         }
         public static int getArmor(this Card card, IGame game)
         {
@@ -585,7 +592,7 @@ namespace TouhouHeartstone
         /// <param name="card"></param>
         /// <param name="game"></param>
         /// <returns></returns>
-        public static async Task resetCard(this Card card,THHGame game)
+        public static async Task resetCard(this Card card, THHGame game)
         {
             if (card.define is ServantCardDefine servant)
             {
@@ -606,6 +613,13 @@ namespace TouhouHeartstone
                 }
                 card.setProp(nameof(ServantCardDefine.keywords), servant.keywords);
                 card.setProp(nameof(ServantCardDefine.tags), servant.tags);
+            }
+        }
+        public static async Task resetCard(this IEnumerable<Card> cards, THHGame game)
+        {
+            foreach (var card in cards)
+            {
+                await resetCard(card, game);
             }
         }
 
@@ -639,7 +653,7 @@ namespace TouhouHeartstone
                 game.logger.log(arg.card + "攻击" + arg.target);
                 arg.card.setAttackTimes(arg.card.getAttackTimes(game) + 1);
                 if (arg.card.define is MasterCardDefine && arg.card.getOwner().item != null)
-                    await arg.card.getOwner().item.damage(game,arg.card,1);
+                    await arg.card.getOwner().item.damage(game, arg.card, 1);
                 if (arg.card.getAttack(game) > 0)
                     await arg.target.damage(game, arg.card, arg.card.getAttack(game));
                 if (arg.target.getAttack(game) > 0)
@@ -696,13 +710,13 @@ namespace TouhouHeartstone
                         }
                         else
                             damage = value;
-                        
-                        if(card.define is MasterCardDefine)
+
+                        if (card.define is MasterCardDefine)
                         {
                             int armor = card.getOwner().armor;
                             damage = damage - armor;
                             if (damage < 0)
-                                card.getOwner().changeArmor(game, -damage,true);
+                                card.getOwner().changeArmor(game, -damage, true);
                         }
 
                         if (damage > 0)
@@ -878,14 +892,30 @@ namespace TouhouHeartstone
             if (card.getOwner().hand.isFull)
             {
                 game.logger.log(card.getOwner() + "的手牌已满，无法将" + card + "置入手牌");
-                await card.die(game);
+                card.setDead(true);
             }
             else
             {
                 game.logger.log("将" + card + "置入" + card.getOwner() + "的手牌");
                 await card.resetCard(game);
                 await card.getOwner().field.moveTo(game, card, card.getOwner().hand);
-                
+            }
+        }
+        public static async Task backToHand(this IEnumerable<Card> cards, THHGame game)
+        {
+            foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
+            {
+                if (g.Key.hand.isFull)
+                {
+                    game.logger.log(g.Key + "的手牌已满，无法将" + string.Join(",", g) + "置入手牌");
+                    g.setDead(true);
+                }
+                else if (g.Key.hand.count + g.Count() <= g.Key.hand.maxCount)
+                {
+                    game.logger.log("将" + string.Join("，", g) + "置入" + g.Key + "的手牌");
+                    await cards.resetCard(game);
+                    await g.Key.field.moveTo(game, g, g.Key.hand);
+                }
             }
         }
         public static async Task removeBuff(this IEnumerable<Card> cards, IGame game, int buffId)

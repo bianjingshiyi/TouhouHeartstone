@@ -848,11 +848,7 @@ namespace TouhouHeartstone.Builtin
         {
             foreach (var player in game.players)
             {
-                foreach (var servant in player.field)
-                {
-                    if (servant != card)
-                        await servant.backToHand(game);
-                }
+                await player.field.Where(c => c != card).backToHand(game);
             }
         }
     }
@@ -903,21 +899,21 @@ namespace TouhouHeartstone.Builtin
             var lunasa = player.field.FirstOrDefault(c => c.define.id == LunasaPrismriver_N.ID);
             if (lunasa == null)
             {
-                lunasa = player.findCardsWherever(game, c => c.define.id == LunasaPrismriver_N.ID, PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
+                lunasa = player.findCardsWherever(game, c => c.define.id == LunasaPrismriver_N.ID, PileFlag.self | PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
                 if (lunasa != null)
                     await player.tryEnterField(game, lunasa.pile, lunasa, position);
             }
             var merlin = player.field.FirstOrDefault(c => c.define.id == MerlinPrismriver_N.ID);
             if (merlin == null)
             {
-                merlin = player.findCardsWherever(game, c => c.define.id == MerlinPrismriver_N.ID, PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
+                merlin = player.findCardsWherever(game, c => c.define.id == MerlinPrismriver_N.ID, PileFlag.self | PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
                 if (merlin != null)
                     await player.tryEnterField(game, merlin.pile, merlin, lunasa.pile.indexOf(lunasa) + 1);
             }
             var lyrica = player.field.FirstOrDefault(c => c.define.id == LyricaPrismriver_N.ID);
             if (lyrica == null)
             {
-                lyrica = player.findCardsWherever(game, c => c.define.id == LyricaPrismriver_N.ID, PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
+                lyrica = player.findCardsWherever(game, c => c.define.id == LyricaPrismriver_N.ID, PileFlag.self | PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
                 if (lyrica != null)
                     await player.tryEnterField(game, lyrica.pile, lyrica, merlin.pile.indexOf(merlin) + 1);
             }
