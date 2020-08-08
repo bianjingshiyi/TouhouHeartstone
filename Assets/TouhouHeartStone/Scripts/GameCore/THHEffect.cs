@@ -352,6 +352,13 @@ namespace TouhouHeartstone
         CheckTargetDelegate _onCheckTarget = null;
         public delegate Task ExecuteDelegate(THHGame game, Card card, Card target);
         ExecuteDelegate _onExecute = null;
+        /// <summary>
+        /// 使用Lambda来构造一个单一目标效果
+        /// </summary>
+        /// <param name="onExecute">效果的执行内容</param>
+        /// <param name="ranges">效果的目标范围</param>
+        /// <param name="onCheckCondition">效果的条件</param>
+        /// <param name="onCheckTarget">效果对于目标的条件</param>
         public LambdaSingleTargetEffect(ExecuteDelegate onExecute,
             PileFlag ranges = PileFlag.none,
             CheckConditionDelegate onCheckCondition = null,

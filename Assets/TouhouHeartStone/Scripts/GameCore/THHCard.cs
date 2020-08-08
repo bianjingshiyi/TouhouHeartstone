@@ -358,6 +358,13 @@ namespace TouhouHeartstone
             }
             return keywords.Contains(keyword);
         }
+        public static bool hasKeyword(this CardDefine define, string keyword)
+        {
+            string[] keywords = define.getProp<string[]>(nameof(ServantCardDefine.keywords));
+            if (keywords == null)
+                return false;
+            return keywords.Contains(keyword);
+        }
         public static int getSpellDamage(this Card card, IGame game)
         {
             return card.getProp<int>(game, nameof(ServantCardDefine.spellDamage));

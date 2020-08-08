@@ -64,6 +64,7 @@ namespace Game
                             return false;
                         table.ui.SelfHandList.removeItem(hand);
                     }
+                    table.getManager<SEManager>().playSE(table.getSkin(eventArg.card).sound_onUse);
                     if (tryTargetedAnim(table, eventArg))
                         return false;
                 }
@@ -77,6 +78,7 @@ namespace Game
                             return false;
                         table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
                     }
+                    table.getManager<SEManager>().playSE(table.getSkin(eventArg.card).sound_onUse);
                     if (tryTargetedAnim(table, eventArg))
                         return false;
                 }

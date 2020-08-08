@@ -222,63 +222,119 @@ namespace Game
                 await getManager<ResourceManager>().loadDataSet(path, platform);
 
             if (dataset.Tables.Count < 1) throw new Exception("空数据集");
-            var table = dataset.Tables[0];
+            var cardTable = dataset.Tables[0];
+            var skinTable = dataset.Tables[1];
             List<CardSkinData> skins = new List<CardSkinData>();
 
-            for (int i = 1; i < table.Rows.Count; i++)
+            for (int i = 1; i < cardTable.Rows.Count; i++)
             {
                 try
                 {
-                    var datarow = table.Rows[i];
+                    var datarow = cardTable.Rows[i];
 
                     if (datarow.ReadCol("Ignore", false))
                         continue;
-                    //加载文字信息
-                    var skin = new CardSkinData()
-                    {
-                        id = datarow.ReadCol<int>("ID"),
-                        name = datarow.ReadCol<string>("Name"),
-                        desc = datarow.ReadCol("Desc", "")
-                    };
-                    //加载图片
-                    string imagePath = datarow.ReadCol("Image", "");
-                    try
-                    {
-                        if (imagePath.StartsWith("res:"))
-                        {
-                            skin.image = Resources.Load<Sprite>(imagePath.Replace("res:", string.Empty));
-                        }
-                        else
-                        {
-                            Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
-                            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
-                            skin.image = sprite;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
-                        skin.image = await getDefaultSprite();
-                    }
-                    //加载音效
-                    try
-                    {
-                        string soundPath = datarow.ReadCol("Sound_onUse", "");
-                        skin.sound_onUse = await getManager<ResourceManager>().loadAudio(soundPath);
-                    }
-                    catch (Exception e)
-                    {
-                        logger?.log("Card", "加载" + skin + "的音效失败");
-                    }
-                    skins.Add(skin);
+                    CardSkinData skin = await loadSkinInCardTable(path, datarow);
+                    int index = skins.FindIndex(s => s.id == skin.id);
+                    if (index > 0)
+                        skins[index] = skin;
+                    else
+                        skins.Add(skin);
                 }
                 catch (Exception e)
                 {
                     Debug.LogWarning($"Error when loading {path} (row {i}): " + e);
                 }
             }
+            for (int i = 0; i < skinTable.Rows.Count; i++)
+            {
+                try
+                {
+                    var datarow = skinTable.Rows[i];
+
+                    CardSkinData skin = await loadSkinInSkinTable(path, datarow);
+                    int index = skins.FindIndex(s => s.id == skin.id);
+                    if (index > 0)
+                        skins[index] = skin;
+                    else
+                        skins.Add(skin);
+                }
+                catch (Exception e)
+                {
+                    logger?.logWarn("当加载" + path + "的第" + i + "行发生了错误：" + e);
+                }
+            }
             return skins.ToArray();
         }
+
+        private async Task<CardSkinData> loadSkinInCardTable(string path, DataRow datarow)
+        {
+            //加载文字信息
+            var skin = new CardSkinData()
+            {
+                id = datarow.ReadCol<int>("ID"),
+                name = datarow.ReadCol<string>("Name"),
+                desc = datarow.ReadCol("Desc", "")
+            };
+            //加载图片
+            string imagePath = datarow.ReadCol("Image", "");
+            try
+            {
+                if (imagePath.StartsWith("res:"))
+                {
+                    skin.image = Resources.Load<Sprite>(imagePath.Replace("res:", string.Empty));
+                }
+                else
+                {
+                    Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
+                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+                    skin.image = sprite;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
+                skin.image = await getDefaultSprite();
+            }
+
+            return skin;
+        }
+        private async Task<CardSkinData> loadSkinInSkinTable(string path, DataRow datarow)
+        {
+            //加载文字信息
+            var skin = new CardSkinData()
+            {
+                id = datarow.ReadCol<int>("ID"),
+                name = datarow.ReadCol<string>("Name"),
+                desc = datarow.ReadCol("Desc", "")
+            };
+            //加载图片
+            string imagePath = datarow.ReadCol("Image", "");
+            try
+            {
+                if (imagePath.StartsWith("res:"))
+                {
+                    skin.image = Resources.Load<Sprite>(imagePath.Replace("res:", string.Empty));
+                }
+                else
+                {
+                    Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
+                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+                    skin.image = sprite;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
+                skin.image = await getDefaultSprite();
+            }
+            //加载音效
+            string soundPath = datarow.ReadCol("Sound_onUse", "");
+            if (!string.IsNullOrEmpty(soundPath))
+                skin.sound_onUse = await getManager<ResourceManager>().loadAudio(soundPath);
+            return skin;
+        }
+
         /// <summary>
         /// 卸载所有加载的资源
         /// </summary>
