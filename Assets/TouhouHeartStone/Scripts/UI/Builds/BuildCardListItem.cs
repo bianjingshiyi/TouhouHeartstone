@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using UnityEngine.EventSystems;
 using TouhouCardEngine;
 namespace UI
@@ -12,6 +13,7 @@ namespace UI
         [SerializeField]
         bool _isDragging = false;
         public CardDefine card { get; private set; }
+        [Obsolete]
         public void update(CardDefine card, CardSkinData skin)
         {
             this.card = card;

@@ -44,6 +44,7 @@ namespace UI
                 isFaceup = false;
             }
         }
+        [Obsolete]
         public void update(CardDefine card, CardSkinData skin)
         {
             CostPropNumber.asText.text = card.getCost().ToString();

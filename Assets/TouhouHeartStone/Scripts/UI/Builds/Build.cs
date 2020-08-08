@@ -226,7 +226,7 @@ namespace UI
                     if (FilterPanel.cardFilter(card, skin))
                     {
                         var item = BuildCardList.addItem();
-                        item.update(card, skin);
+                        item.Card.setCard(card, skin);
                     }
                 }
                 else
@@ -317,7 +317,7 @@ namespace UI
                 DragCard.BuildDeckListItem.hide();
             }
             DragCard.BuildDeckListItem.update(card, ui.getManager<CardManager>().getSkin(card.id), 1);
-            DragCard.Card.update(card, ui.getManager<CardManager>().getSkin(card.id));
+            DragCard.Card.setCard(card, ui.getManager<CardManager>().getSkin(card.id));
         }
 
         void showMessage(string msg)

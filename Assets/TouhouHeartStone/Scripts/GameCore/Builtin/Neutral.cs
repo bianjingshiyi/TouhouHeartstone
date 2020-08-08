@@ -105,6 +105,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SPELL | 0x007;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
+        public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect((game,card)=>
