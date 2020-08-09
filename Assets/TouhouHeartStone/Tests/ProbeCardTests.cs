@@ -31,7 +31,8 @@ namespace Tests
         /// 召唤水晶塔测试
         /// </summary>
         [Test]
-        public void ProbeBulidPylonTest(){
+        public void ProbeBulidPylonTest()
+        {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(BulidPylon.ID, 1)
             );
@@ -50,7 +51,8 @@ namespace Tests
         /// 水晶塔过载测试
         /// </summary>
         [Test]
-        public void ProbePylonOverloadTest(){
+        public void ProbePylonOverloadTest()
+        {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(BulidPylon.ID, 1),
                 new KeyValuePair<int, int>(PylonOverload.ID, 1)
@@ -59,11 +61,11 @@ namespace Tests
             // 我方使用召唤水晶塔
             you.cmdUse(game, you.hand.getCard<BulidPylon>());
             // 回合结束
-            you.cmdTurnEnd(game);    
+            you.cmdTurnEnd(game);
             game.skipUntilCanUse<PylonOverload>(you);
             you.cmdUse(game, you.hand.getCard<PylonOverload>());
-            Debug.Log( "第一个水晶塔是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
-            Debug.Log( "第二个水晶塔是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) );
+            Debug.Log("第一个水晶塔是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game));
+            Debug.Log("第二个水晶塔是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game));
             game.Dispose();
         }
 
@@ -71,7 +73,8 @@ namespace Tests
         /// 普罗托斯测试
         /// </summary>
         [Test]
-        public void ProbeProtossTest(){
+        public void ProbeProtossTest()
+        {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(BulidPylon.ID, 1),
                 new KeyValuePair<int, int>(Protoss.ID, 1)
@@ -79,15 +82,15 @@ namespace Tests
             );
             game.skipUntilCanUse<BulidPylon>(you);
             // 回合结束
-            you.cmdTurnEnd(game);    
+            you.cmdTurnEnd(game);
             game.skipUntilCanUse<Protoss>(you);
             you.cmdUse(game, you.hand.getCard<Protoss>());
-            Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
-            Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) );
-            Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
+            Debug.Log("第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game));
+            Debug.Log("第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game));
+            Debug.Log("第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game));
             you.field[1].die(game);
-            Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
-            Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) );
+            Debug.Log("第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game));
+            Debug.Log("第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game));
             //Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
             game.Dispose();
         }
@@ -96,7 +99,8 @@ namespace Tests
         /// 先知机器人测试
         /// </summary>
         [Test]
-        public void ProbeProphetRobotTest(){
+        public void ProbeProphetRobotTest()
+        {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(ProphetRobot.ID, 15),
                 new KeyValuePair<int, int>(Protoss.ID, 15)
@@ -107,7 +111,7 @@ namespace Tests
             //you.cmdTurnEnd(game);    
             game.skipUntilCanUse<ProphetRobot>(you);
             you.cmdUse(game, you.hand.getCard<ProphetRobot>());
-            
+
             game.Dispose();
         }
 
@@ -116,18 +120,19 @@ namespace Tests
         /// 哨兵测试
         /// </summary>
         [Test]
-        public void ProbeSentryTest(){
+        public void ProbeSentryTest()
+        {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Sentry.ID, 1)
 
             );
             game.skipUntilCanUse<Sentry>(you);
             // 回合结束
-           // you.cmdTurnEnd(game);    
-           // game.skipUntilCanUse<Sentry>(you);
+            // you.cmdTurnEnd(game);    
+            // game.skipUntilCanUse<Sentry>(you);
             you.cmdUse(game, you.hand.getCard<Sentry>());
-            Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
-            Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) );
+            Debug.Log("第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game));
+            Debug.Log("第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game));
             //Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
             game.Dispose();
         }
@@ -146,7 +151,7 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<Sentry>());
             you.cmdTurnEnd(game);
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-            oppo.cmdTurnEnd(game);        
+            oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<PsionicShock>());
             game.Dispose();
         }
@@ -162,9 +167,9 @@ namespace Tests
             );
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-            oppo.cmdTurnEnd(game);        
+            oppo.cmdTurnEnd(game);
             game.skipUntilCanUse<EnergyAutophagy>(you);
-            you.cmdUse(game, you.hand.getCard<EnergyAutophagy>(),targets: oppo.field[0]);
+            you.cmdUse(game, you.hand.getCard<EnergyAutophagy>(), targets: oppo.field[0]);
             game.Dispose();
         }
 
@@ -173,19 +178,20 @@ namespace Tests
         /// 巨像测试
         /// </summary>
         [Test]
-        public void ProbeColossusTest(){
+        public void ProbeColossusTest()
+        {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Colossus.ID, 1)
 
             );
             game.skipUntilCanUse<Colossus>(you);
             you.cmdUse(game, you.hand.getCard<Colossus>());
-            you.cmdTurnEnd(game); 
+            you.cmdTurnEnd(game);
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-            oppo.cmdTurnEnd(game); 
-            you.cmdTurnEnd(game); 
+            oppo.cmdTurnEnd(game);
+            you.cmdTurnEnd(game);
             //Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
             game.Dispose();
         }
@@ -195,7 +201,8 @@ namespace Tests
         /// 0费，完全修好一个友方机械。(警告:不要对机械以外的随从使用！)
         /// </summary>
         [Test]
-        public void ProbeReconstructRayTest(){
+        public void ProbeReconstructRayTest()
+        {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(ReconstructRay.ID, 2),
                 new KeyValuePair<int, int>(Sentry.ID, 1),
@@ -205,11 +212,11 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<Sentry>());
             you.cmdTurnEnd(game);
             game.skipUntilCanUse<EnergyAutophagy>(you);
-            you.cmdUse(game, you.hand.getCard<EnergyAutophagy>(),targets: you.field[0]);
-            you.cmdUse(game, you.hand.getCard<ReconstructRay>(),targets: you.field[0]);
-            you.cmdUse(game, you.hand.getCard<ReconstructRay>(),targets: you.field[1]);
-            you.cmdTurnEnd(game);    
-            
+            you.cmdUse(game, you.hand.getCard<EnergyAutophagy>(), targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<ReconstructRay>(), targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<ReconstructRay>(), targets: you.field[1]);
+            you.cmdTurnEnd(game);
+
             game.Dispose();
         }
 
@@ -218,7 +225,8 @@ namespace Tests
         /// 3费，发现墓地里一张机械牌，召唤它并使其变为3/3
         /// </summary>
         [Test]
-        public void ProbeImitationTest(){
+        public void ProbeImitationTest()
+        {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Imitation.ID, 1),
                 new KeyValuePair<int, int>(Sentry.ID, 3)
@@ -247,8 +255,8 @@ namespace Tests
             int cardId = discoverRequest.cardIdArray[0];
             Card card = you.grave.getCard(cardId);//随便选一张
             you.cmdDiscover(game, cardId);//选
-            Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id );   
-            
+            Debug.Log("第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id);
+
             game.Dispose();
         }
 
@@ -258,7 +266,8 @@ namespace Tests
         /// 3费，使一个随从获得+3生命值，如果它是机械，再获得+4攻击力
         /// </summary>
         [Test]
-        public void ProbeProtectiveShellTest(){
+        public void ProbeProtectiveShellTest()
+        {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(ProtectiveShell.ID, 2),
                 new KeyValuePair<int, int>(Sentry.ID, 1)
@@ -267,16 +276,16 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<Sentry>());
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            
+
             game.skipUntilCanUse<ProtectiveShell>(you);
-            you.cmdUse(game, you.hand.getCard<ProtectiveShell>(),targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<ProtectiveShell>(), targets: you.field[0]);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<ProtectiveShell>(),targets: you.field[1]);
+            you.cmdUse(game, you.hand.getCard<ProtectiveShell>(), targets: you.field[1]);
 
-            Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id );
-            Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) + "的" + you.field[1].define.id );   
-            
+            Debug.Log("第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id);
+            Debug.Log("第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) + "的" + you.field[1].define.id);
+
             game.Dispose();
         }
 
@@ -285,7 +294,8 @@ namespace Tests
         /// 7/2/2，唯一，战吼：获得一个机械的控制权，然后将其变为3/3
         /// </summary>
         [Test]
-        public void ProbeSisselTest(){
+        public void ProbeSisselTest()
+        {
             /*
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Sissel.ID, 1),
@@ -308,9 +318,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), 
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getCardDefine<Sentry>(), 2)));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), 
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getCardDefine<Sissel>(), 2)));
 
             game.skipUntilCanUse<Sentry>(oppo);
@@ -325,10 +335,10 @@ namespace Tests
             oppo.cmdTurnEnd(game);
             Assert.False(card.isValidTarget(game, oppo.field[0]));
 
-           //you.cmdUse(game, you.hand.getCard<Sissel>(), targets: oppo.field[0]);
+            //you.cmdUse(game, you.hand.getCard<Sissel>(), targets: oppo.field[0]);
 
-           // Debug.Log("第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id);
-           // Debug.Log("第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) + "的" + you.field[1].define.id);
+            // Debug.Log("第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id);
+            // Debug.Log("第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) + "的" + you.field[1].define.id);
             game.Dispose();
         }
     }
