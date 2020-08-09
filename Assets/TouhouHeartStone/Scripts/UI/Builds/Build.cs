@@ -346,7 +346,7 @@ namespace UI
                 return;
             }
             // 唯一
-            if (card.hasTag(Keyword.UNIQUE) && deckItem?.count >= 1)
+            if (card.hasKeyword(Keyword.UNIQUE) && deckItem?.count >= 1)
             {
                 showMessage("唯一的卡片只能携带一张");
                 return;
