@@ -55,10 +55,6 @@
         /// </summary>
         public const string WINDFURY = "windfury";
         /// <summary>
-        /// 蓄力
-        /// </summary>
-        public const string ACCUMULATE = "accumulate";
-        /// <summary>
         /// 免疫
         /// </summary>
         public const string IMMUNITY = "immunity";

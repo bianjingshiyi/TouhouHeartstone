@@ -11,12 +11,20 @@ namespace Tests
         {
             createGame(out game, out you, out oppo, new GameOption() { shuffle = false }, yourDeck);
         }
+        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, int yourMaster)
+        {
+            createGame(out game, out you, out oppo, new GameOption() { shuffle = false }, yourMaster);
+        }
         public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option, params KeyValuePair<int, int>[] yourDeck)
+        {
+            createGame(out game, out you, out oppo, option, TestMaster.ID, yourDeck);
+        }
+        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option, int yourMaster, params KeyValuePair<int, int>[] yourDeck)
         {
             game = initGameWithoutPlayers(null, option);
             IEnumerable<CardDefine> yourTrueDeck = yourDeck.Length > 0 ?
- Enumerable.Repeat(game.getCardDefine(yourDeck[0].Key), yourDeck[0].Value) :
- Enumerable.Repeat(game.getCardDefine(DefaultServant.ID), 30);
+                Enumerable.Repeat(game.getCardDefine(yourDeck[0].Key), yourDeck[0].Value) :
+                Enumerable.Repeat(game.getCardDefine(DefaultServant.ID), 30);
             for (int i = 1; i < yourDeck.Length; i++)
             {
                 yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getCardDefine(yourDeck[i].Key), yourDeck[i].Value));
@@ -25,9 +33,10 @@ namespace Tests
             if (count < 30)
                 yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getCardDefine<DefaultServant>(), 30 - count));
             yourTrueDeck = yourTrueDeck.Reverse();
-            you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), yourTrueDeck);
+            you = game.createPlayer(1, "玩家1", game.getCardDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
             oppo = game.createPlayer(2, "玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
         }
+
         public static void createGameWithoutDeck(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option = null)
         {
             game = initGameWithoutPlayers(null, option);

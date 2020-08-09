@@ -263,7 +263,9 @@ namespace TouhouHeartstone
                     var cards = sortedPlayers[i].deck[sortedPlayers[i].deck.count - count, sortedPlayers[i].deck.count - 1].Reverse();
                     sortedPlayers[i].deck.moveTo(this, cards, sortedPlayers[i].init, 0);
                 }
-                logger.log("Debug", "游戏初始化，玩家行动顺序：" + string.Join("、", sortedPlayers.Select(p => p.ToString())) + "，"
+                logger.log("Debug", "游戏初始化，玩家行动顺序："
+                    + string.Join("、", sortedPlayers.Select(p => p.ToString())) + "，"
+                    + "玩家英雄：" + string.Join("，", sortedPlayers.Select(p => p.master + "(" + p.skill + ")")) + "，"
                     + "初始卡牌：" + string.Join("；", sortedPlayers.Select(p => string.Join("、", p.init.Select(c => c.ToString())))));
                 return Task.CompletedTask;
             });

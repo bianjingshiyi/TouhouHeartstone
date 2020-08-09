@@ -111,7 +111,35 @@ namespace TouhouHeartstone
         }
         public static int getArmor(this Card card, IGame game)
         {
-            return card.getProp<int>(game, "armor");
+            return card.getProp<int>(game, Property.ARMOR);
+        }
+        public static Task<ChangeArmorEventArg> gainArmor(this Card card, THHGame game, int value)
+        {
+            return setArmor(card, game, card.getArmor(game) + value);
+        }
+        public static Task<ChangeArmorEventArg> loseArmor(this Card card, THHGame game, int value)
+        {
+            return card.setArmor(game, card.getArmor(game) - value);
+        }
+        public static async Task<ChangeArmorEventArg> setArmor(this Card card, THHGame game, int value)
+        {
+            ChangeArmorEventArg eventArg = new ChangeArmorEventArg() { card = card, value = value };
+            await game.triggers.doEvent(eventArg, arg =>
+            {
+                card = arg.card;
+                value = arg.value;
+                if (value < 0)
+                    value = 0;
+                card.setProp(Property.ARMOR, value);
+                game.logger.log(card + "的护甲值变为" + value);
+                return Task.CompletedTask;
+            });
+            return eventArg;
+        }
+        public class ChangeArmorEventArg : EventArg
+        {
+            public Card card;
+            public int value;
         }
         public static int getCurrentLife(this Card card, IGame game)
         {
@@ -196,10 +224,14 @@ namespace TouhouHeartstone
                 tip = "你必须先攻击具有嘲讽的随从";
                 return false;
             }
-            if (card.isRush(game) && !card.isReady(game) && game.players.Any(p => p.master == target) && !card.isCharge(game))
+            if (card.isRush(game) && !card.isReady(game) && game.players.Any(p => isTarget(target, p)) && !card.isCharge(game))
             {
                 tip = "具有突袭的随从在没有准备好的情况下不能攻击敌方英雄";//除非你具有冲锋
                 return false;
+            }
+            bool isTarget(Card t, THHPlayer p)
+            {
+                return p.master == t;
             }
             if (target.isStealth(game))
             {
@@ -237,7 +269,7 @@ namespace TouhouHeartstone
         }
         public static bool isRush(this Card card, IGame game)
         {
-            return hasKeywords(card, game, Keyword.RUSH);
+            return card.hasKeywords(game, Keyword.RUSH);
         }
         public static void setRush(this Card card, bool value)
         {
@@ -305,14 +337,6 @@ namespace TouhouHeartstone
         public static void setWindfury(this Card card, bool value)
         {
             card.setProp(Keyword.WINDFURY, value);
-        }
-        public static bool isAccumulate(this Card card, IGame game)
-        {
-            return card.getProp<bool>(game, Keyword.ACCUMULATE);
-        }
-        public static void setAccumulate(this Card card, bool value)
-        {
-            card.setProp(Keyword.ACCUMULATE, value);
         }
         public static bool isImmunity(this Card card, IGame game)
         {
@@ -643,35 +667,42 @@ namespace TouhouHeartstone
                 await activeEffect.execute(game, card, new object[] { new THHPlayer.ActiveEventArg(player, card, targets) }, targets);
             }
         }
-        public static async Task<bool> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
+        public static async Task<AttackEventArg> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
             if (!card.canAttack(game))
             {
                 game.logger.log(card + "无法进行攻击");
-                return false;
+                return null;
             }
             if (!card.isAttackable(game, player, target, out var reason))
             {
                 game.logger.log(card + "无法攻击" + target + "，因为" + reason);
-                return false;
+                return null;
             }
-            await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
+            AttackEventArg eventArg = new AttackEventArg() { card = card, target = target };
+            await game.triggers.doEvent(eventArg, async arg =>
             {
-                game.logger.log(arg.card + "攻击" + arg.target);
-                arg.card.setAttackTimes(arg.card.getAttackTimes(game) + 1);
-                if (arg.card.define is MasterCardDefine && arg.card.getOwner().item != null)
-                    await arg.card.getOwner().item.damage(game, arg.card, 1);
-                if (arg.card.getAttack(game) > 0)
-                    await arg.target.damage(game, arg.card, arg.card.getAttack(game));
-                if (arg.target.getAttack(game) > 0)
-                    await arg.card.damage(game, arg.target, arg.target.getAttack(game));
-                if (arg.card.isDrain(game))
-                    await player.master.heal(game, arg.card.getAttack(game));
-                if (arg.target.isDrain(game))
-                    await (arg.target.owner as THHPlayer).master.heal(game, arg.target.getAttack(game));
+                card = arg.card;
+                target = arg.target;
+
+                game.logger.log(card + "攻击" + target);
+                if (card.getAttack(game) > 0)
+                    await target.damage(game, card, card.getAttack(game));
+                if (target.getAttack(game) > 0)
+                    await card.damage(game, target, target.getAttack(game));
+                //消耗攻击次数和耐久
+                card.setAttackTimes(card.getAttackTimes(game) + 1);
+                foreach (var p in game.players)
+                {
+                    if (p.master == card && p.item != null)
+                    {
+                        await p.item.damage(game, card, 1);
+                        break;
+                    }
+                }
             });
             await game.updateDeath();
-            return true;
+            return eventArg;
         }
         public class AttackEventArg : EventArg
         {
@@ -687,7 +718,7 @@ namespace TouhouHeartstone
         public static async Task<DamageEventArg> damage(this IEnumerable<Card> cards, THHGame game, Card source, int value)
         {
             DamageEventArg eventArg = new DamageEventArg() { cards = cards.ToArray(), source = source, value = value };
-            await game.triggers.doEvent(eventArg, arg =>
+            await game.triggers.doEvent(eventArg, async arg =>
             {
                 cards = arg.cards;
                 source = arg.source;
@@ -697,7 +728,6 @@ namespace TouhouHeartstone
                 if (value < 1)
                 {
                     arg.isCanceled = true;
-                    return Task.CompletedTask;
                 }
                 foreach (Card card in cards)
                 {
@@ -717,37 +747,55 @@ namespace TouhouHeartstone
                         }
                         else
                             damage = value;
-                        
-                        if(card.define is MasterCardDefine)
-                        {
-                            int armor = card.getOwner().armor;
-                            damage = damage - armor;
-                            if (damage < 0)
-                                card.getOwner().changeArmor(game, -damage,true);
-                            card.getOwner().changeArmor(game, -damage,true);
-
-                        }
-
                         if (damage > 0)
                         {
-                            card.setCurrentLife(card.getCurrentLife(game) - damage);
-                            game.logger.log(card + "受到" + damage + "点伤害，生命值=>" + card.getCurrentLife(game));
-                            if (source != null && source.isPoisonous(game))
-                                card.setDead(true);
-                            arg.infoDic.Add(card, new DamageEventArg.Info()
+                            int armor = card.getArmor(game);
+                            if (armor > 0)
                             {
-                                damagedValue = damage,
-                                currentLife = card.getCurrentLife(game)
-                            });
+                                if (armor >= damage)
+                                {
+                                    await card.loseArmor(game, damage);
+                                    game.logger.log(card + "受到" + damage + "点伤害，护甲=>" + card.getArmor(game));
+                                    await onDealKeywords(game, source, card, damage);
+                                    arg.infoDic.Add(card, new DamageEventArg.Info(damage, card.getArmor(game), card.getCurrentLife(game)));
+                                }
+                                else
+                                {
+                                    int leakDamage = damage - armor;
+                                    await card.loseArmor(game, armor);
+                                    card.setCurrentLife(card.getCurrentLife(game) - leakDamage);
+                                    game.logger.log(card + "受到" + damage + "点伤害，护甲=>" + card.getArmor(game) + "，生命值=>" + card.getCurrentLife(game));
+                                    await onDealKeywords(game, source, card, damage);
+                                    arg.infoDic.Add(card, new DamageEventArg.Info(damage, card.getArmor(game), card.getCurrentLife(game)));
+                                }
+                            }
+                            else
+                            {
+                                card.setCurrentLife(card.getCurrentLife(game) - damage);
+                                game.logger.log(card + "受到" + damage + "点伤害，生命值=>" + card.getCurrentLife(game));
+                                await onDealKeywords(game, source, card, damage);
+                                arg.infoDic.Add(card, new DamageEventArg.Info(damage, card.getArmor(game), card.getCurrentLife(game)));
+                            }
                         }
                         else
                             game.logger.log(card + "的伤害" + value + "被减伤" + damageReduce + "抵消");
                     }
                 }
-                return Task.CompletedTask;
             });
             return eventArg;
+            async Task onDealKeywords(THHGame g, Card s, Card c, int d)
+            {
+                if (s != null)
+                {
+                    if (s.isPoisonous(g) && !g.players.Any(p => p.master == c))
+                        c.setDead(true);
+                    if (s.isDrain(g))
+                        await s.getOwner().master.heal(g, d);
+                }
+            }
         }
+
+
         public static async Task<DamageEventArg[]> damageByRandom(this IEnumerable<Card> cards, THHGame game, Card source, int value)
         {
             List<DamageEventArg> list = new List<DamageEventArg>();
@@ -770,7 +818,14 @@ namespace TouhouHeartstone
             public class Info
             {
                 public int damagedValue;
+                public int currentArmor;
                 public int currentLife;
+                public Info(int damage, int armor, int life)
+                {
+                    damagedValue = damage;
+                    currentArmor = armor;
+                    currentLife = life;
+                }
             }
         }
         public static async Task heal(this IEnumerable<Card> cards, THHGame game, int value)

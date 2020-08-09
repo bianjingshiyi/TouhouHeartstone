@@ -26,7 +26,6 @@ namespace TouhouHeartstone
         }
         public bool isPrepared { get; set; } = false;
         public int gem { get; private set; } = 0;
-        public int armor { get; private set; } = 0;//护甲
         public int maxGem { get; private set; } = 0;
         public int fatigue { get; private set; } = 0;
         public THHPlayer(THHGame game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck) : base(id, name)
@@ -106,20 +105,6 @@ namespace TouhouHeartstone
         {
             public THHPlayer player;
             public int value;
-        }
-        public Task changeArmor(THHGame game, int value, bool isSet = false)
-        {
-            return game.triggers.doEvent(new ChangeArmorEventArg() { player = this, value = value }, arg =>
-            {
-                if (!isSet)
-                    arg.player.armor += arg.value;
-                else
-                    arg.player.armor = arg.value;
-                if (arg.player.armor < 0)
-                    arg.player.armor = 0;
-                game.logger.log(arg.player + "的护甲值变为" + arg.player.armor);
-                return Task.CompletedTask;
-            });
         }
         public class ChangeArmorEventArg : EventArg
         {
@@ -204,9 +189,39 @@ namespace TouhouHeartstone
         {
             return draw(game, card, out _, out _);
         }
+        public Task draw(THHGame game, Card card, out DrawEventArg drawEvent)
+        {
+            return draw(game, card, out drawEvent, out _);
+        }
+        /// <summary>
+        /// 抽一张符合条件的牌
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public Task draw(THHGame game, Func<Card, bool> filter, out DrawEventArg drawEvent)
+        {
+            var cards = deck.Where(filter);
+            if (cards.Count() > 0)
+            {
+                var card = cards.random(game);
+                return draw(game, card, out drawEvent);
+            }
+            else
+            {
+                drawEvent = null;
+                return Task.CompletedTask;
+            }
+        }
         public class DrawEventArg : EventArg
         {
+            /// <summary>
+            /// 抽卡的玩家
+            /// </summary>
             public THHPlayer player;
+            /// <summary>
+            /// 抽到的卡
+            /// </summary>
             public Card card;
         }
         public class BurnEventArg : EventArg
@@ -218,6 +233,14 @@ namespace TouhouHeartstone
         {
             public THHPlayer player;
         }
+        /// <summary>
+        /// 尝试使用一张卡牌
+        /// </summary>
+        /// <param name="game">游戏环境</param>
+        /// <param name="card">使用的卡牌</param>
+        /// <param name="position">随从卡放置在场上的位置</param>
+        /// <param name="targets">卡牌使用目标</param>
+        /// <returns></returns>
         public async Task<bool> tryUse(THHGame game, Card card, int position, params Card[] targets)
         {
             if (!card.isUsable(game, this, out _))

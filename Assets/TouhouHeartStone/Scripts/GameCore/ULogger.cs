@@ -40,7 +40,7 @@ namespace TouhouHeartstone
 
         public void logWarn(string msg)
         {
-            logWarn(msg);
+            logWarn(null, msg);
         }
 
         public void logWarn(string channel, string msg)

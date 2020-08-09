@@ -7,62 +7,86 @@ using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 namespace TouhouHeartstone.Builtin
 {
-    public class KonpakuYoumu : MasterCardDefine
+    public class Youmu : MasterCardDefine
     {
-        public const int ID = 0x00600000 | CardCategory.MASTER | 0x000;
+        public const int ID = 0x00500000 | CardCategory.MASTER | 0x000;
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
-        public override int skillID { get; set; } = StartdustBullet.ID;
+        public override int skillID { get; set; } = StrangeHalfbody.ID;
         public override IEffect[] effects { get; set; } = new Effect[0];
-
-        public class AccumulateTrigggerEffectBefore : THHEffectBefore<THHGame.TurnEndEventArg>
+        public const string PREHEAT = "preheat";
+        public const string IS_PREHEATED = "isPreheated";
+        /// <summary>
+        /// 蓄力：当回合结束时，如果你的最大法力值大于等于这张卡的花费，那么将这张卡标记为蓄力。在使用一张牌的时候，如果这张牌具有蓄力效果且处于蓄力状态，那么触发该效果。
+        /// </summary>
+        public class PreHeat : THHEffectBefore<THHGame.TurnEndEventArg>
         {
-            public AccumulateTrigggerEffectBefore()
-                : base(PileName.HAND, (g1, c1, a1) =>
-                {
-                    return c1.getOwner().gem > c1.getCost(g1) && c1.getOwner() == a1.player;
-                }, null, async (g, c, a) =>
-                {
-                    g.logger.log(c + "蓄力完成");
-                    c.setAccumulate(true);
-                    await g.updateDeath();
-                })
+            public PreHeat() : base(PileName.HAND, (g1, c1, a1) =>
+            {
+                return c1.getOwner() == a1.player && c1.getOwner().maxGem >= c1.getCost(g1) && !isPreHeated(g1, c1);
+            }, null, (g, c, a) =>
+            {
+                return setPreHeated(g, c, true);
+            })
             {
             }
+        }
+        public class PreHeatEventArg : EventArg
+        {
+            public Card card;
+            public bool value;
+        }
+        public static bool isPreHeated(IGame game, Card card)
+        {
+            return card.getProp<bool>(game, IS_PREHEATED);
+        }
+        public static Task setPreHeated(THHGame game, Card card, bool value)
+        {
+            PreHeatEventArg eventArg = new PreHeatEventArg() { card = card, value = value };
+            return game.triggers.doEvent(eventArg, arg =>
+            {
+                card = arg.card;
+                value = arg.value;
+                game.logger.log(card + "蓄力 => " + value);
+                card.setProp(IS_PREHEATED, value);
+                return Task.CompletedTask;
+            });
         }
     }
     /// <summary>
     /// 2 妖梦技能：奇妙半身 叠甲过
     /// </summary>
-    public class Wonderfulhalfbody : SkillCardDefine
+    public class StrangeHalfbody : SkillCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SKILL | 0x001;
+        public const int ID = Youmu.ID | CardCategory.SKILL | 0x001;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]{
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
             new NoTargetEffect(effect)
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().changeArmor(game, 2);
+            await card.getOwner().master.gainArmor(game, 2);
         }
     }
     /// <summary>
     /// 1 现世斩 使你的英雄在本回合内获得攻击力+2，蓄力：改为攻击力+3
     /// </summary>
-    public class CutInTheWorld : SpellCardDefine
+    public class SlashOfPresentWorld : SpellCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x002;
+        public const int ID = Youmu.ID | CardCategory.SPELL | 0x002;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
-           new KonpakuYoumu.AccumulateTrigggerEffectBefore()
+           new Youmu.PreHeat()
         };
         static async Task effect(THHGame game, Card card)
         {
             int attack;
-            if (!card.isAccumulate(game))
+            if (!Youmu.isPreHeated(game, card))
                 attack = 2;
             else
                 attack = 3;
@@ -74,84 +98,75 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 1 冥想斩 抽一张道具牌，蓄力：使其获得攻击力+1
     /// </summary>
-    public class MeditationSlash : SpellCardDefine
+    public class Meditation : SpellCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x003;
+        public const int ID = Youmu.ID | CardCategory.SPELL | 0x003;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
-           new KonpakuYoumu.AccumulateTrigggerEffectBefore()
+           new Youmu.PreHeat()
         };
         static async Task effect(THHGame game, Card card)
         {
-            Card item = card.getOwner().deck.First(c => c.define is ItemCardDefine);
-            await card.getOwner().draw(game, item);
-            if (card.isAccumulate(game))
+            await card.getOwner().draw(game, c => c.isItem(), out var drawEvent);
+            var item = drawEvent.card;
+            if (Youmu.isPreHeated(game, card))
                 await item.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1)));
         }
     }
     /// <summary>
     /// 1 悟入幻想 获得6点护甲，并在你的下个回合开始时失去6点护甲，蓄力：下个回合开始时不再失去6点护甲。
     /// </summary>
-    public class Enlightenment : SpellCardDefine
+    public class FantasyOfEnteringEnlightenment : SpellCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x004;
+        public const int ID = Youmu.ID | CardCategory.SPELL | 0x004;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
         public override IEffect[] effects { get; set; } = new IEffect[] {
-           new NoTargetEffect(effect),
-           new KonpakuYoumu.AccumulateTrigggerEffectBefore()
+            new NoTargetEffect(effect),
+            new Youmu.PreHeat()
         };
         static async Task effect(THHGame game, Card card)
         {
-            if (!card.isAccumulate(game))
+            await card.getOwner().master.gainArmor(game, 6);
+            if (!Youmu.isPreHeated(game, card))
             {
-                await card.getOwner().changeArmor(game, 6);
-                await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new ArmorEffectBefore<THHGame.TurnStartEventArg>((g1, c1, a1) =>
-                {
-                    return a1.player == c1.getOwner();
-                }, (g2, c2, a2) =>
-                {
-                    c2.getOwner().changeArmor(game, -6);
-                    return c2.getOwner().master.removeBuff(game, c2.getOwner().master.getBuffs().Where(b => b.id == ID));
-                })));
-            }
-            else
-                await card.getOwner().changeArmor(game, 6);
-        }
-        class ArmorEffectBefore<T> : THHEffectBefore<T> where T : IEventArg
-        {
-            public ArmorEffectBefore(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute)
-                : base(PileName.MASTER, onCheckCondition, null, async (g, c, a) =>
-                {
-                    await onExecute?.Invoke(g, c, a);
-                })
-            {
+                await card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
+                    new BeforeTurnStart(async (g, c, a) =>
+                    {
+                        await c.loseArmor(g, 6);
+                        await c.removeBuff(game, ID);
+
+                    }, (g, c, a) =>
+                    {
+                        return a.player == c.getOwner();
+                    })));
             }
         }
     }
     /// <summary>
     /// 1 半灵猛击 对目标随从造成相当于护甲值的伤害。
     /// </summary>
-    public class HalfSpiritSlam : SpellCardDefine
+    public class HalfPhantonSlam : SpellCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x005;
+        public const int ID = Youmu.ID | CardCategory.SPELL | 0x005;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await target.damage(game,card,card.getOwner().armor);
+                await target.damage(game,card,card.getOwner().master.getArmor(game));
             })
         };
     }
     /// <summary>
     /// 121 冥界住人 亡语：将一个1/1的幽灵置入你的手牌
     /// </summary>
-    public class Underworlddweller : ServantCardDefine
+    public class NetherworldInhabitant : ServantCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SERVANT | 0x006;
+        public const int ID = Youmu.ID | CardCategory.SERVANT | 0x006;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
@@ -170,7 +185,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Ghost : ServantCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SERVANT | 0x007;
+        public const int ID = Youmu.ID | CardCategory.SERVANT | 0x007;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
@@ -180,19 +195,19 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 232 楼观剑 蓄力：当你的英雄消灭一个角色之后，获得一次额外的攻击机会
     /// </summary>
-    public class LouGuanjian : ItemCardDefine
+    public class Roukanken : ItemCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.ITEM | 0x008;
+        public const int ID = Youmu.ID | CardCategory.ITEM | 0x008;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new KonpakuYoumu.AccumulateTrigggerEffectBefore(),
+            new Youmu.PreHeat(),
             new THHEffectAfter<THHCard.AttackEventArg>(PileName.ITEM,(g,c,a)=>
             {
-                return a.card == c.getOwner().master && c.isAccumulate(g);
+                return a.card == c.getOwner().master && Youmu.isPreHeated(g,c);
             },null,(g,c,a)=>
             {
                 if(a.target.isDead(g))
@@ -208,17 +223,17 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class TwoHundredYushunInAFlash : SpellCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x009;
+        public const int ID = Youmu.ID | CardCategory.SPELL | 0x009;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { Keyword.ACCUMULATE };
+        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
         };
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().draw(game);
-            if (card.getOwner().armor > 0)
+            if (card.getOwner().master.getArmor(game) > 0)
                 await card.getOwner().draw(game);
         }
     }
@@ -227,18 +242,19 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class CherryBlossom : SpellCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x010;
+        public const int ID = Youmu.ID | CardCategory.SPELL | 0x010;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { Keyword.ACCUMULATE };
+        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
         };
-        static async Task effect(THHGame game, Card card)
+        static Task effect(THHGame game, Card card)
         {
             IEnumerable<Card> servants = game.getOpponent(card.getOwner()).field.OrderBy(c => c.getCurrentLife(game));
             foreach (Card target in servants)
                 card.getOwner().cmdAttack(game, card.getOwner().master, target);
+            return Task.CompletedTask;
         }
     }
     /// <summary>
@@ -246,18 +262,18 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class FaintBitterWheel : SpellCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x011;
+        public const int ID = Youmu.ID | CardCategory.SPELL | 0x011;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { Keyword.ACCUMULATE };
+        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().armor),
+            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().master.getArmor(game)),
                 new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
-            await card.getOwner().changeArmor(game, 0, true);
+            await card.getOwner().master.loseArmor(game, card.getOwner().master.getArmor(game));
         }
     }
     /// <summary>
@@ -265,17 +281,17 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class HeavenAndManAlsoFail : SpellCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x012;
+        public const int ID = Youmu.ID | CardCategory.SPELL | 0x012;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override IEffect[] effects { get; set; } = new IEffect[] {
-            new KonpakuYoumu.AccumulateTrigggerEffectBefore(),
+            new Youmu.PreHeat(),
             new NoTargetEffect(effect)
         };
         static async Task effect(THHGame game, Card card)
         {
             int attack;
-            if (!card.isAccumulate(game))
+            if (!Youmu.isPreHeated(game, card))
                 attack = 5;
             else
                 attack = 7;
@@ -288,7 +304,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class YoukiKonpaku : ServantCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SERVANT | 0x013;
+        public const int ID = Youmu.ID | CardCategory.SERVANT | 0x013;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
@@ -311,7 +327,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class MonsterBlacksmith : ServantCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SERVANT | 0x014;
+        public const int ID = Youmu.ID | CardCategory.SERVANT | 0x014;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
@@ -333,7 +349,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class LinedUp : ServantCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SERVANT | 0x015;
+        public const int ID = Youmu.ID | CardCategory.SERVANT | 0x015;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
@@ -343,7 +359,7 @@ namespace TouhouHeartstone.Builtin
         {
             new BeforeYourTurnEnd(async(game,card,arg)=>
             {
-                if(card.getOwner().armor>0)
+                if(card.getOwner().master.getArmor(game)>0)
                     await card.getOwner().createToken(game, game.getCardDefine<Ghost>());
             })
         };
@@ -353,7 +369,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class HalfGhost : ServantCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.SERVANT | 0x016;
+        public const int ID = Youmu.ID | CardCategory.SERVANT | 0x016;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 1;
@@ -363,16 +379,16 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(async(g1,c1)=>
             {
-                await c1.addBuff(g1, new GeneratedBuff(ID,new AttackModifier(c1.getOwner().armor+c1.define.getAttack(),true)));
-                await c1.addBuff(g1, new GeneratedBuff(ID,new LifeModifier(c1.getOwner().armor+c1.define.getLife(),true)));
+                await c1.addBuff(g1, new GeneratedBuff(ID,new AttackModifier(c1.getOwner().master.getArmor(g1)+c1.define.getAttack(),true)));
+                await c1.addBuff(g1, new GeneratedBuff(ID,new LifeModifier(c1.getOwner().master.getArmor(g1)+c1.define.getLife(),true)));
             }),
             new THHEffectAfter<THHPlayer.ChangeArmorEventArg>(PileName.FIELD,(g,c,a)=>
             {
                 return a.player == c.getOwner();
             },null,async(g,c,a)=>
             {
-                await c.addBuff(g, new GeneratedBuff(ID,new AttackModifier(c.getOwner().armor+c.define.getAttack(),true)));
-                await c.addBuff(g, new GeneratedBuff(ID,new LifeModifier(c.getOwner().armor+c.define.getLife(),true)));
+                await c.addBuff(g, new GeneratedBuff(ID,new AttackModifier(c.getOwner().master.getArmor(g)+c.define.getAttack(),true)));
+                await c.addBuff(g, new GeneratedBuff(ID,new LifeModifier(c.getOwner().master.getArmor(g)+c.define.getLife(),true)));
             })
         };
     }
@@ -381,7 +397,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Bailoujian : ItemCardDefine
     {
-        public const int ID = KonpakuYoumu.ID | CardCategory.ITEM | 0x017;
+        public const int ID = Youmu.ID | CardCategory.ITEM | 0x017;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
