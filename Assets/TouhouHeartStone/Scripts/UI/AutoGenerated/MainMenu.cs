@@ -31,17 +31,10 @@ namespace UI
             this._ManMachineButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("ManMachineButton").GetComponent<ButtonBlack>();
             this._NetworkButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("NetworkButton").GetComponent<ButtonBlack>();
             this._BuildButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<ButtonBlack>();
+            this._SettingButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("SettingButton").GetComponent<ButtonBlack>();
             this._AboutButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<ButtonBlack>();
             this._QuitButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<ButtonBlack>();
             this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
-        }
-        private Main _parent;
-        public Main parent
-        {
-            get
-            {
-                return this.transform.parent.GetComponent<Main>();
-            }
         }
         [SerializeField()]
         private Image _BackgroundImage;
@@ -119,6 +112,19 @@ namespace UI
                     this._BuildButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<ButtonBlack>();
                 }
                 return this._BuildButtonButtonBlack;
+            }
+        }
+        [SerializeField()]
+        private ButtonBlack _SettingButtonButtonBlack;
+        public ButtonBlack SettingButtonButtonBlack
+        {
+            get
+            {
+                if ((this._SettingButtonButtonBlack == null))
+                {
+                    this._SettingButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("SettingButton").GetComponent<ButtonBlack>();
+                }
+                return this._SettingButtonButtonBlack;
             }
         }
         [SerializeField()]
