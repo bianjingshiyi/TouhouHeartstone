@@ -251,7 +251,7 @@ namespace Game
 
                     if (datarow.ReadCol("Ignore", false))
                         continue;
-                    CardSkinData skin = await loadSkinInCardTable(path, datarow);
+                    CardSkinData skin = await loadSkinInCardTable(path, datarow, logger);
                     int index = skins.FindIndex(s => s.id == skin.id);
                     if (index > 0)
                         skins[index] = skin;
@@ -284,7 +284,7 @@ namespace Game
             return skins.ToArray();
         }
 
-        private async Task<CardSkinData> loadSkinInCardTable(string path, DataRow datarow)
+        private async Task<CardSkinData> loadSkinInCardTable(string path, DataRow datarow, ILogger logger = null)
         {
             //加载文字信息
             var skin = new CardSkinData()
@@ -293,6 +293,7 @@ namespace Game
                 name = datarow.ReadCol<string>("Name"),
                 desc = datarow.ReadCol("Desc", "")
             };
+            logger?.log("加载卡片资源: " + skin.name);
             //加载图片
             string imagePath = datarow.ReadCol("Image", "");
             try
