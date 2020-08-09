@@ -15,8 +15,8 @@ namespace Tests
         {
             game = initGameWithoutPlayers(null, option);
             IEnumerable<CardDefine> yourTrueDeck = yourDeck.Length > 0 ?
- Enumerable.Repeat(game.getCardDefine(yourDeck[0].Key), yourDeck[0].Value) :
- Enumerable.Repeat(game.getCardDefine(DefaultServant.ID), 30);
+            Enumerable.Repeat(game.getCardDefine(yourDeck[0].Key), yourDeck[0].Value) :
+            Enumerable.Repeat(game.getCardDefine(DefaultServant.ID), 30);
             for (int i = 1; i < yourDeck.Length; i++)
             {
                 yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getCardDefine(yourDeck[i].Key), yourDeck[i].Value));

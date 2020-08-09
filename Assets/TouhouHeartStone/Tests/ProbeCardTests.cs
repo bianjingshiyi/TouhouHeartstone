@@ -279,5 +279,58 @@ namespace Tests
             
             game.Dispose();
         }
+
+        /// <summary>
+        /// 西塞尔测试
+        /// 7/2/2，唯一，战吼：获得一个机械的控制权，然后将其变为3/3
+        /// </summary>
+        [Test]
+        public void ProbeSisselTest(){
+            /*
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Sissel.ID, 1),
+                new KeyValuePair<int, int>(Sentry.ID, 1)
+            );
+
+            game.skipUntilCanUse<Sentry>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<Sentry>());
+            oppo.cmdTurnEnd(game);
+            
+            game.skipUntilCanUse<Sissel>(you);
+            Assert.True(you.tryUse(game, you.hand.getCard<Sissel>(), 0, targets: oppo.field[0]).Result);
+            Assert.False(you.tryUse( game, you.hand.getCard<Sissel>() , 0 ,targets: oppo.field[1]).Result);
+            you.cmdUse(game, you.hand.getCard<Sissel>(),targets: oppo.field[0]);
+
+            Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id );
+            Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) + "的" + you.field[1].define.id );   
+            */
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), 
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getCardDefine<Sentry>(), 2)));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), 
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getCardDefine<Sissel>(), 2)));
+
+            Card card = you.hand.getCard<Sissel>();
+            game.skipUntilCanUse<Sentry>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<Sentry>());
+            oppo.cmdTurnEnd(game);
+
+            game.skipUntilCanUse<Sissel>(you);
+            
+            Assert.True(card.isValidTarget(game, oppo.field[0]));
+            you.cmdUse(game, you.hand.getCard<Sissel>(), targets: oppo.field[0]);
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            Assert.False(card.isValidTarget(game, oppo.field[0]));
+
+           //you.cmdUse(game, you.hand.getCard<Sissel>(), targets: oppo.field[0]);
+
+           // Debug.Log("第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id);
+           // Debug.Log("第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) + "的" + you.field[1].define.id);
+            game.Dispose();
+        }
     }
 }
