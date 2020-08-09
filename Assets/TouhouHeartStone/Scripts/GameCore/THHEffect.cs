@@ -621,4 +621,17 @@ namespace TouhouHeartstone
         {
         }
     }
+    public class AfterTurnStart : THHEffectAfter<THHGame.TurnStartEventArg>
+    {
+        public AfterTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PileName.FIELD, onCheckCondition, null, async (game, card, arg) =>
+        {
+            if (onExecute != null)
+            {
+                await onExecute.Invoke(game, card, arg);
+                await game.updateDeath();
+            }
+        })
+        {
+        }
+    }
 }

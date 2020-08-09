@@ -638,7 +638,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 324 爱丽丝·玛格特洛依德 当你的回合开始时，召唤一个1/1的人形。
+    /// 324 爱丽丝·玛格特洛依德 当你的回合开始后，召唤一个1/1的人形。
     /// </summary>
     public class AliceMargatroid_N : ServantCardDefine
     {
@@ -648,7 +648,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]{
-            new BeforeTurnStart(async(game,card,arg)=>
+            new AfterTurnStart(async(game,card,arg)=>
             {
                 await card.getOwner().createToken(game, game.getCardDefine<Doll_N>());
             },(g,c,a)=>
@@ -872,8 +872,9 @@ namespace TouhouHeartstone.Builtin
             },null,(g,c,a)=>
             {
                 var oppo = g.getOpponent(c.getOwner());
-                Card[] targets = new Card[]{ oppo.master }.Concat(oppo.field).ToArray();
-                a.target = targets[g.dice(targets.Length)];
+                Card[] targets = (new Card[]{ oppo.master }).Concat(oppo.field).ToArray();
+                int dice = g.dice(targets.Length);
+                a.target = targets[dice - 1];
                 return Task.CompletedTask;
             })
         };
