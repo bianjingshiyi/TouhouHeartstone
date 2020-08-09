@@ -5371,7 +5371,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1254725211972046}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.9997177}
+  m_LocalPosition: {x: 0, y: 0, z: 0.99975586}
   m_LocalScale: {x: 500, y: 500, z: 1}
   m_Children:
   - {fileID: 1853683382859495}
@@ -20002,7 +20002,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7835184432123089359}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.9997177}
+  m_LocalPosition: {x: 0, y: 0, z: 1.0001221}
   m_LocalScale: {x: 500, y: 500, z: 1}
   m_Children:
   - {fileID: 7834728078819446626}
@@ -20011,7 +20011,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -300, y: -300}
+  m_AnchoredPosition: {x: 600, y: 600}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7835184432123089361
@@ -20038,7 +20038,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5af8e0da8d439a84ebdc0312e716d0c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _time: 1
+  _time: 0
   _targetTransform: {fileID: 2018338288}
   _stopDistance: 0
 --- !u!114 &7865471560073682599
@@ -20161,7 +20161,7 @@ ParticleSystem:
   cullingMode: 3
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
-  looping: 1
+  looping: 0
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
