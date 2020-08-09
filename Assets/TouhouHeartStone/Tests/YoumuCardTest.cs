@@ -138,10 +138,10 @@ namespace Tests
             Assert.IsInstanceOf<Roukanken>(you.item.define);
             you.cmdAttack(game, you.master, target: oppo.field[0]);
             Assert.True(you.master.canAttack(game));
-            //you.cmdAttack(game, you.master, target: oppo.field[0]);
-            //Assert.True(you.master.canAttack(game));
-            //you.cmdAttack(game, you.master, target: oppo.master);
-            //Assert.False(you.master.canAttack(game));
+            you.cmdAttack(game, you.master, target: oppo.field[0]);
+            Assert.True(you.master.canAttack(game));
+            you.cmdAttack(game, you.master, target: oppo.master);
+            Assert.False(you.master.canAttack(game));
         }
 
         [Test]
@@ -149,7 +149,7 @@ namespace Tests
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Roukanken.ID, 3),
-                new KeyValuePair<int, int>(MonsterBlacksmith.ID, 3)
+                new KeyValuePair<int, int>(YoukaiSmith.ID, 3)
             );
             game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 2);
             oppo.cmdUse(game, oppo.hand.First(), 0);
@@ -159,7 +159,7 @@ namespace Tests
             you.master.setAttack(5);
             you.cmdUse(game, you.hand.First(c => c.define is Roukanken));
             Assert.IsInstanceOf<Roukanken>(you.item.define);
-            you.cmdUse(game, you.hand.getCard<MonsterBlacksmith>());
+            you.cmdUse(game, you.hand.getCard<YoukaiSmith>());
             Assert.True(you.item.isImmunity(game));
             you.cmdAttack(game, you.master, target: oppo.field[0]);
             Assert.Equals(30, you.master.getCurrentLife(game));
@@ -204,16 +204,16 @@ namespace Tests
         public void TwoHundredYushunInAFlashTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(TwoHundredYushunInAFlash.ID, 5)
+                new KeyValuePair<int, int>(TwoHundredYojanaOneSlash.ID, 5)
             );
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 1);
             you.setGem(game, 10);
             int count = you.hand.count;
-            you.cmdUse(game, you.hand.getCard<TwoHundredYushunInAFlash>());
+            you.cmdUse(game, you.hand.getCard<TwoHundredYojanaOneSlash>());
             Assert.AreEqual(count, you.hand.count);
             count = you.hand.count;
             you.master.gainArmor(game, 1);
-            you.cmdUse(game, you.hand.getCard<TwoHundredYushunInAFlash>());
+            you.cmdUse(game, you.hand.getCard<TwoHundredYojanaOneSlash>());
             Assert.AreEqual(count + 1, you.hand.count);
         }
 

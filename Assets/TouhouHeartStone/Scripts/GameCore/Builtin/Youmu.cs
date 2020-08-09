@@ -221,7 +221,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 2 二百由旬一闪 抽一张牌，如果你拥有护甲，则再抽一张牌
     /// </summary>
-    public class TwoHundredYushunInAFlash : SpellCardDefine
+    public class TwoHundredYojanaOneSlash : SpellCardDefine
     {
         public const int ID = Youmu.ID | CardCategory.SPELL | 0x009;
         public override int id { get; set; } = ID;
@@ -325,7 +325,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 332 妖怪铁匠 战吼：使你的武器在本回合内获得免疫。
     /// </summary>
-    public class MonsterBlacksmith : ServantCardDefine
+    public class YoukaiSmith : ServantCardDefine
     {
         public const int ID = Youmu.ID | CardCategory.SERVANT | 0x014;
         public override int id { get; set; } = ID;
