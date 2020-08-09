@@ -217,8 +217,8 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().draw(game); 
-            if(card.getOwner().armor>0)
+            await card.getOwner().draw(game);
+            if (card.getOwner().armor > 0)
                 await card.getOwner().draw(game);
         }
     }
@@ -268,7 +268,6 @@ namespace TouhouHeartstone.Builtin
         public const int ID = KonpakuYoumu.ID | CardCategory.SPELL | 0x012;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override string[] keywords { get; set; } = new string[] { Keyword.ACCUMULATE };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new KonpakuYoumu.AccumulateTrigggerEffectBefore(),
             new NoTargetEffect(effect)
@@ -344,7 +343,7 @@ namespace TouhouHeartstone.Builtin
         {
             new BeforeYourTurnEnd(async(game,card,arg)=>
             {
-                if(card.getOwner().master.getArmor(game)>0)
+                if(card.getOwner().armor>0)
                     await card.getOwner().createToken(game, game.getCardDefine<Ghost>());
             })
         };
@@ -364,16 +363,16 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(async(g1,c1)=>
             {
-                await c1.getOwner().item.addBuff(g1, new GeneratedBuff(ID,new AttackModifier(c1.getOwner().armor+c1.define.getAttack(),true)));
-                await c1.getOwner().item.addBuff(g1, new GeneratedBuff(ID,new LifeModifier(c1.getOwner().armor+c1.define.getLife(),true)));
+                await c1.addBuff(g1, new GeneratedBuff(ID,new AttackModifier(c1.getOwner().armor+c1.define.getAttack(),true)));
+                await c1.addBuff(g1, new GeneratedBuff(ID,new LifeModifier(c1.getOwner().armor+c1.define.getLife(),true)));
             }),
             new THHEffectAfter<THHPlayer.ChangeArmorEventArg>(PileName.FIELD,(g,c,a)=>
             {
                 return a.player == c.getOwner();
             },null,async(g,c,a)=>
             {
-                await c.getOwner().item.addBuff(g, new GeneratedBuff(ID,new AttackModifier(c.getOwner().armor+c.define.getAttack(),true)));
-                await c.getOwner().item.addBuff(g, new GeneratedBuff(ID,new LifeModifier(c.getOwner().armor+c.define.getLife(),true)));
+                await c.addBuff(g, new GeneratedBuff(ID,new AttackModifier(c.getOwner().armor+c.define.getAttack(),true)));
+                await c.addBuff(g, new GeneratedBuff(ID,new LifeModifier(c.getOwner().armor+c.define.getLife(),true)));
             })
         };
     }
@@ -384,12 +383,19 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = KonpakuYoumu.ID | CardCategory.ITEM | 0x017;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 3;
-        public override int attack { get; set; } = 2;
-        public override int life { get; set; } = 3;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-
+            new NoTargetEffect(async(g1,c1)=>
+            {
+                if(c1.getOwner()[PileName.ITEM].isFull)
+                {
+                    await c1.getOwner().item.addBuff(g1, new GeneratedBuff(ID, new LifeModifier(1)));
+                    await c1.die(g1);
+                }
+            })
         };
     }
 }

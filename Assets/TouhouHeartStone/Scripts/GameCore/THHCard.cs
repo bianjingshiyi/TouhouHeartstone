@@ -717,13 +717,15 @@ namespace TouhouHeartstone
                         }
                         else
                             damage = value;
-
-                        if (card.define is MasterCardDefine)
+                        
+                        if(card.define is MasterCardDefine)
                         {
                             int armor = card.getOwner().armor;
                             damage = damage - armor;
                             if (damage < 0)
-                                card.getOwner().changeArmor(game, -damage, true);
+                                card.getOwner().changeArmor(game, -damage,true);
+                            card.getOwner().changeArmor(game, -damage,true);
+
                         }
 
                         if (damage > 0)
