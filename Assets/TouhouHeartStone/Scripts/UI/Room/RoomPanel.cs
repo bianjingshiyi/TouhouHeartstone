@@ -40,7 +40,7 @@ namespace UI
             initEvents();
         }
 
-        private void Start()
+        private void OnEnable()
         {
             DeckSelectionDeckListItem.SetContent(0, "选择你的卡组", null);
         }
@@ -49,6 +49,13 @@ namespace UI
         {
             RandomSeedContainerGameOptionItemText.InputField.onValueChanged.set(value =>
             {
+                if (string.IsNullOrEmpty(value))
+                {
+                    roomInfo.getOption().randomSeed = 0;
+                    OnRoomInfoUpdate?.Invoke(roomInfo);
+                    return;
+                }
+
                 if (int.TryParse(value, out int i))
                 {
                     roomInfo.getOption().randomSeed = i;
@@ -238,11 +245,11 @@ namespace UI
             }
 
             // 设置房间选项
-            RandomSeedContainerGameOptionItemText.InputField.text = room.getOption().randomSeed.ToString();
+            var seed = room.getOption().randomSeed;
+            RandomSeedContainerGameOptionItemText.InputField.text = seed == 0 ? "" : seed.ToString();
             ShuffleContainerGameOptionItemToggle.Toggle.isOn = room.getOption().shuffle;
             InitReplacementContainerGameOptionItemText.InputField.text = room.getOption().timeoutForInitReplace.ToString();
             TurnTimeContainerGameOptionItemText.InputField.text = room.getOption().timeoutForTurn.ToString();
-            Debug.Log("刷新房间设定" + IsSortedToggleGameOptionItemToggle.Toggle.isOn);
             IsSortedToggleGameOptionItemToggle.Toggle.isOn = room.getOption().sortedPlayers != null;
 
             // 判断是否可以开始游戏
@@ -251,9 +258,12 @@ namespace UI
             {
                 foreach (var item in room.playerList)
                 {
-                    if (item.getDeck().Length < 31) startable = false;
+                    int[] deck;
+                    if (!item.tryGetDeck(out deck) || deck.Length < 30)
+                        startable = false;
                 }
-            } else
+            }
+            else
             {
                 startable = false;
             }

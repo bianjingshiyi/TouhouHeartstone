@@ -486,7 +486,7 @@ namespace TouhouHeartstone
     [Serializable]
     public class GameOption
     {
-        public static GameOption Default { get; } = new GameOption();
+        public static GameOption Default => new GameOption();
         public int randomSeed = 0;
         public int[] sortedPlayers = null;
         public bool shuffle = true;

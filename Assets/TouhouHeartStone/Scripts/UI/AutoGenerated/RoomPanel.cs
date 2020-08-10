@@ -25,7 +25,6 @@ namespace UI
         }
         public void autoBind()
         {
-            this._Image = this.transform.Find("Image").GetComponent<Image>();
             this._ContainerImage = this.transform.Find("Container").GetComponent<Image>();
             this._TitleBarImage = this.transform.Find("Container").Find("TitleBar").GetComponent<Image>();
             this._TitleText = this.transform.Find("Container").Find("TitleBar").Find("Title").GetComponent<Text>();
@@ -44,19 +43,6 @@ namespace UI
             this._DeckSelectionDeckListItem = this.transform.Find("Container").Find("DeckSelection").GetComponent<DeckListItem>();
             this._DeckPanelMasterCardSelection = this.transform.Find("Container").Find("DeckPanel").GetComponent<MasterCardSelection>();
             this._DeckViewMasterCardSelection = this.transform.Find("Container").Find("DeckView").GetComponent<MasterCardSelection>();
-        }
-        [SerializeField()]
-        private Image _Image;
-        public Image Image
-        {
-            get
-            {
-                if ((this._Image == null))
-                {
-                    this._Image = this.transform.Find("Image").GetComponent<Image>();
-                }
-                return this._Image;
-            }
         }
         [SerializeField()]
         private Image _ContainerImage;

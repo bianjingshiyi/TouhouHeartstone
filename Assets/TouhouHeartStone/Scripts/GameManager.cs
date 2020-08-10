@@ -131,7 +131,16 @@ namespace Game
         public void startLocalGame(RoomInfo room)
         {
             _ui.Game.GameResultDialog.hide();
-            game = new THHGame(room.getOption(), getManager<CardManager>().GetCardDefines())
+
+            var option = room.getOption();
+            if (option.randomSeed == 0)
+            {
+                var rand = new byte[4];
+                System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
+                option.randomSeed = BitConverter.ToInt32(rand, 0);
+            }
+
+            game = new THHGame(option, getManager<CardManager>().GetCardDefines())
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),

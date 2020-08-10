@@ -30,61 +30,7 @@ namespace Game
             base.onAwake();
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             Main main = ui.getObject<Main>();
-            main.MainMenu.ManMachineButtonButtonBlack.asButton.onClick.set(() =>
-            {
-                currentRoomInfo = new RoomInfo();
-                var selfPlayer = new RoomPlayerInfo() { id = 0, name = "自己" };
-                currentRoomInfo.playerList.Add(selfPlayer);
-                currentRoomInfo.setOption(GameOption.Default);
-
-                main.RoomPanel.ResetEvents();
-                main.RoomPanel.SetMode(RoomPanel.Mode.Local);
-                main.RoomPanel.SetSelfID(selfPlayer.id);
-                main.RoomPanel.SetRightText("");
-                main.RoomPanel.SetInfo(currentRoomInfo);
-
-                main.display(main.RoomPanel);
-                main.RoomPanel.OnStartClick += () =>
-                {
-                    game.startLocalGame(currentRoomInfo);
-                };
-                main.RoomPanel.OnQuitClick += () =>
-                {
-                    main.display(main.MainMenu);
-                };
-                main.RoomPanel.OnRoomInfoUpdate += (info) =>
-                {
-                    currentRoomInfo = info;
-                    main.RoomPanel.SetInfo(currentRoomInfo);
-                };
-                main.RoomPanel.OnPlayerRemove += (id) =>
-                {
-                    for (int i = 0; i < currentRoomInfo.playerList.Count; i++)
-                    {
-                        if (currentRoomInfo.playerList[i].id == id)
-                        {
-                            currentRoomInfo.playerList.RemoveAt(i--);
-                        }
-                    }
-                    main.RoomPanel.SetInfo(currentRoomInfo);
-                };
-                main.RoomPanel.OnAIPlayerAdd += (player) =>
-                {
-                    currentRoomInfo.playerList.Add(player);
-                    main.RoomPanel.SetInfo(currentRoomInfo);
-                };
-                main.RoomPanel.OnSetPlayerDeck += (id, deck) =>
-                {
-                    for (int i = 0; i < currentRoomInfo.playerList.Count; i++)
-                    {
-                        if (currentRoomInfo.playerList[i].id == id)
-                        {
-                            currentRoomInfo.playerList[i].setDeck(deck);
-                        }
-                    }
-                    main.RoomPanel.SetInfo(currentRoomInfo);
-                };
-            });
+            main.MainMenu.ManMachineButtonButtonBlack.asButton.onClick.set(showLocalRoom);
             main.MainMenu.NetworkButtonButtonBlack.asButton.onClick.set(() =>
             {
                 main.display(main.NetworkingPage);
@@ -119,6 +65,64 @@ namespace Game
                 ui.getObject<Dialog>().display("游戏资源加载失败！请重新启动游戏", () => Application.Quit());
                 _loadCardTask = null;
             }
+        }
+
+        private void showLocalRoom()
+        {
+            Main main = ui.getObject<Main>();
+
+            currentRoomInfo = new RoomInfo();
+            var selfPlayer = new RoomPlayerInfo() { id = 0, name = "自己" };
+            currentRoomInfo.playerList.Add(selfPlayer);
+            currentRoomInfo.setOption(GameOption.Default);
+
+            main.RoomPanel.ResetEvents();
+            main.RoomPanel.SetMode(RoomPanel.Mode.Local);
+            main.RoomPanel.SetSelfID(selfPlayer.id);
+            main.RoomPanel.SetRightText("");
+            main.RoomPanel.SetInfo(currentRoomInfo);
+
+            main.display(main.RoomPanel);
+            main.RoomPanel.OnStartClick += () =>
+            {
+                game.startLocalGame(currentRoomInfo);
+            };
+            main.RoomPanel.OnQuitClick += () =>
+            {
+                main.display(main.MainMenu);
+            };
+            main.RoomPanel.OnRoomInfoUpdate += (info) =>
+            {
+                currentRoomInfo = info;
+                main.RoomPanel.SetInfo(currentRoomInfo);
+            };
+            main.RoomPanel.OnPlayerRemove += (id) =>
+            {
+                for (int i = 0; i < currentRoomInfo.playerList.Count; i++)
+                {
+                    if (currentRoomInfo.playerList[i].id == id)
+                    {
+                        currentRoomInfo.playerList.RemoveAt(i--);
+                    }
+                }
+                main.RoomPanel.SetInfo(currentRoomInfo);
+            };
+            main.RoomPanel.OnAIPlayerAdd += (player) =>
+            {
+                currentRoomInfo.playerList.Add(player);
+                main.RoomPanel.SetInfo(currentRoomInfo);
+            };
+            main.RoomPanel.OnSetPlayerDeck += (id, deck) =>
+            {
+                for (int i = 0; i < currentRoomInfo.playerList.Count; i++)
+                {
+                    if (currentRoomInfo.playerList[i].id == id)
+                    {
+                        currentRoomInfo.playerList[i].setDeck(deck);
+                    }
+                }
+                main.RoomPanel.SetInfo(currentRoomInfo);
+            };
         }
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {

@@ -521,4 +521,12 @@ namespace Tests
             })
         };
     }
+    public class TestWeapon : ItemCardDefine
+    {
+        public const int ID = TestMaster.ID | CardCategory.ITEM | 0x014;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 3;
+    }
 }
