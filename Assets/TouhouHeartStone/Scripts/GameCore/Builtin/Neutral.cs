@@ -829,7 +829,7 @@ namespace TouhouHeartstone.Builtin
             {
                 target.setDead(true);
                 return Task.CompletedTask;
-            })
+            }, PileFlag.field)
         };
     }
     /// <summary>

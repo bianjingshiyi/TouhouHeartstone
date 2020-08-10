@@ -106,11 +106,6 @@ namespace TouhouHeartstone
             public THHPlayer player;
             public int value;
         }
-        public class ChangeArmorEventArg : EventArg
-        {
-            public THHPlayer player;
-            public int value;
-        }
         public Task draw(THHGame game, out DrawEventArg drawEvent, out BurnEventArg burnEvent, out FatigueEventArg fatigueEvent)
         {
             if (deck.count < 1)//无牌可抽，疲劳！
@@ -263,34 +258,26 @@ namespace TouhouHeartstone
                 {
                     //随从卡，将卡置入战场
                     await tryEnterField(game, arg.player.hand, arg.card, arg.position);
-                    ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    if (effect != null)
-                    {
-                        ActiveEventArg active = new ActiveEventArg(player, card, targets);
-                        await game.triggers.doEvent(active, activeLogic);
-                        async Task activeLogic(ActiveEventArg eventArg)
-                        {
-                            await effect.execute(game, card, new object[] { eventArg }, targets);
-                        }
-                    }
-                    IActiveEffect activeEffect = arg.card.define.getActiveEffect();
-                    if (activeEffect != null)
-                    {
-                        await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
-                    }
+                    await card.activeEffect(game, player, targets);
+                    //ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
+                    //if (effect != null)
+                    //{
+                    //    ActiveEventArg active = new ActiveEventArg(player, card, targets);
+                    //    await game.triggers.doEvent(active, activeLogic);
+                    //    async Task activeLogic(ActiveEventArg eventArg)
+                    //    {
+                    //        await effect.execute(game, card, new object[] { eventArg }, targets);
+                    //    }
+                    //}
+                    //IActiveEffect activeEffect = arg.card.define.getActiveEffect();
+                    //if (activeEffect != null)
+                    //{
+                    //    await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
+                    //}
                 }
                 else if (card.define is SkillCardDefine)
                 {
-                    ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    if (effect != null)
-                    {
-                        await effect.execute(game, arg.card, new object[] { new ActiveEventArg(player, card, targets) }, arg.targets);
-                    }
-                    IActiveEffect activeEffect = arg.card.define.getActiveEffect();
-                    if (activeEffect != null)
-                    {
-                        await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
-                    }
+                    await card.activeEffect(game, player, targets);
                 }
                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.SPELL))
                 {
@@ -304,27 +291,18 @@ namespace TouhouHeartstone
                 {
                     //物品卡，置入物品栏
                     await player.equip(game, card);
-                    ITriggerEffect triggerEffect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    if (triggerEffect != null)
-                    {
-                        await triggerEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
-                    }
-                    IActiveEffect activeEffect = arg.card.define.getActiveEffect();
-                    if (activeEffect != null)
-                    {
-                        await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
-                    }
+                    await card.activeEffect(game, player, targets);
                 }
             });
             await game.updateDeath();
             return true;
         }
-        public Task equip(THHGame game, Card item)
+        public async Task equip(THHGame game, Card item)
         {
             if (this[PileName.ITEM].isFull)
-                destroyItem(game);
+                await destroyItem(game);
             item.setCurrentLife(item.getLife(game));
-            return hand.moveTo(game, item, this[PileName.ITEM]);
+            await hand.moveTo(game, item, this[PileName.ITEM]);
         }
         public Task destroyItem(THHGame game)
         {

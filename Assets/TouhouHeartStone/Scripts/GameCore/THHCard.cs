@@ -113,17 +113,17 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(game, Property.ARMOR);
         }
-        public static Task<ChangeArmorEventArg> gainArmor(this Card card, THHGame game, int value)
+        public static Task<SetArmorEventArg> gainArmor(this Card card, THHGame game, int value)
         {
             return setArmor(card, game, card.getArmor(game) + value);
         }
-        public static Task<ChangeArmorEventArg> loseArmor(this Card card, THHGame game, int value)
+        public static Task<SetArmorEventArg> loseArmor(this Card card, THHGame game, int value)
         {
             return card.setArmor(game, card.getArmor(game) - value);
         }
-        public static async Task<ChangeArmorEventArg> setArmor(this Card card, THHGame game, int value)
+        public static async Task<SetArmorEventArg> setArmor(this Card card, THHGame game, int value)
         {
-            ChangeArmorEventArg eventArg = new ChangeArmorEventArg() { card = card, value = value };
+            SetArmorEventArg eventArg = new SetArmorEventArg() { card = card, value = value };
             await game.triggers.doEvent(eventArg, arg =>
             {
                 card = arg.card;
@@ -136,7 +136,7 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
-        public class ChangeArmorEventArg : EventArg
+        public class SetArmorEventArg : EventArg
         {
             public Card card;
             public int value;
@@ -179,7 +179,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool canAttack(this Card card, THHGame game)
         {
-            if (card.getKeywords(game).Contains(Keyword.CANTATTACK))
+            if (card.hasKeywords(game, Keyword.CANTATTACK))
                 return false;
             if (card.getAttack(game) <= 0)//没有攻击力
                 return false;
@@ -503,11 +503,6 @@ namespace TouhouHeartstone
                 if (player.gem < card.getCost(game))//费用不够
                 {
                     info = "你没有足够的法力值";
-                    return false;
-                }
-                if (player.item != null)
-                {
-                    info = "你只能装备一个道具";
                     return false;
                 }
                 info = null;

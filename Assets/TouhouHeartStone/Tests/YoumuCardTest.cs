@@ -24,19 +24,6 @@ namespace Tests
             Assert.AreEqual(0, you.master.getArmor(game));
             Assert.AreEqual(27, you.master.getCurrentLife(game));
         }
-
-        [Test]
-        public void MasterAttackTest()
-        {
-            TestGameflow.createGame(out var game, out var you, out var oppo);
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 1);
-            oppo.cmdUse(game, oppo.hand.First());//对手拍一张白板随从
-            oppo.cmdTurnEnd(game);
-            you.master.setAttack(5);
-            you.cmdAttack(game, you.master, oppo.field[0]);
-            Assert.AreEqual(2, oppo.field[0].getCurrentLife(game));
-        }
-
         [Test]
         public void SlashOfPresentWorldTest()
         {
@@ -169,35 +156,33 @@ namespace Tests
         public void KonpakuYoukiTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(Roukanken.ID, 3),
-                new KeyValuePair<int, int>(KonpakuYouki.ID, 3)
+                new KeyValuePair<int, int>(TestWeapon.ID, 1),
+                new KeyValuePair<int, int>(KonpakuYouki.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 2);
-            oppo.cmdUse(game, oppo.hand.First(), 0);
-            oppo.cmdUse(game, oppo.hand.First(), 1);
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 2);//对手拍两个靶子
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
             oppo.cmdTurnEnd(game);
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 5);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<KonpakuYouki>().cost + game.getCardDefine<TestWeapon>().cost);
             you.cmdUse(game, you.hand.getCard<KonpakuYouki>());
-            you.master.setAttack(5);
-            you.cmdUse(game, you.hand.First(c => c.define is Roukanken));
-            Assert.IsInstanceOf<Roukanken>(you.item.define);
-            you.cmdAttack(game, you.master, target: oppo.field[0]);
-            Assert.AreEqual(4, you.item.getAttack(game));
-            you.cmdAttack(game, you.master, target: oppo.field[1]);
-            Assert.AreEqual(5, you.item.getAttack(game));
+            you.cmdUse(game, you.hand.getCard<TestWeapon>());
+            you.cmdAttack(game, you.master, oppo.field[0]);
+            Assert.AreEqual(2, you.item.getAttack(game));
         }
 
         [Test]
-        public void HalfGhostTest()
+        public void HalfPhantomTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(HalfGhost.ID, 5)
+                new KeyValuePair<int, int>(HalfPhantom.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 5);
-            you.master.gainArmor(game, 6);
-            you.cmdUse(game, you.hand.getCard<HalfGhost>());
-            Assert.AreEqual(7, you.field[0].getAttack(game));
-            Assert.AreEqual(7, you.field[0].getLife(game));
+            game.skipUntilCanUse<HalfPhantom>(you);
+            you.cmdUse(game, you.hand.getCard<HalfPhantom>());
+            Assert.AreEqual(1, you.field[0].getCurrentLife(game));
+            you.master.gainArmor(game, 1);
+            Assert.AreEqual(2, you.field[0].getCurrentLife(game));
+            you.master.loseArmor(game, 1);
+            Assert.AreEqual(1, you.field[0].getCurrentLife(game));
         }
 
         [Test]
@@ -245,24 +230,24 @@ namespace Tests
         }
 
         [Test]
-        public void FaintBitterWheelTest()
+        public void WheelOfPainOfTheLivingAndDeadTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(FaintBitterWheel.ID, 5)
+                new KeyValuePair<int, int>(WheelOfPainOfTheLivingAndDead.ID, 5)
             );
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
             you.master.gainArmor(game, 30);
             Assert.AreEqual(30, you.master.getArmor(game));
-            you.cmdUse(game, you.hand.getCard<FaintBitterWheel>());
+            you.cmdUse(game, you.hand.getCard<WheelOfPainOfTheLivingAndDead>());
             Assert.AreEqual(0, you.master.getArmor(game));
             Assert.AreEqual(30, you.master.getAttack(game));
         }
 
         [Test]
-        public void HeavenAndManAlsoFailTest()
+        public void FiveSignsOfTheDyingDevaTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(HeavenAndManAlsoFail.ID, 10)
+                new KeyValuePair<int, int>(FiveSignsOfTheDyingDeva.ID, 10)
             );
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 5);
             you.cmdUse(game, you.hand.Last());//刚抽的没有蓄力
@@ -274,7 +259,7 @@ namespace Tests
         }
 
         [Test]
-        public void LinedUpTest()
+        public void ProcessingPhantomsTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(ProcessingPhantoms.ID, 5)
@@ -293,16 +278,23 @@ namespace Tests
         public void HakuroukenTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(Hakurouken.ID, 5),
-                new KeyValuePair<int, int>(Roukanken.ID, 5)
+                new KeyValuePair<int, int>(Hakurouken.ID, 2),
+                new KeyValuePair<int, int>(TestWeapon.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 6);
-            you.cmdUse(game, you.hand.getCard<Roukanken>());
-            Assert.IsInstanceOf<Roukanken>(you.item.define);
-            Assert.AreEqual(2, you.item.getCurrentLife(game));
+            game.skipUntilCanUse<Hakurouken>(you);
             you.cmdUse(game, you.hand.getCard<Hakurouken>());
-            Assert.IsInstanceOf<Roukanken>(you.item.define);
-            Assert.AreEqual(4, you.item.getCurrentLife(game));
+            Assert.IsInstanceOf<Hakurouken>(you.item.define);
+
+            game.skipUntilCanUse<TestWeapon>(you);
+            you.cmdUse(game, you.hand.getCard<TestWeapon>());
+            Assert.IsInstanceOf<TestWeapon>(you.item.define);
+
+            game.skipUntilCanUse<Hakurouken>(you);
+            Assert.AreEqual(3, you.item.getCurrentLife(game));
+            you.cmdUse(game, you.hand.getCard<Hakurouken>());
+            Assert.AreEqual(6, you.item.getCurrentLife(game));
+            Assert.True(!you.hand.Any(c => c.define is Hakurouken));
+            Assert.AreEqual(2, you.grave.Where(c => c.define is Hakurouken).Count());
         }
     }
 }

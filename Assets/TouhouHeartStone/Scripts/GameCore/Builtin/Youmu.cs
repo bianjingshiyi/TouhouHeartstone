@@ -262,7 +262,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 4 幽明的苦轮 使你的英雄在本回合内获得等同于护甲值的攻击力，失去所有护甲。
     /// </summary>
-    public class FaintBitterWheel : SpellCardDefine
+    public class WheelOfPainOfTheLivingAndDead : SpellCardDefine
     {
         public const int ID = Youmu.ID | CardCategory.SPELL | 0x011;
         public override int id { get; set; } = ID;
@@ -281,11 +281,12 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 5 天人亦五衰 使你的英雄在本回合内获得攻击力+5，蓄力：改为攻击力+7
     /// </summary>
-    public class HeavenAndManAlsoFail : SpellCardDefine
+    public class FiveSignsOfTheDyingDeva : SpellCardDefine
     {
         public const int ID = Youmu.ID | CardCategory.SPELL | 0x012;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
+        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new Youmu.PreHeat(),
             new NoTargetEffect(effect)
@@ -369,7 +370,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 411 半幽灵 具有等同于护甲值的额外属性值
     /// </summary>
-    public class HalfGhost : ServantCardDefine
+    public class HalfPhantom : ServantCardDefine
     {
         public const int ID = Youmu.ID | CardCategory.SERVANT | 0x016;
         public override int id { get; set; } = ID;
@@ -379,42 +380,69 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect(async(g1,c1)=>
-            {
-                await c1.addBuff(g1, new GeneratedBuff(ID,new AttackModifier(c1.getOwner().master.getArmor(g1)+c1.define.getAttack(),true)));
-                await c1.addBuff(g1, new GeneratedBuff(ID,new LifeModifier(c1.getOwner().master.getArmor(g1)+c1.define.getLife(),true)));
-            }),
-            new THHEffectAfter<THHPlayer.ChangeArmorEventArg>(PileName.FIELD,(g,c,a)=>
-            {
-                return a.player == c.getOwner();
-            },null,async(g,c,a)=>
-            {
-                await c.addBuff(g, new GeneratedBuff(ID,new AttackModifier(c.getOwner().master.getArmor(g)+c.define.getAttack(),true)));
-                await c.addBuff(g, new GeneratedBuff(ID,new LifeModifier(c.getOwner().master.getArmor(g)+c.define.getLife(),true)));
-            })
+            new IntPropFixer<THHCard.SetArmorEventArg>(PileFlag.field,
+                new IntPropFixer<THHCard.SetArmorEventArg>.ModifierFixer(
+                    new AttackModifier(0),(g,c,b,a)=>
+                    {
+                        return c.getOwner().master.getArmor(g);
+                    }),
+                new IntPropFixer<THHCard.SetArmorEventArg>.ModifierFixer(
+                    new LifeModifier(0),(g,c,b,a)=>
+                    {
+                        return c.getOwner().master.getArmor(g);
+                    }))
+            //new NoTargetEffect(async(g1,c1)=>
+            //{
+            //    await c1.addBuff(g1, new GeneratedBuff(ID,new AttackModifier(c1.getOwner().master.getArmor(g1)+c1.define.getAttack(),true)));
+            //    await c1.addBuff(g1, new GeneratedBuff(ID,new LifeModifier(c1.getOwner().master.getArmor(g1)+c1.define.getLife(),true)));
+            //}),
+            //new THHEffectAfter<THHPlayer.ChangeArmorEventArg>(PileName.FIELD,(g,c,a)=>
+            //{
+            //    return a.player == c.getOwner();
+            //},null,async(g,c,a)=>
+            //{
+            //    await c.addBuff(g, new GeneratedBuff(ID,new AttackModifier(c.getOwner().master.getArmor(g)+c.define.getAttack(),true)));
+            //    await c.addBuff(g, new GeneratedBuff(ID,new LifeModifier(c.getOwner().master.getArmor(g)+c.define.getLife(),true)));
+            //})
         };
     }
     /// <summary>
-    /// 232 白楼剑 战吼：如果你已经装备另外一个道具，则不装备此道具，改为使其获得此道具的耐久度。
+    /// 232 白楼剑 如果你已经装备另外一个道具，则不装备此道具，改为使其获得此道具的耐久度。
     /// </summary>
     public class Hakurouken : ItemCardDefine
     {
         public const int ID = Youmu.ID | CardCategory.ITEM | 0x017;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
-        public override int attack { get; set; } = 3;
-        public override int life { get; set; } = 2;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect(async(g1,c1)=>
-            {
-                if(c1.getOwner()[PileName.ITEM].isFull)
+            //new NoTargetEffect(async(g1,c1)=>
+            //{
+            //    if(c1.getOwner()[PileName.ITEM].isFull)
+            //    {
+            //        await c1.getOwner().item.addBuff(g1, new GeneratedBuff(ID, new LifeModifier(1)));
+            //        await c1.die(g1);
+            //    }
+            //})
+            new THHEffectBefore<THHPlayer.UseEventArg>(PileName.HAND,
+                (g1,c1,a1)=>
                 {
-                    await c1.getOwner().item.addBuff(g1, new GeneratedBuff(ID, new LifeModifier(1)));
-                    await c1.die(g1);
-                }
-            })
+                    return a1.card == c1 && c1.getOwner().item != null;
+                },null,
+                (g1,c1,a1)=>
+                {
+                    a1.action = async arg =>
+                    {
+                        THHPlayer player = c1.getOwner();
+                        await player.item.addBuff(g1,new GeneratedBuff(ID,new LifeModifier(c1.getLife(g1))));
+                        await player.hand.moveTo(g1,c1,player.grave);
+                    };
+                    return Task.CompletedTask;
+                })
         };
+
     }
 }
 

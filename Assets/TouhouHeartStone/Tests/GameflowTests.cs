@@ -278,6 +278,17 @@ namespace Tests
 
             game.Dispose();
         }
+        [Test]
+        public void masterAttackTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo);
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 1);
+            oppo.cmdUse(game, oppo.hand.First());//对手拍一张白板随从
+            oppo.cmdTurnEnd(game);
+            you.master.setAttack(5);
+            you.cmdAttack(game, you.master, oppo.field[0]);
+            Assert.AreEqual(2, oppo.field[0].getCurrentLife(game));
+        }
         [UnityTest]
         public IEnumerator winTest()
         {

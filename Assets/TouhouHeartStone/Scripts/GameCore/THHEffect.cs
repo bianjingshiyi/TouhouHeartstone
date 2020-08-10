@@ -634,4 +634,79 @@ namespace TouhouHeartstone
         {
         }
     }
+    public class IntPropFixer<T> : PassiveEffect where T : IEventArg
+    {
+        public override string[] piles { get; }
+        public struct ModifierFixer
+        {
+            public IntPropModifier modifier;
+            public Func<IGame, Card, Buff, T, int> fixer;
+            public ModifierFixer(IntPropModifier modifier, Func<IGame, Card, Buff, T, int> fixer)
+            {
+                this.modifier = modifier;
+                this.fixer = fixer;
+            }
+        }
+        ModifierFixer[] modifiers { get; }
+        public IntPropFixer(PileFlag pile, params ModifierFixer[] modifiers)
+        {
+            piles = pile.getPiles();
+            this.modifiers = modifiers;
+        }
+        public override void onEnable(THHGame game, Card card, Buff buff)
+        {
+            foreach (var pair in modifiers)
+            {
+                IntPropModifier modifier = card.getProp<IntPropModifier>(game, getModifierName(pair.modifier, buff));
+                if (modifier != null)
+                    card.removeModifier(game, modifier);
+                modifier = pair.modifier.clone() as IntPropModifier;
+                modifier.setValue(pair.fixer(game, card, buff, default));
+                card.setProp(getModifierName(pair.modifier, buff), modifier);
+                card.addModifier(game, modifier);
+            }
+            Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(buff));
+            if (trigger == null)
+            {
+                trigger = new Trigger<T>(async arg =>
+                {
+                    foreach (var pair in modifiers)
+                    {
+                        IntPropModifier m = card.getProp<IntPropModifier>(game, getModifierName(pair.modifier, buff));
+                        if (m != null)
+                            await card.removeModifier(game, m);
+                        m = pair.modifier.clone() as IntPropModifier;
+                        m.setValue(pair.fixer(game, card, buff, arg));
+                        card.setProp(getModifierName(pair.modifier, buff), m);
+                        await card.addModifier(game, m);
+                    }
+                });
+                card.setProp(getTriggerName(buff), trigger);
+            }
+            game.triggers.registerAfter(trigger);
+        }
+
+        private static string getTriggerName(Buff buff)
+        {
+            return nameof(IntPropFixer<T>) + "Trigger" + (buff != null ? buff.instanceID.ToString() : "");
+        }
+
+        private string getModifierName(IntPropModifier modifier, Buff buff)
+        {
+            return nameof(IntPropFixer<T>) + modifier.GetType().Name + (buff != null ? buff.instanceID.ToString() : "");
+        }
+
+        public override void onDisable(THHGame game, Card card, Buff buff)
+        {
+            foreach (var pair in modifiers)
+            {
+                IntPropModifier modifier = card.getProp<IntPropModifier>(game, getModifierName(pair.modifier, buff));
+                if (modifier != null)
+                    card.removeModifier(game, modifier);
+            }
+            Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(buff));
+            if (trigger != null)
+                game.triggers.removeAfter(trigger);
+        }
+    }
 }

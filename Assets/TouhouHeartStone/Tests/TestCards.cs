@@ -314,36 +314,14 @@ namespace Tests
         public override int life { get; set; } = 8;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new CostFixer()
+            new IntPropFixer<Pile.MoveCardEventArg>(PileFlag.hand,new IntPropFixer<Pile.MoveCardEventArg>.ModifierFixer(new CostModifier(0),(g,c,b,a)=>
+            {
+                int v = -c.getOwner().hand.Where(c1=>c1!=c).Count();
+                g.logger.log(c+"的花费=>"+v);
+                return v;
+            }))
         };
-        class CostFixer : PassiveEffect
-        {
-            public override string[] piles { get; } = new string[] { PileName.HAND };
-            CostModifier _modifier = new CostModifier();
-            public override void onEnable(THHGame game, Card card, Buff buff)
-            {
-                card.addModifier(game, _modifier);
-            }
-            public override void onDisable(THHGame game, Card card, Buff buff)
-            {
-                _ = card.removeModifier(game, _modifier);
-            }
-            class CostModifier : PropModifier<int>
-            {
-                public override string propName { get; } = nameof(ServantCardDefine.cost);
-                public override int calc(IGame game, Card card, int value)
-                {
-                    return value - card.getOwner().hand.count + 1;
-                }
-
-                public override PropModifier clone()
-                {
-                    return new CostModifier();
-                }
-            }
-        }
     }
-
     /// <summary>
     /// 冰环法术
     /// </summary>
@@ -370,7 +348,6 @@ namespace Tests
             })
         };
     }
-
     /// <summary>
     /// 巫师学徒
     /// </summary>
@@ -472,7 +449,6 @@ namespace Tests
             })
         };
     }
-
     /// <summary>
     /// 剧毒女祭师
     /// </summary>
