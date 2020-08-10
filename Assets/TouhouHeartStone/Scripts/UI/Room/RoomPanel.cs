@@ -258,9 +258,12 @@ namespace UI
             {
                 foreach (var item in room.playerList)
                 {
-                    if (item.getDeck()?.Length < 31) startable = false;
+                    int[] deck;
+                    if (!item.tryGetDeck(out deck) || deck.Length < 30)
+                        startable = false;
                 }
-            } else
+            }
+            else
             {
                 startable = false;
             }
