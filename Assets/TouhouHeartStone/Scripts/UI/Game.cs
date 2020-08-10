@@ -11,7 +11,7 @@ namespace UI
         {
             QuitButtonButtonBlack.asButton.onClick.AddListener(() =>
             {
-                parent.game.game.Dispose();
+                parent.game.quitGame();
                 parent.display(parent.MainMenu);
             });
         }
