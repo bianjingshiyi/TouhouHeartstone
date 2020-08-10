@@ -25,7 +25,6 @@ namespace UI
         }
         public void autoBind()
         {
-            this._BackgroundImage = this.transform.Find("Background").GetComponent<Image>();
             this._TitleBarImage = this.transform.Find("TitleBar").GetComponent<Image>();
             this._TitleText = this.transform.Find("TitleBar").Find("Title").GetComponent<Text>();
             this._BackButtonBlack = this.transform.Find("TitleBar").Find("Back").GetComponent<ButtonBlack>();
@@ -44,19 +43,6 @@ namespace UI
             this._FilterPanel = this.transform.Find("FilterPanel").GetComponent<FilterPanel>();
             this._MasterCardSelection = this.transform.Find("MasterCardSelection").GetComponent<MasterCardSelection>();
             this._HintMessageText = this.transform.Find("HintMessage").GetComponent<Text>();
-        }
-        [SerializeField()]
-        private Image _BackgroundImage;
-        public Image BackgroundImage
-        {
-            get
-            {
-                if ((this._BackgroundImage == null))
-                {
-                    this._BackgroundImage = this.transform.Find("Background").GetComponent<Image>();
-                }
-                return this._BackgroundImage;
-            }
         }
         [SerializeField()]
         private Image _TitleBarImage;

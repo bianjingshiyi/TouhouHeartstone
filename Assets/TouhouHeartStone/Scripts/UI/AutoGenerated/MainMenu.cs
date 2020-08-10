@@ -25,7 +25,6 @@ namespace UI
         }
         public void autoBind()
         {
-            this._BackgroundImage = this.transform.Find("BackgroundContainer").Find("Background").GetComponent<Image>();
             this._ButtonPanelImage = this.transform.Find("ButtonPanel").GetComponent<Image>();
             this._ButtonsVerticalLayoutGroup = this.transform.Find("ButtonPanel").Find("Buttons").GetComponent<VerticalLayoutGroup>();
             this._ManMachineButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("ManMachineButton").GetComponent<ButtonBlack>();
@@ -35,19 +34,6 @@ namespace UI
             this._AboutButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<ButtonBlack>();
             this._QuitButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<ButtonBlack>();
             this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
-        }
-        [SerializeField()]
-        private Image _BackgroundImage;
-        public Image BackgroundImage
-        {
-            get
-            {
-                if ((this._BackgroundImage == null))
-                {
-                    this._BackgroundImage = this.transform.Find("BackgroundContainer").Find("Background").GetComponent<Image>();
-                }
-                return this._BackgroundImage;
-            }
         }
         [SerializeField()]
         private Image _ButtonPanelImage;

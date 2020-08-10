@@ -25,7 +25,6 @@ namespace UI
         }
         public void autoBind()
         {
-            this._Image = this.transform.Find("Image").GetComponent<Image>();
             this._AboutImage = this.transform.Find("About").GetComponent<Image>();
             this._TitleText = this.transform.Find("About").Find("Left").Find("Title").GetComponent<Text>();
             this._Scroll_View = this.transform.Find("About").Find("Left").Find("Container").Find("Scroll View").GetComponent<ScrollRect>();
@@ -43,19 +42,6 @@ namespace UI
             get
             {
                 return this.transform.parent.GetComponent<Main>();
-            }
-        }
-        [SerializeField()]
-        private Image _Image;
-        public Image Image
-        {
-            get
-            {
-                if ((this._Image == null))
-                {
-                    this._Image = this.transform.Find("Image").GetComponent<Image>();
-                }
-                return this._Image;
             }
         }
         [SerializeField()]
