@@ -12,15 +12,6 @@ namespace UI
         float _dragThreshold = 50f;
         [SerializeField]
         bool _isDragging = false;
-        [Obsolete]
-        public CardDefine card { get; set; }
-        [Obsolete]
-        public void update(CardDefine card, CardSkinData skin)
-        {
-            this.card = card;
-
-            Card.update(card, skin);
-        }
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
             _dragStartPosition = eventData.position;

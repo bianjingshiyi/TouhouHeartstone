@@ -291,7 +291,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    logger?.logWarn("当加载" + path + "的第" + i + "行发生了错误：" + e);
+                    Debug.LogWarning($"Error when loading {path} (row {i}): " + e);
                 }
             }
             return skins.ToArray();
