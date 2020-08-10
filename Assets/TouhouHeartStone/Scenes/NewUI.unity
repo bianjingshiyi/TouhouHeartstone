@@ -697,7 +697,7 @@ PrefabInstance:
     - target: {fileID: 6635775828691784213, guid: 85d33f3e1ec157045b30955706f67cc7,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 9.999939
+      value: 9.999695
       objectReference: {fileID: 0}
     - target: {fileID: 6635775829071118641, guid: 85d33f3e1ec157045b30955706f67cc7,
         type: 3}
@@ -3458,6 +3458,9 @@ MonoBehaviour:
   _externalCardPaths:
   - Cards/Cards.xls
   - Cards/*.xls
+  - Cards/*.xls
+  - Cards/*.xls
+  excelList: {fileID: 11400000, guid: d002819a0013bfd4f879e8ab954efbf3, type: 2}
 --- !u!4 &902763123
 Transform:
   m_ObjectHideFlags: 0
@@ -10456,6 +10459,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.x
       value: -17
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879115454153741670, guid: e5eda7d1e4b5e7d41be47236088eba8c,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -49.59961
       objectReference: {fileID: 0}
     - target: {fileID: 4036768457125906130, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}

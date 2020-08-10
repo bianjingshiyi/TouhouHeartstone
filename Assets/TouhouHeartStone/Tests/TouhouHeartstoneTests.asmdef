@@ -8,7 +8,7 @@
         "Plugins",
         "Game",
         "BJSYGameCore",
-        "ExcelDataSet",
+        "ExcelDataSet.Editor",
         "BJSYGameCore.Editor"
     ],
     "includePlatforms": [],

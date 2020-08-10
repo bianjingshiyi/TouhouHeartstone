@@ -3,3 +3,4 @@
 Cards/Cards.xls | Cards/Cards.xls.dataset
 Cards/Patchouli.xls | Cards/Patchouli.xls.dataset
 Cards/Neutral.xls | Cards/Neutral.xls.dataset
+Cards/Youmu.xls | Cards/Youmu.xls.dataset

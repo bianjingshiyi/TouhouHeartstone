@@ -227,6 +227,7 @@ namespace UI
                     {
                         var item = BuildCardList.addItem();
                         item.Card.setCard(card, skin);
+                        UberDebug.LogChannel("UI", "添加卡" + card + "列表项目");
                         item.card = card;
                     }
                 }

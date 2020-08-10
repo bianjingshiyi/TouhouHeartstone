@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47796903c1d9a2c44b513b526ae17535, type: 3}
+  m_Name: ExcelList
+  m_EditorClassIdentifier: 
+  fileList:
+  - Cards/Cards.xls
+  - Cards/Patchouli.xls
+  - Cards/Neutral.xls
+  - Cards/Youmu.xls
