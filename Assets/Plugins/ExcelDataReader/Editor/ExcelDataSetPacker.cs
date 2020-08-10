@@ -21,6 +21,7 @@ namespace IGensoukyo
         /// <param name="pathOut">输出Dataset路径（相对路径）</param>
         static public void PackExcelToDataSet(string pathIn, string pathOut)
         {
+            Debug.Log($"正在将 {pathIn} 转换至 {pathOut}");
             using (var stream = File.Open(Path.Combine(Application.streamingAssetsPath, pathIn), FileMode.Open, FileAccess.Read))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
@@ -52,6 +53,20 @@ namespace IGensoukyo
             {
                 PackExcelToDataSet(item.ExcelFile, item.DataSetFile);
             }
+            updateFileList(configs);
+        }
+
+        static void updateFileList(PackerConfig[] configs)
+        {
+            var so = ScriptableObject.CreateInstance<ExcelDataSetList>();
+
+            so.FileList = configs.Select(c => c.ExcelFile).ToArray();
+
+            if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+                AssetDatabase.CreateFolder("Assets", "Resources");
+
+            AssetDatabase.CreateAsset(so, "Assets/Resources/" + ExcelDataSetList.FileName + ".asset");
+            AssetDatabase.SaveAssets();
         }
 
         static public DataSet ReadDataset(string path)

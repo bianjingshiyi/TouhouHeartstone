@@ -12,9 +12,10 @@ using System.Data;
 using IGensoukyo.Utilities;
 using TouhouHeartstone;
 using MongoDB.Bson;
-using System.IO;
-using MongoDB.Bson.Serialization;
 using ILogger = TouhouCardEngine.Interfaces.ILogger;
+using IGensoukyo;
+using System.Text.RegularExpressions;
+
 namespace Game
 {
     public class CardManager : Manager
@@ -89,6 +90,18 @@ namespace Game
                             foreach (var item in pathes)
                             {
                                 if (!pathList.Contains(item)) pathList.Add(item);
+                            }
+                        }
+                        else
+                        {
+                            // 移动端无法直接读取文件，只能读取文件列表了
+                            var regexp = excelPath.Replace("*", ".+").Replace("?", ".+");
+                            foreach (var item in excelList?.FileList)
+                            {
+                                if (Regex.Match(item, regexp).Success)
+                                {
+                                    if (!pathList.Contains(item)) pathList.Add(item);
+                                }
                             }
                         }
                     }
@@ -278,7 +291,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    logger?.logWarn("当加载" + path + "的第" + i + "行发生了错误：" + e);
+                    Debug.LogWarning($"Error when loading {path} (row {i}): " + e);
                 }
             }
             return skins.ToArray();
@@ -362,6 +375,9 @@ namespace Game
         }
         [SerializeField]
         string[] _externalCardPaths = new string[0];
+        [SerializeField]
+        ExcelDataSetList excelList;
+
         Dictionary<int, CardDefine> defineDic { get; set; } = new Dictionary<int, CardDefine>();
         /// <summary>
         /// 根据id获取卡片定义

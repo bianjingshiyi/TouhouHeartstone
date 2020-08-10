@@ -155,23 +155,23 @@ namespace UI
             onFilterConditionChange?.Invoke();
         }
 
-        public int sortCompareMethod(BuildCardListItem a, BuildCardListItem b)
+        public int sortCompareMethod(CardDefine a, CardDefine b)
         {
             switch (sortMethod)
             {
                 default:
                 case SortMethod.ID:
-                    return a.card.id - b.card.id;
+                    return a.id - b.id;
                 case SortMethod.ID_R:
-                    return b.card.id - a.card.id;
+                    return b.id - a.id;
                 case SortMethod.Cost:
-                    return a.card.getCost() - b.card.getCost();
+                    return a.getCost() - b.getCost();
                 case SortMethod.Attack:
-                    return a.card.getAttack() - b.card.getAttack();
+                    return a.getAttack() - b.getAttack();
                 case SortMethod.Cost_R:
-                    return b.card.getCost() - a.card.getCost();
+                    return b.getCost() - a.getCost();
                 case SortMethod.Attack_R:
-                    return b.card.getAttack() - a.card.getAttack();
+                    return b.getAttack() - a.getAttack();
             }
         }
 

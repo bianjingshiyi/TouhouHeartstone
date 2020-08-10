@@ -56,12 +56,24 @@ namespace UI
             }
         }
 
+        int sortCompareMethod(BuildCardListItem a, BuildCardListItem b)
+        {
+            var ca = getCardItem(a);
+            var cb = getCardItem(b);
+            return FilterPanel.sortCompareMethod(ca.define, cb.define);
+        }
+
+        private CardItem getCardItem(BuildCardListItem a)
+        {
+            return cardItemList.Where(c => c.buildItem == a).FirstOrDefault();
+        }
+
         /// <summary>
         /// 修改了排序
         /// </summary>
         private void onSortChange()
         {
-            BuildCardList.sortItems(FilterPanel.sortCompareMethod);
+            BuildCardList.sortItems(sortCompareMethod);
         }
 
         private void OnEnable()
@@ -148,6 +160,15 @@ namespace UI
                 return false;
         }
 
+        struct CardItem
+        {
+            public CardDefine define;
+            public CardSkinData skin;
+            public BuildCardListItem buildItem;
+        }
+
+        List<CardItem> cardItemList = new List<CardItem>();
+
         CardDefine[] cards { get; set; } = null;
         protected override void onDisplay()
         {
@@ -156,7 +177,7 @@ namespace UI
             cards = ui.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly);
 
             reloadDeckList();
-            reloadCardList();
+            loadCardList();
         }
 
         int currentEditingDeckMasterID = 0;
@@ -212,7 +233,7 @@ namespace UI
             isInDeckEditMode = !deckMode;
         }
 
-        private void reloadCardList()
+        void loadCardList()
         {
             BuildCardList.clearItems();
             foreach (CardDefine card in
@@ -223,17 +244,24 @@ namespace UI
             {
                 if (ui.getManager<CardManager>().tryGetSkin(card.id, out var skin))
                 {
-                    if (FilterPanel.cardFilter(card, skin))
-                    {
-                        var item = BuildCardList.addItem();
-                        item.Card.setCard(card, skin);
-                        item.card = card;
-                    }
+                    var item = BuildCardList.addItem();
+                    cardItemList.Add(new CardItem() { buildItem = item, define = card, skin = skin });
+                    item.Card.setCard(card, skin);
+                    UberDebug.LogChannel("UI", "添加卡" + card + "列表项目");
                 }
                 else
                     UberDebug.LogErrorChannel("UI", "无法找到" + card + "的皮肤");
 
-                BuildCardList.sortItems(FilterPanel.sortCompareMethod);
+                BuildCardList.sortItems(sortCompareMethod);
+            }
+        }
+
+        private void reloadCardList()
+        {
+            foreach (var item in cardItemList)
+            {
+                item.buildItem.gameObject.SetActive(FilterPanel.cardFilter(item.define, item.skin));
+                item.buildItem.Card.isFaceup = true; // Animator默认状态是false，重置之后得还原
             }
         }
         private void Update()
@@ -272,7 +300,7 @@ namespace UI
         }
         public void onDragCardItem(BuildCardListItem item, PointerEventData pointer)
         {
-            onDragItem(item.card, pointer.position);
+            onDragItem(getCardItem(item).define, pointer.position);
         }
         public void onDragDeckItem(BuildDeckListItem item, PointerEventData pointer)
         {

@@ -1,11 +1,7 @@
 {
     "name": "ExcelDataSet",
-    "references": [
-        "GUID:a271640aea1e78b45af671b2597adb18"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "references": [],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
