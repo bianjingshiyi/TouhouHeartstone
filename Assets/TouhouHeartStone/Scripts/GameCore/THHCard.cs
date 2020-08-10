@@ -179,13 +179,8 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool canAttack(this Card card, THHGame game)
         {
-            if (card.define is ServantCardDefine)
-            {
-                if (card.pile.name != PileName.FIELD)//你只能在战场上进行攻击。是不是必须得活着，这是个哲学问题。
-                    return false;
-                if (card.getKeywords(game).Contains(Keyword.CANTATTACK))
-                    return false;
-            }
+            if (card.getKeywords(game).Contains(Keyword.CANTATTACK))
+                return false;
             if (card.getAttack(game) <= 0)//没有攻击力
                 return false;
             if (!card.isReady(game)//还没准备好
@@ -196,6 +191,14 @@ namespace TouhouHeartstone
             if (card.getAttackTimes(game) >= card.getMaxAttackTimes(game))//已经攻击过了
                 return false;
             if (card.isFreeze(game))
+                return false;
+            if (!card.canForceAttack(game))
+                return false;
+            return true;
+        }
+        public static bool canForceAttack(this Card card, THHGame game)
+        {
+            if (!(card.pile.name == PileName.FIELD || card.pile.name == PileName.MASTER))//不在战场上
                 return false;
             return true;
         }
@@ -214,31 +217,35 @@ namespace TouhouHeartstone
                 tip = "你不能攻击友方角色";
                 return false;
             }
-            if (target.getCurrentLife(game) <= 0)
-            {
-                tip = "目标随从已经死亡";
-                return false;
-            }
             if (game.getOpponent(player).field.Any(c => c.isTaunt(game)) && !target.isTaunt(game))
             {
                 tip = "你必须先攻击具有嘲讽的随从";
                 return false;
             }
-            if (card.isRush(game) && !card.isReady(game) && game.players.Any(p => isTarget(target, p)) && !card.isCharge(game))
+            if (card.isRush(game) && !card.isReady(game) && game.players.Any(p => p.master == target) && !card.isCharge(game))
             {
                 tip = "具有突袭的随从在没有准备好的情况下不能攻击敌方英雄";//除非你具有冲锋
                 return false;
-            }
-            bool isTarget(Card t, THHPlayer p)
-            {
-                return p.master == t;
             }
             if (target.isStealth(game))
             {
                 tip = "无法攻击潜行的目标";
                 return false;
             }
+            if (!card.isForceAttackable(game, player, target))
+            {
+                tip = "无法攻击目标";
+                return false;
+            }
             tip = null;
+            return true;
+        }
+        public static bool isForceAttackable(this Card card, THHGame game, THHPlayer player, Card target)
+        {
+            if (!(target.pile.name == PileName.FIELD || target.pile.name == PileName.MASTER))//不在战场上
+                return false;
+            if (target.isDead(game))//已经死了
+                return false;
             return true;
         }
         /// <summary>
@@ -340,7 +347,7 @@ namespace TouhouHeartstone
         }
         public static bool isImmunity(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.IMMUNITY);
+            return card.hasKeywords(game, Keyword.IMMUNITY);
         }
         public static void setImmunity(this Card card, bool value)
         {
@@ -377,7 +384,6 @@ namespace TouhouHeartstone
             string[] keywords = card.getKeywords(game);
             if (keywords == null)
             {
-                game.logger.logWarn(card + "的关键词为null");
                 return false;
             }
             return keywords.Contains(keyword);
@@ -667,7 +673,7 @@ namespace TouhouHeartstone
                 await activeEffect.execute(game, card, new object[] { new THHPlayer.ActiveEventArg(player, card, targets) }, targets);
             }
         }
-        public static async Task<AttackEventArg> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
+        public static Task<AttackEventArg> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
             if (!card.canAttack(game))
             {
@@ -679,6 +685,24 @@ namespace TouhouHeartstone
                 game.logger.log(card + "无法攻击" + target + "，因为" + reason);
                 return null;
             }
+            return card.attack(game, player, target);
+        }
+        public static Task<AttackEventArg> forceAttack(this Card card, THHGame game, THHPlayer player, Card target)
+        {
+            if (!card.canForceAttack(game))
+            {
+                game.logger.log(card + "无法进行强制攻击");
+                return null;
+            }
+            if (!card.isForceAttackable(game, player, target))
+            {
+                game.logger.log(card + "无法对" + target + "进行强制攻击");
+                return null;
+            }
+            return card.attack(game, player, target);
+        }
+        static async Task<AttackEventArg> attack(this Card card, THHGame game, THHPlayer player, Card target)
+        {
             AttackEventArg eventArg = new AttackEventArg() { card = card, target = target };
             await game.triggers.doEvent(eventArg, async arg =>
             {
@@ -696,7 +720,7 @@ namespace TouhouHeartstone
                 {
                     if (p.master == card && p.item != null)
                     {
-                        await p.item.damage(game, card, 1);
+                        await p.item.damage(game, null, 1);
                         break;
                     }
                 }
@@ -711,8 +735,6 @@ namespace TouhouHeartstone
         }
         public static Task<DamageEventArg> damage(this Card card, THHGame game, Card source, int value)
         {
-            if (card == null || card.isImmunity(game))
-                return Task.FromResult(default(DamageEventArg));
             return damage(new Card[] { card }, game, source, value);
         }
         public static async Task<DamageEventArg> damage(this IEnumerable<Card> cards, THHGame game, Card source, int value)
@@ -731,7 +753,13 @@ namespace TouhouHeartstone
                 }
                 foreach (Card card in cards)
                 {
-                    if (card.isShield(game))
+                    if (card == null)
+                        continue;
+                    else if (card.isImmunity(game))
+                    {
+                        game.logger.log(card + "免疫，不受伤害");
+                    }
+                    else if (card.isShield(game))
                     {
                         game.logger.log(card + "受到伤害，失去圣盾");
                         card.setShield(false);

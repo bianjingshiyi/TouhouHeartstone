@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
@@ -240,7 +238,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 2 樱花闪闪 使你的英雄对所有敌方随从进行攻击，生命值越低的越优先。
     /// </summary>
-    public class CherryBlossom : SpellCardDefine
+    public class CherryBlossomFlashing : SpellCardDefine
     {
         public const int ID = Youmu.ID | CardCategory.SPELL | 0x010;
         public override int id { get; set; } = ID;
@@ -251,9 +249,13 @@ namespace TouhouHeartstone.Builtin
         };
         static Task effect(THHGame game, Card card)
         {
-            IEnumerable<Card> servants = game.getOpponent(card.getOwner()).field.OrderBy(c => c.getCurrentLife(game));
+            THHPlayer player = card.getOwner();
+            Card[] servants = game.getOpponent(player).field.OrderBy(c => c.getCurrentLife(game)).ToArray();
             foreach (Card target in servants)
-                card.getOwner().cmdAttack(game, card.getOwner().master, target);
+            {
+                if (player.master.getAttack(game) > 0)
+                    player.master.forceAttack(game, player, target);
+            }
             return Task.CompletedTask;
         }
     }
@@ -302,7 +304,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 324 魂魄妖忌 每当你的英雄攻击时，使其装备的道具获得攻击力+1
     /// </summary>
-    public class YoukiKonpaku : ServantCardDefine
+    public class KonpakuYouki : ServantCardDefine
     {
         public const int ID = Youmu.ID | CardCategory.SERVANT | 0x013;
         public override int id { get; set; } = ID;
@@ -347,7 +349,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 323 列队游魂 当回合结束时，如果你的护甲值大于0，那么召唤一个1/1的幽灵。
     /// </summary>
-    public class LinedUp : ServantCardDefine
+    public class ProcessingPhantoms : ServantCardDefine
     {
         public const int ID = Youmu.ID | CardCategory.SERVANT | 0x015;
         public override int id { get; set; } = ID;
@@ -395,7 +397,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 232 白楼剑 战吼：如果你已经装备另外一个道具，则不装备此道具，改为使其获得此道具的耐久度。
     /// </summary>
-    public class Bailoujian : ItemCardDefine
+    public class Hakurouken : ItemCardDefine
     {
         public const int ID = Youmu.ID | CardCategory.ITEM | 0x017;
         public override int id { get; set; } = ID;

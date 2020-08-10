@@ -29,9 +29,9 @@ namespace TouhouHeartstone
                 case ModifyType.set:
                     return keywords;
                 case ModifyType.remove:
-                    return value.Except(keywords).ToArray();
+                    return value != null ? value.Except(keywords).ToArray() : new string[0];
                 default:
-                    return value.Union(keywords).ToArray();
+                    return value != null ? value.Union(keywords).ToArray() : keywords;
             }
         }
         public override PropModifier clone()
