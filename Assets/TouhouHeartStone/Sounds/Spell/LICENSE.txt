@@ -1,7 +1,12 @@
 DoyouSpear.mp3
 TrilithonShake.mp3
 PrincessUndine.mp3
+BestMagic.mp3
+TheGreatLibrary.mp3
 Author:ZapSplat
+
+SylphyHorn.mp3
+Author:Ali_6868
 
 Coin.wav
 见LICENSE.pdf
