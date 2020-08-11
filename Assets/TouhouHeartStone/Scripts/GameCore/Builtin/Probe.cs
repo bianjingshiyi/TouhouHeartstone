@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
-namespace TouhouHeartstone.Builtin
+namespace TouhouHeartstone.Builtin.Proble
 {
     public class Probe : MasterCardDefine
     {

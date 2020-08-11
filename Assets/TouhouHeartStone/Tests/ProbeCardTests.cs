@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
-using TouhouHeartstone.Builtin;
+using TouhouHeartstone.Builtin.Proble;
 using UnityEngine;
 using UnityEngine.TestTools;
 using System;
