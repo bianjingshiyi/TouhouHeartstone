@@ -179,7 +179,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool canAttack(this Card card, THHGame game)
         {
-            if (card.hasKeywords(game, Keyword.CANTATTACK))
+            if (card.hasKeyword(game, Keyword.CANTATTACK))
                 return false;
             if (card.getAttack(game) <= 0)//没有攻击力
                 return false;
@@ -268,15 +268,15 @@ namespace TouhouHeartstone
         }
         public static bool isTaunt(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.TAUNT);//TODO:把所有关键词改为检查关键词中是否有这个。
+            return card.hasKeyword(game, Keyword.TAUNT);//TODO:把所有关键词改为检查关键词中是否有这个。
         }
         public static bool isCharge(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.CHARGE);
+            return card.hasKeyword(game, Keyword.CHARGE);
         }
         public static bool isRush(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.RUSH);
+            return card.hasKeyword(game, Keyword.RUSH);
         }
         public static void setRush(this Card card, bool value)
         {
@@ -284,19 +284,25 @@ namespace TouhouHeartstone
         }
         public static bool isShield(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.SHIELD);
+            return card.hasKeyword(game, Keyword.SHIELD);
         }
-        public static void setShield(this Card card, bool value)
+        public static void setShield(this Card card, IGame game, bool value)
         {
-            card.setProp(Keyword.SHIELD, value);
+            if (value)
+                card.addKeyword(game, Keyword.SHIELD);
+            else
+                card.removeKeyword(game, Keyword.SHIELD);
         }
         public static bool isStealth(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.STEALTH);
+            return card.hasKeyword(game, Keyword.STEALTH);
         }
-        public static void setStealth(this Card card, bool value)
+        public static void setStealth(this Card card, IGame game, bool value)
         {
-            card.setProp(Keyword.STEALTH, value);
+            if (value)
+                card.addKeyword(game, Keyword.STEALTH);
+            else
+                card.removeKeyword(game, Keyword.STEALTH);
         }
         public static bool isDrain(this Card card, IGame game)
         {
@@ -347,7 +353,7 @@ namespace TouhouHeartstone
         }
         public static bool isImmunity(this Card card, IGame game)
         {
-            return card.hasKeywords(game, Keyword.IMMUNITY);
+            return card.hasKeyword(game, Keyword.IMMUNITY);
         }
         public static void setImmunity(this Card card, bool value)
         {
@@ -379,7 +385,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<string[]>(game, nameof(ServantCardDefine.keywords));
         }
-        public static bool hasKeywords(this Card card, IGame game, string keyword)
+        public static bool hasKeyword(this Card card, IGame game, string keyword)
         {
             string[] keywords = card.getKeywords(game);
             if (keywords == null)
@@ -394,6 +400,26 @@ namespace TouhouHeartstone
             if (keywords == null)
                 return false;
             return keywords.Contains(keyword);
+        }
+        public static Task addKeyword(this Card card, IGame game, string keyword)
+        {
+            string[] keywords = card.getKeywords(game);
+            if (!keywords.Contains(keyword))
+                keywords = keywords.Append(keyword).ToArray();
+            card.setKeywords(game, keywords);
+            return Task.CompletedTask;
+        }
+        public static Task<bool> removeKeyword(this Card card, IGame game, string keyword)
+        {
+            List<string> keywordList = new List<string>(card.getKeywords(game));
+            if (keywordList.Contains(keyword))
+            {
+                keywordList.Remove(keyword);
+                card.setKeywords(game, keywordList.ToArray());
+                return Task.FromResult(true);
+            }
+            else
+                return Task.FromResult(false);
         }
         public static int getSpellDamage(this Card card, IGame game)
         {
@@ -741,7 +767,7 @@ namespace TouhouHeartstone
                 source = arg.source;
                 value = arg.value;
                 if (source != null && source.isStealth(game))
-                    source.setStealth(false);
+                    source.setStealth(game, false);
                 if (value < 1)
                 {
                     arg.isCanceled = true;
@@ -757,7 +783,7 @@ namespace TouhouHeartstone
                     else if (card.isShield(game))
                     {
                         game.logger.log(card + "受到伤害，失去圣盾");
-                        card.setShield(false);
+                        card.setShield(game, false);
                     }
                     else
                     {
