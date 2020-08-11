@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TouhouCardEngine;
@@ -70,7 +71,8 @@ namespace UI
             }
 
             // 填充角色列表
-            var cards = cardManager.GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly);
+            var cards = cardManager.GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly
+            && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null);
             allCharacters = cards.getCharactersID();
             DropdownCharacter.options.Clear();
             DropdownCharacter.options.Add(new UnityEngine.UI.Dropdown.OptionData("所有"));

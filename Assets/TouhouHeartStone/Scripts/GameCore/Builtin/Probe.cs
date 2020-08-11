@@ -8,6 +8,7 @@ using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone.Builtin.Proble
 {
+    [IgnoreCardDefine]
     public class Probe : MasterCardDefine
     {
         public const int ID = 0x04200000 | CardCategory.MASTER | 0x000;
@@ -21,6 +22,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 技能：射箭
     /// </summary>
     [Obsolete]
+    [IgnoreCardDefine]
     public class ProbeShoot : SkillCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SKILL | 0x000;
@@ -41,6 +43,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 2费，召唤一个0/6,带有嘲讽的水晶塔
     /// 召唤系法术
     /// </summary>
+    [IgnoreCardDefine]
     public class BulidPylon : SpellCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SPELL | 0x001;
@@ -62,6 +65,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 水晶塔，随从
     /// 2/0/6,嘲讽
     /// </summary>
+    [IgnoreCardDefine]
     public class Pylon : ServantCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x002;
@@ -79,6 +83,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 2费，造成3点伤害
     /// 指向型直伤系法术
     /// </summary>
+    [IgnoreCardDefine]
     public class ParticulateLaser : SpellCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SPELL | 0x003;
@@ -99,6 +104,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 4费，对所有角色造成3点伤害
     /// 无指向型aoe法术
     /// </summary>
+    [IgnoreCardDefine]
     public class PsionicShock : SpellCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SPELL | 0x004;
@@ -121,6 +127,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 4费，召唤一个水晶塔，再使所有水晶塔获得+3攻击力
     /// 召唤Buff复合型
     /// </summary>
+    [IgnoreCardDefine]
     public class PylonOverload : SpellCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SPELL | 0x005;
@@ -154,6 +161,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 4/2/4，战吼：召唤一个0/2具有嘲讽的幻象
     /// 战吼召唤系随从
     /// </summary>
+    [IgnoreCardDefine]
     public class Sentry : ServantCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x006;
@@ -179,6 +187,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 0/0/2
     /// 衍生物
     /// </summary>
+    [IgnoreCardDefine]
     public class Vision : ServantCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x007;
@@ -197,6 +206,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 4/3/3，战吼：抽一张法力消耗最高的牌
     /// 战吼定向检索随从
     /// </summary>
+    [IgnoreCardDefine]
     public class ProphetRobot : ServantCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x008;
@@ -231,6 +241,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 8/8/8，唯一，回合结束时，对所有敌方角色造成3点伤害
     /// 回合结束扳机随从
     /// </summary>
+    [IgnoreCardDefine]
     public class Colossus : ServantCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x009;
@@ -255,6 +266,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 1费，对一个随从造成等同其攻击力的伤害
     /// 指向型特殊直伤法术
     /// </summary>
+    [IgnoreCardDefine]
     public class EnergyAutophagy : SpellCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SPELL | 0x010;
@@ -275,6 +287,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 普罗托斯
     /// 5/0/3，唯一，所有随从获得+2攻击力，战吼：召唤2个水晶塔
     /// </summary>
+    [IgnoreCardDefine]
     public class Protoss : ServantCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x011;
@@ -302,6 +315,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 重构光线
     /// 0费，完全修好一个友方机械。(警告:不要对机械以外的随从使用！)
     /// </summary>
+    [IgnoreCardDefine]
     public class ReconstructRay : SpellCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SPELL | 0x012;
@@ -327,6 +341,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 山寨版本
     /// 3费，发现墓地里一张机械牌，召唤它并使其变为3/3
     /// </summary>
+    [IgnoreCardDefine]
     public class Imitation : SpellCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SPELL | 0x013;
@@ -349,6 +364,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 守护之壳
     /// 3费，使一个随从获得+3生命值，如果它是机械，再获得+4攻击力
     /// </summary>
+    [IgnoreCardDefine]
     public class ProtectiveShell : SpellCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SPELL | 0x014;
@@ -371,6 +387,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// 西塞尔
     /// 7/2/2，唯一，战吼：获得一个机械的控制权，然后将其变为3/3
     /// </summary>
+    [IgnoreCardDefine]
     public class Sissel : ServantCardDefine
     {
         public const int ID = Probe.ID | CardCategory.SERVANT | 0x015;
