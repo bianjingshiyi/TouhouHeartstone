@@ -98,7 +98,7 @@ namespace TouhouHeartstone
 
         public static void loadCards()
         {
-            _cardDefines = CardHelper.getCardDefines(new Assembly[] { typeof(THHGame).Assembly }, null);
+            _cardDefines = CardHelper.getCardDefines(new Assembly[] { typeof(THHGame).Assembly }, null, null);
         }
 
         public static CardDefine getCardDefine(int id)

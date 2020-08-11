@@ -42,6 +42,7 @@ namespace Game
         {
             _loadCardTask = getManager<CardManager>().load(
                 new System.Reflection.Assembly[] { typeof(THHGame).Assembly },
+                new string[] { "TouhouHeartstone", "TouhouHeartstone.Builtin" },
                 false,
                 null,
                 mainUI.Loading.LoggerText.GetComponent<ScreenLogger>()
