@@ -556,6 +556,12 @@ namespace TouhouHeartstone.Builtin
             //    }
             //})
         };
+
+        /// <summary>
+        /// 扳机触发被动特效
+        /// 达到一定条件开启/关闭特效
+        /// 这东西根本不能写在这里吧！！！！！！
+        /// </summary>
         public class ConditionalPassiveEffect : PassiveEffect
         {
             Func<THHGame, Card, Buff, bool> condition { get; }
