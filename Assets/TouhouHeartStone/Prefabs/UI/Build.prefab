@@ -1531,7 +1531,6 @@ MonoBehaviour:
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  _BackgroundImage: {fileID: 0}
   _TitleBarImage: {fileID: 3879115452046633856}
   _TitleText: {fileID: 3879115453344792619}
   _BackButtonBlack: {fileID: 3235810501380630897}
@@ -1806,7 +1805,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

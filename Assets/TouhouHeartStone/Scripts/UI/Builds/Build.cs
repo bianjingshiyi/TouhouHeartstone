@@ -142,7 +142,12 @@ namespace UI
 
         void showMasterSelection()
         {
-            MasterCardSelection.SetItems(cards.Where(c => isMaster(c)));
+            var masters = cards.Where(c => isMaster(c));
+            foreach (var master in masters)
+            {
+                Debug.Log("Found " + master);
+            }
+            MasterCardSelection.SetItems(masters);
             MasterCardSelection.display();
         }
 
@@ -174,7 +179,8 @@ namespace UI
         {
             base.onDisplay();
 
-            cards = ui.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly);
+            cards = ui.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly 
+            && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null);
 
             reloadDeckList();
             loadCardList();
