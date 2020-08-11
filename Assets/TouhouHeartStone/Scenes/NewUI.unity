@@ -3508,7 +3508,7 @@ RectTransform:
   - {fileID: 1130552760}
   - {fileID: 369709877}
   m_Father: {fileID: 1719801275}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -4995,6 +4995,12 @@ MonoBehaviour:
     audio: {fileID: 8300000, guid: a4e181e570c7db34e822a064bc89a29e, type: 3}
   - name: TrilithonShake
     audio: {fileID: 8300000, guid: b6b28fcb4076aa142a861f8a7f2dd30c, type: 3}
+  - name: BestMagic
+    audio: {fileID: 8300000, guid: b67755e9642df364ca6320ebf4260fc8, type: 3}
+  - name: SylphyHorn
+    audio: {fileID: 8300000, guid: e29e5f176e8c522419357c52c413a020, type: 3}
+  - name: TheGreatLibrary
+    audio: {fileID: 8300000, guid: 744dfdcacff5aa046adbf81c6e4dcf80, type: 3}
 --- !u!82 &1159673834
 AudioSource:
   m_ObjectHideFlags: 0
@@ -7464,6 +7470,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 1681088248}
   - {fileID: 903408308}
   m_Father: {fileID: 1981269949}
   m_RootOrder: 3

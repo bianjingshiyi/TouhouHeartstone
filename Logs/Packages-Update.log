@@ -89,3 +89,11 @@ Update Mode: updateDependencies
 
 The following packages were added:
   com.unity.timeline@1.2.6
+
+=== Tue Aug 11 15:26:58 2020
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were 已添加:
+  com.unity.timeline@1.2.6
