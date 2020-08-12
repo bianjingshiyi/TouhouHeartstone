@@ -477,7 +477,7 @@ namespace TouhouHeartstone.Builtin.Proble
 
     /// <summary>
     /// 迷你机器人，随从
-    /// 2/0/6,嘲讽
+    /// 1/1/1
     /// </summary>
     [IgnoreCardDefine]
     public class MiniRobot : ServantCardDefine
@@ -490,5 +490,38 @@ namespace TouhouHeartstone.Builtin.Proble
         public override bool isToken { get; set; } = true;//是衍生物吗？（当然）
         //public override string[] tags { get; set; } = new string[];//种族标签
         //public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };//关键词标签：
+    }
+
+    /// <summary>
+    /// 化敌为友
+    /// 2费，选择一个随从，使其对他的相邻随从造成等同其攻击力的伤害
+    /// 
+    /// </summary>
+    [IgnoreCardDefine]
+    public class ColludeWithTheEnemy : SpellCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SPELL | 0x019;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            //存在目标的法术
+            new LambdaSingleTargetEffect(async (game,card,target)=>
+            {
+                int dam = target.getAttack(game);
+                int left = target.pile.indexOf(target) - 1;
+                int right = target.pile.indexOf(target) + 1;
+                if(left >= 0)
+                {
+                    await game.getOpponent(card.getOwner()).field[left].damage(game,card,dam);
+                }
+
+                if(game.getOpponent(card.getOwner()).field.right != target)
+                {
+                    await game.getOpponent(card.getOwner()).field[right].damage(game,card,dam);
+                }
+
+            }, PileFlag.oppo | PileFlag.field)//后缀表示只能指向随从
+        };
     }
 }
