@@ -9,7 +9,8 @@ namespace UI
     {
         [SerializeField]
         UnityEvent beforeAnim;
-        public SetColor setColor;
+        [SerializeField]
+        SetColor setColor;
         public void invokeBeforeAnim()
         {
             beforeAnim.Invoke();
@@ -17,7 +18,12 @@ namespace UI
                 setColor.target.color = setColor.color;
         }
         public string animName;
-        public UnityEvent afterAnim;
+        [SerializeField]
+        UnityEvent afterAnim;
+        public void invokeAfterAnim()
+        {
+            afterAnim.Invoke();
+        }
     }
     [Serializable]
     public class SetColor

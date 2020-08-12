@@ -8,7 +8,12 @@ namespace Game
         Animator _animator;
         string _animName;
         bool _isPlayed = false;
-        public bool isFinished { get; private set; } = false;
+        bool _isFinished = false;
+        public bool isFinished
+        {
+            get => _isFinished;
+            private set => _isFinished = value;
+        }
         Func<UIAnimation, bool> _onBlockAnim;
         public AnimAnim(Animator animator, string animName, Func<UIAnimation, bool> onBlockAnim = null)
         {
@@ -18,44 +23,7 @@ namespace Game
         }
         public override bool update(TableManager table)
         {
-            if (_animator == null)
-                return true;
-            if (string.IsNullOrEmpty(_animName))
-                return true;
-            if (isFinished)
-                return true;
-            if (!hasAnim(out var layer))
-            {
-                Debug.LogError(_animator + "中不存在动画状态" + _animName, _animator);
-                return true;
-            }
-            if (!_isPlayed)
-            {
-                _isPlayed = true;
-                _animator.Play(_animName, layer, 0);
-                return false;
-            }
-            for (int i = 0; i < _animator.layerCount; i++)
-            {
-                AnimatorStateInfo state = _animator.GetCurrentAnimatorStateInfo(i);
-                if (state.IsName(_animName) && state.normalizedTime < 1)
-                    return false;
-            }
-            isFinished = true;
-            return true;
-        }
-        bool hasAnim(out int layer)
-        {
-            for (int i = 0; i < _animator.layerCount; i++)
-            {
-                if (_animator.HasState(i, Animator.StringToHash(_animName)))
-                {
-                    layer = i;
-                    return true;
-                }
-            }
-            layer = -1;
-            return false;
+            return AnimHelper.update(_animator, _animName, ref _isPlayed, ref _isFinished);
         }
         public override bool blockAnim(UIAnimation nextAnim)
         {

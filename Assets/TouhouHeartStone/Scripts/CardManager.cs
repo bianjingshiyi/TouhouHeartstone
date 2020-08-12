@@ -363,6 +363,16 @@ namespace Game
             string soundPath = datarow.ReadCol("Sound_onUse", "");
             if (!string.IsNullOrEmpty(soundPath))
                 skin.sound_onUse = await getManager<ResourceManager>().loadAudio(soundPath);
+            //加载投射物
+            string projPath = datarow.ReadCol("Projectile", "");
+            if (!string.IsNullOrEmpty(projPath))
+            {
+                skin.projectile = await getManager<ResourceManager>().loadObject<Projectile>(projPath);
+                if (skin.projectile == null)
+                    UberDebug.LogWarningChannel("Card", skin + "加载投射物" + projPath + "失败");
+                else
+                    UberDebug.LogChannel("Card", skin + "加载投射物" + skin.projectile);
+            }
             return skin;
         }
 

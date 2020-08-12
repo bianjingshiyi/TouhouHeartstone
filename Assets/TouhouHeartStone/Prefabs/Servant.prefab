@@ -288,6 +288,7 @@ MonoBehaviour:
   _StealthImage: {fileID: 4648074596374540746}
   _MaskImage: {fileID: 7890671223044519497}
   _BorderImage: {fileID: 1519690174396059162}
+  _FreezeImage: {fileID: 8892294192392876890}
   _ShieldImage: {fileID: 2168545802654735}
   _AtkImage: {fileID: 290831591498722625}
   _AttackTextPropNumber: {fileID: 5388715380635890011}
@@ -296,7 +297,6 @@ MonoBehaviour:
   _DeathRattleImage: {fileID: 9187231518770046745}
   _LifeStealImage: {fileID: 471503847505473100}
   _PoisionImage: {fileID: 2995683836656750594}
-  _FreezeImage: {fileID: 8892294192392876890}
   _DamageImage: {fileID: 3382637733851489725}
   _DamageText: {fileID: 3861210043151575822}
   _HealImage: {fileID: 9160546003842845278}

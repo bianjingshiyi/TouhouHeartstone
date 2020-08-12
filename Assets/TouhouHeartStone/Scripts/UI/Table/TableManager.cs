@@ -313,24 +313,24 @@ namespace Game
             {
                 // master.HighlightController = Master.Highlight.Yellow;
                 master.onSelectableTrue.invokeBeforeAnim();
-                master.onSelectableTrue.afterAnim.Invoke();
+                master.onSelectableTrue.invokeAfterAnim();
             }
             else
             {
                 master.onSelectableFalse.invokeBeforeAnim();
-                master.onSelectableFalse.afterAnim.Invoke();
+                master.onSelectableFalse.invokeAfterAnim();
             }
             if (card.getOwner() == player && game.currentPlayer == player && card.canAttack(game))
             {
                 // master.HighlightController = Master.Highlight.Green;
                 master.onCanAttackTrue.invokeBeforeAnim();
-                master.onCanAttackTrue.afterAnim.Invoke();
+                master.onCanAttackTrue.invokeAfterAnim();
             }
             else
             {
                 // master.HighlightController = Master.Highlight.None;
                 master.onCanAttackFalse.invokeBeforeAnim();
-                master.onCanAttackFalse.afterAnim.Invoke();
+                master.onCanAttackFalse.invokeAfterAnim();
             }
         }
         public bool tryGetItem(Card card, out Item item)
@@ -435,7 +435,7 @@ namespace Game
                 if (Vector3.Distance(skill.rectTransform.position, pointer.position) < skillDragThreshold)
                     cancelSkill();
                 else
-                    displayArrow(skill.rectTransform.position, pointer.position);
+                    displayArrow(skill.rectTransform, skill.rectTransform.position, pointer.position);
                 return;
             }
             // Stage1: 当前没有拖拽，进入目标选择模式
@@ -449,7 +449,7 @@ namespace Game
                 {
                     usingCard = player.skill;
                     highlightTargets(targets);
-                    displayArrow(skill.rectTransform.position, pointer.position);
+                    displayArrow(skill.rectTransform, skill.rectTransform.position, pointer.position);
                 }
             }
             else
@@ -497,9 +497,10 @@ namespace Game
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        void displayArrow(Vector2 from, Vector2 to)
+        void displayArrow(RectTransform source, Vector2 from, Vector2 to)
         {
             ui.AttackArrowImage.display();
+            ui.AttackArrowImage.rectTransform.SetSiblingIndex(source.GetSiblingIndex() - 1);
             ui.AttackArrowImage.rectTransform.position = from;
             ui.AttackArrowImage.rectTransform.up = (to - from).normalized;
             ui.AttackArrowImage.rectTransform.setHeight(Vector3.Distance(from, to) / ui.getCanvas().transform.localScale.y);
@@ -632,7 +633,7 @@ namespace Game
                             }
                             hand.Card.hide();
                             if (tryGetMaster(usingCard.getOwner().master, out var castMaster))
-                                displayArrow(castMaster.rectTransform.position, pointer.position);
+                                displayArrow(castMaster.rectTransform, castMaster.rectTransform.position, pointer.position);
                         }
                     }
                 }
@@ -1039,18 +1040,18 @@ namespace Game
             if (isSelectable)
             {
                 servant.onSelectableTrue.invokeBeforeAnim();
-                servant.onSelectableTrue.afterAnim.Invoke();
+                servant.onSelectableTrue.invokeAfterAnim();
             }
             else
             {
                 servant.onSelectableFalse.invokeBeforeAnim();
-                servant.onSelectableFalse.afterAnim.Invoke();
+                servant.onSelectableFalse.invokeAfterAnim();
             }
             if (player == card.getOwner() && game.currentPlayer == player && card.canAttack(game))
             {
                 // servant.HighlightController = Servant.Highlight.Green;
                 servant.onCanAttackTrue.invokeBeforeAnim();
-                servant.onCanAttackTrue.afterAnim.Invoke();
+                servant.onCanAttackTrue.invokeAfterAnim();
                 servant.onDrag.add(onDragServant);
                 servant.onDragEnd.add(onDragEndServant);
             }
@@ -1058,17 +1059,17 @@ namespace Game
             {
                 // servant.HighlightController = Servant.Highlight.None;
                 servant.onCanAttackFalse.invokeBeforeAnim();
-                servant.onCanAttackFalse.afterAnim.Invoke();
+                servant.onCanAttackFalse.invokeAfterAnim();
             }
             if (card.isTaunt(game))
             {
                 servant.onTauntTrue.invokeBeforeAnim();
-                servant.onTauntTrue.afterAnim.Invoke();
+                servant.onTauntTrue.invokeAfterAnim();
             }
             else
             {
                 servant.onTauntFalse.invokeBeforeAnim();
-                servant.onTauntFalse.afterAnim.Invoke();
+                servant.onTauntFalse.invokeAfterAnim();
             }
             if (card.hasKeyword(game, Keyword.STEALTH))
                 servant.StealthImage.display();
@@ -1112,7 +1113,7 @@ namespace Game
                 //播放一个变大的动画？
                 //servant.rectTransform.localScale = Vector3.one * 1.1f;
                 //显示指针
-                displayArrow(servant.rectTransform.position, pointer.position);
+                displayArrow(ui.SelfFieldList.rectTransform, servant.rectTransform.position, pointer.position);
                 //高亮标记所有目标
                 highlightTargets(game.findAllCardsInField(c => card.isAttackable(game, player, c, out _)));
             }
@@ -1132,13 +1133,13 @@ namespace Game
                 if (tryGetMaster(target, out var master))
                 {
                     master.onSelectableTrue.invokeBeforeAnim();
-                    master.onSelectableTrue.afterAnim.Invoke();
+                    master.onSelectableTrue.invokeAfterAnim();
                     master.onClick.add(onClickMaster);
                 }
                 else if (tryGetServant(target, out var servant))
                 {
                     servant.onSelectableTrue.invokeBeforeAnim();
-                    servant.onSelectableTrue.afterAnim.Invoke();
+                    servant.onSelectableTrue.invokeAfterAnim();
                     servant.onClick.add(onClickServant);
                 }
             }
@@ -1149,18 +1150,18 @@ namespace Game
         void removeHighlights()
         {
             ui.SelfMaster.onSelectableFalse.invokeBeforeAnim();
-            ui.SelfMaster.onSelectableFalse.afterAnim.Invoke();
+            ui.SelfMaster.onSelectableFalse.invokeAfterAnim();
             ui.EnemyMaster.onSelectableFalse.invokeBeforeAnim();
-            ui.EnemyMaster.onSelectableFalse.afterAnim.Invoke();
+            ui.EnemyMaster.onSelectableFalse.invokeAfterAnim();
             foreach (var servant in ui.SelfFieldList)
             {
                 servant.onSelectableFalse.invokeBeforeAnim();
-                servant.onSelectableFalse.afterAnim.Invoke();
+                servant.onSelectableFalse.invokeAfterAnim();
             }
             foreach (var servant in ui.EnemyFieldList)
             {
                 servant.onSelectableFalse.invokeBeforeAnim();
-                servant.onSelectableFalse.afterAnim.Invoke();
+                servant.onSelectableFalse.invokeAfterAnim();
             }
         }
         /// <summary>
@@ -1239,12 +1240,12 @@ namespace Game
             if (card.hasKeyword(Keyword.TAUNT))
             {
                 servant.onTauntTrue.invokeBeforeAnim();
-                servant.onTauntTrue.afterAnim.Invoke();
+                servant.onTauntTrue.invokeAfterAnim();
             }
             else
             {
                 servant.onTauntFalse.invokeBeforeAnim();
-                servant.onTauntFalse.afterAnim.Invoke();
+                servant.onTauntFalse.invokeAfterAnim();
             }
         }
         /// <summary>

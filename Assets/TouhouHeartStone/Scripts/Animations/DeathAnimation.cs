@@ -55,18 +55,18 @@ namespace Game
             {
                 if (table.tryGetServant(card, out var servant))//尝试获取死亡的随从的随从UI
                 {
-                    servant.onDeath.afterAnim.Invoke();
+                    servant.onDeath.invokeAfterAnim();
                     table.ui.SelfFieldList.removeItem(servant);//从自己的场上移除随从UI
                     table.ui.EnemyFieldList.removeItem(servant);//从敌人的场上移除随从UI
                 }
                 else if (table.tryGetMaster(card, out var master))
                 {
-                    master.onDeath.afterAnim.Invoke();
+                    master.onDeath.invokeAfterAnim();
                 }
                 else if (card.isItem())
                 {
                     Item item = card.getOwner() == table.player ? table.ui.SelfItem : table.ui.EnemyItem;
-                    item.onDestroy.afterAnim.Invoke();
+                    item.onDestroy.invokeAfterAnim();
                     item.hide();
                 }
             }

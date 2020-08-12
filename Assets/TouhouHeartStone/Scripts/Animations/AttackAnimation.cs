@@ -1,25 +1,9 @@
 ﻿using TouhouHeartstone;
 using BJSYGameCore;
-using BJSYGameCore.UI;
 using UnityEngine;
 using UI;
 namespace Game
 {
-    class ProjectileAnimation : UIAnimation
-    {
-        Projectile projectile { get; }
-        public ProjectileAnimation(Projectile projectile, UIObject target)
-        {
-            this.projectile = projectile;
-            projectile.target = target.rectTransform;
-        }
-        public override bool update(Table table)
-        {
-            if (projectile != null)
-                return false;
-            return true;
-        }
-    }
     class AttackAnimation : EventAnimation<THHCard.AttackEventArg>
     {
         AnimAnim _attackAnim;

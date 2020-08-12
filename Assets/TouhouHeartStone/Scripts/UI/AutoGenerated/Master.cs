@@ -25,20 +25,20 @@ namespace UI
         }
         public void autoBind()
         {
-            this._HighlightImage = this.transform.Find("Highlight").GetComponent<Image>();
-            this._Mask = this.transform.Find("Mask").GetComponent<Mask>();
-            this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
-            this._FrameImage = this.transform.Find("Frame").GetComponent<Image>();
-            this._AtkImage = this.transform.Find("Atk").GetComponent<Image>();
-            this._AttackPropNumber = this.transform.Find("Atk").Find("Attack").GetComponent<PropNumber>();
-            this._HpImage = this.transform.Find("Hp").GetComponent<Image>();
-            this._LifePropNumber = this.transform.Find("Hp").Find("Life").GetComponent<PropNumber>();
-            this._ArmorImage = this.transform.Find("Armor").GetComponent<Image>();
-            this._ArmorPropNumber = this.transform.Find("Armor").Find("Armor").GetComponent<PropNumber>();
-            this._DamageImage = this.transform.Find("DamageImage").GetComponent<Image>();
-            this._DamageText = this.transform.Find("DamageImage").Find("DamageText").GetComponent<Text>();
-            this._HealImage = this.transform.Find("HealImage").GetComponent<Image>();
-            this._HealText = this.transform.Find("HealImage").Find("HealText").GetComponent<Text>();
+            this._HighlightImage = this.transform.Find("Root").Find("Highlight").GetComponent<Image>();
+            this._Mask = this.transform.Find("Root").Find("Mask").GetComponent<Mask>();
+            this._Image = this.transform.Find("Root").Find("Mask").Find("Image").GetComponent<Image>();
+            this._FrameImage = this.transform.Find("Root").Find("Frame").GetComponent<Image>();
+            this._AtkImage = this.transform.Find("Root").Find("Atk").GetComponent<Image>();
+            this._AttackPropNumber = this.transform.Find("Root").Find("Atk").Find("Attack").GetComponent<PropNumber>();
+            this._HpImage = this.transform.Find("Root").Find("Hp").GetComponent<Image>();
+            this._LifePropNumber = this.transform.Find("Root").Find("Hp").Find("Life").GetComponent<PropNumber>();
+            this._ArmorImage = this.transform.Find("Root").Find("Armor").GetComponent<Image>();
+            this._ArmorPropNumber = this.transform.Find("Root").Find("Armor").Find("Armor").GetComponent<PropNumber>();
+            this._DamageImage = this.transform.Find("Root").Find("DamageImage").GetComponent<Image>();
+            this._DamageText = this.transform.Find("Root").Find("DamageImage").Find("DamageText").GetComponent<Text>();
+            this._HealImage = this.transform.Find("Root").Find("HealImage").GetComponent<Image>();
+            this._HealText = this.transform.Find("Root").Find("HealImage").Find("HealText").GetComponent<Text>();
         }
         [SerializeField()]
         private Image _HighlightImage;
@@ -48,7 +48,7 @@ namespace UI
             {
                 if ((this._HighlightImage == null))
                 {
-                    this._HighlightImage = this.transform.Find("Highlight").GetComponent<Image>();
+                    this._HighlightImage = this.transform.Find("Root").Find("Highlight").GetComponent<Image>();
                 }
                 return this._HighlightImage;
             }
@@ -61,7 +61,7 @@ namespace UI
             {
                 if ((this._Mask == null))
                 {
-                    this._Mask = this.transform.Find("Mask").GetComponent<Mask>();
+                    this._Mask = this.transform.Find("Root").Find("Mask").GetComponent<Mask>();
                 }
                 return this._Mask;
             }
@@ -74,7 +74,7 @@ namespace UI
             {
                 if ((this._Image == null))
                 {
-                    this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
+                    this._Image = this.transform.Find("Root").Find("Mask").Find("Image").GetComponent<Image>();
                 }
                 return this._Image;
             }
@@ -87,7 +87,7 @@ namespace UI
             {
                 if ((this._FrameImage == null))
                 {
-                    this._FrameImage = this.transform.Find("Frame").GetComponent<Image>();
+                    this._FrameImage = this.transform.Find("Root").Find("Frame").GetComponent<Image>();
                 }
                 return this._FrameImage;
             }
@@ -100,7 +100,7 @@ namespace UI
             {
                 if ((this._AtkImage == null))
                 {
-                    this._AtkImage = this.transform.Find("Atk").GetComponent<Image>();
+                    this._AtkImage = this.transform.Find("Root").Find("Atk").GetComponent<Image>();
                 }
                 return this._AtkImage;
             }
@@ -113,7 +113,7 @@ namespace UI
             {
                 if ((this._AttackPropNumber == null))
                 {
-                    this._AttackPropNumber = this.transform.Find("Atk").Find("Attack").GetComponent<PropNumber>();
+                    this._AttackPropNumber = this.transform.Find("Root").Find("Atk").Find("Attack").GetComponent<PropNumber>();
                 }
                 return this._AttackPropNumber;
             }
@@ -126,7 +126,7 @@ namespace UI
             {
                 if ((this._HpImage == null))
                 {
-                    this._HpImage = this.transform.Find("Hp").GetComponent<Image>();
+                    this._HpImage = this.transform.Find("Root").Find("Hp").GetComponent<Image>();
                 }
                 return this._HpImage;
             }
@@ -139,7 +139,7 @@ namespace UI
             {
                 if ((this._LifePropNumber == null))
                 {
-                    this._LifePropNumber = this.transform.Find("Hp").Find("Life").GetComponent<PropNumber>();
+                    this._LifePropNumber = this.transform.Find("Root").Find("Hp").Find("Life").GetComponent<PropNumber>();
                 }
                 return this._LifePropNumber;
             }
@@ -152,7 +152,7 @@ namespace UI
             {
                 if ((this._ArmorImage == null))
                 {
-                    this._ArmorImage = this.transform.Find("Armor").GetComponent<Image>();
+                    this._ArmorImage = this.transform.Find("Root").Find("Armor").GetComponent<Image>();
                 }
                 return this._ArmorImage;
             }
@@ -165,7 +165,7 @@ namespace UI
             {
                 if ((this._ArmorPropNumber == null))
                 {
-                    this._ArmorPropNumber = this.transform.Find("Armor").Find("Armor").GetComponent<PropNumber>();
+                    this._ArmorPropNumber = this.transform.Find("Root").Find("Armor").Find("Armor").GetComponent<PropNumber>();
                 }
                 return this._ArmorPropNumber;
             }
@@ -178,7 +178,7 @@ namespace UI
             {
                 if ((this._DamageImage == null))
                 {
-                    this._DamageImage = this.transform.Find("DamageImage").GetComponent<Image>();
+                    this._DamageImage = this.transform.Find("Root").Find("DamageImage").GetComponent<Image>();
                 }
                 return this._DamageImage;
             }
@@ -191,7 +191,7 @@ namespace UI
             {
                 if ((this._DamageText == null))
                 {
-                    this._DamageText = this.transform.Find("DamageImage").Find("DamageText").GetComponent<Text>();
+                    this._DamageText = this.transform.Find("Root").Find("DamageImage").Find("DamageText").GetComponent<Text>();
                 }
                 return this._DamageText;
             }
@@ -204,7 +204,7 @@ namespace UI
             {
                 if ((this._HealImage == null))
                 {
-                    this._HealImage = this.transform.Find("HealImage").GetComponent<Image>();
+                    this._HealImage = this.transform.Find("Root").Find("HealImage").GetComponent<Image>();
                 }
                 return this._HealImage;
             }
@@ -217,7 +217,7 @@ namespace UI
             {
                 if ((this._HealText == null))
                 {
-                    this._HealText = this.transform.Find("HealImage").Find("HealText").GetComponent<Text>();
+                    this._HealText = this.transform.Find("Root").Find("HealImage").Find("HealText").GetComponent<Text>();
                 }
                 return this._HealText;
             }
