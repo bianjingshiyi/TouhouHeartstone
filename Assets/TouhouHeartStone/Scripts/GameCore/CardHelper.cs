@@ -11,15 +11,23 @@ namespace TouhouHeartstone
     {
         public static CardDefine[] getCardDefines(ILogger logger)
         {
-            return getCardDefines(AppDomain.CurrentDomain.GetAssemblies(), logger);
+            return getCardDefines(AppDomain.CurrentDomain.GetAssemblies(), null, logger);
         }
-        public static CardDefine[] getCardDefines(Assembly[] assemblies, ILogger logger)
+        public static CardDefine[] getCardDefines(Assembly[] assemblies, string[] namespaces, ILogger logger)
         {
             List<CardDefine> cardList = new List<CardDefine>();
             foreach (Assembly assembly in assemblies)
             {
-                foreach (Type type in assembly.GetTypes().Where(t => t.IsSubclassOf(typeof(CardDefine)) && !t.IsAbstract && t != typeof(GeneratedCardDefine)))
+                foreach (Type type in assembly.GetTypes().Where(t =>
+                    t.IsSubclassOf(typeof(CardDefine)) &&
+                    !t.IsAbstract &&
+                    t != typeof(GeneratedCardDefine)))
                 {
+                    if (namespaces != null && !namespaces.Contains(type.Namespace))
+                    {
+                        UberDebug.LogChannel("Card", type.Namespace + "不包含在[" + string.Join(",", namespaces) + "]中，被忽略");
+                        continue;
+                    }
                     ConstructorInfo constructor = type.GetConstructor(new Type[0]);
                     if (constructor != null)
                     {

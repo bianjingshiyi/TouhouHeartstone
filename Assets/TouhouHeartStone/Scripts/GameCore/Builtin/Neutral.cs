@@ -181,7 +181,7 @@ namespace TouhouHeartstone.Builtin
             },(game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
-                    target.setStealth(true);
+                    target.setStealth(game, true);
                 return Task.CompletedTask;
             })
         };
@@ -709,7 +709,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]{
-            new BeforeTurnStart(async(game,card,arg)=>
+            new AfterTurnStart(async(game,card,arg)=>
             {
                 foreach(var servant in card.getOwner().field.Where(c=>c!=card))
                     await servant.addBuff(game,new GeneratedBuff(ID,new AttackModifier(1),new LifeModifier(1)));

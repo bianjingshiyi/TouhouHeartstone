@@ -1074,6 +1074,14 @@ namespace Game
                 servant.onTauntFalse.invokeBeforeAnim();
                 servant.onTauntFalse.afterAnim.Invoke();
             }
+            if (card.hasKeyword(game, Keyword.SHIELD))
+                servant.ShieldImage.display();
+            else
+                servant.ShieldImage.hide();
+            if (card.hasKeyword(game, Keyword.STEALTH))
+                servant.StealthImage.display();
+            else
+                servant.StealthImage.hide();
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
         }
         void onEnterServant(Servant servant, PointerEventData pointer)
@@ -1228,7 +1236,7 @@ namespace Game
             }
             servant.AttackTextPropNumber.asText.text = card.getAttack().ToString();
             servant.HpTextPropNumber.asText.text = card.getLife().ToString();
-            if (card.getProp<bool>("taunt"))
+            if (card.hasKeyword(Keyword.TAUNT))
             {
                 servant.onTauntTrue.invokeBeforeAnim();
                 servant.onTauntTrue.afterAnim.Invoke();

@@ -66,40 +66,6 @@ namespace Game
                     if (!SimpleAnimHelper.update(table, ref _attackedAnim, targetServant.onAttacked, targetServant.animator))
                         return false;
                 }
-                //if (table.tryGetMaster(eventArg.target, out var targetMaster))
-                //{
-                //    if (!_timer1.isStarted)
-                //        _timer1.start();
-                //    attackServant.getChild("Root").position =
-                //        Vector3.Lerp(attackServant.rectTransform.position, targetMaster.rectTransform.position,
-                //        attackServant.attackAnimationCurve.Evaluate(_timer1.progress));
-                //    if (!_timer1.isExpired())
-                //        return false;
-                //    if (!_timer2.isStarted)
-                //        _timer2.start();
-                //    attackServant.getChild("Root").position =
-                //        Vector3.Lerp(targetMaster.rectTransform.position, attackServant.rectTransform.position,
-                //        attackServant.attackAnimationCurve.Evaluate(_timer2.progress));
-                //    if (!_timer2.isExpired())
-                //        return false;
-                //}
-                //else if (table.getServant(eventArg.target) is Servant targetServant)
-                //{
-                //    if (!_timer1.isStarted)
-                //        _timer1.start();
-                //    attackServant.getChild("Root").position =
-                //        Vector3.Lerp(attackServant.rectTransform.position, targetServant.rectTransform.position,
-                //        attackServant.attackAnimationCurve.Evaluate(_timer1.progress));
-                //    if (!_timer1.isExpired())
-                //        return false;
-                //    if (!_timer2.isStarted)
-                //        _timer2.start();
-                //    attackServant.getChild("Root").position =
-                //        Vector3.Lerp(targetServant.rectTransform.position, attackServant.rectTransform.position,
-                //        attackServant.attackAnimationCurve.Evaluate(_timer2.progress));
-                //    if (!_timer2.isExpired())
-                //        return false;
-                //}
                 table.setServant(attackServant, eventArg.card);
             }
             return true;

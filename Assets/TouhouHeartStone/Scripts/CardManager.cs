@@ -48,22 +48,22 @@ namespace Game
         /// 加载配置路径中的所有卡片和皮肤。
         /// </summary>
         /// <returns></returns>
-        public Task load(Assembly[] assemblies = default, bool builtinOnly = false, ILogger logger = null, ILogger screenLogger = null)
+        public Task load(Assembly[] assemblies = default, string[] namespaces = null, bool builtinOnly = false, ILogger logger = null, ILogger screenLogger = null)
         {
-            return load(builtinOnly ? new string[0] : _externalCardPaths, assemblies, logger, screenLogger);
+            return load(builtinOnly ? new string[0] : _externalCardPaths, assemblies, namespaces, logger, screenLogger);
         }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
         /// </summary>
         /// <param name="excelPaths"></param>
         /// <returns></returns>
-        public async Task load(string[] excelPaths, Assembly[] assemblies = default, ILogger logger = null, ILogger screenLogger = null)
+        public async Task load(string[] excelPaths, Assembly[] assemblies = default, string[] namespaces = null, ILogger logger = null, ILogger screenLogger = null)
         {
             //加载内置卡片
             screenLogger?.log("加载内置卡片");
             if (assemblies == default)
                 assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies, logger));
+            List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies, namespaces, logger));
             foreach (CardDefine card in cardList)
             {
                 if (defineDic.ContainsKey(card.id))
