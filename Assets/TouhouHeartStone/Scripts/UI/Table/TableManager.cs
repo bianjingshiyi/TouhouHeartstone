@@ -325,6 +325,8 @@ namespace Game
                 // master.HighlightController = Master.Highlight.Green;
                 master.onCanAttackTrue.invokeBeforeAnim();
                 master.onCanAttackTrue.invokeAfterAnim();
+                master.onDrag.add(onDragMaster);
+                master.onDragEnd.add(onDragEndMaster);
             }
             else
             {
@@ -332,6 +334,8 @@ namespace Game
                 master.onCanAttackFalse.invokeBeforeAnim();
                 master.onCanAttackFalse.invokeAfterAnim();
             }
+            //master.onDrag.add(onDragMaster);
+            //master.onDragEnd.add(onDragEndMaster);
         }
         public bool tryGetItem(Card card, out Item item)
         {
@@ -1179,6 +1183,60 @@ namespace Game
             if (!card.canAttack(game))//不能攻击
                 return;
             //如果在随从或英雄上面
+            if (isOnTarget(pointer, out var target))
+            {
+                if (card.isAttackable(game, player, target, out var tip))
+                    player.cmdAttack(game, card, target);
+                else
+                    showTip(tip);
+            }
+            //取消选中和攻击
+            cancelAttack();
+        }
+        /// <summary>
+        /// 英雄拖拽处理
+        /// </summary>
+        /// <param name="master"></param>
+        /// <param name="pointer"></param>
+        void onDragMaster(Master master, PointerEventData pointer)
+        {
+            if (!canControl)//不是你的回合
+                return;
+            TouhouCardEngine.Card card = getCard(master);
+            if (card.getOwner() != player)//不是你的英雄
+                return;
+            if (!card.canAttack(game))
+                return;
+            //拉动距离也应该有一个阈值
+            if (Vector2.Distance(master.rectTransform.position, pointer.position) > master.attackThreshold)
+            {
+                //播放一个变大的动画？
+                //servant.rectTransform.localScale = Vector3.one * 1.1f;
+                //显示指针
+                displayArrow(master.rectTransform, master.rectTransform.position, pointer.position);
+                //高亮标记所有目标
+                highlightTargets(game.findAllCardsInField(c => card.isAttackable(game, player, c, out _)));
+            }
+            else
+            {
+                cancelAttack();
+            }
+        }
+        /// <summary>
+        /// 英雄拖拽结束处理
+        /// </summary>
+        /// <param name="master"></param>
+        /// <param name="pointer"></param>
+        void onDragEndMaster(Master master, PointerEventData pointer)
+        {
+            if (!canControl)//不是你的回合
+                return;
+            Card card = getCard(master);
+            if (card.owner != player)//不是你的英雄
+                return;
+            if (!card.canAttack(game))//不能攻击
+                return;
+            //如果在随从上面
             if (isOnTarget(pointer, out var target))
             {
                 if (card.isAttackable(game, player, target, out var tip))

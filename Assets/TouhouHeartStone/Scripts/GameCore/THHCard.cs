@@ -306,7 +306,7 @@ namespace TouhouHeartstone
         }
         public static bool isDrain(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.DRAIN);
+            return card.hasKeyword(game, Keyword.DRAIN);
         }
         public static void setDrain(this Card card, bool value)
         {
@@ -314,7 +314,7 @@ namespace TouhouHeartstone
         }
         public static bool isPoisonous(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.POISONOUS);
+            return card.hasKeyword(game, Keyword.POISONOUS);
         }
         public static void setPoisonous(this Card card, bool value)
         {
@@ -322,7 +322,7 @@ namespace TouhouHeartstone
         }
         public static bool isElusive(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.ELUSIVE);
+            return card.hasKeyword(game, Keyword.ELUSIVE);
         }
         public static void setElusive(this Card card, bool value)
         {
@@ -330,7 +330,7 @@ namespace TouhouHeartstone
         }
         public static bool isFreeze(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.FREEZE);
+            return card.hasKeyword(game, Keyword.FREEZE);
         }
         public static void setFreeze(this Card card, bool value)
         {
@@ -345,7 +345,7 @@ namespace TouhouHeartstone
         }
         public static bool isWindfury(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.WINDFURY);
+            return card.hasKeyword(game, Keyword.WINDFURY);
         }
         public static void setWindfury(this Card card, bool value)
         {
@@ -361,7 +361,7 @@ namespace TouhouHeartstone
         }
         public static bool isUnique(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, Keyword.UNIQUE);
+            return card.hasKeyword(game, Keyword.UNIQUE);
         }
         public static void setUnique(this Card card, bool value)
         {
