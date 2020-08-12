@@ -12,6 +12,10 @@ namespace UI
         public TouhouCardEngine.Card card { get; private set; } = null;
         [SerializeField]
         float _attackThreshold = 50;
+        public float attackThreshold
+        {
+            get { return _attackThreshold; }
+        }
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
             //if (!card.canAttack())
@@ -35,6 +39,7 @@ namespace UI
             //    return;
             //Table table = GetComponentInParent<Table>();
         }
+        public ActionEvent<Master, PointerEventData> onDrag { get; } = new ActionEvent<Master, PointerEventData>();
 
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
@@ -57,6 +62,8 @@ namespace UI
             //    }
             //}
         }
+        public ActionEvent<Master, PointerEventData> onDragEnd { get; } = new ActionEvent<Master, PointerEventData>();
+
         public void OnPointerDown(PointerEventData eventData)
         {
             onClick.invoke(this, eventData);
