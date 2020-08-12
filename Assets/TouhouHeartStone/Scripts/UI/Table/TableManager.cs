@@ -1070,14 +1070,18 @@ namespace Game
                 servant.onTauntFalse.invokeBeforeAnim();
                 servant.onTauntFalse.afterAnim.Invoke();
             }
-            if (card.hasKeyword(game, Keyword.SHIELD))
-                servant.ShieldImage.display();
-            else
-                servant.ShieldImage.hide();
             if (card.hasKeyword(game, Keyword.STEALTH))
                 servant.StealthImage.display();
             else
                 servant.StealthImage.hide();
+            if (card.hasKeyword(game, Keyword.FREEZE))
+                servant.FreezeImage.display();
+            else
+                servant.FreezeImage.hide();
+            if (card.hasKeyword(game, Keyword.SHIELD))
+                servant.ShieldImage.display();
+            else
+                servant.ShieldImage.hide();
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
         }
         void onEnterServant(Servant servant, PointerEventData pointer)

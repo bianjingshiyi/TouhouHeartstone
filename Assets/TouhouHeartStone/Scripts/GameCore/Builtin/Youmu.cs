@@ -391,19 +391,6 @@ namespace TouhouHeartstone.Builtin
                     {
                         return c.getOwner().master.getArmor(g);
                     }))
-            //new NoTargetEffect(async(g1,c1)=>
-            //{
-            //    await c1.addBuff(g1, new GeneratedBuff(ID,new AttackModifier(c1.getOwner().master.getArmor(g1)+c1.define.getAttack(),true)));
-            //    await c1.addBuff(g1, new GeneratedBuff(ID,new LifeModifier(c1.getOwner().master.getArmor(g1)+c1.define.getLife(),true)));
-            //}),
-            //new THHEffectAfter<THHPlayer.ChangeArmorEventArg>(PileName.FIELD,(g,c,a)=>
-            //{
-            //    return a.player == c.getOwner();
-            //},null,async(g,c,a)=>
-            //{
-            //    await c.addBuff(g, new GeneratedBuff(ID,new AttackModifier(c.getOwner().master.getArmor(g)+c.define.getAttack(),true)));
-            //    await c.addBuff(g, new GeneratedBuff(ID,new LifeModifier(c.getOwner().master.getArmor(g)+c.define.getLife(),true)));
-            //})
         };
     }
     /// <summary>

@@ -371,7 +371,7 @@ namespace TouhouHeartstone
                 if (card.define is ServantCardDefine servant)
                 {
                     card.setDead(false);
-                    card.setCurrentLife(servant.life);
+                    card.setCurrentLife(card.getLife(game));
                     card.setReady(false);
                 }
                 arg.attack = card.getAttack(game);

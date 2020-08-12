@@ -658,12 +658,13 @@ namespace TouhouHeartstone
             foreach (var pair in modifiers)
             {
                 IntPropModifier modifier = card.getProp<IntPropModifier>(game, getModifierName(pair.modifier, buff));
-                if (modifier != null)
-                    card.removeModifier(game, modifier);
-                modifier = pair.modifier.clone() as IntPropModifier;
-                modifier.setValue(pair.fixer(game, card, buff, default));
-                card.setProp(getModifierName(pair.modifier, buff), modifier);
-                card.addModifier(game, modifier);
+                if (modifier == null)
+                {
+                    modifier = pair.modifier.clone() as IntPropModifier;
+                    card.setProp(getModifierName(pair.modifier, buff), modifier);
+                    card.addModifier(game, modifier);
+                }
+                modifier.setValue(game, card, pair.fixer(game, card, buff, default));
             }
             Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(buff));
             if (trigger == null)
@@ -673,12 +674,13 @@ namespace TouhouHeartstone
                     foreach (var pair in modifiers)
                     {
                         IntPropModifier m = card.getProp<IntPropModifier>(game, getModifierName(pair.modifier, buff));
-                        if (m != null)
-                            await card.removeModifier(game, m);
-                        m = pair.modifier.clone() as IntPropModifier;
-                        m.setValue(pair.fixer(game, card, buff, arg));
-                        card.setProp(getModifierName(pair.modifier, buff), m);
-                        await card.addModifier(game, m);
+                        if (m == null)
+                        {
+                            m = pair.modifier.clone() as IntPropModifier;
+                            card.setProp(getModifierName(pair.modifier, buff), m);
+                            await card.addModifier(game, m);
+                        }
+                        await m.setValue(game, card, pair.fixer(game, card, buff, arg));
                     }
                 });
                 card.setProp(getTriggerName(buff), trigger);
