@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
+
+
 namespace TouhouHeartstone.Builtin.Proble
 {
     [IgnoreCardDefine]
@@ -41,7 +43,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 召唤水晶塔，法术
     /// 2费，召唤一个0/6,带有嘲讽的水晶塔
-    /// 召唤系法术
+    /// 不仅为周围建筑供电，还提供WiFi
     /// </summary>
     [IgnoreCardDefine]
     public class BulidPylon : SpellCardDefine
@@ -81,7 +83,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 粒子光束
     /// 2费，造成3点伤害
-    /// 指向型直伤系法术
+    /// 对矿物有加成
     /// </summary>
     [IgnoreCardDefine]
     public class ParticulateLaser : SpellCardDefine
@@ -102,7 +104,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 灵能震荡
     /// 4费，对所有角色造成3点伤害
-    /// 无指向型aoe法术
+    /// Power Overflowing
     /// </summary>
     [IgnoreCardDefine]
     public class PsionicShock : SpellCardDefine
@@ -125,7 +127,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 水晶塔过载
     /// 4费，召唤一个水晶塔，再使所有水晶塔获得+3攻击力
-    /// 召唤Buff复合型
+    /// 就连我的建筑在战斗都比你有用！
     /// </summary>
     [IgnoreCardDefine]
     public class PylonOverload : SpellCardDefine
@@ -159,7 +161,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 机械哨兵
     /// 4/2/4，战吼：召唤一个0/2具有嘲讽的幻象
-    /// 战吼召唤系随从
+    /// “星灵的凤凰战机比地上跑的虫子都多” ——倒霉的机枪兵
     /// </summary>
     [IgnoreCardDefine]
     public class Sentry : ServantCardDefine
@@ -204,7 +206,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 先知机器人
     /// 4/3/3，战吼：抽一张法力消耗最高的牌
-    /// 战吼定向检索随从
+    /// 它一直担心太阳会在某一天熄灭
     /// </summary>
     [IgnoreCardDefine]
     public class ProphetRobot : ServantCardDefine
@@ -239,7 +241,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 巨像
     /// 8/8/8，唯一，回合结束时，对所有敌方角色造成3点伤害
-    /// 回合结束扳机随从
+    /// 3台巨像能轻易毁灭一个文明，但不一定能A得死人
     /// </summary>
     [IgnoreCardDefine]
     public class Colossus : ServantCardDefine
@@ -264,7 +266,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 能量反馈
     /// 1费，对一个随从造成等同其攻击力的伤害
-    /// 指向型特殊直伤法术
+    /// 请不要随便给自己加能量条。
     /// </summary>
     [IgnoreCardDefine]
     public class EnergyAutophagy : SpellCardDefine
@@ -286,6 +288,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 普罗托斯
     /// 5/0/3，唯一，所有随从获得+2攻击力，战吼：召唤2个水晶塔
+    /// 征战无数的传奇探机最终还是逃不过死亡的命运：被投入坟头枢纽
     /// </summary>
     [IgnoreCardDefine]
     public class Protoss : ServantCardDefine
@@ -314,6 +317,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 重构光线
     /// 0费，完全修好一个友方机械。(警告:不要对机械以外的随从使用！)
+    /// “只要给够钱，我连黄金舰队都能修。”——SCV
     /// </summary>
     [IgnoreCardDefine]
     public class ReconstructRay : SpellCardDefine
@@ -340,6 +344,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 山寨版本
     /// 3费，发现墓地里一张机械牌，召唤它并使其变为3/3
+    /// 靠着偷、抢、抄，塔达林居然拼凑出了死亡舰队。
     /// </summary>
     [IgnoreCardDefine]
     public class Imitation : SpellCardDefine
@@ -363,6 +368,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 守护之壳
     /// 3费，使一个随从获得+3生命值，如果它是机械，再获得+4攻击力
+    /// 只是强化护盾，既不守护你的脸，又不是壳。
     /// </summary>
     [IgnoreCardDefine]
     public class ProtectiveShell : SpellCardDefine
@@ -384,8 +390,9 @@ namespace TouhouHeartstone.Builtin.Proble
     }
 
     /// <summary>
-    /// 西塞尔
-    /// 7/2/2，唯一，战吼：获得一个机械的控制权，然后将其变为3/3
+    /// 幽灵猫西塞尔
+    /// 7/2/2，唯一，战吼：获得一个机械的控制权，然后将其攻击力与生命值变为3
+    /// “为什么幻想乡没有电话？”
     /// </summary>
     [IgnoreCardDefine]
     public class Sissel : ServantCardDefine
@@ -407,6 +414,31 @@ namespace TouhouHeartstone.Builtin.Proble
                 await target.addBuff(game , new GeneratedBuff(ID,new AttackModifier(3,true),new LifeModifier(3,true)));
             }, PileFlag.oppo | PileFlag.field,onCheckTarget:(g,c,t)=> t.define.hasTag(CardTag.MACHINE))//后缀表示只能指向随从
         };
+    }
 
+    /// <summary>
+    /// 沉默的计牌器
+    /// 4/3/3，每当你的对手使用一张牌时，自身获得+1/+2
+    /// “......你刚刚伏笔了”
+    /// </summary>
+    [IgnoreCardDefine]
+    public class SilentCardCounter : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SERVANT | 0x016;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 3;//随从的攻击力
+        public override int life { get; set; } = 3;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
+        //public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            //测试表示：这张牌的扳机是使用卡牌生效后。
+            new AddBuffAfter<THHPlayer.UseEventArg>(PileName.FIELD,(g,c,a)=>
+            {
+                return a.player == g.getOpponent(c.getOwner());
+            },new GeneratedBuff(ID,new AttackModifier(1),new LifeModifier(2)))
+        };       
     }
 }

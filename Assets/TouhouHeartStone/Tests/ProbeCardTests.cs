@@ -341,5 +341,29 @@ namespace Tests
             // Debug.Log("第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) + "的" + you.field[1].define.id);
             game.Dispose();
         }
+
+        /// <summary>
+        /// 沉默的计牌器测试
+        /// 4/3/3，每当你的对手使用一张牌时，自身获得+1/+2
+        /// </summary>
+        [Test]
+        public void ProbeSilentCardCounterTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getCardDefine<ParticulateLaser>(), 2)));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getCardDefine<SilentCardCounter>(), 2)));
+
+            game.skipUntilCanUse<SilentCardCounter>(you);
+            you.cmdUse(game, you.hand.getCard<SilentCardCounter>());
+            you.cmdTurnEnd(game);
+            oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
+            //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
+            game.Dispose();
+        }
     }
 }
