@@ -441,4 +441,54 @@ namespace TouhouHeartstone.Builtin.Proble
             },new GeneratedBuff(ID,new AttackModifier(1),new LifeModifier(2)))
         };       
     }
+
+    /// <summary>
+    /// 流水线
+    /// 3/0/3，每当你使用一张牌时，召唤一个1/1的迷你机器人
+    /// 它被关在工厂里一万年了...
+    /// </summary>
+    [IgnoreCardDefine]
+    public class AssemblyLine : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SERVANT | 0x017;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 0;//随从的攻击力
+        public override int life { get; set; } = 3;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        //public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
+        //public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+        
+            new THHEffectBefore<THHPlayer.UseEventArg>(PileName.FIELD,
+                (g,c,a) =>
+                {
+                    return a.player == c.getOwner();
+                },null,(g,c,a)=>
+                {
+                    c.getOwner().createToken(g, g.getCardDefine<MiniRobot>(), c.getOwner().field.count);
+                    return Task.CompletedTask;
+                }
+            )
+
+        };
+    }
+
+    /// <summary>
+    /// 迷你机器人，随从
+    /// 2/0/6,嘲讽
+    /// </summary>
+    [IgnoreCardDefine]
+    public class MiniRobot : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SERVANT | 0x018;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;//随从的攻击力
+        public override int life { get; set; } = 1;//随从的血量上限
+        public override bool isToken { get; set; } = true;//是衍生物吗？（当然）
+        //public override string[] tags { get; set; } = new string[];//种族标签
+        //public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };//关键词标签：
+    }
 }

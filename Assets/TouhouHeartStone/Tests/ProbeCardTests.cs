@@ -365,5 +365,30 @@ namespace Tests
             //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
             game.Dispose();
         }
+
+        /// <summary>
+        /// 流水线测试
+        /// 3/0/3，每当你使用一张牌时，召唤一个1/1的迷你机器人
+        /// 它被关在工厂里一万年了...
+        /// </summary>
+        [Test]
+        public void ProbeAssemblyLineTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(AssemblyLine.ID, 2),
+                new KeyValuePair<int, int>(FireBall.ID, 2),
+                new KeyValuePair<int, int>(DefaultServant.ID, 2)
+            );
+
+            game.skipUntilCanUse<AssemblyLine>(you);
+            you.cmdUse(game, you.hand.getCard<AssemblyLine>());
+            game.skipUntilCanUse<DefaultServant>(you);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse<FireBall>(you);
+            you.cmdUse(game, you.hand.getCard<FireBall>(),targets : oppo.master);
+            //oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
+            //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
+            game.Dispose();
+        }
     }
 }
