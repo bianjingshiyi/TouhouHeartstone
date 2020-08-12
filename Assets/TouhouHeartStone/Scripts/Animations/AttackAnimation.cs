@@ -22,8 +22,6 @@ namespace Game
     }
     class AttackAnimation : EventAnimation<THHCard.AttackEventArg>
     {
-        Timer _timer1 = new Timer() { duration = .5f };
-        Timer _timer2 = new Timer() { duration = .5f };
         AnimAnim _attackAnim;
         AnimAnim _attackedAnim;
         public override bool update(TableManager table, THHCard.AttackEventArg eventArg)
