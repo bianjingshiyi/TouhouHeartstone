@@ -177,12 +177,25 @@ namespace Tests
                 new KeyValuePair<int, int>(HalfPhantom.ID, 1)
             );
             game.skipUntilCanUse<HalfPhantom>(you);
+            you.master.gainArmor(game, 6);
             you.cmdUse(game, you.hand.getCard<HalfPhantom>());
-            Assert.AreEqual(1, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(7, you.field[0].getAttack(game));
+            Assert.AreEqual(7, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(7, you.field[0].getLife(game));
             you.master.gainArmor(game, 1);
-            Assert.AreEqual(2, you.field[0].getCurrentLife(game));
-            you.master.loseArmor(game, 1);
-            Assert.AreEqual(1, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(8, you.field[0].getAttack(game));
+            Assert.AreEqual(8, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(8, you.field[0].getLife(game));
+            you.field[0].damage(game, null, 1);
+            Assert.AreEqual(7, you.field[0].getCurrentLife(game));
+            you.master.gainArmor(game, 1);
+            Assert.AreEqual(9, you.field[0].getAttack(game));
+            Assert.AreEqual(8, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(9, you.field[0].getLife(game));
+            you.master.loseArmor(game, 2);
+            Assert.AreEqual(7, you.field[0].getAttack(game));
+            Assert.AreEqual(7, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(7, you.field[0].getLife(game));
         }
 
         [Test]

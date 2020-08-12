@@ -281,19 +281,15 @@ namespace Game
         /// <param name="master"></param>
         /// <param name="card"></param>
         /// <param name="isSelectable"></param>
-        public void setMaster(Master master, TouhouCardEngine.Card card, bool isSelectable = false)
+        public void setMaster(Master master, Card card, bool isSelectable = false)
         {
             CardSkinData skin = getSkin(card);
             master.Image.sprite = skin.image;
             master.LifePropNumber.asText.text = card.getCurrentLife(game).ToString();
-            //if (card.getCurrentLife() == card.getLife())
-            //    HpText.color = Color.white;
-            //else
-            //    HpText.color = Color.red;
             if (card.getAttack(game) > 0)
             {
                 master.AttackPropNumber.asText.text = card.getAttack(game).ToString();
-                master.AttackPropNumber.asText.display();
+                master.AtkImage.display();
                 master.AttackPropNumber.asText.display();
             }
             else
@@ -1074,14 +1070,18 @@ namespace Game
                 servant.onTauntFalse.invokeBeforeAnim();
                 servant.onTauntFalse.afterAnim.Invoke();
             }
-            if (card.hasKeyword(game, Keyword.SHIELD))
-                servant.ShieldImage.display();
-            else
-                servant.ShieldImage.hide();
             if (card.hasKeyword(game, Keyword.STEALTH))
                 servant.StealthImage.display();
             else
                 servant.StealthImage.hide();
+            if (card.hasKeyword(game, Keyword.FREEZE))
+                servant.FreezeImage.display();
+            else
+                servant.FreezeImage.hide();
+            if (card.hasKeyword(game, Keyword.SHIELD))
+                servant.ShieldImage.display();
+            else
+                servant.ShieldImage.hide();
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
         }
         void onEnterServant(Servant servant, PointerEventData pointer)
@@ -1101,7 +1101,7 @@ namespace Game
         {
             if (!canControl)//不是你的回合
                 return;
-            TouhouCardEngine.Card card = getCard(servant);
+            Card card = getCard(servant);
             if (card.getOwner() != player)//不是你的卡
                 return;
             if (!card.canAttack(game))
@@ -1177,7 +1177,7 @@ namespace Game
                 return;
             if (!card.canAttack(game))//不能攻击
                 return;
-            //如果在随从上面
+            //如果在随从或英雄上面
             if (isOnTarget(pointer, out var target))
             {
                 if (card.isAttackable(game, player, target, out var tip))

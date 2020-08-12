@@ -1,5 +1,6 @@
 ﻿using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using System.Threading.Tasks;
 namespace TouhouHeartstone
 {
     public class LifeModifier : IntPropModifier
@@ -13,6 +14,30 @@ namespace TouhouHeartstone
         LifeModifier(LifeModifier origin) : base(origin)
         {
 
+        }
+        public override async Task setValue(IGame game, Card card, int value)
+        {
+            bool resetCurrentLife = card.getCurrentLife(game) >= card.getLife(game);
+            int changedValue = value - this.value;
+            await base.setValue(game, card, value);
+            if (isSet)
+                card.setCurrentLife(value);
+            else
+            {
+                int life = card.getLife(game);
+                if (resetCurrentLife)
+                {
+                    game?.logger?.log("由于" + card + "没有受伤，修正值变为" + value + "后重置生命值为" + life);
+                    card.setCurrentLife(life);
+                }
+                else if (card.getCurrentLife(game) > life)
+                    card.setCurrentLife(life);
+                else
+                {
+                    card.setCurrentLife(card.getCurrentLife(game) + changedValue);
+                    game?.logger?.log("由于" + card + "受伤了，修正值变为" + value + "之后生命值变为" + card.getCurrentLife(game));
+                }
+            }
         }
         public override void beforeAdd(IGame game, Card card)
         {

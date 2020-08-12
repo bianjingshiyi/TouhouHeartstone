@@ -268,7 +268,7 @@ namespace TouhouHeartstone
         }
         public static bool isTaunt(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.TAUNT);//TODO:把所有关键词改为检查关键词中是否有这个。
+            return card.hasKeyword(game, Keyword.TAUNT);
         }
         public static bool isCharge(this Card card, IGame game)
         {
