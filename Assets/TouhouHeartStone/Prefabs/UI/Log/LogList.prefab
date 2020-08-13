@@ -511,6 +511,10 @@ MonoBehaviour:
   _IconImage: {fileID: 4514938058562137377}
   _Text: {fileID: 4514938058591415663}
   _BorderImage: {fileID: 4514938058713749634}
+  _selfColor: {r: 0.2, g: 0.2, b: 0.8, a: 1}
+  _oppoColor: {r: 0.8, g: 0.2, b: 0.2, a: 1}
+  _useIcon: {fileID: 21300000, guid: afcc21aaa520e9743b7c6ddd2ee73409, type: 3}
+  _damageIcon: {fileID: 21300000, guid: d54a9728519c5d54bbe09aff5bd95284, type: 3}
 --- !u!1 &4514938058591415649
 GameObject:
   m_ObjectHideFlags: 0
@@ -737,7 +741,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.78431374, g: 0.19607843, b: 0.19607843, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:

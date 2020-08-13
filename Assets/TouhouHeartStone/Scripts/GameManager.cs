@@ -29,6 +29,7 @@ namespace Game
             get { return _ui; }
         }
         public THHGame game { get; private set; } = null;
+        public THHPlayer localPlayer { get; private set; } = null;
         Task gameTask { get; set; } = null;
         protected override void onAwake()
         {
@@ -125,11 +126,11 @@ namespace Game
 
             CardDefine playerMaster = game.getCardDefine(deck[0]);
             CardDefine[] playerDeck = deck.Skip(1).Select(id => game.getCardDefine(id)).ToArray();
-            THHPlayer localPlayer = game.createPlayer(1, "本地玩家", playerMaster as MasterCardDefine,
+            localPlayer = game.createPlayer(1, "本地玩家", playerMaster as MasterCardDefine,
                 playerDeck);
             THHPlayer aiPlayer = game.createPlayer(2, "AI", playerMaster as MasterCardDefine,
                 deck.Skip(1).Select(id => game.getCardDefine(id)));
-            displayGameUI(localPlayer);
+            displayGameUI();
             //AI玩家用AI
             new AI(game, aiPlayer);
             onGameStart?.Invoke();
@@ -170,7 +171,10 @@ namespace Game
                 THHPlayer player = game.createPlayer(info.id, info.name, game.getCardDefine(deck[0]) as MasterCardDefine,
                     deck.Skip(1).Select(id => game.getCardDefine(id)));
                 if (info.id == room.playerList[0].id) // 暂时的
-                    displayGameUI(player);
+                {
+                    localPlayer = player;
+                    displayGameUI();
+                }
                 else
                     new AI(game, player); //AI玩家用AI
             }
@@ -198,7 +202,10 @@ namespace Game
                 THHPlayer player = game.createPlayer(info.id, info.name, game.getCardDefine(info.getDeck()[0]) as MasterCardDefine,
                     info.getDeck().Skip(1).Select(id => game.getCardDefine(id)));
                 if (client.id == info.id)
-                    displayGameUI(player);
+                {
+                    localPlayer = player;
+                    displayGameUI();
+                }
             }
             onGameStart?.Invoke();
             gameTask = game.run();
@@ -231,7 +238,8 @@ namespace Game
 
             new ReplayPlayer(rep, game);
 
-            displayGameUI(game.players.Last());
+            localPlayer = game.players.Last();
+            displayGameUI();
             gameTask = game.run();
         }
 
@@ -257,7 +265,7 @@ namespace Game
         /// 显示游戏UI，并指定本地玩家
         /// </summary>
         /// <param name="localPlayer"></param>
-        private void displayGameUI(THHPlayer localPlayer)
+        private void displayGameUI()
         {
             //本地玩家用UI
             _mainUI.display(_mainUI.Game);
@@ -265,21 +273,45 @@ namespace Game
             _mainUI.Game.Table.setGame(game, localPlayer);
 
             game.triggers.onEventBefore += onEventBefore;
+            game.triggers.onEventAfter += onEventAfter;
         }
         void onEventBefore(TouhouCardEngine.Interfaces.IEventArg obj)
         {
             switch (obj)
             {
-                case THHPlayer.UseEventArg use:
+                case THHPlayer.UseEventArg _:
+                case THHCard.DamageEventArg _:
                     var item = ui.LogScrollView.LogList.addItem();
-                    item.Text.text = "使用";
-                    item.Image.sprite = getManager<TableManager>().getSkin(use.card).image;
+                    item.setProp("event", obj);
                     break;
                 default:
                     break;
             }
         }
-
+        void onEventAfter(TouhouCardEngine.Interfaces.IEventArg obj)
+        {
+            var item = ui.LogScrollView.LogList.getItems().FirstOrDefault(i => i.getProp("event") == obj);
+            if (item == null)
+                return;
+            switch (obj)
+            {
+                case THHPlayer.UseEventArg use:
+                    item.IconImage.sprite = item.useIcon;
+                    item.Text.text = "使用";
+                    item.Image.sprite = getManager<TableManager>().getSkin(use.card).image;
+                    item.BorderImage.color = use.player == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHCard.DamageEventArg damage:
+                    //item.rectTransform.setWidth(item.rectTransform.getWidth());
+                    item.IconImage.sprite = item.damageIcon;
+                    item.Text.text = "-" + damage.value;
+                    item.Image.sprite = getManager<TableManager>().getSkin(damage.cards[0]).image;
+                    item.BorderImage.color = damage.source.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                default:
+                    break;
+            }
+        }
         public void quitGame()
         {
             if (game != null)

@@ -81,6 +81,10 @@ namespace UI
         {
             transform.sizeDelta = new Vector2(transform.sizeDelta.x, height);
         }
+        public static float getWidth(this RectTransform transform)
+        {
+            return transform.sizeDelta.x;
+        }
         public static void setWidth(this RectTransform transform, float width)
         {
             transform.sizeDelta = new Vector2(width, transform.sizeDelta.y);
