@@ -16,7 +16,22 @@ namespace Game
             }
             if (!anim.update(table))
                 return false;
-            simpleAnim.afterAnim.Invoke();
+            simpleAnim.invokeAfterAnim();
+            anim = null;
+            return true;
+        }
+        public static bool update(TableManager table, ref TableAnimation anim, SimpleAnim simpleAnim, Animator animator, Func<UIAnimation, bool> onBlockAnim = null)
+        {
+            if (simpleAnim == null)
+                return true;
+            if (anim == null)
+            {
+                simpleAnim.invokeBeforeAnim();
+                anim = new AnimAnim(animator, simpleAnim.animName, onBlockAnim);
+            }
+            if (!anim.update(table))
+                return false;
+            simpleAnim.invokeAfterAnim();
             anim = null;
             return true;
         }

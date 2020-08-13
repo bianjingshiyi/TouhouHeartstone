@@ -50,15 +50,15 @@ namespace Game
             {
                 if (table.tryGetServant(card, out var servant))
                 {
-                    servant.onDamage.afterAnim.Invoke();
+                    servant.onDamage.invokeAfterAnim();
                 }
                 else if (table.tryGetMaster(card, out Master master))
                 {
-                    master.onDamage.afterAnim.Invoke();
+                    master.onDamage.invokeAfterAnim();
                 }
                 else if (table.tryGetItem(card, out var item))
                 {
-                    item.onLifeDown.afterAnim.Invoke();
+                    item.onLifeDown.invokeAfterAnim();
                 }
             }
             return true;

@@ -48,6 +48,13 @@ namespace UI
             get { return _sound_onUse; }
             set { _sound_onUse = value; }
         }
+        [SerializeField]
+        Projectile _projectile;
+        public Projectile projectile
+        {
+            get { return _projectile; }
+            set { _projectile = value; }
+        }
         public override string ToString()
         {
             string name = this.name;

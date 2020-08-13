@@ -117,7 +117,14 @@ namespace Game
 
             return null;
         }
-
+        public Task<T> loadObject<T>(string path, string curDir = null, PlatformCompability platform = null) where T : UnityEngine.Object
+        {
+            if (string.IsNullOrEmpty(path))
+                return default;
+            if (path.StartsWith("res:"))
+                return Task.FromResult(Resources.Load<T>(path.Replace("res:", "")));
+            throw new NotImplementedException();
+        }
         /// <summary>
         /// 尝试修改材质的扩展名，以便做Fallback
         /// </summary>

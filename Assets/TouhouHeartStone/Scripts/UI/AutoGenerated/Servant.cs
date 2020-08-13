@@ -33,6 +33,7 @@ namespace UI
             this._StealthImage = this.transform.Find("Root").Find("ImageMask").Find("Stealth").GetComponent<Image>();
             this._MaskImage = this.transform.Find("Root").Find("Mask").GetComponent<Image>();
             this._BorderImage = this.transform.Find("Root").Find("Border").GetComponent<Image>();
+            this._FreezeImage = this.transform.Find("Root").Find("Freeze").GetComponent<Image>();
             this._ShieldImage = this.transform.Find("Root").Find("Shield").GetComponent<Image>();
             this._AtkImage = this.transform.Find("Root").Find("Atk").GetComponent<Image>();
             this._AttackTextPropNumber = this.transform.Find("Root").Find("Atk").Find("AttackText").GetComponent<PropNumber>();
@@ -41,7 +42,6 @@ namespace UI
             this._DeathRattleImage = this.transform.Find("Root").Find("DeathRattle").GetComponent<Image>();
             this._LifeStealImage = this.transform.Find("Root").Find("LifeSteal").GetComponent<Image>();
             this._PoisionImage = this.transform.Find("Root").Find("Poision").GetComponent<Image>();
-            this._FreezeImage = this.transform.Find("Root").Find("Freeze").GetComponent<Image>();
             this._DamageImage = this.transform.Find("Root").Find("DamageImage").GetComponent<Image>();
             this._DamageText = this.transform.Find("Root").Find("DamageImage").Find("DamageText").GetComponent<Text>();
             this._HealImage = this.transform.Find("Root").Find("HealImage").GetComponent<Image>();
@@ -152,6 +152,19 @@ namespace UI
             }
         }
         [SerializeField()]
+        private Image _FreezeImage;
+        public Image FreezeImage
+        {
+            get
+            {
+                if ((this._FreezeImage == null))
+                {
+                    this._FreezeImage = this.transform.Find("Root").Find("Freeze").GetComponent<Image>();
+                }
+                return this._FreezeImage;
+            }
+        }
+        [SerializeField()]
         private Image _ShieldImage;
         public Image ShieldImage
         {
@@ -253,19 +266,6 @@ namespace UI
                     this._PoisionImage = this.transform.Find("Root").Find("Poision").GetComponent<Image>();
                 }
                 return this._PoisionImage;
-            }
-        }
-        [SerializeField()]
-        private Image _FreezeImage;
-        public Image FreezeImage
-        {
-            get
-            {
-                if ((this._FreezeImage == null))
-                {
-                    this._FreezeImage = this.transform.Find("Root").Find("Freeze").GetComponent<Image>();
-                }
-                return this._FreezeImage;
             }
         }
         [SerializeField()]

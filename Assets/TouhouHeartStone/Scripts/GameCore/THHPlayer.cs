@@ -164,7 +164,7 @@ namespace TouhouHeartstone
                 {
                     THHPlayer player = arg.player;
                     card = arg.card;
-                    if (card.define is SpellCardDefine spell && card.getProp<bool>(game, Keyword.AUTOCAST))
+                    if (card.define is SpellCardDefine spell && card.hasKeyword(game, Keyword.AUTOCAST))
                     {
                         await player.deck.moveTo(game, card, player.warp);
                         await card.activeEffect(game, player, new Card[0]);
