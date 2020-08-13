@@ -26,6 +26,9 @@ namespace UI
         public void autoBind()
         {
             this._FieldsImage = this.transform.Find("Fields").GetComponent<Image>();
+            this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
+            this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
+            this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
             this._EnemyFieldList = this.transform.Find("Fields").Find("EnemyField").GetComponent<FieldList>();
             this._EnemyMaster = this.transform.Find("Fields").Find("EnemyMaster").GetComponent<Master>();
             this._EnemyGraveDeck = this.transform.Find("Fields").Find("EnemyGrave").GetComponent<Deck>();
@@ -34,10 +37,7 @@ namespace UI
             this._EnemyItem = this.transform.Find("Fields").Find("EnemyItem").GetComponent<Item>();
             this._EnemySkill = this.transform.Find("Fields").Find("EnemySkill").GetComponent<Skill>();
             this._EnemyHandList = this.transform.Find("Fields").Find("EnemyHand").GetComponent<HandList>();
-            this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
-            this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
             this._AttackArrowImage = this.transform.Find("Fields").Find("AttackArrow").GetComponent<Image>();
-            this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
             this._SelfFieldList = this.transform.Find("Fields").Find("SelfField").GetComponent<FieldList>();
             this._SelfMaster = this.transform.Find("Fields").Find("SelfMaster").GetComponent<Master>();
             this._SelfGraveDeck = this.transform.Find("Fields").Find("SelfGrave").GetComponent<Deck>();
@@ -69,6 +69,45 @@ namespace UI
                     this._FieldsImage = this.transform.Find("Fields").GetComponent<Image>();
                 }
                 return this._FieldsImage;
+            }
+        }
+        [SerializeField()]
+        private Button _TurnEndButton;
+        public Button TurnEndButton
+        {
+            get
+            {
+                if ((this._TurnEndButton == null))
+                {
+                    this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
+                }
+                return this._TurnEndButton;
+            }
+        }
+        [SerializeField()]
+        private Slider _TimeoutSlider;
+        public Slider TimeoutSlider
+        {
+            get
+            {
+                if ((this._TimeoutSlider == null))
+                {
+                    this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
+                }
+                return this._TimeoutSlider;
+            }
+        }
+        [SerializeField()]
+        private Weather _Weather;
+        public Weather Weather
+        {
+            get
+            {
+                if ((this._Weather == null))
+                {
+                    this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
+                }
+                return this._Weather;
             }
         }
         [SerializeField()]
@@ -176,32 +215,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Slider _TimeoutSlider;
-        public Slider TimeoutSlider
-        {
-            get
-            {
-                if ((this._TimeoutSlider == null))
-                {
-                    this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
-                }
-                return this._TimeoutSlider;
-            }
-        }
-        [SerializeField()]
-        private Button _TurnEndButton;
-        public Button TurnEndButton
-        {
-            get
-            {
-                if ((this._TurnEndButton == null))
-                {
-                    this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
-                }
-                return this._TurnEndButton;
-            }
-        }
-        [SerializeField()]
         private Image _AttackArrowImage;
         public Image AttackArrowImage
         {
@@ -212,19 +225,6 @@ namespace UI
                     this._AttackArrowImage = this.transform.Find("Fields").Find("AttackArrow").GetComponent<Image>();
                 }
                 return this._AttackArrowImage;
-            }
-        }
-        [SerializeField()]
-        private Weather _Weather;
-        public Weather Weather
-        {
-            get
-            {
-                if ((this._Weather == null))
-                {
-                    this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
-                }
-                return this._Weather;
             }
         }
         [SerializeField()]

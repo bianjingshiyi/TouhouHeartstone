@@ -11,7 +11,7 @@ using UI;
 using System;
 using ExcelLibrary.SpreadSheet;
 using System.Collections.Generic;
-
+using BJSYGameCore.UI;
 namespace Game
 {
     public class GameManager : Manager
@@ -21,15 +21,23 @@ namespace Game
         [SerializeField]
         GameOption _option = new GameOption();
         [SerializeField]
-        Main _ui;
+        Main _mainUI;
+        [SerializeField]
+        UI.Game _ui;
+        public UI.Game ui
+        {
+            get { return _ui; }
+        }
         public THHGame game { get; private set; } = null;
         Task gameTask { get; set; } = null;
         protected override void onAwake()
         {
             base.onAwake();
-            _ui = this.findInstance<Main>();
-            _ui.game = this;
-            _ui.Game.GameResultDialog.ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
+            _mainUI = this.findInstance<Main>();
+            _mainUI.game = this;
+            _mainUI.Game.GameResultDialog.ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
+
+            _ui = getManager<UIManager>().getObject<UI.Game>();
         }
         [SerializeField]
         bool _useDefaultDeck = true;
@@ -99,7 +107,7 @@ namespace Game
         /// </summary>
         public void startLocalGame()
         {
-            _ui.Game.GameResultDialog.hide();
+            _mainUI.Game.GameResultDialog.hide();
             if (_useTimeAsRandomSeed)
                 _option.randomSeed = (int)DateTime.Now.ToBinary();
             game = new THHGame(_option, getManager<CardManager>().GetCardDefines())
@@ -130,7 +138,7 @@ namespace Game
 
         public void startLocalGame(RoomInfo room)
         {
-            _ui.Game.GameResultDialog.hide();
+            _mainUI.Game.GameResultDialog.hide();
 
             var option = room.getOption();
             if (option.randomSeed == 0)
@@ -172,7 +180,7 @@ namespace Game
 
         public void startRemoteGame(ClientManager client, GameOption option, RoomPlayerInfo[] players)
         {
-            _ui.Game.GameResultDialog.hide();
+            _mainUI.Game.GameResultDialog.hide();
 
             game = new THHGame(option, getManager<CardManager>().GetCardDefines())
             {
@@ -198,7 +206,7 @@ namespace Game
 
         public void startReplayGame(Replay rep)
         {
-            _ui.Game.GameResultDialog.hide();
+            _mainUI.Game.GameResultDialog.hide();
 
             game = new THHGame(rep.option, getManager<CardManager>().GetCardDefines())
             {
@@ -252,17 +260,33 @@ namespace Game
         private void displayGameUI(THHPlayer localPlayer)
         {
             //本地玩家用UI
-            _ui.display(_ui.Game);
+            _mainUI.display(_mainUI.Game);
             getManager<TableManager>().setGame(game, localPlayer);
-            _ui.Game.Table.setGame(game, localPlayer);
+            _mainUI.Game.Table.setGame(game, localPlayer);
+
+            game.triggers.onEventBefore += onEventBefore;
         }
+        void onEventBefore(TouhouCardEngine.Interfaces.IEventArg obj)
+        {
+            switch (obj)
+            {
+                case THHPlayer.UseEventArg use:
+                    var item = ui.LogScrollView.LogList.addItem();
+                    item.Text.text = "使用";
+                    item.Image.sprite = getManager<TableManager>().getSkin(use.card).image;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         public void quitGame()
         {
             if (game != null)
             {
                 game.Dispose();
                 game = null;
-                _ui.display(_ui.MainMenu);
+                _mainUI.display(_mainUI.MainMenu);
                 gameTask = null;
                 onGameEnd?.Invoke();
             }
