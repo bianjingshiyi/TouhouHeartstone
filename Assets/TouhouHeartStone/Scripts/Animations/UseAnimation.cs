@@ -108,7 +108,10 @@ namespace Game
                 {
                     item = table.ui.SelfItem;
                     if (!item.isDisplaying)
+                    {
                         table.setItem(item, eventArg.card);
+                        table.setMaster(table.ui.SelfMaster, eventArg.card.getOwner().master);
+                    }
                     if (table.tryGetHand(eventArg.card, out var hand))
                     {
                         if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onSelfUse, hand.animator))
