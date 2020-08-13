@@ -27,16 +27,12 @@ namespace UI
         {
             this._BackgroundImage = this.transform.Find("Background").GetComponent<Image>();
             this._Table = this.transform.Find("Table").GetComponent<Table>();
+            this._LeftButtonGroupVerticalLayoutGroup = this.transform.Find("LeftButtonGroup").GetComponent<VerticalLayoutGroup>();
+            this._ChatButtonBlack = this.transform.Find("LeftButtonGroup").Find("Chat").GetComponent<ButtonBlack>();
+            this._LogButtonBlack = this.transform.Find("LeftButtonGroup").Find("Log").GetComponent<ButtonBlack>();
+            this._LogScrollView = this.transform.Find("LeftButtonGroup").Find("LogScrollView").GetComponent<LogScrollView>();
             this._QuitButtonButtonBlack = this.transform.Find("QuitButton").GetComponent<ButtonBlack>();
             this._GameResultDialog = this.transform.Find("GameResultDialog").GetComponent<GameResultDialog>();
-        }
-        private Main _parent;
-        public Main parent
-        {
-            get
-            {
-                return this.transform.parent.GetComponent<Main>();
-            }
         }
         [SerializeField()]
         private Image _BackgroundImage;
@@ -62,6 +58,58 @@ namespace UI
                     this._Table = this.transform.Find("Table").GetComponent<Table>();
                 }
                 return this._Table;
+            }
+        }
+        [SerializeField()]
+        private VerticalLayoutGroup _LeftButtonGroupVerticalLayoutGroup;
+        public VerticalLayoutGroup LeftButtonGroupVerticalLayoutGroup
+        {
+            get
+            {
+                if ((this._LeftButtonGroupVerticalLayoutGroup == null))
+                {
+                    this._LeftButtonGroupVerticalLayoutGroup = this.transform.Find("LeftButtonGroup").GetComponent<VerticalLayoutGroup>();
+                }
+                return this._LeftButtonGroupVerticalLayoutGroup;
+            }
+        }
+        [SerializeField()]
+        private ButtonBlack _ChatButtonBlack;
+        public ButtonBlack ChatButtonBlack
+        {
+            get
+            {
+                if ((this._ChatButtonBlack == null))
+                {
+                    this._ChatButtonBlack = this.transform.Find("LeftButtonGroup").Find("Chat").GetComponent<ButtonBlack>();
+                }
+                return this._ChatButtonBlack;
+            }
+        }
+        [SerializeField()]
+        private ButtonBlack _LogButtonBlack;
+        public ButtonBlack LogButtonBlack
+        {
+            get
+            {
+                if ((this._LogButtonBlack == null))
+                {
+                    this._LogButtonBlack = this.transform.Find("LeftButtonGroup").Find("Log").GetComponent<ButtonBlack>();
+                }
+                return this._LogButtonBlack;
+            }
+        }
+        [SerializeField()]
+        private LogScrollView _LogScrollView;
+        public LogScrollView LogScrollView
+        {
+            get
+            {
+                if ((this._LogScrollView == null))
+                {
+                    this._LogScrollView = this.transform.Find("LeftButtonGroup").Find("LogScrollView").GetComponent<LogScrollView>();
+                }
+                return this._LogScrollView;
             }
         }
         [SerializeField()]

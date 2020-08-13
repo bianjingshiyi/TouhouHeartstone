@@ -11,8 +11,9 @@ namespace UI
         {
             QuitButtonButtonBlack.asButton.onClick.AddListener(() =>
             {
-                parent.game.quitGame();
-                parent.display(parent.MainMenu);
+                Main main = GetComponentInParent<Main>();
+                main.game.quitGame();
+                main.display(main.MainMenu);
             });
         }
         public void OnPointerDown(PointerEventData eventData)

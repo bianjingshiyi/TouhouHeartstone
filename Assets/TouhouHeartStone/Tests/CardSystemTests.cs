@@ -8,7 +8,7 @@ using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-
+using System.Collections.Generic;
 namespace Tests
 {
     public class CardSystemTests
@@ -323,6 +323,19 @@ namespace Tests
             Assert.Null(game.answers.getRequest<DiscoverRequest>(you.id));
             Assert.True(task.IsCompleted);
             Assert.True(cards.Contains(task.Result));
+        }
+        [Test]
+        public void corruptionTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Corruption.ID, 1));
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse<Corruption>(you);
+            you.cmdUse(game, you.hand.getCard<Corruption>(), 0, oppo.field[0]);
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            Assert.AreEqual(0, oppo.field.count);
         }
     }
     static class TestExtension

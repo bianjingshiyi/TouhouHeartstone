@@ -28,12 +28,12 @@ namespace UI
             this.m_as_Image = this.GetComponent<Image>();
             this._Text = this.transform.Find("Text").GetComponent<Text>();
         }
-        private Table _parent;
-        public Table parent
+        private Game _parent;
+        public Game parent
         {
             get
             {
-                return this.transform.parent.GetComponent<Table>();
+                return this.transform.parent.parent.GetComponent<Game>();
             }
         }
         [SerializeField()]
