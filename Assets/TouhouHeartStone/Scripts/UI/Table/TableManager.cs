@@ -117,6 +117,9 @@ namespace Game
             ui.SelfSkill.asButton.onClick.set(onClickSkill);
             ui.SelfSkill.onDrag.set(onDragSkill);
             ui.SelfSkill.onDragEnd.set(onDragSkillEnd);
+            ui.SelfMaster.onClick.add(onClickMaster);
+            ui.SelfMaster.onDrag.set(onDragMaster);
+            ui.SelfMaster.onDragEnd.set(onDragEndMaster);
             ui.SelfItem.hide();
             ui.SelfHandList.clearItems();
             ui.SelfHandList.asButton.onClick.set(() =>
@@ -334,8 +337,6 @@ namespace Game
                 master.onCanAttackFalse.invokeBeforeAnim();
                 master.onCanAttackFalse.invokeAfterAnim();
             }
-            //master.onDrag.add(onDragMaster);
-            //master.onDragEnd.add(onDragEndMaster);
         }
         public bool tryGetItem(Card card, out Item item)
         {
