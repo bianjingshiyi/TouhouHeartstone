@@ -44,7 +44,9 @@ namespace TouhouHeartstone
         }
         public static int getAttack(this Card card, IGame game)
         {
+            THHGame tgame = (THHGame)game;
             int result = card.getProp<int>(game, nameof(ServantCardDefine.attack));
+            if(card.getOwner()== tgame.currentPlayer)
             if (card.define is MasterCardDefine)
             {
                 if (card.getOwner().item != null)
