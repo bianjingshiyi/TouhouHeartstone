@@ -328,6 +328,7 @@ namespace Game
                 // master.HighlightController = Master.Highlight.Green;
                 master.onCanAttackTrue.invokeBeforeAnim();
                 master.onCanAttackTrue.invokeAfterAnim();
+                master.onClick.add(onClickMaster);
                 master.onDrag.add(onDragMaster);
                 master.onDragEnd.add(onDragEndMaster);
             }
