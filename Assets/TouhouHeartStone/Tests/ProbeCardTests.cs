@@ -8,6 +8,7 @@ using TouhouHeartstone.Builtin.Proble;
 using UnityEngine;
 using UnityEngine.TestTools;
 using System;
+using static TouhouHeartstone.Builtin.Proble.Probe;
 
 namespace Tests
 {
