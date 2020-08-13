@@ -385,8 +385,8 @@ namespace Game
         }
         [SerializeField]
         string[] _externalCardPaths = new string[0];
-        [SerializeField]
-        ExcelDataSetList excelList;
+
+        ExcelDataSetList excelList => ExcelDataSetList.Instance;
 
         Dictionary<int, CardDefine> defineDic { get; set; } = new Dictionary<int, CardDefine>();
         /// <summary>
