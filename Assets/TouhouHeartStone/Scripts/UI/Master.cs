@@ -38,6 +38,7 @@ namespace UI
             //if (!card.canAttack())
             //    return;
             //Table table = GetComponentInParent<Table>();
+            onDrag.invoke(this, eventData);
         }
         public ActionEvent<Master, PointerEventData> onDrag { get; } = new ActionEvent<Master, PointerEventData>();
 
@@ -61,6 +62,7 @@ namespace UI
             //        rectTransform.localScale = Vector3.one;
             //    }
             //}
+            onDragEnd.invoke(this, eventData);
         }
         public ActionEvent<Master, PointerEventData> onDragEnd { get; } = new ActionEvent<Master, PointerEventData>();
 
