@@ -493,7 +493,7 @@ namespace TouhouHeartstone.Builtin.Proble
     }
 
     /// <summary>
-    /// 化敌为友
+    /// 化敌为友(格拉摩根伯爵-水桥帕露西)
     /// 2费，选择一个随从，使其对他的相邻随从造成等同其攻击力的伤害
     /// 
     /// </summary>
@@ -523,5 +523,50 @@ namespace TouhouHeartstone.Builtin.Proble
 
             }, PileFlag.oppo | PileFlag.field)//后缀表示只能指向随从
         };
+    }
+
+    /// <summary>
+    /// 腐蚀(格拉摩根伯爵-黑谷山女)
+    /// 1费，选择一个随从，下回合开始时消灭他
+    /// 
+    /// </summary>
+    [IgnoreCardDefine]
+    public class Corrosion : SpellCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SPELL | 0x020;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            //存在目标的法术
+            new LambdaSingleTargetEffect(async (game,card,target)=>
+            {
+                await target.addBuff(game,new FilledMiasma());
+            }, PileFlag.oppo | PileFlag.field)//后缀表示只能指向随从
+        };
+
+        public class FilledMiasma : Buff
+        {
+            public const int ID = Corrosion.ID;
+            public override int id { get; } = ID;
+            public override PropModifier[] modifiers { get; }
+            public override IPassiveEffect[] effects { get; } = new IPassiveEffect[]
+            {
+                new AfterTurnStart(async(g,c,a) =>
+                {
+                   c.setDead(true);
+                }, (g, c, a) =>
+                {
+                    return a.player == g.getOpponent(c.getOwner());
+                })
+            };
+            public override int instanceID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+            public override Buff clone()
+            {
+                return new FilledMiasma();
+            }
+        }
+
     }
 }

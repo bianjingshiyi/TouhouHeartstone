@@ -429,5 +429,32 @@ namespace Tests
             
             game.Dispose();
         }
+
+        /// <summary>
+        /// 腐蚀测试(格拉摩根伯爵-黑谷山女)
+        /// 1费，选择一个随从，下回合开始时消灭他
+        /// 
+        /// </summary>
+        [Test]
+        public void ProbeCorrosionTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getCardDefine<Corrosion>(), 3)));
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<Corrosion>(you);
+            you.cmdUse(game, you.hand.getCard<Corrosion>(), targets: oppo.field[0]);
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            game.Dispose();
+        }
     }
 }
