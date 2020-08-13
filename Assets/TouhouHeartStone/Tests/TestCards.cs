@@ -103,8 +103,7 @@ namespace Tests
                 return true;
             },(game,card,arg,targets)=>
             {
-                card.addBuff(game,new TestBuff());
-                return Task.CompletedTask;
+                return card.addBuff(game,new TestBuff());
             })
         };
         class TestBuff : Buff
@@ -504,5 +503,32 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
+    }
+    /// <summary>
+    /// 1 腐蚀术 选择一个敌方随从，在你的回合开始时，消灭该随从。
+    /// </summary>
+    public class Corruption : SpellCardDefine
+    {
+        public const int ID = TestMaster.ID | CardCategory.SPELL | 0x015;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect((g,c,t)=>
+            {
+                return t.addBuff(g,new GeneratedBuff(ID,
+                    new THHEffectBefore<THHGame.TurnStartEventArg>(PileName.FIELD,(g1,c1,a1)=>
+                    {
+                        return a1.player == c.getOwner();
+                    },null,(g1,c1,a1)=>
+                    {
+                        c1.setDead(true);
+                        return g1.updateDeath();
+                    })));
+            }, PileFlag.field,null,(g,c,t)=>
+            {
+                return t.getOwner() != c.getOwner();
+            })
+        };
     }
 }
