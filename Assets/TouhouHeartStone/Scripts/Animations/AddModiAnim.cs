@@ -61,6 +61,20 @@ namespace Game
                     hand.Card.CostPropNumber.asText.text = eventArg.card.getCost(table.game).ToString();
                 }
             }
+            else if (table.tryGetMaster(eventArg.card, out var master))
+            {
+                animator = master.animator;
+                if (eventArg.modifier is AttackModifier atkMod)
+                {
+                    if (atkMod.value > 0)
+                        simpleAnim = master.onAttack;
+                    else
+                        simpleAnim = master.onAttacked;
+                    master.AttackPropNumber.asText.text = eventArg.card.getAttack(table.game).ToString();
+                }
+                table.setMaster(master, eventArg.card);
+            }
+
             if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator))
                 return false;
             return true;

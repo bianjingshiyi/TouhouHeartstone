@@ -32,6 +32,7 @@ namespace Game
                         var servant = table.getServant(card);
                         table.setServant(servant, card);
                     }
+                    table.setMaster(player == table.player ? table.ui.SelfMaster: table.ui.EnemyMaster, player.master);
                 }
             }
             if (!_timer.isExpired())
