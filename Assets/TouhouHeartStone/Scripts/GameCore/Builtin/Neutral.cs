@@ -323,7 +323,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect((g,c,t)=>
             {
-                t.getNearbyCards().setFreeze(true);
+                t.getNearbyCards().setFreeze(g, true);
                 return Task.CompletedTask;
             }, PileFlag.both| PileFlag.field)
         };
@@ -498,7 +498,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect((game,card,target)=>
             {
-                target.setFreeze(true);
+                target.setFreeze(game, true);
                 return Task.CompletedTask;
             }, PileFlag.oppo | PileFlag.character)
         };
@@ -518,7 +518,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect((game,card,target)=>
             {
-                target.getNearbyCards().setFreeze(true);
+                target.getNearbyCards().setFreeze(game, true);
                 return Task.CompletedTask;
             }, PileFlag.both | PileFlag.field)
         };

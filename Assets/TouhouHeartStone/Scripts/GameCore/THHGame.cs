@@ -369,7 +369,8 @@ namespace TouhouHeartstone
                     case AttackResponse attack:
                         card = getCard(attack.cardId);
                         Card target = getCard(attack.targetId);
-                        await card.tryAttack(this, player, target);
+                        Task<THHCard.AttackEventArg> task = card.tryAttack(this, player, target);
+                        await task;
                         break;
                     case TurnEndResponse _:
                         return;
@@ -394,7 +395,7 @@ namespace TouhouHeartstone
                         if (servant.getMaxAttackTimes(this) - servant.getAttackTimes(this) >= 0)
                         {
                             logger.log("被冻结的随从解除冰冻");
-                            servant.setFreeze(false);
+                            servant.setFreeze(this, false);
                         }
                     }
                 }
