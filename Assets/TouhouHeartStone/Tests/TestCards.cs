@@ -341,7 +341,7 @@ namespace Tests
             {
                 foreach(Card target in targets)
                 {
-                    target.setFreeze(true);
+                    target.setFreeze(game, true);
                 }
                 return Task.CompletedTask;
             })

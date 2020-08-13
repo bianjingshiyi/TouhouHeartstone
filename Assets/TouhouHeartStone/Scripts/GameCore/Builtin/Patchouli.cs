@@ -523,7 +523,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                target.setFreeze(true);
+                target.setFreeze(game, true);
                 await Patchouli.tryMix(game,card);
             })
         };

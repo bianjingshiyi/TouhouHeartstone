@@ -46,12 +46,12 @@ namespace TouhouHeartstone
         {
             THHGame tgame = (THHGame)game;
             int result = card.getProp<int>(game, nameof(ServantCardDefine.attack));
-            if(card.getOwner()== tgame.currentPlayer)
-            if (card.define is MasterCardDefine)
-            {
-                if (card.getOwner().item != null)
-                    result += card.getOwner().item.getAttack(game);
-            }
+            if (card.getOwner() == tgame.currentPlayer)
+                if (card.define is MasterCardDefine)
+                {
+                    if (card.getOwner().item != null)
+                        result += card.getOwner().item.getAttack(game);
+                }
             if (result < 0)
                 return 0;
             return result;
@@ -280,9 +280,12 @@ namespace TouhouHeartstone
         {
             return card.hasKeyword(game, Keyword.RUSH);
         }
-        public static void setRush(this Card card, bool value)
+        public static void setRush(this Card card, IGame game, bool value)
         {
-            card.setProp(Keyword.RUSH, value);
+            if (value)
+                card.addKeyword(game, Keyword.RUSH);
+            else
+                card.removeKeyword(game, Keyword.RUSH);
         }
         public static bool isShield(this Card card, IGame game)
         {
@@ -310,64 +313,85 @@ namespace TouhouHeartstone
         {
             return card.hasKeyword(game, Keyword.DRAIN);
         }
-        public static void setDrain(this Card card, bool value)
+        public static void setDrain(this Card card, IGame game, bool value)
         {
-            card.setProp(Keyword.DRAIN, value);
+            if (value)
+                card.addKeyword(game, Keyword.DRAIN);
+            else
+                card.removeKeyword(game, Keyword.DRAIN);
         }
         public static bool isPoisonous(this Card card, IGame game)
         {
             return card.hasKeyword(game, Keyword.POISONOUS);
         }
-        public static void setPoisonous(this Card card, bool value)
+        public static void setPoisonous(this Card card, IGame game, bool value)
         {
-            card.setProp(Keyword.POISONOUS, value);
+            if (value)
+                card.addKeyword(game, Keyword.POISONOUS);
+            else
+                card.removeKeyword(game, Keyword.POISONOUS);
         }
         public static bool isElusive(this Card card, IGame game)
         {
             return card.hasKeyword(game, Keyword.ELUSIVE);
         }
-        public static void setElusive(this Card card, bool value)
+        public static void setElusive(this Card card, IGame game, bool value)
         {
-            card.setProp(Keyword.ELUSIVE, value);
+            if (value)
+                card.addKeyword(game, Keyword.ELUSIVE);
+            else
+                card.removeKeyword(game, Keyword.ELUSIVE);
         }
         public static bool isFreeze(this Card card, IGame game)
         {
             return card.hasKeyword(game, Keyword.FREEZE);
         }
-        public static void setFreeze(this Card card, bool value)
+        public static void setFreeze(this Card card, IGame game, bool value)
         {
-            card.setProp(Keyword.FREEZE, value);
+            if (value)
+                card.addKeyword(game, Keyword.FREEZE);
+            else
+                card.removeKeyword(game, Keyword.FREEZE);
         }
-        public static void setFreeze(this IEnumerable<Card> cards, bool value)
+        public static void setFreeze(this IEnumerable<Card> cards, IGame game, bool value)
         {
             foreach (var card in cards)
             {
-                card.setFreeze(value);
+                card.setFreeze(game, value);
             }
         }
         public static bool isWindfury(this Card card, IGame game)
         {
             return card.hasKeyword(game, Keyword.WINDFURY);
         }
-        public static void setWindfury(this Card card, bool value)
+        public static void setWindfury(this Card card, IGame game, bool value)
         {
-            card.setProp(Keyword.WINDFURY, value);
+            if (value)
+                card.addKeyword(game, Keyword.WINDFURY);
+            else
+                card.removeKeyword(game, Keyword.WINDFURY);
         }
         public static bool isImmunity(this Card card, IGame game)
         {
             return card.hasKeyword(game, Keyword.IMMUNITY);
         }
-        public static void setImmunity(this Card card, bool value)
+        public static void setImmunity(this Card card, IGame game, bool value)
         {
-            card.setProp(Keyword.IMMUNITY, value);
+            if (value)
+                card.addKeyword(game, Keyword.IMMUNITY);
+            else
+                card.removeKeyword(game, Keyword.IMMUNITY);
         }
         public static bool isUnique(this Card card, IGame game)
         {
             return card.hasKeyword(game, Keyword.UNIQUE);
         }
-        public static void setUnique(this Card card, bool value)
+        public static void setUnique(this Card card, IGame game, bool value)
         {
-            card.setProp(Keyword.UNIQUE, value);
+            if (value)
+                card.addKeyword(game, Keyword.UNIQUE);
+            else
+                card.removeKeyword(game, Keyword.UNIQUE);
         }
         public static void setKeywords(this Card card, IGame game, string[] keywords)
         {
@@ -701,12 +725,12 @@ namespace TouhouHeartstone
             if (!card.canAttack(game))
             {
                 game.logger.log(card + "无法进行攻击");
-                return null;
+                return Task.FromResult<AttackEventArg>(null);
             }
             if (!card.isAttackable(game, player, target, out var reason))
             {
                 game.logger.log(card + "无法攻击" + target + "，因为" + reason);
-                return null;
+                return Task.FromResult<AttackEventArg>(null);
             }
             return card.attack(game, player, target);
         }
@@ -715,12 +739,12 @@ namespace TouhouHeartstone
             if (!card.canForceAttack(game))
             {
                 game.logger.log(card + "无法进行强制攻击");
-                return null;
+                return Task.FromResult<AttackEventArg>(null);
             }
             if (!card.isForceAttackable(game, player, target))
             {
                 game.logger.log(card + "无法对" + target + "进行强制攻击");
-                return null;
+                return Task.FromResult<AttackEventArg>(null);
             }
             return card.attack(game, player, target);
         }
