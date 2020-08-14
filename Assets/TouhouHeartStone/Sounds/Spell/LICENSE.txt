@@ -3,6 +3,8 @@ TrilithonShake.mp3
 PrincessUndine.mp3
 BestMagic.mp3
 TheGreatLibrary.mp3
+SpringWind.mp3
+ElementalHarvester.mp3
 Author:ZapSplat
 
 SylphyHorn.mp3

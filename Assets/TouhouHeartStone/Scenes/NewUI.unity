@@ -4758,7 +4758,7 @@ MonoBehaviour:
   - name: BestMagic
     audio: {fileID: 8300000, guid: b67755e9642df364ca6320ebf4260fc8, type: 3}
   - name: SylphyHorn
-    audio: {fileID: 8300000, guid: 521b17280bfbf174ba020dd7b2603e42, type: 3}
+    audio: {fileID: 8300000, guid: 44d08a8dea55e8840a7fd820e02eebd2, type: 3}
   - name: TheGreatLibrary
     audio: {fileID: 8300000, guid: 744dfdcacff5aa046adbf81c6e4dcf80, type: 3}
   - name: SilentSelene
@@ -4769,6 +4769,8 @@ MonoBehaviour:
     audio: {fileID: 8300000, guid: a024e0056412fb34e864eaea6be14ff7, type: 3}
   - name: freeze
     audio: {fileID: 8300000, guid: d89aa10dfc5f840479a0c154106e43b2, type: 3}
+  - name: SpringWind
+    audio: {fileID: 8300000, guid: 521b17280bfbf174ba020dd7b2603e42, type: 3}
 --- !u!82 &1159673834
 AudioSource:
   m_ObjectHideFlags: 0
