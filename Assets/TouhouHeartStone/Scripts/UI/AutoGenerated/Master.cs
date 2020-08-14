@@ -39,6 +39,8 @@ namespace UI
             this._DamageText = this.transform.Find("Root").Find("DamageImage").Find("DamageText").GetComponent<Text>();
             this._HealImage = this.transform.Find("Root").Find("HealImage").GetComponent<Image>();
             this._HealText = this.transform.Find("Root").Find("HealImage").Find("HealText").GetComponent<Text>();
+            this._FreezeImage = this.transform.Find("Root").Find("Freeze").GetComponent<Image>();
+            this._ShieldImage = this.transform.Find("Root").Find("Shield").GetComponent<Image>();
         }
         [SerializeField()]
         private Image _HighlightImage;
@@ -220,6 +222,32 @@ namespace UI
                     this._HealText = this.transform.Find("Root").Find("HealImage").Find("HealText").GetComponent<Text>();
                 }
                 return this._HealText;
+            }
+        }
+        [SerializeField()]
+        private Image _FreezeImage;
+        public Image FreezeImage
+        {
+            get
+            {
+                if ((this._FreezeImage == null))
+                {
+                    this._FreezeImage = this.transform.Find("Root").Find("Freeze").GetComponent<Image>();
+                }
+                return this._FreezeImage;
+            }
+        }
+        [SerializeField()]
+        private Image _ShieldImage;
+        public Image ShieldImage
+        {
+            get
+            {
+                if ((this._ShieldImage == null))
+                {
+                    this._ShieldImage = this.transform.Find("Root").Find("Shield").GetComponent<Image>();
+                }
+                return this._ShieldImage;
             }
         }
         partial void onAwake();

@@ -338,6 +338,14 @@ namespace Game
                 master.onCanAttackFalse.invokeBeforeAnim();
                 master.onCanAttackFalse.invokeAfterAnim();
             }
+            if (card.hasKeyword(game, Keyword.FREEZE))
+                master.FreezeImage.display();
+            else
+                master.FreezeImage.hide();
+            if (card.hasKeyword(game, Keyword.SHIELD))
+                master.ShieldImage.display();
+            else
+                master.ShieldImage.hide();
         }
         public bool tryGetItem(Card card, out Item item)
         {
