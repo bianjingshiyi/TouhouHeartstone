@@ -3373,7 +3373,6 @@ MonoBehaviour:
     _projectile: {fileID: 0}
   _externalCardPaths:
   - Cards/*.xls
-  excelList: {fileID: 11400000, guid: d002819a0013bfd4f879e8ab954efbf3, type: 2}
 --- !u!4 &902763123
 Transform:
   m_ObjectHideFlags: 0
@@ -11217,6 +11216,11 @@ PrefabInstance:
     - target: {fileID: 7072975926286452929, guid: 83c0b33294cc7ac4295dbe5157864e9d,
         type: 3}
       propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7072975926286452929, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7072975926422771951, guid: 83c0b33294cc7ac4295dbe5157864e9d,

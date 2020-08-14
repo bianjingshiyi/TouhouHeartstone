@@ -645,9 +645,10 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.25
-    functionName: PlaySE
-    data: ServantAttack
-    objectReferenceParameter: {fileID: 0}
+    functionName: playSound
+    data: 
+    objectReferenceParameter: {fileID: 8300000, guid: 6bb81ac1bd43dc140b30d3e4a0046110,
+      type: 3}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
