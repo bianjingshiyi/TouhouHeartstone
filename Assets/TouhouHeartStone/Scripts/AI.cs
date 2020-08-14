@@ -89,7 +89,7 @@ namespace Game
             {
                 if (player.skill.isNeedTarget(game, out var targets))
                 {
-                    foreach (var target in targets)
+                    foreach (var target in targets.Where(t => player.skill.isValidTarget(game, t)))
                     {
                         use = new UseResponse() { cardId = player.skill.id, targetsId = new int[] { target.id } };
                         responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
@@ -111,7 +111,7 @@ namespace Game
                     {
                         if (card.isNeedTarget(game, out var targets) && targets.Length > 0)
                         {
-                            foreach (var target in targets)
+                            foreach (var target in targets.Where(t => card.isValidTarget(game, t)))
                             {
                                 responseDic.Add(new UseResponse() { cardId = card.id, position = i, targetsId = new int[] { target.id } },
                                     card.getAttack(game) + card.getLife(game));
@@ -128,7 +128,7 @@ namespace Game
                 {
                     if (card.isNeedTarget(game, out var targets))
                     {
-                        foreach (var target in targets)
+                        foreach (var target in targets.Where(t => card.isValidTarget(game, t)))
                         {
                             use = new UseResponse() { cardId = card.id, targetsId = new int[] { target.id } };
                             responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
