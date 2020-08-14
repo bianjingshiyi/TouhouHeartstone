@@ -457,5 +457,22 @@ namespace Tests
             oppo.cmdTurnEnd(game);
             game.Dispose();
         }
+
+        [Test]
+        public void ProbeCablewayGuardTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(CablewayGuard.ID, 2)
+            );
+
+            game.skipUntilCanUse<CablewayGuard>(you);
+            you.cmdUse(game, you.hand.getCard<CablewayGuard>());
+            game.skipUntilCanUse<CablewayGuard>(you);
+            you.cmdUse(game, you.hand.getCard<CablewayGuard>());
+            
+            //oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
+            //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
+            game.Dispose();
+        }
     }
 }

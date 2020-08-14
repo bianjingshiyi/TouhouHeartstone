@@ -18,8 +18,33 @@ namespace TouhouHeartstone.Builtin.Proble
         public override int life { get; set; } = 15;
         public override int skillID { get; set; } = ProbeShoot.ID;//英雄技能的ID
         public override IEffect[] effects { get; set; } = new IEffect[0];
+        
+        
+        public static bool isJoinForce(Pile field, Card card)
+        {
+            int i = 0;
+            foreach (var servant in field)
+            {
+                if (servant.define.id == card.define.id)
+                {
+                    i++;
+                }
+            }
 
+            if (i > 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
+        }
 
+        
+
+    }
         /// <summary>
         /// 技能：射箭
         /// </summary>
@@ -562,39 +587,66 @@ namespace TouhouHeartstone.Builtin.Proble
         }
 
 
-        /// <summary>
-        /// 自强型机器人（格拉摩根伯爵-星熊勇仪）
-        /// 4/4/5，两回合后，自身获得+4/+4
-        /// 它被关在工厂里一万年了...
-        /// </summary>
-        //[IgnoreCardDefine]
-        //public class HoshigumaYugi : ServantCardDefine
-        //{
-        //    public const int ID = Probe.ID | CardCategory.SERVANT | 0x021;
-        //    public override int id { get; set; } = ID;
-        //    public override int cost { get; set; } = 4;
-        //    public override int attack { get; set; } = 4;//随从的攻击力
-        //    public override int life { get; set; } = 5;//随从的血量上限
-        //    public override bool isToken { get; set; } = false;//是衍生物吗？
-        //    public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
-        //                                                                                   //public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
-        //    public override IEffect[] effects { get; set; } = new IEffect[]
-        //    {
+    /// <summary>
+    /// 自强型机器人（格拉摩根伯爵-星熊勇仪）
+    /// 4/4/5，两回合后，自身获得+4/+4
+    /// 它被关在工厂里一万年了...
+    /// </summary>
+    //[IgnoreCardDefine]
+    //public class HoshigumaYugi : ServantCardDefine
+    //{
+    //    public const int ID = Probe.ID | CardCategory.SERVANT | 0x021;
+    //    public override int id { get; set; } = ID;
+    //    public override int cost { get; set; } = 4;
+    //    public override int attack { get; set; } = 4;//随从的攻击力
+    //    public override int life { get; set; } = 5;//随从的血量上限
+    //    public override bool isToken { get; set; } = false;//是衍生物吗？
+    //    public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
+    //                                                                                   //public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
+    //    public override IEffect[] effects { get; set; } = new IEffect[]
+    //    {
 
-        //    new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,
-        //        (g,c,a) =>
-        //        {
-        //            return a.player == c.getOwner();
-        //        },null,(g,c,a)=>
-        //        {
+    //    new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,
+    //        (g,c,a) =>
+    //        {
+    //            return a.player == c.getOwner();
+    //        },null,(g,c,a)=>
+    //        {
 
-        //            return Task.CompletedTask;
-        //        }
-        //        )
-        //    };
-        //}
+    //            return Task.CompletedTask;
+    //        }
+    //        )
+    //    };
+    //}
 
+    /// <summary>
+    /// 索道护卫（格拉摩根伯爵-早苗-索道护卫）
+    /// 554，会师：抽三张牌
+    /// 当场上有同名牌时，触发会师
+    /// </summary>
+    [IgnoreCardDefine]
+    public class CablewayGuard : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SPELL | 0x021;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 5;
+        public override int attack { get; set; } = 5;//随从的攻击力
+        public override int life { get; set; } = 4;//随从的血量上限
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
 
-
+        static async Task effect(THHGame game, Card card)
+        {
+            if (Probe.isJoinForce(card.getOwner().field, card))
+            {
+                for(int i = 0 ; i<3; i++) { 
+                    await card.getOwner().draw(game);
+                }
+            }
+        }
     }
+
+
 }
