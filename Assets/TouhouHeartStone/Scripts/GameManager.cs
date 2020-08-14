@@ -306,23 +306,19 @@ namespace Game
             }
             bool isChildOf(IEventArg parent, IEventArg child, ref int depth)
             {
+                if (child == null)
+                    return false;
                 if (parent == null)
-                {
-                    depth = 0;
                     return false;
-                }
                 if (child.parent == null)
-                {
-                    depth = 0;
                     return false;
-                }
                 if (child.parent == parent)
+                    return true;
+                else
                 {
                     depth += 1;
-                    return true;
-                }
-                else
                     return isChildOf(parent, child.parent, ref depth);
+                }
             }
             ui.LogScrollView.asScrollRect.verticalScrollbar.value = 0;
             switch (obj)

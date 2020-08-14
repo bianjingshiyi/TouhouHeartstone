@@ -116,9 +116,10 @@ namespace TouhouHeartstone
                 return game.triggers.doEvent(fatigueEvent, onFatigue);
                 async Task onFatigue(FatigueEventArg arg)
                 {
-                    arg.player.fatigue++;
-                    game.logger.log(arg.player + "已经没有卡牌了，当前疲劳值：" + arg.player.fatigue);
-                    await arg.player.master.damage(game, null, arg.player.fatigue);
+                    THHPlayer player = arg.player;
+                    player.fatigue++;
+                    game.logger.log(player + "已经没有卡牌了，当前疲劳值：" + player.fatigue);
+                    var damage = await player.master.damage(game, null, player.fatigue);
                     await game.updateDeath();
                 }
             }

@@ -211,37 +211,43 @@ namespace Tests
             Assert.AreEqual(game.sortedPlayers[0].grave[0], burn.card);
             game.Dispose();
         }
-        [UnityTest]
-        public IEnumerator fatigueTest()
-        {
-            THHGame game = TestGameflow.initStandardGame(deckCount: 10);
-
-            _ = game.run();
-            yield return new WaitForSeconds(.1f);
-            game.players[0].cmdInitReplace(game);
-            game.players[1].cmdInitReplace(game);
-            yield return new WaitForSeconds(.1f);
-            for (int i = 0; i < 7; i++)
-            {
-                game.sortedPlayers[0].cmdTurnEnd(game);
-                yield return new WaitForSeconds(.1f);
-                game.sortedPlayers[1].cmdTurnEnd(game);
-                yield return new WaitForSeconds(.1f);
-            }
-            THHPlayer.FatigueEventArg fatigue = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.FatigueEventArg) as THHPlayer.FatigueEventArg;
-            Assert.NotNull(fatigue);
-            Assert.AreEqual(game.sortedPlayers[0], fatigue.player);
-            THHCard.DamageEventArg damage = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DamageEventArg) as THHCard.DamageEventArg;
-            Assert.NotNull(damage);
-            Assert.AreEqual(game.sortedPlayers[0].master, damage.cards[0]);
-            Assert.AreEqual(1, damage.value);
-
-            game.Dispose();
-        }
         [Test]
-        public void fatigueTest_UntilDeath()
+        public void fatigueTest()
         {
-            TestGameflow.createGame(out var game, out var you, out var oppo);
+            TestGameflow.createGameWithoutDeck(out var game, out var you, out var oppo, new GameOption()
+            {
+                sortedPlayers = new int[] { 1, 2 }
+            });
+
+            game.run();
+            you.cmdInitReplace(game);
+            oppo.cmdInitReplace(game);
+            you.cmdTurnEnd(game);
+            THHPlayer.FatigueEventArg fatigue = game.triggers.getRecordedEvents().OfType<THHPlayer.FatigueEventArg>().First();
+            Assert.AreEqual(you, fatigue.player);
+            THHCard.DamageEventArg damage = fatigue.getChildEvents().OfType<THHCard.DamageEventArg>().First();
+            Assert.AreEqual(you.master, damage.infoDic.First().Key);
+            Assert.AreEqual(1, damage.infoDic.First().Value.damagedValue);
+            while (you.master.getCurrentLife(game) > 0)
+            {
+                you.cmdTurnEnd(game);
+                if (you.fatigue >= you.master.getCurrentLife(game))
+                {
+                    oppo.cmdTurnEnd(game);
+                    THHGame.TurnStartEventArg turnStart = game.triggers.getRecordedEvents().OfType<THHGame.TurnStartEventArg>().Last();
+                    fatigue = turnStart.getChildEvents().OfType<THHPlayer.FatigueEventArg>().Last();
+                    damage = fatigue.getChildEvents().OfType<THHCard.DamageEventArg>().Last();
+                    Assert.NotNull(damage);
+                    THHCard.DeathEventArg death = fatigue.getChildEvents().OfType<THHCard.DeathEventArg>().Last();
+                    Assert.NotNull(death);
+                    THHGame.GameEndEventArg gameEnd = fatigue.getChildEvents().OfType<THHGame.GameEndEventArg>().Last();
+                    Assert.NotNull(gameEnd);
+                    break;
+                }
+                else
+                    oppo.cmdTurnEnd(game);
+            }
+            game.Dispose();
         }
         [UnityTest]
         public IEnumerator attackTest()
