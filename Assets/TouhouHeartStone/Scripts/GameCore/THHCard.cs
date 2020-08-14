@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using JetBrains.Annotations;
+
 namespace TouhouHeartstone
 {
     public static class THHCard
@@ -886,6 +888,21 @@ namespace TouhouHeartstone
             }
             return list.ToArray();
         }
+
+        //public static async Task<DamageEventArg[]> damageByRandomTargets(this IEnumerable<Card> cards, THHGame game, Card source, int dam, int tar)
+        //{
+        //    List<DamageEventArg> list = new List<DamageEventArg>();
+        //    for (int i = 0; i < tar; i++)
+        //    {
+        //        Card target = cards.Where(c => !c.isDead(game)).random(game);
+        //        if (target != null)
+        //        {
+        //            list.Add(await target.damage(game, source, dam));
+        //            target
+        //        }
+        //    }
+        //    return list.ToArray();
+        //}
         public class DamageEventArg : EventArg
         {
             public Card[] cards;

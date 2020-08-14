@@ -648,5 +648,26 @@ namespace TouhouHeartstone.Builtin.Proble
         }
     }
 
+    /// <summary>
+    /// 捕风捉影
+    /// 5费，对一个敌方随机随从打3，召唤一个3/2的鸦天狗
+    /// 
+    /// </summary>
+    [IgnoreCardDefine]
+    public class CirculationOfGossip_1 : SpellCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SPELL | 0x022;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            //存在目标的法术
+            new NoTargetEffect(effect)
+        };
 
+        static async Task effect(THHGame game, Card card)
+        {
+            
+        }
+    }
 }
