@@ -474,5 +474,38 @@ namespace Tests
             //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
             game.Dispose();
         }
+
+        [Test]
+        public void ProbeCirculationOfGossipTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getCardDefine<CirculationOfGossip_1>(), 3)));
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<CirculationOfGossip_1>(you);
+            you.cmdUse(game, you.hand.getCard<CirculationOfGossip_1>());
+            
+
+            //oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
+            //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
+            game.Dispose();
+        }
     }
 }

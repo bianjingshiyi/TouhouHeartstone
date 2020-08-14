@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using JetBrains.Annotations;
+using System.Data;
 
 namespace TouhouHeartstone
 {
@@ -889,20 +890,31 @@ namespace TouhouHeartstone
             return list.ToArray();
         }
 
-        //public static async Task<DamageEventArg[]> damageByRandomTargets(this IEnumerable<Card> cards, THHGame game, Card source, int dam, int tar)
-        //{
-        //    List<DamageEventArg> list = new List<DamageEventArg>();
-        //    for (int i = 0; i < tar; i++)
-        //    {
-        //        Card target = cards.Where(c => !c.isDead(game)).random(game);
-        //        if (target != null)
-        //        {
-        //            list.Add(await target.damage(game, source, dam));
-        //            target
-        //        }
-        //    }
-        //    return list.ToArray();
-        //}
+        public static async Task<DamageEventArg[]> damageByRandomTargets(this IEnumerable<Card> cards, THHGame game, Card source, int dam, int tar)
+        {
+            List<DamageEventArg> list = new List<DamageEventArg>();
+            List<Card> targets = new List<Card>();
+            for (int i = 0; i < tar; i++)
+            {
+                    Card target = cards.Where(c => !c.isDead(game) && !c.isTargeted).random(game);
+                    if (target != null)
+                    {
+                        targets.Add(target);
+                        target.isTargeted = true;
+                    }
+                    else
+                    {
+                        break;
+                    }                            
+            }
+
+            foreach(Card t in targets)
+            {
+                list.Add(await t.damage(game, source, dam));
+                t.isTargeted = false;
+            }
+            return list.ToArray();
+        }
         public class DamageEventArg : EventArg
         {
             public Card[] cards;

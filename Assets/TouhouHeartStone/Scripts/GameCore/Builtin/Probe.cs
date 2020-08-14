@@ -667,7 +667,7 @@ namespace TouhouHeartstone.Builtin.Proble
 
         static async Task effect(THHGame game, Card card)
         {
-            
+            await game.getOpponent(card.getOwner()).field.damageByRandomTargets(game, card, 3, 2);
         }
     }
 }
