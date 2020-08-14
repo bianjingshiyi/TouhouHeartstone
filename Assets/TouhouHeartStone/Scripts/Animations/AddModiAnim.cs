@@ -66,10 +66,10 @@ namespace Game
                 animator = master.animator;
                 if (eventArg.modifier is AttackModifier atkMod)
                 {
-                    if (atkMod.value > 0)
-                        simpleAnim = master.onAttack;
+                    /*if (atkMod.value > 0)
+                        simpleAnim = master.onAttackUp;
                     else
-                        simpleAnim = master.onAttacked;
+                        simpleAnim = master.onAttackDown;*/
                     master.AttackPropNumber.asText.text = eventArg.card.getAttack(table.game).ToString();
                 }
                 table.setMaster(master, eventArg.card);
