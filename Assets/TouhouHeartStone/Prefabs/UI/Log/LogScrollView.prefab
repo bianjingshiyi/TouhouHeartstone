@@ -187,7 +187,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 100
   m_Viewport: {fileID: 6256509990172010143}
   m_HorizontalScrollbar: {fileID: 5705199687242285803}
   m_VerticalScrollbar: {fileID: 1165859958018571966}
@@ -216,7 +216,7 @@ MonoBehaviour:
   m_as_Image: {fileID: 6256509991378568682}
   m_as_ScrollRect: {fileID: 6256509991378568683}
   _ViewportMask: {fileID: 6256509990172010142}
-  _LogList: {fileID: 6312463789743592224}
+  _LogList: {fileID: 0}
   _ScrollbarHorizontal: {fileID: 2916847660304598115}
   _ScrollbarVertical: {fileID: 930051118172906411}
 --- !u!1001 &6256509991342590767
@@ -682,15 +682,3 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7528855905675083626}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6312463789743592224 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4603170100281060426, guid: e329c57e413144d40bf991ea6d8ed725,
-    type: 3}
-  m_PrefabInstance: {fileID: 7528855905675083626}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ce0bf5b30c0f3044ad19b6534740682, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

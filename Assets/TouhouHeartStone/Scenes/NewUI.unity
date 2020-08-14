@@ -6078,10 +6078,10 @@ MonoBehaviour:
   _useTestDeck: 0
   _testDeck:
     name: TestPatchouli
-    master: 4194304
+    master: 5242880
     deckList:
-    - id: 8257
-      count: 30
+    - id: 8242
+      count: 0
   _deck: 00004000012000000120000001200000012000000120000002200000022000000220000002200000022000000220000002200000032000000320000003200000032000000320000003200000122040001220400007304000073040001220400006200000062000000620000006200000062000000620000006200000
   _testRandomDeck: 0
 --- !u!4 &1441166624
@@ -11037,6 +11037,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7072975924707125977, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7072975924923286470, guid: 83c0b33294cc7ac4295dbe5157864e9d,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -11500,6 +11505,11 @@ PrefabInstance:
     - target: {fileID: 8240309564201733937, guid: 83c0b33294cc7ac4295dbe5157864e9d,
         type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8240309564201733937, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

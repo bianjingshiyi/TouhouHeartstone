@@ -22,6 +22,11 @@ namespace TouhouHeartstone
             get { return base.answers as AnswerManager; }
             set { base.answers = value; }
         }
+        public new TimeManager time
+        {
+            get { return base.time as TimeManager; }
+            set { base.time = value; }
+        }
         public THHGame(params CardDefine[] defines) : base(null, null, GameOption.Default.randomSeed, defines)
         {
             option = GameOption.Default;
@@ -229,7 +234,7 @@ namespace TouhouHeartstone
         {
             if (!isRunning)
                 return;
-            await triggers.doEvent(new InitEventArg(), arg =>
+            await triggers.doEvent(new InitEventArg(), async arg =>
             {
                 //决定玩家行动顺序
                 if (option.sortedPlayers == null || option.sortedPlayers.Length != players.Length)
@@ -257,17 +262,18 @@ namespace TouhouHeartstone
                 //洗牌，然后抽初始卡牌
                 for (int i = 0; i < sortedPlayers.Length; i++)
                 {
+                    if (sortedPlayers[i].deck.count < 1)
+                        continue;
                     if (option.shuffle)
                         sortedPlayers[i].deck.shuffle(this);
                     int count = i == 0 ? 3 : 4;
                     var cards = sortedPlayers[i].deck[sortedPlayers[i].deck.count - count, sortedPlayers[i].deck.count - 1].Reverse();
-                    sortedPlayers[i].deck.moveTo(this, cards, sortedPlayers[i].init, 0);
+                    await sortedPlayers[i].deck.moveTo(this, cards, sortedPlayers[i].init, 0);
                 }
                 logger.log("Debug", "游戏初始化，玩家行动顺序："
                     + string.Join("、", sortedPlayers.Select(p => p.ToString())) + "，"
                     + "玩家英雄：" + string.Join("，", sortedPlayers.Select(p => p.master + "(" + p.skill + ")")) + "，"
                     + "初始卡牌：" + string.Join("；", sortedPlayers.Select(p => string.Join("、", p.init.Select(c => c.ToString())))));
-                return Task.CompletedTask;
             });
         }
         public class InitEventArg : EventArg
@@ -415,6 +421,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public Task updateDeath()
         {
+            logger.log("Game", "进行死亡结算");
             List<Card> deathList = new List<Card>();
             foreach (THHPlayer player in players)
             {
@@ -436,7 +443,7 @@ namespace TouhouHeartstone
             }
             if (deathList.Count > 0)
             {
-                logger.log("结算" + string.Join("，", deathList) + "的死亡");
+                logger.log("Game", "结算" + string.Join("，", deathList) + "的死亡");
                 return deathList.die(this);
             }
             else
@@ -482,6 +489,12 @@ namespace TouhouHeartstone
         public void Dispose()
         {
             close();
+            if (answers != null)
+                answers.Dispose();
+            if (triggers != null)
+                triggers.Dispose();
+            if (time != null)
+                time.Dispose();
         }
     }
     [Serializable]

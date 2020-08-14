@@ -12,6 +12,7 @@ using System;
 using ExcelLibrary.SpreadSheet;
 using System.Collections.Generic;
 using BJSYGameCore.UI;
+using TouhouCardEngine.Interfaces;
 namespace Game
 {
     public class GameManager : Manager
@@ -275,11 +276,12 @@ namespace Game
             game.triggers.onEventBefore += onEventBefore;
             game.triggers.onEventAfter += onEventAfter;
         }
-        void onEventBefore(TouhouCardEngine.Interfaces.IEventArg obj)
+        void onEventBefore(IEventArg obj)
         {
             switch (obj)
             {
                 case THHPlayer.UseEventArg _:
+                case THHCard.AttackEventArg _:
                 case THHCard.DamageEventArg _:
                     var item = ui.LogScrollView.LogList.addItem();
                     item.setProp("event", obj);
@@ -288,11 +290,40 @@ namespace Game
                     break;
             }
         }
-        void onEventAfter(TouhouCardEngine.Interfaces.IEventArg obj)
+        void onEventAfter(IEventArg obj)
         {
             var item = ui.LogScrollView.LogList.getItems().FirstOrDefault(i => i.getProp("event") == obj);
             if (item == null)
                 return;
+            foreach (var parentItem in ui.LogScrollView.LogList.getItems())
+            {
+                int depth = 0;
+                if (isChildOf(parentItem.getProp<IEventArg>("event"), item.getProp<IEventArg>("event"), ref depth))
+                {
+                    item.rectTransform.setWidth(item.rectTransform.getWidth() + 20 * depth);
+                    break;
+                }
+            }
+            bool isChildOf(IEventArg parent, IEventArg child, ref int depth)
+            {
+                if (child == null)
+                    return false;
+                if (parent == null)
+                    return false;
+                if (child.parent == null)
+                    return false;
+                if (child.parent == parent)
+                {
+                    depth++;
+                    return true;
+                }
+                else
+                {
+                    depth++;
+                    return isChildOf(parent, child.parent, ref depth);
+                }
+            }
+            ui.LogScrollView.asScrollRect.verticalScrollbar.value = 0;
             switch (obj)
             {
                 case THHPlayer.UseEventArg use:
@@ -301,8 +332,13 @@ namespace Game
                     item.Image.sprite = getManager<TableManager>().getSkin(use.card).image;
                     item.BorderImage.color = use.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
+                case THHCard.AttackEventArg attack:
+                    item.IconImage.sprite = item.attackIcon;
+                    item.Text.text = "攻击";
+                    item.Image.sprite = getManager<TableManager>().getSkin(attack.card).image;
+                    item.BorderImage.color = attack.card.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
                 case THHCard.DamageEventArg damage:
-                    //item.rectTransform.setWidth(item.rectTransform.getWidth());
                     item.IconImage.sprite = item.damageIcon;
                     item.Text.text = "-" + damage.value;
                     item.Image.sprite = getManager<TableManager>().getSkin(damage.cards[0]).image;

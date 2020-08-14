@@ -22,6 +22,12 @@ namespace UI
             get { return _useIcon; }
         }
         [SerializeField]
+        Sprite _attackIcon;
+        public Sprite attackIcon
+        {
+            get { return _attackIcon; }
+        }
+        [SerializeField]
         Sprite _damageIcon;
         public Sprite damageIcon
         {

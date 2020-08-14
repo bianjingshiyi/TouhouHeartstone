@@ -381,7 +381,7 @@ namespace Game
         /// </summary>
         /// <param name="skill"></param>
         /// <param name="card"></param>
-        public void setSkill(Skill skill, TouhouCardEngine.Card card)
+        public void setSkill(Skill skill, Card card)
         {
             CardSkinData skin = getSkin(card);
             skill.Image.sprite = skin.image;

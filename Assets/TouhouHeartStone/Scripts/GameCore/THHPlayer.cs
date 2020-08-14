@@ -116,9 +116,10 @@ namespace TouhouHeartstone
                 return game.triggers.doEvent(fatigueEvent, onFatigue);
                 async Task onFatigue(FatigueEventArg arg)
                 {
-                    arg.player.fatigue++;
-                    game.logger.log(arg.player + "已经没有卡牌了，当前疲劳值：" + arg.player.fatigue);
-                    await arg.player.master.damage(game, null, arg.player.fatigue);
+                    THHPlayer player = arg.player;
+                    player.fatigue++;
+                    game.logger.log(player + "已经没有卡牌了，当前疲劳值：" + player.fatigue);
+                    var damage = await player.master.damage(game, null, player.fatigue);
                     await game.updateDeath();
                 }
             }
@@ -189,7 +190,7 @@ namespace TouhouHeartstone
             return draw(game, card, out drawEvent, out _);
         }
         /// <summary>
-        /// 抽一张符合条件的牌
+        /// 抽一张符合条件的牌，如果没有符合条件的牌则抽牌不会发生，返回事件为空。
         /// </summary>
         /// <param name="game"></param>
         /// <param name="filter"></param>

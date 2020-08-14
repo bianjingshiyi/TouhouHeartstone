@@ -128,10 +128,9 @@ namespace TouhouHeartstone
         {
             return card.setArmor(game, card.getArmor(game) - value);
         }
-        public static async Task<SetArmorEventArg> setArmor(this Card card, THHGame game, int value)
+        public static Task<SetArmorEventArg> setArmor(this Card card, THHGame game, int value)
         {
-            SetArmorEventArg eventArg = new SetArmorEventArg() { card = card, value = value };
-            await game.triggers.doEvent(eventArg, arg =>
+            return game.triggers.doEvent(new SetArmorEventArg() { card = card, value = value }, arg =>
             {
                 card = arg.card;
                 value = arg.value;
@@ -141,7 +140,6 @@ namespace TouhouHeartstone
                 game.logger.log(card + "的护甲值变为" + value);
                 return Task.CompletedTask;
             });
-            return eventArg;
         }
         public class SetArmorEventArg : EventArg
         {
@@ -471,10 +469,10 @@ namespace TouhouHeartstone
         {
             card.setProp(nameof(ServantCardDefine.damageReduce), value);
         }
-        public static async Task<SilenceEventArg> silence(this IEnumerable<Card> cards, THHGame game)
+        public static Task<SilenceEventArg> silence(this IEnumerable<Card> cards, THHGame game)
         {
             SilenceEventArg eventArg = new SilenceEventArg() { cards = cards.ToArray() };
-            await game.triggers.doEvent(eventArg, async arg =>
+            return game.triggers.doEvent(eventArg, async arg =>
             {
                 cards = arg.cards;
                 foreach (var card in cards)
@@ -488,7 +486,6 @@ namespace TouhouHeartstone
                     card.setKeywords(game, new string[0]);
                 }
             });
-            return eventArg;
         }
         public class SilenceEventArg : EventArg
         {
@@ -712,18 +709,19 @@ namespace TouhouHeartstone
             }
         }
 
-        public static async Task activeEffect(this Card card, THHGame game, THHPlayer player, Card[] targets)
+        public static Task activeEffect(this Card card, THHGame game, THHPlayer player, Card[] targets)
         {
             ITriggerEffect triggerEffect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
             if (triggerEffect != null)
             {
-                await triggerEffect.execute(game, card, new object[] { new THHPlayer.ActiveEventArg(player, card, targets) }, targets);
+                return triggerEffect.execute(game, card, new object[] { new THHPlayer.ActiveEventArg(player, card, targets) }, targets);
             }
             IActiveEffect activeEffect = card.define.getActiveEffect();
             if (activeEffect != null)
             {
-                await activeEffect.execute(game, card, new object[] { new THHPlayer.ActiveEventArg(player, card, targets) }, targets);
+                return activeEffect.execute(game, card, new object[] { new THHPlayer.ActiveEventArg(player, card, targets) }, targets);
             }
+            return Task.CompletedTask;
         }
         public static Task<AttackEventArg> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
@@ -737,7 +735,8 @@ namespace TouhouHeartstone
                 game.logger.log(card + "无法攻击" + target + "，因为" + reason);
                 return Task.FromResult<AttackEventArg>(null);
             }
-            return card.attack(game, player, target);
+            card.setAttackTimes(card.getAttackTimes(game) + 1);
+            return card.attack(game, target);
         }
         public static Task<AttackEventArg> forceAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
@@ -751,12 +750,11 @@ namespace TouhouHeartstone
                 game.logger.log(card + "无法对" + target + "进行强制攻击");
                 return Task.FromResult<AttackEventArg>(null);
             }
-            return card.attack(game, player, target);
+            return card.attack(game, target);
         }
-        static async Task<AttackEventArg> attack(this Card card, THHGame game, THHPlayer player, Card target)
+        static async Task<AttackEventArg> attack(this Card card, THHGame game, Card target)
         {
-            AttackEventArg eventArg = new AttackEventArg() { card = card, target = target };
-            await game.triggers.doEvent(eventArg, async arg =>
+            var eventArg = await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
             {
                 card = arg.card;
                 target = arg.target;
@@ -766,8 +764,7 @@ namespace TouhouHeartstone
                     await target.damage(game, card, card.getAttack(game));
                 if (target.getAttack(game) > 0)
                     await card.damage(game, target, target.getAttack(game));
-                //消耗攻击次数和耐久
-                card.setAttackTimes(card.getAttackTimes(game) + 1);
+                //消耗耐久
                 foreach (var p in game.players)
                 {
                     if (p.master == card && p.item != null)
@@ -789,10 +786,9 @@ namespace TouhouHeartstone
         {
             return damage(new Card[] { card }, game, source, value);
         }
-        public static async Task<DamageEventArg> damage(this IEnumerable<Card> cards, THHGame game, Card source, int value)
+        public static Task<DamageEventArg> damage(this IEnumerable<Card> cards, THHGame game, Card source, int value)
         {
-            DamageEventArg eventArg = new DamageEventArg() { cards = cards.ToArray(), source = source, value = value };
-            await game.triggers.doEvent(eventArg, async arg =>
+            return game.triggers.doEvent(new DamageEventArg() { cards = cards.ToArray(), source = source, value = value }, async arg =>
             {
                 cards = arg.cards;
                 source = arg.source;
@@ -862,16 +858,16 @@ namespace TouhouHeartstone
                     }
                 }
             });
-            return eventArg;
-            async Task onDealKeywords(THHGame g, Card s, Card c, int d)
+            Task onDealKeywords(THHGame g, Card s, Card c, int d)
             {
                 if (s != null)
                 {
                     if (s.isPoisonous(g) && !g.players.Any(p => p.master == c))
                         c.setDead(true);
                     if (s.isDrain(g))
-                        await s.getOwner().master.heal(g, d);
+                        return s.getOwner().master.heal(g, d);
                 }
+                return Task.CompletedTask;
             }
         }
 
@@ -934,12 +930,12 @@ namespace TouhouHeartstone
                 }
             }
         }
-        public static async Task heal(this IEnumerable<Card> cards, THHGame game, int value)
+        public static Task<HealEventArg> heal(this IEnumerable<Card> cards, THHGame game, int value)
         {
             cards = cards.Where(c => c.getCurrentLife(game) < c.getLife(game));
             if (cards.Count() < 1)
-                return;
-            await game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(), value = value }, arg =>
+                return Task.FromResult<HealEventArg>(default);
+            return game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(), value = value }, arg =>
             {
                 cards = arg.cards;
                 value = arg.value;
@@ -968,9 +964,9 @@ namespace TouhouHeartstone
                 return Task.CompletedTask;
             });
         }
-        public static async Task heal(this Card card, THHGame game, int value)
+        public static Task<HealEventArg> heal(this Card card, THHGame game, int value)
         {
-            await heal(new Card[] { card }, game, value);
+            return heal(new Card[] { card }, game, value);
         }
         public class HealEventArg : EventArg
         {
@@ -986,10 +982,10 @@ namespace TouhouHeartstone
         {
             return die(new Card[] { card }, game);
         }
-        public static async Task die(this IEnumerable<Card> cards, THHGame game)
+        public static async Task<DeathEventArg> die(this IEnumerable<Card> cards, THHGame game)
         {
             List<THHPlayer> remainPlayerList = new List<THHPlayer>(game.players);
-            await game.triggers.doEvent(new DeathEventArg() { infoDic = cards.ToDictionary(c => c, c => default(DeathEventArg.Info)) }, onDie);
+            var eventArg = await game.triggers.doEvent(new DeathEventArg() { infoDic = cards.ToDictionary(c => c, c => default(DeathEventArg.Info)) }, onDie);
             Task onDie(DeathEventArg arg)
             {
                 Dictionary<Card, DeathEventArg.Info> infoDic = new Dictionary<Card, DeathEventArg.Info>();
@@ -1036,6 +1032,7 @@ namespace TouhouHeartstone
                 else
                     await game.gameEnd(new THHPlayer[0]);
             }
+            return eventArg;
         }
         public class DeathEventArg : EventArg
         {

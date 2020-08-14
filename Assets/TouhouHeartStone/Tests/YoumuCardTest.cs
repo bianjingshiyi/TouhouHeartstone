@@ -30,32 +30,33 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(SlashOfPresentWorld.ID, 8)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<SlashOfPresentWorld>().cost * 2);
             Card card = you.hand.First();
             you.cmdUse(game, card);
             Assert.True(Youmu.isPreHeated(game, card));
-            Assert.AreEqual(3, you.master.getAttack(game));
+            Assert.AreEqual(4, you.master.getAttack(game));
             card = you.hand.Last();
             you.cmdUse(game, card);
             Assert.False(Youmu.isPreHeated(game, card));
-            Assert.AreEqual(5, you.master.getAttack(game));
+            Assert.AreEqual(6, you.master.getAttack(game));
         }
 
         [Test]
         public void MeditationTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(Meditation.ID, 8),
-                new KeyValuePair<int, int>(PhilosopherStone.ID, 8)
+                new KeyValuePair<int, int>(Meditation.ID, 2),
+                new KeyValuePair<int, int>(DefaultServant.ID, 26),
+                new KeyValuePair<int, int>(TestWeapon.ID, 2)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 1);
+            game.skipUntilCanUse<Meditation>(you);
             you.cmdUse(game, you.hand.getCard<Meditation>());//未蓄力
             Card card = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
-            Assert.AreEqual(0, card.getAttack(game));
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 3);
-            you.cmdUse(game, you.hand.First(c => c.define is Meditation));//蓄力
+            Assert.AreEqual(3, card.getLife(game));
+            game.skipUntilCanUse<Meditation>(you);
+            you.cmdUse(game, you.hand.getCard<Meditation>());//蓄力
             card = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
-            Assert.AreEqual(1, card.getAttack(game));
+            Assert.AreEqual(4, card.getLife(game));
         }
 
         [Test]
@@ -71,14 +72,14 @@ namespace Tests
             Assert.AreEqual(6, you.master.getArmor(game));
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            Assert.AreEqual(0, you.master.getArmor(game));
+            Assert.AreEqual(3, you.master.getArmor(game));
             card = you.hand.getCards<FantasyOfEnteringEnlightenment>().First();
             Assert.True(Youmu.isPreHeated(game, card));
             you.cmdUse(game, card);
-            Assert.AreEqual(6, you.master.getArmor(game));
+            Assert.AreEqual(9, you.master.getArmor(game));
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            Assert.AreEqual(6, you.master.getArmor(game));
+            Assert.AreEqual(9, you.master.getArmor(game));
         }
 
         [Test]
@@ -179,23 +180,23 @@ namespace Tests
             game.skipUntilCanUse<HalfPhantom>(you);
             you.master.gainArmor(game, 6);
             you.cmdUse(game, you.hand.getCard<HalfPhantom>());
-            Assert.AreEqual(7, you.field[0].getAttack(game));
-            Assert.AreEqual(7, you.field[0].getCurrentLife(game));
-            Assert.AreEqual(7, you.field[0].getLife(game));
-            you.master.gainArmor(game, 1);
-            Assert.AreEqual(8, you.field[0].getAttack(game));
-            Assert.AreEqual(8, you.field[0].getCurrentLife(game));
-            Assert.AreEqual(8, you.field[0].getLife(game));
-            you.field[0].damage(game, null, 1);
-            Assert.AreEqual(7, you.field[0].getCurrentLife(game));
-            you.master.gainArmor(game, 1);
             Assert.AreEqual(9, you.field[0].getAttack(game));
-            Assert.AreEqual(8, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(9, you.field[0].getCurrentLife(game));
             Assert.AreEqual(9, you.field[0].getLife(game));
+            you.master.gainArmor(game, 1);
+            Assert.AreEqual(10, you.field[0].getAttack(game));
+            Assert.AreEqual(10, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(10, you.field[0].getLife(game));
+            you.field[0].damage(game, null, 1);
+            Assert.AreEqual(9, you.field[0].getCurrentLife(game));
+            you.master.gainArmor(game, 1);
+            Assert.AreEqual(11, you.field[0].getAttack(game));
+            Assert.AreEqual(10, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(11, you.field[0].getLife(game));
             you.master.loseArmor(game, 2);
-            Assert.AreEqual(7, you.field[0].getAttack(game));
-            Assert.AreEqual(7, you.field[0].getCurrentLife(game));
-            Assert.AreEqual(7, you.field[0].getLife(game));
+            Assert.AreEqual(9, you.field[0].getAttack(game));
+            Assert.AreEqual(9, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(9, you.field[0].getLife(game));
         }
 
         [Test]
@@ -232,7 +233,7 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<TestWeapon>());
             for (int i = 0; i < oppo.field.count; i++)
             {
-                oppo.field[i].setCurrentLife(i + 1);
+                oppo.field[i].setCurrentLife(i + 3);
             }
             you.cmdUse(game, you.hand.getCard<CherryBlossomFlashing>());
             Assert.AreEqual(4, oppo.field.count);
@@ -240,6 +241,7 @@ namespace Tests
             Assert.AreEqual(2, oppo.field[1].getCurrentLife(game));
             Assert.AreEqual(4, oppo.field[2].getCurrentLife(game));
             Assert.AreEqual(5, oppo.field[3].getCurrentLife(game));
+            Assert.AreEqual(0, you.master.getAttackTimes(game));
         }
 
         [Test]
@@ -260,15 +262,12 @@ namespace Tests
         public void FiveSignsOfTheDyingDevaTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(FiveSignsOfTheDyingDeva.ID, 10)
+                new KeyValuePair<int, int>(FiveSignsOfTheDyingDeva.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 5);
-            you.cmdUse(game, you.hand.Last());//刚抽的没有蓄力
+            game.skipUntilCanUse<FiveSignsOfTheDyingDeva>(you);
+            you.cmdUse(game, you.hand.getCard<FiveSignsOfTheDyingDeva>());
             Assert.AreEqual(5, you.master.getAttack(game));
-
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 7);
-            you.cmdUse(game, you.hand.First());//蓄力了
-            Assert.AreEqual(7, you.master.getAttack(game));
+            Assert.AreEqual(5, you.master.getArmor(game));
         }
 
         [Test]
