@@ -190,7 +190,7 @@ namespace TouhouHeartstone
             return draw(game, card, out drawEvent, out _);
         }
         /// <summary>
-        /// 抽一张符合条件的牌
+        /// 抽一张符合条件的牌，如果没有符合条件的牌则抽牌不会发生，返回事件为空。
         /// </summary>
         /// <param name="game"></param>
         /// <param name="filter"></param>

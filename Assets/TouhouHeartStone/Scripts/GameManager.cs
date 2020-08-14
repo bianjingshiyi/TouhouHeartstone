@@ -313,10 +313,13 @@ namespace Game
                 if (child.parent == null)
                     return false;
                 if (child.parent == parent)
+                {
+                    depth++;
                     return true;
+                }
                 else
                 {
-                    depth += 1;
+                    depth++;
                     return isChildOf(parent, child.parent, ref depth);
                 }
             }

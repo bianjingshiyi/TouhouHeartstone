@@ -118,7 +118,7 @@ namespace Game
                             return false;
                         table.ui.SelfHandList.removeItem(hand);
                     }
-                    if (!SimpleAnimHelper.update(table, ref _equipAnim, table.ui.EnemyItem.onEquip, table.ui.EnemyItem.animator))
+                    if (!SimpleAnimHelper.update(table, ref _equipAnim, item.onEquip, item.animator))
                         return false;
                     if (tryTargetedAnim(table, table.ui.SelfItem, eventArg))
                         return false;

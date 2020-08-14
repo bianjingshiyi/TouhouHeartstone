@@ -69,7 +69,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 1 现世斩 使你的英雄在本回合内获得攻击力+2，蓄力：改为攻击力+3
+    /// 1 现世斩 使你的英雄在本回合内获得攻击力+2，蓄力：改为攻击力+4
     /// </summary>
     public class SlashOfPresentWorld : SpellCardDefine
     {
@@ -87,14 +87,14 @@ namespace TouhouHeartstone.Builtin
             if (!Youmu.isPreHeated(game, card))
                 attack = 2;
             else
-                attack = 3;
+                attack = 4;
             await card.getOwner().master.addBuff(game,
                 new GeneratedBuff(ID, new AttackModifier(attack),
-                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
+                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
         }
     }
     /// <summary>
-    /// 1 冥想 抽一张道具牌，蓄力：使其获得攻击力+1
+    /// 1 冥想 抽一张道具牌，蓄力：使其获得耐久值+1
     /// </summary>
     public class Meditation : SpellCardDefine
     {
@@ -108,9 +108,12 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().draw(game, c => c.isItem(), out var drawEvent);
-            var item = drawEvent.card;
-            if (Youmu.isPreHeated(game, card))
-                await item.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1)));
+            if (drawEvent != null)
+            {
+                var item = drawEvent.card;
+                if (Youmu.isPreHeated(game, card))
+                    await item.addBuff(game, new GeneratedBuff(ID, new LifeModifier(1)));
+            }
         }
     }
     /// <summary>
@@ -236,27 +239,27 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 2 樱花闪闪 使你的英雄对所有敌方随从进行攻击，生命值越低的越优先。
+    /// 4 樱花闪闪 使你的英雄在本回合内获得攻击力+2并对所有敌方随从进行攻击，生命值越低的越优先。
     /// </summary>
     public class CherryBlossomFlashing : SpellCardDefine
     {
         public const int ID = Youmu.ID | CardCategory.SPELL | 0x010;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
+        public override int cost { get; set; } = 4;
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
         };
-        static Task effect(THHGame game, Card card)
+        static async Task effect(THHGame game, Card card)
         {
             THHPlayer player = card.getOwner();
+            await player.master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
             Card[] servants = game.getOpponent(player).field.OrderBy(c => c.getCurrentLife(game)).ToArray();
             foreach (Card target in servants)
             {
                 if (player.master.getAttack(game) > 0)
-                    player.master.forceAttack(game, player, target);
+                    await player.master.forceAttack(game, player, target);
             }
-            return Task.CompletedTask;
         }
     }
     /// <summary>
@@ -274,7 +277,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().master.getArmor(game)),
-                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
+                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
             await card.getOwner().master.loseArmor(game, card.getOwner().master.getArmor(game));
         }
     }
@@ -286,7 +289,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CardCategory.SPELL | 0x012;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override IEffect[] effects { get; set; } = new IEffect[] 
+        public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
@@ -294,7 +297,7 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().master.gainArmor(game, 5);
             await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(5),
-                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
+                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
         }
     }
     /// <summary>
@@ -339,7 +342,7 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().item.addBuff(game, new GeneratedBuff(ID,
                 new KeywordsModifier(KeywordsModifier.ModifyType.add, Keyword.IMMUNITY),
-                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.ITEM, ID)));
+                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PileName.ITEM, ID)));
         }
     }
     /// <summary>
@@ -363,15 +366,15 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 411 半幽灵 具有等同于护甲值的额外属性值
+    /// 433 半幽灵 具有等同于护甲值的额外属性值
     /// </summary>
     public class HalfPhantom : ServantCardDefine
     {
         public const int ID = Youmu.ID | CardCategory.SERVANT | 0x016;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 1;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 3;
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {

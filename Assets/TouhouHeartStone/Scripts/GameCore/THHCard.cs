@@ -732,7 +732,8 @@ namespace TouhouHeartstone
                 game.logger.log(card + "无法攻击" + target + "，因为" + reason);
                 return Task.FromResult<AttackEventArg>(null);
             }
-            return card.attack(game, player, target);
+            card.setAttackTimes(card.getAttackTimes(game) + 1);
+            return card.attack(game, target);
         }
         public static Task<AttackEventArg> forceAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
@@ -746,9 +747,9 @@ namespace TouhouHeartstone
                 game.logger.log(card + "无法对" + target + "进行强制攻击");
                 return Task.FromResult<AttackEventArg>(null);
             }
-            return card.attack(game, player, target);
+            return card.attack(game, target);
         }
-        static async Task<AttackEventArg> attack(this Card card, THHGame game, THHPlayer player, Card target)
+        static async Task<AttackEventArg> attack(this Card card, THHGame game, Card target)
         {
             var eventArg = await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
             {
@@ -760,8 +761,7 @@ namespace TouhouHeartstone
                     await target.damage(game, card, card.getAttack(game));
                 if (target.getAttack(game) > 0)
                     await card.damage(game, target, target.getAttack(game));
-                //消耗攻击次数和耐久
-                card.setAttackTimes(card.getAttackTimes(game) + 1);
+                //消耗耐久
                 foreach (var p in game.players)
                 {
                     if (p.master == card && p.item != null)
