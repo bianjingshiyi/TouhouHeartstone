@@ -94,7 +94,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 1 冥想斩 抽一张道具牌，蓄力：使其获得攻击力+1
+    /// 1 冥想 抽一张道具牌，蓄力：使其获得攻击力+1
     /// </summary>
     public class Meditation : SpellCardDefine
     {
@@ -156,7 +156,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.damage(game,card,card.getOwner().master.getArmor(game));
-            })
+            }, PileFlag.field)
         };
     }
     /// <summary>
@@ -320,7 +320,7 @@ namespace TouhouHeartstone.Builtin
                 return a.card == c.getOwner().master;
             },null,async(g,c,a)=>
             {
-                if(c.getOwner()[PileName.ITEM].isFull)
+                if(c.getOwner().item != null)
                     await c.getOwner().item.addBuff(g, new GeneratedBuff(ID, new AttackModifier(1)));
             })
         };
