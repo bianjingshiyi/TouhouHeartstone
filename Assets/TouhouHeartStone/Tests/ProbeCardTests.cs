@@ -8,6 +8,7 @@ using TouhouHeartstone.Builtin.Proble;
 using UnityEngine;
 using UnityEngine.TestTools;
 using System;
+using static TouhouHeartstone.Builtin.Proble.Probe;
 
 namespace Tests
 {
@@ -363,6 +364,97 @@ namespace Tests
             you.cmdTurnEnd(game);
             oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
             //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
+            game.Dispose();
+        }
+
+        /// <summary>
+        /// 流水线测试
+        /// 3/0/3，每当你使用一张牌时，召唤一个1/1的迷你机器人
+        /// 它被关在工厂里一万年了...
+        /// </summary>
+        [Test]
+        public void ProbeAssemblyLineTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(AssemblyLine.ID, 2),
+                new KeyValuePair<int, int>(FireBall.ID, 2),
+                new KeyValuePair<int, int>(DefaultServant.ID, 2)
+            );
+
+            game.skipUntilCanUse<AssemblyLine>(you);
+            you.cmdUse(game, you.hand.getCard<AssemblyLine>());
+            game.skipUntilCanUse<DefaultServant>(you);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse<FireBall>(you);
+            you.cmdUse(game, you.hand.getCard<FireBall>(),targets : oppo.master);
+            //oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
+            //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
+            game.Dispose();
+        }
+
+        /// <summary>
+        /// 化敌为友
+        /// 2费，选择一个随从，使其对他的相邻随从造成等同其攻击力的伤害
+        /// 
+        /// </summary>
+        [Test]
+        public void ProbeColludeWithTheEnemyTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getCardDefine<ColludeWithTheEnemy>(), 3)));
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<ColludeWithTheEnemy>(you);
+            you.cmdUse(game, you.hand.getCard<ColludeWithTheEnemy>(), targets: oppo.field[0]);
+
+            game.skipUntilCanUse<ColludeWithTheEnemy>(you);
+            you.cmdUse(game, you.hand.getCard<ColludeWithTheEnemy>(), targets: oppo.field[1]);
+
+            game.skipUntilCanUse<ColludeWithTheEnemy>(you);
+            you.cmdUse(game, you.hand.getCard<ColludeWithTheEnemy>(), targets: oppo.field[2]);
+
+            
+            game.Dispose();
+        }
+
+        /// <summary>
+        /// 腐蚀测试(格拉摩根伯爵-黑谷山女)
+        /// 1费，选择一个随从，下回合开始时消灭他
+        /// 
+        /// </summary>
+        [Test]
+        public void ProbeCorrosionTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getCardDefine<Corrosion>(), 3)));
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<Corrosion>(you);
+            you.cmdUse(game, you.hand.getCard<Corrosion>(), targets: oppo.field[0]);
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
             game.Dispose();
         }
     }

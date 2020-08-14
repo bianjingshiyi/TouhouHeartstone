@@ -178,11 +178,11 @@ namespace TouhouHeartstone.Builtin
                 if(targets[0] is Card target && target.pile.name == PileName.FIELD)
                     return true;
                 return false;
-            },(game,card,arg,targets)=>
+            },async(game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
-                    target.setStealth(game, true);
-                return Task.CompletedTask;
+                await target.addBuff(game, new GeneratedBuff(ID,
+                    new KeywordsModifier(KeywordsModifier.ModifyType.add,Keyword.STEALTH)));
             })
         };
     }
@@ -321,11 +321,14 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((g,c,t)=>
+            new LambdaSingleTargetEffect(async(game,card,target)=>
             {
-                t.getNearbyCards().setFreeze(g, true);
-                return Task.CompletedTask;
-            }, PileFlag.both| PileFlag.field)
+                foreach( Card t in target.getNearbyCards())
+                {
+                    await t.addBuff(game, new GeneratedBuff(ID,
+                    new KeywordsModifier(KeywordsModifier.ModifyType.add,Keyword.FREEZE)));
+                }
+            }, PileFlag.both | PileFlag.field)
         };
     }
     /// <summary>
@@ -496,10 +499,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async(game,card,target)=>
             {
-                target.setFreeze(game, true);
-                return Task.CompletedTask;
+                 await target.addBuff(game, new GeneratedBuff(ID,
+                    new KeywordsModifier(KeywordsModifier.ModifyType.add,Keyword.FREEZE)));
             }, PileFlag.oppo | PileFlag.character)
         };
     }
@@ -516,10 +519,13 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async(game,card,target)=>
             {
-                target.getNearbyCards().setFreeze(game, true);
-                return Task.CompletedTask;
+                foreach( Card t in target.getNearbyCards())
+                {
+                    await t.addBuff(game, new GeneratedBuff(ID,
+                    new KeywordsModifier(KeywordsModifier.ModifyType.add,Keyword.FREEZE)));
+                }
             }, PileFlag.both | PileFlag.field)
         };
     }
