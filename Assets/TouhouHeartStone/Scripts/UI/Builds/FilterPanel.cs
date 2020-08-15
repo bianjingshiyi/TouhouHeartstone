@@ -48,39 +48,39 @@ namespace UI
 
         partial void onAwake()
         {
-            DropdownCost.onValueChanged.AddListener(onCostFilterChange);
-            DropdownRare.onValueChanged.AddListener(onRareFilterChange);
-            DropdownCharacter.onValueChanged.AddListener(onCharacterFilterChange);
-            DropdownType.onValueChanged.AddListener(onTypeFilterChange);
+            DropdownCostDropdownLight.asDropdown.onValueChanged.AddListener(onCostFilterChange);
+            DropdownRareDropdownLight.asDropdown.onValueChanged.AddListener(onRareFilterChange);
+            DropdownCharacterDropdownLight.asDropdown.onValueChanged.AddListener(onCharacterFilterChange);
+            DropdownTypeDropdownLight.asDropdown.onValueChanged.AddListener(onTypeFilterChange);
             InputField.onValueChanged.AddListener(onNameFilterChange);
 
-            DropdownSort.onValueChanged.AddListener(onSortMethodChange);
+            DropdownSortDropdownLight.asDropdown.onValueChanged.AddListener(onSortMethodChange);
 
             // 填充过滤类型
-            DropdownType.options.Clear();
+            DropdownTypeDropdownLight.asDropdown.options.Clear();
             for (int i = 0; i < typeName.Length; i++)
             {
-                DropdownType.options.Add(new UnityEngine.UI.Dropdown.OptionData(typeName[i].Value));
+                DropdownTypeDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(typeName[i].Value));
             }
 
             // 填充排序方式
-            DropdownSort.options.Clear();
+            DropdownSortDropdownLight.asDropdown.options.Clear();
             for (int i = 0; i < sortMethodsName.Length; i++)
             {
-                DropdownSort.options.Add(new UnityEngine.UI.Dropdown.OptionData(sortMethodsName[i]));
+                DropdownSortDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(sortMethodsName[i]));
             }
 
             // 填充角色列表
             var cards = cardManager.GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly
             && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null);
             allCharacters = cards.getCharactersID();
-            DropdownCharacter.options.Clear();
-            DropdownCharacter.options.Add(new UnityEngine.UI.Dropdown.OptionData("所有"));
+            DropdownCharacterDropdownLight.asDropdown.options.Clear();
+            DropdownCharacterDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData("所有"));
             for (int i = 0; i < allCharacters.Length; i++)
             {
                 var id = allCharacters[i];
                 var name = id == CardCategory.CHARACTER_NEUTRAL ? "中立" : cardManager.getSkin(id)?.name;
-                DropdownCharacter.options.Add(new UnityEngine.UI.Dropdown.OptionData(name));
+                DropdownCharacterDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(name));
             }
         }
 

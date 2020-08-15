@@ -28,15 +28,15 @@ namespace UI
             this.m_as_Image = this.GetComponent<Image>();
             this.m_as_HorizontalLayoutGroup = this.GetComponent<HorizontalLayoutGroup>();
             this._LabelSortText = this.transform.Find("Sort").Find("LabelSort").GetComponent<Text>();
-            this._DropdownSort = this.transform.Find("Sort").Find("DropdownSort").GetComponent<Dropdown>();
+            this._DropdownSortDropdownLight = this.transform.Find("Sort").Find("DropdownSort").GetComponent<DropdownLight>();
             this._LabelCharacterText = this.transform.Find("Character").Find("LabelCharacter").GetComponent<Text>();
-            this._DropdownCharacter = this.transform.Find("Character").Find("DropdownCharacter").GetComponent<Dropdown>();
+            this._DropdownCharacterDropdownLight = this.transform.Find("Character").Find("DropdownCharacter").GetComponent<DropdownLight>();
             this._LabelCostText = this.transform.Find("Cost").Find("LabelCost").GetComponent<Text>();
-            this._DropdownCost = this.transform.Find("Cost").Find("DropdownCost").GetComponent<Dropdown>();
+            this._DropdownCostDropdownLight = this.transform.Find("Cost").Find("DropdownCost").GetComponent<DropdownLight>();
             this._LabelRareText = this.transform.Find("Rare").Find("LabelRare").GetComponent<Text>();
-            this._DropdownRare = this.transform.Find("Rare").Find("DropdownRare").GetComponent<Dropdown>();
+            this._DropdownRareDropdownLight = this.transform.Find("Rare").Find("DropdownRare").GetComponent<DropdownLight>();
             this._LabelTypeText = this.transform.Find("Type").Find("LabelType").GetComponent<Text>();
-            this._DropdownType = this.transform.Find("Type").Find("DropdownType").GetComponent<Dropdown>();
+            this._DropdownTypeDropdownLight = this.transform.Find("Type").Find("DropdownType").GetComponent<DropdownLight>();
             this._LabelSearchText = this.transform.Find("Search").Find("LabelSearch").GetComponent<Text>();
             this._InputField = this.transform.Find("Search").Find("InputField").GetComponent<InputField>();
         }
@@ -80,16 +80,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Dropdown _DropdownSort;
-        public Dropdown DropdownSort
+        private DropdownLight _DropdownSortDropdownLight;
+        public DropdownLight DropdownSortDropdownLight
         {
             get
             {
-                if ((this._DropdownSort == null))
+                if ((this._DropdownSortDropdownLight == null))
                 {
-                    this._DropdownSort = this.transform.Find("Sort").Find("DropdownSort").GetComponent<Dropdown>();
+                    this._DropdownSortDropdownLight = this.transform.Find("Sort").Find("DropdownSort").GetComponent<DropdownLight>();
                 }
-                return this._DropdownSort;
+                return this._DropdownSortDropdownLight;
             }
         }
         [SerializeField()]
@@ -106,16 +106,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Dropdown _DropdownCharacter;
-        public Dropdown DropdownCharacter
+        private DropdownLight _DropdownCharacterDropdownLight;
+        public DropdownLight DropdownCharacterDropdownLight
         {
             get
             {
-                if ((this._DropdownCharacter == null))
+                if ((this._DropdownCharacterDropdownLight == null))
                 {
-                    this._DropdownCharacter = this.transform.Find("Character").Find("DropdownCharacter").GetComponent<Dropdown>();
+                    this._DropdownCharacterDropdownLight = this.transform.Find("Character").Find("DropdownCharacter").GetComponent<DropdownLight>();
                 }
-                return this._DropdownCharacter;
+                return this._DropdownCharacterDropdownLight;
             }
         }
         [SerializeField()]
@@ -132,16 +132,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Dropdown _DropdownCost;
-        public Dropdown DropdownCost
+        private DropdownLight _DropdownCostDropdownLight;
+        public DropdownLight DropdownCostDropdownLight
         {
             get
             {
-                if ((this._DropdownCost == null))
+                if ((this._DropdownCostDropdownLight == null))
                 {
-                    this._DropdownCost = this.transform.Find("Cost").Find("DropdownCost").GetComponent<Dropdown>();
+                    this._DropdownCostDropdownLight = this.transform.Find("Cost").Find("DropdownCost").GetComponent<DropdownLight>();
                 }
-                return this._DropdownCost;
+                return this._DropdownCostDropdownLight;
             }
         }
         [SerializeField()]
@@ -158,16 +158,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Dropdown _DropdownRare;
-        public Dropdown DropdownRare
+        private DropdownLight _DropdownRareDropdownLight;
+        public DropdownLight DropdownRareDropdownLight
         {
             get
             {
-                if ((this._DropdownRare == null))
+                if ((this._DropdownRareDropdownLight == null))
                 {
-                    this._DropdownRare = this.transform.Find("Rare").Find("DropdownRare").GetComponent<Dropdown>();
+                    this._DropdownRareDropdownLight = this.transform.Find("Rare").Find("DropdownRare").GetComponent<DropdownLight>();
                 }
-                return this._DropdownRare;
+                return this._DropdownRareDropdownLight;
             }
         }
         [SerializeField()]
@@ -184,16 +184,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Dropdown _DropdownType;
-        public Dropdown DropdownType
+        private DropdownLight _DropdownTypeDropdownLight;
+        public DropdownLight DropdownTypeDropdownLight
         {
             get
             {
-                if ((this._DropdownType == null))
+                if ((this._DropdownTypeDropdownLight == null))
                 {
-                    this._DropdownType = this.transform.Find("Type").Find("DropdownType").GetComponent<Dropdown>();
+                    this._DropdownTypeDropdownLight = this.transform.Find("Type").Find("DropdownType").GetComponent<DropdownLight>();
                 }
-                return this._DropdownType;
+                return this._DropdownTypeDropdownLight;
             }
         }
         [SerializeField()]

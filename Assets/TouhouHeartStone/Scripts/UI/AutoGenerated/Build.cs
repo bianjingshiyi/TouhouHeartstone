@@ -28,10 +28,16 @@ namespace UI
             this._TitleBarImage = this.transform.Find("TitleBar").GetComponent<Image>();
             this._TitleText = this.transform.Find("TitleBar").Find("Title").GetComponent<Text>();
             this._BackButtonBlack = this.transform.Find("TitleBar").Find("Back").GetComponent<ButtonBlack>();
-            this._DeckListViewScroll = this.transform.Find("DeckListView").GetComponent<ScrollRect>();
-            this._DeckList = this.transform.Find("DeckListView").Find("Viewport").Find("DeckList").GetComponent<DeckList>();
+            this._DeckListViewImage = this.transform.Find("DeckListView").GetComponent<Image>();
+            this._Text = this.transform.Find("DeckListView").Find("Text").GetComponent<Text>();
+            this._DeckListScroll = this.transform.Find("DeckListView").Find("DeckList").GetComponent<ScrollRect>();
+            this._DeckList = this.transform.Find("DeckListView").Find("DeckList").Find("Viewport").Find("DeckList").GetComponent<DeckList>();
             this._DeckCardViewImage = this.transform.Find("DeckCardView").GetComponent<Image>();
-            this._EditingDeckDeckListItem = this.transform.Find("DeckCardView").Find("EditingDeck").GetComponent<DeckListItem>();
+            this._UpperImage = this.transform.Find("DeckCardView").Find("Upper").GetComponent<Image>();
+            this._SaveButtonBlackIcon = this.transform.Find("DeckCardView").Find("Upper").Find("Save").GetComponent<ButtonBlackIcon>();
+            this._BackButtonBlackIcon = this.transform.Find("DeckCardView").Find("Upper").Find("Back").GetComponent<ButtonBlackIcon>();
+            this._Upper_Text = this.transform.Find("DeckCardView").Find("Upper").Find("Text").GetComponent<Text>();
+            this._EditingDeckDeckListItem = this.transform.Find("DeckCardView").Find("Upper").Find("EditingDeck").GetComponent<DeckListItem>();
             this._NameBkgImage = this.transform.Find("DeckCardView").Find("NameBkgImage").GetComponent<Image>();
             this._MasterNameText = this.transform.Find("DeckCardView").Find("NameBkgImage").Find("MasterNameText").GetComponent<Text>();
             this._DeckCountText = this.transform.Find("DeckCardView").Find("NameBkgImage").Find("DeckCountText").GetComponent<Text>();
@@ -84,16 +90,42 @@ namespace UI
             }
         }
         [SerializeField()]
-        private ScrollRect _DeckListViewScroll;
-        public ScrollRect DeckListViewScroll
+        private Image _DeckListViewImage;
+        public Image DeckListViewImage
         {
             get
             {
-                if ((this._DeckListViewScroll == null))
+                if ((this._DeckListViewImage == null))
                 {
-                    this._DeckListViewScroll = this.transform.Find("DeckListView").GetComponent<ScrollRect>();
+                    this._DeckListViewImage = this.transform.Find("DeckListView").GetComponent<Image>();
                 }
-                return this._DeckListViewScroll;
+                return this._DeckListViewImage;
+            }
+        }
+        [SerializeField()]
+        private Text _Text;
+        public Text Text
+        {
+            get
+            {
+                if ((this._Text == null))
+                {
+                    this._Text = this.transform.Find("DeckListView").Find("Text").GetComponent<Text>();
+                }
+                return this._Text;
+            }
+        }
+        [SerializeField()]
+        private ScrollRect _DeckListScroll;
+        public ScrollRect DeckListScroll
+        {
+            get
+            {
+                if ((this._DeckListScroll == null))
+                {
+                    this._DeckListScroll = this.transform.Find("DeckListView").Find("DeckList").GetComponent<ScrollRect>();
+                }
+                return this._DeckListScroll;
             }
         }
         [SerializeField()]
@@ -104,7 +136,7 @@ namespace UI
             {
                 if ((this._DeckList == null))
                 {
-                    this._DeckList = this.transform.Find("DeckListView").Find("Viewport").Find("DeckList").GetComponent<DeckList>();
+                    this._DeckList = this.transform.Find("DeckListView").Find("DeckList").Find("Viewport").Find("DeckList").GetComponent<DeckList>();
                 }
                 return this._DeckList;
             }
@@ -123,6 +155,58 @@ namespace UI
             }
         }
         [SerializeField()]
+        private Image _UpperImage;
+        public Image UpperImage
+        {
+            get
+            {
+                if ((this._UpperImage == null))
+                {
+                    this._UpperImage = this.transform.Find("DeckCardView").Find("Upper").GetComponent<Image>();
+                }
+                return this._UpperImage;
+            }
+        }
+        [SerializeField()]
+        private ButtonBlackIcon _SaveButtonBlackIcon;
+        public ButtonBlackIcon SaveButtonBlackIcon
+        {
+            get
+            {
+                if ((this._SaveButtonBlackIcon == null))
+                {
+                    this._SaveButtonBlackIcon = this.transform.Find("DeckCardView").Find("Upper").Find("Save").GetComponent<ButtonBlackIcon>();
+                }
+                return this._SaveButtonBlackIcon;
+            }
+        }
+        [SerializeField()]
+        private ButtonBlackIcon _BackButtonBlackIcon;
+        public ButtonBlackIcon BackButtonBlackIcon
+        {
+            get
+            {
+                if ((this._BackButtonBlackIcon == null))
+                {
+                    this._BackButtonBlackIcon = this.transform.Find("DeckCardView").Find("Upper").Find("Back").GetComponent<ButtonBlackIcon>();
+                }
+                return this._BackButtonBlackIcon;
+            }
+        }
+        [SerializeField()]
+        private Text _Upper_Text;
+        public Text Upper_Text
+        {
+            get
+            {
+                if ((this._Upper_Text == null))
+                {
+                    this._Upper_Text = this.transform.Find("DeckCardView").Find("Upper").Find("Text").GetComponent<Text>();
+                }
+                return this._Upper_Text;
+            }
+        }
+        [SerializeField()]
         private DeckListItem _EditingDeckDeckListItem;
         public DeckListItem EditingDeckDeckListItem
         {
@@ -130,7 +214,7 @@ namespace UI
             {
                 if ((this._EditingDeckDeckListItem == null))
                 {
-                    this._EditingDeckDeckListItem = this.transform.Find("DeckCardView").Find("EditingDeck").GetComponent<DeckListItem>();
+                    this._EditingDeckDeckListItem = this.transform.Find("DeckCardView").Find("Upper").Find("EditingDeck").GetComponent<DeckListItem>();
                 }
                 return this._EditingDeckDeckListItem;
             }

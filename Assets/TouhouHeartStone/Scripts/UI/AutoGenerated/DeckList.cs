@@ -29,12 +29,12 @@ namespace UI
             this.m_as_VerticalLayoutGroup = this.GetComponent<VerticalLayoutGroup>();
             this.defaultItem = this.transform.Find("DeckListItem").GetComponent<DeckListItem>();
         }
-        private Main _parent;
-        public Main parent
+        private Build _parent;
+        public Build parent
         {
             get
             {
-                return this.transform.parent.parent.parent.parent.GetComponent<Main>();
+                return this.transform.parent.parent.parent.parent.GetComponent<Build>();
             }
         }
         [SerializeField()]

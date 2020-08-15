@@ -26,28 +26,28 @@ namespace UI
         }
         public void autoBind()
         {
-            this.m_as_ListLayoutGroup = this.GetComponent<ListLayoutGroup>();
+            this.m_as_VerticalLayoutGroup = this.GetComponent<VerticalLayoutGroup>();
             this.defaultItem = this.transform.Find("BuildItem").GetComponent<BuildDeckListItem>();
         }
-        private Main _parent;
-        public Main parent
+        private Build _parent;
+        public Build parent
         {
             get
             {
-                return this.transform.parent.parent.parent.parent.parent.GetComponent<Main>();
+                return this.transform.parent.parent.parent.parent.GetComponent<Build>();
             }
         }
         [SerializeField()]
-        private ListLayoutGroup m_as_ListLayoutGroup;
-        public ListLayoutGroup asListLayoutGroup
+        private VerticalLayoutGroup m_as_VerticalLayoutGroup;
+        public VerticalLayoutGroup asVerticalLayoutGroup
         {
             get
             {
-                if ((this.m_as_ListLayoutGroup == null))
+                if ((this.m_as_VerticalLayoutGroup == null))
                 {
-                    this.m_as_ListLayoutGroup = this.GetComponent<ListLayoutGroup>();
+                    this.m_as_VerticalLayoutGroup = this.GetComponent<VerticalLayoutGroup>();
                 }
-                return this.m_as_ListLayoutGroup;
+                return this.m_as_VerticalLayoutGroup;
             }
         }
         protected override BuildDeckListItem getDefaultItem()
