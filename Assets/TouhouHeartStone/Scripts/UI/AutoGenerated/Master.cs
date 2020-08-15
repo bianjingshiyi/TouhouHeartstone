@@ -28,7 +28,9 @@ namespace UI
             this._HighlightImage = this.transform.Find("Root").Find("Highlight").GetComponent<Image>();
             this._Mask = this.transform.Find("Root").Find("Mask").GetComponent<Mask>();
             this._Image = this.transform.Find("Root").Find("Mask").Find("Image").GetComponent<Image>();
+            this._StealthImage = this.transform.Find("Root").Find("Mask").Find("Stealth").GetComponent<Image>();
             this._FrameImage = this.transform.Find("Root").Find("Frame").GetComponent<Image>();
+            this._FreezeImage = this.transform.Find("Root").Find("Freeze").GetComponent<Image>();
             this._AtkImage = this.transform.Find("Root").Find("Atk").GetComponent<Image>();
             this._AttackPropNumber = this.transform.Find("Root").Find("Atk").Find("Attack").GetComponent<PropNumber>();
             this._HpImage = this.transform.Find("Root").Find("Hp").GetComponent<Image>();
@@ -39,7 +41,6 @@ namespace UI
             this._DamageText = this.transform.Find("Root").Find("DamageImage").Find("DamageText").GetComponent<Text>();
             this._HealImage = this.transform.Find("Root").Find("HealImage").GetComponent<Image>();
             this._HealText = this.transform.Find("Root").Find("HealImage").Find("HealText").GetComponent<Text>();
-            this._FreezeImage = this.transform.Find("Root").Find("Freeze").GetComponent<Image>();
             this._ShieldImage = this.transform.Find("Root").Find("Shield").GetComponent<Image>();
         }
         [SerializeField()]
@@ -82,6 +83,19 @@ namespace UI
             }
         }
         [SerializeField()]
+        private Image _StealthImage;
+        public Image StealthImage
+        {
+            get
+            {
+                if ((this._StealthImage == null))
+                {
+                    this._StealthImage = this.transform.Find("Root").Find("Mask").Find("Stealth").GetComponent<Image>();
+                }
+                return this._StealthImage;
+            }
+        }
+        [SerializeField()]
         private Image _FrameImage;
         public Image FrameImage
         {
@@ -92,6 +106,19 @@ namespace UI
                     this._FrameImage = this.transform.Find("Root").Find("Frame").GetComponent<Image>();
                 }
                 return this._FrameImage;
+            }
+        }
+        [SerializeField()]
+        private Image _FreezeImage;
+        public Image FreezeImage
+        {
+            get
+            {
+                if ((this._FreezeImage == null))
+                {
+                    this._FreezeImage = this.transform.Find("Root").Find("Freeze").GetComponent<Image>();
+                }
+                return this._FreezeImage;
             }
         }
         [SerializeField()]
@@ -222,19 +249,6 @@ namespace UI
                     this._HealText = this.transform.Find("Root").Find("HealImage").Find("HealText").GetComponent<Text>();
                 }
                 return this._HealText;
-            }
-        }
-        [SerializeField()]
-        private Image _FreezeImage;
-        public Image FreezeImage
-        {
-            get
-            {
-                if ((this._FreezeImage == null))
-                {
-                    this._FreezeImage = this.transform.Find("Root").Find("Freeze").GetComponent<Image>();
-                }
-                return this._FreezeImage;
             }
         }
         [SerializeField()]

@@ -16,12 +16,13 @@ namespace UI
         CardManager cm => ui.getManager<CardManager>();
         DeckManager dm => ui.getManager<DeckManager>();
 
+        int currentDeckID = 0;
+
         partial void onAwake()
         {
             BackButtonBlack.asButton.onClick.AddListener(() =>
             {
-                // 返回的时候也顺便保存
-                saveToDeck(EditingDeckDeckListItem.ID);
+                // todo: 提示未保存
 
                 Main main = GetComponentInParent<Main>();
                 main.display(main.MainMenu);
@@ -32,12 +33,17 @@ namespace UI
 
             EditingDeckDeckListItem.onDeckRename += onDeckRename;
             EditingDeckDeckListItem.SetMode(DeckListItem.Mode.DeckTitle);
-            EditingDeckDeckListItem.onDeckSelect += (id) =>
+
+            SaveButtonBlackIcon.asButton.onClick.AddListener(() =>
             {
                 // 卡组保存
-                saveToDeck(id);
+                saveToDeck(currentDeckID);
                 uiModeSwitch(true);
-            };
+            });
+            BackButtonBlackIcon.asButton.onClick.AddListener(() =>
+            {
+                uiModeSwitch(true);
+            });
 
             MasterCardSelection.OnSelect += onMasterSelect;
 
@@ -179,7 +185,7 @@ namespace UI
         {
             base.onDisplay();
 
-            cards = ui.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly 
+            cards = ui.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly
             && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null);
 
             reloadDeckList();
@@ -194,6 +200,8 @@ namespace UI
         /// <param name="deck"></param>
         private void deckEnterEditMode(int deckID)
         {
+            currentDeckID = deckID;
+
             var deck = dm.GetDeck(deckID);
             var deckCards = dm.GetDeckCards(deckID);
 
@@ -233,7 +241,7 @@ namespace UI
         /// <param name="deckMode">卡组列表模式</param>
         void uiModeSwitch(bool deckMode)
         {
-            DeckListViewScroll.gameObject.SetActive(deckMode);
+            DeckListViewImage.gameObject.SetActive(deckMode);
             DeckCardViewImage.gameObject.SetActive(!deckMode);
 
             isInDeckEditMode = !deckMode;
@@ -266,8 +274,15 @@ namespace UI
         {
             foreach (var item in cardItemList)
             {
-                item.buildItem.gameObject.SetActive(FilterPanel.cardFilter(item.define, item.skin));
-                item.buildItem.Card.isFaceup = true; // Animator默认状态是false，重置之后得还原
+                if (item.buildItem != null)
+                {
+                    item.buildItem.gameObject?.SetActive(FilterPanel.cardFilter(item.define, item.skin));
+                    item.buildItem.Card.isFaceup = true; // Animator默认状态是false，重置之后得还原
+                }
+                else
+                {
+                    Debug.LogWarning($"{item}.buildItem does not exists.");
+                }
             }
         }
         private void Update()

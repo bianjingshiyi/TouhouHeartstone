@@ -487,25 +487,61 @@ namespace Tests
             THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getCardDefine<CirculationOfGossip_1>(), 3)));
 
-            game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-
-            game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-
-            game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-
-            game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            do {
+                game.skipUntilCanUse<DefaultServant>(oppo);
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            } while (!oppo.field.isFull);
 
             game.skipUntilCanUse<CirculationOfGossip_1>(you);
             you.cmdUse(game, you.hand.getCard<CirculationOfGossip_1>());
+
             
+
+            while (!oppo.field.isFull)
+            {
+                game.skipUntilCanUse<DefaultServant>(oppo);
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            }
+
+            game.skipUntilCanUse<CirculationOfGossip_2>(you);
+            you.cmdUse(game, you.hand.getCard<CirculationOfGossip_2>());
+
+            while (!oppo.field.isFull)
+            {
+                game.skipUntilCanUse<DefaultServant>(oppo);
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            }
+
+            game.skipUntilCanUse<CirculationOfGossip_3>(you);
+            you.cmdUse(game, you.hand.getCard<CirculationOfGossip_3>());
+
+            //oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
+            //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
+            game.Dispose();
+        }
+
+        [Test]
+        public void ProbeGoustFromTheBarrowTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(GoustFromTheBarrow.ID, 2)
+            );
+
+            game.skipUntilCanUse<GoustFromTheBarrow>(you);
+            you.cmdUse(game, you.hand.getCard<GoustFromTheBarrow>());
+
+
+            game.skipUntilCanUse<DefaultServant>(you);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<GoustFromTheBarrow>(you);
+            you.cmdUse(game, you.hand.getCard<GoustFromTheBarrow>(),targets: you.field[1]);
 
             //oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
             //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
             game.Dispose();
         }
     }
+
+    
 }

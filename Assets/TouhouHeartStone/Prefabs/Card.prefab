@@ -1365,12 +1365,12 @@ MonoBehaviour:
   - IsFaceup/IsFaceup_False
   - Type/Type_Servant
   _CardBackImage: {fileID: 525013306416142025}
-  _CardBackEffectImage: {fileID: 0}
+  _CardBackEffectImage: {fileID: 5476528343448222198}
   _ShadowImage: {fileID: 1949518328878013980}
   _BackgroundImage: {fileID: 8512227078610663267}
   _Mask: {fileID: 4413013968147032452}
   _Image: {fileID: 6724395705441483877}
-  _CardFaceEffectImage: {fileID: 0}
+  _CardFaceEffectImage: {fileID: 9208750557227066415}
   _NameShadowImage: {fileID: 896383926161244298}
   _NameText: {fileID: 5938416541120205926}
   _DescShadowImage: {fileID: 6046089851005868003}

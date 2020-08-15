@@ -28,7 +28,7 @@ namespace UI
             this.m_as_Image = this.GetComponent<Image>();
             this._ImageMask = this.transform.Find("ImageMask").GetComponent<Mask>();
             this._HeadImageButton = this.transform.Find("ImageMask").Find("HeadImage").GetComponent<Button>();
-            this._DeleteButtonBlack = this.transform.Find("ImageMask").Find("Delete").GetComponent<ButtonBlack>();
+            this._DeleteButtonIconGlass = this.transform.Find("ImageMask").Find("Delete").GetComponent<ButtonIconGlass>();
             this._DeckNameImage = this.transform.Find("ImageMask").Find("DeckName").GetComponent<Image>();
             this._Text = this.transform.Find("ImageMask").Find("DeckName").Find("Text").GetComponent<Text>();
             this._NameInputField = this.transform.Find("ImageMask").Find("NameInputField").GetComponent<InputField>();
@@ -74,16 +74,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private ButtonBlack _DeleteButtonBlack;
-        public ButtonBlack DeleteButtonBlack
+        private ButtonIconGlass _DeleteButtonIconGlass;
+        public ButtonIconGlass DeleteButtonIconGlass
         {
             get
             {
-                if ((this._DeleteButtonBlack == null))
+                if ((this._DeleteButtonIconGlass == null))
                 {
-                    this._DeleteButtonBlack = this.transform.Find("ImageMask").Find("Delete").GetComponent<ButtonBlack>();
+                    this._DeleteButtonIconGlass = this.transform.Find("ImageMask").Find("Delete").GetComponent<ButtonIconGlass>();
                 }
-                return this._DeleteButtonBlack;
+                return this._DeleteButtonIconGlass;
             }
         }
         [SerializeField()]

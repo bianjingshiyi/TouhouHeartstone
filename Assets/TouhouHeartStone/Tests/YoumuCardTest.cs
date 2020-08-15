@@ -122,7 +122,7 @@ namespace Tests
             oppo.cmdTurnEnd(game);
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
             you.master.setAttack(5);
-            you.cmdUse(game, you.hand.First());//使用楼观剑
+            you.cmdUse(game, you.hand.getCard<Roukanken>());//使用楼观剑
             Assert.IsInstanceOf<Roukanken>(you.item.define);
             you.cmdAttack(game, you.master, target: oppo.field[0]);
             Assert.True(you.master.canAttack(game));

@@ -883,13 +883,11 @@ namespace TouhouHeartstone
             }
             return list.ToArray();
         }
-        public static Task<DamageEventArg> damageByRandomCount(this IEnumerable<Card> cards, THHGame game, Card source, int value, int count)
-        {
+        public static Task<DamageEventArg> damageByRandomCount(this IEnumerable<Card> cards, THHGame game, Card source, int value, int count)        {
             if (cards.Count() > count)
                 cards = cards.randomTake(game, count);
             return cards.damage(game, source, value);
-        }
-        public class DamageEventArg : EventArg
+        }        public class DamageEventArg : EventArg
         {
             public Card[] cards;
             public Card source;
