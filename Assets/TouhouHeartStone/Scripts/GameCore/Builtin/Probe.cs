@@ -649,8 +649,8 @@ namespace TouhouHeartstone.Builtin.Proble
     }
 
     /// <summary>
-    /// 捕风捉影
-    /// 5费，对一个敌方随机随从打3，召唤一个3/2的鸦天狗
+    /// 捕风捉影（格拉摩根伯爵-早苗-流言蜚语）
+    /// 4费，对一个敌方随机随从打3，召唤一个3/2的鸦天狗。将这张牌的升级版置入手牌(流言蜚语)。
     /// 
     /// </summary>
     [IgnoreCardDefine]
@@ -658,7 +658,8 @@ namespace TouhouHeartstone.Builtin.Proble
     {
         public const int ID = Probe.ID | CardCategory.SPELL | 0x022;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
+        public override int cost { get; set; } = 5;
+        public override bool isToken { get; set; } = false;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             //存在目标的法术
@@ -667,7 +668,84 @@ namespace TouhouHeartstone.Builtin.Proble
 
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.getOwner()).field.damageByRandomTargets(game, card, 3, 2);
+            await game.getOpponent(card.getOwner()).field.damageByRandomCount(game, card, 3, 1);
+            await card.getOwner().createToken(game, game.getCardDefine<KarasuTenguobot>());
+            await card.getOwner().hand.add(game, game.createCard<CirculationOfGossip_2>());
         }
+    }
+
+    /// <summary>
+    /// 流言蜚语
+    /// 6费，对两个敌方随机随从打5，召唤两个3/2的鸦天狗。将这张牌的升级版置入手牌(三人成虎)。
+    /// 
+    /// </summary>
+    [IgnoreCardDefine]
+    public class CirculationOfGossip_2 : SpellCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SPELL | 0x023;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 5;
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            //存在目标的法术
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            await game.getOpponent(card.getOwner()).field.damageByRandomCount(game, card, 6, 2);
+            await card.getOwner().createToken(game, game.getCardDefine<KarasuTenguobot>());
+            await card.getOwner().createToken(game, game.getCardDefine<KarasuTenguobot>());
+            await card.getOwner().hand.add(game, game.createCard<CirculationOfGossip_3>());
+        }
+    }
+
+    /// <summary>
+    /// 三人成虎
+    /// 8费，消灭3个随机敌方随从，召唤三个3/2的鸦天狗。
+    /// 
+    /// </summary>
+    [IgnoreCardDefine]
+    public class CirculationOfGossip_3 : SpellCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SPELL | 0x024;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 5;
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            //存在目标的法术
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            IEnumerable<Card> cards = game.getOpponent(card.getOwner()).field;
+            if (cards.Count() > 3)
+            {
+                cards = cards.randomTake(game, 3);
+            }
+            cards.setDead(true);
+
+            await card.getOwner().createToken(game, game.getCardDefine<KarasuTenguobot>());
+            await card.getOwner().createToken(game, game.getCardDefine<KarasuTenguobot>());
+            await card.getOwner().createToken(game, game.getCardDefine<KarasuTenguobot>());
+        }
+    }
+    /// <summary>
+    /// 鸦天狗，随从
+    /// 2/3/2
+    /// </summary>
+    [IgnoreCardDefine]
+    public class KarasuTenguobot : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SERVANT | 0x025;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 3;//随从的攻击力
+        public override int life { get; set; } = 2;//随从的血量上限
+        public override bool isToken { get; set; } = true;//是衍生物吗？（当然）
+                                                          
     }
 }

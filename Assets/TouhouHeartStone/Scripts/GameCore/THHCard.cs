@@ -886,31 +886,39 @@ namespace TouhouHeartstone
             return list.ToArray();
         }
 
-        public static async Task<DamageEventArg[]> damageByRandomTargets(this IEnumerable<Card> cards, THHGame game, Card source, int dam, int tar)
+        public static Task<DamageEventArg> damageByRandomCount(this IEnumerable<Card> cards, THHGame game, Card source, int value, int count)
         {
-            List<DamageEventArg> list = new List<DamageEventArg>();
-            List<Card> targets = new List<Card>();
-            for (int i = 0; i < tar; i++)
+            if (cards.Count() > count)
             {
-                    Card target = cards.Where(c => !c.isDead(game) && !c.isTargeted).random(game);
-                    if (target != null)
-                    {
-                        targets.Add(target);
-                        target.isTargeted = true;
-                    }
-                    else
-                    {
-                        break;
-                    }                            
+                cards = cards.randomTake(game,count);
             }
-
-            foreach(Card t in targets)
-            {
-                list.Add(await t.damage(game, source, dam));
-                t.isTargeted = false;
-            }
-            return list.ToArray();
+            return cards.damage(game, source, value);
         }
+        //public static async Task<DamageEventArg[]> damageByRandomTargets(this IEnumerable<Card> cards, THHGame game, Card source, int dam, int tar)
+        //{
+        //    List<DamageEventArg> list = new List<DamageEventArg>();
+        //    List<Card> targets = new List<Card>();
+        //    for (int i = 0; i < tar; i++)
+        //    {
+        //            Card target = cards.Where(c => !c.isDead(game) && !c.isTargeted).random(game);
+        //            if (target != null)
+        //            {
+        //                targets.Add(target);
+        //                target.isTargeted = true;
+        //            }
+        //            else
+        //            {
+        //                break;
+        //            }                            
+        //    }
+
+        //    foreach(Card t in targets)
+        //    {
+        //        list.Add(await t.damage(game, source, dam));
+        //        t.isTargeted = false;
+        //    }
+        //    return list.ToArray();
+        //}
         public class DamageEventArg : EventArg
         {
             public Card[] cards;
