@@ -519,5 +519,29 @@ namespace Tests
             //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
             game.Dispose();
         }
+
+        [Test]
+        public void ProbeGoustFromTheBarrowTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(GoustFromTheBarrow.ID, 2)
+            );
+
+            game.skipUntilCanUse<GoustFromTheBarrow>(you);
+            you.cmdUse(game, you.hand.getCard<GoustFromTheBarrow>());
+
+
+            game.skipUntilCanUse<DefaultServant>(you);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<GoustFromTheBarrow>(you);
+            you.cmdUse(game, you.hand.getCard<GoustFromTheBarrow>(),targets: you.field[1]);
+
+            //oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
+            //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
+            game.Dispose();
+        }
     }
+
+    
 }
