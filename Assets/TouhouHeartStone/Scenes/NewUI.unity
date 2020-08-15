@@ -8680,6 +8680,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1981269948}
   m_CullTransparentMesh: 0
+--- !u!114 &2001490677 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1828031410929233710, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7072975925436828004}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 840a1d307031e20438309a785651efcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &2029944167 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3879115454036205262, guid: e5eda7d1e4b5e7d41be47236088eba8c,
@@ -10641,6 +10653,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1828031410929233710, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: onHoverCard.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2001490677}
+    - target: {fileID: 1828031410929233710, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: onHoverCard.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: setBoolTrue
+      objectReference: {fileID: 0}
+    - target: {fileID: 1828031410929233710, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: onHoverCard.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2168971917012047929, guid: 83c0b33294cc7ac4295dbe5157864e9d,
         type: 3}
