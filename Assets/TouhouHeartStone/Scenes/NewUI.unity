@@ -4773,6 +4773,10 @@ MonoBehaviour:
     audio: {fileID: 8300000, guid: 521b17280bfbf174ba020dd7b2603e42, type: 3}
   - name: ElementalHarvester
     audio: {fileID: 8300000, guid: 38ccec6b280a2d74294e5d32c67ae454, type: 3}
+  - name: BurgeoningRise
+    audio: {fileID: 8300000, guid: a125612ecadf1cb4f9d47857c576027f, type: 3}
+  - name: PhlogisticRain
+    audio: {fileID: 8300000, guid: 03dc03f369a493443a3330d393a7f220, type: 3}
 --- !u!82 &1159673834
 AudioSource:
   m_ObjectHideFlags: 0
