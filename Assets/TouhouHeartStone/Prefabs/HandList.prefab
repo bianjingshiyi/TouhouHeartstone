@@ -268,6 +268,31 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 3231289549623003552, guid: 0170c536da3dfbe49b323cb0e30aa962,
+        type: 3}
+      propertyPath: onHoverCard.beforeAnim.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3231289549623003552, guid: 0170c536da3dfbe49b323cb0e30aa962,
+        type: 3}
+      propertyPath: onHoverCard.animName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3231289549623003552, guid: 0170c536da3dfbe49b323cb0e30aa962,
+        type: 3}
+      propertyPath: onHoverCard.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3231289549623003552, guid: 0170c536da3dfbe49b323cb0e30aa962,
+        type: 3}
+      propertyPath: onHoverCard.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3231289549623003552, guid: 0170c536da3dfbe49b323cb0e30aa962,
+        type: 3}
+      propertyPath: onHoverCard.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2432038108976825796}
     - target: {fileID: 9146447555242476573, guid: 0170c536da3dfbe49b323cb0e30aa962,
         type: 3}
       propertyPath: m_AnchorMax.x

@@ -886,8 +886,15 @@ namespace Game
             hand = null;
             return false;
         }
+        /// <summary>
+        /// 手牌悬停事件
+        /// </summary>
+        /// <param name="handList"></param>
+        /// <param name="pointer"></param>
         void onHandPointerEnter(HandListItem handList, PointerEventData pointer)
         {
+            handList.onHoverCard.invokeAfterAnim();
+            handList.onHoverCard.invokeBeforeAnim();
             if (!ui.SelfHandList.isExpanded &&
                 player.hand.count > 0)
             {
@@ -900,6 +907,8 @@ namespace Game
         }
         void onHandPointerExit(HandListItem handList, PointerEventData pointer)
         {
+            handList.onexitHoverCard.invokeAfterAnim();
+            handList.onexitHoverCard.invokeBeforeAnim();
             ui.TipBox.hide();
         }
         /// <summary>

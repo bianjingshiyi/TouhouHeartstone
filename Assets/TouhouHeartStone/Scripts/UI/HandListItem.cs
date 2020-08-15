@@ -23,7 +23,7 @@ namespace UI
         bool _isDragging = false;
         [SerializeField]
         bool _isHovered = false;
-        public ActionEvent<HandListItem, PointerEventData> onPointerEnter { get; set; } = new ActionEvent<HandListItem, PointerEventData>();
+        
         public ActionEvent<HandListItem, PointerEventData> onPointerExit { get; set; } = new ActionEvent<HandListItem, PointerEventData>();
         public ActionEvent<HandListItem, Vector2> onPointerMove { get; set; } = new ActionEvent<HandListItem, Vector2>();
 
@@ -72,11 +72,14 @@ namespace UI
             }
             _isDragging = false;
         }
+
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
             _isHovered = true;
             onPointerEnter.invoke(this, eventData);
         }
+        public ActionEvent<HandListItem, PointerEventData> onPointerEnter { get; set; } = new ActionEvent<HandListItem, PointerEventData>();
+
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
             _isHovered = false;
@@ -97,5 +100,7 @@ namespace UI
         public SimpleAnim onDraw;
         public SimpleAnim onEnemyUse;
         public SimpleAnim onSelfUse;
+        public SimpleAnim onHoverCard;
+        public SimpleAnim onexitHoverCard;
     }
 }
