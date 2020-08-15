@@ -95,19 +95,35 @@ namespace TouhouHeartstone
         public new delegate bool CheckConditionDelegate(THHGame game, Card card, T eventArg);
         public new delegate Task ExecuteDelegate(THHGame game, Card card, T eventArg);
         public THHEffectBefore(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
-            base(new Before<T>(), pile, (game, card, vars) =>
-            {
-                if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
-                    return onCheckCondition.Invoke(game, card, t);
-                else
-                    return true;
-            }, onCheckTarget, (game, card, vars, targets) =>
-            {
-                if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
-                    return onExecute.Invoke(game, card, t);
-                else
-                    return Task.CompletedTask;
-            })
+        base(new Before<T>(), pile, (game, card, vars) =>
+        {
+            if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                return onCheckCondition.Invoke(game, card, t);
+            else
+                return true;
+        }, onCheckTarget, (game, card, vars, targets) =>
+        {
+            if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                return onExecute.Invoke(game, card, t);
+            else
+                return Task.CompletedTask;
+        })
+        {
+        }
+        public THHEffectBefore(PileFlag pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
+        base(new TriggerTime[] { new Before<T>() }, pile.getPiles(), (game, card, vars) =>
+        {
+            if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                return onCheckCondition.Invoke(game, card, t);
+            else
+                return true;
+        }, onCheckTarget, (game, card, vars, targets) =>
+        {
+            if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                return onExecute.Invoke(game, card, t);
+            else
+                return Task.CompletedTask;
+        })
         {
         }
         public override void onEnable(IGame game, ICard card, IBuff buff)
@@ -164,19 +180,35 @@ namespace TouhouHeartstone
         public new delegate bool CheckConditionDelegate(THHGame game, Card card, T eventArg);
         public new delegate Task ExecuteDelegate(THHGame game, Card card, T eventArg);
         public THHEffectAfter(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
-            base(new After<T>(), pile, (game, card, vars) =>
-            {
-                if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
-                    return onCheckCondition.Invoke(game, card, t);
-                else
-                    return true;
-            }, onCheckTarget, (game, card, vars, targets) =>
-            {
-                if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
-                    return onExecute.Invoke(game, card, t);
-                else
-                    return Task.CompletedTask;
-            })
+        base(new After<T>(), pile, (game, card, vars) =>
+        {
+            if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                return onCheckCondition.Invoke(game, card, t);
+            else
+                return true;
+        }, onCheckTarget, (game, card, vars, targets) =>
+        {
+            if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                return onExecute.Invoke(game, card, t);
+            else
+                return Task.CompletedTask;
+        })
+        {
+        }
+        public THHEffectAfter(PileFlag pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
+        base(new TriggerTime[] { new After<T>() }, pile.getPiles(), (game, card, vars) =>
+        {
+            if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                return onCheckCondition.Invoke(game, card, t);
+            else
+                return true;
+        }, onCheckTarget, (game, card, vars, targets) =>
+        {
+            if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                return onExecute.Invoke(game, card, t);
+            else
+                return Task.CompletedTask;
+        })
         {
         }
         public override void onEnable(IGame game, ICard card, IBuff buff)

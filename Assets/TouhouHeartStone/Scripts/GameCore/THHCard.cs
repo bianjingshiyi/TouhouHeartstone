@@ -1,10 +1,8 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-using JetBrains.Annotations;
-using System.Data;
 
 namespace TouhouHeartstone
 {
@@ -885,31 +883,11 @@ namespace TouhouHeartstone
             }
             return list.ToArray();
         }
-
-        public static async Task<DamageEventArg[]> damageByRandomTargets(this IEnumerable<Card> cards, THHGame game, Card source, int dam, int tar)
+        public static Task<DamageEventArg> damageByRandomCount(this IEnumerable<Card> cards, THHGame game, Card source, int value, int count)
         {
-            List<DamageEventArg> list = new List<DamageEventArg>();
-            List<Card> targets = new List<Card>();
-            for (int i = 0; i < tar; i++)
-            {
-                    Card target = cards.Where(c => !c.isDead(game) && !c.isTargeted).random(game);
-                    if (target != null)
-                    {
-                        targets.Add(target);
-                        target.isTargeted = true;
-                    }
-                    else
-                    {
-                        break;
-                    }                            
-            }
-
-            foreach(Card t in targets)
-            {
-                list.Add(await t.damage(game, source, dam));
-                t.isTargeted = false;
-            }
-            return list.ToArray();
+            if (cards.Count() > count)
+                cards = cards.randomTake(game, count);
+            return cards.damage(game, source, value);
         }
         public class DamageEventArg : EventArg
         {

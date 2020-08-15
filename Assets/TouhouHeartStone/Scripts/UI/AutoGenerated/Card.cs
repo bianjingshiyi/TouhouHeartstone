@@ -26,10 +26,12 @@ namespace UI
         public void autoBind()
         {
             this._CardBackImage = this.transform.Find("CardBack").GetComponent<Image>();
+            this._CardBackEffectImage = this.transform.Find("CardBack").Find("CardBackEffect").GetComponent<Image>();
             this._ShadowImage = this.transform.Find("CardFace").Find("Shadow").GetComponent<Image>();
             this._BackgroundImage = this.transform.Find("CardFace").Find("Background").GetComponent<Image>();
             this._Mask = this.transform.Find("CardFace").Find("Mask").GetComponent<Mask>();
             this._Image = this.transform.Find("CardFace").Find("Mask").Find("Image").GetComponent<Image>();
+            this._CardFaceEffectImage = this.transform.Find("CardFace").Find("Mask").Find("CardFaceEffect").GetComponent<Image>();
             this._NameShadowImage = this.transform.Find("CardFace").Find("NameShadow").GetComponent<Image>();
             this._NameText = this.transform.Find("CardFace").Find("NameText").GetComponent<Text>();
             this._DescShadowImage = this.transform.Find("CardFace").Find("DescShadow").GetComponent<Image>();
@@ -57,6 +59,19 @@ namespace UI
                     this._CardBackImage = this.transform.Find("CardBack").GetComponent<Image>();
                 }
                 return this._CardBackImage;
+            }
+        }
+        [SerializeField()]
+        private Image _CardBackEffectImage;
+        public Image CardBackEffectImage
+        {
+            get
+            {
+                if ((this._CardBackEffectImage == null))
+                {
+                    this._CardBackEffectImage = this.transform.Find("CardBack").Find("CardBackEffect").GetComponent<Image>();
+                }
+                return this._CardBackEffectImage;
             }
         }
         [SerializeField()]
@@ -109,6 +124,19 @@ namespace UI
                     this._Image = this.transform.Find("CardFace").Find("Mask").Find("Image").GetComponent<Image>();
                 }
                 return this._Image;
+            }
+        }
+        [SerializeField()]
+        private Image _CardFaceEffectImage;
+        public Image CardFaceEffectImage
+        {
+            get
+            {
+                if ((this._CardFaceEffectImage == null))
+                {
+                    this._CardFaceEffectImage = this.transform.Find("CardFace").Find("Mask").Find("CardFaceEffect").GetComponent<Image>();
+                }
+                return this._CardFaceEffectImage;
             }
         }
         [SerializeField()]

@@ -17,16 +17,31 @@ namespace TouhouHeartstone.Builtin
         /// <summary>
         /// 蓄力：当回合结束时，如果你的最大法力值大于等于这张卡的花费，那么将这张卡标记为蓄力。在使用一张牌的时候，如果这张牌具有蓄力效果且处于蓄力状态，那么触发该效果。
         /// </summary>
-        public class PreHeat : THHEffectBefore<THHGame.TurnEndEventArg>
+        public class PreHeatEffect : PassiveEffect
         {
-            public PreHeat() : base(PileName.HAND, (g1, c1, a1) =>
+            public override string[] piles => throw new System.NotImplementedException();
+            THHEffectBefore<THHGame.TurnEndEventArg> onTurnEnd { get; } = new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.HAND, (g1, c1, a1) =>
             {
                 return c1.getOwner() == a1.player && c1.getOwner().maxGem >= c1.getCost(g1) && !isPreHeated(g1, c1);
             }, null, (g, c, a) =>
             {
                 return setPreHeated(g, c, true);
-            })
+            });
+            THHEffectAfter<THHPlayer.UseEventArg> onUse { get; } = new THHEffectAfter<THHPlayer.UseEventArg>(PileFlag.field | PileFlag.warp | PileFlag.item,
+            (g1, c1, a1) =>
             {
+                return a1.card == c1;
+            }, null, (g1, c1, a1) =>
+            {
+                return setPreHeated(g1, c1, false);
+            });
+            public override void onEnable(THHGame game, Card card, Buff buff)
+            {
+                throw new System.NotImplementedException();
+            }
+            public override void onDisable(THHGame game, Card card, Buff buff)
+            {
+                onTurnEnd.onDisable(game, card, buff);
             }
         }
         public class PreHeatEventArg : EventArg
@@ -40,8 +55,7 @@ namespace TouhouHeartstone.Builtin
         }
         public static Task setPreHeated(THHGame game, Card card, bool value)
         {
-            PreHeatEventArg eventArg = new PreHeatEventArg() { card = card, value = value };
-            return game.triggers.doEvent(eventArg, arg =>
+            return game.triggers.doEvent(new PreHeatEventArg() { card = card, value = value }, arg =>
             {
                 card = arg.card;
                 value = arg.value;
@@ -79,7 +93,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
-           new Youmu.PreHeat()
+           new Youmu.PreHeatEffect()
         };
         static async Task effect(THHGame game, Card card)
         {
@@ -103,7 +117,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
-           new Youmu.PreHeat()
+           new Youmu.PreHeatEffect()
         };
         static async Task effect(THHGame game, Card card)
         {
@@ -127,7 +141,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect),
-            new Youmu.PreHeat()
+            new Youmu.PreHeatEffect()
         };
         static async Task effect(THHGame game, Card card)
         {
@@ -205,7 +219,7 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new Youmu.PreHeat(),
+            new Youmu.PreHeatEffect(),
             new THHEffectAfter<THHCard.AttackEventArg>(PileName.ITEM,(g,c,a)=>
             {
                 return a.card == c.getOwner().master && Youmu.isPreHeated(g,c);
