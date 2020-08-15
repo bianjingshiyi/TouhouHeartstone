@@ -40,7 +40,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2634264027146421539}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.06087441, y: 0, z: 0, w: 0.99814546}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -48,7 +48,7 @@ RectTransform:
   - {fileID: 378132232228561961}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -6.98, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -243,6 +243,52 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
+  onHoverCard:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3231289549623003552}
+          m_MethodName: setBoolTrue
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: Show
+            m_BoolArgument: 0
+          m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onexitHoverCard:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3231289549623003552}
+          m_MethodName: setBoolFalse
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: Show
+            m_BoolArgument: 0
+          m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!95 &4729018519811004943
 Animator:
   serializedVersion: 3
@@ -343,6 +389,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1195777761491610246, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: onCast.animName
+      value: HighLight_Green
       objectReference: {fileID: 0}
     - target: {fileID: 1331063411485177131, guid: 92b5566bce81a774fb9bb22f1b342b2e,
         type: 3}
