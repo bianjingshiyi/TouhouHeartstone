@@ -771,4 +771,51 @@ namespace TouhouHeartstone.Builtin.Proble
             },PileFlag.self|PileFlag.field)
         };
     }
+
+    /// <summary>
+    /// 杰洛特：伊格尼法印
+    /// 6/2/2,唯一，战吼：消灭敌方所有攻击力最高的随从
+    /// “他同暮光升起，为了那些罪恶复仇；他于阴影中藏匿，为了平息痛苦；他随狂怒前行，将那伤痛铭记于心。”
+    /// </summary>
+    [IgnoreCardDefine]
+    public class Geralt_Igni : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CardCategory.SERVANT | 0x027;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 6;
+        public override int attack { get; set; } = 2;//随从的攻击力
+        public override int life { get; set; } = 2;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game,Card card)
+        {
+            IEnumerable<Card> cards = game.getOpponent(card.getOwner()).field;
+
+            List<Card> results = new List<Card>();
+
+            int maxAttack = game.getOpponent(card.getOwner()).field[0].getAttack(game);
+            foreach(Card c in cards)
+            {
+                if (c.getAttack(game) > maxAttack)
+                {
+                    maxAttack = c.getAttack(game);
+                }
+            }
+
+            foreach (Card c1 in cards)
+            {
+                if (c1.getAttack(game) == maxAttack)
+                {
+                    results.Add(c1);
+                }
+            }
+
+            results.setDead(true);
+        }
+    }
 }

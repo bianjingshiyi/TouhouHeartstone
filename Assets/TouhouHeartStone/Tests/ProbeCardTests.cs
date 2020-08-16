@@ -541,6 +541,30 @@ namespace Tests
             //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
             game.Dispose();
         }
+
+        [Test]
+        public void ProbeGeralt_IgniTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getCardDefine<Geralt_Igni>(), 3)));
+
+            do
+            {
+                game.skipUntilCanUse<DefaultServant>(oppo);
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            } while (!oppo.field.isFull);
+
+            game.skipUntilCanUse<Geralt_Igni>(you);
+            you.cmdUse(game, you.hand.getCard<Geralt_Igni>());
+         
+            game.Dispose();
+        }
     }
 
     
