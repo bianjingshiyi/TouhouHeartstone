@@ -347,6 +347,8 @@ namespace Tests
             })
         };
     }
+
+
     /// <summary>
     /// 巫师学徒
     /// </summary>
@@ -529,6 +531,24 @@ namespace Tests
             {
                 return t.getOwner() != c.getOwner();
             })
+        };
+    }
+
+    /// <summary>
+    /// 测试：冷静头脑
+    /// 冻结一个敌方角色
+    /// </summary>
+    public class TestFreezeBrain : SpellCardDefine
+    {
+        public const int ID = TestMaster.ID | CardCategory.SPELL | 0x016;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async (g, c, t) =>
+            {
+                t.setFreeze(g,true);
+            },PileFlag.oppo | PileFlag.character)
         };
     }
 }
