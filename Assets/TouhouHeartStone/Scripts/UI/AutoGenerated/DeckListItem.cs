@@ -31,6 +31,7 @@ namespace UI
             this._DeleteButtonIconGlass = this.transform.Find("ImageMask").Find("Delete").GetComponent<ButtonIconGlass>();
             this._DeckNameImage = this.transform.Find("ImageMask").Find("DeckName").GetComponent<Image>();
             this._Text = this.transform.Find("ImageMask").Find("DeckName").Find("Text").GetComponent<Text>();
+            this._NotCompleteImage = this.transform.Find("ImageMask").Find("DeckName").Find("NotComplete").GetComponent<Image>();
             this._NameInputField = this.transform.Find("ImageMask").Find("NameInputField").GetComponent<InputField>();
             this._AddButtonBlack = this.transform.Find("Add").GetComponent<ButtonBlack>();
         }
@@ -110,6 +111,19 @@ namespace UI
                     this._Text = this.transform.Find("ImageMask").Find("DeckName").Find("Text").GetComponent<Text>();
                 }
                 return this._Text;
+            }
+        }
+        [SerializeField()]
+        private Image _NotCompleteImage;
+        public Image NotCompleteImage
+        {
+            get
+            {
+                if ((this._NotCompleteImage == null))
+                {
+                    this._NotCompleteImage = this.transform.Find("ImageMask").Find("DeckName").Find("NotComplete").GetComponent<Image>();
+                }
+                return this._NotCompleteImage;
             }
         }
         [SerializeField()]

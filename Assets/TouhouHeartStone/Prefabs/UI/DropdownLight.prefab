@@ -425,6 +425,7 @@ MonoBehaviour:
   _LabelText: {fileID: 7828612899551654307}
   _ArrowImage: {fileID: 7828612899653961127}
   _TemplateScroll: {fileID: 7828612898547453112}
+  _ContentVerticalLayoutGroup: {fileID: 3165093950647626666}
   _ItemToggle: {fileID: 7828612899341638206}
 --- !u!1 &7828612899551654305
 GameObject:
