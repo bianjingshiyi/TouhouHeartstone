@@ -26,14 +26,8 @@ namespace UI
         public void autoBind()
         {
             this._Card = this.transform.Find("Card").GetComponent<Card>();
-        }
-        private BuildCardList _parent;
-        public BuildCardList parent
-        {
-            get
-            {
-                return this.transform.parent.GetComponent<BuildCardList>();
-            }
+            this._Image = this.transform.Find("Image").GetComponent<Image>();
+            this._RemainHintText = this.transform.Find("Image").Find("RemainHint").GetComponent<Text>();
         }
         [SerializeField()]
         private Card _Card;
@@ -46,6 +40,32 @@ namespace UI
                     this._Card = this.transform.Find("Card").GetComponent<Card>();
                 }
                 return this._Card;
+            }
+        }
+        [SerializeField()]
+        private Image _Image;
+        public Image Image
+        {
+            get
+            {
+                if ((this._Image == null))
+                {
+                    this._Image = this.transform.Find("Image").GetComponent<Image>();
+                }
+                return this._Image;
+            }
+        }
+        [SerializeField()]
+        private Text _RemainHintText;
+        public Text RemainHintText
+        {
+            get
+            {
+                if ((this._RemainHintText == null))
+                {
+                    this._RemainHintText = this.transform.Find("Image").Find("RemainHint").GetComponent<Text>();
+                }
+                return this._RemainHintText;
             }
         }
         partial void onAwake();

@@ -18,14 +18,25 @@ namespace UI
 
         int currentDeckID = 0;
 
+        bool deckChanged = false;
+
         partial void onAwake()
         {
             BackButtonBlack.asButton.onClick.AddListener(() =>
             {
-                // todo: 提示未保存
-
                 Main main = GetComponentInParent<Main>();
-                main.display(main.MainMenu);
+
+                if (deckChanged)
+                {
+                    UIDialog.ShowQuestion("卡组尚未保存，退出后现有变更将丢失。\n是否退出？", () =>
+                    {
+                        main.display(main.MainMenu);
+                    });
+                }
+                else
+                {
+                    main.display(main.MainMenu);
+                }
             });
 
             FilterPanel.onFilterConditionChange += reloadCardList;
@@ -37,8 +48,19 @@ namespace UI
             SaveButtonBlackIcon.asButton.onClick.AddListener(() =>
             {
                 // 卡组保存
-                saveToDeck(currentDeckID);
-                uiModeSwitch(true);
+                if (BuildDeckList.Select(i => i.count).Sum() < 30)
+                {
+                    UIDialog.ShowQuestion("当前卡组不完整，无法在游戏中使用。\n是否要保存？", () =>
+                    {
+                        saveToDeck(currentDeckID);
+                        uiModeSwitch(true);
+                    });
+                }
+                else
+                {
+                    saveToDeck(currentDeckID);
+                    uiModeSwitch(true);
+                }
             });
             BackButtonBlackIcon.asButton.onClick.AddListener(() =>
             {
@@ -48,6 +70,7 @@ namespace UI
             MasterCardSelection.OnSelect += onMasterSelect;
 
             HintMessageText.gameObject.SetActive(false);
+            UIDialog.gameObject.SetActive(false);
         }
 
         private void saveToDeck(int id)
@@ -72,6 +95,10 @@ namespace UI
         private CardItem getCardItem(BuildCardListItem a)
         {
             return cardItemList.Where(c => c.buildItem == a).FirstOrDefault();
+        }
+        private CardItem getCardItem(CardDefine a)
+        {
+            return cardItemList.Where(c => c.define.id == a.id).FirstOrDefault();
         }
 
         /// <summary>
@@ -104,6 +131,8 @@ namespace UI
                 var item = DeckList.addItem();
                 item.SetContent((int)deck.ID, deck.Name, spr);
                 item.SetMode(DeckListItem.Mode.DeckListItem);
+                item.SetSelectable(true);
+                item.SetWarning(dm.GetDeckCards(deck.ID).Count < 30);
 
                 item.onDeckSelect += deckEnterEditMode;
                 item.onDeckRemove += onDeckRemove;
@@ -227,6 +256,7 @@ namespace UI
             });
             DragCard.hide();
 
+            deckChanged = false;
             uiModeSwitch(false);
         }
 
@@ -245,6 +275,11 @@ namespace UI
             DeckCardViewImage.gameObject.SetActive(!deckMode);
 
             isInDeckEditMode = !deckMode;
+
+            if (!deckMode)
+            {
+                updateCardRemainText();
+            }
         }
 
         void loadCardList()
@@ -259,6 +294,7 @@ namespace UI
                 if (ui.getManager<CardManager>().tryGetSkin(card.id, out var skin))
                 {
                     var item = BuildCardList.addItem();
+                    item.setRemainText(0, card.hasKeyword(Keyword.UNIQUE) ? 1 : 2);
                     cardItemList.Add(new CardItem() { buildItem = item, define = card, skin = skin });
                     item.Card.setCard(card, skin);
                     UberDebug.LogChannel("UI", "添加卡" + card + "列表项目");
@@ -285,6 +321,23 @@ namespace UI
                 }
             }
         }
+
+        void updateCardRemainText()
+        {
+            foreach (var card in cardItemList)
+            {
+                var deckItem = BuildDeckList.getItems().FirstOrDefault(i => i.card == card.define);
+                if (deckItem != null)
+                {
+                    card.buildItem.setRemainText(deckItem.count, card.define.hasKeyword(Keyword.UNIQUE) ? 1 : 2);
+                }
+                else
+                {
+                    card.buildItem.setRemainText(0, 2);
+                }
+            }
+        }
+
         private void Update()
         {
             DeckCountText.text = BuildDeckList.getItems().Select(i => i.count).Sum() + "/30";
@@ -347,7 +400,11 @@ namespace UI
             else
             {
                 if (item.count < 1)
+                {
                     BuildDeckList.removeItem(item);
+                    getCardItem(item.card).buildItem.setRemainText(0, 2);
+                    deckChanged = true;
+                }
             }
         }
         void onDragItem(CardDefine card, Vector2 position)
@@ -426,6 +483,12 @@ namespace UI
                 else
                     return a.card.id - b.card.id;
             });
+
+            // 更新可用信息
+            getCardItem(card).buildItem.setRemainText(deckItem.count, card.hasKeyword(Keyword.UNIQUE) ? 1 : 2);
+
+            // 标记为已经修改
+            deckChanged = true;
         }
     }
 }

@@ -34,6 +34,7 @@ namespace UI
             this._Text = this.transform.Find("Root").Find("Text").GetComponent<Text>();
             this._Root_Image = this.transform.Find("Root").Find("Image").GetComponent<Image>();
             this._NumText = this.transform.Find("Root").Find("Image").Find("NumText").GetComponent<Text>();
+            this._Image_Image = this.transform.Find("Root").Find("Image").Find("Image").GetComponent<Image>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -150,6 +151,19 @@ namespace UI
                     this._NumText = this.transform.Find("Root").Find("Image").Find("NumText").GetComponent<Text>();
                 }
                 return this._NumText;
+            }
+        }
+        [SerializeField()]
+        private Image _Image_Image;
+        public Image Image_Image
+        {
+            get
+            {
+                if ((this._Image_Image == null))
+                {
+                    this._Image_Image = this.transform.Find("Root").Find("Image").Find("Image").GetComponent<Image>();
+                }
+                return this._Image_Image;
             }
         }
         partial void onAwake();

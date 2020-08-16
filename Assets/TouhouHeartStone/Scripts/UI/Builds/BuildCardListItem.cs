@@ -39,5 +39,16 @@ namespace UI
             }
             _isDragging = false;
         }
+
+        /// <summary>
+        /// 设置剩下可用的牌的提示
+        /// </summary>
+        /// <param name="now"></param>
+        /// <param name="count"></param>
+        public void setRemainText(int now, int count)
+        {
+            Image.gameObject.SetActive(now != 0);
+            RemainHintText.text = $"{now} / {count}";
+        }
     }
 }

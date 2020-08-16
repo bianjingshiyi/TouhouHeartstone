@@ -30,6 +30,16 @@ namespace UI
             Text.text = name;
         }
 
+        public void SetSelectable(bool val)
+        {
+            HeadImageButton.interactable = val; 
+        }
+
+        public void SetWarning(bool val)
+        {
+            NotCompleteImage.gameObject.SetActive(val);
+        }
+
         public enum Mode
         {
             DeckListItem, // 牌组列表
