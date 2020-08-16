@@ -25,12 +25,41 @@ namespace UI
         }
         public void autoBind()
         {
+            this.m_as_Image = this.GetComponent<Image>();
+            this._RootMask = this.transform.Find("Root").GetComponent<Mask>();
             this._MaskImage = this.transform.Find("Root").Find("MaskImage").GetComponent<Image>();
             this._Mask = this.transform.Find("Root").Find("Mask").GetComponent<Mask>();
             this._Image = this.transform.Find("Root").Find("Mask").Find("Image").GetComponent<Image>();
             this._FadeImage = this.transform.Find("Root").Find("Fade").GetComponent<Image>();
             this._Text = this.transform.Find("Root").Find("Text").GetComponent<Text>();
-            this._NumText = this.transform.Find("Root").Find("NumText").GetComponent<Text>();
+            this._Root_Image = this.transform.Find("Root").Find("Image").GetComponent<Image>();
+            this._NumText = this.transform.Find("Root").Find("Image").Find("NumText").GetComponent<Text>();
+        }
+        [SerializeField()]
+        private Image m_as_Image;
+        public Image asImage
+        {
+            get
+            {
+                if ((this.m_as_Image == null))
+                {
+                    this.m_as_Image = this.GetComponent<Image>();
+                }
+                return this.m_as_Image;
+            }
+        }
+        [SerializeField()]
+        private Mask _RootMask;
+        public Mask RootMask
+        {
+            get
+            {
+                if ((this._RootMask == null))
+                {
+                    this._RootMask = this.transform.Find("Root").GetComponent<Mask>();
+                }
+                return this._RootMask;
+            }
         }
         [SerializeField()]
         private Image _MaskImage;
@@ -98,6 +127,19 @@ namespace UI
             }
         }
         [SerializeField()]
+        private Image _Root_Image;
+        public Image Root_Image
+        {
+            get
+            {
+                if ((this._Root_Image == null))
+                {
+                    this._Root_Image = this.transform.Find("Root").Find("Image").GetComponent<Image>();
+                }
+                return this._Root_Image;
+            }
+        }
+        [SerializeField()]
         private Text _NumText;
         public Text NumText
         {
@@ -105,7 +147,7 @@ namespace UI
             {
                 if ((this._NumText == null))
                 {
-                    this._NumText = this.transform.Find("Root").Find("NumText").GetComponent<Text>();
+                    this._NumText = this.transform.Find("Root").Find("Image").Find("NumText").GetComponent<Text>();
                 }
                 return this._NumText;
             }

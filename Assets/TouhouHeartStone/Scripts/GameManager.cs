@@ -35,6 +35,7 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
+            TaskExceptionHandler.register();
             _mainUI = this.findInstance<Main>();
             _mainUI.game = this;
             _mainUI.Game.GameResultDialog.ButtonGlassButtonBlack.asButton.onClick.set(quitGame);

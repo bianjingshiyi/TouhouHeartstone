@@ -17,9 +17,9 @@ namespace TouhouHeartstone.Builtin
         /// <summary>
         /// 蓄力：当回合结束时，如果你的最大法力值大于等于这张卡的花费，那么将这张卡标记为蓄力。在使用一张牌的时候，如果这张牌具有蓄力效果且处于蓄力状态，那么触发该效果。
         /// </summary>
-        public class PreHeat : THHEffectBefore<THHGame.TurnEndEventArg>
+        public class SetPreHeatEffect : THHEffectBefore<THHGame.TurnEndEventArg>
         {
-            public PreHeat() : base(PileName.HAND, (g1, c1, a1) =>
+            public SetPreHeatEffect() : base(PileName.HAND, (g1, c1, a1) =>
             {
                 return c1.getOwner() == a1.player && c1.getOwner().maxGem >= c1.getCost(g1) && !isPreHeated(g1, c1);
             }, null, (g, c, a) =>
@@ -27,6 +27,21 @@ namespace TouhouHeartstone.Builtin
                 return setPreHeated(g, c, true);
             })
             {
+
+            }
+        }
+        public class RemovePreHeatEffect : THHEffectAfter<THHPlayer.UseEventArg>
+        {
+            public RemovePreHeatEffect() : base(PileFlag.field | PileFlag.warp | PileFlag.item,
+            (g1, c1, a1) =>
+            {
+                return a1.card == c1;
+            }, null, (g1, c1, a1) =>
+            {
+                return setPreHeated(g1, c1, false);
+            })
+            {
+
             }
         }
         public class PreHeatEventArg : EventArg
@@ -40,8 +55,7 @@ namespace TouhouHeartstone.Builtin
         }
         public static Task setPreHeated(THHGame game, Card card, bool value)
         {
-            PreHeatEventArg eventArg = new PreHeatEventArg() { card = card, value = value };
-            return game.triggers.doEvent(eventArg, arg =>
+            return game.triggers.doEvent(new PreHeatEventArg() { card = card, value = value }, arg =>
             {
                 card = arg.card;
                 value = arg.value;
@@ -79,7 +93,8 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
-           new Youmu.PreHeat()
+           new Youmu.SetPreHeatEffect(),
+           new Youmu.RemovePreHeatEffect()
         };
         static async Task effect(THHGame game, Card card)
         {
@@ -103,7 +118,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
-           new Youmu.PreHeat()
+           new Youmu.SetPreHeatEffect(),
+           new Youmu.RemovePreHeatEffect()
         };
         static async Task effect(THHGame game, Card card)
         {
@@ -127,7 +143,8 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect),
-            new Youmu.PreHeat()
+            new Youmu.SetPreHeatEffect(),
+            new Youmu.RemovePreHeatEffect()
         };
         static async Task effect(THHGame game, Card card)
         {
@@ -205,17 +222,26 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new Youmu.PreHeat(),
-            new THHEffectAfter<THHCard.AttackEventArg>(PileName.ITEM,(g,c,a)=>
+            new Youmu.SetPreHeatEffect(),
+            new Youmu.RemovePreHeatEffect(),
+            new NoTargetEffect((game,card)=>
             {
-                return a.card == c.getOwner().master && Youmu.isPreHeated(g,c);
-            },null,(g,c,a)=>
-            {
-                if(a.target.isDead(g))
+                if(Youmu.isPreHeated(game,card))
                 {
-                    c.getOwner().master.setAttackTimes(c.getOwner().master.getAttackTimes(g)-1);
+                    return card.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<THHCard.AttackEventArg>(PileName.ITEM,(g,c,a)=>
+                    {
+                        return a.card == c.getOwner().master;
+                    },null,(g,c,a)=>
+                    {
+                        if(a.target.isDead(g))
+                        {
+                            c.getOwner().master.setAttackTimes(c.getOwner().master.getAttackTimes(g)-1);
+                        }
+                        return Task.CompletedTask;
+                    })));
                 }
-                return Task.CompletedTask;
+                else
+                    return Task.CompletedTask;
             })
         };
     }

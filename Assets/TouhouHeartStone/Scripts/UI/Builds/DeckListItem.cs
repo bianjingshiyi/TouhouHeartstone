@@ -17,7 +17,7 @@ namespace UI
         {
             HeadImageButton.onClick.AddListener(() => { onDeckSelect?.Invoke(id); });
             NameInputField.onEndEdit.AddListener((s) => { onDeckRename?.Invoke(id, s); });
-            DeleteButtonBlack.asButton.onClick.AddListener(() => { onDeckRemove?.Invoke(id); });
+            DeleteButtonIconGlass.asButton.onClick.AddListener(() => { onDeckRemove?.Invoke(id); });
             AddButtonBlack.asButton.onClick.AddListener(() => { onDeckAdd?.Invoke(); });
         }
 
@@ -45,7 +45,7 @@ namespace UI
 
             DeckNameImage.gameObject.SetActive(mode == Mode.DeckListItem || mode == Mode.DeckSelect);
             NameInputField.gameObject.SetActive(mode == Mode.DeckTitle);
-            DeleteButtonBlack.gameObject.SetActive(mode == Mode.DeckListItem);
+            DeleteButtonIconGlass.gameObject.SetActive(mode == Mode.DeckListItem);
         }
     }
 }

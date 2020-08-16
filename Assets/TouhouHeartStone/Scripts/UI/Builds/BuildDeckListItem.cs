@@ -28,7 +28,7 @@ namespace UI
             set
             {
                 _count = value;
-                NumText.text = _count > 1 ? _count.ToString() : null;
+                NumText.text = _count > 0 ? _count.ToString() : null;
             }
         }
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)

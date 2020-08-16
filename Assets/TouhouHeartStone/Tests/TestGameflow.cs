@@ -3,6 +3,7 @@ using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
+using BJSYGameCore;
 namespace Tests
 {
     public static class TestGameflow
