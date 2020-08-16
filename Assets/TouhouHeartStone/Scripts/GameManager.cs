@@ -13,6 +13,7 @@ using ExcelLibrary.SpreadSheet;
 using System.Collections.Generic;
 using BJSYGameCore.UI;
 using TouhouCardEngine.Interfaces;
+using UnityEngine.UI;
 namespace Game
 {
     public class GameManager : Manager
@@ -276,6 +277,7 @@ namespace Game
 
             game.triggers.onEventBefore += onEventBefore;
             game.triggers.onEventAfter += onEventAfter;
+            ui.LogScrollView.shrink();
             ui.LogScrollView.LogList.clearItems();
         }
         void onEventBefore(IEventArg obj)
@@ -299,6 +301,7 @@ namespace Game
                 case THHCard.DeathEventArg _:
                     var item = ui.LogScrollView.LogList.addItem();
                     item.setProp("event", obj);
+                    item.onPointerEnter.set(onLogListItemEnter);
                     break;
                 default:
                     break;
@@ -337,7 +340,8 @@ namespace Game
                     return isChildOf(parent, child.parent, ref depth);
                 }
             }
-            ui.LogScrollView.asScrollRect.verticalScrollbar.value = 0;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(ui.LogScrollView.LogList.rectTransform);
+            ui.LogScrollView.asScrollRect.verticalNormalizedPosition = 0;
             switch (obj)
             {
                 case THHPlayer.SetGemEventArg setGem:
@@ -456,6 +460,17 @@ namespace Game
                 _deck[i] = PlayerPrefs.GetInt("Deck" + i);
             }
         }
+        #region Events
+        void onLogListItemEnter(LogListItem item)
+        {
+            var arg = item.getProp<IEventArg>("event");
+            if (arg is IDescribableEventArg describable)
+            {
+
+                ui.LogScrollView.LogInfoHorizantal.display();
+            }
+        }
+        #endregion
         protected void OnGUI()
         {
 #if UNITY_EDITOR

@@ -545,9 +545,10 @@ namespace Tests
         public override int cost { get; set; } = 0;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect(async (g, c, t) =>
+            new LambdaSingleTargetEffect((g, c, t) =>
             {
                 t.setFreeze(g,true);
+                return Task.CompletedTask;
             },PileFlag.oppo | PileFlag.character)
         };
     }

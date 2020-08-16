@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using BJSYGameCore.UI;
 namespace UI
 {
     partial class LogListItem
     {
+        [Header("Config")]
         [SerializeField]
         Color _selfColor = new Color(.2f, .2f, .8f);
         public Color selfColor
@@ -104,6 +106,34 @@ namespace UI
         public Sprite deathIcon
         {
             get { return _deathIcon; }
+        }
+        [Header("Status")]
+        [SerializeField]
+        bool _isHovered = false;
+        public bool isHovered
+        {
+            get { return _isHovered; }
+        }
+        public ActionEvent<LogListItem> onPointerEnter { get; } = new ActionEvent<LogListItem>();
+        public ActionEvent<LogListItem> onPointerExit { get; } = new ActionEvent<LogListItem>();
+        protected void Update()
+        {
+            if (ui.getManager<InputManager>().isPointerOver(rectTransform))
+            {
+                if (!_isHovered)
+                {
+                    _isHovered = true;
+                    onPointerEnter.invoke(this);
+                }
+            }
+            else
+            {
+                if (_isHovered)
+                {
+                    _isHovered = false;
+                    onPointerExit.invoke(this);
+                }
+            }
         }
     }
 }

@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/TouhouHeartStone/Scenes/NewUI.unity
     guid: a0c8713e97c7b3b4db24b3fb3fe1c8cb
+  - enabled: 0
+    path: Assets/Tests/InputTest/InputTest.unity
+    guid: caf934d2d510e2a4a97c5fc03eab9e08
   m_configObjects: {}

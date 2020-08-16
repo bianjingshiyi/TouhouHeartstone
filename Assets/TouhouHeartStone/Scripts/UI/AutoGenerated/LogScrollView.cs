@@ -31,6 +31,7 @@ namespace UI
             this._LogList = this.transform.Find("Viewport").Find("LogList").GetComponent<LogList>();
             this._ScrollbarHorizontal = this.transform.Find("ScrollbarHorizontal").GetComponent<ScrollbarHorizontal>();
             this._ScrollbarVertical = this.transform.Find("ScrollbarVertical").GetComponent<ScrollbarVertical>();
+            this._LogInfoHorizantal = this.transform.Find("LogInfoHorizantal").GetComponent<LogInfoHorizantal>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -108,6 +109,19 @@ namespace UI
                     this._ScrollbarVertical = this.transform.Find("ScrollbarVertical").GetComponent<ScrollbarVertical>();
                 }
                 return this._ScrollbarVertical;
+            }
+        }
+        [SerializeField()]
+        private LogInfoHorizantal _LogInfoHorizantal;
+        public LogInfoHorizantal LogInfoHorizantal
+        {
+            get
+            {
+                if ((this._LogInfoHorizantal == null))
+                {
+                    this._LogInfoHorizantal = this.transform.Find("LogInfoHorizantal").GetComponent<LogInfoHorizantal>();
+                }
+                return this._LogInfoHorizantal;
             }
         }
         partial void onAwake();

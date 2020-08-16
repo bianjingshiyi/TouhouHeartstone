@@ -289,7 +289,7 @@ namespace Tests
         /// 新冰冻测试：与原本相比，添加了对英雄冻结的测试
         /// </summary>
         [Test]
-        public void NewfreezeTest()
+        public void freezeHeroTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {

@@ -332,7 +332,7 @@ MonoBehaviour:
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  _defaultItem: {fileID: 0}
+  _defaultItem: {fileID: 4541366765011398569}
   m_as_VerticalLayoutGroup: {fileID: 4514938058492799096}
 --- !u!1 &4514938058562137379
 GameObject:
