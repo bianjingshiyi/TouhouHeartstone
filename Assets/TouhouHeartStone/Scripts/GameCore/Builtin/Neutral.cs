@@ -653,7 +653,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 324 爱丽丝·玛格特洛依德 当你的回合开始后，召唤一个1/1的人形。
+    /// 324 爱丽丝·玛格特洛依德 唯一，当你的回合结束时，召唤一个1/1的人形。
     /// </summary>
     public class AliceMargatroid_N : ServantCardDefine
     {
@@ -662,13 +662,12 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
-        public override IEffect[] effects { get; set; } = new IEffect[]{
-            new AfterTurnStart(async(game,card,arg)=>
+        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new BeforeYourTurnEnd(async(game,card,arg)=>
             {
                 await card.getOwner().createToken(game, game.getCardDefine<Doll_N>());
-            },(g,c,a)=>
-            {
-                return a.player==c.getOwner();
             })
         };
     }
@@ -683,6 +682,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override bool isToken { get; set; } = true;
+        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
     }
     /// <summary>
     /// 433 帕秋莉·诺蕾姬 唯一，战吼：发现两张元素法术，将它们融合并置入手牌。

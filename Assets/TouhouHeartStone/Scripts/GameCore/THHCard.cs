@@ -139,10 +139,19 @@ namespace TouhouHeartstone
                 return Task.CompletedTask;
             });
         }
-        public class SetArmorEventArg : EventArg
+        public class SetArmorEventArg : EventArg, IDescribableEventArg
         {
             public Card card;
             public int value;
+
+            ICard IDescribableEventArg.card => card;
+
+            ICard[] IDescribableEventArg.targets => null;
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return card.getFormatString() + "的护甲变为" + value;
+            }
         }
         public static int getCurrentLife(this Card card, IGame game)
         {
@@ -485,9 +494,15 @@ namespace TouhouHeartstone
                 }
             });
         }
-        public class SilenceEventArg : EventArg
+        public class SilenceEventArg : EventArg, IDescribableEventArg
         {
             public Card[] cards;
+            ICard IDescribableEventArg.card => cards.Length < 2 ? cards[0] : null;
+            ICard[] IDescribableEventArg.targets => cards.Length > 1 ? cards : null;
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return string.Join("，", cards.Select(c => c.getFormatString())) + "被沉默";
+            }
         }
         public static Task<SilenceEventArg> silence(this Card card, THHGame game)
         {
@@ -775,10 +790,16 @@ namespace TouhouHeartstone
             await game.updateDeath();
             return eventArg;
         }
-        public class AttackEventArg : EventArg
+        public class AttackEventArg : EventArg, IDescribableEventArg
         {
             public Card card;
             public Card target;
+            ICard IDescribableEventArg.card => card;
+            ICard[] IDescribableEventArg.targets => new ICard[] { target };
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return card.getFormatString() + "攻击" + target.getFormatString();
+            }
         }
         public static Task<DamageEventArg> damage(this Card card, THHGame game, Card source, int value)
         {
@@ -889,12 +910,22 @@ namespace TouhouHeartstone
                 cards = cards.randomTake(game, count);
             return cards.damage(game, source, value);
         }
-        public class DamageEventArg : EventArg
+        public class DamageEventArg : EventArg, IDescribableEventArg
         {
             public Card[] cards;
             public Card source;
             public int value;
             public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
+
+            ICard IDescribableEventArg.card => source;
+
+            ICard[] IDescribableEventArg.targets => infoDic.Keys.ToArray();
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return source.getFormatString() + "对" + string.Join("，", infoDic.Select(p => p.Key.getFormatString() + "造成" + p.Value.damagedValue + "点伤害"));
+            }
+
             public class Info
             {
                 public int damagedValue;
@@ -946,11 +977,20 @@ namespace TouhouHeartstone
         {
             return heal(new Card[] { card }, game, value);
         }
-        public class HealEventArg : EventArg
+        public class HealEventArg : EventArg, IDescribableEventArg
         {
             public Card[] cards;
             public int value;
             public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
+            ICard IDescribableEventArg.card => infoDic.Count > 1 ? null : infoDic.First().Key;
+
+            ICard[] IDescribableEventArg.targets => infoDic.Count > 1 ? infoDic.Keys.ToArray() : null;
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return string.Join("，", infoDic.Select(p => "治疗" + p.Key.getFormatString() + p.Value.healedValue + "点生命值"));
+            }
+
             public class Info
             {
                 public int healedValue;
@@ -1012,9 +1052,19 @@ namespace TouhouHeartstone
             }
             return eventArg;
         }
-        public class DeathEventArg : EventArg
+        public class DeathEventArg : EventArg, IDescribableEventArg
         {
             public Dictionary<Card, Info> infoDic;
+
+            ICard IDescribableEventArg.card => infoDic.Count > 1 ? null : infoDic.First().Key;
+
+            ICard[] IDescribableEventArg.targets => infoDic.Count > 1 ? infoDic.Keys.ToArray() : null;
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return string.Join("，", infoDic.Keys.Select(c => c.getFormatString()) + "死亡");
+            }
+
             public class Info
             {
                 public THHPlayer player;
@@ -1070,7 +1120,7 @@ namespace TouhouHeartstone
                 await card.removeBuff(game, card.getBuffs(b => b.id == buffId));
             }
         }
-        public static string getFormat(this Card card)
+        public static string getFormatString(this Card card)
         {
             return "{card:" + card.define.id + "}";
         }

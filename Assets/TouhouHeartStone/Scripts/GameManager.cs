@@ -276,6 +276,7 @@ namespace Game
 
             game.triggers.onEventBefore += onEventBefore;
             game.triggers.onEventAfter += onEventAfter;
+            ui.LogScrollView.LogList.clearItems();
         }
         void onEventBefore(IEventArg obj)
         {
@@ -288,11 +289,14 @@ namespace Game
                 case THHPlayer.BurnEventArg _:
                 case THHPlayer.FatigueEventArg _:
                 case THHPlayer.DiscardEventArg _:
-                case THHPlayer.EnterFieldEventArg _:
                 case THHPlayer.CreateTokenEventArg _:
                 case THHPlayer.RebornEventArg _:
                 case THHCard.AttackEventArg _:
                 case THHCard.DamageEventArg _:
+                case THHCard.SetArmorEventArg _:
+                case THHCard.HealEventArg _:
+                case THHCard.SilenceEventArg _:
+                case THHCard.DeathEventArg _:
                     var item = ui.LogScrollView.LogList.addItem();
                     item.setProp("event", obj);
                     break;
@@ -398,9 +402,33 @@ namespace Game
                     break;
                 case THHCard.DamageEventArg damage:
                     item.IconImage.sprite = item.damageIcon;
-                    item.Text.text = "-" + damage.value;
-                    item.Image.sprite = getManager<TableManager>().getSkin(damage.cards[0]).image;
+                    item.Text.text = "-" + damage.infoDic.First().Value.damagedValue;
+                    item.Image.sprite = getManager<TableManager>().getSkin(damage.infoDic.First().Key).image;
                     item.BorderImage.color = damage.source.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHCard.SetArmorEventArg armor:
+                    item.IconImage.sprite = item.armorIcon;
+                    item.Text.text = "=>" + armor.value;
+                    item.Image.sprite = getManager<TableManager>().getSkin(armor.card).image;
+                    item.BorderImage.color = armor.card.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHCard.HealEventArg heal:
+                    item.IconImage.sprite = item.healIcon;
+                    item.Text.text = "+" + heal.infoDic.First().Value.healedValue;
+                    item.Image.sprite = getManager<TableManager>().getSkin(heal.infoDic.First().Key).image;
+                    item.BorderImage.color = heal.infoDic.First().Key.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHCard.SilenceEventArg silence:
+                    item.IconImage.sprite = item.healIcon;
+                    item.Text.text = "沉默";
+                    item.Image.sprite = getManager<TableManager>().getSkin(silence.cards[0]).image;
+                    item.BorderImage.color = silence.cards[0].getOwner() == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHCard.DeathEventArg death:
+                    item.IconImage.sprite = item.deathIcon;
+                    item.Text.text = "死亡";
+                    item.Image.sprite = getManager<TableManager>().getSkin(death.infoDic.First().Key).image;
+                    item.BorderImage.color = death.infoDic.First().Key.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 default:
                     break;

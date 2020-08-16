@@ -81,5 +81,29 @@ namespace UI
         {
             get { return _damageIcon; }
         }
+        [SerializeField]
+        Sprite _armorIcon;
+        public Sprite armorIcon
+        {
+            get { return _armorIcon; }
+        }
+        [SerializeField]
+        Sprite _healIcon;
+        public Sprite healIcon
+        {
+            get { return _healIcon; }
+        }
+        [SerializeField]
+        Sprite _silenceIcon;
+        public Sprite silenceIcon
+        {
+            get { return _silenceIcon; }
+        }
+        [SerializeField]
+        Sprite _deathIcon;
+        public Sprite deathIcon
+        {
+            get { return _deathIcon; }
+        }
     }
 }

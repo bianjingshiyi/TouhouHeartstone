@@ -409,9 +409,9 @@ namespace TouhouHeartstone
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 if (targets == null || targets.Length < 1)
-                    return player.name + "发动" + card.getFormat() + "的效果";
+                    return player.name + "发动" + card.getFormatString() + "的效果";
                 else
-                    return player.name + "发动" + card.getFormat() + "的效果，目标：" + string.Join("，", targets.Select(t => t is Card c ? c.getFormat() : t.ToString()));
+                    return player.name + "发动" + card.getFormatString() + "的效果，目标：" + string.Join("，", targets.Select(t => t is Card c ? c.getFormatString() : t.ToString()));
             }
         }
         public async Task<bool> tryEnterField(THHGame game, Pile from, Card card, int position)
@@ -460,7 +460,7 @@ namespace TouhouHeartstone
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return player.name + "将" + card.getFormat() + "置入战场，位于" + position;
+                return player.name + "将" + card.getFormatString() + "置入战场，位于" + position;
             }
         }
         public async Task<CreateTokenEventArg> createToken(THHGame game, CardDefine define, int position = -1)
@@ -507,7 +507,7 @@ namespace TouhouHeartstone
             ICard[] IDescribableEventArg.targets => null;
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return player.name + "召唤衍生物" + card.getFormat();
+                return player.name + "召唤衍生物" + card.getFormatString();
             }
         }
         public async Task<RebornEventArg> reborn(THHGame game, Card card, Pile pile, int position = -1)
@@ -544,7 +544,7 @@ namespace TouhouHeartstone
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return player.name + "复活" + card.getFormat();
+                return player.name + "复活" + card.getFormatString();
             }
         }
         public int getSpellDamage(THHGame game, int baseDamage)
@@ -621,7 +621,7 @@ namespace TouhouHeartstone
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return player.name + "弃牌：" + string.Join("，", cards.Select(c => c.getFormat()));
+                return player.name + "弃牌：" + string.Join("，", cards.Select(c => c.getFormatString()));
             }
         }
         public bool isFriend(Card card)

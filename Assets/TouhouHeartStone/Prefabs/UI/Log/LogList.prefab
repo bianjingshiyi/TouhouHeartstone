@@ -513,9 +513,21 @@ MonoBehaviour:
   _BorderImage: {fileID: 4514938058713749634}
   _selfColor: {r: 0.2, g: 0.2, b: 0.8, a: 1}
   _oppoColor: {r: 0.8, g: 0.2, b: 0.2, a: 1}
-  _useIcon: {fileID: 21300000, guid: 64df4b6d7138b2c489e0b9a444cfa521, type: 3}
+  _gemIcon: {fileID: 21300000, guid: be5129279b1dfca4ab4fa9ddc1c574f0, type: 3}
+  _maxGemIcon: {fileID: 21300000, guid: 8ea3e46938e041f4a8abb8200dc90159, type: 3}
+  _drawIcon: {fileID: 21300000, guid: de328077ad8c9594c9ec3cf1023b25fe, type: 3}
+  _burnIcon: {fileID: 21300000, guid: 062eeb9d5e8ba8f45a9ddfea52518f82, type: 3}
+  _fatigueIcon: {fileID: 21300000, guid: e5da668c6557abb47a17a303cf69943f, type: 3}
+  _discardIcon: {fileID: 21300000, guid: 5dec73e9ae51f4f449835068fa42ab0e, type: 3}
+  _useIcon: {fileID: 21300000, guid: 85a96536cdeba7e46b4a254c6c705151, type: 3}
+  _rebornIcon: {fileID: 21300000, guid: b9d3d7dbf5c4f114fbe9d15c62c0f9cc, type: 3}
+  _tokenIcon: {fileID: 21300000, guid: 5639e7536f629884f907d06a418a7da6, type: 3}
   _attackIcon: {fileID: 21300000, guid: 2820b2e4880bb924da42e15982d02033, type: 3}
   _damageIcon: {fileID: 21300000, guid: d54a9728519c5d54bbe09aff5bd95284, type: 3}
+  _armorIcon: {fileID: 21300000, guid: 1815ea71c4e799e45b0db8899c240c4a, type: 3}
+  _healIcon: {fileID: 21300000, guid: 8747fbd096b50834ab608c29a3c05bcc, type: 3}
+  _silenceIcon: {fileID: 21300000, guid: 2251011a5d10c124ea35f86c11f5d53b, type: 3}
+  _deathIcon: {fileID: 21300000, guid: ea48f42d704ced14b89d95cf206a788f, type: 3}
 --- !u!1 &4514938058591415649
 GameObject:
   m_ObjectHideFlags: 0
