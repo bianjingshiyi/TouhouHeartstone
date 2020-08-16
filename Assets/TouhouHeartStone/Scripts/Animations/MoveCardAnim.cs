@@ -117,6 +117,26 @@ namespace Game
                         return false;
                 }
             }
+            else if (eventArg.from.name == PileName.FIELD)
+            {
+                //RectTransform graveTransform = eventArg.from == table.player.field ? table.ui.SelfFieldList.rectTransform : table.ui.SelfFieldList.rectTransform;
+                if (eventArg.to.name == PileName.HAND)
+                {
+                    //回手
+                    if (!table.tryGetHand(eventArg.card, out var hand))
+                    {
+                        Debug.Log(".tryGetHand");
+                        table.ui.SelfHandList.removeItem(hand);
+                        table.ui.EnemyHandList.removeItem(hand);
+                    }
+                    if (!table.tryGetServant(eventArg.card, out var servant))
+                    {
+                        Debug.Log(".tryGetServant");
+                    }
+                    if (!SimpleAnimHelper.update(table, ref _anim, servant.onTauntTrue, servant.animator))
+                        return false;
+                }
+            }
             return true;
         }
     }
