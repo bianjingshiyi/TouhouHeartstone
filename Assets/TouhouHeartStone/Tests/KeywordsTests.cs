@@ -316,5 +316,42 @@ namespace Tests
 
             game.Dispose();
         }
+
+
+        /// <summary>
+        /// 半灵冰淇淋
+        /// 简单点说，就是冰冻妖梦_中立(PS：风怒随从)的测试
+        /// </summary>
+        [Test]
+        public void HalfbodyIceCreamTest()
+        {
+           
+
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(KonpakuYoumu_N.ID, 1),
+                new KeyValuePair<int, int>(TestFreezeBrain.ID, 3)
+            );
+
+            game.skipUntilCanUse<KonpakuYoumu_N>(you);
+            you.cmdUse(game, you.hand.getCard<KonpakuYoumu_N>());
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            
+            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(),targets: you.field[0]);
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+
+            you.cmdAttack(game, you.field[0], oppo.master);
+            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(), targets: you.field[0]);
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+
+            you.cmdAttack(game, you.field[0], oppo.master);
+            you.cmdAttack(game, you.field[0], oppo.master);
+            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(), targets: you.field[0]);
+            you.cmdTurnEnd(game);
+
+            game.Dispose();
+        }
     }
 }
