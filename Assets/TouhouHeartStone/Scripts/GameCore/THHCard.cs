@@ -293,9 +293,9 @@ namespace TouhouHeartstone
         public static void setRush(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeyword(game, Keyword.RUSH);
+                card.addKeywords(game, Keyword.RUSH);
             else
-                card.removeKeyword(game, Keyword.RUSH);
+                card.removeKeywords(game, Keyword.RUSH);
         }
         public static bool isShield(this Card card, IGame game)
         {
@@ -304,9 +304,9 @@ namespace TouhouHeartstone
         public static void setShield(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeyword(game, Keyword.SHIELD);
+                card.addKeywords(game, Keyword.SHIELD);
             else
-                card.removeKeyword(game, Keyword.SHIELD);
+                card.removeKeywords(game, Keyword.SHIELD);
         }
         public static bool isStealth(this Card card, IGame game)
         {
@@ -315,9 +315,9 @@ namespace TouhouHeartstone
         public static void setStealth(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeyword(game, Keyword.STEALTH);
+                card.addKeywords(game, Keyword.STEALTH);
             else
-                card.removeKeyword(game, Keyword.STEALTH);
+                card.removeKeywords(game, Keyword.STEALTH);
         }
         public static bool isDrain(this Card card, IGame game)
         {
@@ -326,9 +326,9 @@ namespace TouhouHeartstone
         public static void setDrain(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeyword(game, Keyword.DRAIN);
+                card.addKeywords(game, Keyword.DRAIN);
             else
-                card.removeKeyword(game, Keyword.DRAIN);
+                card.removeKeywords(game, Keyword.DRAIN);
         }
         public static bool isPoisonous(this Card card, IGame game)
         {
@@ -337,9 +337,9 @@ namespace TouhouHeartstone
         public static void setPoisonous(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeyword(game, Keyword.POISONOUS);
+                card.addKeywords(game, Keyword.POISONOUS);
             else
-                card.removeKeyword(game, Keyword.POISONOUS);
+                card.removeKeywords(game, Keyword.POISONOUS);
         }
         public static bool isElusive(this Card card, IGame game)
         {
@@ -348,9 +348,9 @@ namespace TouhouHeartstone
         public static void setElusive(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeyword(game, Keyword.ELUSIVE);
+                card.addKeywords(game, Keyword.ELUSIVE);
             else
-                card.removeKeyword(game, Keyword.ELUSIVE);
+                card.removeKeywords(game, Keyword.ELUSIVE);
         }
         public static bool isFreeze(this Card card, IGame game)
         {
@@ -359,9 +359,9 @@ namespace TouhouHeartstone
         public static void setFreeze(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeyword(game, Keyword.FREEZE);
+                card.addKeywords(game, Keyword.FREEZE);
             else
-                card.removeKeyword(game, Keyword.FREEZE);
+                card.removeKeywords(game, Keyword.FREEZE);
         }
         public static void setFreeze(this IEnumerable<Card> cards, IGame game, bool value)
         {
@@ -377,9 +377,9 @@ namespace TouhouHeartstone
         public static void setWindfury(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeyword(game, Keyword.WINDFURY);
+                card.addKeywords(game, Keyword.WINDFURY);
             else
-                card.removeKeyword(game, Keyword.WINDFURY);
+                card.removeKeywords(game, Keyword.WINDFURY);
         }
         public static bool isImmunity(this Card card, IGame game)
         {
@@ -388,9 +388,9 @@ namespace TouhouHeartstone
         public static void setImmunity(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeyword(game, Keyword.IMMUNITY);
+                card.addKeywords(game, Keyword.IMMUNITY);
             else
-                card.removeKeyword(game, Keyword.IMMUNITY);
+                card.removeKeywords(game, Keyword.IMMUNITY);
         }
         public static bool isUnique(this Card card, IGame game)
         {
@@ -399,17 +399,21 @@ namespace TouhouHeartstone
         public static void setUnique(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeyword(game, Keyword.UNIQUE);
+                card.addKeywords(game, Keyword.UNIQUE);
             else
-                card.removeKeyword(game, Keyword.UNIQUE);
+                card.removeKeywords(game, Keyword.UNIQUE);
         }
         public static void setKeywords(this Card card, IGame game, string[] keywords)
         {
             if (keywords == null)
                 keywords = new string[0];
-            foreach (var keyword in card.getKeywords(game))
+            string[] oldKeywords = card.getKeywords(game);
+            if (oldKeywords != null)
             {
-                card.setProp(keyword, false);
+                foreach (var keyword in oldKeywords)
+                {
+                    card.setProp(keyword, false);
+                }
             }
             card.setProp(nameof(ServantCardDefine.keywords), keywords);
             foreach (var keyword in card.getKeywords(game))
@@ -437,25 +441,30 @@ namespace TouhouHeartstone
                 return false;
             return keywords.Contains(keyword);
         }
-        public static Task addKeyword(this Card card, IGame game, string keyword)
+        public static Task addKeywords(this Card card, IGame game, params string[] keywords)
         {
-            string[] keywords = card.getKeywords(game);
-            if (!keywords.Contains(keyword))
-                keywords = keywords.Append(keyword).ToArray();
-            card.setKeywords(game, keywords);
+            string[] oldKeywords = card.getKeywords(game);
+            if (oldKeywords == null)
+                oldKeywords = keywords;
+            else
+                oldKeywords = oldKeywords.Concat(keywords).Distinct().ToArray();
+            card.setKeywords(game, oldKeywords);
             return Task.CompletedTask;
         }
-        public static Task<bool> removeKeyword(this Card card, IGame game, string keyword)
+        public static Task<int> removeKeywords(this Card card, IGame game, params string[] keywords)
         {
             List<string> keywordList = new List<string>(card.getKeywords(game));
-            if (keywordList.Contains(keyword))
+            int count = 0;
+            foreach (var keyword in keywords)
             {
-                keywordList.Remove(keyword);
-                card.setKeywords(game, keywordList.ToArray());
-                return Task.FromResult(true);
+                if (keywordList.Contains(keyword))
+                {
+                    keywordList.Remove(keyword);
+                    card.setKeywords(game, keywordList.ToArray());
+                    count++;
+                }
             }
-            else
-                return Task.FromResult(false);
+            return Task.FromResult(count);
         }
         public static int getSpellDamage(this Card card, IGame game)
         {

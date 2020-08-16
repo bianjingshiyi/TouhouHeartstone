@@ -5,6 +5,7 @@ using TouhouHeartstone;
 using TouhouCardEngine;
 using TouhouHeartstone.Builtin;
 using System;
+using System.Collections.Generic;
 namespace Tests
 {
     public class KeywordsTests
@@ -291,24 +292,27 @@ namespace Tests
         [Test]
         public void freezeHeroTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30)
-                .Concat(Enumerable.Repeat(game.getCardDefine<TestWeapon>(), 2)));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
-                .Concat(Enumerable.Repeat(game.getCardDefine<TestFreezeBrain>(), 2)));
-
-            game.skipUntilCanUse<TestFreezeBrain>(you);
-            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(),targets: oppo.master);
-            game.skipUntilCanUse<TestWeapon>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<TestWeapon>());
-            oppo.cmdAttack(game, oppo.master, you.master);
-            oppo.cmdTurnEnd(game);
+            TestGameflow.createGame(out var game, out var you, out var oppo, null, TestMaster.ID,
+                new KeyValuePair<int, int>[]
+                {
+                    new KeyValuePair<int, int>(TestWeapon.ID,30)
+                },
+                new KeyValuePair<int, int>[]
+                {
+                    new KeyValuePair<int, int>(TestFreezeBrain.ID,30)
+                });
+            game.skipUntilCanUse<TestWeapon>(you);
+            you.cmdUse(game, you.hand.getCard<TestWeapon>());
+            Assert.True(you.master.canAttack(game));
+            you.cmdAttack(game, you.master, oppo.master);
+            Assert.AreEqual(29, oppo.master.getCurrentLife(game));//测试能进行正常攻击
+            game.skipUntilCanUse<TestFreezeBrain>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<TestFreezeBrain>(), 0, you.master);//冰冻
+            game.skipUntilYourTurn(you);
+            Assert.False(you.master.canAttack(game));//被冻住，不能攻击
             you.cmdTurnEnd(game);
-            oppo.cmdAttack(game, oppo.master, you.master);
-            Assert.AreEqual(29, you.master.getCurrentLife(game));
+            oppo.cmdTurnEnd(game);
+            Assert.True(you.master.canAttack(game));//解冻了，应该可以攻击
 
             game.Dispose();
         }

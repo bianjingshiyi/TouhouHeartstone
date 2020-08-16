@@ -499,10 +499,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect(async(game,card,target)=>
+            new LambdaSingleTargetEffect((game,card,target)=>
             {
-                 await target.addBuff(game, new GeneratedBuff(ID,
-                    new KeywordsModifier(KeywordsModifier.ModifyType.add,Keyword.FREEZE)));
+                target.setFreeze(game,true);
+                return Task.CompletedTask;
             }, PileFlag.oppo | PileFlag.character)
         };
     }

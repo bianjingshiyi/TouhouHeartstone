@@ -387,6 +387,10 @@ namespace Tests
                     throw new StackOverflowException();
             }
         }
+        public static void skipUntilYourTurn(this THHGame game, THHPlayer player)
+        {
+            game.skipTurnUntil(() => game.currentPlayer == player);
+        }
         public static void skipUntilCanUse<T>(this THHGame game, THHPlayer you) where T : CardDefine
         {
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<T>().getProp<int>(nameof(ServantCardDefine.cost)));

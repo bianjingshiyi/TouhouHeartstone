@@ -22,7 +22,21 @@ namespace Tests
         }
         public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option, int yourMaster, params KeyValuePair<int, int>[] yourDeck)
         {
+            createGame(out game, out you, out oppo, option, yourMaster, yourDeck);
+        }
+        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option,
+            int yourMaster, KeyValuePair<int, int>[] yourDeck,
+            KeyValuePair<int, int>[] oppoDeck)
+        {
             game = initGameWithoutPlayers(null, option);
+            IEnumerable<CardDefine> yourTrueDeck = createDeck(game, yourDeck);
+            IEnumerable<CardDefine> oppoTrueDeck = createDeck(game, oppoDeck);
+            you = game.createPlayer(1, "玩家1", game.getCardDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
+            oppo = game.createPlayer(2, "玩家2", game.getCardDefine<TestMaster>(), oppoTrueDeck);
+        }
+
+        private static IEnumerable<CardDefine> createDeck(THHGame game, KeyValuePair<int, int>[] yourDeck)
+        {
             IEnumerable<CardDefine> yourTrueDeck = yourDeck.Length > 0 ?
             Enumerable.Repeat(game.getCardDefine(yourDeck[0].Key), yourDeck[0].Value) :
             Enumerable.Repeat(game.getCardDefine(DefaultServant.ID), 30);
@@ -34,8 +48,7 @@ namespace Tests
             if (count < 30)
                 yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getCardDefine<DefaultServant>(), 30 - count));
             yourTrueDeck = yourTrueDeck.Reverse();
-            you = game.createPlayer(1, "玩家1", game.getCardDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
-            oppo = game.createPlayer(2, "玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            return yourTrueDeck;
         }
 
         public static void createGameWithoutDeck(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option = null)

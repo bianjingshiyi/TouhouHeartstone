@@ -466,7 +466,7 @@ namespace Game
             var arg = item.getProp<IEventArg>("event");
             if (arg is IDescribableEventArg describable)
             {
-
+                //ui.LogScrollView.LogInfoHorizantal.inca
                 ui.LogScrollView.LogInfoHorizantal.display();
             }
         }
