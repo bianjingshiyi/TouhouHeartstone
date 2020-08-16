@@ -122,7 +122,7 @@ namespace Tests
             Assert.AreEqual(0, use.targets.Length);
             THHPlayer.SetGemEventArg setGem = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.SetGemEventArg) as THHPlayer.SetGemEventArg;
             Assert.AreEqual(0, setGem.value);
-            THHPlayer.MoveEventArg summon = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.MoveEventArg) as THHPlayer.MoveEventArg;
+            THHPlayer.EnterFieldEventArg summon = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.EnterFieldEventArg) as THHPlayer.EnterFieldEventArg;
             Assert.NotNull(summon);
             Assert.AreEqual(game.sortedPlayers[0], summon.player);
             Assert.AreEqual(TestServant.ID, summon.card.define.id);

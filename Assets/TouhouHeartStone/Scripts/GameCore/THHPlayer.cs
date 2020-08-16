@@ -7,6 +7,12 @@ using TouhouCardEngine.Interfaces;
 using TouhouHeartstone.Builtin;
 namespace TouhouHeartstone
 {
+    public interface IDescribableEventArg : IEventArg
+    {
+        ICard card { get; }
+        ICard[] targets { get; }
+        string toString(IGame game, IPlayer viewer);
+    }
     public class THHPlayer : Player
     {
         public Card master { get; }
@@ -81,10 +87,16 @@ namespace TouhouHeartstone
                 return Task.CompletedTask;
             });
         }
-        public class SetGemEventArg : EventArg
+        public class SetGemEventArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
             public int value;
+            public ICard card => null;
+            public ICard[] targets => null;
+            public string toString(IGame game, IPlayer player)
+            {
+                return this.player.name + "的法力值变为" + value;
+            }
         }
         public Task setMaxGem(THHGame game, int value)
         {
@@ -101,10 +113,16 @@ namespace TouhouHeartstone
                 return Task.CompletedTask;
             });
         }
-        public class SetMaxGemEventArg : EventArg
+        public class SetMaxGemEventArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
             public int value;
+            public ICard card => null;
+            public ICard[] targets => null;
+            public string toString(IGame game, IPlayer player)
+            {
+                return this.player.name + "的最大法力值变为" + value;
+            }
         }
         public Task draw(THHGame game, out DrawEventArg drawEvent, out BurnEventArg burnEvent, out FatigueEventArg fatigueEvent)
         {
@@ -209,7 +227,7 @@ namespace TouhouHeartstone
                 return Task.CompletedTask;
             }
         }
-        public class DrawEventArg : EventArg
+        public class DrawEventArg : EventArg, IDescribableEventArg
         {
             /// <summary>
             /// 抽卡的玩家
@@ -219,15 +237,39 @@ namespace TouhouHeartstone
             /// 抽到的卡
             /// </summary>
             public Card card;
+
+            public ICard[] targets => null;
+
+            ICard IDescribableEventArg.card => card;
+
+            public string toString(IGame game, IPlayer viewer)
+            {
+                if (viewer == player)
+                    return player.name + "抽{card:" + card.define.id + "}";
+                else
+                    return player.name + "抽了一张牌";
+            }
         }
-        public class BurnEventArg : EventArg
+        public class BurnEventArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
             public Card card;
+            public ICard[] targets => null;
+            ICard IDescribableEventArg.card => card;
+            public string toString(IGame game, IPlayer viewer)
+            {
+                return player.name + "抽{card:" + card.define.id + "}，但是由于手牌已满它被送入墓地";
+            }
         }
-        public class FatigueEventArg : EventArg
+        public class FatigueEventArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
+            ICard IDescribableEventArg.card => null;
+            ICard[] IDescribableEventArg.targets => null;
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return player.name + "已经无牌可抽，即将受到疲劳伤害";
+            }
         }
         /// <summary>
         /// 尝试使用一张卡牌
@@ -331,14 +373,24 @@ namespace TouhouHeartstone
             game.logger.log(this + "选择" + selected);
             return selected;
         }
-        public class UseEventArg : EventArg
+        public class UseEventArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
             public Card card;
             public int position;
             public Card[] targets;
+
+            ICard IDescribableEventArg.card => card;
+            ICard[] IDescribableEventArg.targets => targets;
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                if (targets == null || targets.Length < 1)
+                    return player.name + "使用{card:" + card.define.id + "}";
+                else
+                    return player.name + "使用{card:" + card.define.id + "}，目标：" + string.Join("，", targets.Select(c => "{card:" + c.define.id + "}"));
+            }
         }
-        public class ActiveEventArg : EventArg
+        public class ActiveEventArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
             public Card card;
@@ -349,13 +401,25 @@ namespace TouhouHeartstone
                 this.card = card;
                 this.targets = targets;
             }
+
+            ICard IDescribableEventArg.card => card;
+
+            ICard[] IDescribableEventArg.targets => targets.OfType<Card>().ToArray();
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                if (targets == null || targets.Length < 1)
+                    return player.name + "发动" + card.getFormat() + "的效果";
+                else
+                    return player.name + "发动" + card.getFormat() + "的效果，目标：" + string.Join("，", targets.Select(t => t is Card c ? c.getFormat() : t.ToString()));
+            }
         }
         public async Task<bool> tryEnterField(THHGame game, Pile from, Card card, int position)
         {
             if (field.count >= field.maxCount)//没位置了
                 return false;
-            await game.triggers.doEvent(new MoveEventArg() { player = this, from = from, card = card, position = position }, onEnterField);
-            Task onEnterField(MoveEventArg arg)
+            await game.triggers.doEvent(new EnterFieldEventArg() { player = this, from = from, card = card, position = position }, onEnterField);
+            Task onEnterField(EnterFieldEventArg arg)
             {
                 THHPlayer player = arg.player;
                 from = arg.from;
@@ -381,7 +445,7 @@ namespace TouhouHeartstone
             }
             return true;
         }
-        public class MoveEventArg : EventArg
+        public class EnterFieldEventArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
             public Pile from;
@@ -389,6 +453,15 @@ namespace TouhouHeartstone
             public int position;
             public int attack;
             public int life;
+
+            ICard IDescribableEventArg.card => card;
+
+            ICard[] IDescribableEventArg.targets => null;
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return player.name + "将" + card.getFormat() + "置入战场，位于" + position;
+            }
         }
         public async Task<CreateTokenEventArg> createToken(THHGame game, CardDefine define, int position = -1)
         {
@@ -423,12 +496,19 @@ namespace TouhouHeartstone
             }
             return list.ToArray();
         }
-        public class CreateTokenEventArg : EventArg
+        public class CreateTokenEventArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
             public CardDefine define;
             public int position;
             public Card card;
+
+            ICard IDescribableEventArg.card => card;
+            ICard[] IDescribableEventArg.targets => null;
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return player.name + "召唤衍生物" + card.getFormat();
+            }
         }
         public async Task<RebornEventArg> reborn(THHGame game, Card card, Pile pile, int position = -1)
         {
@@ -451,12 +531,21 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
-        public class RebornEventArg : EventArg
+        public class RebornEventArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
             public int position;
             public Card card;
             public Pile pile;
+
+            ICard IDescribableEventArg.card => card;
+
+            ICard[] IDescribableEventArg.targets => null;
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return player.name + "复活" + card.getFormat();
+            }
         }
         public int getSpellDamage(THHGame game, int baseDamage)
         {
@@ -521,10 +610,19 @@ namespace TouhouHeartstone
                 return player.hand.moveTo(game, cards, player.grave);
             });
         }
-        public class DiscardEventArg : EventArg
+        public class DiscardEventArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
             public Card[] cards;
+
+            ICard IDescribableEventArg.card => null;
+
+            ICard[] IDescribableEventArg.targets => cards;
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return player.name + "弃牌：" + string.Join("，", cards.Select(c => c.getFormat()));
+            }
         }
         public bool isFriend(Card card)
         {

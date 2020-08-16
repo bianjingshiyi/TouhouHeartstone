@@ -3,10 +3,10 @@ using BJSYGameCore.UI;
 using UI;
 namespace Game
 {
-    class MoveServantAnimation : EventAnimation<THHPlayer.MoveEventArg>
+    class MoveServantAnimation : EventAnimation<THHPlayer.EnterFieldEventArg>
     {
         AnimAnim _anim;
-        public override bool update(TableManager table, THHPlayer.MoveEventArg eventArg)
+        public override bool update(TableManager table, THHPlayer.EnterFieldEventArg eventArg)
         {
             if (!table.tryGetServant(eventArg.card, out var servant))
                 servant = table.createServant(eventArg.card, eventArg.position, eventArg.attack, eventArg.life);

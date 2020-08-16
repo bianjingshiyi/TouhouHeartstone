@@ -48,24 +48,6 @@ namespace Game
                     }
                     if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator))
                         return false;
-                    //if (!_timer.isStarted)
-                    //{
-                    //    _item = table.createHand(eventArg.card);
-                    //    if (eventArg.from.owner == table.player)
-                    //    {
-                    //        _item.Card.rectTransform.position = table.ui.SelfDeck.rectTransform.position;
-                    //        _startPosition = table.ui.SelfDeck.rectTransform.position;
-                    //    }
-                    //    else
-                    //    {
-                    //        _item.Card.rectTransform.position = table.ui.EnemyDeck.rectTransform.position;
-                    //        _startPosition = table.ui.EnemyDeck.rectTransform.position;
-                    //    }
-                    //    _timer.start();
-                    //}
-                    //_item.Card.rectTransform.position = Vector3.Lerp(_startPosition, _item.rectTransform.position, _item.Card.drawCurve.Evaluate(_timer.progress));
-                    //if (!_timer.isExpired())
-                    //    return false;
                 }
                 else if (eventArg.to.name == PileName.WARP)
                 {

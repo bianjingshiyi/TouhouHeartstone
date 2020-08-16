@@ -282,6 +282,15 @@ namespace Game
             switch (obj)
             {
                 case THHPlayer.UseEventArg _:
+                case THHPlayer.SetGemEventArg _:
+                case THHPlayer.SetMaxGemEventArg _:
+                case THHPlayer.DrawEventArg _:
+                case THHPlayer.BurnEventArg _:
+                case THHPlayer.FatigueEventArg _:
+                case THHPlayer.DiscardEventArg _:
+                case THHPlayer.EnterFieldEventArg _:
+                case THHPlayer.CreateTokenEventArg _:
+                case THHPlayer.RebornEventArg _:
                 case THHCard.AttackEventArg _:
                 case THHCard.DamageEventArg _:
                     var item = ui.LogScrollView.LogList.addItem();
@@ -327,11 +336,59 @@ namespace Game
             ui.LogScrollView.asScrollRect.verticalScrollbar.value = 0;
             switch (obj)
             {
+                case THHPlayer.SetGemEventArg setGem:
+                    item.IconImage.sprite = item.gemIcon;
+                    item.Text.text = "=>" + setGem.value;
+                    item.Image.sprite = getManager<TableManager>().getSkin(game.getCardDefine<LuckyCoin>()).image;
+                    item.BorderImage.color = setGem.player == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHPlayer.SetMaxGemEventArg setMaxGem:
+                    item.IconImage.sprite = item.gemIcon;
+                    item.Text.text = "=>" + setMaxGem.value;
+                    item.Image.sprite = getManager<TableManager>().getSkin(game.getCardDefine<LuckyCoin>()).image;
+                    item.BorderImage.color = setMaxGem.player == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHPlayer.DrawEventArg draw:
+                    item.IconImage.sprite = item.drawIcon;
+                    item.Text.text = "抽牌";
+                    item.Image.sprite = getManager<TableManager>().getSkin(draw.player == localPlayer ? draw.card : draw.player.master).image;
+                    item.BorderImage.color = draw.player == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHPlayer.BurnEventArg burn:
+                    item.IconImage.sprite = item.burnIcon;
+                    item.Text.text = "爆牌";
+                    item.Image.sprite = getManager<TableManager>().getSkin(burn.card).image;
+                    item.BorderImage.color = burn.player == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHPlayer.FatigueEventArg fatigue:
+                    item.IconImage.sprite = item.fatigueIcon;
+                    item.Text.text = "疲劳";
+                    item.Image.sprite = getManager<TableManager>().getSkin(fatigue.player.master).image;
+                    item.BorderImage.color = fatigue.player == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHPlayer.DiscardEventArg discard:
+                    item.IconImage.sprite = item.discardIcon;
+                    item.Text.text = "弃牌";
+                    item.Image.sprite = getManager<TableManager>().getSkin(discard.cards[0]).image;
+                    item.BorderImage.color = discard.player == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
                 case THHPlayer.UseEventArg use:
                     item.IconImage.sprite = item.useIcon;
                     item.Text.text = "使用";
                     item.Image.sprite = getManager<TableManager>().getSkin(use.card).image;
                     item.BorderImage.color = use.player == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHPlayer.CreateTokenEventArg token:
+                    item.IconImage.sprite = item.rebornIcon;
+                    item.Text.text = "召唤";
+                    item.Image.sprite = getManager<TableManager>().getSkin(token.card).image;
+                    item.BorderImage.color = token.player == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHPlayer.RebornEventArg reborn:
+                    item.IconImage.sprite = item.rebornIcon;
+                    item.Text.text = "复活";
+                    item.Image.sprite = getManager<TableManager>().getSkin(reborn.card).image;
+                    item.BorderImage.color = reborn.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHCard.AttackEventArg attack:
                     item.IconImage.sprite = item.attackIcon;
