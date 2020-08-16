@@ -337,13 +337,13 @@ namespace Tests
             },(game,card,targets)=>
             {
                 return true;
-            },(game,card,arg,targets)=>
+            },async(game,card,arg,targets)=>
             {
                 foreach(Card target in targets)
                 {
-                    target.setFreeze(game, true);
+                    await target.addBuff(game, new GeneratedBuff(ID,
+                    new KeywordsModifier(KeywordsModifier.ModifyType.add,Keyword.FREEZE)));
                 }
-                return Task.CompletedTask;
             })
         };
     }

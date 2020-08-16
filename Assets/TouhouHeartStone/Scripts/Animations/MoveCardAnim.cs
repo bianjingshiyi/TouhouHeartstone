@@ -101,22 +101,24 @@ namespace Game
             }
             else if (eventArg.from.name == PileName.FIELD)
             {
-                //RectTransform graveTransform = eventArg.from == table.player.field ? table.ui.SelfFieldList.rectTransform : table.ui.SelfFieldList.rectTransform;
+                RectTransform fieldTransform = eventArg.from == table.player.field ? table.ui.SelfFieldList.rectTransform : table.ui.SelfFieldList.rectTransform;
                 if (eventArg.to.name == PileName.HAND)
                 {
                     //回手
+                    if (table.tryGetServant(eventArg.card, out var servant))//尝试获取将要回手的随从
+                    {
+                        table.ui.SelfFieldList.removeItem(servant);                    
+                        table.ui.EnemyFieldList.removeItem(servant);
+                    }
                     if (!table.tryGetHand(eventArg.card, out var hand))
                     {
-                        Debug.Log(".tryGetHand");
-                        table.ui.SelfHandList.removeItem(hand);
-                        table.ui.EnemyHandList.removeItem(hand);
+                        hand = table.createHand(eventArg.card);
+                        hand.rectTransform.position = fieldTransform.position;
+                        hand.GetComponentInChildren<PositionLerp>().setTarget(hand.rectTransform);
                     }
-                    if (!table.tryGetServant(eventArg.card, out var servant))
-                    {
-                        Debug.Log(".tryGetServant");
-                    }
-                    if (!SimpleAnimHelper.update(table, ref _anim, servant.onTauntTrue, servant.animator))
+                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator))
                         return false;
+
                 }
             }
             return true;
