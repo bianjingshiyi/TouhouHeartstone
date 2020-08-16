@@ -283,5 +283,34 @@ namespace Tests
             game.sortedPlayers[1].cmdInitReplace(game);
             return game;
         }
+
+
+        /// <summary>
+        /// 新冰冻测试：与原本相比，添加了对英雄冻结的测试
+        /// </summary>
+        [Test]
+        public void NewfreezeTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30)
+                .Concat(Enumerable.Repeat(game.getCardDefine<TestWeapon>(), 2)));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+                .Concat(Enumerable.Repeat(game.getCardDefine<TestFreezeBrain>(), 2)));
+
+            game.skipUntilCanUse<TestFreezeBrain>(you);
+            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(),targets: oppo.master);
+            game.skipUntilCanUse<TestWeapon>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<TestWeapon>());
+            oppo.cmdAttack(game, oppo.master, you.master);
+            oppo.cmdTurnEnd(game);
+            you.cmdTurnEnd(game);
+            oppo.cmdAttack(game, oppo.master, you.master);
+            Assert.AreEqual(29, you.master.getCurrentLife(game));
+
+            game.Dispose();
+        }
     }
 }

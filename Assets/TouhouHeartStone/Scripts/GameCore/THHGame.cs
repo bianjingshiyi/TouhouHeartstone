@@ -393,15 +393,19 @@ namespace TouhouHeartstone
             await triggers.doEvent(new TurnEndEventArg() { player = player }, arg =>
             {
                 logger.log("Debug", currentPlayer + "回合结束");
-                foreach (Card servant in arg.player.field)
+
+                List<Card> AllCharactor = new List<Card>();
+                AllCharactor.Add(player.master);
+                AllCharactor.AddRange(player.field);
+                foreach (Card chara in AllCharactor)
                 {
-                    if (servant.isFreeze(this))
+                    if (chara.isFreeze(this))
                     {
-                        servant.setAttackTimes(servant.getAttackTimes(this) + 1);
-                        if (servant.getMaxAttackTimes(this) - servant.getAttackTimes(this) >= 0)
+                        chara.setAttackTimes(chara.getAttackTimes(this) + 1);
+                        if (chara.getMaxAttackTimes(this) - chara.getAttackTimes(this) >= 0)
                         {
                             logger.log("被冻结的随从解除冰冻");
-                            servant.setFreeze(this, false);
+                            chara.setFreeze(this, false);
                         }
                     }
                 }
