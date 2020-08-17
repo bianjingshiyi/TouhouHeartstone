@@ -65,9 +65,9 @@ namespace Tests
         {
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= gem);
         }
-        public static void skipUntilCanUse(this THHGame game, THHPlayer you, params Card[] card)
+        public static void skipUntilCanUse(this THHGame game, THHPlayer you, params CardDefine[] card)
         {
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= card.Sum(c => c.getCost(game)));
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= card.Sum(c => c.getCost()));
         }
     }
 }

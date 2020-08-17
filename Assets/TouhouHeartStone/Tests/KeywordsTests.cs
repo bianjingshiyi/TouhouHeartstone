@@ -16,21 +16,32 @@ namespace Tests
         [Test]
         public void RushTest()
         {
-            THHGame game = GameInitWithoutPlayer<DefaultServant, RushServant>(29, 1);
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(RushServant.ID, 1));
+            game.skipUntilCanUse(oppo, game.getCardDefine<DefaultServant>());
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse(you, game.getCardDefine<RushServant>(), game.getCardDefine<DefaultServant>());
+            you.cmdUse(game, you.hand.getCard<RushServant>());
+            Assert.True(you.field.getCard<RushServant>().isRush(game));//是否为突袭随从
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            Assert.False(you.field.getCard<DefaultServant>().canAttack(game));//普通随从没准备好无法攻击
+            Assert.False(you.field.getCard<RushServant>().isAttackable(game, you, oppo.master, out _));//突袭的随从没准备好无法攻击master
+            Assert.True(you.field.getCard<RushServant>().isAttackable(game, you, oppo.field.getCard<DefaultServant>(), out _));//突袭的随从可以攻击敌方随从
+            //THHGame game = GameInitWithoutPlayer<DefaultServant, RushServant>(29, 1);
 
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[1], 0);
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 1);
+            //game.sortedPlayers[0].cmdTurnEnd(game);
+            //game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[1], 0);
+            //game.sortedPlayers[1].cmdTurnEnd(game);
+            //game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            //game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 1);
 
-            Assert.True(game.sortedPlayers[0].field[0].isRush(game));   //是否为突袭随从
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[1], game.sortedPlayers[1].master);
-            Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife(game));     //普通随从没准备好无法攻击
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].master);
-            Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife(game));     //突袭的随从没准备好无法攻击master
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].field[0]);
-            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife(game));    //突袭的随从可以攻击敌方随从
+            //Assert.True(game.sortedPlayers[0].field[0].isRush(game));
+            //game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[1], game.sortedPlayers[1].master);
+            //Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife(game));
+            //game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].master);
+            //Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife(game));
+            //game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].field[0]);
+            //Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife(game));    
         }
 
         /// <summary>
@@ -39,6 +50,9 @@ namespace Tests
         [Test]
         public void ShieldTest()
         {
+            //TestGameflow.createGame(out var game, out var you, out var oppo,
+            //    new KeyValuePair<int, int>(ShieldServant.ID, 1));
+
             THHGame game = GameInitWithoutPlayer<DefaultServant, ShieldServant>(29, 1);
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[1], 0);
@@ -148,16 +162,16 @@ namespace Tests
                 {
                     new KeyValuePair<int, int>(PoisonousServant.ID,1)
                 });
-            game.skipUntilCanUse(you, you.hand.getCard<PoisonousServant>(), you.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse(you, game.getCardDefine<PoisonousServant>(), game.getCardDefine<DefaultServant>());
             you.cmdUse(game, you.hand.getCard<PoisonousServant>());
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            game.skipUntilCanUse(oppo, oppo.hand.getCard<PoisonousServant>(), oppo.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse(oppo, game.getCardDefine<PoisonousServant>(), game.getCardDefine<DefaultServant>());
             oppo.cmdUse(game, oppo.hand.getCard<PoisonousServant>());
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
             oppo.cmdTurnEnd(game);
-            //攻击剧毒随从，自身死亡
-            you.cmdAttack(game, you.field.getCard<DefaultServant>(), oppo.field.getCard<PoisonousServant>());
-            Assert.Null(you.field.getCard<DefaultServant>());
+            //没剧毒的随从攻击敌方随从，随从不死亡
+            you.cmdAttack(game, you.field.getCard<DefaultServant>(), oppo.field.getCard<DefaultServant>());
+            Assert.NotNull(oppo.field.getCard<DefaultServant>());
             //有剧毒的随从攻击敌方随从，随从死亡
             you.cmdAttack(game, you.field.getCard<PoisonousServant>(), oppo.field.getCard<DefaultServant>());
             Assert.Null(oppo.field.getCard<DefaultServant>());
