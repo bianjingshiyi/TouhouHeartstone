@@ -417,7 +417,7 @@ namespace Game
         }
         public static bool tryGetDeck(this RoomPlayerInfo playerInfo, out int[] deck)
         {
-            return playerInfo.tryGetProp<int[]>(DECK_INTARRAY, out deck);
+            return playerInfo.tryGetProp(DECK_INTARRAY, out deck);
         }
         public static void setDeck(this RoomPlayerInfo playerInfo, int[] value)
         {

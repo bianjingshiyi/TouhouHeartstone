@@ -12,6 +12,10 @@ namespace Tests
         {
             createGame(out game, out you, out oppo, new GameOption() { shuffle = false }, yourDeck);
         }
+        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, KeyValuePair<int, int>[] yourDeck, KeyValuePair<int, int>[] oppoDeck)
+        {
+            createGame(out game, out you, out oppo, new GameOption() { shuffle = false }, TestMaster.ID, yourDeck, TestMaster.ID, oppoDeck);
+        }
         public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, int yourMaster)
         {
             createGame(out game, out you, out oppo, new GameOption() { shuffle = false }, yourMaster);
@@ -22,17 +26,17 @@ namespace Tests
         }
         public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option, int yourMaster, params KeyValuePair<int, int>[] yourDeck)
         {
-            createGame(out game, out you, out oppo, option, yourMaster, yourDeck);
+            createGame(out game, out you, out oppo, option, yourMaster, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
         }
         public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option,
             int yourMaster, KeyValuePair<int, int>[] yourDeck,
-            KeyValuePair<int, int>[] oppoDeck)
+            int oppoMaster, KeyValuePair<int, int>[] oppoDeck)
         {
             game = initGameWithoutPlayers(null, option);
             IEnumerable<CardDefine> yourTrueDeck = createDeck(game, yourDeck);
             IEnumerable<CardDefine> oppoTrueDeck = createDeck(game, oppoDeck);
             you = game.createPlayer(1, "玩家1", game.getCardDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
-            oppo = game.createPlayer(2, "玩家2", game.getCardDefine<TestMaster>(), oppoTrueDeck);
+            oppo = game.createPlayer(2, "玩家2", game.getCardDefine<MasterCardDefine>(oppoMaster), oppoTrueDeck);
         }
 
         private static IEnumerable<CardDefine> createDeck(THHGame game, KeyValuePair<int, int>[] yourDeck)

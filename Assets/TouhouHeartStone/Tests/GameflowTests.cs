@@ -610,7 +610,7 @@ namespace Tests
             Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife(game));    //敌方随从受到伤害
             Assert.AreEqual(1, gemNum - game.sortedPlayers[0].gem);     //水晶减1
             gemNum = game.sortedPlayers[0].gem;
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0, game.sortedPlayers[1].field[0]);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand.getCard<TestSpellCard>(), 0, game.sortedPlayers[1].field[0]);
             Assert.AreEqual(5, game.sortedPlayers[1].field[0].getCurrentLife(game));
             Assert.AreEqual(1, gemNum - game.sortedPlayers[0].gem);     //水晶减1
         }

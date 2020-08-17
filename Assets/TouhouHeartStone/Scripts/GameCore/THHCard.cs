@@ -362,12 +362,12 @@ namespace TouhouHeartstone
         {
             return card.hasKeyword(game, KEYWORD.FREEZE);
         }
-        public static void setFreeze(this Card card, IGame game, bool value)
+        public static Task<ISetPropEventArg> setFreeze(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, KEYWORD.FREEZE);
+                return card.addKeywords(game, KEYWORD.FREEZE);
             else
-                card.removeKeywords(game, KEYWORD.FREEZE);
+                return card.removeKeywords(game, KEYWORD.FREEZE);
         }
         public static void setFreeze(this IEnumerable<Card> cards, IGame game, bool value)
         {

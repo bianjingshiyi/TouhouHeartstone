@@ -341,8 +341,7 @@ namespace Tests
             {
                 foreach(Card target in targets)
                 {
-                    await target.addBuff(game, new GeneratedBuff(ID,
-                    new KeywordsModifier(KeywordsModifier.ModifyType.add,KEYWORD.FREEZE)));
+                    await target.setFreeze(game,true);
                 }
             })
         };

@@ -99,23 +99,38 @@ namespace Tests
         [Test]
         public void DrainTest()
         {
-            THHGame game = GameInitWithoutPlayer<DefaultServant, DrainServant>(29, 1);
-            AfterXRound(game, 1);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[1], 0);
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].master);
-            Assert.AreEqual(29, game.sortedPlayers[1].master.getCurrentLife(game));  //被攻击后血量减少1
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[0], game.sortedPlayers[0].master);
-            Assert.AreEqual(29, game.sortedPlayers[1].master.getCurrentLife(game));  //不会吸血的随从攻击后，master没有回血
-            game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field[1], game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife(game));  //会吸血的随从攻击后，master回血
-            Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife(game));  //攻击吸血随从，敌方master回血
-
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(DrainServant.ID, 1));
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse<DrainServant>(you);
+            you.cmdUse(game, you.hand.getCard<DrainServant>());
+            you.cmdTurnEnd(game);
+            oppo.cmdAttack(game, oppo.field.getCard<DefaultServant>(), you.master);
+            Assert.AreEqual(you.master.getLife(game) - oppo.field.getCard<DefaultServant>().getAttack(game), you.master.getCurrentLife(game));
+            oppo.cmdTurnEnd(game);
+            you.cmdAttack(game, you.field.getCard<DrainServant>(), oppo.field.getCard<DefaultServant>());
+            Assert.AreEqual(30, you.master.getCurrentLife(game));
+            game.Dispose();
+            //oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            //oppo.cmdTurnEnd(game);
+            //you.cmdTurnEnd(game);
+            //THHGame game = GameInitWithoutPlayer<DefaultServant, DrainServant>(29, 1);
+            //AfterXRound(game, 1);
+            //game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
+            //game.sortedPlayers[0].cmdTurnEnd(game);
+            //game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[1], 0);
+            //game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 1);
+            //game.sortedPlayers[1].cmdTurnEnd(game);
+            //game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].master);
+            //Assert.AreEqual(29, game.sortedPlayers[1].master.getCurrentLife(game));  //被攻击后血量减少1
+            //game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
+            //game.sortedPlayers[0].cmdTurnEnd(game);
+            //game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field.getCard<DefaultServant>(), game.sortedPlayers[0].master);
+            //Assert.AreEqual(29, game.sortedPlayers[1].master.getCurrentLife(game));  //不会吸血的随从攻击后，master没有回血
+            //game.sortedPlayers[1].cmdAttack(game, game.sortedPlayers[1].field.getCard<DrainServant>(), game.sortedPlayers[0].field.getCard<DrainServant>());
+            //Assert.AreEqual(30, game.sortedPlayers[1].master.getCurrentLife(game));  //会吸血的随从攻击后，master回血
+            //Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife(game));  //攻击吸血随从，敌方master回血
         }
 
         /// <summary>
@@ -195,27 +210,28 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
+            THHPlayer you = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer oppo = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getCardDefine<TestFreeze>(), 2)));
 
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+            game.skipTurnUntil(() => you.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == you);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>(), 0);
             //玩家0拍白板一张
 
-            game.skipTurnUntil(() => elusivePlayer.gem >= game.getCardDefine<TestFreeze>().cost && game.currentPlayer == elusivePlayer);
-            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == TestFreeze.ID), 0, defaultPlayer.field);
+            game.skipTurnUntil(() => oppo.gem >= game.getCardDefine<TestFreeze>().cost && game.currentPlayer == oppo);
+            oppo.cmdUse(game, oppo.hand.First(c => c.define.id == TestFreeze.ID), 0, you.field);
             //玩家1释放冰环
 
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdAttack(game, defaultPlayer.field[0], elusivePlayer.master);//被冻结的随从无法攻击
-            defaultPlayer.cmdTurnEnd(game);//回合结束，随从解冻
+            game.skipTurnUntil(() => you.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == you);
+            you.cmdAttack(game, you.field[0], oppo.master);//被冻结的随从无法攻击
+            you.cmdTurnEnd(game);//回合结束，随从解冻
 
-            elusivePlayer.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
 
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getCardDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdAttack(game, defaultPlayer.field[0], elusivePlayer.master);//已解除冰冻的随从可以攻击
-            Assert.AreEqual(29, elusivePlayer.master.getCurrentLife(game));
+            game.skipUntilYourTurn(you);
+            Assert.True(you.field.getCard<DefaultServant>().canAttack(game));
+            you.cmdAttack(game, you.field[0], oppo.master);//已解除冰冻的随从可以攻击
+            Assert.AreEqual(29, oppo.master.getCurrentLife(game));
 
             game.Dispose();
         }
@@ -292,12 +308,12 @@ namespace Tests
         [Test]
         public void freezeHeroTest()
         {
-            TestGameflow.createGame(out var game, out var you, out var oppo, null, TestMaster.ID,
-                new KeyValuePair<int, int>[]
+            TestGameflow.createGame(out var game, out var you, out var oppo, null,
+                TestMaster.ID, new KeyValuePair<int, int>[]
                 {
                     new KeyValuePair<int, int>(TestWeapon.ID,30)
                 },
-                new KeyValuePair<int, int>[]
+                TestMaster.ID, new KeyValuePair<int, int>[]
                 {
                     new KeyValuePair<int, int>(TestFreezeBrain.ID,30)
                 });
@@ -325,7 +341,7 @@ namespace Tests
         [Test]
         public void HalfbodyIceCreamTest()
         {
-           
+
 
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(KonpakuYoumu_N.ID, 1),
@@ -336,8 +352,8 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<KonpakuYoumu_N>());
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            
-            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(),targets: you.field[0]);
+
+            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(), targets: you.field[0]);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
 
