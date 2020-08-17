@@ -277,8 +277,8 @@ namespace Game
             getManager<TableManager>().setGame(game, localPlayer);
             _mainUI.Game.Table.setGame(game, localPlayer);
 
-            //game.triggers.onEventBefore += onEventBefore;
-            //game.triggers.onEventAfter += onEventAfter;
+            game.triggers.onEventBefore += onEventBefore;
+            game.triggers.onEventAfter += onEventAfter;
             ui.LogScrollView.shrink();
             ui.LogScrollView.LogList.clearItems();
         }
