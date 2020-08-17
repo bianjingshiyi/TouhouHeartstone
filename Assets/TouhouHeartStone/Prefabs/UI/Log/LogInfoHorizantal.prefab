@@ -306,7 +306,7 @@ MonoBehaviour:
   _initStates: []
   m_as_Image: {fileID: 8905001030828181733}
   m_as_HorizontalLayoutGroup: {fileID: 7962269362811005294}
-  _InfoCardTargetGridListItem: {fileID: 4052166704371574539}
+  _InfoCard: {fileID: 6983464317442078291}
   _LogInfoVerticalVerticalLayoutGroup: {fileID: 8875512474940378619}
   _Text: {fileID: 1065864420291208610}
   _TargetGridList: {fileID: 8136976083558207255}
@@ -455,16 +455,16 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4807853949967159109}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4052166704371574539 stripped
+--- !u!114 &6983464317442078291 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8828424798275889230, guid: 22cafc1776d7381439fb8afe6353035d,
+  m_CorrespondingSourceObject: {fileID: 2473270567696890134, guid: 22cafc1776d7381439fb8afe6353035d,
     type: 3}
   m_PrefabInstance: {fileID: 4807853949967159109}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c06e60003dd60747b6102e3ffa2888c, type: 3}
+  m_Script: {fileID: 11500000, guid: 945b713d1e809bf439bc3aa4f84a9f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &6071470615044007497

@@ -15,18 +15,19 @@ namespace UI
     using UnityEngine.UI;
     using BJSYGameCore.UI;
     
-    public partial class TargetGridList : UIObject
+    public partial class TargetGridList : UIList<InfoCard>
     {
         protected override void Awake()
         {
             base.Awake();
             this.autoBind();
+            this.defaultItem.gameObject.SetActive(false);
             this.onAwake();
         }
         public void autoBind()
         {
             this.m_as_GridLayoutGroup = this.GetComponent<GridLayoutGroup>();
-            this._InfoCardTargetGridListItem = this.transform.Find("InfoCard").GetComponent<TargetGridListItem>();
+            this.defaultItem = this.transform.Find("InfoCard").GetComponent<InfoCard>();
         }
         [SerializeField()]
         private GridLayoutGroup m_as_GridLayoutGroup;
@@ -41,18 +42,9 @@ namespace UI
                 return this.m_as_GridLayoutGroup;
             }
         }
-        [SerializeField()]
-        private TargetGridListItem _InfoCardTargetGridListItem;
-        public TargetGridListItem InfoCardTargetGridListItem
+        protected override InfoCard getDefaultItem()
         {
-            get
-            {
-                if ((this._InfoCardTargetGridListItem == null))
-                {
-                    this._InfoCardTargetGridListItem = this.transform.Find("InfoCard").GetComponent<TargetGridListItem>();
-                }
-                return this._InfoCardTargetGridListItem;
-            }
+            return this.transform.Find("InfoCard").GetComponent<InfoCard>();
         }
         partial void onAwake();
     }

@@ -143,11 +143,14 @@ namespace TouhouHeartstone
         {
             public Card card;
             public int value;
-
-            ICard IDescribableEventArg.card => card;
-
-            ICard[] IDescribableEventArg.targets => null;
-
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 return card.getFormatString() + "的护甲变为" + value;
@@ -506,8 +509,17 @@ namespace TouhouHeartstone
         public class SilenceEventArg : EventArg, IDescribableEventArg
         {
             public Card[] cards;
-            ICard IDescribableEventArg.card => cards.Length < 2 ? cards[0] : null;
-            ICard[] IDescribableEventArg.targets => cards.Length > 1 ? cards : null;
+
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return cards.Length < 2 ? cards[0] : null;
+            }
+
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return cards.Length > 1 ? cards : null;
+            }
+
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 return string.Join("，", cards.Select(c => c.getFormatString())) + "被沉默";
@@ -803,8 +815,14 @@ namespace TouhouHeartstone
         {
             public Card card;
             public Card target;
-            ICard IDescribableEventArg.card => card;
-            ICard[] IDescribableEventArg.targets => new ICard[] { target };
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return new ICard[] { target };
+            }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 return card.getFormatString() + "攻击" + target.getFormatString();
@@ -925,11 +943,14 @@ namespace TouhouHeartstone
             public Card source;
             public int value;
             public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
-
-            ICard IDescribableEventArg.card => source;
-
-            ICard[] IDescribableEventArg.targets => infoDic.Keys.ToArray();
-
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return source;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return infoDic.Keys.ToArray();
+            }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 return source.getFormatString() + "对" + string.Join("，", infoDic.Select(p => p.Key.getFormatString() + "造成" + p.Value.damagedValue + "点伤害"));
@@ -991,9 +1012,16 @@ namespace TouhouHeartstone
             public Card[] cards;
             public int value;
             public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
-            ICard IDescribableEventArg.card => infoDic.Count > 1 ? null : infoDic.First().Key;
 
-            ICard[] IDescribableEventArg.targets => infoDic.Count > 1 ? infoDic.Keys.ToArray() : null;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return infoDic.Count > 1 ? null : infoDic.First().Key;
+            }
+
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return infoDic.Count > 1 ? infoDic.Keys.ToArray() : null;
+            }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
@@ -1065,9 +1093,15 @@ namespace TouhouHeartstone
         {
             public Dictionary<Card, Info> infoDic;
 
-            ICard IDescribableEventArg.card => infoDic.Count > 1 ? null : infoDic.First().Key;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return infoDic.Count > 1 ? null : infoDic.First().Key;
+            }
 
-            ICard[] IDescribableEventArg.targets => infoDic.Count > 1 ? infoDic.Keys.ToArray() : null;
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return infoDic.Count > 1 ? infoDic.Keys.ToArray() : null;
+            }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {

@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using BJSYGameCore.UI;
 using TouhouCardEngine.Interfaces;
 using UnityEngine.UI;
+using Card = TouhouCardEngine.Card;
+using System.Text.RegularExpressions;
 namespace Game
 {
     public class GameManager : Manager
@@ -302,6 +304,7 @@ namespace Game
                     var item = ui.LogScrollView.LogList.addItem();
                     item.setProp("event", obj);
                     item.onPointerEnter.set(onLogListItemEnter);
+                    item.onPointerExit.set(onLogListItemExit);
                     break;
                 default:
                     break;
@@ -466,9 +469,34 @@ namespace Game
             var arg = item.getProp<IEventArg>("event");
             if (arg is IDescribableEventArg describable)
             {
-                //ui.LogScrollView.LogInfoHorizantal.inca
                 ui.LogScrollView.LogInfoHorizantal.display();
+                string info = describable.toString(game, localPlayer);
+                info = Regex.Replace(info, @"{card:(?<id>\d+)}", m => int.TryParse(m.Groups["id"].Value, out var id) ?
+                    getManager<CardManager>().getSkin(id).name : "未知卡牌");
+                ui.LogScrollView.LogInfoHorizantal.Text.text = info;
+                if (describable.getCard(game, localPlayer) != null)
+                {
+                    ui.LogScrollView.LogInfoHorizantal.InfoCard.display();
+                    ui.LogScrollView.LogInfoHorizantal.InfoCard.Card.setCard(describable.getCard(game, localPlayer).define as CardDefine,
+                        getManager<CardManager>().getSkin(describable.getCard(game, localPlayer) as Card));
+                }
+                else
+                    ui.LogScrollView.LogInfoHorizantal.InfoCard.hide();
+                ui.LogScrollView.LogInfoHorizantal.TargetGridList.clearItems();
+                if (describable.getTargets(game, localPlayer) != null && describable.getTargets(game, localPlayer).Length > 0)
+                {
+                    foreach (var target in describable.getTargets(game, localPlayer))
+                    {
+                        var targetItem = ui.LogScrollView.LogInfoHorizantal.TargetGridList.addItem();
+                        targetItem.Card.setCard(target.define as CardDefine, getManager<CardManager>().getSkin(target as Card));
+                    }
+                }
+                LayoutRebuilder.ForceRebuildLayoutImmediate(ui.LogScrollView.LogInfoHorizantal.rectTransform);
             }
+        }
+        void onLogListItemExit(LogListItem item)
+        {
+            ui.LogScrollView.LogInfoHorizantal.hide();
         }
         #endregion
         protected void OnGUI()

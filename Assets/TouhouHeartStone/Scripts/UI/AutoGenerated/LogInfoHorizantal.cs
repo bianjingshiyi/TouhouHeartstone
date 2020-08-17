@@ -27,7 +27,7 @@ namespace UI
         {
             this.m_as_Image = this.GetComponent<Image>();
             this.m_as_HorizontalLayoutGroup = this.GetComponent<HorizontalLayoutGroup>();
-            this._InfoCardTargetGridListItem = this.transform.Find("InfoCard").GetComponent<TargetGridListItem>();
+            this._InfoCard = this.transform.Find("InfoCard").GetComponent<InfoCard>();
             this._LogInfoVerticalVerticalLayoutGroup = this.transform.Find("LogInfoVertical").GetComponent<VerticalLayoutGroup>();
             this._Text = this.transform.Find("LogInfoVertical").Find("Text").GetComponent<Text>();
             this._TargetGridList = this.transform.Find("LogInfoVertical").Find("TargetGridList").GetComponent<TargetGridList>();
@@ -59,16 +59,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private TargetGridListItem _InfoCardTargetGridListItem;
-        public TargetGridListItem InfoCardTargetGridListItem
+        private InfoCard _InfoCard;
+        public InfoCard InfoCard
         {
             get
             {
-                if ((this._InfoCardTargetGridListItem == null))
+                if ((this._InfoCard == null))
                 {
-                    this._InfoCardTargetGridListItem = this.transform.Find("InfoCard").GetComponent<TargetGridListItem>();
+                    this._InfoCard = this.transform.Find("InfoCard").GetComponent<InfoCard>();
                 }
-                return this._InfoCardTargetGridListItem;
+                return this._InfoCard;
             }
         }
         [SerializeField()]

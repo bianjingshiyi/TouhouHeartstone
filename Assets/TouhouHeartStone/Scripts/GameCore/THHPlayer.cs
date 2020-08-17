@@ -9,8 +9,8 @@ namespace TouhouHeartstone
 {
     public interface IDescribableEventArg : IEventArg
     {
-        ICard card { get; }
-        ICard[] targets { get; }
+        ICard getCard(IGame game, IPlayer viewer);
+        ICard[] getTargets(IGame game, IPlayer viewer);
         string toString(IGame game, IPlayer viewer);
     }
     public class THHPlayer : Player
@@ -91,11 +91,17 @@ namespace TouhouHeartstone
         {
             public THHPlayer player;
             public int value;
-            public ICard card => null;
-            public ICard[] targets => null;
-            public string toString(IGame game, IPlayer player)
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
-                return this.player.name + "的法力值变为" + value;
+                return null;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return player.name + "的法力值变为" + value;
             }
         }
         public Task setMaxGem(THHGame game, int value)
@@ -117,11 +123,17 @@ namespace TouhouHeartstone
         {
             public THHPlayer player;
             public int value;
-            public ICard card => null;
-            public ICard[] targets => null;
-            public string toString(IGame game, IPlayer player)
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
-                return this.player.name + "的最大法力值变为" + value;
+                return null;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return player.name + "的最大法力值变为" + value;
             }
         }
         public Task draw(THHGame game, out DrawEventArg drawEvent, out BurnEventArg burnEvent, out FatigueEventArg fatigueEvent)
@@ -237,12 +249,16 @@ namespace TouhouHeartstone
             /// 抽到的卡
             /// </summary>
             public Card card;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return viewer == player ? card : null;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
 
-            public ICard[] targets => null;
-
-            ICard IDescribableEventArg.card => card;
-
-            public string toString(IGame game, IPlayer viewer)
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 if (viewer == player)
                     return player.name + "抽{card:" + card.define.id + "}";
@@ -254,9 +270,15 @@ namespace TouhouHeartstone
         {
             public THHPlayer player;
             public Card card;
-            public ICard[] targets => null;
-            ICard IDescribableEventArg.card => card;
-            public string toString(IGame game, IPlayer viewer)
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 return player.name + "抽{card:" + card.define.id + "}，但是由于手牌已满它被送入墓地";
             }
@@ -264,8 +286,17 @@ namespace TouhouHeartstone
         public class FatigueEventArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
-            ICard IDescribableEventArg.card => null;
-            ICard[] IDescribableEventArg.targets => null;
+
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 return player.name + "已经无牌可抽，即将受到疲劳伤害";
@@ -380,8 +411,16 @@ namespace TouhouHeartstone
             public int position;
             public Card[] targets;
 
-            ICard IDescribableEventArg.card => card;
-            ICard[] IDescribableEventArg.targets => targets;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return targets;
+            }
+
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 if (targets == null || targets.Length < 1)
@@ -401,11 +440,14 @@ namespace TouhouHeartstone
                 this.card = card;
                 this.targets = targets;
             }
-
-            ICard IDescribableEventArg.card => card;
-
-            ICard[] IDescribableEventArg.targets => targets.OfType<Card>().ToArray();
-
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return targets.OfType<Card>().ToArray();
+            }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 if (targets == null || targets.Length < 1)
@@ -454,9 +496,15 @@ namespace TouhouHeartstone
             public int attack;
             public int life;
 
-            ICard IDescribableEventArg.card => card;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
 
-            ICard[] IDescribableEventArg.targets => null;
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
@@ -503,8 +551,16 @@ namespace TouhouHeartstone
             public int position;
             public Card card;
 
-            ICard IDescribableEventArg.card => card;
-            ICard[] IDescribableEventArg.targets => null;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 return player.name + "召唤衍生物" + card.getFormatString();
@@ -538,9 +594,15 @@ namespace TouhouHeartstone
             public Card card;
             public Pile pile;
 
-            ICard IDescribableEventArg.card => card;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
 
-            ICard[] IDescribableEventArg.targets => null;
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
@@ -615,9 +677,15 @@ namespace TouhouHeartstone
             public THHPlayer player;
             public Card[] cards;
 
-            ICard IDescribableEventArg.card => null;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
 
-            ICard[] IDescribableEventArg.targets => cards;
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return cards;
+            }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
