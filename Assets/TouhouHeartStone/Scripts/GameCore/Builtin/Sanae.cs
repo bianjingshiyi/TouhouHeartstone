@@ -7,7 +7,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Sanae : MasterCardDefine
     {
-        public const int ID = 0x00300000 | CardCategory.MASTER | 0x000;
+        public const int ID = 0x00300000 | CATEGORY.MASTER | 0x000;
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = WindStopMiracle.ID;
@@ -18,7 +18,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class WindStopMiracle : SkillCardDefine
     {
-        public const int ID = Sanae.ID | CardCategory.SKILL | 0x000;
+        public const int ID = Sanae.ID | CATEGORY.SKILL | 0x000;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]

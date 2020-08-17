@@ -4,7 +4,7 @@ namespace TouhouHeartstone
 {
     public abstract class SpellCardDefine : CardDefine
     {
-        public override string type { get; set; } = CardDefineType.SPELL;
+        public override string type { get; set; } = DEFINE.SPELL;
         public abstract int cost { get; set; }
         public virtual string[] keywords { get; set; } = new string[0];
         public virtual bool isToken { get; set; } = false;

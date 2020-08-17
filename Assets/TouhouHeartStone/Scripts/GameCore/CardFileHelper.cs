@@ -64,7 +64,7 @@ namespace TouhouHeartstone
             if (effectList.Count > 0)
                 card.setProp("effects", effectList.ToArray());
             //属性
-            if (card.type == CardDefineType.SERVANT)
+            if (card.type == DEFINE.SERVANT)
             {
                 if (doc["Card"]["cost"] != null)
                     card.setProp("cost", Convert.ToInt32(doc["Card"]["cost"].InnerText));
@@ -73,7 +73,7 @@ namespace TouhouHeartstone
                 if (doc["Card"]["life"] != null)
                     card.setProp("life", Convert.ToInt32(doc["Card"]["life"].InnerText));
             }
-            else if (card.type == CardDefineType.SPELL)
+            else if (card.type == DEFINE.SPELL)
             {
                 if (doc["Card"]["cost"] != null)
                     card.setProp("cost", Convert.ToInt32(doc["Card"]["cost"].InnerText));
@@ -97,7 +97,7 @@ namespace TouhouHeartstone
             cardEle.SetAttribute("id", card.id.ToString());
             cardEle.SetAttribute("type", card.type);
             //属性
-            if (card.type == CardDefineType.SERVANT)
+            if (card.type == DEFINE.SERVANT)
             {
                 XmlElement propEle = doc.CreateElement("cost");
                 propEle.InnerText = card.getProp<int>("cost").ToString();
@@ -109,7 +109,7 @@ namespace TouhouHeartstone
                 propEle.InnerText = card.getProp<int>("life").ToString();
                 cardEle.AppendChild(propEle);
             }
-            else if (card.type == CardDefineType.SPELL)
+            else if (card.type == DEFINE.SPELL)
             {
                 XmlElement propEle = doc.CreateElement("cost");
                 propEle.InnerText = card.getProp<int>("cost").ToString();

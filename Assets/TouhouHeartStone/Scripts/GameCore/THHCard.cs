@@ -194,7 +194,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool canAttack(this Card card, THHGame game)
         {
-            if (card.hasKeyword(game, Keyword.CANTATTACK))
+            if (card.hasKeyword(game, KEYWORD.CANTATTACK))
                 return false;
             if (card.getAttack(game) <= 0)//没有攻击力
                 return false;
@@ -283,88 +283,88 @@ namespace TouhouHeartstone
         }
         public static bool isTaunt(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.TAUNT);
+            return card.hasKeyword(game, KEYWORD.TAUNT);
         }
         public static bool isCharge(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.CHARGE);
+            return card.hasKeyword(game, KEYWORD.CHARGE);
         }
         public static bool isRush(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.RUSH);
+            return card.hasKeyword(game, KEYWORD.RUSH);
         }
         public static void setRush(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, Keyword.RUSH);
+                card.addKeywords(game, KEYWORD.RUSH);
             else
-                card.removeKeywords(game, Keyword.RUSH);
+                card.removeKeywords(game, KEYWORD.RUSH);
         }
         public static bool isShield(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.SHIELD);
+            return card.hasKeyword(game, KEYWORD.SHIELD);
         }
         public static void setShield(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, Keyword.SHIELD);
+                card.addKeywords(game, KEYWORD.SHIELD);
             else
-                card.removeKeywords(game, Keyword.SHIELD);
+                card.removeKeywords(game, KEYWORD.SHIELD);
         }
         public static bool isStealth(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.STEALTH);
+            return card.hasKeyword(game, KEYWORD.STEALTH);
         }
         public static void setStealth(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, Keyword.STEALTH);
+                card.addKeywords(game, KEYWORD.STEALTH);
             else
-                card.removeKeywords(game, Keyword.STEALTH);
+                card.removeKeywords(game, KEYWORD.STEALTH);
         }
         public static bool isDrain(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.DRAIN);
+            return card.hasKeyword(game, KEYWORD.DRAIN);
         }
         public static void setDrain(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, Keyword.DRAIN);
+                card.addKeywords(game, KEYWORD.DRAIN);
             else
-                card.removeKeywords(game, Keyword.DRAIN);
+                card.removeKeywords(game, KEYWORD.DRAIN);
         }
         public static bool isPoisonous(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.POISONOUS);
+            return card.hasKeyword(game, KEYWORD.POISONOUS);
         }
         public static void setPoisonous(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, Keyword.POISONOUS);
+                card.addKeywords(game, KEYWORD.POISONOUS);
             else
-                card.removeKeywords(game, Keyword.POISONOUS);
+                card.removeKeywords(game, KEYWORD.POISONOUS);
         }
         public static bool isElusive(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.ELUSIVE);
+            return card.hasKeyword(game, KEYWORD.ELUSIVE);
         }
         public static void setElusive(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, Keyword.ELUSIVE);
+                card.addKeywords(game, KEYWORD.ELUSIVE);
             else
-                card.removeKeywords(game, Keyword.ELUSIVE);
+                card.removeKeywords(game, KEYWORD.ELUSIVE);
         }
         public static bool isFreeze(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.FREEZE);
+            return card.hasKeyword(game, KEYWORD.FREEZE);
         }
         public static void setFreeze(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, Keyword.FREEZE);
+                card.addKeywords(game, KEYWORD.FREEZE);
             else
-                card.removeKeywords(game, Keyword.FREEZE);
+                card.removeKeywords(game, KEYWORD.FREEZE);
         }
         public static void setFreeze(this IEnumerable<Card> cards, IGame game, bool value)
         {
@@ -375,36 +375,36 @@ namespace TouhouHeartstone
         }
         public static bool isWindfury(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.WINDFURY);
+            return card.hasKeyword(game, KEYWORD.WINDFURY);
         }
         public static void setWindfury(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, Keyword.WINDFURY);
+                card.addKeywords(game, KEYWORD.WINDFURY);
             else
-                card.removeKeywords(game, Keyword.WINDFURY);
+                card.removeKeywords(game, KEYWORD.WINDFURY);
         }
         public static bool isImmunity(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.IMMUNITY);
+            return card.hasKeyword(game, KEYWORD.IMMUNITY);
         }
         public static void setImmunity(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, Keyword.IMMUNITY);
+                card.addKeywords(game, KEYWORD.IMMUNITY);
             else
-                card.removeKeywords(game, Keyword.IMMUNITY);
+                card.removeKeywords(game, KEYWORD.IMMUNITY);
         }
         public static bool isUnique(this Card card, IGame game)
         {
-            return card.hasKeyword(game, Keyword.UNIQUE);
+            return card.hasKeyword(game, KEYWORD.UNIQUE);
         }
         public static void setUnique(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, Keyword.UNIQUE);
+                card.addKeywords(game, KEYWORD.UNIQUE);
             else
-                card.removeKeywords(game, Keyword.UNIQUE);
+                card.removeKeywords(game, KEYWORD.UNIQUE);
         }
         public static void setKeywords(this Card card, IGame game, string[] keywords)
         {

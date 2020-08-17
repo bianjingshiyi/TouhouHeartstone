@@ -485,8 +485,8 @@ namespace Game
             }
             else if (c is GeneratedCardDefine generated)
             {
-                if (generated.type == CardDefineType.MASTER ||
-                    generated.type == CardDefineType.SKILL)
+                if (generated.type == DEFINE.MASTER ||
+                    generated.type == DEFINE.SKILL)
                     return false;
                 if (generated.getProp<bool>(nameof(ServantCardDefine.isToken)))
                     return false;

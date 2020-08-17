@@ -269,7 +269,7 @@ namespace Tests
         [Test]
         public void idTest()
         {
-            Assert.AreEqual(TestMaster.ID, CardCategory.getCharacterID(TestSkill.ID));
+            Assert.AreEqual(TestMaster.ID, CATEGORY.getCharacterID(TestSkill.ID));
         }
         [UnityTest]
         public IEnumerator discoverTest()

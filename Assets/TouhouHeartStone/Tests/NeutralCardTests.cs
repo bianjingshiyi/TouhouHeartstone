@@ -482,7 +482,7 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<YakumoRan_N>());
             Card card = game.triggers.getRecordedEvents().OfType<THHPlayer.CreateTokenEventArg>().Last().card;
             Assert.IsInstanceOf<Chen_N>(card.define);
-            Assert.True(you.field[1].hasKeyword(game, Keyword.RUSH));
+            Assert.True(you.field[1].hasKeyword(game, KEYWORD.RUSH));
             var buff = you.field[1].getBuffs()[0];
             Assert.AreEqual(YakumoRan_N.ID, buff.id);
         }

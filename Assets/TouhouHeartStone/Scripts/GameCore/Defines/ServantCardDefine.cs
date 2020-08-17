@@ -3,7 +3,7 @@ namespace TouhouHeartstone
 {
     public abstract class ServantCardDefine : CardDefine
     {
-        public override string type { get; set; } = CardDefineType.SERVANT;
+        public override string type { get; set; } = DEFINE.SERVANT;
         /// <summary>
         /// 是否是衍生物？
         /// </summary>

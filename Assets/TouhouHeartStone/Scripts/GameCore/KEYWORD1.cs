@@ -1,6 +1,6 @@
 ﻿namespace TouhouHeartstone
 {
-    public class Keyword
+    public class KEYWORD
     {
         /// <summary>
         /// 嘲讽

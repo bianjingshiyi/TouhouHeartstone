@@ -195,7 +195,7 @@ namespace TouhouHeartstone
                 {
                     THHPlayer player = arg.player;
                     card = arg.card;
-                    if (card.define is SpellCardDefine spell && card.hasKeyword(game, Keyword.AUTOCAST))
+                    if (card.define is SpellCardDefine spell && card.hasKeyword(game, KEYWORD.AUTOCAST))
                     {
                         await player.deck.moveTo(game, card, player.warp);
                         await card.activeEffect(game, player, new Card[0]);
@@ -328,7 +328,7 @@ namespace TouhouHeartstone
                 card = arg.card;
                 targets = arg.targets;
                 game.logger.log(arg.player + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
-                if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.SERVANT))
+                if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
                 {
                     //随从卡，将卡置入战场
                     await tryEnterField(game, arg.player.hand, arg.card, arg.position);
@@ -353,7 +353,7 @@ namespace TouhouHeartstone
                 {
                     await card.activeEffect(game, player, targets);
                 }
-                else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == CardDefineType.SPELL))
+                else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SPELL))
                 {
                     //法术卡，释放效果然后丢进墓地
                     await player.hand.moveTo(game, card, player.warp);
@@ -361,7 +361,7 @@ namespace TouhouHeartstone
                     await player.warp.moveTo(game, card, player.grave);
                     await card.removeBuff(game);
                 }
-                else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == CardDefineType.ITEM))
+                else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == DEFINE.ITEM))
                 {
                     //物品卡，置入物品栏
                     await player.equip(game, card);

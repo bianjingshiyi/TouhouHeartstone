@@ -18,7 +18,7 @@ namespace Tests
     }
     class TestSkill : SkillCardDefine
     {
-        public const int ID = TestMaster.ID | CardCategory.SKILL | 0x000;
+        public const int ID = TestMaster.ID | CATEGORY.SKILL | 0x000;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new LambdaSingleTargetEffect[0];
@@ -135,7 +135,7 @@ namespace Tests
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[0];
-        public override string[] keywords { get; set; } = new string[] { Keyword.RUSH };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
     /// <summary>
@@ -149,7 +149,7 @@ namespace Tests
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[0];
-        public override string[] keywords { get; set; } = new string[] { Keyword.SHIELD };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
     /// <summary>
@@ -163,7 +163,7 @@ namespace Tests
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[0];
-        public override string[] keywords { get; set; } = new string[] { Keyword.STEALTH };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.STEALTH };
         public override IEffect[] effects { get; set; } = new IEffect[0];
 
         //public override IEffect[] effects { get; set; } = new IEffect[]
@@ -195,7 +195,7 @@ namespace Tests
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[] { };
-        public override string[] keywords { get; set; } = new string[] { Keyword.DRAIN };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.DRAIN };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
 
@@ -210,7 +210,7 @@ namespace Tests
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[] { };
-        public override string[] keywords { get; set; } = new string[] { Keyword.POISONOUS };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
 
@@ -225,7 +225,7 @@ namespace Tests
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[] { };
-        public override string[] keywords { get; set; } = new string[] { Keyword.ELUSIVE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.ELUSIVE };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
 
@@ -342,7 +342,7 @@ namespace Tests
                 foreach(Card target in targets)
                 {
                     await target.addBuff(game, new GeneratedBuff(ID,
-                    new KeywordsModifier(KeywordsModifier.ModifyType.add,Keyword.FREEZE)));
+                    new KeywordsModifier(KeywordsModifier.ModifyType.add,KEYWORD.FREEZE)));
                 }
             })
         };
@@ -438,7 +438,7 @@ namespace Tests
     }
     class FireBall : SpellCardDefine
     {
-        public const int ID = TestMaster.ID | CardCategory.SPELL | 0x012;
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x012;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -461,7 +461,7 @@ namespace Tests
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 1;
         public override string[] tags { get; set; } = new string[] { };
-        public override string[] keywords { get; set; } = new string[] { Keyword.POISONOUS };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
@@ -486,7 +486,7 @@ namespace Tests
     }
     public class DiscoverCopy : SpellCardDefine
     {
-        public const int ID = TestMaster.ID | CardCategory.SPELL | 0x013;
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x013;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -500,7 +500,7 @@ namespace Tests
     }
     public class TestWeapon : ItemCardDefine
     {
-        public const int ID = TestMaster.ID | CardCategory.ITEM | 0x014;
+        public const int ID = TestMaster.ID | CATEGORY.ITEM | 0x014;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
@@ -511,7 +511,7 @@ namespace Tests
     /// </summary>
     public class Corruption : SpellCardDefine
     {
-        public const int ID = TestMaster.ID | CardCategory.SPELL | 0x015;
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x015;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -540,7 +540,7 @@ namespace Tests
     /// </summary>
     public class TestFreezeBrain : SpellCardDefine
     {
-        public const int ID = TestMaster.ID | CardCategory.SPELL | 0x016;
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x016;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override IEffect[] effects { get; set; } = new IEffect[]

@@ -61,13 +61,13 @@ namespace TouhouHeartstone
                     else
                         path = "Neutral";
                     int typeId = define.getCategory();
-                    if (typeId == CardCategory.SERVANT)
+                    if (typeId == CATEGORY.SERVANT)
                         path += "/Servant";
-                    else if (typeId == CardCategory.SKILL)
+                    else if (typeId == CATEGORY.SKILL)
                         path += "/Skill";
-                    else if (typeId == CardCategory.SPELL)
+                    else if (typeId == CATEGORY.SPELL)
                         path += "/Spell";
-                    else if (typeId == CardCategory.ITEM)
+                    else if (typeId == CATEGORY.ITEM)
                         path += "/Item";
                     path += "/" + define.GetType().Name;
                     menu.AddItem(new GUIContent(path), define.id == id, () =>

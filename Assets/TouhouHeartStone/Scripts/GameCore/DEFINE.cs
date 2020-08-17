@@ -1,6 +1,6 @@
 ﻿namespace TouhouHeartstone
 {
-    public class CardDefineType
+    public class DEFINE
     {
         public const string SERVANT = "Servant";
         public const string MASTER = "Master";

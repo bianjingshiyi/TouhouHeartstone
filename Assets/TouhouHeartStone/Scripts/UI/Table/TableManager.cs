@@ -338,11 +338,11 @@ namespace Game
                 master.onCanAttackFalse.invokeBeforeAnim();
                 master.onCanAttackFalse.invokeAfterAnim();
             }
-            if (card.hasKeyword(game, Keyword.FREEZE))
+            if (card.hasKeyword(game, KEYWORD.FREEZE))
                 master.FreezeImage.display();
             else
                 master.FreezeImage.hide();
-            if (card.hasKeyword(game, Keyword.SHIELD))
+            if (card.hasKeyword(game, KEYWORD.SHIELD))
                 master.ShieldImage.display();
             else
                 master.ShieldImage.hide();
@@ -966,14 +966,14 @@ namespace Game
                 ui.isFaceup = false;
             }
 
-            if (card.define.type == CardDefineType.SERVANT)
+            if (card.define.type == DEFINE.SERVANT)
             {
-                ui.type = CardCategory.SERVANT;
+                ui.type = CATEGORY.SERVANT;
                 ui.AttackPropNumber.asText.text = card.getAttack(game).ToString();
                 ui.LifePropNumber.asText.text = card.getLife(game).ToString();
             }
             else
-                ui.type = CardCategory.SPELL;
+                ui.type = CATEGORY.SPELL;
         }
         Dictionary<Card, Servant> cardServantDic { get; } = new Dictionary<Card, Servant>();
         /// <summary>
@@ -1094,15 +1094,15 @@ namespace Game
                 servant.onTauntFalse.invokeBeforeAnim();
                 servant.onTauntFalse.invokeAfterAnim();
             }
-            if (card.hasKeyword(game, Keyword.STEALTH))
+            if (card.hasKeyword(game, KEYWORD.STEALTH))
                 servant.StealthImage.display();
             else
                 servant.StealthImage.hide();
-            if (card.hasKeyword(game, Keyword.FREEZE))
+            if (card.hasKeyword(game, KEYWORD.FREEZE))
                 servant.FreezeImage.display();
             else
                 servant.FreezeImage.hide();
-            if (card.hasKeyword(game, Keyword.SHIELD))
+            if (card.hasKeyword(game, KEYWORD.SHIELD))
                 servant.ShieldImage.display();
             else
                 servant.ShieldImage.hide();
@@ -1314,7 +1314,7 @@ namespace Game
             }
             servant.AttackTextPropNumber.asText.text = card.getAttack().ToString();
             servant.HpTextPropNumber.asText.text = card.getLife().ToString();
-            if (card.hasKeyword(Keyword.TAUNT))
+            if (card.hasKeyword(KEYWORD.TAUNT))
             {
                 servant.onTauntTrue.invokeBeforeAnim();
                 servant.onTauntTrue.invokeAfterAnim();

@@ -131,7 +131,7 @@ namespace Tests
             you.cmdTurnEnd(game);
             game.skipTurnUntil(() => game.currentPlayer == you);
             Assert.False(you.field[0].canAttack(game));
-            Assert.True(you.field[0].getKeywords(game).Contains(Keyword.CANTATTACK));
+            Assert.True(you.field[0].getKeywords(game).Contains(KEYWORD.CANTATTACK));
             you.field[0].silence(game);
             Assert.True(you.field[0].canAttack(game));
 
@@ -452,7 +452,7 @@ namespace Tests
             you.field[0].damage(game, you.master, 4);
             you.cmdUse(game, you.hand.getCard<WaterElf>(), targets: you.field[0]);
             Assert.True(you.field[0].getCurrentLife(game) == 13);
-            Assert.True(you.field[0].hasKeyword(game, Keyword.TAUNT));
+            Assert.True(you.field[0].hasKeyword(game, KEYWORD.TAUNT));
             var keywords = you.field[0].getProp(game, nameof(ServantCardDefine.keywords));
             Debug.Log(keywords.GetType());
             Assert.True(keywords is Array);
@@ -654,7 +654,7 @@ namespace Tests
             you.cmdDiscover(game, game.answers.getRequest<DiscoverRequest>(you.id).cardIdArray[0]);
             game.skipUntilCanUse<NoachianDeluge>(you);
             you.cmdUse(game, you.hand.getCard<NoachianDeluge>());
-            Assert.False(you.field[0].hasTag(game, Keyword.TAUNT));
+            Assert.False(you.field[0].hasTag(game, KEYWORD.TAUNT));
             Assert.AreEqual(defineLife, you.field[0].getCurrentLife(game));
             Assert.AreEqual(defineLife, you.field[0].getLife(game));
 

@@ -7,7 +7,7 @@ namespace TouhouHeartstone
     /// <summary>
     /// 关于ID格式，目前是8位十六进制，前3位为人物ID，中间2位是卡牌种类，后3位是卡片自己的ID。
     /// </summary>
-    public static class CardCategory
+    public static class CATEGORY
     {
         public const int CHARACTER_MASK = 0x0ff00000;
         public const int CATEGORY_MASK = 0x000ff000;

@@ -294,7 +294,7 @@ namespace UI
                 if (ui.getManager<CardManager>().tryGetSkin(card.id, out var skin))
                 {
                     var item = BuildCardList.addItem();
-                    item.setRemainText(0, card.hasKeyword(Keyword.UNIQUE) ? 1 : 2);
+                    item.setRemainText(0, card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
                     cardItemList.Add(new CardItem() { buildItem = item, define = card, skin = skin });
                     item.Card.setCard(card, skin);
                     UberDebug.LogChannel("UI", "添加卡" + card + "列表项目");
@@ -329,7 +329,7 @@ namespace UI
                 var deckItem = BuildDeckList.getItems().FirstOrDefault(i => i.card == card.define);
                 if (deckItem != null)
                 {
-                    card.buildItem.setRemainText(deckItem.count, card.define.hasKeyword(Keyword.UNIQUE) ? 1 : 2);
+                    card.buildItem.setRemainText(deckItem.count, card.define.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
                 }
                 else
                 {
@@ -452,13 +452,13 @@ namespace UI
                 return;
             }
             // 唯一
-            if (card.hasKeyword(Keyword.UNIQUE) && deckItem?.count >= 1)
+            if (card.hasKeyword(KEYWORD.UNIQUE) && deckItem?.count >= 1)
             {
                 showMessage("唯一的卡片只能携带一张");
                 return;
             }
             // 中立卡或自己的卡
-            if (card.getCharacterID() != CardCategory.CHARACTER_NEUTRAL
+            if (card.getCharacterID() != CATEGORY.CHARACTER_NEUTRAL
                 && card.getCharacterID() != currentEditingDeckMasterID)
             {
                 showMessage("只能选择角色对应的卡或中立卡");
@@ -485,7 +485,7 @@ namespace UI
             });
 
             // 更新可用信息
-            getCardItem(card).buildItem.setRemainText(deckItem.count, card.hasKeyword(Keyword.UNIQUE) ? 1 : 2);
+            getCardItem(card).buildItem.setRemainText(deckItem.count, card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
 
             // 标记为已经修改
             deckChanged = true;

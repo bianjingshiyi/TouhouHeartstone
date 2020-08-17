@@ -14,14 +14,14 @@ namespace Game
             ui.DescText.text = skin.desc;
             ui.isFaceup = true;
 
-            if (card.type == CardDefineType.SERVANT)
+            if (card.type == DEFINE.SERVANT)
             {
-                ui.type = CardCategory.SERVANT;
+                ui.type = CATEGORY.SERVANT;
                 ui.AttackPropNumber.asText.text = card.getAttack().ToString();
                 ui.LifePropNumber.asText.text = card.getLife().ToString();
             }
             else
-                ui.type = CardCategory.SPELL;
+                ui.type = CATEGORY.SPELL;
         }
     }
 }

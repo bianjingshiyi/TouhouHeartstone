@@ -125,13 +125,13 @@ namespace TouhouHeartstone
                 //ID，类型
                 _card.setProp("id", EditorGUILayout.IntField("id", _card.id));
                 //_card.setProp("type", Convert.ToInt32(EditorGUILayout.EnumPopup("type", _card.type)));
-                if (_card.type == CardDefineType.SERVANT)
+                if (_card.type == DEFINE.SERVANT)
                 {
                     _card.setProp("cost", EditorGUILayout.IntField("cost", _card.getProp<int>("cost")));
                     _card.setProp("attack", EditorGUILayout.IntField("attack", _card.getProp<int>("attack")));
                     _card.setProp("life", EditorGUILayout.IntField("life", _card.getProp<int>("life")));
                 }
-                else if (_card.type == CardDefineType.SPELL)
+                else if (_card.type == DEFINE.SPELL)
                 {
                     _card.setProp("cost", EditorGUILayout.IntField("cost", _card.getProp<int>("cost")));
                 }

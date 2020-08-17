@@ -15,18 +15,18 @@ namespace UI
             this.card = card;
 
             CostPropNumber.asText.text = card.getCost(null).ToString();
-            if (card.define.type == CardDefineType.SERVANT)
+            if (card.define.type == DEFINE.SERVANT)
             {
-                type = CardCategory.SERVANT;
+                type = CATEGORY.SERVANT;
                 // TypeController = Type.Servant;
                 //onTypeControllerServant?.Invoke();
                 AttackPropNumber.asText.text = card.getAttack(null).ToString();
                 LifePropNumber.asText.text = card.getLife(null).ToString();
             }
-            else if (card.define.type == CardDefineType.SPELL)
+            else if (card.define.type == DEFINE.SPELL)
             {
                 // TypeController = Type.Spell;
-                type = CardCategory.SPELL;
+                type = CATEGORY.SPELL;
             }
 
             if (skin != null)
@@ -93,7 +93,7 @@ namespace UI
             {
                 switch (value)
                 {
-                    case CardCategory.SPELL:
+                    case CATEGORY.SPELL:
                         _onTypeControllerSpell.Invoke();
                         break;
                     default://SERVANT

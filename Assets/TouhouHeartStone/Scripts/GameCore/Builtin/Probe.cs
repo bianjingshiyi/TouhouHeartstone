@@ -13,7 +13,7 @@ namespace TouhouHeartstone.Builtin.Proble
     [IgnoreCardDefine]
     public class Probe : MasterCardDefine
     {
-        public const int ID = 0x04200000 | CardCategory.MASTER | 0x000;
+        public const int ID = 0x04200000 | CATEGORY.MASTER | 0x000;
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 15;
         public override int skillID { get; set; } = ProbeShoot.ID;//英雄技能的ID
@@ -52,7 +52,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class ProbeShoot : SkillCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SKILL | 0x000;
+            public const int ID = Probe.ID | CATEGORY.SKILL | 0x000;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 2; //技能花费
             public override IEffect[] effects { get; set; } = new IEffect[]
@@ -73,7 +73,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class BulidPylon : SpellCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SPELL | 0x001;
+            public const int ID = Probe.ID | CATEGORY.SPELL | 0x001;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 2; //花费
             public override IEffect[] effects { get; set; } = new IEffect[]
@@ -95,14 +95,14 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class Pylon : ServantCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SERVANT | 0x002;
+            public const int ID = Probe.ID | CATEGORY.SERVANT | 0x002;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 2;
             public override int attack { get; set; } = 0;//随从的攻击力
             public override int life { get; set; } = 6;//随从的血量上限
             public override bool isToken { get; set; } = true;//是衍生物吗？（当然）
                                                               //public override string[] tags { get; set; } = new string[];//种族标签
-            public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };//关键词标签：
+            public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };//关键词标签：
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class ParticulateLaser : SpellCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SPELL | 0x003;
+            public const int ID = Probe.ID | CATEGORY.SPELL | 0x003;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 2;
             public override IEffect[] effects { get; set; } = new IEffect[]
@@ -134,7 +134,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class PsionicShock : SpellCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SPELL | 0x004;
+            public const int ID = Probe.ID | CATEGORY.SPELL | 0x004;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 4;
             public override IEffect[] effects { get; set; } = new IEffect[]
@@ -157,7 +157,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class PylonOverload : SpellCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SPELL | 0x005;
+            public const int ID = Probe.ID | CATEGORY.SPELL | 0x005;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 4; //花费
             public override IEffect[] effects { get; set; } = new IEffect[]
@@ -191,7 +191,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class Sentry : ServantCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SERVANT | 0x006;
+            public const int ID = Probe.ID | CATEGORY.SERVANT | 0x006;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 4;
             public override int attack { get; set; } = 2;//随从的攻击力
@@ -217,14 +217,14 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class Vision : ServantCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SERVANT | 0x007;
+            public const int ID = Probe.ID | CATEGORY.SERVANT | 0x007;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 0;
             public override int attack { get; set; } = 0;//随从的攻击力
             public override int life { get; set; } = 2;//随从的血量上限
             public override bool isToken { get; set; } = true;//是衍生物吗？
                                                               //public override string[] tags { get; set; } = new string[];//种族标签
-            public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };//关键词标签：
+            public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };//关键词标签：
 
         }
 
@@ -236,7 +236,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class ProphetRobot : ServantCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SERVANT | 0x008;
+            public const int ID = Probe.ID | CATEGORY.SERVANT | 0x008;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 4;
             public override int attack { get; set; } = 3;//随从的攻击力
@@ -271,14 +271,14 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class Colossus : ServantCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SERVANT | 0x009;
+            public const int ID = Probe.ID | CATEGORY.SERVANT | 0x009;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 8;
             public override int attack { get; set; } = 8;//随从的攻击力
             public override int life { get; set; } = 8;//随从的血量上限
             public override bool isToken { get; set; } = false;//是衍生物吗？
             public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
-            public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
+            public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
             public override IEffect[] effects { get; set; } = new IEffect[]{
             //回合结束扳机
             new BeforeYourTurnEnd(async(game,card,arg)=>
@@ -296,7 +296,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class EnergyAutophagy : SpellCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SPELL | 0x010;
+            public const int ID = Probe.ID | CATEGORY.SPELL | 0x010;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 1;
             public override IEffect[] effects { get; set; } = new IEffect[]
@@ -318,14 +318,14 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class Protoss : ServantCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SERVANT | 0x011;
+            public const int ID = Probe.ID | CATEGORY.SERVANT | 0x011;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 5;
             public override int attack { get; set; } = 0;//随从的攻击力
             public override int life { get; set; } = 3;//随从的血量上限
             public override bool isToken { get; set; } = false;//是衍生物吗？
             public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
-            public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
+            public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
             public override IEffect[] effects { get; set; } = new IEffect[]
             {
             new NoTargetEffect(effect),
@@ -347,7 +347,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class ReconstructRay : SpellCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SPELL | 0x012;
+            public const int ID = Probe.ID | CATEGORY.SPELL | 0x012;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 0;
             public override IEffect[] effects { get; set; } = new IEffect[]
@@ -374,7 +374,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class Imitation : SpellCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SPELL | 0x013;
+            public const int ID = Probe.ID | CATEGORY.SPELL | 0x013;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 0;
             public override IEffect[] effects { get; set; } = new IEffect[]
@@ -398,7 +398,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class ProtectiveShell : SpellCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SPELL | 0x014;
+            public const int ID = Probe.ID | CATEGORY.SPELL | 0x014;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 3;
             public override IEffect[] effects { get; set; } = new IEffect[]
@@ -422,14 +422,14 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class Sissel : ServantCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SERVANT | 0x015;
+            public const int ID = Probe.ID | CATEGORY.SERVANT | 0x015;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 7;
             public override int attack { get; set; } = 2;//随从的攻击力
             public override int life { get; set; } = 2;//随从的血量上限
             public override bool isToken { get; set; } = false;//是衍生物吗？
                                                                //public override string[] tags { get; set; } = new string[] {  };//种族标签
-            public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
+            public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
             public override IEffect[] effects { get; set; } = new IEffect[]
             {
             //存在目标的法术
@@ -449,7 +449,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class SilentCardCounter : ServantCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SERVANT | 0x016;
+            public const int ID = Probe.ID | CATEGORY.SERVANT | 0x016;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 4;
             public override int attack { get; set; } = 3;//随从的攻击力
@@ -475,7 +475,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class AssemblyLine : ServantCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SERVANT | 0x017;
+            public const int ID = Probe.ID | CATEGORY.SERVANT | 0x017;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 3;
             public override int attack { get; set; } = 0;//随从的攻击力
@@ -507,7 +507,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class MiniRobot : ServantCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SERVANT | 0x018;
+            public const int ID = Probe.ID | CATEGORY.SERVANT | 0x018;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 1;
             public override int attack { get; set; } = 1;//随从的攻击力
@@ -525,7 +525,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class ColludeWithTheEnemy : SpellCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SPELL | 0x019;
+            public const int ID = Probe.ID | CATEGORY.SPELL | 0x019;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 2;
             public override IEffect[] effects { get; set; } = new IEffect[]
@@ -558,7 +558,7 @@ namespace TouhouHeartstone.Builtin.Proble
         [IgnoreCardDefine]
         public class Corrosion : SpellCardDefine
         {
-            public const int ID = Probe.ID | CardCategory.SPELL | 0x020;
+            public const int ID = Probe.ID | CATEGORY.SPELL | 0x020;
             public override int id { get; set; } = ID;
             public override int cost { get; set; } = 1;
             public override IEffect[] effects { get; set; } = new IEffect[]
@@ -627,7 +627,7 @@ namespace TouhouHeartstone.Builtin.Proble
     [IgnoreCardDefine]
     public class CablewayGuard : ServantCardDefine
     {
-        public const int ID = Probe.ID | CardCategory.SPELL | 0x021;
+        public const int ID = Probe.ID | CATEGORY.SPELL | 0x021;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 5;//随从的攻击力
@@ -656,7 +656,7 @@ namespace TouhouHeartstone.Builtin.Proble
     [IgnoreCardDefine]
     public class CirculationOfGossip_1 : SpellCardDefine
     {
-        public const int ID = Probe.ID | CardCategory.SPELL | 0x022;
+        public const int ID = Probe.ID | CATEGORY.SPELL | 0x022;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override bool isToken { get; set; } = false;
@@ -682,7 +682,7 @@ namespace TouhouHeartstone.Builtin.Proble
     [IgnoreCardDefine]
     public class CirculationOfGossip_2 : SpellCardDefine
     {
-        public const int ID = Probe.ID | CardCategory.SPELL | 0x023;
+        public const int ID = Probe.ID | CATEGORY.SPELL | 0x023;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override bool isToken { get; set; } = true;
@@ -709,7 +709,7 @@ namespace TouhouHeartstone.Builtin.Proble
     [IgnoreCardDefine]
     public class CirculationOfGossip_3 : SpellCardDefine
     {
-        public const int ID = Probe.ID | CardCategory.SPELL | 0x024;
+        public const int ID = Probe.ID | CATEGORY.SPELL | 0x024;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override bool isToken { get; set; } = true;
@@ -740,7 +740,7 @@ namespace TouhouHeartstone.Builtin.Proble
     [IgnoreCardDefine]
     public class KarasuTenguobot : ServantCardDefine
     {
-        public const int ID = Probe.ID | CardCategory.SERVANT | 0x025;
+        public const int ID = Probe.ID | CATEGORY.SERVANT | 0x025;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;//随从的攻击力
@@ -757,7 +757,7 @@ namespace TouhouHeartstone.Builtin.Proble
     [IgnoreCardDefine]
     public class GoustFromTheBarrow : ServantCardDefine
     {
-        public const int ID = Probe.ID | CardCategory.SERVANT | 0x026;
+        public const int ID = Probe.ID | CATEGORY.SERVANT | 0x026;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 6;//随从的攻击力
@@ -780,13 +780,13 @@ namespace TouhouHeartstone.Builtin.Proble
     [IgnoreCardDefine]
     public class Geralt_Igni : ServantCardDefine
     {
-        public const int ID = Probe.ID | CardCategory.SERVANT | 0x027;
+        public const int ID = Probe.ID | CATEGORY.SERVANT | 0x027;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 2;//随从的攻击力
         public override int life { get; set; } = 2;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
-        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)

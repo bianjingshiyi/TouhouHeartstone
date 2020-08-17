@@ -11,13 +11,13 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class RashFairy : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x001;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x001;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
-        public override string[] keywords { get; set; } = new string[] { Keyword.CHARGE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.CHARGE };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
     /// <summary>
@@ -25,12 +25,12 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class HumanVillageGuard : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x002;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x002;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
     /// <summary>
@@ -38,7 +38,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class RifleHunter : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x003;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x003;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
@@ -57,7 +57,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class MissingSpecter : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x004;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x004;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
@@ -76,7 +76,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class LostSpecter : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x005;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x005;
         public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override int cost { get; set; } = 5;
@@ -90,7 +90,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class DrizzleFairy : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x006;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x006;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
@@ -102,7 +102,7 @@ namespace TouhouHeartstone.Builtin
     }
     public class LuckyCoin : SpellCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SPELL | 0x007;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x007;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
@@ -119,7 +119,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class FlameFairy : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x008;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x008;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
@@ -148,12 +148,12 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class SunnyMilk : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x009;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x009;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { Keyword.STEALTH };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.STEALTH };
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
@@ -162,7 +162,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class LunaChild : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x010;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x010;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
@@ -182,7 +182,7 @@ namespace TouhouHeartstone.Builtin
             {
                 if(targets[0] is Card target)
                 await target.addBuff(game, new GeneratedBuff(ID,
-                    new KeywordsModifier(KeywordsModifier.ModifyType.add,Keyword.STEALTH)));
+                    new KeywordsModifier(KeywordsModifier.ModifyType.add,KEYWORD.STEALTH)));
             })
         };
     }
@@ -191,7 +191,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class StarSphere : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x011;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x011;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
@@ -207,7 +207,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class BeerFairy : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x012;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x012;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
@@ -226,7 +226,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class SunflowerWarleader : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x013;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x013;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
@@ -257,7 +257,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Cirno : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x014;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x014;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
@@ -285,12 +285,12 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Daiyousei : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x015;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x015;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { Keyword.CHARGE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.CHARGE };
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
@@ -313,7 +313,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Cirno_IceFall : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x016;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x016;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 4;
@@ -326,7 +326,7 @@ namespace TouhouHeartstone.Builtin
                 foreach( Card t in target.getNearbyCards())
                 {
                     await t.addBuff(game, new GeneratedBuff(ID,
-                    new KeywordsModifier(KeywordsModifier.ModifyType.add,Keyword.FREEZE)));
+                    new KeywordsModifier(KeywordsModifier.ModifyType.add,KEYWORD.FREEZE)));
                 }
             }, PileFlag.both | PileFlag.field)
         };
@@ -336,7 +336,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Clownpiece : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x017;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x017;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
@@ -380,7 +380,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class ForestFairy : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x018;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x018;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 8;
         public override int attack { get; set; } = 8;
@@ -408,7 +408,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class EternityLarva : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x019;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x019;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
@@ -438,7 +438,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class LilyWhite : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x020;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x020;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 2;
@@ -471,12 +471,12 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Daiyousei_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x021;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x021;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { Keyword.RUSH };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
@@ -491,7 +491,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Cirno_N_YYM : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x022;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x022;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
@@ -511,7 +511,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Cirno_N_HMX : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x023;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x023;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
@@ -524,7 +524,7 @@ namespace TouhouHeartstone.Builtin
                 foreach( Card t in target.getNearbyCards())
                 {
                     await t.addBuff(game, new GeneratedBuff(ID,
-                    new KeywordsModifier(KeywordsModifier.ModifyType.add,Keyword.FREEZE)));
+                    new KeywordsModifier(KeywordsModifier.ModifyType.add,KEYWORD.FREEZE)));
                 }
             }, PileFlag.both | PileFlag.field)
         };
@@ -534,7 +534,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class LettyWhiterock_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x024;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x024;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
@@ -615,7 +615,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Chen_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x025;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x025;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
@@ -626,7 +626,7 @@ namespace TouhouHeartstone.Builtin
             {
                 return card.addBuff(game,new GeneratedBuff(ID,
                     new AttackModifier(2),
-                    new KeywordsModifier(KeywordsModifier.ModifyType.add,Keyword.RUSH)));
+                    new KeywordsModifier(KeywordsModifier.ModifyType.add,KEYWORD.RUSH)));
             })
         };
     }
@@ -635,7 +635,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Koakuma_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x026;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x026;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
@@ -657,12 +657,12 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class AliceMargatroid_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x027;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x027;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new BeforeYourTurnEnd(async(game,card,arg)=>
@@ -676,25 +676,25 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Doll_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x028;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x028;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override bool isToken { get; set; } = true;
-        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
     }
     /// <summary>
     /// 433 帕秋莉·诺蕾姬 唯一，战吼：发现两张元素法术，将它们融合并置入手牌。
     /// </summary>
     public class PatchouliKnowledge_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x029;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x029;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 3;
-        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(async (g1,c1)=>
@@ -712,7 +712,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class LilyWhite_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x030;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x030;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
@@ -733,24 +733,24 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class KonpakuYoumu_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x031;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x031;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { Keyword.RUSH, Keyword.WINDFURY };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD.WINDFURY };
     }
     /// <summary>
     /// 646 蕾米莉亚·斯卡蕾特 唯一，战吼：弃三张牌，抽三张牌。
     /// </summary>
     public class RemiliaScarlet_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x032;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x032;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 6;
-        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
         public override IEffect[] effects { get; set; } = new IEffect[]{
             new NoTargetEffect(effect)
         };
@@ -768,12 +768,12 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class FlandreScarlet_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x033;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x033;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 6;
-        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
         public override IEffect[] effects { get; set; } = new IEffect[]{
             new NoTargetEffect(effect)
         };
@@ -788,7 +788,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class IzayoiSakuya_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x037;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x037;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 2;
@@ -809,7 +809,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class YakumoRan_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x038;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x038;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 7;
         public override int attack { get; set; } = 4;
@@ -824,7 +824,7 @@ namespace TouhouHeartstone.Builtin
             await chen.addBuff(game, new GeneratedBuff(ID,
                 new AttackModifier(3),
                 new LifeModifier(1),
-                new KeywordsModifier(KeywordsModifier.ModifyType.add, Keyword.RUSH)));
+                new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
         }
     }
     /// <summary>
@@ -832,12 +832,12 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class SaigyoujiYuyuko_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x039;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x039;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 8;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
-        public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect((game,card,target)=>
@@ -852,7 +852,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class YakumoYukari_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x040;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x040;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 10;
         public override int attack { get; set; } = 8;
@@ -873,12 +873,12 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Rumia_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x041;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x041;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { Keyword.STEALTH };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.STEALTH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectBefore<THHCard.AttackEventArg>(PileName.FIELD,(g,c,a)=>
@@ -899,7 +899,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class LunasaPrismriver_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x042;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x042;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 2;
@@ -941,12 +941,12 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class MerlinPrismriver_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x043;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x043;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { Keyword.TAUNT };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect((g1,c1)=>
@@ -960,12 +960,12 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class LyricaPrismriver_N : ServantCardDefine
     {
-        public const int ID = CardCategory.CHARACTER_NEUTRAL | CardCategory.SERVANT | 0x044;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x044;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { Keyword.SHIELD };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect((g1,c1)=>
