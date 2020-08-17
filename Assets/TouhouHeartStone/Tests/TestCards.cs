@@ -536,7 +536,7 @@ namespace Tests
 
     /// <summary>
     /// 测试：冷静头脑
-    /// 冻结一个敌方角色
+    /// 冻结一个角色
     /// </summary>
     public class TestFreezeBrain : SpellCardDefine
     {
@@ -549,7 +549,7 @@ namespace Tests
             {
                 t.setFreeze(g,true);
                 return Task.CompletedTask;
-            },PileFlag.oppo | PileFlag.character)
+            },PileFlag.both | PileFlag.character)
         };
     }
 }
