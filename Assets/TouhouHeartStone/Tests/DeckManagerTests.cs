@@ -100,10 +100,15 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
+            // 清理卡组
+            var decks = dm.GetDecks();
+            foreach (var item in decks)
+                dm.RemoveDeck(item.ID);
+            
             var deck1ID = dm.CreateDeck("测试卡组1", 1);
             var deck2ID = dm.CreateDeck("测试卡组2", 2);
 
-            var decks = dm.GetDecks();
+            decks = dm.GetDecks();
             Assert.AreEqual(2, decks.Count());
 
             var d1 = decks.Where(d => d.ID == deck1ID).First();
