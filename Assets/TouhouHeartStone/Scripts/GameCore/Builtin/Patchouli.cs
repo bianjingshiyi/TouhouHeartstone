@@ -293,7 +293,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getCardDefine<RockElement>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getDefine<RockElement>(), card.getOwner().field.count);
             await Patchouli.tryMix(game, card);
         }
     }
@@ -580,7 +580,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getCardDefine<GemSpear>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getDefine<GemSpear>(), card.getOwner().field.count);
             await Patchouli.tryMix(game, card);
         }
     }
@@ -773,7 +773,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             for (int i = 0; i < 2; i++)
-                await card.getOwner().createToken(game, game.getCardDefine<LavaElement>());
+                await card.getOwner().createToken(game, game.getDefine<LavaElement>());
             await Patchouli.tryMix(game, card);
         }
     }
@@ -812,7 +812,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getOpponent(card.getOwner()).field.count, game.getCardDefine<DustElement>());
+            await card.getOwner().createToken(game, game.getOpponent(card.getOwner()).field.count, game.getDefine<DustElement>());
             await Patchouli.tryMix(game, card);
         }
     }
@@ -847,7 +847,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             await game.getAllServants().silence(game);
-            await card.getOwner().createToken(game, game.getCardDefine<FloodElement>());
+            await card.getOwner().createToken(game, game.getDefine<FloodElement>());
             await Patchouli.tryMix(game, card);
         }
     }

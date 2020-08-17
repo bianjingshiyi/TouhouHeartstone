@@ -50,7 +50,7 @@ namespace Tests
             }
             int count = yourTrueDeck.Count();
             if (count < 30)
-                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getCardDefine<DefaultServant>(), 30 - count));
+                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getDefine<DefaultServant>(), 30 - count));
             yourTrueDeck = yourTrueDeck.Reverse();
             return yourTrueDeck;
         }
@@ -58,8 +58,8 @@ namespace Tests
         public static void createGameWithoutDeck(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option = null)
         {
             game = initGameWithoutPlayers(null, option);
-            you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), null);
-            oppo = game.createPlayer(2, "玩家2", game.getCardDefine<TestMaster>(), null);
+            you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), null);
+            oppo = game.createPlayer(2, "玩家2", game.getDefine<TestMaster>(), null);
         }
         public static THHGame initStandardGame(string name = null, int deckCount = 30, int[] playersId = null, GameOption option = null)
         {
@@ -74,9 +74,9 @@ namespace Tests
             if (playersId == null)
                 playersId = new int[] { 1, 2 };
             if (masters == null)
-                masters = Enumerable.Repeat(game.getCardDefine<TestMaster>(), playersId.Length).ToArray();
+                masters = Enumerable.Repeat(game.getDefine<TestMaster>(), playersId.Length).ToArray();
             if (decks == null)
-                decks = Enumerable.Repeat(Enumerable.Repeat(game.getCardDefine<TestServant>(), 30).ToArray(), playersId.Length).ToArray();
+                decks = Enumerable.Repeat(Enumerable.Repeat(game.getDefine<TestServant>(), 30).ToArray(), playersId.Length).ToArray();
             if (option == null)
                 option = GameOption.Default;
             for (int i = 0; i < playersId.Length; i++)

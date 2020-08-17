@@ -30,7 +30,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(SlashOfPresentWorld.ID, 8)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<SlashOfPresentWorld>().cost * 2);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<SlashOfPresentWorld>().cost * 2);
             Card card = you.hand.First();
             you.cmdUse(game, card);
             Assert.True(Youmu.isPreHeated(game, card));
@@ -164,7 +164,7 @@ namespace Tests
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
             oppo.cmdTurnEnd(game);
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<KonpakuYouki>().cost + game.getCardDefine<TestWeapon>().cost);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<KonpakuYouki>().cost + game.getDefine<TestWeapon>().cost);
             you.cmdUse(game, you.hand.getCard<KonpakuYouki>());
             you.cmdUse(game, you.hand.getCard<TestWeapon>());
             you.cmdAttack(game, you.master, oppo.field[0]);
@@ -229,7 +229,7 @@ namespace Tests
                 oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
             }
             oppo.cmdTurnEnd(game);
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<TestWeapon>().cost + game.getCardDefine<CherryBlossomFlashing>().cost);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<TestWeapon>().cost + game.getDefine<CherryBlossomFlashing>().cost);
             you.cmdUse(game, you.hand.getCard<TestWeapon>());
             for (int i = 0; i < oppo.field.count; i++)
             {

@@ -83,7 +83,7 @@ namespace TouhouHeartstone.Builtin.Proble
 
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getCardDefine<Pylon>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getDefine<Pylon>(), card.getOwner().field.count);
         }
 
     }
@@ -168,7 +168,7 @@ namespace TouhouHeartstone.Builtin.Proble
         static async Task effect(THHGame game, Card card)
         {
             //召唤水晶塔
-            await card.getOwner().createToken(game, game.getCardDefine<Pylon>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getDefine<Pylon>(), card.getOwner().field.count);
 
             //buff
             foreach (var servant in card.getOwner().field)
@@ -205,7 +205,7 @@ namespace TouhouHeartstone.Builtin.Proble
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getCardDefine<Vision>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getDefine<Vision>(), card.getOwner().field.count);
         }
     }
 
@@ -333,8 +333,8 @@ namespace TouhouHeartstone.Builtin.Proble
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getCardDefine<Pylon>(), card.pile.indexOf(card) + 1);
-            await card.getOwner().createToken(game, game.getCardDefine<Pylon>(), card.pile.indexOf(card) - 1);
+            await card.getOwner().createToken(game, game.getDefine<Pylon>(), card.pile.indexOf(card) + 1);
+            await card.getOwner().createToken(game, game.getDefine<Pylon>(), card.pile.indexOf(card) - 1);
         }
     }
 
@@ -492,7 +492,7 @@ namespace TouhouHeartstone.Builtin.Proble
                     return a.player == c.getOwner();
                 },null,(g,c,a)=>
                 {
-                    return c.getOwner().createToken(g, g.getCardDefine<MiniRobot>(), c.getOwner().field.count);
+                    return c.getOwner().createToken(g, g.getDefine<MiniRobot>(), c.getOwner().field.count);
                 }
             )
 
@@ -669,7 +669,7 @@ namespace TouhouHeartstone.Builtin.Proble
         static async Task effect(THHGame game, Card card)
         {
             await game.getOpponent(card.getOwner()).field.damageByRandomCount(game, card, 3, 1);
-            await card.getOwner().createToken(game, game.getCardDefine<KarasuTenguobot>());
+            await card.getOwner().createToken(game, game.getDefine<KarasuTenguobot>());
             await card.getOwner().hand.add(game, game.createCard<CirculationOfGossip_2>());
         }
     }
@@ -695,8 +695,8 @@ namespace TouhouHeartstone.Builtin.Proble
         static async Task effect(THHGame game, Card card)
         {
             await game.getOpponent(card.getOwner()).field.damageByRandomCount(game, card, 6, 2);
-            await card.getOwner().createToken(game, game.getCardDefine<KarasuTenguobot>());
-            await card.getOwner().createToken(game, game.getCardDefine<KarasuTenguobot>());
+            await card.getOwner().createToken(game, game.getDefine<KarasuTenguobot>());
+            await card.getOwner().createToken(game, game.getDefine<KarasuTenguobot>());
             await card.getOwner().hand.add(game, game.createCard<CirculationOfGossip_3>());
         }
     }
@@ -728,9 +728,9 @@ namespace TouhouHeartstone.Builtin.Proble
             }
             await cards.setDead(game, true);
 
-            await card.getOwner().createToken(game, game.getCardDefine<KarasuTenguobot>());
-            await card.getOwner().createToken(game, game.getCardDefine<KarasuTenguobot>());
-            await card.getOwner().createToken(game, game.getCardDefine<KarasuTenguobot>());
+            await card.getOwner().createToken(game, game.getDefine<KarasuTenguobot>());
+            await card.getOwner().createToken(game, game.getDefine<KarasuTenguobot>());
+            await card.getOwner().createToken(game, game.getDefine<KarasuTenguobot>());
         }
     }
     /// <summary>

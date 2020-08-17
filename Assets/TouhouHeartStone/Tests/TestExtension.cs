@@ -59,7 +59,7 @@ namespace Tests
         }
         public static void skipUntilCanUse<T>(this THHGame game, THHPlayer you) where T : CardDefine
         {
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<T>().getProp<int>(nameof(ServantCardDefine.cost)));
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<T>().getProp<int>(nameof(ServantCardDefine.cost)));
         }
         public static void skipUntilHasGem(this THHGame game, THHPlayer you, int gem)
         {

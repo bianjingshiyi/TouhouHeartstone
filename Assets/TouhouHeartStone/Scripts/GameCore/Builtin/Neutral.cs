@@ -67,7 +67,7 @@ namespace TouhouHeartstone.Builtin
         {
             new DeathRattle(ID,(g1,c1,p)=>
             {
-                return c1.getOwner().createToken(g1,g1.getCardDefine<LostSpecter>(),p);
+                return c1.getOwner().createToken(g1,g1.getDefine<LostSpecter>(),p);
             })
         };
     }
@@ -668,7 +668,7 @@ namespace TouhouHeartstone.Builtin
         {
             new BeforeYourTurnEnd(async(game,card,arg)=>
             {
-                await card.getOwner().createToken(game, game.getCardDefine<Doll_N>());
+                await card.getOwner().createToken(game, game.getDefine<Doll_N>());
             })
         };
     }
@@ -820,7 +820,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            var createToken = await card.getOwner().createToken(game, game.getCardDefine<Chen_N>());
+            var createToken = await card.getOwner().createToken(game, game.getDefine<Chen_N>());
             var chen = createToken.card;
             await chen.addBuff(game, new GeneratedBuff(ID,
                 new AttackModifier(3),

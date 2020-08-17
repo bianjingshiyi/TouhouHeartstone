@@ -255,14 +255,14 @@ namespace Game
             if (game.getCardDefine(deck[0]) == null)
             {
                 UberDebug.LogError("非法角色ID" + deck[0] + "被替换为灵梦");
-                deck[0] = game.getCardDefine<Reimu>().id;
+                deck[0] = game.getDefine<Reimu>().id;
             }
             for (int i = 1; i < deck.Length; i++)
             {
                 if (game.getCardDefine(deck[i]) == null)
                 {
                     UberDebug.LogError("非法随从ID" + deck[i] + "被替换为小野菊");
-                    deck[i] = game.getCardDefine<RashFairy>().id;
+                    deck[i] = game.getDefine<RashFairy>().id;
                 }
             }
         }
@@ -350,13 +350,13 @@ namespace Game
                 case THHPlayer.SetGemEventArg setGem:
                     item.IconImage.sprite = item.gemIcon;
                     item.Text.text = "=>" + setGem.value;
-                    item.Image.sprite = getManager<TableManager>().getSkin(game.getCardDefine<LuckyCoin>()).image;
+                    item.Image.sprite = getManager<TableManager>().getSkin(game.getDefine<LuckyCoin>()).image;
                     item.BorderImage.color = setGem.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.SetMaxGemEventArg setMaxGem:
                     item.IconImage.sprite = item.gemIcon;
                     item.Text.text = "=>" + setMaxGem.value;
-                    item.Image.sprite = getManager<TableManager>().getSkin(game.getCardDefine<LuckyCoin>()).image;
+                    item.Image.sprite = getManager<TableManager>().getSkin(game.getDefine<LuckyCoin>()).image;
                     item.BorderImage.color = setMaxGem.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.DrawEventArg draw:

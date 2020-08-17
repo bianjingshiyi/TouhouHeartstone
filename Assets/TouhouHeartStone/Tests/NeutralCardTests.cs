@@ -97,7 +97,7 @@ namespace Tests
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(MissingSpecter.ID, 30));
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<MissingSpecter>().cost);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<MissingSpecter>().cost);
             you.cmdUse(game, you.hand[0], 0);
             Assert.IsInstanceOf<MissingSpecter>(you.field[0].define);
             (you.field[0].define.effects[0] as DeathRattle).onDisable(game, you.field[0], null);//类似沉默
@@ -111,10 +111,10 @@ namespace Tests
             {
                 shuffle = false
             });
-            game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<DrizzleFairy>() as CardDefine, 29)
-            .Concat(Enumerable.Repeat(game.getCardDefine<FantasySeal>(), 1)));
-            game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<DrizzleFairy>() as CardDefine, 29)
-            .Concat(Enumerable.Repeat(game.getCardDefine<FantasySeal>(), 1)));
+            game.createPlayer(0, "玩家0", game.getDefine<Reimu>(), Enumerable.Repeat(game.getDefine<DrizzleFairy>() as CardDefine, 29)
+            .Concat(Enumerable.Repeat(game.getDefine<FantasySeal>(), 1)));
+            game.createPlayer(1, "玩家1", game.getDefine<Reimu>(), Enumerable.Repeat(game.getDefine<DrizzleFairy>() as CardDefine, 29)
+            .Concat(Enumerable.Repeat(game.getDefine<FantasySeal>(), 1)));
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
@@ -156,8 +156,8 @@ namespace Tests
             {
                 shuffle = false
             });//首先，上来先新建一个不带玩家的游戏
-            game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<FlameFairy>() as CardDefine, 30));//创建两个玩家，给他们设置初始英雄，套牌
-            game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<FlameFairy>() as CardDefine, 30));
+            game.createPlayer(0, "玩家0", game.getDefine<Reimu>(), Enumerable.Repeat(game.getDefine<FlameFairy>() as CardDefine, 30));//创建两个玩家，给他们设置初始英雄，套牌
+            game.createPlayer(1, "玩家1", game.getDefine<Reimu>(), Enumerable.Repeat(game.getDefine<FlameFairy>() as CardDefine, 30));
             game.run();//运行游戏
 
             //炎之妖精 战吼：对一个随机敌方随从造成1点伤害
@@ -187,8 +187,8 @@ namespace Tests
             {
                 shuffle = false
             });
-            game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<SunnyMilk>() as CardDefine, 30));
-            game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<SunnyMilk>() as CardDefine, 30));
+            game.createPlayer(0, "玩家0", game.getDefine<Reimu>(), Enumerable.Repeat(game.getDefine<SunnyMilk>() as CardDefine, 30));
+            game.createPlayer(1, "玩家1", game.getDefine<Reimu>(), Enumerable.Repeat(game.getDefine<SunnyMilk>() as CardDefine, 30));
 
             game.skipTurnWhen(() => game.sortedPlayers[0].gem < 2);
 
@@ -203,9 +203,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<LunaChild>() as CardDefine, 30));
-            game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<LunaChild>() as CardDefine, 29)
-            .Concat(Enumerable.Repeat(game.getCardDefine<DefaultServant>(), 1)));
+            game.createPlayer(0, "玩家0", game.getDefine<Reimu>(), Enumerable.Repeat(game.getDefine<LunaChild>() as CardDefine, 30));
+            game.createPlayer(1, "玩家1", game.getDefine<Reimu>(), Enumerable.Repeat(game.getDefine<LunaChild>() as CardDefine, 29)
+            .Concat(Enumerable.Repeat(game.getDefine<DefaultServant>(), 1)));
             game.skipTurnWhen(() => game.sortedPlayers[0].gem < 3);
 
             game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
@@ -244,8 +244,8 @@ namespace Tests
             {
                 shuffle = false
             });
-            game.createPlayer(0, "玩家0", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<BeerFairy>() as CardDefine, 30));
-            game.createPlayer(1, "玩家1", game.getCardDefine<Reimu>(), Enumerable.Repeat(game.getCardDefine<BeerFairy>() as CardDefine, 30));
+            game.createPlayer(0, "玩家0", game.getDefine<Reimu>(), Enumerable.Repeat(game.getDefine<BeerFairy>() as CardDefine, 30));
+            game.createPlayer(1, "玩家1", game.getDefine<Reimu>(), Enumerable.Repeat(game.getDefine<BeerFairy>() as CardDefine, 30));
             game.skipTurnWhen(() => game.sortedPlayers[0].gem < 4);
 
             var s = game.sortedPlayers[0].hand[0];
@@ -321,11 +321,11 @@ namespace Tests
                 new KeyValuePair<int, int>(LettyWhiterock_N.ID, 30));
             game.skipUntilCanUse<LettyWhiterock_N>(you);
             you.cmdUse(game, you.hand.getCard<LettyWhiterock_N>());
-            Assert.AreEqual(game.getCardDefine<LettyWhiterock_N>().cost, you.hand.getCard<LettyWhiterock_N>().getCost(game));
-            game.skipUntilHasGem(you, game.getCardDefine<LettyWhiterock_N>().cost * 2 + 1);
-            Assert.AreEqual(game.getCardDefine<LettyWhiterock_N>().cost + 1, you.hand.getCard<LettyWhiterock_N>().getCost(game));
+            Assert.AreEqual(game.getDefine<LettyWhiterock_N>().cost, you.hand.getCard<LettyWhiterock_N>().getCost(game));
+            game.skipUntilHasGem(you, game.getDefine<LettyWhiterock_N>().cost * 2 + 1);
+            Assert.AreEqual(game.getDefine<LettyWhiterock_N>().cost + 1, you.hand.getCard<LettyWhiterock_N>().getCost(game));
             you.cmdUse(game, you.hand.getCard<LettyWhiterock_N>());
-            Assert.AreEqual(game.getCardDefine<LettyWhiterock_N>().cost, you.hand.getCard<LettyWhiterock_N>().getCost(game));
+            Assert.AreEqual(game.getDefine<LettyWhiterock_N>().cost, you.hand.getCard<LettyWhiterock_N>().getCost(game));
             //game.skipUntilCanUse<LettyWhiterock_N>(you);
             //Assert.AreEqual(game.getCardDefine<LettyWhiterock_N>().cost + 1, you.hand.getCard<LettyWhiterock_N>().getCost(game));
             //THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption() { shuffle = false });

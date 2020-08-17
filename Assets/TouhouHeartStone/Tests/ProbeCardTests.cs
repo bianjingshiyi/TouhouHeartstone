@@ -23,7 +23,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(ParticulateLaser.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<ParticulateLaser>().cost);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<ParticulateLaser>().cost);
             you.cmdUse(game, you.hand.getCard<ParticulateLaser>(), targets: oppo.master);
             game.Dispose();
         }
@@ -319,10 +319,10 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getCardDefine<Sentry>(), 2)));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getCardDefine<Sissel>(), 2)));
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getDefine<Sentry>(), 2)));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getDefine<Sissel>(), 2)));
 
             game.skipUntilCanUse<Sentry>(oppo);
             oppo.cmdUse(game, oppo.hand.getCard<Sentry>());
@@ -354,10 +354,10 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getCardDefine<ParticulateLaser>(), 2)));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getCardDefine<SilentCardCounter>(), 2)));
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getDefine<ParticulateLaser>(), 2)));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getDefine<SilentCardCounter>(), 2)));
 
             game.skipUntilCanUse<SilentCardCounter>(you);
             you.cmdUse(game, you.hand.getCard<SilentCardCounter>());
@@ -404,10 +404,10 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getCardDefine<ColludeWithTheEnemy>(), 3)));
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<ColludeWithTheEnemy>(), 3)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
@@ -443,10 +443,10 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getCardDefine<Corrosion>(), 3)));
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<Corrosion>(), 3)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
@@ -482,10 +482,10 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getCardDefine<CirculationOfGossip_1>(), 3)));
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<CirculationOfGossip_1>(), 3)));
 
             do {
                 game.skipUntilCanUse<DefaultServant>(oppo);
@@ -549,10 +549,10 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getCardDefine<Geralt_Igni>(), 3)));
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<Geralt_Igni>(), 3)));
 
             do
             {

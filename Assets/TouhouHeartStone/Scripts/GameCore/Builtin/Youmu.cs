@@ -386,7 +386,7 @@ namespace TouhouHeartstone.Builtin
             new BeforeYourTurnEnd(async(game,card,arg)=>
             {
                 if(card.getOwner().master.getArmor(game)>0)
-                    await card.getOwner().createToken(game, game.getCardDefine<Ghost>());
+                    await card.getOwner().createToken(game, game.getDefine<Ghost>());
             })
         };
     }

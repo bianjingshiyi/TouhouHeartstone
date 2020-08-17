@@ -136,7 +136,7 @@ namespace TouhouHeartstone
         }
         public Card createCard<T>() where T : CardDefine
         {
-            return createCard(getCardDefine<T>());
+            return createCard(getDefine<T>());
         }
         public Card createCardByRandom(IEnumerable<CardDefine> defines)
         {
@@ -293,7 +293,7 @@ namespace TouhouHeartstone
                     await player.init.moveTo(this, player.init[0, player.init.count - 1], player.hand, 0);
                     if (player != sortedPlayers[0])
                     {
-                        await player.hand.add(this, createCard(getCardDefine<LuckyCoin>()));
+                        await player.hand.add(this, createCard(getDefine<LuckyCoin>()));
                         logger.log("由于后手行动" + player + "获得一张幸运币");
                     }
                     arg.startHandDic.Add(player, new StartEventArg.StartInfo()

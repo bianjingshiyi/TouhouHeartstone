@@ -13,8 +13,8 @@ namespace Tests
         public IEnumerator calcActionsTest_Turn1()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, GameOption.Default);
-            THHPlayer player = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
-            game.createPlayer(2, "玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
+            THHPlayer player = game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
+            game.createPlayer(2, "玩家2", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
             game.logger.log("Force Init");
             AI ai = new AI(game, player, false);
             _ = game.run();
@@ -36,8 +36,8 @@ namespace Tests
         public IEnumerator run_InitReplaceTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, GameOption.Default);
-            THHPlayer player = game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
-            game.createPlayer(2, "玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant>(), 30));
+            THHPlayer player = game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
+            game.createPlayer(2, "玩家2", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
             AI ai = new AI(game, player);
             _ = game.run();
             yield return new WaitForSeconds(.1f);

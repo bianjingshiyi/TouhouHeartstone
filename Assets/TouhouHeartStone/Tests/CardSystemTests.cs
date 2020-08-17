@@ -179,8 +179,8 @@ namespace Tests
             {
                 shuffle = false
             });
-            game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<MountainGaint>() as CardDefine, 30));
-            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<MountainGaint>() as CardDefine, 30));
+            game.createPlayer(0, "玩家0", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<MountainGaint>() as CardDefine, 30));
+            game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<MountainGaint>() as CardDefine, 30));
 
             game.skipTurnWhen(() => game.sortedPlayers[0].hand.count < 10);
 
@@ -218,8 +218,8 @@ namespace Tests
             {
                 shuffle = false
             });
-            game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<FireBall>() as CardDefine, 30));
-            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<FireBall>() as CardDefine, 30));
+            game.createPlayer(0, "玩家0", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 30));
+            game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 30));
 
             game.skipTurnUntil(() => game.players[0].hand.count > 0);
             Assert.False(game.players[0].hand[0].isUsable(game, game.players[0], out _));
@@ -237,16 +237,16 @@ namespace Tests
             {
                 shuffle = false
             });
-            game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster>(),
-                Enumerable.Repeat(game.getCardDefine<FireBall>(), 29).Cast<CardDefine>()
-                .Concat(Enumerable.Repeat(game.getCardDefine<SorcererApprentice>(), 1).Cast<CardDefine>()));
-            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(),
-                Enumerable.Repeat(game.getCardDefine<FireBall>(), 29).Cast<CardDefine>()
-                .Concat(Enumerable.Repeat(game.getCardDefine<SorcererApprentice>(), 1).Cast<CardDefine>()));
+            game.createPlayer(0, "玩家0", game.getDefine<TestMaster>(),
+                Enumerable.Repeat(game.getDefine<FireBall>(), 29).Cast<CardDefine>()
+                .Concat(Enumerable.Repeat(game.getDefine<SorcererApprentice>(), 1).Cast<CardDefine>()));
+            game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(),
+                Enumerable.Repeat(game.getDefine<FireBall>(), 29).Cast<CardDefine>()
+                .Concat(Enumerable.Repeat(game.getDefine<SorcererApprentice>(), 1).Cast<CardDefine>()));
 
             game.skipTurnUntil(() =>
                 game.currentPlayer == game.players[0] &&
-                game.players[0].gem >= game.getCardDefine<SorcererApprentice>().cost &&
+                game.players[0].gem >= game.getDefine<SorcererApprentice>().cost &&
                 game.players[0].hand.Any(c => c.define is SorcererApprentice));
             Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//火球术全是4费
             var task = game.players[0].cmdUse(game, game.players[0].hand.getCard<SorcererApprentice>());//使用哀绿

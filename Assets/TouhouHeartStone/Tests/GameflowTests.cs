@@ -547,8 +547,8 @@ namespace Tests
         public IEnumerator effectRegisterTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, GameOption.Default);
-            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant_TurnEndEffect>(), 30));
-            game.createPlayer(2, "玩家2", game.getCardDefine<TestMaster>(), Enumerable.Repeat(game.getCardDefine<TestServant_TurnEndEffect>(), 30));
+            game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant_TurnEndEffect>(), 30));
+            game.createPlayer(2, "玩家2", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant_TurnEndEffect>(), 30));
             _ = game.run();
             yield return new WaitForSeconds(.1f);
             game.players[0].cmdInitReplace(game);
@@ -593,10 +593,10 @@ namespace Tests
             {
                 shuffle = false
             });
-            game.createPlayer(0, "玩家0", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 28)
-            .Concat(Enumerable.Repeat(game.getCardDefine<DefaultServant>(), 2)));
-            game.createPlayer(1, "玩家1", game.getCardDefine<TestMaster2>(), Enumerable.Repeat(game.getCardDefine<DefaultServant>() as CardDefine, 29)
-            .Concat(Enumerable.Repeat(game.getCardDefine<TestSpellCard>(), 1)));
+            game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
+            .Concat(Enumerable.Repeat(game.getDefine<DefaultServant>(), 2)));
+            game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29)
+            .Concat(Enumerable.Repeat(game.getDefine<TestSpellCard>(), 1)));
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);

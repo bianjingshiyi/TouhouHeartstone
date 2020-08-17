@@ -24,10 +24,10 @@ namespace TouhouHeartstone.Builtin
             {
                 CardDefine[] totemDefines = new CardDefine[]
                 {
-                    game.getCardDefine<HealTotem>(),
-                    game.getCardDefine<FireTotem>(),
-                    game.getCardDefine<ManaTotem>(),
-                    game.getCardDefine<TauntTotem>()
+                    game.getDefine<HealTotem>(),
+                    game.getDefine<FireTotem>(),
+                    game.getDefine<ManaTotem>(),
+                    game.getDefine<TauntTotem>()
                 };
                 if(totemDefines.All(d=>card.getOwner().field.Any(c=>c.define==d)) ||//场上四种类型的图腾都有
                     !totemDefines.Any(d=>card.getOwner().field.Any(c=>c.define==d)))//或者都没有
