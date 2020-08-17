@@ -28,7 +28,7 @@ namespace TouhouHeartstone
         public Pile warp { get; }
         public Card item
         {
-            get { return this[PileName.ITEM].count > 0 ? this[PileName.ITEM][0] : null; }
+            get { return this[PILE.ITEM].count > 0 ? this[PILE.ITEM][0] : null; }
         }
         public bool isPrepared { get; set; } = false;
         public int gem { get; private set; } = 0;
@@ -37,26 +37,26 @@ namespace TouhouHeartstone
         public THHPlayer(THHGame game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck) : base(id, name)
         {
             this.master = game.createCard(master);
-            addPile(new Pile(game, PileName.MASTER, 1));
-            getPile(PileName.MASTER).add(game, this.master);
+            addPile(new Pile(game, PILE.MASTER, 1));
+            getPile(PILE.MASTER).add(game, this.master);
             skill = game.createCardById(master.skillID);
-            addPile(new Pile(game, PileName.SKILL, 1));
-            this[PileName.SKILL].add(game, skill);
-            this.deck = new Pile(game, PileName.DECK);
+            addPile(new Pile(game, PILE.SKILL, 1));
+            this[PILE.SKILL].add(game, skill);
+            this.deck = new Pile(game, PILE.DECK);
             if (deck != null)
                 this.deck.add(game, deck.Select(d => game.createCard(d)).ToArray());
             addPile(this.deck);
-            init = new Pile(game, PileName.INIT, maxCount: 4);
+            init = new Pile(game, PILE.INIT, maxCount: 4);
             addPile(init);
-            hand = new Pile(game, PileName.HAND, maxCount: 10);
+            hand = new Pile(game, PILE.HAND, maxCount: 10);
             addPile(hand);
-            field = new Pile(game, PileName.FIELD, maxCount: 7);
+            field = new Pile(game, PILE.FIELD, maxCount: 7);
             addPile(field);
-            grave = new Pile(game, PileName.GRAVE);
+            grave = new Pile(game, PILE.GRAVE);
             addPile(grave);
-            warp = new Pile(game, PileName.WARP);
+            warp = new Pile(game, PILE.WARP);
             addPile(warp);
-            addPile(new Pile(game, PileName.ITEM));
+            addPile(new Pile(game, PILE.ITEM));
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
         {
@@ -373,14 +373,14 @@ namespace TouhouHeartstone
         }
         public async Task equip(THHGame game, Card item)
         {
-            if (this[PileName.ITEM].isFull)
+            if (this[PILE.ITEM].isFull)
                 await destroyItem(game);
             item.setCurrentLife(item.getLife(game));
-            await hand.moveTo(game, item, this[PileName.ITEM]);
+            await hand.moveTo(game, item, this[PILE.ITEM]);
         }
         public Task destroyItem(THHGame game)
         {
-            if (this[PileName.ITEM].count > 0 && this[PileName.ITEM][0] is Card item)
+            if (this[PILE.ITEM].count > 0 && this[PILE.ITEM][0] is Card item)
                 return item.die(game);
             return Task.CompletedTask;
         }

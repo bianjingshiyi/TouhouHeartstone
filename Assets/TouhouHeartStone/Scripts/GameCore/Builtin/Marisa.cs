@@ -27,12 +27,12 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 5;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
             {
-                if(targets[0] is Card target && (target.pile.name == PileName.MASTER || target.pile.name == PileName.FIELD))
+                if(targets[0] is Card target && (target.pile.name == PILE.MASTER || target.pile.name == PILE.FIELD))
                     return true;
                 return false;
             },async (game,card,arg,targets)=>
@@ -63,7 +63,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -124,7 +124,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -153,12 +153,12 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
             {
-                if(targets[0] is Card target && target.pile.name == PileName.FIELD)
+                if(targets[0] is Card target && target.pile.name == PILE.FIELD)
                     return true;
                 return false;
             },async (game,card,arg,targets)=>

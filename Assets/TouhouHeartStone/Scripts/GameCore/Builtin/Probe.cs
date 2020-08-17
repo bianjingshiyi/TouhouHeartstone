@@ -460,7 +460,7 @@ namespace TouhouHeartstone.Builtin.Proble
             public override IEffect[] effects { get; set; } = new IEffect[]
             {
             //测试表示：这张牌的扳机是使用卡牌生效后。
-            new AddBuffAfter<THHPlayer.UseEventArg>(PileName.FIELD,(g,c,a)=>
+            new AddBuffAfter<THHPlayer.UseEventArg>(PILE.FIELD,(g,c,a)=>
             {
                 return a.player == g.getOpponent(c.getOwner());
             },new GeneratedBuff(ID,new AttackModifier(1),new LifeModifier(2)))
@@ -486,7 +486,7 @@ namespace TouhouHeartstone.Builtin.Proble
             public override IEffect[] effects { get; set; } = new IEffect[]
             {
 
-            new THHEffectBefore<THHPlayer.UseEventArg>(PileName.FIELD,
+            new THHEffectBefore<THHPlayer.UseEventArg>(PILE.FIELD,
                 (g,c,a) =>
                 {
                     return a.player == c.getOwner();
@@ -567,7 +567,7 @@ namespace TouhouHeartstone.Builtin.Proble
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnStartEventArg>(
-                    PileName.FIELD,
+                    PILE.FIELD,
                     (g1,c1,a1) =>
                     {
                         //判断是敌人的回合还是我的回合

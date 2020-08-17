@@ -213,7 +213,7 @@ namespace TouhouHeartstone
         }
         public static bool canForceAttack(this Card card, THHGame game)
         {
-            if (!(card.pile.name == PileName.FIELD || card.pile.name == PileName.MASTER))//不在战场上
+            if (!(card.pile.name == PILE.FIELD || card.pile.name == PILE.MASTER))//不在战场上
                 return false;
             return true;
         }
@@ -257,7 +257,7 @@ namespace TouhouHeartstone
         }
         public static bool isForceAttackable(this Card card, THHGame game, THHPlayer player, Card target)
         {
-            if (!(target.pile.name == PileName.FIELD || target.pile.name == PileName.MASTER))//不在战场上
+            if (!(target.pile.name == PILE.FIELD || target.pile.name == PILE.MASTER))//不在战场上
                 return false;
             if (target.isDead(game))//已经死了
                 return false;
@@ -1046,7 +1046,7 @@ namespace TouhouHeartstone
                 Dictionary<Card, DeathEventArg.Info> infoDic = new Dictionary<Card, DeathEventArg.Info>();
                 foreach (var card in arg.infoDic.Keys)
                 {
-                    if (card.pile.name == PileName.MASTER)//英雄阵亡
+                    if (card.pile.name == PILE.MASTER)//英雄阵亡
                     {
                         infoDic.Add(card, new DeathEventArg.Info()
                         {
@@ -1056,7 +1056,7 @@ namespace TouhouHeartstone
                         remainPlayerList.Remove(card.getOwner());
                         game.logger.log(card.getOwner() + "失败");
                     }
-                    else if (card.pile.name == PileName.FIELD)//随从阵亡
+                    else if (card.pile.name == PILE.FIELD)//随从阵亡
                     {
                         infoDic.Add(card, new DeathEventArg.Info()
                         {
@@ -1066,7 +1066,7 @@ namespace TouhouHeartstone
                         card.pile.moveTo(game, card, card.getOwner().grave);
                         game.logger.log(card + "阵亡");
                     }
-                    else if (card.pile.name == PileName.ITEM)//装备摧毁
+                    else if (card.pile.name == PILE.ITEM)//装备摧毁
                     {
                         infoDic.Add(card, new DeathEventArg.Info()
                         {

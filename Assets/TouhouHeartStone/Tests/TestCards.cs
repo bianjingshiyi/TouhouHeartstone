@@ -41,7 +41,7 @@ namespace Tests
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -74,7 +74,7 @@ namespace Tests
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE, (game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -95,7 +95,7 @@ namespace Tests
         public override int life { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE, (game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE, (game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -247,7 +247,7 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.SKILL,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.SKILL,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -274,7 +274,7 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -331,7 +331,7 @@ namespace Tests
         public override int cost { get; set; } = 0;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -464,7 +464,7 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
             {
                 if(arg.player!=game.currentPlayer)
                 return false;
@@ -519,7 +519,7 @@ namespace Tests
             new LambdaSingleTargetEffect((g,c,t)=>
             {
                 return t.addBuff(g,new GeneratedBuff(ID,
-                    new THHEffectBefore<THHGame.TurnStartEventArg>(PileName.FIELD,(g1,c1,a1)=>
+                    new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.FIELD,(g1,c1,a1)=>
                     {
                         return a1.player == c.getOwner();
                     },null,(g1,c1,a1)=>

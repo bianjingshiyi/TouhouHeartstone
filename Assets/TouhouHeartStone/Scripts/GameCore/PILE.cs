@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TouhouCardEngine;
 namespace TouhouHeartstone
 {
-    public static class PileName
+    public static class PILE
     {
         public const string NONE = null;
         public const string MASTER = "Master";

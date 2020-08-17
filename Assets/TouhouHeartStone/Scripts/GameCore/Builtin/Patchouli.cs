@@ -131,11 +131,11 @@ namespace TouhouHeartstone.Builtin
                  {
                      return c1.isSpell();
                  }),
-                new RemoveBuffBefore<THHPlayer.UseEventArg>(PileName.MASTER, (g, c, a) =>
+                new RemoveBuffBefore<THHPlayer.UseEventArg>(PILE.MASTER, (g, c, a) =>
                 {
                     return a.player == card.getOwner() && a.card.isSpell();
                 }, ID),
-                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.MASTER, (g2, c2, a2) =>
+                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PILE.MASTER, (g2, c2, a2) =>
                 {
                     return a2.player == card.getOwner();
                 }, ID)));
@@ -154,11 +154,11 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new AddBuffAfter<THHPlayer.UseEventArg>(PileName.HAND,(g,c,a)=>
+            new AddBuffAfter<THHPlayer.UseEventArg>(PILE.HAND,(g,c,a)=>
             {
                 return a.player == c.getOwner() && a.card.isSpell() && a.card.getCost(g) > 0 && !c.containBuff(ID);
             },new GeneratedBuff(ID,new CostModifier(-2),
-                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.HAND,ID)))
+                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PILE.HAND,ID)))
         };
     }
     /// <summary>
@@ -189,7 +189,7 @@ namespace TouhouHeartstone.Builtin
         class ItemTrigggerEffectAfter<T> : THHEffectAfter<T> where T : IEventArg
         {
             public ItemTrigggerEffectAfter(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute)
-                : base(PileName.ITEM, onCheckCondition, null, async (g, c, a) =>
+                : base(PILE.ITEM, onCheckCondition, null, async (g, c, a) =>
                 {
                     await onExecute?.Invoke(g, c, a);
                     await c.damage(g, c, 1);
@@ -201,7 +201,7 @@ namespace TouhouHeartstone.Builtin
         class ItemTrigggerEffectBefore<T> : THHEffectBefore<T> where T : IEventArg
         {
             public ItemTrigggerEffectBefore(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute)
-                : base(PileName.ITEM, onCheckCondition, null, async (g, c, a) =>
+                : base(PILE.ITEM, onCheckCondition, null, async (g, c, a) =>
                 {
                     await onExecute?.Invoke(g, c, a);
                     await c.damage(g, c, 1);
@@ -244,7 +244,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await card.getOwner().master.addBuff(game,new GeneratedBuff(ID,
                     new DamageReduceModifier(3),
-                    new RemoveBuffBefore<THHGame.TurnStartEventArg>(PileName.MASTER,(g,c,a)=>
+                    new RemoveBuffBefore<THHGame.TurnStartEventArg>(PILE.MASTER,(g,c,a)=>
                     {
                         return a.player == card.getOwner();
                     },ID)));
@@ -252,7 +252,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     await servant.addBuff(game,new GeneratedBuff(ID,
                         new DamageReduceModifier(3),
-                        new RemoveBuffBefore<THHGame.TurnStartEventArg>(PileName.FIELD,(g,c,a)=>
+                        new RemoveBuffBefore<THHGame.TurnStartEventArg>(PILE.FIELD,(g,c,a)=>
                         {
                             return a.player == card.getOwner();
                         },ID)));
@@ -646,7 +646,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     await target.addBuff(game,
                         new GeneratedBuff(ID,new AttackModifier(-3),
-                        new RemoveBuffBefore<THHGame.TurnStartEventArg>(PileName.FIELD,ID)));
+                        new RemoveBuffBefore<THHGame.TurnStartEventArg>(PILE.FIELD,ID)));
                     if(target.getAttack(game)<=0)
                         target.setDead(true);
                 }
@@ -880,7 +880,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHGame.TurnStartEventArg>(PileName.FIELD,(g1,c1,a1)=>
+            new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.FIELD,(g1,c1,a1)=>
             {
                 return a1.player==c1.getOwner();
             },null,(g1,c1,a1)=>

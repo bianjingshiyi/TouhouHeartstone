@@ -314,8 +314,8 @@ namespace TouhouHeartstone
         /// </summary>
         public string[] ranges { get; protected set; } = new string[]
         {
-            PileName.FIELD,
-            PileName.MASTER
+            PILE.FIELD,
+            PILE.MASTER
         };
         /// <summary>
         /// 默认实现，存在可以作为目标的卡片。
@@ -397,7 +397,7 @@ namespace TouhouHeartstone
             CheckTargetDelegate onCheckTarget = null)
         {
             if (ranges != PileFlag.none)
-                this.ranges = PileName.getPiles(ranges);
+                this.ranges = PILE.getPiles(ranges);
             _onCheckCondition = onCheckCondition;
             _onCheckTarget = onCheckTarget;
             _onExecute = onExecute;
@@ -438,7 +438,7 @@ namespace TouhouHeartstone
         public Halo(Buff buff, PileFlag range, PileFlag pile = PileFlag.self | PileFlag.field, Func<THHGame, Card, bool> filter = null)
         {
             this.buff = buff;
-            piles = PileName.getPiles(pile);
+            piles = PILE.getPiles(pile);
             getRange = (game, card) => range.getPiles(game, card.getOwner());
             this.filter = filter;
         }
@@ -561,7 +561,7 @@ namespace TouhouHeartstone
     public class DeathRattle : IPassiveEffect
     {
         public int id { get; }
-        public string[] piles { get; } = new string[] { PileName.FIELD, PileName.GRAVE };
+        public string[] piles { get; } = new string[] { PILE.FIELD, PILE.GRAVE };
         public CheckConditionDelegate onCheckCondition { get; }
         public delegate Task ExecuteDelegate(THHGame game, Card card, int position);
         public ExecuteDelegate onExecute { get; }
@@ -632,7 +632,7 @@ namespace TouhouHeartstone
     }
     public class BeforeYourTurnEnd : THHEffectBefore<THHGame.TurnEndEventArg>
     {
-        public BeforeYourTurnEnd(ExecuteDelegate onExecute) : base(PileName.FIELD, (game, card, arg) =>
+        public BeforeYourTurnEnd(ExecuteDelegate onExecute) : base(PILE.FIELD, (game, card, arg) =>
         {
             return arg.player == card.getOwner();
         }, null, async (game, card, arg) =>
@@ -648,7 +648,7 @@ namespace TouhouHeartstone
     }
     public class BeforeTurnStart : THHEffectBefore<THHGame.TurnStartEventArg>
     {
-        public BeforeTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PileName.FIELD, onCheckCondition, null, async (game, card, arg) =>
+        public BeforeTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PILE.FIELD, onCheckCondition, null, async (game, card, arg) =>
          {
              if (onExecute != null)
              {
@@ -661,7 +661,7 @@ namespace TouhouHeartstone
     }
     public class AfterTurnStart : THHEffectAfter<THHGame.TurnStartEventArg>
     {
-        public AfterTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PileName.FIELD, onCheckCondition, null, async (game, card, arg) =>
+        public AfterTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PILE.FIELD, onCheckCondition, null, async (game, card, arg) =>
         {
             if (onExecute != null)
             {

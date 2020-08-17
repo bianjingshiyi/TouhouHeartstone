@@ -23,7 +23,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect(new On<THHPlayer.ActiveEventArg>(),PileName.SKILL,(game,card,vars)=>
+            new THHEffect(new On<THHPlayer.ActiveEventArg>(),PILE.SKILL,(game,card,vars)=>
             {
                 return true;
             },(game,card,targets)=>

@@ -19,7 +19,7 @@ namespace TouhouHeartstone.Builtin
         /// </summary>
         public class SetPreHeatEffect : THHEffectBefore<THHGame.TurnEndEventArg>
         {
-            public SetPreHeatEffect() : base(PileName.HAND, (g1, c1, a1) =>
+            public SetPreHeatEffect() : base(PILE.HAND, (g1, c1, a1) =>
             {
                 return c1.getOwner() == a1.player && c1.getOwner().maxGem >= c1.getCost(g1) && !isPreHeated(g1, c1);
             }, null, (g, c, a) =>
@@ -105,7 +105,7 @@ namespace TouhouHeartstone.Builtin
                 attack = 4;
             await card.getOwner().master.addBuff(game,
                 new GeneratedBuff(ID, new AttackModifier(attack),
-                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
+                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
         }
     }
     /// <summary>
@@ -228,7 +228,7 @@ namespace TouhouHeartstone.Builtin
             {
                 if(Youmu.isPreHeated(game,card))
                 {
-                    return card.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<THHCard.AttackEventArg>(PileName.ITEM,(g,c,a)=>
+                    return card.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<THHCard.AttackEventArg>(PILE.ITEM,(g,c,a)=>
                     {
                         return a.card == c.getOwner().master;
                     },null,(g,c,a)=>
@@ -279,7 +279,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             THHPlayer player = card.getOwner();
-            await player.master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
+            await player.master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
             Card[] servants = game.getOpponent(player).field.OrderBy(c => c.getCurrentLife(game)).ToArray();
             foreach (Card target in servants)
             {
@@ -303,7 +303,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().master.getArmor(game)),
-                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
+                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
             await card.getOwner().master.loseArmor(game, card.getOwner().master.getArmor(game));
         }
     }
@@ -323,7 +323,7 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().master.gainArmor(game, 5);
             await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(5),
-                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PileName.MASTER, ID)));
+                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
         }
     }
     /// <summary>
@@ -339,7 +339,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHCard.AttackEventArg>(PileName.FIELD,(g,c,a)=>
+            new THHEffectBefore<THHCard.AttackEventArg>(PILE.FIELD,(g,c,a)=>
             {
                 return a.card == c.getOwner().master;
             },null,async(g,c,a)=>
@@ -368,7 +368,7 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().item.addBuff(game, new GeneratedBuff(ID,
                 new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.IMMUNITY),
-                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PileName.ITEM, ID)));
+                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.ITEM, ID)));
         }
     }
     /// <summary>
@@ -437,7 +437,7 @@ namespace TouhouHeartstone.Builtin
             //        await c1.die(g1);
             //    }
             //})
-            new THHEffectBefore<THHPlayer.UseEventArg>(PileName.HAND,
+            new THHEffectBefore<THHPlayer.UseEventArg>(PILE.HAND,
                 (g1,c1,a1)=>
                 {
                     return a1.card == c1 && c1.getOwner().item != null;

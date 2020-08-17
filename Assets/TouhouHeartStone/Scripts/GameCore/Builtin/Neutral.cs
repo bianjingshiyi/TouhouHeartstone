@@ -127,7 +127,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -170,12 +170,12 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
             {
-                if(targets[0] is Card target && target.pile.name == PileName.FIELD)
+                if(targets[0] is Card target && target.pile.name == PILE.FIELD)
                     return true;
                 return false;
             },async(game,card,arg,targets)=>
@@ -265,7 +265,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -294,7 +294,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.DeathEventArg>(PileName.GRAVE,(game,card,arg)=>
+            new THHEffectAfter<THHCard.DeathEventArg>(PILE.GRAVE,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -344,7 +344,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -416,12 +416,12 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
             {
-                if(targets[0] is Card target && target.pile.name == PileName.FIELD && target.hasTag(game,CardTag.FAIRY))
+                if(targets[0] is Card target && target.pile.name == PILE.FIELD && target.hasTag(game,CardTag.FAIRY))
                     return true;
                 return false;
             },async (game,card,arg,targets)=>
@@ -446,7 +446,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -545,7 +545,7 @@ namespace TouhouHeartstone.Builtin
                 (g,c,b)=>g.triggers.getRecordedEvents()
                 .skipUntilLast(e=>e is THHGame.TurnStartEventArg)
                 .OfType<THHPlayer.UseEventArg>()
-                .Where(u=>u.card.pile.name!=PileName.SKILL).Count()<1)
+                .Where(u=>u.card.pile.name!=PILE.SKILL).Count()<1)
             //new THHEffectBefore<THHGame.TurnStartEventArg>(PileName.FIELD,null,null,async (g,c,a)=>
             //{
             //    foreach (var player in g.players)
@@ -801,7 +801,7 @@ namespace TouhouHeartstone.Builtin
             await card.getOwner().draw(game, out var draw);
             var drawed = draw.card;
             await drawed.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true),
-              new RemoveBuffBefore<THHGame.TurnEndEventArg>(PileName.HAND, ID)));
+              new RemoveBuffBefore<THHGame.TurnEndEventArg>(PILE.HAND, ID)));
         }
     }
     /// <summary>
@@ -881,7 +881,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.STEALTH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHCard.AttackEventArg>(PileName.FIELD,(g,c,a)=>
+            new THHEffectBefore<THHCard.AttackEventArg>(PILE.FIELD,(g,c,a)=>
             {
                 return a.card == c;
             },null,(g,c,a)=>

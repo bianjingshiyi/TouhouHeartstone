@@ -58,7 +58,7 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PileName.FIELD,(game,card,arg)=>
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
             {
                 if(arg.player!=game.currentPlayer)//不是自己的回合
                     return false;
@@ -114,7 +114,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,card,arg)=>
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>

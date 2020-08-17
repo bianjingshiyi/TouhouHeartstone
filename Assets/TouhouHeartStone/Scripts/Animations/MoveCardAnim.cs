@@ -17,7 +17,7 @@ namespace Game
         {
             if (eventArg.from == null)
             {
-                if (eventArg.to.name == PileName.HAND)
+                if (eventArg.to.name == PILE.HAND)
                 {
                     //发现，印卡
                     if (!table.tryGetHand(eventArg.card, out var hand))
@@ -26,18 +26,18 @@ namespace Game
                         return false;
                 }
             }
-            else if (eventArg.from.name == PileName.INIT)
+            else if (eventArg.from.name == PILE.INIT)
             {
-                if (eventArg.to.name == PileName.HAND)
+                if (eventArg.to.name == PILE.HAND)
                 {
                     //初始手牌
                     table.createHand(eventArg.card);
                 }
             }
-            else if (eventArg.from.name == PileName.DECK)
+            else if (eventArg.from.name == PILE.DECK)
             {
                 RectTransform deckTransform = eventArg.from == table.player.deck ? table.ui.SelfDeck.rectTransform : table.ui.EnemyDeck.rectTransform;
-                if (eventArg.to.name == PileName.HAND)
+                if (eventArg.to.name == PILE.HAND)
                 {
                     //抽牌
                     if (!table.tryGetHand(eventArg.card, out var hand))
@@ -49,7 +49,7 @@ namespace Game
                     if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator))
                         return false;
                 }
-                else if (eventArg.to.name == PileName.WARP)
+                else if (eventArg.to.name == PILE.WARP)
                 {
                     if (!table.tryGetHand(eventArg.card, out var hand))
                     {
@@ -64,11 +64,11 @@ namespace Game
                     table.ui.EnemyHandList.removeItem(hand);
                 }
             }
-            else if (eventArg.from.name == PileName.HAND)
+            else if (eventArg.from.name == PILE.HAND)
             {
                 if (table.tryGetHand(eventArg.card, out var hand))
                 {
-                    if (eventArg.to.name == PileName.GRAVE)
+                    if (eventArg.to.name == PILE.GRAVE)
                     {
                         //弃牌
                         if (!SimpleAnimHelper.update(table, ref _anim, hand.onDiscard, hand.animator, next =>
@@ -83,10 +83,10 @@ namespace Game
                     }
                 }
             }
-            else if (eventArg.from.name == PileName.GRAVE)
+            else if (eventArg.from.name == PILE.GRAVE)
             {
                 RectTransform graveTransform = eventArg.from == table.player.grave ? table.ui.SelfGraveDeck.rectTransform : table.ui.EnemyGraveDeck.rectTransform;
-                if (eventArg.to.name == PileName.HAND)
+                if (eventArg.to.name == PILE.HAND)
                 {
                     //从墓地抽牌
                     if (!table.tryGetHand(eventArg.card, out var hand))
@@ -99,10 +99,10 @@ namespace Game
                         return false;
                 }
             }
-            else if (eventArg.from.name == PileName.FIELD)
+            else if (eventArg.from.name == PILE.FIELD)
             {
                 RectTransform fieldTransform = eventArg.from == table.player.field ? table.ui.SelfFieldList.rectTransform : table.ui.SelfFieldList.rectTransform;
-                if (eventArg.to.name == PileName.HAND)
+                if (eventArg.to.name == PILE.HAND)
                 {
                     //回手
                     if (table.tryGetServant(eventArg.card, out var servant))//尝试获取将要回手的随从
