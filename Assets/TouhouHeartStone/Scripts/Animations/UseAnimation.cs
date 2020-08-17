@@ -39,7 +39,7 @@ namespace Game
                 else
                 {
                     var hand = table.getHand(eventArg.card);
-                    if (hand == null)
+                    if (hand == null && _handToField == null)
                         throw new ActorNotFoundException(eventArg.card);
                     if (!table.ui.ServantPlaceHolder.Servant.isDisplaying)
                     {
@@ -103,31 +103,19 @@ namespace Game
             }
             else if (eventArg.card.isItem())
             {
-                Item item;
                 if (eventArg.player == table.player)
                 {
-                    item = table.ui.SelfItem;
-                    if (!item.isDisplaying)
-                    {
-                        table.setItem(item, eventArg.card);
-                        table.setMaster(table.ui.SelfMaster, eventArg.card.getOwner().master);
-                    }
                     if (table.tryGetHand(eventArg.card, out var hand))
                     {
                         if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onSelfUse, hand.animator))
                             return false;
                         table.ui.SelfHandList.removeItem(hand);
                     }
-                    if (!SimpleAnimHelper.update(table, ref _equipAnim, item.onEquip, item.animator))
-                        return false;
                     if (tryTargetedAnim(table, table.ui.SelfItem, eventArg))
                         return false;
                 }
                 else
                 {
-                    item = table.ui.EnemyItem;
-                    if (!item.isDisplaying)
-                        table.setItem(item, eventArg.card);
                     if (table.tryGetHand(eventArg.card, out var hand))
                     {
                         table.setCard(hand.Card, eventArg.card, true);
@@ -136,8 +124,6 @@ namespace Game
                             return false;
                         table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
                     }
-                    if (!SimpleAnimHelper.update(table, ref _equipAnim, table.ui.EnemyItem.onEquip, table.ui.EnemyItem.animator))
-                        return false;
                     if (tryTargetedAnim(table, table.ui.EnemyItem, eventArg))
                         return false;
                 }

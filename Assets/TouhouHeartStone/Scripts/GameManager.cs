@@ -277,8 +277,8 @@ namespace Game
             getManager<TableManager>().setGame(game, localPlayer);
             _mainUI.Game.Table.setGame(game, localPlayer);
 
-            game.triggers.onEventBefore += onEventBefore;
-            game.triggers.onEventAfter += onEventAfter;
+            //game.triggers.onEventBefore += onEventBefore;
+            //game.triggers.onEventAfter += onEventAfter;
             ui.LogScrollView.shrink();
             ui.LogScrollView.LogList.clearItems();
         }
@@ -326,6 +326,8 @@ namespace Game
             }
             bool isChildOf(IEventArg parent, IEventArg child, ref int depth)
             {
+                if (depth > 100)
+                    throw new StackOverflowException();
                 if (child == null)
                     return false;
                 if (parent == null)
@@ -491,6 +493,8 @@ namespace Game
                         targetItem.Card.setCard(target.define as CardDefine, getManager<CardManager>().getSkin(target as Card));
                     }
                 }
+                LayoutRebuilder.ForceRebuildLayoutImmediate(ui.LogScrollView.LogInfoHorizantal.TargetGridList.rectTransform);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(ui.LogScrollView.LogInfoHorizantal.LogInfoVerticalVerticalLayoutGroup.GetComponent<RectTransform>());
                 LayoutRebuilder.ForceRebuildLayoutImmediate(ui.LogScrollView.LogInfoHorizantal.rectTransform);
             }
         }

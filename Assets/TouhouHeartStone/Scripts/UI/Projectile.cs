@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using BJSYGameCore;
+using System;
 namespace UI
 {
     public class Projectile : MonoBehaviour
@@ -45,12 +46,28 @@ namespace UI
                 if (transform.position != target.position)
                     return;
                 else
-                    _onHit.invokeBeforeAnim();
+                {
+                    try
+                    {
+                        _onHit.invokeBeforeAnim();
+                    }
+                    catch (Exception e)
+                    {
+                        UberDebug.LogError("UI", this + "播放onHit动画引发异常：" + e);
+                    }
+                }
             }
-            Animator animator = GetComponentInChildren<Animator>();
-            if (!AnimHelper.update(animator, _onHit.animName, ref _isOnHitPlayed, ref _isOnHitFinished))
-                return;
-            _onHit.invokeAfterAnim();
+            try
+            {
+                Animator animator = GetComponentInChildren<Animator>();
+                if (!AnimHelper.update(animator, _onHit.animName, ref _isOnHitPlayed, ref _isOnHitFinished))
+                    return;
+                _onHit.invokeAfterAnim();
+            }
+            catch (Exception e)
+            {
+                UberDebug.LogError("UI", this + "播放onHit动画引发异常：" + e);
+            }
             Destroy(gameObject);
         }
     }

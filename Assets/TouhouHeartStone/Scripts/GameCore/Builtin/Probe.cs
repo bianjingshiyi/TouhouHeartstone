@@ -197,7 +197,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override int attack { get; set; } = 2;//随从的攻击力
         public override int life { get; set; } = 4;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
-        public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
+        public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
                                                                                        //public override string[] keywords { get; set; } = new string[] {Keyword.TAUNT};//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
@@ -242,7 +242,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override int attack { get; set; } = 3;//随从的攻击力
         public override int life { get; set; } = 3;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
-        public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
+        public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
                                                                                        //public override string[] keywords { get; set; } = new string[] {Keyword.TAUNT};//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
@@ -277,7 +277,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override int attack { get; set; } = 8;//随从的攻击力
         public override int life { get; set; } = 8;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
-        public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
+        public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]{
             //回合结束扳机
@@ -324,7 +324,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override int attack { get; set; } = 0;//随从的攻击力
         public override int life { get; set; } = 3;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
-        public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
+        public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
@@ -356,7 +356,7 @@ namespace TouhouHeartstone.Builtin.Proble
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 int heal = target.getLife(game);
-                if(((IList)target.getTags(game)).Contains(CardTag.MACHINE)){
+                if(((IList)target.getTags(game)).Contains(TAG.MACHINE)){
                     await target.heal(game,heal);
                 }else{
                     await target.damage(game, card, card.getOwner().getSpellDamage(game, heal));
@@ -383,7 +383,7 @@ namespace TouhouHeartstone.Builtin.Proble
         };
         static async Task effect(THHGame game, Card card)
         {
-            var discovered = await card.getOwner().discover(game, card.getOwner().grave.Where(c => c.isServant() && ((IList)c.getTags(game)).Contains(CardTag.MACHINE)));
+            var discovered = await card.getOwner().discover(game, card.getOwner().grave.Where(c => c.isServant() && ((IList)c.getTags(game)).Contains(TAG.MACHINE)));
             var theReborned = (await card.getOwner().reborn(game, discovered, card.getOwner().field)).card;
             await theReborned.addBuff(game, new GeneratedBuff(ID, new AttackModifier(3, true), new LifeModifier(3, true)));
 
@@ -407,7 +407,7 @@ namespace TouhouHeartstone.Builtin.Proble
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(3)));
-                if(((IList)target.getTags(game)).Contains(CardTag.MACHINE)){
+                if(((IList)target.getTags(game)).Contains(TAG.MACHINE)){
                     await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(4)));
                 }
             }, PileFlag.self | PileFlag.field)//后缀表示只能指向随从
@@ -437,7 +437,7 @@ namespace TouhouHeartstone.Builtin.Proble
             {
                 await target.getOwner().field.moveTo(game, target, card.getOwner().field);
                 await target.addBuff(game , new GeneratedBuff(ID,new AttackModifier(3,true),new LifeModifier(3,true)));
-            }, PileFlag.oppo | PileFlag.field,onCheckTarget:(g,c,t)=> t.define.hasTag(CardTag.MACHINE))//后缀表示只能指向随从
+            }, PileFlag.oppo | PileFlag.field,onCheckTarget:(g,c,t)=> t.define.hasTag(TAG.MACHINE))//后缀表示只能指向随从
         };
     }
 
@@ -455,7 +455,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override int attack { get; set; } = 3;//随从的攻击力
         public override int life { get; set; } = 3;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
-        public override string[] tags { get; set; } = new string[] { CardTag.MACHINE };//种族标签
+        public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
                                                                                        //public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {

@@ -68,7 +68,15 @@ namespace Game
             {
                 if (table.tryGetHand(eventArg.card, out var hand))
                 {
-                    if (eventArg.to.name == PILE.GRAVE)
+                    if (eventArg.to.name == PILE.ITEM)
+                    {
+                        var item = eventArg.to.owner == table.player ? table.ui.SelfItem : table.ui.EnemyItem;
+                        table.setItem(item, eventArg.card);
+                        item.display();
+                        if (!SimpleAnimHelper.update(table, ref _anim, item.onEquip, item.animator))
+                            return false;
+                    }
+                    else if (eventArg.to.name == PILE.GRAVE)
                     {
                         //弃牌
                         if (!SimpleAnimHelper.update(table, ref _anim, hand.onDiscard, hand.animator, next =>
@@ -107,7 +115,7 @@ namespace Game
                     //回手
                     if (table.tryGetServant(eventArg.card, out var servant))//尝试获取将要回手的随从
                     {
-                        table.ui.SelfFieldList.removeItem(servant);                    
+                        table.ui.SelfFieldList.removeItem(servant);
                         table.ui.EnemyFieldList.removeItem(servant);
                     }
                     if (!table.tryGetHand(eventArg.card, out var hand))

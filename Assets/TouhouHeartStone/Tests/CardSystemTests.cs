@@ -336,5 +336,25 @@ namespace Tests
             oppo.cmdTurnEnd(game);
             Assert.AreEqual(0, oppo.field.count);
         }
+        [Test]
+        public void equipTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(TestWeapon.ID, 30));
+            game.skipUntilCanUse<TestWeapon>(you);
+            you.cmdUse(game, you.hand.getCard<TestWeapon>());
+            Assert.True(you.master.canAttack(game));
+            you.cmdAttack(game, you.master, oppo.master);
+            Assert.AreEqual(29, oppo.master.getCurrentLife(game));
+            game.skipUntilHasGem(you, 2);
+            you.cmdUse(game, you.hand.getCard<TestWeapon>());
+            Assert.IsInstanceOf<TestWeapon>(you.item.define);
+            you.cmdAttack(game, you.master, oppo.master);
+            Assert.AreEqual(28, oppo.master.getCurrentLife(game));
+            Assert.AreEqual(2, you.item.getCurrentLife(game));
+            you.cmdUse(game, you.hand.getCard<TestWeapon>());
+            Assert.AreEqual(2, you.grave.count);
+            Assert.AreEqual(3, you.item.getCurrentLife(game));
+        }
     }
 }

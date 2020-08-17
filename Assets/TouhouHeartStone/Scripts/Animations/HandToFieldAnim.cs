@@ -2,12 +2,17 @@
 using UnityEngine;
 using System.Linq;
 using UI;
+using System;
 namespace Game
 {
+    [Serializable]
     class HandToFieldAnim : TableAnimation
     {
+        [SerializeField]
         HandListItem _item;
+        [SerializeField]
         Vector3 _startPosition;
+        [SerializeField]
         Timer _timer;
         public HandToFieldAnim(TableManager table, HandListItem item, FieldList field, int index)
         {

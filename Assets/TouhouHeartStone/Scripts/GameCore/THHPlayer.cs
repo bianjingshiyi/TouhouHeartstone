@@ -50,7 +50,7 @@ namespace TouhouHeartstone
             addPile(grave);
             warp = new Pile(game, PILE.WARP);
             addPile(warp);
-            addPile(new Pile(game, PILE.ITEM));
+            addPile(new Pile(game, PILE.ITEM, 1));
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
         {
@@ -368,9 +368,13 @@ namespace TouhouHeartstone
         public async Task equip(THHGame game, Card item)
         {
             if (this[PILE.ITEM].isFull)
+            {
+                game.logger.log("由于" + this + "的道具栏已满，摧毁当前道具");
                 await destroyItem(game);
+            }
             await item.setCurrentLife(game, item.getLife(game));
             await hand.moveTo(game, item, this[PILE.ITEM]);
+            game.logger.log(this + "装备" + item);
         }
         public Task destroyItem(THHGame game)
         {
@@ -404,17 +408,14 @@ namespace TouhouHeartstone
             public Card card;
             public int position;
             public Card[] targets;
-
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
-
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return targets;
             }
-
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 if (targets == null || targets.Length < 1)
@@ -487,17 +488,14 @@ namespace TouhouHeartstone
             public int position;
             public int attack;
             public int life;
-
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
-
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
-
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 return player.name + "将" + card.getFormatString() + "置入战场，位于" + position;

@@ -236,7 +236,9 @@ namespace Game
                 case HalfPhantonSlam _:
                     value = calcDamageValue(game, player, oppo, target, player.master.getArmor(game)); return true;
                 case Roukanken _:
-                    value = player.item == null ? calcWeaponValue(game, card) : calcWeaponValue(game, card) - calcWeaponValue(game, player.item); return true;
+                    value = player.item == null ?
+                        calcWeaponValue(game, card) :
+                        calcWeaponValue(game, card) - calcWeaponValue(player.item.getAttack(game), player.item.getCurrentLife(game)); return true;
                 case TwoHundredYojanaOneSlash _:
                     value = Youmu.isPreHeated(game, card) ? 4 : 2; return true;
                 case CherryBlossomFlashing _:
@@ -257,8 +259,16 @@ namespace Game
         }
         float calcWeaponValue(THHGame game, Card card)
         {
-            return card.getAttack(game) * card.getCurrentLife(game);
+            int attack = card.getAttack(game);
+            int life = card.getLife(game);
+            return calcWeaponValue(attack, life);
         }
+
+        float calcWeaponValue(int attack, int life)
+        {
+            return attack * life;
+        }
+
         bool calcPatchouliValue(THHGame game, THHPlayer player, Card card, THHPlayer opponent, Card target, out float value)
         {
             switch (card.define)

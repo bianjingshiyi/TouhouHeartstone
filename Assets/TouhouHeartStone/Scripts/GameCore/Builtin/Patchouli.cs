@@ -36,7 +36,7 @@ namespace TouhouHeartstone.Builtin
         }
         public static CardDefine[] getElementCards(THHGame game)
         {
-            return game.getCardDefines().Where(c => getElements(c).Length == 1).ToArray();
+            return game.getCardDefines().Where(c => getElements(c).Length == 1 && c is SpellCardDefine spell && !spell.isToken).ToArray();
         }
         public static CardDefine[] getMixCards(THHGame game)
         {
@@ -308,7 +308,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 9;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.ELEMENT };
+        public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT, KEYWORD.CANTATTACK };
     }
     /// <summary>
@@ -340,7 +340,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 6;
-        public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
+        public override string[] tags { get; set; } = new string[] { TAG.DEMON };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
@@ -400,7 +400,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
-        public override string[] tags { get; set; } = new string[] { CardTag.ELEMENT };
+        public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -592,7 +592,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x658;
         public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.ELEMENT };
+        public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -788,7 +788,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.ELEMENT };
+        public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
         public override IEffect[] effects { get; set; } = new IEffect[]{
             new BeforeYourTurnEnd(async(game,card,arg)=>
@@ -827,7 +827,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 1;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.ELEMENT };
+        public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
@@ -862,7 +862,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = new string[] { CardTag.ELEMENT };
+        public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
@@ -876,7 +876,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
-        public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
+        public override string[] tags { get; set; } = new string[] { TAG.DEMON };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {

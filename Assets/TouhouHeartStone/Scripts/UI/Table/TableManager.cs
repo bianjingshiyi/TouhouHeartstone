@@ -70,6 +70,7 @@ namespace Game
             get { return _isSelectingTarget; }
             set { _isSelectingTarget = value; }
         }
+        HandToFieldAnim _handToFieldAnim = null;
         public Card attackingCard { get; set; } = null;
         protected override void onAwake()
         {
@@ -100,6 +101,28 @@ namespace Game
             }
             else
                 ui.TimeoutSlider.hide();
+            //随从牌使用预览
+            if (_handToFieldAnim != null)
+            {
+                if (_handToFieldAnim.update(this))
+                {
+                    _handToFieldAnim = null;
+                    if (tryGetHand(usingCard, out var hand))
+                        hand.Card.hide();
+                    else
+                        throw new ActorNotFoundException(usingCard);
+                    //显示占位随从
+                    ui.ServantPlaceHolder.Servant.display();
+                    try
+                    {
+                        setServant(ui.ServantPlaceHolder.Servant, usingCard.define);
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        Debug.LogError(e);
+                    }
+                }
+            }
             updateAnim();
         }
         /// <summary>
@@ -342,21 +365,28 @@ namespace Game
                 master.ShieldImage.display();
             else
                 master.ShieldImage.hide();
+            if (card.hasKeyword(game, KEYWORD.FREEZE))
+                master.FreezeImage.display();
+            else
+                master.FreezeImage.hide();
         }
         public bool tryGetItem(Card card, out Item item)
         {
+            if (card == null)
+            {
+                item = null;
+                return false;
+            }
             if (player.item == card)
             {
                 item = ui.SelfItem;
                 return true;
             }
-            else if (game.getOpponent(player).item == card)
+            else
             {
                 item = ui.EnemyItem;
                 return true;
             }
-            item = null;
-            return false;
         }
         public void setItem(Item item, Card card)
         {
@@ -702,26 +732,11 @@ namespace Game
                     //松开鼠标，确认使用随从牌
                     int index = calcIndexInField(pointer.position);
                     ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(index + 1);
-                    if (usingCard.getAvaliableTargets(game) is TouhouCardEngine.Card[] targets && targets.Length > 0)
+                    if (usingCard.getAvaliableTargets(game) is Card[] targets && targets.Length > 0)
                     {
                         usingPosition = index;
                         //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
-                        addAnim(new HandToFieldAnim(this, hand, ui.SelfFieldList, index));
-                        TouhouCardEngine.Card localUsingCard = usingCard;
-                        addAnim(new CodeAnim(() =>
-                        {
-                            hand.Card.hide();
-                            //显示占位随从
-                            ui.ServantPlaceHolder.Servant.display();
-                            try
-                            {
-                                setServant(ui.ServantPlaceHolder.Servant, localUsingCard.define);
-                            }
-                            catch (NullReferenceException e)
-                            {
-                                Debug.LogError(e);
-                            }
-                        }));
+                        _handToFieldAnim = new HandToFieldAnim(this, hand, ui.SelfFieldList, index);
                         isSelectingTarget = true;
                         highlightTargets(targets);
                         ui.SelfSkill.isUsable = false;
@@ -837,6 +852,7 @@ namespace Game
                 usingHand.Card.rectTransform.localScale = Vector3.one;
                 usingHand.Card.rectTransform.localPosition = Vector2.zero;
             }
+            _handToFieldAnim = null;
             usingCard = null;
             if (resetPlaceHolder)
                 hideServantPlaceHolder();
@@ -1094,6 +1110,10 @@ namespace Game
                 servant.StealthImage.display();
             else
                 servant.StealthImage.hide();
+            if (card.hasKeyword(game, KEYWORD.FREEZE))
+                servant.FreezeImage.display();
+            else
+                servant.FreezeImage.hide();
             if (card.hasKeyword(game, KEYWORD.SHIELD))
                 servant.ShieldImage.display();
             else

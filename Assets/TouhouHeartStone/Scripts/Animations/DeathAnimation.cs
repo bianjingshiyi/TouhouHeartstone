@@ -30,14 +30,13 @@ namespace Game
                         //table.ui.SelfFieldList.removeItem(servant);//从自己的场上移除随从UI
                         //table.ui.EnemyFieldList.removeItem(servant);//从敌人的场上移除随从UI
                     }
-                    else if (table.tryGetServant(card, out var master))
+                    else if (table.tryGetMaster(card, out var master))
                     {
                         master.onDeath.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(master.animator, master.onDeath.animName));
                     }
-                    else if (card.isItem())
+                    else if (table.tryGetItem(card, out var item))
                     {
-                        Item item = card.getOwner() == table.player ? table.ui.SelfItem : table.ui.EnemyItem;
                         item.onDestroy.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(item.animator, item.onDestroy.animName));
                     }

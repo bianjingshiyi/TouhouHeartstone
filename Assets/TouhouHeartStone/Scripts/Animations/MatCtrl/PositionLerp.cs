@@ -18,11 +18,17 @@ namespace Game
         Vector3 _startPosition;
         protected void OnEnable()
         {
-            _startPosition = GetComponent<RectTransform>().position;
+            _startPosition = transform.position;
         }
         protected void Update()
         {
-            tryLerp();
+            //不能将位置的更新放在LateUpdate中，LateUpdate中TargetTransform的位置与Update中的不同，可能与动画和Layout有关，此时处于没有计算Layout的状态。
+            //也不能在Update中获取位置，然后在LateUpdate中更新位置，更新的位置仍然是错的。
+            if (targetTransofrm != null)
+            {
+                Vector3 targetPosition = Vector3.MoveTowards(targetTransofrm.position, _startPosition, _stopDistance);
+                transform.position = Vector3.Lerp(_startPosition, targetPosition, _time);
+            }
         }
         protected void OnDisable()
         {
@@ -30,12 +36,7 @@ namespace Game
         }
         private void tryLerp()
         {
-            if (targetTransofrm != null)
-            {
-                RectTransform transform = GetComponent<RectTransform>();
-                Vector3 targetPosition = Vector3.MoveTowards(targetTransofrm.position, _startPosition, _stopDistance);
-                transform.position = Vector3.Lerp(_startPosition, targetPosition, _time);
-            }
+
         }
         public void setTarget(RectTransform target, float stopDistance = 0)
         {

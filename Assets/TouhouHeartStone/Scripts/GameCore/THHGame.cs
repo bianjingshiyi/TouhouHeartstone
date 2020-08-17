@@ -425,7 +425,6 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public Task updateDeath()
         {
-            logger.log("Game", "进行死亡结算");
             List<Card> deathList = new List<Card>();
             foreach (THHPlayer player in players)
             {
@@ -447,7 +446,6 @@ namespace TouhouHeartstone
             }
             if (deathList.Count > 0)
             {
-                logger.log("Game", "结算" + string.Join("，", deathList) + "的死亡");
                 return deathList.die(this);
             }
             else

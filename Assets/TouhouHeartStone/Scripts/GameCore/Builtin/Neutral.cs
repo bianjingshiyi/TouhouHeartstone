@@ -16,7 +16,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.CHARGE };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
@@ -96,7 +96,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
         public override int spellDamage { get; set; } = 1;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
@@ -124,7 +124,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
@@ -154,7 +154,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.STEALTH };
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
     /// <summary>
@@ -167,7 +167,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
@@ -196,7 +196,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 4;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             //TODO:潜行光环
@@ -212,7 +212,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect((game,card,target)=>
@@ -231,7 +231,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             //new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
@@ -262,7 +262,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 5;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
@@ -291,7 +291,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.CHARGE };
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectAfter<THHCard.DeathEventArg>(PILE.GRAVE,(game,card,arg)=>
@@ -318,7 +318,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 5;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async(game,card,target)=>
@@ -341,7 +341,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
@@ -385,7 +385,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 8;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             //new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
@@ -413,7 +413,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
@@ -421,7 +421,7 @@ namespace TouhouHeartstone.Builtin
                 return true;
             },(game,card,targets)=>
             {
-                if(targets[0] is Card target && target.pile.name == PILE.FIELD && target.hasTag(game,CardTag.FAIRY))
+                if(targets[0] is Card target && target.pile.name == PILE.FIELD && target.hasTag(game,TAG.FAIRY))
                     return true;
                 return false;
             }, (game,card,arg,targets)=>
@@ -444,7 +444,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
@@ -478,7 +478,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new DeathRattle(ID,(g1,c1,p)=>
@@ -497,7 +497,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect((game,card,target)=>
@@ -517,7 +517,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
-        public override string[] tags { get; set; } = new string[] { CardTag.FAIRY };
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async(game,card,target)=>
@@ -641,7 +641,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[] { CardTag.DEMON };
+        public override string[] tags { get; set; } = new string[] { TAG.DEMON };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
