@@ -98,13 +98,13 @@ namespace Game
 //            int costIndex = findColIndex(sheet, "Cost");
 //            card.setProp(nameof(ServantCardDefine.cost), numberToInt(sheet.Cells[row, costIndex].Value));
 //            int attackIndex = findColIndex(sheet, "Attack");
-//            card.setProp(nameof(ServantCardDefine.attack), numberToInt(sheet.Cells[row, attackIndex].Value));
+//            card.setProp(PROPERTY.ATTACK, numberToInt(sheet.Cells[row, attackIndex].Value));
 //            int lifeIndex = findColIndex(sheet, "Life");
 //            card.setProp(nameof(ServantCardDefine.life), numberToInt(sheet.Cells[row, lifeIndex].Value));
 //            int tagsIndex = findColIndex(sheet, "Tags");
 //            card.setProp(nameof(ServantCardDefine.tags), sheet.Cells[row, tagsIndex].StringValue.Split(','));
 //            int keywordsIndex = findColIndex(sheet, "Keywords");
-//            card.setProp(nameof(ServantCardDefine.keywords), sheet.Cells[row, keywordsIndex].StringValue.Split(','));
+//            card.setProp(PROPERTY.KEYWORDS, sheet.Cells[row, keywordsIndex].StringValue.Split(','));
 //            int isTokenIndex = findColIndex(sheet, "IsToken");
 //            card.setProp(nameof(ServantCardDefine.isToken), sheet.Cells[row, isTokenIndex].Value);
 //            int ignoreIndex = findColIndex(sheet, "Ignore");
@@ -147,10 +147,10 @@ namespace Game
 //            card.id = datarow.ReadCol<int>("ID");
 //            card.type = datarow.ReadCol<string>("Type");
 //            card.setProp(nameof(ServantCardDefine.cost), datarow.ReadCol<int>("Cost"));
-//            card.setProp(nameof(ServantCardDefine.attack), datarow.ReadCol<int>("Attack", 0));
+//            card.setProp(PROPERTY.ATTACK, datarow.ReadCol<int>("Attack", 0));
 //            card.setProp(nameof(ServantCardDefine.life), datarow.ReadCol<int>("Life", 0));
 //            card.setProp(nameof(ServantCardDefine.tags), datarow.ReadCol<string>("Tags", "").Split(','));
-//            card.setProp(nameof(ServantCardDefine.keywords), datarow.ReadCol<string>("Keywords", "").Split(','));
+//            card.setProp(PROPERTY.KEYWORDS, datarow.ReadCol<string>("Keywords", "").Split(','));
 //            card.setProp(nameof(ServantCardDefine.isToken), datarow.ReadCol<bool>("IsToken", false));
 //            CardSkinData skin;
 //            if (datarow.ReadCol("Ignore", false))

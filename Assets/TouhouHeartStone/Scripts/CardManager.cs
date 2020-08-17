@@ -219,10 +219,10 @@ namespace Game
                     card.id = datarow.ReadCol<int>("ID");
                     card.type = datarow.ReadCol<string>("Type");
                     card.setProp(nameof(ServantCardDefine.cost), datarow.ReadCol("Cost", 0));
-                    card.setProp(nameof(ServantCardDefine.attack), datarow.ReadCol("Attack", 0));
+                    card.setProp(PROPERTY.ATTACK, datarow.ReadCol("Attack", 0));
                     card.setProp(nameof(ServantCardDefine.life), datarow.ReadCol("Life", 0));
                     card.setProp(nameof(ServantCardDefine.tags), datarow.ReadCol("Tags", "").Split(','));
-                    card.setProp(nameof(ServantCardDefine.keywords), datarow.ReadCol("Keywords", "").Split(','));
+                    card.setProp(PROPERTY.KEYWORDS, datarow.ReadCol("Keywords", "").Split(','));
                     card.setProp(nameof(ServantCardDefine.isToken), datarow.ReadCol("IsToken", false));
                     card.setProp(nameof(ServantCardDefine.isActive), datarow.ReadCol("IsUnavailable", false));
 

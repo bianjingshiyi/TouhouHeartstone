@@ -5,7 +5,7 @@ namespace TouhouHeartstone
 {
     public class KeywordsModifier : PropModifier<string[]>
     {
-        public override string propName { get; } = nameof(ServantCardDefine.keywords);
+        public override string propName { get; } = PROPERTY.KEYWORDS;
         public string[] keywords { get; }
         public enum ModifyType
         {

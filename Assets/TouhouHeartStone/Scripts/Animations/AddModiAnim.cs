@@ -2,7 +2,6 @@
 using UnityEngine;
 using TouhouHeartstone;
 using Card = TouhouCardEngine.Card;
-
 namespace Game
 {
     class AddModiAnim : EventAnimation<Card.AddModiEventArg>
@@ -12,28 +11,7 @@ namespace Game
         {
             SimpleAnim simpleAnim = null;
             Animator animator = null;
-            if (table.tryGetServant(eventArg.card, out var servant))
-            {
-                animator = servant.animator;
-                if (eventArg.modifier is AttackModifier atkMod)
-                {
-                    if (atkMod.value > 0)
-                        simpleAnim = servant.onAttackUp;
-                    else
-                        simpleAnim = servant.onAttackDown;
-                    servant.AttackTextPropNumber.asText.text = eventArg.card.getAttack(table.game).ToString();
-                }
-                else if (eventArg.modifier is LifeModifier lifMod)
-                {
-                    if (lifMod.value > 0)
-                        simpleAnim = servant.onLifeUp;
-                    else
-                        simpleAnim = servant.onLifeDown;
-                    servant.HpTextPropNumber.asText.text = eventArg.card.getCurrentLife(table.game).ToString();
-                }
-                table.setServant(servant, eventArg.card);
-            }
-            else if (table.tryGetHand(eventArg.card, out var hand))
+            if (table.tryGetHand(eventArg.card, out var hand))
             {
                 animator = hand.animator;
                 if (eventArg.modifier is AttackModifier atkMod)
@@ -74,7 +52,6 @@ namespace Game
                 }
                 table.setMaster(master, eventArg.card);
             }
-
             if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator))
                 return false;
             return true;

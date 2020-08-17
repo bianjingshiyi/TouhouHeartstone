@@ -46,7 +46,7 @@ namespace TouhouHeartstone
         public static int getAttack(this Card card, IGame game)
         {
             THHGame tgame = (THHGame)game;
-            int result = card.getProp<int>(game, nameof(ServantCardDefine.attack));
+            int result = card.getProp<int>(game, PROPERTY.ATTACK);
             if (card.getOwner() == tgame.currentPlayer)
             {
                 if (card.define is MasterCardDefine)
@@ -61,7 +61,7 @@ namespace TouhouHeartstone
         }
         public static int getAttack(this CardDefine card)
         {
-            int result = card.getProp<int>(nameof(ServantCardDefine.attack));
+            int result = card.getProp<int>(PROPERTY.ATTACK);
             if (result < 0)
                 return 0;
             return result;
@@ -69,7 +69,7 @@ namespace TouhouHeartstone
         }
         public static Task<ISetPropEventArg> setAttack(this Card card, IGame game, int value)
         {
-            return card.setProp(game, nameof(ServantCardDefine.attack), value);
+            return card.setProp(game, PROPERTY.ATTACK, value);
         }
         public static int getLife(this Card card, IGame game)
         {
@@ -161,11 +161,11 @@ namespace TouhouHeartstone
         }
         public static int getCurrentLife(this Card card, IGame game)
         {
-            return card.getProp<int>(game, "currentLife");
+            return card.getProp<int>(game, PROPERTY.CURRENT_LIFE);
         }
         public static Task<ISetPropEventArg> setCurrentLife(this Card card, IGame game, int value)
         {
-            return card.setProp(game, "currentLife", value);
+            return card.setProp(game, PROPERTY.CURRENT_LIFE, value);
         }
         public static bool isReady(this Card card, IGame game)
         {
@@ -421,7 +421,7 @@ namespace TouhouHeartstone
                     await card.setProp(game, keyword, false);
                 }
             }
-            var result = await card.setProp(game, nameof(ServantCardDefine.keywords), keywords);
+            var result = await card.setProp(game, PROPERTY.KEYWORDS, keywords);
             foreach (var keyword in card.getKeywords(game))
             {
                 await card.setProp(game, keyword, true);
@@ -430,7 +430,7 @@ namespace TouhouHeartstone
         }
         public static string[] getKeywords(this Card card, IGame game)
         {
-            return card.getProp<string[]>(game, nameof(ServantCardDefine.keywords));
+            return card.getProp<string[]>(game, PROPERTY.KEYWORDS);
         }
         public static bool hasKeyword(this Card card, IGame game, string keyword)
         {
@@ -443,7 +443,7 @@ namespace TouhouHeartstone
         }
         public static bool hasKeyword(this CardDefine define, string keyword)
         {
-            string[] keywords = define.getProp<string[]>(nameof(ServantCardDefine.keywords));
+            string[] keywords = define.getProp<string[]>(PROPERTY.KEYWORDS);
             if (keywords == null)
                 return false;
             return keywords.Contains(keyword);
@@ -496,7 +496,7 @@ namespace TouhouHeartstone
                 cards = arg.cards;
                 foreach (var card in cards)
                 {
-                    await card.setProp(game, nameof(silence), true);
+                    await card.setProp(game, PROPERTY.SILENCE, true);
                     await card.removeBuff(game, card.getBuffs());
                     foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
                     {
@@ -531,7 +531,7 @@ namespace TouhouHeartstone
         }
         public static bool isSilenced(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, nameof(silence));
+            return card.getProp<bool>(game, PROPERTY.SILENCE);
         }
         public static bool hasTag(this Card card, IGame game, string tag)
         {
@@ -731,7 +731,7 @@ namespace TouhouHeartstone
                         continue;
                     await card.setProp(game, keyword, true);
                 }
-                await card.setProp(game, nameof(ServantCardDefine.keywords), servant.keywords);
+                await card.setProp(game, PROPERTY.KEYWORDS, servant.keywords);
                 await card.setProp(game, nameof(ServantCardDefine.tags), servant.tags);
             }
         }

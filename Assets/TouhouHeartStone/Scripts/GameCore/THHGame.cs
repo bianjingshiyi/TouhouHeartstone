@@ -109,7 +109,7 @@ namespace TouhouHeartstone
                         continue;
                     card.setProp(this, keyword, true);
                 }
-                card.setProp(this, nameof(ServantCardDefine.keywords), servant.keywords);
+                card.setProp(this, PROPERTY.KEYWORDS, servant.keywords);
                 card.setProp(this, nameof(ServantCardDefine.tags), servant.tags);
             }
             else if (define is SpellCardDefine spell)

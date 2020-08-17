@@ -338,10 +338,6 @@ namespace Game
                 master.onCanAttackFalse.invokeBeforeAnim();
                 master.onCanAttackFalse.invokeAfterAnim();
             }
-            if (card.hasKeyword(game, KEYWORD.FREEZE))
-                master.FreezeImage.display();
-            else
-                master.FreezeImage.hide();
             if (card.hasKeyword(game, KEYWORD.SHIELD))
                 master.ShieldImage.display();
             else
@@ -1098,10 +1094,6 @@ namespace Game
                 servant.StealthImage.display();
             else
                 servant.StealthImage.hide();
-            if (card.hasKeyword(game, KEYWORD.FREEZE))
-                servant.FreezeImage.display();
-            else
-                servant.FreezeImage.hide();
             if (card.hasKeyword(game, KEYWORD.SHIELD))
                 servant.ShieldImage.display();
             else
