@@ -1,6 +1,6 @@
 ﻿namespace TouhouHeartstone
 {
-    public static class Property
+    public static class PROPERTY
     {
         public const string ARMOR = "armor";
     }

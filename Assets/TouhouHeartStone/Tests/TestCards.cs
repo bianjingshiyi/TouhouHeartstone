@@ -49,7 +49,7 @@ namespace Tests
                 return true;
             },(game,card,arg)=>
             {
-                card.setProp("TestResult",true);
+                card.setProp(game, "TestResult", true);
                 return Task.CompletedTask;
             })
         };
@@ -371,7 +371,7 @@ namespace Tests
         //    public override string[] piles { get; } = new string[] { PileName.FIELD };
         //    Dictionary<Card, Buff> buffDic { get; } = new Dictionary<Card, Buff>();
         //    Trigger<Pile.MoveCardEventArg> onCardEnterHandTrigger { get; set; } = null;
-        //    public override void onEnable(THHGame game, Card card)
+        //    public override Task onEnable(THHGame game, Card card)
         //    {
         //        if (onCardEnterHandTrigger == null)
         //        {
@@ -522,10 +522,10 @@ namespace Tests
                     new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.FIELD,(g1,c1,a1)=>
                     {
                         return a1.player == c.getOwner();
-                    },null,(g1,c1,a1)=>
+                    },null,async (g1,c1,a1)=>
                     {
-                        c1.setDead(true);
-                        return g1.updateDeath();
+                        await c1.setDead(g,true);
+                        await g1.updateDeath();
                     })));
             }, PileFlag.field,null,(g,c,t)=>
             {

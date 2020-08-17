@@ -368,7 +368,7 @@ namespace Tests
             for (int i = 0; i < 3; i++)
             {
                 oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-                oppo.field[i].setCurrentLife(2);
+                oppo.field[i].setCurrentLife(game, 2);
             }
             oppo.cmdTurnEnd(game);
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<ElementalHarvester>().cost);
@@ -388,7 +388,7 @@ namespace Tests
             {
                 oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
             }
-            oppo.field[0].setAttack(5);
+            oppo.field[0].setAttack(game, 5);
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.hand.getCard<MercuryPoison>());
             you.cmdTurnEnd(game);
@@ -557,7 +557,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(PhilosopherStone.ID, 5)
             );
-            
+
             // game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<PhilosopherStone>().cost);
             // var handBeforeUse = you.hand.ToArray();
             // you.cmdUse(game, you.hand.getCard<PhilosopherStone>());//挂刀
@@ -570,7 +570,7 @@ namespace Tests
             //TODO:现在是之前的版本，用一张牌给一张牌，但是是回合结束给牌，所以需要修改测试，让它通过。
             game.skipUntilCanUse<PhilosopherStone>(you);
             var handBeforeUse = you.hand.ToArray().Length;
-            
+
             you.cmdUse(game, you.hand.getCard<PhilosopherStone>());
             Assert.IsInstanceOf<PhilosopherStone>(you.item.define);
 

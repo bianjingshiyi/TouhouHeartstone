@@ -95,42 +95,42 @@ namespace TouhouHeartstone
             Card card = base.createCard(define);
             if (define is MasterCardDefine master)
             {
-                card.setLife(master.life);
+                card.setLife(this, master.life);
             }
             else if (define is ServantCardDefine servant)
             {
-                card.setCost(servant.cost);
-                card.setAttack(servant.attack);
-                card.setLife(servant.life);
-                card.setSpellDamage(servant.spellDamage);
+                card.setCost(this, servant.cost);
+                card.setAttack(this, servant.attack);
+                card.setLife(this, servant.life);
+                card.setSpellDamage(this, servant.spellDamage);
                 foreach (string keyword in servant.keywords)
                 {
                     if (string.IsNullOrEmpty(keyword))
                         continue;
-                    card.setProp(keyword, true);
+                    card.setProp(this, keyword, true);
                 }
-                card.setProp(nameof(ServantCardDefine.keywords), servant.keywords);
-                card.setProp(nameof(ServantCardDefine.tags), servant.tags);
+                card.setProp(this, nameof(ServantCardDefine.keywords), servant.keywords);
+                card.setProp(this, nameof(ServantCardDefine.tags), servant.tags);
             }
             else if (define is SpellCardDefine spell)
             {
-                card.setCost(spell.cost);
+                card.setCost(this, spell.cost);
                 foreach (var keyword in spell.keywords)
                 {
                     if (string.IsNullOrEmpty(keyword))
                         continue;
-                    card.setProp(keyword, true);
+                    card.setProp(this, keyword, true);
                 }
             }
             else if (define is SkillCardDefine skill)
             {
-                card.setCost(skill.cost);
+                card.setCost(this, skill.cost);
             }
             else if (define is ItemCardDefine item)
             {
-                card.setCost(item.cost);
-                card.setAttack(item.attack);
-                card.setLife(item.life);
+                card.setCost(this, item.cost);
+                card.setAttack(this, item.attack);
+                card.setLife(this, item.life);
             }
             return card;
         }
@@ -257,7 +257,7 @@ namespace TouhouHeartstone
                 Card[] masterCards = sortedPlayers.Select(p => { return p.master; }).ToArray();
                 foreach (Card card in masterCards)
                 {
-                    card.setCurrentLife(30);
+                    await card.setCurrentLife(this, 30);
                 }
                 //洗牌，然后抽初始卡牌
                 for (int i = 0; i < sortedPlayers.Length; i++)
@@ -327,16 +327,16 @@ namespace TouhouHeartstone
                 //抽一张牌
                 await arg.player.draw(this);
                 //重置技能
-                player.skill.setUsed(false);
+                await player.skill.setUsed(this, false);
                 //使随从可以攻击
                 foreach (Card card in player.field)
                 {
-                    card.setReady(true);
-                    card.setAttackTimes(0);
+                    await card.setReady(this, true);
+                    await card.setAttackTimes(this, 0);
                 }
                 //使自己可以攻击
-                player.master.setReady(true);
-                player.master.setAttackTimes(0);
+                await player.master.setReady(this, true);
+                await player.master.setAttackTimes(this, 0);
             });
             //倒计时75秒
             turnTimer = time.startTimer(option.timeoutForTurn);

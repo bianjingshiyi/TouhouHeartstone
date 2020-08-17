@@ -275,7 +275,7 @@ namespace TouhouHeartstone.Builtin
             {
                 foreach (var character in game.getAllCharacters().randomTake(game,3))
                 {
-                    //character.setFreeze(true);
+                    character.setFreeze(game,true);
                 }
             })
         };
@@ -354,7 +354,7 @@ namespace TouhouHeartstone.Builtin
             {
                 foreach (var servant in game.getAllServants())
                 {
-                    servant.addBuff(game, new ClownpieceBuff());
+                   await servant.addBuff(game, new ClownpieceBuff());
                 }
             })
         };
@@ -424,12 +424,13 @@ namespace TouhouHeartstone.Builtin
                 if(targets[0] is Card target && target.pile.name == PILE.FIELD && target.hasTag(game,CardTag.FAIRY))
                     return true;
                 return false;
-            },async (game,card,arg,targets)=>
+            }, (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
                 {
-                    //target.setPoision(true);
+                    target.setPoisonous(game, true);
                 }
+                return Task.CompletedTask;
             })
         };
     }
@@ -581,7 +582,7 @@ namespace TouhouHeartstone.Builtin
                 this.effect = effect;
             }
             public override string[] piles => effect.piles;
-            public override void onEnable(THHGame game, Card card, Buff buff)
+            public override async Task onEnable(THHGame game, Card card, Buff buff)
             {
                 Trigger<THHGame.TurnStartEventArg> enableTrig = new Trigger<THHGame.TurnStartEventArg>(arg =>
                 {
@@ -589,7 +590,7 @@ namespace TouhouHeartstone.Builtin
                         effect.onEnable(game, card, buff);
                     return Task.CompletedTask;
                 });
-                card.setProp(nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig", enableTrig);
+                await card.setProp(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig", enableTrig);
                 game.triggers.registerAfter(enableTrig);
                 Trigger<THHPlayer.UseEventArg> disableTrig = new Trigger<THHPlayer.UseEventArg>(arg =>
                 {
@@ -597,16 +598,16 @@ namespace TouhouHeartstone.Builtin
                         effect.onDisable(game, card, buff);
                     return Task.CompletedTask;
                 });
-                card.setProp(nameof(ConditionalPassiveEffect) + GetHashCode() + "disableTrig", disableTrig);
+                await card.setProp(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "disableTrig", disableTrig);
                 game.triggers.registerAfter(disableTrig);
                 if (condition == null || condition(game, card, buff))
-                    effect.onEnable(game, card, buff);
+                    await effect.onEnable(game, card, buff);
             }
-            public override void onDisable(THHGame game, Card card, Buff buff)
+            public override Task onDisable(THHGame game, Card card, Buff buff)
             {
                 game.triggers.removeAfter(card.getProp<Trigger<THHGame.TurnStartEventArg>>(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig"));
                 game.triggers.removeAfter(card.getProp<Trigger<THHPlayer.UseEventArg>>(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "disableTrig"));
-                effect.onDisable(game, card, buff);
+                return effect.onDisable(game, card, buff);
             }
         }
     }
@@ -780,7 +781,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().randomDiscard(game, 1);
-            game.getOpponent(card.getOwner()).field.random(game).setDead(true);
+            await game.getOpponent(card.getOwner()).field.random(game).setDead(game, true);
         }
     }
     /// <summary>
@@ -842,8 +843,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect((game,card,target)=>
             {
-                target.setDead(true);
-                return Task.CompletedTask;
+                return target.setDead(game,true);
             }, PileFlag.field)
         };
     }

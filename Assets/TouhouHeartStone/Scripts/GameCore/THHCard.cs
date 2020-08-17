@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-
+using System;
 namespace TouhouHeartstone
 {
     public static class THHCard
@@ -35,9 +35,9 @@ namespace TouhouHeartstone
                 return 0;
             return result;
         }
-        public static void setCost(this Card card, int value)
+        public static Task<ISetPropEventArg> setCost(this Card card, IGame game, int value)
         {
-            card.setProp(nameof(ServantCardDefine.cost), value);
+            return card.setProp(game, nameof(ServantCardDefine.cost), value);
         }
         public static int getCost(this CardDefine card)
         {
@@ -67,9 +67,9 @@ namespace TouhouHeartstone
             return result;
 
         }
-        public static void setAttack(this Card card, int value)
+        public static Task<ISetPropEventArg> setAttack(this Card card, IGame game, int value)
         {
-            card.setProp(nameof(ServantCardDefine.attack), value);
+            return card.setProp(game, nameof(ServantCardDefine.attack), value);
         }
         public static int getLife(this Card card, IGame game)
         {
@@ -79,9 +79,9 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(nameof(ServantCardDefine.life));
         }
-        public static void setLife(this Card card, int value)
+        public static Task<ISetPropEventArg> setLife(this Card card, IGame game, int value)
         {
-            card.setProp(nameof(ServantCardDefine.life), value);
+            return card.setProp(game, nameof(ServantCardDefine.life), value);
         }
         /// <summary>
         /// 一个随从/物品/英雄是否已经死了？除了生命值小于等于0以外，还有一个isDead的属性来控制卡片是否在死亡结算当中。
@@ -103,20 +103,22 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <param name="value"></param>
-        public static void setDead(this Card card, bool value)
+        public static Task<ISetPropEventArg> setDead(this Card card, IGame game, bool value)
         {
-            card.setProp(nameof(THHCard.isDead), value);
+            return card.setProp(game, nameof(THHCard.isDead), value);
         }
-        public static void setDead(this IEnumerable<Card> cards, bool value)
+        public static async Task<ISetPropEventArg[]> setDead(this IEnumerable<Card> cards, IGame game, bool value)
         {
+            List<ISetPropEventArg> argList = new List<ISetPropEventArg>();
             foreach (var card in cards)
             {
-                card.setProp(nameof(THHCard.isDead), value);
+                argList.Add(await card.setProp(game, nameof(THHCard.isDead), value));
             }
+            return argList.ToArray();
         }
         public static int getArmor(this Card card, IGame game)
         {
-            return card.getProp<int>(game, Property.ARMOR);
+            return card.getProp<int>(game, PROPERTY.ARMOR);
         }
         public static Task<SetArmorEventArg> gainArmor(this Card card, THHGame game, int value)
         {
@@ -134,11 +136,12 @@ namespace TouhouHeartstone
                 value = arg.value;
                 if (value < 0)
                     value = 0;
-                card.setProp(Property.ARMOR, value);
                 game.logger.log(card + "的护甲值变为" + value);
+                card.setProp(game, PROPERTY.ARMOR, value);
                 return Task.CompletedTask;
             });
         }
+        [Obsolete]
         public class SetArmorEventArg : EventArg, IDescribableEventArg
         {
             public Card card;
@@ -160,25 +163,25 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(game, "currentLife");
         }
-        public static void setCurrentLife(this Card card, int value)
+        public static Task<ISetPropEventArg> setCurrentLife(this Card card, IGame game, int value)
         {
-            card.setProp("currentLife", value);
+            return card.setProp(game, "currentLife", value);
         }
         public static bool isReady(this Card card, IGame game)
         {
             return card.getProp<bool>(game, "isReady");
         }
-        public static void setReady(this Card card, bool value)
+        public static Task<ISetPropEventArg> setReady(this Card card, IGame game, bool value)
         {
-            card.setProp("isReady", value);
+            return card.setProp(game, "isReady", value);
         }
         public static int getAttackTimes(this Card card, IGame game)
         {
             return card.getProp<int>(game, "attackTimes");
         }
-        public static void setAttackTimes(this Card card, int value)
+        public static Task<ISetPropEventArg> setAttackTimes(this Card card, IGame game, int value)
         {
-            card.setProp("attackTimes", value);
+            return card.setProp(game, "attackTimes", value);
         }
         public static int getMaxAttackTimes(this Card card, IGame game)
         {
@@ -277,9 +280,9 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <param name="value"></param>
-        public static void setUsed(this Card card, bool value)
+        public static Task<ISetPropEventArg> setUsed(this Card card, IGame game, bool value)
         {
-            card.setProp("isUsed", value);
+            return card.setProp(game, "isUsed", value);
         }
         public static bool isTaunt(this Card card, IGame game)
         {
@@ -406,7 +409,7 @@ namespace TouhouHeartstone
             else
                 card.removeKeywords(game, KEYWORD.UNIQUE);
         }
-        public static void setKeywords(this Card card, IGame game, string[] keywords)
+        public static async Task<ISetPropEventArg> setKeywords(this Card card, IGame game, string[] keywords)
         {
             if (keywords == null)
                 keywords = new string[0];
@@ -415,14 +418,15 @@ namespace TouhouHeartstone
             {
                 foreach (var keyword in oldKeywords)
                 {
-                    card.setProp(keyword, false);
+                    await card.setProp(game, keyword, false);
                 }
             }
-            card.setProp(nameof(ServantCardDefine.keywords), keywords);
+            var result = await card.setProp(game, nameof(ServantCardDefine.keywords), keywords);
             foreach (var keyword in card.getKeywords(game))
             {
-                card.setProp(keyword, true);
+                await card.setProp(game, keyword, true);
             }
+            return result;
         }
         public static string[] getKeywords(this Card card, IGame game)
         {
@@ -444,38 +448,34 @@ namespace TouhouHeartstone
                 return false;
             return keywords.Contains(keyword);
         }
-        public static Task addKeywords(this Card card, IGame game, params string[] keywords)
+        public static Task<ISetPropEventArg> addKeywords(this Card card, IGame game, params string[] keywords)
         {
             string[] oldKeywords = card.getKeywords(game);
             if (oldKeywords == null)
                 oldKeywords = keywords;
             else
                 oldKeywords = oldKeywords.Concat(keywords).Distinct().ToArray();
-            card.setKeywords(game, oldKeywords);
-            return Task.CompletedTask;
+            return card.setKeywords(game, oldKeywords);
         }
-        public static Task<int> removeKeywords(this Card card, IGame game, params string[] keywords)
+        public static Task<ISetPropEventArg> removeKeywords(this Card card, IGame game, params string[] keywords)
         {
             List<string> keywordList = new List<string>(card.getKeywords(game));
-            int count = 0;
             foreach (var keyword in keywords)
             {
                 if (keywordList.Contains(keyword))
                 {
                     keywordList.Remove(keyword);
-                    card.setKeywords(game, keywordList.ToArray());
-                    count++;
                 }
             }
-            return Task.FromResult(count);
+            return card.setKeywords(game, keywordList.ToArray());
         }
         public static int getSpellDamage(this Card card, IGame game)
         {
             return card.getProp<int>(game, nameof(ServantCardDefine.spellDamage));
         }
-        public static void setSpellDamage(this Card card, int value)
+        public static Task<ISetPropEventArg> setSpellDamage(this Card card, IGame game, int value)
         {
-            card.setProp(nameof(ServantCardDefine.spellDamage), value);
+            return card.setProp(game, nameof(ServantCardDefine.spellDamage), value);
         }
         public static int getDamageReduce(this Card card, IGame game)
         {
@@ -484,9 +484,9 @@ namespace TouhouHeartstone
                 return 0;
             return result;
         }
-        public static void setDamageReduce(this Card card, int value)
+        public static Task<ISetPropEventArg> setDamageReduce(this Card card, IGame game, int value)
         {
-            card.setProp(nameof(ServantCardDefine.damageReduce), value);
+            return card.setProp(game, nameof(ServantCardDefine.damageReduce), value);
         }
         public static Task<SilenceEventArg> silence(this IEnumerable<Card> cards, THHGame game)
         {
@@ -496,13 +496,13 @@ namespace TouhouHeartstone
                 cards = arg.cards;
                 foreach (var card in cards)
                 {
-                    card.setProp(nameof(silence), true);
+                    await card.setProp(game, nameof(silence), true);
                     await card.removeBuff(game, card.getBuffs());
                     foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
                     {
-                        effect.onDisable(game, card, null);
+                        await effect.onDisable(game, card, null);
                     }
-                    card.setKeywords(game, new string[0]);
+                    await card.setKeywords(game, new string[0]);
                 }
             });
         }
@@ -555,9 +555,9 @@ namespace TouhouHeartstone
         {
             return card.getProp<string[]>(game, nameof(ServantCardDefine.tags));
         }
-        public static void setTags(this Card card, string[] tags)
+        public static Task<ISetPropEventArg> setTags(this Card card, IGame game, string[] tags)
         {
-            card.setProp(nameof(ServantCardDefine.tags), tags);
+            return card.setProp(game, nameof(ServantCardDefine.tags), tags);
         }
         public static bool isUsable(this Card card, THHGame game, THHPlayer player, out string info)
         {
@@ -716,23 +716,23 @@ namespace TouhouHeartstone
         {
             if (card.define is ServantCardDefine servant)
             {
-                card.setDead(false);
-                card.setCurrentLife(servant.life);
-                card.setReady(false);
-                card.setCost(servant.cost);
-                card.setAttack(servant.attack);
-                card.setLife(servant.life);
-                card.setSpellDamage(servant.spellDamage);
+                await card.setDead(game, false);
+                await card.setCurrentLife(game, servant.life);
+                await card.setReady(game, false);
+                await card.setCost(game, servant.cost);
+                await card.setAttack(game, servant.attack);
+                await card.setLife(game, servant.life);
+                await card.setSpellDamage(game, servant.spellDamage);
                 await card.removeBuff(game, card.getBuffs());
-                card.setKeywords(game, new string[0]);
+                await card.setKeywords(game, new string[0]);
                 foreach (string keyword in servant.keywords)
                 {
                     if (string.IsNullOrEmpty(keyword))
                         continue;
-                    card.setProp(keyword, true);
+                    await card.setProp(game, keyword, true);
                 }
-                card.setProp(nameof(ServantCardDefine.keywords), servant.keywords);
-                card.setProp(nameof(ServantCardDefine.tags), servant.tags);
+                await card.setProp(game, nameof(ServantCardDefine.keywords), servant.keywords);
+                await card.setProp(game, nameof(ServantCardDefine.tags), servant.tags);
             }
         }
         public static async Task resetCard(this IEnumerable<Card> cards, THHGame game)
@@ -757,20 +757,20 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
-        public static Task<AttackEventArg> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
+        public static async Task<AttackEventArg> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
             if (!card.canAttack(game))
             {
                 game.logger.log(card + "无法进行攻击");
-                return Task.FromResult<AttackEventArg>(null);
+                return null;
             }
             if (!card.isAttackable(game, player, target, out var reason))
             {
                 game.logger.log(card + "无法攻击" + target + "，因为" + reason);
-                return Task.FromResult<AttackEventArg>(null);
+                return null;
             }
-            card.setAttackTimes(card.getAttackTimes(game) + 1);
-            return card.attack(game, target);
+            await card.setAttackTimes(game, card.getAttackTimes(game) + 1);
+            return await card.attack(game, target);
         }
         public static Task<AttackEventArg> forceAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
@@ -885,7 +885,7 @@ namespace TouhouHeartstone
                                 {
                                     int leakDamage = damage - armor;
                                     await card.loseArmor(game, armor);
-                                    card.setCurrentLife(card.getCurrentLife(game) - leakDamage);
+                                    await card.setCurrentLife(game, card.getCurrentLife(game) - leakDamage);
                                     game.logger.log(card + "受到" + damage + "点伤害，护甲=>" + card.getArmor(game) + "，生命值=>" + card.getCurrentLife(game));
                                     await onDealKeywords(game, source, card, damage);
                                     arg.infoDic.Add(card, new DamageEventArg.Info(damage, card.getArmor(game), card.getCurrentLife(game)));
@@ -893,7 +893,7 @@ namespace TouhouHeartstone
                             }
                             else
                             {
-                                card.setCurrentLife(card.getCurrentLife(game) - damage);
+                                await card.setCurrentLife(game, card.getCurrentLife(game) - damage);
                                 game.logger.log(card + "受到" + damage + "点伤害，生命值=>" + card.getCurrentLife(game));
                                 await onDealKeywords(game, source, card, damage);
                                 arg.infoDic.Add(card, new DamageEventArg.Info(damage, card.getArmor(game), card.getCurrentLife(game)));
@@ -904,16 +904,15 @@ namespace TouhouHeartstone
                     }
                 }
             });
-            Task onDealKeywords(THHGame g, Card s, Card c, int d)
+            async Task onDealKeywords(THHGame g, Card s, Card c, int d)
             {
                 if (s != null)
                 {
                     if (s.isPoisonous(g) && !g.players.Any(p => p.master == c))
-                        c.setDead(true);
+                        await c.setDead(game, true);
                     if (s.isDrain(g))
-                        return s.getOwner().master.heal(g, d);
+                        await s.getOwner().master.heal(g, d);
                 }
-                return Task.CompletedTask;
             }
         }
 
@@ -974,7 +973,7 @@ namespace TouhouHeartstone
             cards = cards.Where(c => c.getCurrentLife(game) < c.getLife(game));
             if (cards.Count() < 1)
                 return Task.FromResult<HealEventArg>(default);
-            return game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(), value = value }, arg =>
+            return game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(), value = value }, async arg =>
             {
                 cards = arg.cards;
                 value = arg.value;
@@ -982,7 +981,7 @@ namespace TouhouHeartstone
                 {
                     if (card.getCurrentLife(game) + value < card.getLife(game))
                     {
-                        card.setCurrentLife(card.getCurrentLife(game) + value);
+                        await card.setCurrentLife(game, card.getCurrentLife(game) + value);
                         arg.infoDic.Add(card, new HealEventArg.Info()
                         {
                             healedValue = value
@@ -992,7 +991,7 @@ namespace TouhouHeartstone
                     else
                     {
                         int healedValue = card.getLife(game) - card.getCurrentLife(game);
-                        card.setCurrentLife(card.getLife(game));
+                        await card.setCurrentLife(game, card.getLife(game));
                         arg.infoDic.Add(card, new HealEventArg.Info()
                         {
                             healedValue = healedValue
@@ -1000,7 +999,6 @@ namespace TouhouHeartstone
                         game.logger.log(card + "恢复" + healedValue + "点生命值，生命值=>" + card.getCurrentLife(game));
                     }
                 }
-                return Task.CompletedTask;
             });
         }
         public static Task<HealEventArg> heal(this Card card, THHGame game, int value)
@@ -1130,7 +1128,7 @@ namespace TouhouHeartstone
             if (card.getOwner().hand.isFull)
             {
                 game.logger.log(card.getOwner() + "的手牌已满，无法将" + card + "置入手牌");
-                card.setDead(true);
+                await card.setDead(game, true);
             }
             else
             {
@@ -1146,7 +1144,7 @@ namespace TouhouHeartstone
                 if (g.Key.hand.isFull)
                 {
                     game.logger.log(g.Key + "的手牌已满，无法将" + string.Join(",", g) + "置入手牌");
-                    g.setDead(true);
+                    await g.setDead(game, true);
                 }
                 else if (g.Key.hand.count + g.Count() <= g.Key.hand.maxCount)
                 {

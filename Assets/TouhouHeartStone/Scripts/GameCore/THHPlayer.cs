@@ -7,12 +7,6 @@ using TouhouCardEngine.Interfaces;
 using TouhouHeartstone.Builtin;
 namespace TouhouHeartstone
 {
-    public interface IDescribableEventArg : IEventArg
-    {
-        ICard getCard(IGame game, IPlayer viewer);
-        ICard[] getTargets(IGame game, IPlayer viewer);
-        string toString(IGame game, IPlayer viewer);
-    }
     public class THHPlayer : Player
     {
         public Card master { get; }
@@ -320,7 +314,7 @@ namespace TouhouHeartstone
                 return false;
             if (card.define is SkillCardDefine)
                 //使用技能
-                card.setUsed(true);
+                await card.setUsed(game, true);
             await setGem(game, gem - card.getCost(game));
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>
             {
@@ -375,7 +369,7 @@ namespace TouhouHeartstone
         {
             if (this[PILE.ITEM].isFull)
                 await destroyItem(game);
-            item.setCurrentLife(item.getLife(game));
+            await item.setCurrentLife(game, item.getLife(game));
             await hand.moveTo(game, item, this[PILE.ITEM]);
         }
         public Task destroyItem(THHGame game)
@@ -456,12 +450,12 @@ namespace TouhouHeartstone
                     return player.name + "发动" + card.getFormatString() + "的效果，目标：" + string.Join("，", targets.Select(t => t is Card c ? c.getFormatString() : t.ToString()));
             }
         }
-        public async Task<bool> tryEnterField(THHGame game, Pile from, Card card, int position)
+        public Task<EnterFieldEventArg> tryEnterField(THHGame game, Pile from, Card card, int position)
         {
             if (field.count >= field.maxCount)//没位置了
-                return false;
-            await game.triggers.doEvent(new EnterFieldEventArg() { player = this, from = from, card = card, position = position }, onEnterField);
-            Task onEnterField(EnterFieldEventArg arg)
+                return null;
+            return game.triggers.doEvent(new EnterFieldEventArg() { player = this, from = from, card = card, position = position }, onEnterField);
+            async Task onEnterField(EnterFieldEventArg arg)
             {
                 THHPlayer player = arg.player;
                 from = arg.from;
@@ -472,20 +466,18 @@ namespace TouhouHeartstone
                 else
                     game.logger.log(arg.player + "将" + arg.card + "置入战场，位于" + arg.position);
                 if (from != null)
-                    from.moveTo(game, arg.card, arg.player.field, arg.position);
+                    await from.moveTo(game, arg.card, arg.player.field, arg.position);
                 else
-                    player.field.insert(game, card, position);
+                    await player.field.insert(game, card, position);
                 if (card.define is ServantCardDefine servant)
                 {
-                    card.setDead(false);
-                    card.setCurrentLife(card.getLife(game));
-                    card.setReady(false);
+                    await card.setDead(game, false);
+                    await card.setCurrentLife(game, card.getLife(game));
+                    await card.setReady(game, false);
                 }
                 arg.attack = card.getAttack(game);
                 arg.life = card.getLife(game);
-                return Task.CompletedTask;
             }
-            return true;
         }
         public class EnterFieldEventArg : EventArg, IDescribableEventArg
         {

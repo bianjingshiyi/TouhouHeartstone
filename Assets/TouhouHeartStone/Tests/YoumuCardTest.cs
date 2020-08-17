@@ -121,7 +121,7 @@ namespace Tests
             oppo.cmdUse(game, oppo.hand.First(), 1);
             oppo.cmdTurnEnd(game);
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
-            you.master.setAttack(5);
+            you.master.setAttack(game, 5);
             you.cmdUse(game, you.hand.getCard<Roukanken>());//使用楼观剑
             Assert.IsInstanceOf<Roukanken>(you.item.define);
             you.cmdAttack(game, you.master, target: oppo.field[0]);
@@ -144,7 +144,7 @@ namespace Tests
             oppo.cmdUse(game, oppo.hand.First(), 1);
             oppo.cmdTurnEnd(game);
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 5);
-            you.master.setAttack(5);
+            you.master.setAttack(game, 5);
             you.cmdUse(game, you.hand.getCard<Roukanken>());
             Assert.IsInstanceOf<Roukanken>(you.item.define);
             you.cmdUse(game, you.hand.getCard<YoukaiSmith>());
@@ -233,7 +233,7 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<TestWeapon>());
             for (int i = 0; i < oppo.field.count; i++)
             {
-                oppo.field[i].setCurrentLife(i + 3);
+                oppo.field[i].setCurrentLife(game, i + 3);
             }
             you.cmdUse(game, you.hand.getCard<CherryBlossomFlashing>());
             Assert.AreEqual(4, oppo.field.count);

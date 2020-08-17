@@ -648,7 +648,7 @@ namespace TouhouHeartstone.Builtin
                         new GeneratedBuff(ID,new AttackModifier(-3),
                         new RemoveBuffBefore<THHGame.TurnStartEventArg>(PILE.FIELD,ID)));
                     if(target.getAttack(game)<=0)
-                        target.setDead(true);
+                        await target.setDead(game,true);
                 }
                 await Patchouli.tryMix(game, card);
             })
@@ -906,7 +906,7 @@ namespace TouhouHeartstone.Builtin
                     await card.addBuff(g1, new GeneratedBuff(ID, new CostModifier(-2)));
                 c1.getOwner().setProp(nameof(Asthma),c1.getOwner().getProp<int>(nameof(Asthma))+1);
                 Card asthma = g1.createCard<Asthma>();
-                asthma.setProp("damage",c1.getOwner().getProp<int>(nameof(Asthma)));
+                await asthma.setProp(g1,"damage",c1.getOwner().getProp<int>(nameof(Asthma)));
                 await c1.getOwner().shuffleCardToDeck(g1, asthma);
                 await c1.getOwner().addCardToHand<MultiCast>(g1);
             })

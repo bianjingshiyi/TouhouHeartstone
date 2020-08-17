@@ -60,8 +60,7 @@ namespace TouhouHeartstone.Builtin
                 card = arg.card;
                 value = arg.value;
                 game.logger.log(card + "蓄力 => " + value);
-                card.setProp(IS_PREHEATED, value);
-                return Task.CompletedTask;
+                return card.setProp(game, IS_PREHEATED, value);
             });
         }
     }
@@ -235,7 +234,7 @@ namespace TouhouHeartstone.Builtin
                     {
                         if(a.target.isDead(g))
                         {
-                            c.getOwner().master.setAttackTimes(c.getOwner().master.getAttackTimes(g)-1);
+                            return c.getOwner().master.setAttackTimes(game,c.getOwner().master.getAttackTimes(g)-1);
                         }
                         return Task.CompletedTask;
                     })));

@@ -74,7 +74,7 @@ namespace TouhouHeartstone
             //if (e.name is "onInitReplace")
             //{
             //    //玩家准备完毕
-            //    e.getProp<Player>("player").setProp("prepared", true);
+            //    e.getProp<Player>("player").setProp(game, "prepared", true);
             //    //判断是否所有玩家都准备完毕
             //    if (engine.getPlayers().All(p => { return p.getProp<bool>("prepared"); }))
             //    {

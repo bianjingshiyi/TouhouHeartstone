@@ -105,18 +105,18 @@ namespace Tests
         public void subAttackBuffApplyAndRevertTest()
         {
             Card card = new Card(0);
-            card.setAttack(2);
+            card.setAttack(null, 2);
             TestBuff[] buffs = new TestBuff[3];
             for (int i = 0; i < buffs.Length; i++)
             {
                 buffs[i] = new TestBuff(new AttackModifier(-2));
-                card.addBuff(null, buffs[i]);
+                _ = card.addBuff(null, buffs[i]);
             }
             Assert.AreEqual(0, card.getAttack(null));
 
             for (int i = 0; i < buffs.Length; i++)
             {
-                card.removeBuff(null, buffs[i]);
+                _ = card.removeBuff(null, buffs[i]);
             }
             Assert.AreEqual(2, card.getAttack(null));
         }
@@ -131,15 +131,15 @@ namespace Tests
                 logger = new UnityLogger()
             };
             Card card = new Card(0);
-            card.setLife(1);
-            card.setCurrentLife(1);
+            card.setLife(game, 1);
+            card.setCurrentLife(game, 1);
             TestBuff haloBuff = new TestBuff(new LifeModifier(1));
-            card.addBuff(game, haloBuff);
+            _ = card.addBuff(game, haloBuff);
             TestBuff setBuff = new TestBuff(new LifeModifier(1, true));
-            card.addBuff(game, setBuff);
+            _ = card.addBuff(game, setBuff);
             //刷新Buff
-            card.removeBuff(game, haloBuff);
-            card.addBuff(game, haloBuff);
+            _ = card.removeBuff(game, haloBuff);
+            _ = card.addBuff(game, haloBuff);
 
             Assert.AreEqual(2, card.getCurrentLife(game));
             Assert.AreEqual(2, card.getLife(game));
@@ -155,20 +155,20 @@ namespace Tests
                 logger = new UnityLogger()
             };
             Card card = new Card(0);
-            card.setLife(5);
-            card.setCurrentLife(5);
+            card.setLife(game, 5);
+            card.setCurrentLife(game, 5);
             TestBuff buff = new TestBuff(new LifeModifier(3, true));
-            card.addBuff(game, buff);
+            _ = card.addBuff(game, buff);
             Assert.AreEqual(3, card.getLife(game));
             Assert.AreEqual(3, card.getCurrentLife(game));
-            card.removeBuff(game, buff);
+            _ = card.removeBuff(game, buff);
             Assert.AreEqual(5, card.getLife(game));
             Assert.AreEqual(5, card.getCurrentLife(game));
-            card.addBuff(game, buff);
+            _ = card.addBuff(game, buff);
             Assert.AreEqual(3, card.getLife(game));
             Assert.AreEqual(3, card.getCurrentLife(game));
             //不满血
-            card.setCurrentLife(1);
+            card.setCurrentLife(game, 1);
             card.removeBuff(game, buff);
             Assert.AreEqual(5, card.getLife(game));
             Assert.AreEqual(1, card.getCurrentLife(game));

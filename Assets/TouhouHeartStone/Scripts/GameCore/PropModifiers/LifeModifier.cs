@@ -21,33 +21,30 @@ namespace TouhouHeartstone
             int changedValue = value - this.value;
             await base.setValue(game, card, value);
             if (isSet)
-                card.setCurrentLife(value);
+                await card.setCurrentLife(game, (value));
             else
             {
                 int life = card.getLife(game);
                 if (resetCurrentLife)
                 {
                     game?.logger?.log("由于" + card + "没有受伤，修正值变为" + value + "后重置生命值为" + life);
-                    card.setCurrentLife(life);
+                    await card.setCurrentLife(game, life);
                 }
                 else if (card.getCurrentLife(game) > life)
-                    card.setCurrentLife(life);
+                    await card.setCurrentLife(game, life);
                 else
                 {
-                    card.setCurrentLife(card.getCurrentLife(game) + changedValue);
+                    await card.setCurrentLife(game, (card.getCurrentLife(game) + changedValue));
                     game?.logger?.log("由于" + card + "受伤了，修正值变为" + value + "之后生命值变为" + card.getCurrentLife(game));
                 }
             }
         }
-        public override void beforeAdd(IGame game, Card card)
-        {
-        }
-        public override void afterAdd(IGame game, Card card)
+        public override Task afterAdd(IGame game, Card card)
         {
             if (isSet)
-                card.setCurrentLife(value);
+                return card.setCurrentLife(game, (value));
             else
-                card.setCurrentLife(card.getCurrentLife(game) + value);
+                return card.setCurrentLife(game, (card.getCurrentLife(game) + value));
         }
         public override int calc(IGame game, Card card, int value)
         {
@@ -57,22 +54,26 @@ namespace TouhouHeartstone
                 return value + this.value;
         }
         bool resetCurrentLife { get; set; } = false;
-        public override void beforeRemove(IGame game, Card card)
+        public override Task beforeRemove(IGame game, Card card)
         {
             resetCurrentLife = card.getCurrentLife(game) >= card.getLife(game);
+            return base.beforeRemove(game, card);
         }
-        public override void afterRemove(IGame game, Card card)
+        public override Task afterRemove(IGame game, Card card)
         {
             int life = card.getLife(game);
             if (resetCurrentLife)
             {
                 game?.logger?.log("由于" + card + "没有受伤，在移除" + this + "之后重置生命值为" + life);
-                card.setCurrentLife(life);
+                return card.setCurrentLife(game, life);
             }
             else if (card.getCurrentLife(game) > life)
-                card.setCurrentLife(life);
+                return card.setCurrentLife(game, life);
             else
+            {
                 game?.logger?.log("由于" + card + "受伤了，在移除" + this + "之后生命值仍为" + card.getCurrentLife(game));
+                return Task.CompletedTask;
+            }
         }
         public override PropModifier clone()
         {
