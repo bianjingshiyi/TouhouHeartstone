@@ -89,7 +89,25 @@ namespace Tests
         [Test]
         public void StealthTest()
         {
-            THHGame game = GameInitWithoutPlayer<DefaultServant, StealthServant>(29, 1);
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(StealthServant.ID, 1));
+            game.skipUntilCanUse(oppo, game.getDefine<DefaultServant>());
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse(you, game.getDefine<StealthServant>(), game.getDefine<DefaultServant>());
+            you.cmdUse(game, you.hand.getCard<StealthServant>(),0);
+            Assert.True(you.field.getCard<StealthServant>().isStealth(game));//是否为潜行随从
+            you.cmdUse(game, you.hand.getCard<DefaultServant>(),1);
+            you.cmdTurnEnd(game);
+            oppo.cmdAttack(game, oppo.field[0], you.field[0]);
+            Assert.AreEqual(3, you.field[0].getCurrentLife(game));
+            oppo.cmdAttack(game, oppo.field[0], you.field[1]);
+            Assert.AreEqual(6, you.field[1].getCurrentLife(game));
+            oppo.cmdTurnEnd(game);
+            you.cmdAttack(game, you.field[0], oppo.field[0]);
+            Assert.False(you.field.getCard<StealthServant>().isStealth(game));//是否为潜行随从
+            game.Dispose();
+
+            /*THHGame game = GameInitWithoutPlayer<DefaultServant, StealthServant>(29, 1);
 
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[1], 0);
@@ -116,7 +134,7 @@ namespace Tests
             //Assert.True(game.sortedPlayers[1].field[1].isStealth(game));
             //game.sortedPlayers[1].cmdTurnEnd(game);
             //Assert.AreEqual(29, game.sortedPlayers[0].master.getCurrentLife(game));     //潜行随从在回合结束时对对方master造成伤害
-            //Assert.False(game.sortedPlayers[1].field[1].isStealth(game));               //潜行消失
+            //Assert.False(game.sortedPlayers[1].field[1].isStealth(game));               //潜行消失*/
         }
 
         /// <summary>
