@@ -6077,7 +6077,7 @@ MonoBehaviour:
     startGem: 0
   _mainUI: {fileID: 0}
   _ui: {fileID: 0}
-  _useDefaultDeck: 1
+  _useDefaultDeck: 0
   _defaultDeck:
     name: DefaultPatchouli
     master: 4194304
@@ -6122,7 +6122,7 @@ MonoBehaviour:
       count: 0
     - id: 8196
       count: 0
-  _useTestDeck: 1
+  _useTestDeck: 0
   _testDeck:
     name: TestPatchouli
     master: 5242880
