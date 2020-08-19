@@ -308,6 +308,23 @@ namespace Tests
             Assert.True(!you.hand.Any(c => c.define is Hakurouken));
             Assert.AreEqual(2, you.grave.Where(c => c.define is Hakurouken).Count());
         }
+        [Test]
+        public void caseCoinRoukankenTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo, new GameOption()
+            {
+                shuffle = false,
+                sortedPlayers = new int[] { 2, 1 }
+            }, new KeyValuePair<int, int>(Roukanken.ID, 30));
+            game.skipUntilYourTurn(you);
+            you.cmdUse(game, you.hand.getCard<LuckyCoin>());
+            you.cmdUse(game, you.hand.getCard<Roukanken>());
+            Assert.True(you.master.canAttack(game));
+            Assert.AreEqual(3, you.master.getAttack(game));
+            you.cmdAttack(game, you.master, oppo.master);
+            Assert.AreEqual(27, oppo.master.getCurrentLife(game));
+            Assert.AreEqual(1, you.item.getCurrentLife(game));
+        }
     }
 }
 

@@ -102,7 +102,9 @@ namespace Game
                     else
                         UberDebug.LogErrorChannel("Game", "游戏因未知异常退出");
                     quitGame();
+                    return;
                 }
+                eventCache.poll();
             }
         }
 
@@ -277,11 +279,12 @@ namespace Game
             getManager<TableManager>().setGame(game, localPlayer);
             _mainUI.Game.Table.setGame(game, localPlayer);
 
-            game.triggers.onEventBefore += onEventBefore;
-            game.triggers.onEventAfter += onEventAfter;
+            game.triggers.onEventBefore += t1 => eventCache.cache(onEventBefore, t1);
+            game.triggers.onEventAfter += t1 => eventCache.cache(onEventAfter, t1);
             ui.LogScrollView.shrink();
             ui.LogScrollView.LogList.clearItems();
         }
+        ActionEventCache eventCache { get; } = new ActionEventCache();
         void onEventBefore(IEventArg obj)
         {
             switch (obj)
@@ -413,7 +416,7 @@ namespace Game
                     item.IconImage.sprite = item.damageIcon;
                     item.Text.text = "-" + damage.infoDic.First().Value.damagedValue;
                     item.Image.sprite = getManager<TableManager>().getSkin(damage.infoDic.First().Key).image;
-                    item.BorderImage.color = damage.source.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
+                    item.BorderImage.color = damage.infoDic.First().Key.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHCard.SetArmorEventArg armor:
                     item.IconImage.sprite = item.armorIcon;

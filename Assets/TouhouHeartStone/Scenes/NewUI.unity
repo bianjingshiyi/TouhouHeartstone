@@ -6070,7 +6070,7 @@ MonoBehaviour:
   _useTimeAsRandomSeed: 1
   _option:
     randomSeed: 1455466707
-    sortedPlayers: 
+    sortedPlayers: 0200000001000000
     shuffle: 1
     timeoutForInitReplace: 30
     timeoutForTurn: 75

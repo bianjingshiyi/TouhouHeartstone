@@ -26,15 +26,24 @@ namespace UI
         /// <returns></returns>
         public static bool update(Animator animator, string animName, ref bool isPlayed, ref bool isFinished)
         {
-            if (animator == null)
-                return true;
             if (string.IsNullOrEmpty(animName))
                 return true;
+            if (animator == null)
+                return true;
+            if (!animator.isActiveAndEnabled)
+            {
+                UberDebug.LogErrorChannel(animator, "Animation", animator + "被禁用，无法播放动画" + animName);
+            }
+            if (!animator.gameObject.activeInHierarchy)
+            {
+                UberDebug.LogErrorChannel(animator, "Animation", animator + "的GameObject被禁用，无法播放动画" + animName);
+                return true;
+            }
             if (isFinished)
                 return true;
             if (!hasAnim(animator, animName, out var layer))
             {
-                Debug.LogError(animator + "中不存在动画状态" + animName, animator);
+                UberDebug.LogErrorChannel(animator, "Animation", animator + "中不存在动画状态" + animName);
                 return true;
             }
             if (!isPlayed)

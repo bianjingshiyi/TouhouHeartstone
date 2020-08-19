@@ -111,6 +111,7 @@ namespace Game
                             return false;
                         table.ui.SelfHandList.removeItem(hand);
                     }
+                    table.setMaster(table.ui.SelfMaster, table.player.master);
                     if (tryTargetedAnim(table, table.ui.SelfItem, eventArg))
                         return false;
                 }
@@ -124,6 +125,7 @@ namespace Game
                             return false;
                         table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
                     }
+                    table.setMaster(table.ui.EnemyMaster, table.game.getOpponent(table.player).master);
                     if (tryTargetedAnim(table, table.ui.EnemyItem, eventArg))
                         return false;
                 }
