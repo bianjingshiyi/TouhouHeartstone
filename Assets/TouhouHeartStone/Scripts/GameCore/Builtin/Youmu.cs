@@ -99,12 +99,13 @@ namespace TouhouHeartstone.Builtin
         {
             int attack;
             if (!Youmu.isPreHeated(game, card))
-                attack = 2;
+                await card.getOwner().master.addBuff(game,
+                    new GeneratedBuff(ID, new AttackModifier(2),
+                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
             else
-                attack = 4;
-            await card.getOwner().master.addBuff(game,
-                new GeneratedBuff(ID, new AttackModifier(attack),
-                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+                await card.getOwner().master.addBuff(game,
+                    new GeneratedBuff(ID, new AttackModifier(3),
+                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
         }
     }
     /// <summary>
@@ -333,7 +334,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SERVANT | 0x013;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
-        public override int attack { get; set; } = 3;
+        public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -428,14 +429,6 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            //new NoTargetEffect(async(g1,c1)=>
-            //{
-            //    if(c1.getOwner()[PileName.ITEM].isFull)
-            //    {
-            //        await c1.getOwner().item.addBuff(g1, new GeneratedBuff(ID, new LifeModifier(1)));
-            //        await c1.die(g1);
-            //    }
-            //})
             new THHEffectBefore<THHPlayer.UseEventArg>(PILE.HAND,
                 (g1,c1,a1)=>
                 {

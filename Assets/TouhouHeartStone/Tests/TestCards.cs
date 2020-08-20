@@ -551,4 +551,40 @@ namespace Tests
             },PileFlag.both | PileFlag.character)
         };
     }
+    public class Lightspawn : ServantCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x017;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 0;
+        public override int life { get; set; } = 5;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+
+        };
+        class PropModifyPassiveEffect : PassiveEffect
+        {
+            public override string[] piles { get; }
+            public PropModifier[] modifiers { get; }
+            public PropModifyPassiveEffect(PileFlag pile, params PropModifier[] modifiers)
+            {
+                piles = pile.getPiles();
+                this.modifiers = modifiers;
+            }
+            public override async Task onEnable(THHGame game, Card card, Buff buff)
+            {
+                foreach (var modifier in modifiers)
+                {
+                    await card.addModifier(game, modifier);
+                }
+            }
+            public override async Task onDisable(THHGame game, Card card, Buff buff)
+            {
+                foreach (var modifier in modifiers)
+                {
+                    await card.removeModifier(game, modifier);
+                }
+            }
+        }
+    }
 }

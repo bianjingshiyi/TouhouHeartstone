@@ -1106,7 +1106,7 @@ namespace TouhouHeartstone
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return string.Join("，", infoDic.Keys.Select(c => c.getFormatString()) + "死亡");
+                return string.Join("，", infoDic.Keys.Select(c => c.getFormatString())) + "死亡";
             }
 
             public class Info
