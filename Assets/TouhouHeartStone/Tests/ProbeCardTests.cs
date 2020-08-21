@@ -565,6 +565,30 @@ namespace Tests
          
             game.Dispose();
         }
+
+        [Test]
+        public void ProbeFastReload()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<FastReload>(), 3)));
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            game.skipUntilHasGem(you, 3);
+            you.cmdUse(game, you.skill,targets:oppo.field[0]);
+            Assert.True(you.skill.isUsed(game));
+            you.cmdUse(game, you.hand.getCard<FastReload>(), targets: oppo.master);
+            Assert.False(you.skill.isUsed(game));
+            you.cmdUse(game, you.skill,targets:oppo.field[0]);
+
+            game.Dispose();
+        }
     }
 
     
