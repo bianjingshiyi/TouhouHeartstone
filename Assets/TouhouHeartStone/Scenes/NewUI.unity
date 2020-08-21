@@ -6069,8 +6069,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _useTimeAsRandomSeed: 1
   _option:
-    randomSeed: 1455466707
-    sortedPlayers: 0200000001000000
+    randomSeed: 0
+    sortedPlayers: 
     shuffle: 1
     timeoutForInitReplace: 30
     timeoutForTurn: 75
@@ -7227,7 +7227,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _editableAnims: []
   _animationQueue: []
-  _table: {fileID: 1004327311}
   _skillDragThreshold: 75
   _moveToFieldCurve:
     serializedVersion: 2
@@ -7284,6 +7283,7 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   _cardPrefab: {fileID: 0}
   _tipBoxOffset: {x: 20, y: 20}
+  _table: {fileID: 1004327311}
   _canControl: 1
   _usingPosition: 0
   _isSelectingTarget: 0

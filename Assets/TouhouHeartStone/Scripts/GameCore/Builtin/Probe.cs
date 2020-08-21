@@ -874,9 +874,5 @@ namespace TouhouHeartstone.Builtin.Proble
                  }
             )
         };
-
-       
-
-
     }
 }
