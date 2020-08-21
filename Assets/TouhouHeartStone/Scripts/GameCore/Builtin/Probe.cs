@@ -848,9 +848,7 @@ namespace TouhouHeartstone.Builtin.Proble
     }
 
     /// <summary>
-    /// 击剑教头
-    /// 2/2/2，战吼：在本回合英雄技能可以使用2次
-    /// 征战无数的传奇探机最终还是逃不过死亡的命运：被投入坟头枢纽
+    /// 考达拉幼龙
     /// </summary>
     [IgnoreCardDefine]
     public class FencingCoach : ServantCardDefine
@@ -868,21 +866,12 @@ namespace TouhouHeartstone.Builtin.Proble
             new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
                 (g,c,a) =>
                 {
-                    return a.player == c.getOwner() && c.isSkill();
+                    return a.player == c.getOwner() && a.card.isSkill();
                 },null,(g,c,a)=>
-                {
-                    int i = 0;
-                    if (i < 2)
-                    {
+                { 
                         return c.getOwner().skill.setUsed(g,false);
-                        i++;
-                    }
-                    else
-                    {
-                        return Task.CompletedTask;;
-                    }
                    
-                }
+                 }
             )
         };
 

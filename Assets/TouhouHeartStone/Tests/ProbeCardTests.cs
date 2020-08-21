@@ -589,6 +589,32 @@ namespace Tests
 
             game.Dispose();
         }
+
+        [Test]
+        public void ProbeFencingCoachTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<FencingCoach>(), 3)));
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilHasGem(you, 5);
+            you.cmdUse(game, you.hand.getCard<FencingCoach>());
+            Assert.False(you.skill.isUsed(game));
+            you.cmdUse(game, you.skill, targets: oppo.field[0]);
+            Assert.False(you.skill.isUsed(game));
+            you.cmdUse(game, you.skill, targets: oppo.field[0]);
+            Assert.False(you.skill.isUsed(game));
+
+            game.Dispose();
+        }
     }
 
     
