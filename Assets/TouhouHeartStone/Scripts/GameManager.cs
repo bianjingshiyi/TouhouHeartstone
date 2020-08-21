@@ -452,6 +452,7 @@ namespace Game
             {
                 game.Dispose();
                 game = null;
+                getManager<TableManager>().setGame(null, null);
                 _mainUI.display(_mainUI.MainMenu);
                 gameTask = null;
                 onGameEnd?.Invoke();

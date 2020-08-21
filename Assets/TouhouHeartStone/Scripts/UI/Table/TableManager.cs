@@ -15,15 +15,6 @@ namespace Game
 {
     public partial class TableManager : Manager
     {
-        public THHGame game { get; private set; } = null;
-        public THHPlayer player { get; private set; } = null;
-        [SerializeField]
-        Table _table;
-        public Table ui
-        {
-            get { return _table; }
-            set { _table = value; }
-        }
         [Header("Config")]
         [SerializeField]
         float _skillDragThreshold = 75;
@@ -39,6 +30,16 @@ namespace Game
         [SerializeField]
         Vector2 _tipBoxOffset = new Vector2(20, 20);
         [Header("State")]
+        [SerializeField]
+        Table _table;
+        public Table ui
+        {
+            get { return _table; }
+            set { _table = value; }
+        }
+        public THHGame game { get; private set; } = null;
+        public THHPlayer player { get; private set; } = null;
+        ActionEventCache eventCache { get; } = new ActionEventCache();
         [SerializeField]
         bool _canControl = true;
         /// <summary>
@@ -123,6 +124,9 @@ namespace Game
                     }
                 }
             }
+            //游戏事件处理
+            eventCache.poll();
+            //动画
             updateAnim();
         }
         /// <summary>
@@ -174,24 +178,29 @@ namespace Game
             ui.Discover.hide();
             ui.PilePanel.hide();
             ui.TipBox.hide();
+            eventCache.clear();
             _animationQueue.Clear();
 
             if (game != null)
             {
-                game.triggers.onEventBefore -= onEventBefore;
-                game.triggers.onEventAfter -= onEventAfter;
-                game.answers.onRequest -= onRequest;
-                game.answers.onResponse -= onResponse;
+                game.triggers.onEventBefore -= onEventBeforeHandler;
+                game.triggers.onEventAfter -= onEventAfterHandler;
+                game.answers.onRequest -= onRequestHandler;
+                game.answers.onResponse -= onResponseHandler;
             }
             this.game = game;
             if (game != null)
             {
-                game.triggers.onEventBefore += onEventBefore;
-                game.triggers.onEventAfter += onEventAfter;
-                game.answers.onRequest += onRequest;
-                game.answers.onResponse += onResponse;
+                game.triggers.onEventBefore += onEventBeforeHandler;
+                game.triggers.onEventAfter += onEventAfterHandler;
+                game.answers.onRequest += onRequestHandler;
+                game.answers.onResponse += onResponseHandler;
             }
             this.player = player;
+        }
+        void onRequestHandler(IRequest request)
+        {
+            eventCache.cache(onRequest, request);
         }
         /// <summary>
         /// 游戏核心Request对应处理
@@ -213,6 +222,10 @@ namespace Game
             else if (!(obj is FreeActRequest))
                 UberDebug.LogWarningChannel("UI", "没有与" + obj + "相应的动画");
         }
+        void onResponseHandler(IResponse response)
+        {
+            eventCache.cache(onResponse, response);
+        }
         void onResponse(IResponse response)
         {
             if (response.playerId != player.id)
@@ -226,6 +239,10 @@ namespace Game
                     break;
             }
         }
+        void onEventBeforeHandler(IEventArg arg)
+        {
+            eventCache.cache(onEventBefore, arg);
+        }
         /// <summary>
         /// 事件前处理
         /// </summary>
@@ -235,7 +252,7 @@ namespace Game
             UIAnimation anim;
             switch (arg)
             {
-                case TouhouCardEngine.Card.AddModiEventArg addMod:
+                case Card.AddModiEventArg addMod:
                     anim = new AddModiAnim() { eventArg = addMod };
                     break;
                 default:
@@ -244,6 +261,10 @@ namespace Game
             }
             if (anim != null)
                 addAnim(anim);
+        }
+        void onEventAfterHandler(IEventArg arg)
+        {
+            eventCache.cache(onEventAfter, arg);
         }
         /// <summary>
         /// 事件后处理
