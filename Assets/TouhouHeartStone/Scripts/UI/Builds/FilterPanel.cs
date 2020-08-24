@@ -157,8 +157,25 @@ namespace UI
             onFilterConditionChange?.Invoke();
         }
 
+        public void OnEnable()
+        {
+            ResetCondition();
+        }
+
+        public void ResetCondition()
+        {
+            DropdownCostDropdownLight.asDropdown.value = 0;
+            DropdownRareDropdownLight.asDropdown.value = 0;
+            DropdownCharacterDropdownLight.asDropdown.value = 0;
+            DropdownTypeDropdownLight.asDropdown.value = 0;
+            InputField.text = "";
+        }
+
         public int sortCompareMethod(CardDefine a, CardDefine b)
         {
+            if (a == null) return 1;
+            if (b == null) return -1;
+
             switch (sortMethod)
             {
                 default:
