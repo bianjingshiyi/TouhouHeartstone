@@ -304,13 +304,12 @@ namespace UI
                     item.setRemainText(0, card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
                     cardItemList.Add(new CardItem() { buildItem = item, define = card, skin = skin });
                     item.Card.setCard(card, skin);
-                    UberDebug.LogChannel("UI", "添加卡" + card + "列表项目");
                 }
                 else
                     UberDebug.LogErrorChannel("UI", "无法找到" + card + "的皮肤");
-
-                BuildCardList.sortItems(sortCompareMethod);
             }
+
+            BuildCardList.sortItems(sortCompareMethod);
         }
 
         private void reloadCardList()
