@@ -42,7 +42,18 @@ namespace TouhouHeartstone.Builtin.Proble
 
         }
 
-
+        
+        public static bool isInjured(IGame game,Card card)
+        {
+            if (card.getLife(game) < card.define.getLife())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
     }
     /// <summary>
@@ -877,7 +888,7 @@ namespace TouhouHeartstone.Builtin.Proble
     }
 
     /// <summary>
-    /// 爹
+    /// 爹(未完成)
     /// 8/4/9,冲锋，受伤时+6攻
     /// </summary>
     [IgnoreCardDefine]
@@ -897,4 +908,35 @@ namespace TouhouHeartstone.Builtin.Proble
         };
     }
 
+    /// <summary>
+    /// 伪奥秘：镜像实体
+    /// 1/1/1,当对手打出一张随从后，召唤它的复制，然后送自己进墓地
+    /// </summary>
+    [IgnoreCardDefine]
+    public class Mirror : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CATEGORY.SERVANT | 0x031;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;//随从的攻击力
+        public override int life { get; set; } = 1;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        // public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE, KEYWORD.CHARGE };//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+                                                      (g, c, a) =>
+                                                      {
+                                                          return a.player == g.getOpponent(c.getOwner()) && a.card.isServant();
+                                                      },null,
+                                                      (g, c, a) =>
+                                                      {
+                                                          c.getOwner().createToken(g,g.getCardDefine(a.card.define.id));
+                                                          c.setDead(g,true);
+                                                          g.updateDeath();
+                                                          return Task.CompletedTask;
+                                                      })
+        };
+    }
 }
