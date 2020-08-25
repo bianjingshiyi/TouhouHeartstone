@@ -466,16 +466,16 @@ namespace TouhouHeartstone
                     game.logger.log(arg.player + "将" + arg.card + "从" + arg.from + "置入战场，位于" + arg.position);
                 else
                     game.logger.log(arg.player + "将" + arg.card + "置入战场，位于" + arg.position);
-                if (from != null)
-                    await from.moveTo(game, arg.card, arg.player.field, arg.position);
-                else
-                    await player.field.insert(game, card, position);
                 if (card.define is ServantCardDefine servant)
                 {
                     await card.setDead(game, false);
                     await card.setCurrentLife(game, card.getLife(game));
                     await card.setReady(game, false);
                 }
+                if (from != null)
+                    await from.moveTo(game, arg.card, arg.player.field, arg.position);
+                else
+                    await player.field.insert(game, card, position);
                 arg.attack = card.getAttack(game);
                 arg.life = card.getLife(game);
             }

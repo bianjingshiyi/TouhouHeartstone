@@ -148,11 +148,7 @@ namespace Game
                     if (_targetedAnim == null)
                     {
                         _targetedAnim = new ProjectileAnimation(
-                            UObject.Instantiate(
-                                skin.projectile,
-                                sourceActor.transform.position,
-                                Quaternion.identity,
-                                table.ui.FieldsImage.transform),
+                            table.createProjectile(skin.projectile, sourceActor.rectTransform, targetActor.rectTransform),
                             targetActor);
                     }
                     if (!_targetedAnim.update(table))

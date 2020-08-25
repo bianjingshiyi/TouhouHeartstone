@@ -875,4 +875,26 @@ namespace TouhouHeartstone.Builtin.Proble
             )
         };
     }
+
+    /// <summary>
+    /// 爹
+    /// 8/4/9,冲锋，受伤时+6攻
+    /// </summary>
+    [IgnoreCardDefine]
+    public class Father : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CATEGORY.SERVANT | 0x030;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 8;
+        public override int attack { get; set; } = 4;//随从的攻击力
+        public override int life { get; set; } = 9;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        // public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE , KEYWORD.CHARGE };//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            
+        };
+    }
+
 }
