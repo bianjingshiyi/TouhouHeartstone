@@ -560,7 +560,7 @@ namespace Tests
         public override int life { get; set; } = 5;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-
+            new PropModifyPassiveEffect(PileFlag.field, new PropHook<int>(PROPERTY.ATTACK,PROPERTY.CURRENT_LIFE))
         };
         class PropModifyPassiveEffect : PassiveEffect
         {

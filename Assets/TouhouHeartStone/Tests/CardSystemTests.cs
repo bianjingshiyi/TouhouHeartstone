@@ -356,5 +356,19 @@ namespace Tests
             Assert.AreEqual(2, you.grave.count);
             Assert.AreEqual(3, you.item.getCurrentLife(game));
         }
+        [Test]
+        public void lightspawnTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Lightspawn.ID, 1));
+            game.skipUntilCanUse<Lightspawn>(you);
+            you.cmdUse(game, you.hand.getCard<Lightspawn>());
+            Card lightspawn = you.field.getCard<Lightspawn>();
+            Assert.AreEqual(5, lightspawn.getAttack(game));
+            lightspawn.damage(game, null, 2);
+            Assert.AreEqual(3, lightspawn.getAttack(game));
+            lightspawn.heal(game, 1);
+            Assert.AreEqual(4, lightspawn.getAttack(game));
+        }
     }
 }

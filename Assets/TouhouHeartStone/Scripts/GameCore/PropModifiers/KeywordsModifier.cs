@@ -5,19 +5,18 @@ namespace TouhouHeartstone
 {
     public class KeywordsModifier : PropModifier<string[]>
     {
-        public override string propName { get; } = PROPERTY.KEYWORDS;
         public string[] keywords { get; }
         public enum ModifyType
         {
             add, remove, set
         }
         public ModifyType modifyType { get; }
-        public KeywordsModifier(ModifyType modifyType, params string[] keywords)
+        public KeywordsModifier(ModifyType modifyType, params string[] keywords) : base(PROPERTY.KEYWORDS, keywords)
         {
             this.modifyType = modifyType;
             this.keywords = keywords;
         }
-        protected KeywordsModifier(KeywordsModifier origin)
+        protected KeywordsModifier(KeywordsModifier origin) : base(origin)
         {
             keywords = origin.keywords;
             modifyType = origin.modifyType;

@@ -11,6 +11,7 @@ using System.Linq;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Card = TouhouCardEngine.Card;
+using BJSYGameCore.UI;
 namespace Game
 {
     public partial class TableManager : Manager
@@ -1466,6 +1467,15 @@ namespace Game
         void onGravePointerExit(UI.Deck deck, PointerEventData pointer)
         {
             ui.TipBox.hide();
+        }
+        [SerializeField]
+        List<Projectile> _projectileList = new List<Projectile>();
+        public Projectile createProjectile(Projectile prefab, RectTransform from, RectTransform to)
+        {
+            Projectile projectile = Instantiate(prefab, from.position, Quaternion.LookRotation(to.position - from.position, Vector3.forward), to.parent);
+            projectile.transform.SetSiblingIndex(to.GetSiblingIndex() + 1);
+            _projectileList.Add(projectile);
+            return projectile;
         }
         [SerializeField]
         BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer() { duration = 3 };
