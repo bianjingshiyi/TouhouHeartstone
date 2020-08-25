@@ -682,6 +682,11 @@ namespace TouhouHeartstone
         {
             public IntPropModifier modifier;
             public Func<IGame, Card, Buff, T, int> fixer;
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="modifier">属性修改器</param>
+            /// <param name="fixer">当事件发生时，属性修改器的修改值如何发生改变？</param>
             public ModifierFixer(IntPropModifier modifier, Func<IGame, Card, Buff, T, int> fixer)
             {
                 this.modifier = modifier;
