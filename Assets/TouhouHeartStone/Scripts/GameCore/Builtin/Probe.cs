@@ -662,7 +662,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override bool isToken { get; set; } = false;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            //存在目标的法术
+            
             new NoTargetEffect(effect)
         };
 

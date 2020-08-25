@@ -84,4 +84,36 @@ namespace TouhouHeartstone.Builtin
         }
 
     }
+
+    /// <summary>
+    /// 叛逃月兔
+    /// 2/2/1，战吼：对随机敌方角色造成2点伤害。你每使用一次英雄技能，触发此战吼。
+    /// </summary>
+    public class Marin : ServantCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x002;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;//随从的攻击力
+        public override int life { get; set; } = 1;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect),
+
+            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+                (g,c,a)=>{
+                    return a.player == c.getOwner() && a.card.isSkill();
+                }, null, (g, c, a) =>
+                {
+                    g.getAllEnemies(c.getOwner()).random(g).damage(g, c, 2);
+                    return Task.CompletedTask;
+                }
+                )
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            await game.getAllEnemies(card.getOwner()).random(game).damage(game, card, 2);
+        }
+    }
 }
