@@ -116,4 +116,6 @@ namespace TouhouHeartstone.Builtin
             await game.getAllEnemies(card.getOwner()).random(game).damage(game, card, 2);
         }
     }
+
+
 }

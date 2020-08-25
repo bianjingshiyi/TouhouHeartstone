@@ -586,5 +586,95 @@ namespace Tests
                 }
             }
         }
+
+        
+        
+    }
+
+    /// <summary>
+    /// 维伦
+    /// 法术和英雄技能造成的伤害和治疗翻倍
+    /// </summary>
+    //public class Velen : ServantCardDefine
+    //{
+    //    public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x018;
+    //    public override int id { get; set; } = ID;
+    //    public override int cost { get; set; } = 7;
+    //    public override int attack { get; set; } = 7;
+    //    public override int life { get; set; } = 7;
+    //    public override IEffect[] effects { get; set; } = new IEffect[]
+    //    {
+    //        new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
+    //            (g, c, a) =>
+    //            {
+    //                return a.source.getOwner() == c.getOwner() && a.source.isSkill();
+    //            },null,(g,c,a)=>
+    //            {
+    //                a.value *= 2;
+    //                return Task.CompletedTask;
+    //            }),
+    //        new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
+    //            (g, c, a) =>
+    //            {
+    //                return a.source.getOwner() == c.getOwner() && a.source.isSpell();
+    //            },null,(g,c,a)=>
+    //            {
+    //                a.value *= 2;
+    //                return Task.CompletedTask;
+    //            })
+    //        new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
+    //            (g, c, a) =>
+    //            {
+    //                return a..getOwner() == c.getOwner() && a.source.isSkill();
+    //            },null,(g,c,a)=>
+    //            {
+    //                a.value *= 2;
+    //                return Task.CompletedTask;
+    //            }),
+    //        new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
+    //            (g, c, a) =>
+    //            {
+    //                return a.source.getOwner() == c.getOwner() && a.source.isSpell();
+    //            },null,(g,c,a)=>
+    //            {
+    //                a.value *= 2;
+    //                return Task.CompletedTask;
+    //            })
+    //    };
+    //}
+
+
+    /// <summary>
+    /// 力量的代价
+    /// 1，使一个友方随从获得+4/+4，回合结束消灭它
+    /// </summary>
+    public class PowrOverwhelming : SpellCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x018;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+                new LambdaSingleTargetEffect((game, card, target) =>
+                {
+                   target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(4),new LifeModifier(4)));
+                   target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnEndEventArg>(
+                                                         PILE.FIELD,
+                                                         (g1, c1, a1) =>
+                                                         {
+                                                             return a1.player == c1.getOwner();
+                                                         },
+                                                         null,
+                                                         async (g1,c1,a1) =>
+                                                         {
+                                                            //起效部分，效果是消灭随从
+                                                            await c1.setDead(game, true);
+                                                            //由于回合开始不会进行死亡结算，所以这里要强制进行一次。
+                                                            await g1.updateDeath();
+                                                         }
+                                                         )));
+                    return Task.CompletedTask;
+                },PileFlag.self | PileFlag.field)
+        };
     }
 }
