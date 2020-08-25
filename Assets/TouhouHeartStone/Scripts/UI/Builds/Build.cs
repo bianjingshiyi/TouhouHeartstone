@@ -18,7 +18,7 @@ namespace UI
 
         int currentDeckID = 0;
 
-        bool deckChanged = false;
+        bool deckChanged { get; set; } = false;
 
         partial void onAwake()
         {
@@ -83,6 +83,9 @@ namespace UI
                     dm.AddCard(id, item.card.id);
                 }
             }
+
+            // 更新Mark
+            reloadDeckList();
         }
 
         int sortCompareMethod(BuildCardListItem a, BuildCardListItem b)
@@ -219,6 +222,8 @@ namespace UI
 
             reloadDeckList();
             loadCardList();
+
+            HintMessageText.gameObject.SetActive(false);
         }
 
         int currentEditingDeckMasterID = 0;
@@ -256,7 +261,6 @@ namespace UI
             });
             DragCard.hide();
 
-            deckChanged = false;
             uiModeSwitch(false);
         }
 
@@ -280,11 +284,14 @@ namespace UI
             {
                 updateCardRemainText();
             }
+            deckChanged = false;
         }
 
         void loadCardList()
         {
             BuildCardList.clearItems();
+            cardItemList.Clear();
+
             foreach (CardDefine card in
                 cards.Where(
                     c => ui.getManager<CardManager>().isStandardCard(c)
@@ -297,13 +304,12 @@ namespace UI
                     item.setRemainText(0, card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
                     cardItemList.Add(new CardItem() { buildItem = item, define = card, skin = skin });
                     item.Card.setCard(card, skin);
-                    UberDebug.LogChannel("UI", "添加卡" + card + "列表项目");
                 }
                 else
                     UberDebug.LogErrorChannel("UI", "无法找到" + card + "的皮肤");
-
-                BuildCardList.sortItems(sortCompareMethod);
             }
+
+            BuildCardList.sortItems(sortCompareMethod);
         }
 
         private void reloadCardList()
@@ -475,6 +481,7 @@ namespace UI
             {
                 var newItem = BuildDeckList.addItem();
                 newItem.update(DragCard.BuildDeckListItem.card, ui.getManager<CardManager>().getSkin(DragCard.BuildDeckListItem.card.id), 1);
+                deckItem = newItem;
             }
             BuildDeckList.sortItems((a, b) =>
             {

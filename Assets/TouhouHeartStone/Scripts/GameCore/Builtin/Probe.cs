@@ -198,7 +198,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override int life { get; set; } = 4;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
         public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
-                                                                                       //public override string[] keywords { get; set; } = new string[] {Keyword.TAUNT};//关键词标签：
+                                                                                   //public override string[] keywords { get; set; } = new string[] {Keyword.TAUNT};//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -243,7 +243,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override int life { get; set; } = 3;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
         public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
-                                                                                       //public override string[] keywords { get; set; } = new string[] {Keyword.TAUNT};//关键词标签：
+                                                                                   //public override string[] keywords { get; set; } = new string[] {Keyword.TAUNT};//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -369,7 +369,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 山寨版本
     /// 3费，发现墓地里一张机械牌，召唤它并使其变为3/3
-    /// 靠着偷、抢、抄，塔达林居然拼凑出了死亡舰队。
+    /// 靠着偷、抢、抄，塔达林居然拼凑出了强大的死亡舰队。
     /// </summary>
     [IgnoreCardDefine]
     public class Imitation : SpellCardDefine
@@ -417,7 +417,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 幽灵猫西塞尔
     /// 7/2/2，唯一，战吼：获得一个机械的控制权，然后将其攻击力与生命值变为3
-    /// “为什么幻想乡没有电话？”
+    /// “为什么幻想乡没有电话线？”
     /// </summary>
     [IgnoreCardDefine]
     public class Sissel : ServantCardDefine
@@ -456,7 +456,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override int life { get; set; } = 3;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
         public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
-                                                                                       //public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
+                                                                                   //public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             //测试表示：这张牌的扳机是使用卡牌生效后。
@@ -651,7 +651,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 捕风捉影（格拉摩根伯爵-早苗-流言蜚语）
     /// 4费，对一个敌方随机随从打3，召唤一个3/2的鸦天狗。将这张牌的升级版置入手牌(流言蜚语)。
-    /// 
+    /// “言语胜于刀剑”
     /// </summary>
     [IgnoreCardDefine]
     public class CirculationOfGossip_1 : SpellCardDefine
@@ -662,7 +662,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override bool isToken { get; set; } = false;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            //存在目标的法术
+            
             new NoTargetEffect(effect)
         };
 
@@ -775,7 +775,7 @@ namespace TouhouHeartstone.Builtin.Proble
     /// <summary>
     /// 杰洛特：伊格尼法印
     /// 6/2/2,唯一，战吼：消灭敌方所有攻击力最高的随从
-    /// “他同暮光升起，为了那些罪恶复仇；他于阴影中藏匿，为了平息痛苦；他随狂怒前行，将那伤痛铭记于心。”
+    /// “猎魔人走夜路不需要点灯”
     /// </summary>
     [IgnoreCardDefine]
     public class Geralt_Igni : ServantCardDefine
@@ -809,6 +809,7 @@ namespace TouhouHeartstone.Builtin.Proble
 
             foreach (Card c1 in cards)
             {
+
                 if (c1.getAttack(game) == maxAttack)
                 {
                     results.Add(c1);
@@ -816,5 +817,62 @@ namespace TouhouHeartstone.Builtin.Proble
             }
             return results.setDead(game, true);
         }
+    }
+
+    /// <summary>
+    /// 双手攻击
+    /// 1费，造成1点伤害，重置你的英雄技能并使其本回合法力消耗变为0
+    /// 
+    /// </summary>
+    [IgnoreCardDefine]
+    public class FastReload : SpellCardDefine
+    {
+        public const int ID = Probe.ID | CATEGORY.SPELL | 0x028;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            //存在目标的法术
+            new LambdaSingleTargetEffect(async (game,card,target)=>
+            {
+                await target.damage(game,card,1);
+                await card.getOwner().skill.addBuff(game,new GeneratedBuff(ID,new CostModifier(0,true),
+                                                         new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.SKILL,ID)));
+                if(card.getOwner().skill.isUsed(game) == true)
+                {
+                    await card.getOwner().skill.setUsed(game,false);
+                }
+            }, PileFlag.oppo | PileFlag.character)
+            
+        };
+    }
+
+    /// <summary>
+    /// 考达拉幼龙
+    /// </summary>
+    [IgnoreCardDefine]
+    public class FencingCoach : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CATEGORY.SERVANT | 0x029;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;//随从的攻击力
+        public override int life { get; set; } = 2;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        // public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
+        // public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+                (g,c,a) =>
+                {
+                    return a.player == c.getOwner() && a.card.isSkill();
+                },null,(g,c,a)=>
+                { 
+                        return c.getOwner().skill.setUsed(g,false);
+                   
+                 }
+            )
+        };
     }
 }
