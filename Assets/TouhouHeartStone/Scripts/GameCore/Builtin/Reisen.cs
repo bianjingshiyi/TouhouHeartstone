@@ -119,7 +119,7 @@ namespace TouhouHeartstone.Builtin
   
     /// <summary>
     /// 测试用奥秘
-    /// 2费，释放冰冻陷阱
+    /// 2费，释放奥秘：冰冻陷阱
     /// </summary>
     [IgnoreCardDefine]
     public class DefaultMystery : SpellCardDefine
@@ -127,20 +127,41 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x666;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
+        public override bool isSecret { get; set; } = true;//是奥秘牌
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect(async(g1,c1)=>{
-                await c1.getOwner().master.SetSecret(g1,new SecrettTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
-                {
-                    return a.card.getOwner() != c1.getOwner();
-                },async(g,c,a)=>
-                {
-                    await a.card.backToHand(g);
-                    await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
-                }));
-                })
+            new SecrettTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
+            {
+                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
+            },async(g,c,a)=>
+            {
+                 await a.card.backToHand(g);
+                 await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
+            })
         };
     }
 
+    /// <summary>
+    /// 测试用奥秘
+    /// 2费，释放奥秘：蒸发
+    /// </summary>
+    [IgnoreCardDefine]
+    public class DefaultMystery_zf : SpellCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x667;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override bool isSecret { get; set; } = true;//是奥秘牌
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new SecrettTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
+            {
+                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
+            },async(g,c,a)=>
+            {
+                 await a.card.setDead(g,true);
+            })
+        };
+    }
 
 }

@@ -20,6 +20,10 @@ namespace TouhouHeartstone
         /// 正在使用的法术卡都会被置入亚空间
         /// </summary>
         public Pile warp { get; }
+        /// <summary>
+        /// 头顶的五个玩意
+        /// </summary>
+        public Pile head { get; }
         public Card item
         {
             get { return this[PILE.ITEM].count > 0 ? this[PILE.ITEM][0] : null; }
@@ -51,6 +55,9 @@ namespace TouhouHeartstone
             warp = new Pile(game, PILE.WARP);
             addPile(warp);
             addPile(new Pile(game, PILE.ITEM, 1));
+            head = new Pile(game, PILE.HEAD, maxCount: 5);
+            addPile(head);
+
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
         {
@@ -349,11 +356,14 @@ namespace TouhouHeartstone
                 }
                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SPELL))
                 {
-                    //法术卡，释放效果然后丢进墓地
+                    //法术卡,释放效果
                     await player.hand.moveTo(game, card, player.warp);
                     await card.activeEffect(game, player, targets);
-                    await player.warp.moveTo(game, card, player.grave);
                     await card.removeBuff(game);
+                    if (card.define is SpellCardDefine spell && spell.isSecret)
+                        await player.warp.moveTo(game, card, player.head);//如果是奥秘或任务，置入head
+                    else
+                        await player.warp.moveTo(game, card, player.grave);//如果是普通法术，则送入墓地
                 }
                 else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == DEFINE.ITEM))
                 {

@@ -88,26 +88,41 @@ namespace Tests
         public void DefaultMysteryTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(DefaultMystery.ID, 8)
+                new KeyValuePair<int, int>(DefaultMystery.ID, 4),
+                new KeyValuePair<int, int>(DefaultMystery_zf.ID, 4)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 2);
-            oppo.cmdUse(game, oppo.hand.First());
+
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            oppo.cmdUse(game, oppo.hand.First(),0);
+            oppo.cmdUse(game, oppo.hand.First(),1);
+            oppo.cmdUse(game, oppo.hand.First(),2);
             Card card = oppo.field[0];
+            Card card2 = oppo.field[1];
             oppo.cmdTurnEnd(game);
 
-            you.cmdUse(game, you.hand.getCard<DefaultMystery>());
-            you.cmdTurnEnd(game);
-            oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<DefaultMystery>());
-            THHCard.SecretEventArg secretevent = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
-            Assert.True(secretevent.card == you.master);//奥秘挂上了
-            Assert.AreEqual(2,you.master.getSecret(game));//挂了1个奥秘
+
+            Card secret = you.hand.getCard<DefaultMystery>();
+            you.cmdUse(game, secret);
+            Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>().LastOrDefault(c=>c.to == you.head);
+            Assert.True(movecardevent.card == secret);//奥秘挂上了(移动至Head牌堆)
             you.cmdTurnEnd(game);
 
             oppo.cmdAttack(game, card, you.master);
-            THHCard.SecretEventArg secretevent2 = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().LastOrDefault(c => c.type == THHCard.SecretEventArg.TriggerSecret);
-            Assert.True(secretevent2.card == you.master);//奥秘触发了
-            Assert.AreEqual(0, you.master.getSecret(game));//没有奥秘了
+            THHCard.SecretEventArg secretevent = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            Assert.True(secretevent.card == secret);//奥秘触发了
+            Pile.MoveCardEventArg movecardevent2 = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>().LastOrDefault(c => c.from == you.head);
+            Assert.True(movecardevent2.card == secret);//奥秘送入墓地
             Assert.True(oppo.hand.ToArray().Contains(card));//回到手牌
-        }    }
+
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
+            you.cmdUse(game, you.hand.getCard<DefaultMystery_zf>());
+            you.cmdUse(game, you.hand.getCard<DefaultMystery_zf>());//不能使用相同的奥秘
+            you.cmdUse(game, you.hand.getCard<DefaultMystery>());//挂一个蒸发
+            you.cmdTurnEnd(game);
+
+            oppo.cmdAttack(game, card2, you.master);//触发蒸发，不触发冰冻
+            Assert.True(you.head.Any(c => c.define == game.getDefine<DefaultMystery>()));
+            oppo.cmdAttack(game, oppo.field[0], you.master);//触发冰冻
+        }
+    }
 }

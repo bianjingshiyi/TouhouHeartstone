@@ -15,6 +15,8 @@ namespace TouhouHeartstone
         public const string GRAVE = "Grave";
         public const string WARP = "Warp";
         public const string ITEM = "Item";
+        public const string HEAD = "head";
+
         public static string[] getPiles(this PileFlag flag)
         {
             List<string> pileList = new List<string>();
@@ -36,6 +38,8 @@ namespace TouhouHeartstone
                 pileList.Add(WARP);
             if (flag.HasFlag(PileFlag.item))
                 pileList.Add(ITEM);
+            if (flag.HasFlag(PileFlag.head))
+                pileList.Add(HEAD);
             return pileList.ToArray();
         }
         public static Pile[] getPiles(this PileFlag flag, THHGame game, Player player)
@@ -72,6 +76,8 @@ namespace TouhouHeartstone
                 pileList.Add(player[WARP]);
             if (flag.HasFlag(PileFlag.item))
                 pileList.Add(player[ITEM]);
+            if (flag.HasFlag(PileFlag.head))
+                pileList.Add(player[HEAD]);
         }
     }
     [Flags]
@@ -87,7 +93,8 @@ namespace TouhouHeartstone
         grave = 0b_001000000,
         warp = 0b_010000000,
         item = 0b_100000000,
-        all = master | init | hand | skill | deck | field | grave | warp | item,
+        head = 0b_100000001,
+        all = master | init | hand | skill | deck | field | grave | warp | item | head ,
         character = field | master,
 
         self = 0b_01000000000,

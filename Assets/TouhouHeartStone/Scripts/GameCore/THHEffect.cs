@@ -760,7 +760,7 @@ namespace TouhouHeartstone
 
     public class SecrettTriggerBefore<T> : THHEffectBefore<T> where T : IEventArg
     {
-        public SecrettTriggerBefore(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(PILE.MASTER, onCheckCondition, null, onExecute)
+        public SecrettTriggerBefore(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(PILE.HEAD, onCheckCondition, null, onExecute)
         {
         }
         public override async Task onEnable(IGame game, ICard card, IBuff buff)
@@ -797,7 +797,7 @@ namespace TouhouHeartstone
     }
     public class SecrettTriggerAfter<T> : THHEffectBefore<T> where T : IEventArg
     {
-        public SecrettTriggerAfter(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(PILE.MASTER, onCheckCondition, null, onExecute)
+        public SecrettTriggerAfter(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(PILE.HEAD, onCheckCondition, null, onExecute)
         {
         }
         public override async Task onEnable(IGame game, ICard card, IBuff buff)

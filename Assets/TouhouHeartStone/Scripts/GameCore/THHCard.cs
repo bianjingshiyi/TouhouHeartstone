@@ -190,14 +190,6 @@ namespace TouhouHeartstone
             else
                 return 1;
         }
-        public static int getSecret(this Card card, IGame game)
-        {
-            return card.getProp<int>(game, "Secret");
-        }
-        public static Task<ISetPropEventArg> setSecret(this Card card, IGame game, int value = 1)
-        {
-            return card.setProp(game, "Secret", value);
-        }
 
         /// <summary>
         /// 这个角色能否进行攻击？
@@ -612,6 +604,21 @@ namespace TouhouHeartstone
                     info = "你没有足够的法力值";
                     return false;
                 }
+                if(spell.isSecret)
+                {
+                    if(card.getOwner().head.count >= card.getOwner().head.maxCount)
+                    {
+                        game.logger.log("你没有多余的位置挂载奥秘");
+                        info = "你没有多余的位置挂载奥秘";
+                        return false;
+                    }
+                    if (card.getOwner().head.Any(c=>c.define == spell))
+                    {
+                        game.logger.log("你已挂载了相同的奥秘");
+                        info = "你已挂载了相同的奥秘";
+                        return false;
+                    }
+                }
                 info = null;
                 return true;
             }
@@ -795,11 +802,19 @@ namespace TouhouHeartstone
             }
             return card.attack(game, target);
         }
+        public static bool canAttackTest(this Card card, THHGame game)
+        {
+            if (!(card.pile.name == PILE.FIELD || card.pile.name == PILE.MASTER))//不在战场上
+                return false;
+            if(card.isDead(game))
+                return false;
+            return true;
+        }
         static async Task<AttackEventArg> attack(this Card card, THHGame game, Card target)
         {
             var eventArg = await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
             {
-                if (!card.canForceAttack(game))
+                if (!card.canAttackTest(game))
                     game.logger.log(card + "无法进行攻击");
                 else
                 {
@@ -1183,33 +1198,6 @@ namespace TouhouHeartstone
         }
 
         /// <summary>
-        /// 挂上奥秘
-        /// </summary>
-        /// <param name="card"></param>
-        /// <param name="game"></param>
-        /// <param name="effects"></param>
-        /// <returns></returns>
-        public static async Task<SecretEventArg> SetSecret(this Card card,IGame game, params IPassiveEffect[] effects)
-        {
-            if (effects == null)
-                throw new ArgumentNullException(nameof(effects));
-            if (card.getOwner().master.getSecret(game) == 5)
-            {
-                game.logger.log("奥秘最多挂载5个！");
-                return await Task.FromResult<SecretEventArg>(default);
-            }
-            var eventArg = await game.triggers.doEvent(new SecretEventArg() { card = card, type = SecretEventArg.SetSecret }, async arg =>
-            {
-                foreach (IPassiveEffect efffect in effects)
-                {
-                    await card.getOwner().master.setSecret(game);
-                    await efffect.onEnable(game, card, null);
-                }
-                game.logger.log("挂载奥秘" + card);
-            });
-            return eventArg;
-        }
-        /// <summary>
         /// 触发奥秘
         /// </summary>
         /// <param name="card"></param>
@@ -1218,44 +1206,18 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static async Task<SecretEventArg> TriggerSecret(this Card card, IGame game)
         {
-            var eventArg = await game.triggers.doEvent(new SecretEventArg() { card = card, type = SecretEventArg.TriggerSecret }, async arg =>
+            var eventArg = await game.triggers.doEvent(new SecretEventArg() { card = card }, async arg =>
             {
-                await card.getOwner().master.setSecret(game, card.getOwner().master.getSecret(game) - 1);
                 game.logger.log("触发奥秘" + card);
+                THHPlayer player = arg.card.getOwner();
+                await player.head.moveTo(game, arg.card, player.grave);
             });
             return eventArg;
         }
-        /// <summary>
-        /// 移除奥秘
-        /// </summary>
-        /// <param name="card"></param>
-        /// <param name="game"></param>
-        /// <param name="effects"></param>
-        /// <returns></returns>
-        public static async Task<SecretEventArg> RemoveSecret(this Card card, IGame game, IPassiveEffect[] effects)
-        {
-            if (effects == null)
-                throw new ArgumentNullException(nameof(effects));
-            var eventArg = await game.triggers.doEvent(new SecretEventArg() { card = card, type = SecretEventArg.RemoveSecret }, async arg =>
-            {
-                foreach (IPassiveEffect effect in card.define.effects.OfType<IPassiveEffect>())
-                {
-                    await card.getOwner().master.setSecret(game, card.getOwner().master.getSecret(game) - 1);
-                    await effect.onDisable(game, card, null);
-                }
-                game.logger.log("移除奥秘" + card);
-            });
-            return eventArg;
-        }
+
         public class SecretEventArg : EventArg, IDescribableEventArg
         {
-            public const string SetSecret = "SetSecret";
-            public const string TriggerSecret = "TriggerSecret";
-            public const string RemoveSecret = "RemoveSecret";
-
-            public Card card;//奥秘卡牌
-            public string type;
-            public IPassiveEffect[] effects;
+            public Card card;
 
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
