@@ -116,6 +116,31 @@ namespace TouhouHeartstone.Builtin
             await game.getAllEnemies(card.getOwner()).random(game).damage(game, card, 2);
         }
     }
+  
+    /// <summary>
+    /// 测试用奥秘
+    /// 2费，释放冰冻陷阱
+    /// </summary>
+    [IgnoreCardDefine]
+    public class DefaultMystery : SkillCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x666;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(async(g1,c1)=>{
+                await c1.getOwner().master.SetSecret(g1,new SecrettTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
+                {
+                    return a.card.getOwner() != c1.getOwner();
+                },async(g,c,a)=>
+                {
+                    await a.card.backToHand(g);
+                    await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
+                }));
+                })
+        };
+    }
 
 
 }

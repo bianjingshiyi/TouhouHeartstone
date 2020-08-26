@@ -54,8 +54,7 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<Marin>(), 3)));
-
-           
+   
             game.skipUntilHasGem(you, 4);
             you.cmdUse(game, you.hand.getCard<Marin>());
 
@@ -84,5 +83,28 @@ namespace Tests
             you.cmdTurnEnd(game);
             game.Dispose();
         }
-    }
+
+        [Test]
+        public void DefaultMysteryTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(DefaultMystery.ID, 8)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 2);
+            oppo.cmdUse(game, oppo.hand.First());
+            Card card = oppo.field[0];
+            oppo.cmdTurnEnd(game);
+
+            you.cmdUse(game, you.hand.getCard<DefaultMystery>());
+            THHCard.SecretEventArg secretevent = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            Assert.True(secretevent.card == you.master);//奥秘挂上了
+            Assert.AreEqual(1,you.master.getSecret(game));//挂了1个奥秘
+            you.cmdTurnEnd(game);
+
+            oppo.cmdAttack(game, card, you.master);
+            THHCard.SecretEventArg secretevent2 = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().LastOrDefault(c => c.type == THHCard.SecretEventArg.TriggerSecret);
+            Assert.True(secretevent2.card == you.master);//奥秘触发了
+            Assert.AreEqual(0, you.master.getSecret(game));//没有奥秘了
+            Assert.True(oppo.hand.ToArray().Contains(card));//回到手牌
+        }    }
 }

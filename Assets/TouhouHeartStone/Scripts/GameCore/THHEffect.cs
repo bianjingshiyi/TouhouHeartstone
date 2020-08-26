@@ -757,4 +757,79 @@ namespace TouhouHeartstone
                 game.triggers.removeAfter(trigger);
         }
     }
+
+    public class SecrettTriggerBefore<T> : THHEffectBefore<T> where T : IEventArg
+    {
+        public SecrettTriggerBefore(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(PILE.MASTER, onCheckCondition, null, onExecute)
+        {
+        }
+        public override async Task onEnable(IGame game, ICard card, IBuff buff)
+        {
+            foreach (TriggerTime time in triggers)
+            {
+                Trigger<T> trigger = new Trigger<T>(arg =>
+                {
+                    if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
+                    {
+                        (card as Card).TriggerSecret(game);
+                        return (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
+                    }
+                    else
+                        return Task.CompletedTask;
+                });
+                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                await card.setProp(game, effectName, trigger);
+                game.logger.log("Effect", card + "注册效果" + effectName);
+                game.triggers.registerBefore(trigger);
+            }
+        }
+        public override Task onDisable(IGame game, ICard card, IBuff buff)
+        {
+            foreach (TriggerTime time in triggers)
+            {
+                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                Trigger<T> trigger = card.getProp<Trigger<T>>(game, effectName);
+                game.logger.log("Effect", card + "注销效果" + effectName);
+                game.triggers.removeBefore(trigger);
+            }
+            return Task.CompletedTask;
+        }
+    }
+    public class SecrettTriggerAfter<T> : THHEffectBefore<T> where T : IEventArg
+    {
+        public SecrettTriggerAfter(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(PILE.MASTER, onCheckCondition, null, onExecute)
+        {
+        }
+        public override async Task onEnable(IGame game, ICard card, IBuff buff)
+        {
+            foreach (TriggerTime time in triggers)
+            {
+                Trigger<T> trigger = new Trigger<T>(arg =>
+                {
+                    if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
+                    {
+                        (card as Card).TriggerSecret(game);
+                        return (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
+                    }
+                    else
+                        return Task.CompletedTask;
+                });
+                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                await card.setProp(game, effectName, trigger);
+                game.logger.log("Effect", card + "注册效果" + effectName);
+                game.triggers.registerAfter(trigger);
+            }
+        }
+        public override Task onDisable(IGame game, ICard card, IBuff buff)
+        {
+            foreach (TriggerTime time in triggers)
+            {
+                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                Trigger<T> trigger = card.getProp<Trigger<T>>(game, effectName);
+                game.logger.log("Effect", card + "注销效果" + effectName);
+                game.triggers.removeAfter(trigger);
+            }
+            return Task.CompletedTask;
+        }
+    }
 }
