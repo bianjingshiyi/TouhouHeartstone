@@ -525,7 +525,7 @@ namespace TouhouHeartstone.Builtin
             {
                 target.setFreeze(game, true);
                 await Patchouli.tryMix(game,card);
-            })
+            },PileFlag.both | PileFlag.field)
         };
     }
     /// <summary>
