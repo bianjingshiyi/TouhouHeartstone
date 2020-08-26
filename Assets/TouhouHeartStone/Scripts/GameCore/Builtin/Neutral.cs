@@ -325,8 +325,7 @@ namespace TouhouHeartstone.Builtin
             {
                 foreach( Card t in target.getNearbyCards())
                 {
-                    await t.addBuff(game, new GeneratedBuff(ID,
-                    new KeywordsModifier(KeywordsModifier.ModifyType.add,KEYWORD.FREEZE)));
+                    await t.setFreeze(game,true);
                 }
             }, PileFlag.both | PileFlag.field)
         };
@@ -524,8 +523,7 @@ namespace TouhouHeartstone.Builtin
             {
                 foreach( Card t in target.getNearbyCards())
                 {
-                    await t.addBuff(game, new GeneratedBuff(ID,
-                    new KeywordsModifier(KeywordsModifier.ModifyType.add,KEYWORD.FREEZE)));
+                    await t.setFreeze(game,true);
                 }
             }, PileFlag.both | PileFlag.field)
         };
@@ -857,6 +855,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 10;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
