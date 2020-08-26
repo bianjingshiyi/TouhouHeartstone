@@ -160,6 +160,7 @@ namespace TouhouHeartstone.Builtin
             },async(g,c,a)=>
             {
                  await a.card.setDead(g,true);
+                 await g.updateDeath();//死亡结算
             })
         };
     }
