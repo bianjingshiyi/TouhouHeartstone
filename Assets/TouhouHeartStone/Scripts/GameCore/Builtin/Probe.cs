@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouHeartstone;
 
 
 
@@ -42,8 +43,8 @@ namespace TouhouHeartstone.Builtin.Proble
 
         }
 
-        
-        public static bool isInjured(IGame game,Card card)
+
+        public static bool isInjured(IGame game, Card card)
         {
             if (card.getLife(game) < card.define.getLife())
             {
@@ -673,7 +674,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override bool isToken { get; set; } = false;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            
+
             new NoTargetEffect(effect)
         };
 
@@ -854,7 +855,7 @@ namespace TouhouHeartstone.Builtin.Proble
                     await card.getOwner().skill.setUsed(game,false);
                 }
             }, PileFlag.oppo | PileFlag.character)
-            
+
         };
     }
 
@@ -879,9 +880,9 @@ namespace TouhouHeartstone.Builtin.Proble
                 {
                     return a.player == c.getOwner() && a.card.isSkill();
                 },null,(g,c,a)=>
-                { 
+                {
                         return c.getOwner().skill.setUsed(g,false);
-                   
+
                  }
             )
         };
@@ -901,10 +902,10 @@ namespace TouhouHeartstone.Builtin.Proble
         public override int life { get; set; } = 9;//随从的血量上限
         public override bool isToken { get; set; } = false;//是衍生物吗？
         // public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE , KEYWORD.CHARGE };//关键词标签：
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE, KEYWORD.CHARGE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            
+
         };
     }
 
@@ -939,4 +940,56 @@ namespace TouhouHeartstone.Builtin.Proble
                                                       })
         };
     }
+
+    /// <summary>
+    /// 坚持不懈男
+    /// 1/1/3
+    /// </summary>
+    [IgnoreCardDefine]
+    public class PersevereMan : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CATEGORY.SERVANT | 0x032;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;//随从的攻击力
+        public override int life { get; set; } = 3;//随从的血量上限
+        public override bool isToken { get; set; } = true;//是衍生物吗？
+        // public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE, KEYWORD.CHARGE };//关键词标签：
+        
+    }
+
+    /// <summary>
+    /// 伪奥秘：坚持不懈
+    /// 1/1/1,当对手随从攻击前，召唤1/3挡刀，然后送自己进墓地
+    /// </summary>
+    [IgnoreCardDefine]
+    public class Persevere : ServantCardDefine
+    {
+        public const int ID = Probe.ID | CATEGORY.SERVANT | 0x033;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;//随从的攻击力
+        public override int life { get; set; } = 1;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        // public override string[] tags { get; set; } = new string[] { TAG.MACHINE };//种族标签
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE, KEYWORD.CHARGE };//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectBefore<THHCard.AttackEventArg>(PILE.FIELD,
+                                                      (g, c, a) =>
+                                                      {
+                                                          return a.card.getOwner() == g.getOpponent(c.getOwner());
+                                                      },null,
+                                                      (g, c, a) =>
+                                                      {
+                                                          c.getOwner().createToken(g,g.getDefine<PersevereMan>(),c.getOwner().field.count);
+                                                          a.target = c.getOwner().field.right;
+                                                          c.setDead(g,true);
+                                                          g.updateDeath();
+                                                          return Task.CompletedTask;
+                                                      })
+        };
+    }
+
 }
