@@ -122,7 +122,7 @@ namespace TouhouHeartstone.Builtin
     /// 2费，释放冰冻陷阱
     /// </summary>
     [IgnoreCardDefine]
-    public class DefaultMystery : SkillCardDefine
+    public class DefaultMystery : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x666;
         public override int id { get; set; } = ID;

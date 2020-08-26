@@ -96,9 +96,12 @@ namespace Tests
             oppo.cmdTurnEnd(game);
 
             you.cmdUse(game, you.hand.getCard<DefaultMystery>());
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.hand.getCard<DefaultMystery>());
             THHCard.SecretEventArg secretevent = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
             Assert.True(secretevent.card == you.master);//奥秘挂上了
-            Assert.AreEqual(1,you.master.getSecret(game));//挂了1个奥秘
+            Assert.AreEqual(2,you.master.getSecret(game));//挂了1个奥秘
             you.cmdTurnEnd(game);
 
             oppo.cmdAttack(game, card, you.master);
