@@ -979,15 +979,15 @@ namespace TouhouHeartstone.Builtin.Proble
             new THHEffectBefore<THHCard.AttackEventArg>(PILE.FIELD,
                                                       (g, c, a) =>
                                                       {
-                                                          return a.card.getOwner() == g.getOpponent(c.getOwner());
+                                                          return a.card.getOwner() == g.getOpponent(c.getOwner()) && !c.getOwner().field.isFull;
                                                       },null,
-                                                      (g, c, a) =>
+                                                      async (g, c, a) =>
                                                       {
-                                                          c.getOwner().createToken(g,g.getDefine<PersevereMan>(),c.getOwner().field.count);
-                                                          a.target = c.getOwner().field.right;
-                                                          c.setDead(g,true);
-                                                          g.updateDeath();
-                                                          return Task.CompletedTask;
+                                                          var token = await c.getOwner().createToken(g,g.getDefine<PersevereMan>(),c.getOwner().field.count);
+                                                          a.target = token.card;
+                                                          await c.setDead(g,true);
+                                                          await g.updateDeath();
+                                                         
                                                       })
         };
     }
