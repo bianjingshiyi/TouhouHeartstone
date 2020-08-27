@@ -35,7 +35,7 @@ namespace Tests
             var go = new GameObject(nameof(CardManager));
             go.AddComponent<ResourceManager>();
             CardManager cm = go.AddComponent<CardManager>();
-            cm.setDefaultImagePath("Textures/砰砰博士.png");
+            cm.setDefaultImagePath("Textures/DrBoom.png");
             return cm;
         }
 

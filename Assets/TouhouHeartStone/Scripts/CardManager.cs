@@ -21,7 +21,7 @@ namespace Game
     public class CardManager : Manager
     {
         [SerializeField]
-        string _defaultImagePath = "Textures/砰砰博士.png";
+        string _defaultImagePath = "Textures/DrBoom.png";
         [SerializeField]
         Sprite _defaultImage;
         /// <summary>
