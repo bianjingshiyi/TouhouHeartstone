@@ -202,10 +202,10 @@ namespace Tests
             CardManager cm = go.AddComponent<CardManager>();
 
             string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
-            string pictureFile = Path.Combine(Application.streamingAssetsPath, "测试图片.jpg");
+            string pictureFile = Path.Combine(Application.streamingAssetsPath, "TestPicture.jpg");
 
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
-            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\测试图片.jpg", pictureFile);
+            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\TestPicture.jpg", pictureFile);
 
             var task = cm.loadSkins(xlsFile, new PlatformCompability(RuntimePlatform.WindowsPlayer));
             yield return new WaitUntil(() => task.IsCompleted);
@@ -272,10 +272,10 @@ namespace Tests
             string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
             string dataSetFileName = Path.Combine("Cards", "Test.xls.dataset");
             string dataSetFile = Path.Combine(Application.streamingAssetsPath, dataSetFileName);
-            string pictureFile = Path.Combine(Application.streamingAssetsPath, "测试图片.jpg");
+            string pictureFile = Path.Combine(Application.streamingAssetsPath, "TestPicture.jpg");
 
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
-            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\测试图片.jpg", pictureFile);
+            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\TestPicture.jpg", pictureFile);
             ExcelDataSetPacker.PackExcelToDataSet(xlsFile, dataSetFile);
 
             var task = cm.loadSkins(dataSetFileName, new PlatformCompability(RuntimePlatform.Android));

@@ -252,7 +252,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator loadTexture_Resources()
         {
-            const string TEX_NAME = "res:测试图片";
+            const string TEX_NAME = "res:TestPicture";
 
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
             var task = manager.loadTexture(TEX_NAME, null);
@@ -264,7 +264,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator loadAudio_Resource()
         {
-            const string audioName = "res:测试音频";
+            const string audioName = "res:TestAudio";
 
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
             var task = manager.loadAudio(audioName);
@@ -278,7 +278,7 @@ namespace Tests
         {
             const string audioName = "se:testAudio";
 
-            var clip = Resources.Load<AudioClip>("测试音频");
+            var clip = Resources.Load<AudioClip>("TestAudio");
             var sem = new GameObject(nameof(SEManager)).AddComponent<SEManager>();
             sem.SEs = new SEManager.SEItem[1] { new SEManager.SEItem() { audio = clip, name = "testAudio" } };
             ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
