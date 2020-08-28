@@ -173,10 +173,10 @@ namespace Game
             if (updated.playerList.Count < now.playerList.Count)
             {
                 //有玩家离开了
-                var roomPlayer = now.playerList.First(p => !updated.playerList.Exists(p2 => p2.id == p.id));
+                var roomPlayer = now.playerList.First(p => !updated.playerList.Exists(p2 => p2.RoomID == p.RoomID));
                 if (getManager<GameManager>().game is THHGame game)
                 {
-                    game.getPlayer(roomPlayer.id).cmdSurrender(game);
+                    game.getPlayer(roomPlayer.RoomID).cmdSurrender(game);
                 }
             }
             setRoomPanel(updated);
@@ -211,7 +211,7 @@ namespace Game
 
             Task.Run(async () => { await client.joinRoom(room, currentPlayer); });
 
-            roomPanel.SetSelfID(currentPlayer.id);
+            roomPanel.SetSelfID(currentPlayer.PlayerID);
 
             ui.RoomButton.interactable = true;
             ui.RoomButton.image.color = Color.white;
@@ -250,6 +250,9 @@ namespace Game
             currentPlayer.name = "玩家2"; // todo: 替换为真实的玩家名称
             currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
             await client.joinRoom(roomInfo, currentPlayer);
+
+            roomPanel.SetSelfID(currentPlayer.PlayerID);
+
             ui.RoomButton.interactable = true;
             ui.RoomButton.image.color = Color.white;
         }
@@ -368,13 +371,14 @@ namespace Game
         {
             roomPanel.ResetEvents();
 
-            roomPanel.OnQuitClick += () =>{
+            roomPanel.OnQuitClick += () =>
+            {
                 quitRoom();
                 ui.parent.display(ui);
             };
             roomPanel.OnStartClick += () =>
             {
-                _ = host.invokeAll<object>(host.room.playerList.Select(p => p.id).ToArray(), nameof(start));
+                _ = host.invokeAll<object>(host.room.playerList.Select(p => p.RoomID).ToArray(), nameof(start));
             };
             roomPanel.OnRoomInfoUpdate += (info) =>
             {
@@ -393,6 +397,11 @@ namespace Game
             roomPanel.OnSetPlayerDeck += (id, cards) =>
             {
                 currentPlayer.setDeck(cards);
+                _ = client.updatePlayerInfo(currentPlayer);
+            };
+            roomPanel.OnPlayerReadyChange += (id) =>
+            {
+                currentPlayer.ready = !currentPlayer.ready;
                 _ = client.updatePlayerInfo(currentPlayer);
             };
 

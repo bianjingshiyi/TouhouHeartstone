@@ -175,9 +175,9 @@ namespace Game
                     deck = _testDeck.toIdArray();
 #endif
 
-                THHPlayer player = game.createPlayer(info.id, info.name, game.getCardDefine(deck[0]) as MasterCardDefine,
+                THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getCardDefine(deck[0]) as MasterCardDefine,
                     deck.Skip(1).Select(id => game.getCardDefine(id)));
-                if (info.id == room.playerList[0].id) // 暂时的
+                if (info.RoomID == room.playerList[0].RoomID) // 暂时的
                 {
                     localPlayer = player;
                     displayGameUI();
@@ -206,9 +206,9 @@ namespace Game
             {
                 checkDeckValid(info.getDeck());
 
-                THHPlayer player = game.createPlayer(info.id, info.name, game.getCardDefine(info.getDeck()[0]) as MasterCardDefine,
+                THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getCardDefine(info.getDeck()[0]) as MasterCardDefine,
                     info.getDeck().Skip(1).Select(id => game.getCardDefine(id)));
-                if (client.id == info.id)
+                if (client.id == info.RoomID)
                 {
                     localPlayer = player;
                     displayGameUI();

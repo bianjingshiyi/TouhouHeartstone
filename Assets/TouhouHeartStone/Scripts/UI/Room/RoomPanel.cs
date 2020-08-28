@@ -104,14 +104,21 @@ namespace UI
                 Debug.Log("更新房间设定" + value);
                 roomInfo.setOption(new GameOption(roomInfo.getOption())
                 {
-                    sortedPlayers = value ? roomInfo.playerList.Select(p => p.id).ToArray() : null
+                    sortedPlayers = value ? roomInfo.playerList.Select(p => p.RoomID).ToArray() : null
                 });
                 OnRoomInfoUpdate?.Invoke(roomInfo);
             });
 
             StartButtonButtonBlack.asButton.onClick.set(() =>
             {
-                OnStartClick?.Invoke();
+                if (isHost)
+                {
+                    OnStartClick?.Invoke();
+                }
+                else
+                {
+                    OnPlayerReadyChange?.Invoke(selfPlayerID);
+                }
             });
 
             QuitButtonButtonBlack.asButton.onClick.set(() =>
@@ -144,6 +151,9 @@ namespace UI
             InitReplacementContainerGameOptionItemText.InputField.setSelectable(isHost);
             TurnTimeContainerGameOptionItemText.InputField.setSelectable(isHost);
             IsSortedToggleGameOptionItemToggle.Toggle.setSelectable(isHost);
+
+            // 准备按钮
+            StartButtonButtonBlack.Text.text = isHost ? "开始游戏" : "准备";
         }
 
         int selfPlayerID = -1;
@@ -197,35 +207,46 @@ namespace UI
         {
             roomInfo = room;
 
+            RoomPlayerInfo selfPlayer = null;
+
             RoomPlayerList.clearItems();
             foreach (var player in room.playerList)
             {
+                // 顺便获取自己的引用
+                if (player.PlayerID == selfPlayerID)
+                    selfPlayer = player;
+
                 var item = RoomPlayerList.addItem();
                 item.SetPlayerInfo(player);
                 item.OnPlayerViewDeck += viewDeck;
 
                 // 仅当自己是主机且此玩家不是自己时，设置为可以移除
-                item.SetRemoveable(isHost && selfPlayerID != player.id);
+                item.SetRemoveable(isHost && selfPlayerID != player.PlayerID);
                 item.OnPlayerRemove += (id) =>
                 {
-                    if (id == aiPlayer?.id)
+                    if (id == aiPlayer?.PlayerID)
                         aiPlayer = null;
                     OnPlayerRemove?.Invoke(id);
                 };
 
-                if (aiPlayer != null && player.id == aiPlayer.id)
+                if (aiPlayer != null && player.PlayerID == aiPlayer.PlayerID)
                 {
                     item.SetMode(RoomPlayerListItem.PlayerListMode.AIPlayer);
                     item.OnSetAIDeck += () =>
                     {
                         showDeckSelectionPanel((deckID) =>
                         {
+                            // AI 玩家直接在这里设置为准备好
+                            // 底下的 OnSetPlayerDeck 会触发变更事件的。
+                            aiPlayer.ready = true;
+
                             var deck = deckManager.GetDeck(deckID);
                             var skin = cardManager.getSkin(deck.MasterID);
 
                             var list = deckManager.GetDeckCards(deckID).Select(k => (int)k.Value).ToList();
                             list.Insert(0, deck.MasterID); // polyfill: 转换为传统的，第一张卡是master的格式
-                            OnSetPlayerDeck?.Invoke(aiPlayer.id, list.ToArray());
+
+                            OnSetPlayerDeck?.Invoke(aiPlayer.PlayerID, list.ToArray());
                         });
                     };
                 }
@@ -242,7 +263,7 @@ namespace UI
 
                 item.OnAddAIPlayer += () =>
                 {
-                    aiPlayer = new RoomPlayerInfo() { name = "AI" };
+                    aiPlayer = new RoomPlayerInfo() { RoomID = 1, name = "AI" };
                     OnAIPlayerAdd?.Invoke(aiPlayer);
                 };
             }
@@ -255,22 +276,34 @@ namespace UI
             TurnTimeContainerGameOptionItemText.InputField.text = room.getOption().timeoutForTurn.ToString();
             IsSortedToggleGameOptionItemToggle.Toggle.isOn = room.getOption().sortedPlayers != null;
 
-            // 判断是否可以开始游戏
-            bool startable = true;
-            if (isHost && room.playerList.Count > 1)
+            if (isHost)
             {
+                // 判断是否可以开始游戏
+                bool startable = room.playerList.Count > 1;
+
                 foreach (var item in room.playerList)
                 {
-                    int[] deck;
-                    if (!item.tryGetDeck(out deck) || deck.Length < 30)
-                        startable = false;
+                    if (item.PlayerID == selfPlayerID)
+                    {
+                        // 主机检查卡组是否满
+                        if (!item.tryGetDeck(out int[] deck) || deck.Length < 30)
+                            startable = false;
+                    }
+                    else
+                    {
+                        // 其他检查是否准备好
+                        startable &= item.ready;
+                    }
                 }
+
+                StartButtonButtonBlack.asButton.setSelectable(startable);
             }
             else
             {
-                startable = false;
+                // 判断准备状态
+                StartButtonButtonBlack.Text.text = selfPlayer.ready ? "取消准备" : "准备";
+                StartButtonButtonBlack.asButton.setSelectable(selfPlayer.tryGetDeck(out int[] deck) && selfPlayer.getDeck().Length >= 30);
             }
-            StartButtonButtonBlack.asButton.setSelectable(startable);
         }
 
         /// <summary>
@@ -306,6 +339,10 @@ namespace UI
         /// 玩家牌组改变
         /// </summary>
         public event Action<int, int[]> OnSetPlayerDeck;
+        /// <summary>
+        /// 玩家准备或取消准备
+        /// </summary>
+        public event Action<int> OnPlayerReadyChange;
 
         public void ResetEvents()
         {
@@ -326,7 +363,7 @@ namespace UI
     {
         partial void onAwake()
         {
-            RemoveButtonBlack.asButton.onClick.AddListener(() => OnPlayerRemove?.Invoke(playerInfo.id));
+            RemoveButtonBlack.asButton.onClick.AddListener(() => OnPlayerRemove?.Invoke(playerInfo.PlayerID));
             ViewButtonBlack.asButton.onClick.AddListener(() =>
             {
                 int[] deck;
@@ -358,6 +395,7 @@ namespace UI
             int[] deck;
             bool exists = info.tryGetProp<int[]>(RoomPlayerInfoName.DECK_INTARRAY, out deck);
 
+            CheckIconImage.gameObject.SetActive(info.ready);
             CharacterText.text = exists ? this.findInstance<CardManager>().getSkin(deck[0]).name : "";
         }
 

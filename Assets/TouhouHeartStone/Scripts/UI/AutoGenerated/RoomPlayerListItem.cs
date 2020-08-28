@@ -28,6 +28,7 @@ namespace UI
             this.m_as_Button = this.GetComponent<Button>();
             this.m_as_Image = this.GetComponent<Image>();
             this._PlayerImage = this.transform.Find("Player").GetComponent<Image>();
+            this._CheckIconImage = this.transform.Find("Player").Find("CheckIcon").GetComponent<Image>();
             this._NameText = this.transform.Find("Player").Find("NameText").GetComponent<Text>();
             this._CharacterText = this.transform.Find("Player").Find("CharacterText").GetComponent<Text>();
             this._ViewButtonBlack = this.transform.Find("Player").Find("View").GetComponent<ButtonBlack>();
@@ -73,6 +74,19 @@ namespace UI
                     this._PlayerImage = this.transform.Find("Player").GetComponent<Image>();
                 }
                 return this._PlayerImage;
+            }
+        }
+        [SerializeField()]
+        private Image _CheckIconImage;
+        public Image CheckIconImage
+        {
+            get
+            {
+                if ((this._CheckIconImage == null))
+                {
+                    this._CheckIconImage = this.transform.Find("Player").Find("CheckIcon").GetComponent<Image>();
+                }
+                return this._CheckIconImage;
             }
         }
         [SerializeField()]

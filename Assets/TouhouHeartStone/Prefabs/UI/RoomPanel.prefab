@@ -669,7 +669,6 @@ MonoBehaviour:
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  _Image: {fileID: 0}
   _ContainerImage: {fileID: 5637791470381514994}
   _TitleBarImage: {fileID: 6635775827595761034}
   _TitleText: {fileID: 6635775828788087295}
@@ -1496,7 +1495,7 @@ PrefabInstance:
     - target: {fileID: 2650129693795318188, guid: e2102c19846404041a400979b8ee05b5,
         type: 3}
       propertyPath: m_Text
-      value: "\u67E5\u770B\u724C\u7EC4"
+      value: "\u67E5\u770B\u5361\u7EC4"
       objectReference: {fileID: 0}
     - target: {fileID: 2914270859208974661, guid: e2102c19846404041a400979b8ee05b5,
         type: 3}

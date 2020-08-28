@@ -397,7 +397,7 @@ namespace Tests
                 //发送玩家信息
                 RoomPlayerInfo playerInfo = new RoomPlayerInfo()
                 {
-                    id = local.id,
+                    RoomID = local.id,
                     name = "玩家" + local.id,
                 };
                 playerInfo.setDeck(new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray());
@@ -427,7 +427,7 @@ namespace Tests
                         (localGame.answers as AnswerManager).client = local;
                         foreach (var playerInfo in newRoomInfo.playerList)
                         {
-                            localGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, localGame.getCardDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => localGame.getCardDefine(did)));
+                            localGame.createPlayer(playerInfo.RoomID, "玩家" + playerInfo.RoomID, localGame.getCardDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => localGame.getCardDefine(did)));
                         }
                         localGame.run();
                     }
@@ -447,7 +447,7 @@ namespace Tests
                 //发送玩家信息
                 RoomPlayerInfo playerInfo = new RoomPlayerInfo()
                 {
-                    id = remote.id,
+                    RoomID = remote.id,
                     name = "玩家" + remote.id
                 };
                 playerInfo.setDeck(new int[] { Reimu.ID }.Concat(Enumerable.Repeat(DrizzleFairy.ID, 30)).ToArray());
@@ -464,7 +464,7 @@ namespace Tests
                         (remoteGame.answers as AnswerManager).client = remote;
                         foreach (var playerInfo in newRoomInfo.playerList)
                         {
-                            remoteGame.createPlayer(playerInfo.id, "玩家" + playerInfo.id, remoteGame.getCardDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => remoteGame.getCardDefine(did)));
+                            remoteGame.createPlayer(playerInfo.RoomID, "玩家" + playerInfo.RoomID, remoteGame.getCardDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => remoteGame.getCardDefine(did)));
                         }
                         remoteGame.run();
                     }

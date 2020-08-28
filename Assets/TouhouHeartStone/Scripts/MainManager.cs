@@ -73,13 +73,13 @@ namespace Game
             Main main = ui.getObject<Main>();
 
             currentRoomInfo = new RoomInfo();
-            var selfPlayer = new RoomPlayerInfo() { id = 0, name = "自己" };
+            var selfPlayer = new RoomPlayerInfo() { name = "自己" };
             currentRoomInfo.playerList.Add(selfPlayer);
             currentRoomInfo.setOption(GameOption.Default);
 
             main.RoomPanel.ResetEvents();
             main.RoomPanel.SetMode(RoomPanel.Mode.Local);
-            main.RoomPanel.SetSelfID(selfPlayer.id);
+            main.RoomPanel.SetSelfID(selfPlayer.PlayerID);
             main.RoomPanel.SetRightText("");
             main.RoomPanel.SetInfo(currentRoomInfo);
 
@@ -101,7 +101,7 @@ namespace Game
             {
                 for (int i = 0; i < currentRoomInfo.playerList.Count; i++)
                 {
-                    if (currentRoomInfo.playerList[i].id == id)
+                    if (currentRoomInfo.playerList[i].PlayerID == id)
                     {
                         currentRoomInfo.playerList.RemoveAt(i--);
                     }
@@ -117,7 +117,7 @@ namespace Game
             {
                 for (int i = 0; i < currentRoomInfo.playerList.Count; i++)
                 {
-                    if (currentRoomInfo.playerList[i].id == id)
+                    if (currentRoomInfo.playerList[i].PlayerID == id)
                     {
                         currentRoomInfo.playerList[i].setDeck(deck);
                     }
