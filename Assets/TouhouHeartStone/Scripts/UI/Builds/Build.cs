@@ -8,6 +8,7 @@ using TouhouHeartstone;
 using System.Reflection;
 using Game;
 using TouhouHeartstone.Builtin;
+using System;
 
 namespace UI
 {
@@ -496,6 +497,28 @@ namespace UI
 
             // 标记为已经修改
             deckChanged = true;
+        }
+
+        public void DeckItemSelect(BuildDeckListItem item)
+        {
+            DragCard.display();
+            DragCard.Card.display();
+            DragCard.BuildDeckListItem.hide();
+
+            DragCard.Card.setCard(item.card, ui.getManager<CardManager>().getSkin(item.card.id));
+
+            var rt = DragCard.rectTransform;
+            var rt2 = item.GetComponent<RectTransform>();
+
+            Vector2 point = new Vector2(rt2.position.x - (rt2.rect.width + rt.rect.width) / 2, rt2.position.y);
+            point.y = Math.Max(point.y, rt.rect.height / 2 + 10);
+
+            rt.position = point;
+        }
+
+        public void DeckItemDeselect(BuildDeckListItem item)
+        {
+            DragCard.hide();
         }
     }
 }

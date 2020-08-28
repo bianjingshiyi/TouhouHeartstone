@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using TouhouCardEngine;
 namespace UI
 {
-    partial class BuildDeckListItem : IBeginDragHandler, IDragHandler, IEndDragHandler
+    partial class BuildDeckListItem : IBeginDragHandler, IDragHandler, IEndDragHandler, ISelectHandler, IDeselectHandler
     {
         public void update(CardDefine card, CardSkinData skin, int count)
         {
@@ -67,6 +67,18 @@ namespace UI
                 build.onReleaseDeckItem(this, eventData);
             }
             //gameObject.SetActive(true);
+        }
+
+        void ISelectHandler.OnSelect(BaseEventData eventData)
+        {
+            Build build = GetComponentInParent<Build>();
+            build.DeckItemSelect(this);
+        }
+
+        void IDeselectHandler.OnDeselect(BaseEventData eventData)
+        {
+            Build build = GetComponentInParent<Build>();
+            build.DeckItemDeselect(this);
         }
     }
 }
