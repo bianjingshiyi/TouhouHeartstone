@@ -16,6 +16,8 @@ namespace TouhouHeartstone
                 return (T)(object)cost;
             if (propName == nameof(tags))
                 return (T)(object)tags;
+            if (propName == nameof(keywords))
+                return (T)(object)keywords;
             else
                 return base.getProp<T>(propName);
         }
