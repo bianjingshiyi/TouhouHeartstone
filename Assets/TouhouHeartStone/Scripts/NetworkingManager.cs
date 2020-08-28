@@ -206,6 +206,7 @@ namespace Game
             });
             displayLoadingPanel();
             currentPlayer = new RoomPlayerInfo();
+            currentPlayer.name = "房主"; // todo: 替换为真实的玩家名称
             currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
 
             Task.Run(async () => { await client.joinRoom(room, currentPlayer); });
@@ -235,12 +236,18 @@ namespace Game
 
         RoomPlayerInfo currentPlayer;
 
+        /// <summary>
+        /// 客户端加入房间
+        /// </summary>
+        /// <param name="roomInfo"></param>
+        /// <returns></returns>
         public async Task joinRoom(RoomInfo roomInfo)
         {
             if (roomInfo == null)
                 throw new ArgumentNullException(nameof(roomInfo));
             displayLoadingPanel();
             currentPlayer = new RoomPlayerInfo();
+            currentPlayer.name = "玩家2"; // todo: 替换为真实的玩家名称
             currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
             await client.joinRoom(roomInfo, currentPlayer);
             ui.RoomButton.interactable = true;
