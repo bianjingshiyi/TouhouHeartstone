@@ -58,5 +58,9 @@
         /// 免疫
         /// </summary>
         public const string IMMUNITY = "immunity";
+        /// <summary>
+        /// 奥秘
+        /// </summary>
+        public const string SECRET = "secret";
     }
 }

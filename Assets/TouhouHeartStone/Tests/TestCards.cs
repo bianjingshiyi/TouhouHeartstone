@@ -347,6 +347,29 @@ namespace Tests
         };
     }
 
+    /// <summary>
+    /// 测试用奥秘
+    /// 2费，释放奥秘：冰冻陷阱
+    /// </summary>
+    public class DefaultMystery : SpellCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x666;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new SecrettTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
+            {
+                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
+            },async(g,c,a)=>
+            {
+                 await a.card.backToHand(g);
+                 await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
+            })
+        };
+    }
+
 
     /// <summary>
     /// 巫师学徒
