@@ -564,5 +564,23 @@ namespace Tests
             Assert.True(you.field.Any(c => c.define is MerlinPrismriver_N));
             Assert.True(you.field.Any(c => c.define is LyricaPrismriver_N));
         }
+
+        [Test]
+        public void xxxTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(YakumoRan_N.ID, 2),
+                new KeyValuePair<int, int>(YakumoYukari_N.ID, 2)
+            );
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 1);
+            you.setGem(game, 10);
+            you.cmdUse(game, you.hand.getCard<YakumoRan_N>());
+            Card chen = you.field[1];
+            you.setGem(game, 10);
+            you.cmdUse(game, you.hand.getCard<YakumoYukari_N>());
+            you.setGem(game, 10);
+            you.cmdUse(game, chen);
+            Assert.True(chen.hasKeyword(game, KEYWORD.RUSH));
+        }
     }
 }

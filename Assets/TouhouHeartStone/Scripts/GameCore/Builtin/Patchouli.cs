@@ -646,7 +646,8 @@ namespace TouhouHeartstone.Builtin
                 {
                     await target.addBuff(game,
                         new GeneratedBuff(ID,new AttackModifier(-3),
-                        new RemoveBuffBefore<THHGame.TurnStartEventArg>(PILE.FIELD,ID)));
+                        new RemoveBuffBefore<THHGame.TurnStartEventArg>(PILE.FIELD,
+                        (g,c,a)=>{ return a.player == card.getOwner(); }, ID)));
                     if(target.getAttack(game)<=0)
                         await target.setDead(game,true);
                 }
