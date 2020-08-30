@@ -730,6 +730,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static async Task resetCard(this Card card, THHGame game)
         {
+            await card.removeBuff(game, card.getBuffs());
             if (card.define is ServantCardDefine servant)
             {
                 await card.setDead(game, false);
@@ -739,15 +740,7 @@ namespace TouhouHeartstone
                 await card.setAttack(game, servant.attack);
                 await card.setLife(game, servant.life);
                 await card.setSpellDamage(game, servant.spellDamage);
-                await card.removeBuff(game, card.getBuffs());
-                await card.setKeywords(game, new string[0]);
-                foreach (string keyword in servant.keywords)
-                {
-                    if (string.IsNullOrEmpty(keyword))
-                        continue;
-                    await card.setProp(game, keyword, true);
-                }
-                await card.setProp(game, PROPERTY.KEYWORDS, servant.keywords);
+                await card.setKeywords(game, servant.keywords);
                 await card.setProp(game, nameof(ServantCardDefine.tags), servant.tags);
             }
         }
@@ -1093,7 +1086,6 @@ namespace TouhouHeartstone
                             position = card.pile.indexOf(card)
                         });
                         await card.pile.moveTo(game, card, card.getOwner().grave);
-                        await card.resetCard(game);
                         game.logger.log(card + "阵亡");
                     }
                     else if (card.pile.name == PILE.ITEM)//装备摧毁
@@ -1104,11 +1096,15 @@ namespace TouhouHeartstone
                             position = card.pile.indexOf(card)
                         });
                         await card.pile.moveTo(game, card, card.getOwner().grave);
-                        await card.resetCard(game);
                         game.logger.log(card + "摧毁");
                     }
                 }
                 arg.infoDic = infoDic;
+            }
+            foreach (var card in eventArg.infoDic.Keys)
+            {
+                if (card.pile.name == PILE.GRAVE)
+                    await card.resetCard(game);
             }
             if (remainPlayerList.Count != game.players.Length)
             {
