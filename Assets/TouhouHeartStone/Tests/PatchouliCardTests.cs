@@ -390,6 +390,7 @@ namespace Tests
             }
             oppo.field[0].setAttack(game, 5);
             oppo.cmdTurnEnd(game);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 6);
             you.cmdUse(game, you.hand.getCard<MercuryPoison>());
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);

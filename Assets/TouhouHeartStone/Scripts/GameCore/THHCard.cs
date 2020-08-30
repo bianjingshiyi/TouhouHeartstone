@@ -604,7 +604,7 @@ namespace TouhouHeartstone
                     info = "你没有足够的法力值";
                     return false;
                 }
-                if(spell.isSecret)
+                if(spell.hasKeyword(KEYWORD.SECRET))
                 {
                     if(card.getOwner().head.count >= card.getOwner().head.maxCount)
                     {
