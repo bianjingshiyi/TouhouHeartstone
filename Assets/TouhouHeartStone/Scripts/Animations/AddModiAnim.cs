@@ -20,7 +20,7 @@ namespace Game
                         simpleAnim = hand.onAttackUp;
                     else
                         simpleAnim = hand.onAttackDown;
-                    hand.Card.AttackPropNumber.asText.text = eventArg.card.getAttack(table.game).ToString();
+                    hand.Card.AttackPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
                 else if (eventArg.modifier is LifeModifier lifMod)
                 {
@@ -28,7 +28,7 @@ namespace Game
                         simpleAnim = hand.onLifeUp;
                     else
                         simpleAnim = hand.onLifeDown;
-                    hand.Card.LifePropNumber.asText.text = eventArg.card.getLife(table.game).ToString();
+                    hand.Card.LifePropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
                 else if (eventArg.modifier is CostModifier costMod)
                 {
@@ -36,7 +36,7 @@ namespace Game
                         simpleAnim = hand.onCostUp;
                     else
                         simpleAnim = hand.onCostDown;
-                    hand.Card.CostPropNumber.asText.text = eventArg.card.getCost(table.game).ToString();
+                    hand.Card.CostPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
             }
             else if (table.tryGetMaster(eventArg.card, out var master))
@@ -48,7 +48,7 @@ namespace Game
                         simpleAnim = master.onAttackUp;
                     else
                         simpleAnim = master.onAttackDown;*/
-                    master.AttackPropNumber.asText.text = eventArg.card.getAttack(table.game).ToString();
+                    master.AttackPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
                 table.setMaster(master, eventArg.card);
             }
@@ -61,7 +61,7 @@ namespace Game
                         simpleAnim = master.onAttackUp;
                     else
                         simpleAnim = master.onAttackDown;*/
-                    item.AttackPropNumber.asText.text = eventArg.card.getAttack(table.game).ToString();
+                    item.AttackPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
             }
             if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator))

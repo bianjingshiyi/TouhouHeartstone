@@ -673,11 +673,11 @@ namespace TouhouHeartstone
                 List<Card> targetList = new List<Card>();
                 foreach (THHPlayer player in game.players)
                 {
-                    if (targetEffect.checkTargets(game, null, card, new object[] { player.master }))
+                    if (card.isValidTarget(game, player.master, targetEffect, null))
                         targetList.Add(player.master);
                     foreach (Card servant in player.field)
                     {
-                        if (targetEffect.checkTargets(game, null, card, new object[] { servant }))
+                        if (card.isValidTarget(game, servant, targetEffect, null))
                             targetList.Add(servant);
                     }
                 }
@@ -689,11 +689,11 @@ namespace TouhouHeartstone
                 List<Card> targetList = new List<Card>();
                 foreach (THHPlayer player in game.players)
                 {
-                    if (triggerEffect.checkTargets(game, null, card, new object[] { player.master }))
+                    if (card.isValidTarget(game, player.master, null, triggerEffect))
                         targetList.Add(player.master);
                     foreach (Card servant in player.field)
                     {
-                        if (triggerEffect.checkTargets(game, null, card, new object[] { servant }))
+                        if (card.isValidTarget(game, servant, null, triggerEffect))
                             targetList.Add(servant);
                     }
                 }
@@ -710,10 +710,14 @@ namespace TouhouHeartstone
         }
         public static bool isValidTarget(this Card card, THHGame game, Card target)
         {
-            if (target.isStealth(game))
-                return false;
             ITargetEffect targetEffect = card.define.getActiveEffect() as ITargetEffect;
             ITriggerEffect triggerEffect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            return isValidTarget(card, game, target, targetEffect, triggerEffect);
+        }
+        private static bool isValidTarget(this Card card, THHGame game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect)
+        {
+            if (target.isStealth(game))
+                return false;
             if (targetEffect == null && triggerEffect == null)
                 return false;
             if (targetEffect != null && !targetEffect.checkTargets(game, card, null, new object[] { target }))
@@ -722,6 +726,7 @@ namespace TouhouHeartstone
                 return false;
             return true;
         }
+
         /// <summary>
         /// 重置卡牌
         /// </summary>
