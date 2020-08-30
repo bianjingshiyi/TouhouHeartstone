@@ -281,7 +281,13 @@ namespace UI
 
             isInDeckEditMode = !deckMode;
 
-            if (!deckMode)
+            // 退出组卡时清理
+            if (deckMode)
+            {
+                BuildDeckList.clearItems();
+                removeCardRemainText();
+            } 
+            else
             {
                 updateCardRemainText();
             }
@@ -342,6 +348,14 @@ namespace UI
                 {
                     card.buildItem.setRemainText(0, 2);
                 }
+            }
+        }
+
+        void removeCardRemainText()
+        {
+            foreach (var card in cardItemList)
+            {
+                card.buildItem.setRemainText(0, 2);
             }
         }
 
