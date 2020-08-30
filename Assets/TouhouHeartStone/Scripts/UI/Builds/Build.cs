@@ -17,28 +17,67 @@ namespace UI
         CardManager cm => ui.getManager<CardManager>();
         DeckManager dm => ui.getManager<DeckManager>();
 
+        /// <summary>
+        /// 当前正在编辑的卡组ID
+        /// </summary>
         int currentDeckID = 0;
 
+        /// <summary>
+        /// 当前正在编辑的卡组的Master卡的ID
+        /// </summary>
+        int currentEditingDeckMasterID = 0;
+
+        /// <summary>
+        /// 当前正在编辑的卡组的卡片
+        /// </summary>
+        List<int> currentDeckCards { get; set; } = new List<int>();
+
+        /// <summary>
+        /// 当前卡组是否修改
+        /// </summary>
         bool deckChanged { get; set; } = false;
+
+        void onBackBtnClick()
+        {
+            Main main = GetComponentInParent<Main>();
+
+            if (deckChanged)
+            {
+                UIDialog.ShowQuestion("卡组尚未保存，退出后现有变更将丢失。\n是否退出？", () =>
+                {
+                    main.display(main.MainMenu);
+                });
+            }
+            else
+            {
+                main.display(main.MainMenu);
+            }
+        }
+
+        /// <summary>
+        /// 保存卡组按下
+        /// </summary>
+        void onSaveDeckClick()
+        {
+            // 卡组保存
+            if (BuildDeckList.Select(i => i.count).Sum() < 30)
+            {
+                UIDialog.ShowQuestion("当前卡组不完整，无法在游戏中使用。\n是否要保存？", () =>
+                {
+                    saveToDeck(currentDeckID);
+                    uiModeSwitch(true);
+                });
+            }
+            else
+            {
+                saveToDeck(currentDeckID);
+                uiModeSwitch(true);
+            }
+        }
 
         partial void onAwake()
         {
-            BackButtonBlack.asButton.onClick.AddListener(() =>
-            {
-                Main main = GetComponentInParent<Main>();
-
-                if (deckChanged)
-                {
-                    UIDialog.ShowQuestion("卡组尚未保存，退出后现有变更将丢失。\n是否退出？", () =>
-                    {
-                        main.display(main.MainMenu);
-                    });
-                }
-                else
-                {
-                    main.display(main.MainMenu);
-                }
-            });
+            BackButtonBlack.asButton.onClick.AddListener(onBackBtnClick);
 
             FilterPanel.onFilterConditionChange += reloadCardList;
             FilterPanel.onSortChange += onSortChange;
@@ -46,23 +85,7 @@ namespace UI
             EditingDeckDeckListItem.onDeckRename += onDeckRename;
             EditingDeckDeckListItem.SetMode(DeckListItem.Mode.DeckTitle);
 
-            SaveButtonBlackIcon.asButton.onClick.AddListener(() =>
-            {
-                // 卡组保存
-                if (BuildDeckList.Select(i => i.count).Sum() < 30)
-                {
-                    UIDialog.ShowQuestion("当前卡组不完整，无法在游戏中使用。\n是否要保存？", () =>
-                    {
-                        saveToDeck(currentDeckID);
-                        uiModeSwitch(true);
-                    });
-                }
-                else
-                {
-                    saveToDeck(currentDeckID);
-                    uiModeSwitch(true);
-                }
-            });
+            SaveButtonBlackIcon.asButton.onClick.AddListener(onSaveDeckClick);
             BackButtonBlackIcon.asButton.onClick.AddListener(() =>
             {
                 uiModeSwitch(true);
@@ -74,35 +97,33 @@ namespace UI
             UIDialog.gameObject.SetActive(false);
         }
 
+        /// <summary>
+        /// 保存到卡组中
+        /// </summary>
+        /// <param name="id"></param>
         private void saveToDeck(int id)
         {
             dm.ClearDeck(id);
-            foreach (var item in BuildDeckList.getItems())
+            foreach (var card in currentDeckCards)
             {
-                for (int i = 0; i < item.count; i++)
-                {
-                    dm.AddCard(id, item.card.id);
-                }
+                dm.AddCard(id, card);
             }
 
             // 更新Mark
             reloadDeckList();
         }
 
+        /// <summary>
+        /// 比较方法
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         int sortCompareMethod(BuildCardListItem a, BuildCardListItem b)
         {
             var ca = getCardItem(a);
             var cb = getCardItem(b);
             return FilterPanel.sortCompareMethod(ca.define, cb.define);
-        }
-
-        private CardItem getCardItem(BuildCardListItem a)
-        {
-            return cardItemList.Where(c => c.buildItem == a).FirstOrDefault();
-        }
-        private CardItem getCardItem(CardDefine a)
-        {
-            return cardItemList.Where(c => c.define.id == a.id).FirstOrDefault();
         }
 
         /// <summary>
@@ -157,18 +178,30 @@ namespace UI
             reloadDeckList();
         }
 
+        /// <summary>
+        /// 添加卡组点击后
+        /// </summary>
         void onDeckAdd()
         {
             // 点击添加后，弹出人物选择窗口
             showMasterSelection();
         }
 
+        /// <summary>
+        /// 卡组重命名后
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
         void onDeckRename(int id, string name)
         {
             dm.RenameDeck(id, name);
             reloadDeckList();
         }
 
+        /// <summary>
+        /// 卡组添加完选择完人物后
+        /// </summary>
+        /// <param name="id"></param>
         void onMasterSelect(int id)
         {
             // 然后在窗口选择之后再正式新建卡组
@@ -179,9 +212,12 @@ namespace UI
             deckEnterEditMode((int)deckID);
         }
 
+        /// <summary>
+        /// 显示任务选择对话框
+        /// </summary>
         void showMasterSelection()
         {
-            var masters = cards.Where(c => isMaster(c));
+            var masters = avaliableCards.Where(c => isMaster(c));
             foreach (var master in masters)
             {
                 Debug.Log("Found " + master);
@@ -190,6 +226,11 @@ namespace UI
             MasterCardSelection.display();
         }
 
+        /// <summary>
+        /// 判断是不是Master卡
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
         private static bool isMaster(CardDefine c)
         {
             if (c.id == 0)
@@ -213,12 +254,28 @@ namespace UI
 
         List<CardItem> cardItemList = new List<CardItem>();
 
-        CardDefine[] cards { get; set; } = null;
+        private CardItem getCardItem(BuildCardListItem a)
+        {
+            return cardItemList.Where(c => c.buildItem == a).FirstOrDefault();
+        }
+        private CardItem getCardItem(CardDefine a)
+        {
+            return GetCardItem(a.id);
+        }
+        private CardItem GetCardItem(int cardID)
+        {
+            return cardItemList.Where(c => c.define.id == cardID).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// 所有可用的卡
+        /// </summary>
+        CardDefine[] avaliableCards { get; set; } = null;
         protected override void onDisplay()
         {
             base.onDisplay();
 
-            cards = ui.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly
+            avaliableCards = ui.getManager<CardManager>().GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly
             && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null);
 
             reloadDeckList();
@@ -226,8 +283,6 @@ namespace UI
 
             HintMessageText.gameObject.SetActive(false);
         }
-
-        int currentEditingDeckMasterID = 0;
 
         /// <summary>
         /// 使用卡组进入卡组编辑模式
@@ -238,16 +293,34 @@ namespace UI
             currentDeckID = deckID;
 
             var deck = dm.GetDeck(deckID);
-            var deckCards = dm.GetDeckCards(deckID);
 
+            // 皮肤
             CardSkinData masterSkin = ui.getManager<CardManager>().getSkin(deck.MasterID);
             EditingDeckDeckListItem.SetContent(deckID, deck.Name, masterSkin?.image);
             currentEditingDeckMasterID = deck.MasterID;
-
             MasterNameText.text = masterSkin?.name;
 
+            // 卡片列表
+            var deckCards = dm.GetDeckCards(deckID);
+            currentDeckCards = deckCards.Values.Select(i => (int)i).ToList();
+
+            // 更新UI
+            onDeckCardChange();
+            deckChanged = false;
+
+            DragCard.hide();
+            updateUIDeckCardsList();
+
+            uiModeSwitch(false);
+        }
+
+        /// <summary>
+        /// 更新列表
+        /// </summary>
+        void updateUIDeckCardsList()
+        {
             BuildDeckList.clearItems();
-            foreach (var cards in deckCards.Select(card => cards.FirstOrDefault(c => c.id == card.Value)).Where(c => c != null).GroupBy(c => c.id))
+            foreach (var cards in currentDeckCards.Select(card => avaliableCards.FirstOrDefault(c => c.id == card)).Where(c => c != null).GroupBy(c => c.id))
             {
                 var item = BuildDeckList.addItem();
                 var skin = ui.getManager<CardManager>().getSkin(cards.First().id);
@@ -260,9 +333,6 @@ namespace UI
                 else
                     return a.card.id - b.card.id;
             });
-            DragCard.hide();
-
-            uiModeSwitch(false);
         }
 
         /// <summary>
@@ -284,23 +354,23 @@ namespace UI
             // 退出组卡时清理
             if (deckMode)
             {
-                BuildDeckList.clearItems();
-                removeCardRemainText();
-            } 
-            else
-            {
-                updateCardRemainText();
+                currentDeckCards.Clear();
             }
+
+            updateCardRemainText();
             deckChanged = false;
         }
 
+        /// <summary>
+        /// 加载所有卡
+        /// </summary>
         void loadCardList()
         {
             BuildCardList.clearItems();
             cardItemList.Clear();
 
             foreach (CardDefine card in
-                cards.Where(
+                avaliableCards.Where(
                     c => ui.getManager<CardManager>().isStandardCard(c)
                     )
                 )
@@ -319,6 +389,9 @@ namespace UI
             BuildCardList.sortItems(sortCompareMethod);
         }
 
+        /// <summary>
+        /// 重载卡片列表
+        /// </summary>
         private void reloadCardList()
         {
             foreach (var item in cardItemList)
@@ -335,64 +408,24 @@ namespace UI
             }
         }
 
+        /// <summary>
+        /// 更新卡片剩余数量文本
+        /// </summary>
         void updateCardRemainText()
         {
             foreach (var card in cardItemList)
             {
-                var deckItem = BuildDeckList.getItems().FirstOrDefault(i => i.card == card.define);
-                if (deckItem != null)
-                {
-                    card.buildItem.setRemainText(deckItem.count, card.define.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
-                }
-                else
-                {
-                    card.buildItem.setRemainText(0, 2);
-                }
+                var cardCount = currentDeckCards.Where(i => i == card.define.id).Count();
+                card.buildItem.setRemainText(cardCount, card.define.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
             }
         }
 
-        void removeCardRemainText()
+        void onDeckCardChange()
         {
-            foreach (var card in cardItemList)
-            {
-                card.buildItem.setRemainText(0, 2);
-            }
+            DeckCountText.text = currentDeckCards.Count + "/30";
+            deckChanged = true;
         }
 
-        private void Update()
-        {
-            DeckCountText.text = BuildDeckList.getItems().Select(i => i.count).Sum() + "/30";
-
-            //if (DragCard.isDisplaying)
-            //{
-            //    var input = EventSystem.current.currentInputModule.input;
-            //    DragCard.transform.position = input.mousePosition;
-            //    Vector2 position = input.mousePosition;
-            //    if (DeckViewScroll.GetComponent<RectTransform>().rect.Contains(DeckViewScroll.GetComponent<RectTransform>().InverseTransformPoint(position)))
-            //    {
-            //        if (!DragCard.BuildDeckListItem.isDisplaying)
-            //        {
-            //            DragCard.BuildDeckListItem.display();
-            //            DragCard.BuildDeckListItem.update(DragCard.BuildDeckListItem.card, parent.game.cards.GetCardSkin(DragCard.BuildDeckListItem.card.id), 1);
-            //        }
-            //        DragCard.Card.hide();
-            //    }
-            //    else
-            //    {
-            //        if (!DragCard.Card.isDisplaying)
-            //        {
-            //            DragCard.Card.display();
-            //            DragCard.Card.update(DragCard.BuildDeckListItem.card, parent.game.cards.GetCardSkin(DragCard.BuildDeckListItem.card.id));
-            //        }
-            //        DragCard.BuildDeckListItem.hide();
-            //    }
-            //    if (input.GetMouseButtonUp(0))
-            //    {
-            //        //停止拖拽
-            //        stopDrag(position);
-            //    }
-            //}
-        }
         public void onDragCardItem(BuildCardListItem item, PointerEventData pointer)
         {
             onDragItem(getCardItem(item).define, pointer.position);
@@ -420,12 +453,18 @@ namespace UI
             }
             else
             {
+                if (currentDeckCards.Contains(item.card.id))
+                    currentDeckCards.Remove(item.card.id);
+
+                // 更新可用信息
+                var cardCount = currentDeckCards.Where(i => i == item.card.id).Count();
+                getCardItem(item.card).buildItem.setRemainText(cardCount, item.card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
+
+                // 更新UI
                 if (item.count < 1)
-                {
                     BuildDeckList.removeItem(item);
-                    getCardItem(item.card).buildItem.setRemainText(0, 2);
-                    deckChanged = true;
-                }
+
+                onDeckCardChange();
             }
         }
         void onDragItem(CardDefine card, Vector2 position)
@@ -458,22 +497,22 @@ namespace UI
         private void onReleaseItem()
         {
             var card = DragCard.BuildDeckListItem.card;
-            var deckItem = BuildDeckList.getItems().FirstOrDefault(i => i.card == card);
+            var cardCount = currentDeckCards.Where(i => i == card.id).Count();
 
             // 最多30张牌
-            if (BuildDeckList.Select(i => i.count).Sum() >= 30)
+            if (currentDeckCards.Count >= 30)
             {
                 showMessage("牌组已满");
                 return;
             }
             // 每类牌最多两张
-            if (deckItem?.count >= 2)
+            if (cardCount >= 2)
             {
                 showMessage("最多携带两张相同的卡片");
                 return;
             }
             // 唯一
-            if (card.hasKeyword(KEYWORD.UNIQUE) && deckItem?.count >= 1)
+            if (card.hasKeyword(KEYWORD.UNIQUE) && cardCount >= 1)
             {
                 showMessage("唯一的卡片只能携带一张");
                 return;
@@ -486,6 +525,18 @@ namespace UI
                 return;
             }
 
+            // 添加卡
+            currentDeckCards.Add(card.id);
+            cardCount = currentDeckCards.Where(i => i == card.id).Count();
+
+            // 更新可用信息
+            getCardItem(card).buildItem.setRemainText(cardCount, card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
+
+            // 标记为已经修改
+            onDeckCardChange();
+
+            // 更新UI
+            var deckItem = BuildDeckList.getItems().FirstOrDefault(i => i.card == card);
             if (deckItem != null)
             {
                 deckItem.count++;
@@ -505,12 +556,6 @@ namespace UI
                 else
                     return a.card.id - b.card.id;
             });
-
-            // 更新可用信息
-            getCardItem(card).buildItem.setRemainText(deckItem.count, card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
-
-            // 标记为已经修改
-            deckChanged = true;
         }
 
         public void DeckItemSelect(BuildDeckListItem item)
