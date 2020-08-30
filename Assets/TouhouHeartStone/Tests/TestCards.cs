@@ -359,7 +359,7 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new SecrettTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
+            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
             {
                 return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
             },async(g,c,a)=>
