@@ -54,6 +54,7 @@ namespace UI
                     catch (Exception e)
                     {
                         UberDebug.LogError("UI", this + "播放onHit动画引发异常：" + e);
+                        Destroy(gameObject);
                     }
                 }
             }
@@ -67,6 +68,7 @@ namespace UI
             catch (Exception e)
             {
                 UberDebug.LogError("UI", this + "播放onHit动画引发异常：" + e);
+                Destroy(gameObject);
             }
             Destroy(gameObject);
         }

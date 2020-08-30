@@ -57,6 +57,10 @@ namespace UI
             // IsFaceupController = IsFaceup.True;
             isFaceup = true;
         }
+        public void resetPosition()
+        {
+            rectTransform.anchoredPosition = Vector2.zero;
+        }
         [SerializeField]
         AnimationCurve _useCurve = new AnimationCurve();
         public AnimationCurve useCurve
