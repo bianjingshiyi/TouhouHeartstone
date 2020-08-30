@@ -52,6 +52,18 @@ namespace Game
                 }
                 table.setMaster(master, eventArg.card);
             }
+            else if (table.tryGetItem(eventArg.card, out var item))
+            {
+                animator = item.animator;
+                if (eventArg.modifier is AttackModifier atkMod)
+                {
+                    /*if (atkMod.value > 0)
+                        simpleAnim = master.onAttackUp;
+                    else
+                        simpleAnim = master.onAttackDown;*/
+                    item.AttackPropNumber.asText.text = eventArg.card.getAttack(table.game).ToString();
+                }
+            }
             if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator))
                 return false;
             return true;

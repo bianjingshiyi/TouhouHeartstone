@@ -836,7 +836,7 @@ namespace TouhouHeartstone
                     }
                 }
             });
-            await game.updateDeath();
+            await game.updateDeath(game);
             return eventArg;
         }
         public class AttackEventArg : EventArg, IDescribableEventArg

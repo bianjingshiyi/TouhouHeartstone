@@ -193,7 +193,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     await onExecute?.Invoke(g, c, a);
                     await c.damage(g, c, 1);
-                    await g.updateDeath();
+                    await g.updateDeath(g);
                 })
             {
             }
@@ -205,7 +205,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     await onExecute?.Invoke(g, c, a);
                     await c.damage(g, c, 1);
-                    await g.updateDeath();
+                    await g.updateDeath(g);
                 })
             {
             }

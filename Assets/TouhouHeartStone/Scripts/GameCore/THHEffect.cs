@@ -643,7 +643,7 @@ namespace TouhouHeartstone
             if (onExecute != null)
             {
                 await onExecute.Invoke(game, card, arg);
-                await game.updateDeath();
+                await game.updateDeath(game);
             }
         })
         {
@@ -656,7 +656,7 @@ namespace TouhouHeartstone
              if (onExecute != null)
              {
                  await onExecute.Invoke(game, card, arg);
-                 await game.updateDeath();
+                 await game.updateDeath(game);
              }
          })
         {
@@ -669,7 +669,7 @@ namespace TouhouHeartstone
             if (onExecute != null)
             {
                 await onExecute.Invoke(game, card, arg);
-                await game.updateDeath();
+                await game.updateDeath(game);
             }
         })
         {

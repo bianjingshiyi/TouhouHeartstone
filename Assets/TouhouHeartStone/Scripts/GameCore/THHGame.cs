@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-using UberLogger;
 using TouhouHeartstone.Builtin;
 namespace TouhouHeartstone
 {
@@ -423,7 +421,7 @@ namespace TouhouHeartstone
         /// 清理战场上死亡的随从
         /// </summary>
         /// <returns></returns>
-        public Task updateDeath()
+        public Task updateDeath(THHGame game)
         {
             List<Card> deathList = new List<Card>();
             foreach (THHPlayer player in players)
@@ -434,12 +432,14 @@ namespace TouhouHeartstone
                 }
                 if (player.item != null && player.item.isDead(this))
                 {
+                    player.item.resetCard(game);
                     deathList.Add(player.item);
                 }
                 foreach (Card card in player.field)
                 {
                     if (card.isDead(this))
                     {
+                        card.resetCard(game);
                         deathList.Add(card);
                     }
                 }
