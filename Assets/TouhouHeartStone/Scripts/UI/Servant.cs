@@ -5,6 +5,8 @@ using TouhouHeartstone;
 using System.Linq;
 using TouhouCardEngine;
 using UnityEngine.Events;
+using BJSYGameCore;
+using BJSYGameCore.UI;
 namespace UI
 {
     partial class Servant : IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
@@ -32,6 +34,10 @@ namespace UI
         {
             get { return _attackThreshold; }
         }
+        [SerializeField]
+        bool _isHovered = false;
+        public ActionEvent<Servant, PointerEventData> onPointerEnter { get; set; } = new ActionEvent<Servant, PointerEventData>();
+        public ActionEvent<Servant, PointerEventData> onPointerExit { get; set; } = new ActionEvent<Servant, PointerEventData>();
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
         }
@@ -113,14 +119,25 @@ namespace UI
         }
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            onEnterServant.invoke(this, eventData);
+            _isHovered = true;
+            onPointerEnter.invoke(this, eventData);
         }
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-            onExitServant.invoke(this, eventData);
+            _isHovered = false;
+            onPointerExit.invoke(this, eventData);
         }
-        public ActionEvent<Servant, PointerEventData> onEnterServant { get; } = new ActionEvent<Servant, PointerEventData>();
-        public ActionEvent<Servant, PointerEventData> onExitServant { get; } = new ActionEvent<Servant, PointerEventData>();
+        private void Update()
+        {
+            if (_isHovered)
+            {
+                if (!ui.getManager<InputManager>().isPointerOver(rectTransform))
+                {
+                    _isHovered = false;
+                    onPointerExit.invoke(this, null);
+                }
+            }
+        }
         public void OnPointerDown(PointerEventData eventData)
         {
             onClick.invoke(this, eventData);

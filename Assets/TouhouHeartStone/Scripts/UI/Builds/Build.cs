@@ -9,7 +9,7 @@ using System.Reflection;
 using Game;
 using TouhouHeartstone.Builtin;
 using System;
-
+using BJSYGameCore.UI;
 namespace UI
 {
     partial class Build

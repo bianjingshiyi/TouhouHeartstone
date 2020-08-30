@@ -7,6 +7,7 @@ using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
+using BJSYGameCore.UI;
 
 namespace UI
 {

@@ -3,6 +3,7 @@ using UnityEngine;
 using TouhouHeartstone;
 using Card = TouhouCardEngine.Card;
 using System.Linq;
+using BJSYGameCore.UI;
 namespace Game
 {
     class SetPropAnim : EventAnimation<Card.SetPropEventArg>
@@ -55,7 +56,7 @@ namespace Game
                 }
                 table.setServant(servant, eventArg.card);
             }
-            if (table.tryGetMaster(eventArg.card, out var master))
+            else if (table.tryGetMaster(eventArg.card, out var master))
             {
                 animator = master.animator;
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)

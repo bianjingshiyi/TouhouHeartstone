@@ -2,6 +2,7 @@
 using System.Linq;
 using TouhouHeartstone;
 using UI;
+using BJSYGameCore.UI;
 namespace Game
 {
     class InitReplaceRequestAnimation : RequestAnimation<InitReplaceRequest>

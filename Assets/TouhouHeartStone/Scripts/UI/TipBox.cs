@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 namespace UI
 {
     partial class TipBox
@@ -8,9 +9,7 @@ namespace UI
             Text.text = msg;
             rectTransform.position = position;
             display();
-            //刷新自适应
-            asVerticalLayoutGroup.enabled = false;
-            asVerticalLayoutGroup.enabled = true;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
         }
 
         public void updatePos(Vector2 pos)

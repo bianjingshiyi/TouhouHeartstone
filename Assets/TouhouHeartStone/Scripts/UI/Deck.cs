@@ -1,6 +1,7 @@
 ﻿using TouhouHeartstone;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using BJSYGameCore.UI;
 namespace UI
 {
     partial class Deck : IPointerEnterHandler, IPointerExitHandler

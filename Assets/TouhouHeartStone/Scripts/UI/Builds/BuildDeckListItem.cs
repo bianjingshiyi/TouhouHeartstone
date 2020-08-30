@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using TouhouCardEngine;
+using BJSYGameCore.UI;
 namespace UI
 {
     partial class BuildDeckListItem : IBeginDragHandler, IDragHandler, IEndDragHandler, ISelectHandler, IDeselectHandler

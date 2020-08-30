@@ -167,6 +167,7 @@ namespace Game
             ui.SelfGraveDeck.onPointerExit.set(onGravePointerExit);
             ui.SelfGraveDeck.onPointerMove.set(onDeckPointerMove);
             ui.TurnEndButton.onClick.set(onTurnEndButtonClick);
+            ui.LargeCard.hide();
             ui.TipText.hide();
             initMaster(ui.EnemyMaster);
             ui.EnemyGem.Text.text = "0";
@@ -1036,8 +1037,8 @@ namespace Game
             servant.onClick.add(onClickServant);
             servant.onDrag.add(onDragServant);
             servant.onDragEnd.add(onDragEndServant);
-            servant.onExitServant.set(onExitServant);
-            servant.onEnterServant.set(onEnterServant);
+            servant.onPointerEnter.set(onEnterServant);
+            servant.onPointerExit.set(onExitServant);
             cardServantDic.Add(card, servant);
             return servant;
         }
@@ -1472,8 +1473,8 @@ namespace Game
         List<Projectile> _projectileList = new List<Projectile>();
         public Projectile createProjectile(Projectile prefab, RectTransform from, RectTransform to)
         {
-            Projectile projectile = Instantiate(prefab, from.position, Quaternion.LookRotation(to.position - from.position, Vector3.forward), to.parent);
-            projectile.transform.SetSiblingIndex(to.GetSiblingIndex() + 1);
+            Projectile projectile = Instantiate(prefab, from.position, Quaternion.LookRotation(to.position - from.position, Vector3.forward), ui.FieldsImage.transform);
+            projectile.transform.SetSiblingIndex(to.getBranch(ui.FieldsImage.transform).GetSiblingIndex() + 1);
             _projectileList.Add(projectile);
             return projectile;
         }

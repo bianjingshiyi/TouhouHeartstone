@@ -43,6 +43,10 @@ namespace Game
             _targetTransform = target;
             _stopDistance = stopDistance;
         }
+        public void resetPosition()
+        {
+            transform.localPosition = Vector3.zero;
+        }
         protected void Reset()
         {
             enabled = false;

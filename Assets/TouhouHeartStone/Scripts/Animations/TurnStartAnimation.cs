@@ -2,6 +2,7 @@
 using UnityEngine;
 using BJSYGameCore;
 using UI;
+using BJSYGameCore.UI;
 namespace Game
 {
     class TurnStartAnimation : EventAnimation<THHGame.TurnStartEventArg>

@@ -1,5 +1,7 @@
 ﻿using UI;
 using TouhouHeartstone.Builtin;
+
+using BJSYGameCore.UI;
 namespace Game
 {
     class PreHeatAnim : EventAnimation<Youmu.PreHeatEventArg>

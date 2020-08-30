@@ -604,15 +604,15 @@ namespace TouhouHeartstone
                     info = "你没有足够的法力值";
                     return false;
                 }
-                if(spell.hasKeyword(KEYWORD.SECRET))
+                if (spell.hasKeyword(KEYWORD.SECRET))
                 {
-                    if(card.getOwner().head.count >= card.getOwner().head.maxCount)
+                    if (card.getOwner().head.count >= card.getOwner().head.maxCount)
                     {
                         game.logger.log("你没有多余的位置挂载奥秘");
                         info = "你没有多余的位置挂载奥秘";
                         return false;
                     }
-                    if (card.getOwner().head.Any(c=>c.define == spell))
+                    if (card.getOwner().head.Any(c => c.define == spell))
                     {
                         game.logger.log("你已挂载了相同的奥秘");
                         info = "你已挂载了相同的奥秘";
@@ -785,7 +785,7 @@ namespace TouhouHeartstone
                 game.logger.log(card + "无法攻击" + target + "，因为" + reason);
                 return null;
             }
-                await card.setAttackTimes(game, card.getAttackTimes(game) + 1);
+            await card.setAttackTimes(game, card.getAttackTimes(game) + 1);
             return await card.attack(game, target);
         }
         public static Task<AttackEventArg> forceAttack(this Card card, THHGame game, THHPlayer player, Card target)
@@ -806,7 +806,7 @@ namespace TouhouHeartstone
         {
             if (!(card.pile.name == PILE.FIELD || card.pile.name == PILE.MASTER))//不在战场上
                 return false;
-            if(card.isDead(game))
+            if (card.isDead(game))
                 return false;
             return true;
         }
@@ -1070,7 +1070,7 @@ namespace TouhouHeartstone
         {
             List<THHPlayer> remainPlayerList = new List<THHPlayer>(game.players);
             var eventArg = await game.triggers.doEvent(new DeathEventArg() { infoDic = cards.ToDictionary(c => c, c => default(DeathEventArg.Info)) }, onDie);
-            Task onDie(DeathEventArg arg)
+            async Task onDie(DeathEventArg arg)
             {
                 Dictionary<Card, DeathEventArg.Info> infoDic = new Dictionary<Card, DeathEventArg.Info>();
                 foreach (var card in arg.infoDic.Keys)
@@ -1092,7 +1092,8 @@ namespace TouhouHeartstone
                             player = card.getOwner(),
                             position = card.pile.indexOf(card)
                         });
-                        card.pile.moveTo(game, card, card.getOwner().grave);
+                        await card.pile.moveTo(game, card, card.getOwner().grave);
+                        await card.resetCard(game);
                         game.logger.log(card + "阵亡");
                     }
                     else if (card.pile.name == PILE.ITEM)//装备摧毁
@@ -1102,12 +1103,12 @@ namespace TouhouHeartstone
                             player = card.getOwner(),
                             position = card.pile.indexOf(card)
                         });
-                        card.pile.moveTo(game, card, card.getOwner().grave);
+                        await card.pile.moveTo(game, card, card.getOwner().grave);
+                        await card.resetCard(game);
                         game.logger.log(card + "摧毁");
                     }
                 }
                 arg.infoDic = infoDic;
-                return Task.CompletedTask;
             }
             if (remainPlayerList.Count != game.players.Length)
             {

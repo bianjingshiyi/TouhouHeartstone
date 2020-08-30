@@ -1,6 +1,7 @@
 ﻿using TouhouHeartstone;
 using BJSYGameCore;
 using UI;
+using BJSYGameCore.UI;
 namespace Game
 {
     class HealAnimation : EventAnimation<THHCard.HealEventArg>

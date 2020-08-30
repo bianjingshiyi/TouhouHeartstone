@@ -432,14 +432,12 @@ namespace TouhouHeartstone
                 }
                 if (player.item != null && player.item.isDead(this))
                 {
-                    player.item.resetCard(game);
                     deathList.Add(player.item);
                 }
                 foreach (Card card in player.field)
                 {
                     if (card.isDead(this))
                     {
-                        card.resetCard(game);
                         deathList.Add(card);
                     }
                 }

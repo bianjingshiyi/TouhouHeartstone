@@ -663,7 +663,9 @@ MonoBehaviour:
   _HighlightImage: {fileID: 246142453696156295}
   _Mask: {fileID: 7552501258627038251}
   _Image: {fileID: 7552501258534462119}
+  _StealthImage: {fileID: 0}
   _FrameImage: {fileID: 7552501258643873164}
+  _FreezeImage: {fileID: 876014733318368807}
   _AtkImage: {fileID: 7552501258647209238}
   _AttackPropNumber: {fileID: 1139424714985255227}
   _HpImage: {fileID: 7552501258202321409}
@@ -674,7 +676,6 @@ MonoBehaviour:
   _DamageText: {fileID: 8911003165737062234}
   _HealImage: {fileID: 8792442376026923327}
   _HealText: {fileID: 2445753624763639741}
-  _FreezeImage: {fileID: 876014733318368807}
   _ShieldImage: {fileID: 8666015601512183802}
   _attackThreshold: 50
   onTargeted:
@@ -700,7 +701,18 @@ MonoBehaviour:
     animName: Master_Attack1
     afterAnim:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 3125610898641119321}
+          m_MethodName: resetPosition
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   onAttacked:
     beforeAnim:
       m_PersistentCalls:

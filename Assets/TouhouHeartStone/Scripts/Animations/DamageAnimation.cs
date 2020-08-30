@@ -18,14 +18,14 @@ namespace Game
                 {
                     if (table.tryGetServant(card, out var servant))
                     {
-                        servant.DamageText.text = "-" + eventArg.value;
+                        servant.DamageText.text = "-" + eventArg.infoDic[card].damagedValue;
                         servant.HpTextPropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
                         servant.onDamage.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(servant.animator, servant.onDamage.animName));
                     }
                     else if (table.tryGetMaster(card, out Master master))
                     {
-                        master.DamageText.text = "-" + eventArg.value;
+                        master.DamageText.text = "-" + eventArg.infoDic[card].damagedValue;
                         master.LifePropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
                         master.onDamage.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(master.animator, master.onDamage.animName));

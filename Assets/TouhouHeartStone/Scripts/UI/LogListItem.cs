@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using BJSYGameCore.UI;
+using BJSYGameCore;
 namespace UI
 {
     partial class LogListItem

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using BJSYGameCore.UI;
 namespace UI
 {
     partial class LogScrollView

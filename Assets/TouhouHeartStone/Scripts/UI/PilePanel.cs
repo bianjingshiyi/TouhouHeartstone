@@ -1,4 +1,5 @@
-﻿namespace UI
+﻿using BJSYGameCore.UI;
+namespace UI
 {
     partial class PilePanel
     {
