@@ -370,5 +370,83 @@ namespace Tests
             lightspawn.heal(game, 1);
             Assert.AreEqual(4, lightspawn.getAttack(game));
         }
+        [Test]
+        public void secretTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>[]
+                {
+                    new KeyValuePair<int, int>(FreezingTrap.ID, 3),
+                    new KeyValuePair<int, int>(Vaporize.ID, 3)
+                },
+                new KeyValuePair<int, int>[]
+                {
+                    new KeyValuePair<int, int>(ChargeServant.ID,30)
+                }
+            );
+            //单独测试：冰冻、蒸发
+            game.skipUntilCanUse<FreezingTrap>(you);
+            Card secret = you.hand.getCard<FreezingTrap>();
+            you.cmdUse(game, secret);
+            Assert.AreEqual(1, you.head.count);
+            Assert.AreEqual(secret, you.head[0]);
+            you.cmdTurnEnd(game);
+            Card servant = oppo.hand.getCard<ChargeServant>();
+            oppo.cmdUse(game, servant);
+            oppo.cmdAttack(game, servant, you.master);
+            var eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            Assert.NotNull(eventArg);
+            Assert.AreEqual(secret, eventArg.card);
+            Assert.True(oppo.hand.Contains(servant));
+            oppo.cmdTurnEnd(game);
+
+            game.skipUntilCanUse<Vaporize>(you);
+            secret = you.hand.getCard<Vaporize>();
+            you.cmdUse(game, secret);
+            you.cmdTurnEnd(game);
+            servant = oppo.hand.getCard<ChargeServant>();
+            oppo.cmdUse(game, servant);
+            oppo.cmdAttack(game, servant, you.master);
+            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            Assert.AreEqual(secret, eventArg.card);
+            Assert.True(oppo.grave.Contains(servant));
+            oppo.cmdTurnEnd(game);
+
+            //组合测试：蒸发、冰冻
+            game.skipUntilCanUse(you, game.getDefine<FreezingTrap>(), game.getDefine<Vaporize>());
+            secret = you.hand.getCard<Vaporize>();
+            you.cmdUse(game, secret);
+            secret = you.hand.getCard<FreezingTrap>();
+            you.cmdUse(game, secret);
+            you.cmdTurnEnd(game);
+            servant = oppo.hand.getCard<ChargeServant>();
+            oppo.cmdUse(game, servant);
+            oppo.cmdAttack(game, servant, you.master);
+            //断点观察：you头上是否还有冰冻
+            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            Assert.IsInstanceOf<Vaporize>(eventArg.card.define);
+            Assert.IsInstanceOf<FreezingTrap>(you.head[0].define);
+            servant = oppo.hand.getCard<ChargeServant>();
+            oppo.cmdUse(game, servant);
+            oppo.cmdAttack(game, oppo.field[0], you.master);
+
+
+            //组合测试：冰冻、蒸发
+            game.skipUntilCanUse(you, game.getDefine<FreezingTrap>(), game.getDefine<Vaporize>());
+            secret = you.hand.getCard<FreezingTrap>();
+            you.cmdUse(game, secret);
+            secret = you.hand.getCard<Vaporize>();
+            you.cmdUse(game, secret);
+            you.cmdTurnEnd(game);
+            servant = oppo.hand.getCard<ChargeServant>();
+            oppo.cmdUse(game, servant);
+            oppo.cmdAttack(game, servant, you.master);
+            //断点观察：you头上是否还有蒸发
+            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            Assert.IsInstanceOf<FreezingTrap>(eventArg.card.define);
+            Assert.IsInstanceOf<Vaporize>(you.head[0].define);
+
+            game.Dispose();
+        }
     }
 }

@@ -17,8 +17,6 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = OpenFire.ID;//英雄技能的ID
         public override IEffect[] effects { get; set; } = new IEffect[0];
-
-
     }
     /// <summary>
     /// 技能：开火
@@ -116,30 +114,4 @@ namespace TouhouHeartstone.Builtin
             await game.getAllEnemies(card.getOwner()).random(game).damage(game, card, 2);
         }
     }
-  
-
-    /// <summary>
-    /// 测试用奥秘
-    /// 2费，释放奥秘：蒸发
-    /// </summary>
-    [IgnoreCardDefine]
-    public class DefaultMystery_zf : SpellCardDefine
-    {
-        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x667;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
-            {
-                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
-            },async(g,c,a)=>
-            {
-                 await a.card.setDead(g,true);
-                 await g.updateDeath(g);//死亡结算
-            })
-        };
-    }
-
 }

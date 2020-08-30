@@ -346,31 +346,6 @@ namespace Tests
             })
         };
     }
-
-    /// <summary>
-    /// 测试用奥秘
-    /// 2费，释放奥秘：冰冻陷阱
-    /// </summary>
-    public class DefaultMystery : SpellCardDefine
-    {
-        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x666;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
-            {
-                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
-            },async(g,c,a)=>
-            {
-                 await a.card.backToHand(g);
-                 await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
-            })
-        };
-    }
-
-
     /// <summary>
     /// 巫师学徒
     /// </summary>
@@ -610,8 +585,8 @@ namespace Tests
             }
         }
 
-        
-        
+
+
     }
 
     /// <summary>
@@ -678,26 +653,78 @@ namespace Tests
         public override int cost { get; set; } = 0;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-                new LambdaSingleTargetEffect((game, card, target) =>
-                {
-                   target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(4),new LifeModifier(4)));
-                   target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnEndEventArg>(
-                                                         PILE.FIELD,
-                                                         (g1, c1, a1) =>
-                                                         {
-                                                             return a1.player == c1.getOwner();
-                                                         },
-                                                         null,
-                                                         async (g1,c1,a1) =>
-                                                         {
-                                                            //起效部分，效果是消灭随从
-                                                            await c1.setDead(game, true);
-                                                            //由于回合开始不会进行死亡结算，所以这里要强制进行一次。
-                                                            await g1.updateDeath(g1);
-                                                         }
-                                                         )));
-                    return Task.CompletedTask;
-                },PileFlag.self | PileFlag.field)
+            new LambdaSingleTargetEffect(async (game, card, target) =>
+            {
+                await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(4),new LifeModifier(4)));
+                await target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnEndEventArg>(
+                    PILE.FIELD,
+                    (g1, c1, a1) =>
+                    {
+                        return a1.player == c1.getOwner();
+                    },
+                    null,
+                    async (g1,c1,a1) =>
+                    {
+                    //起效部分，效果是消灭随从
+                    await c1.setDead(game, true);
+                    //由于回合开始不会进行死亡结算，所以这里要强制进行一次。
+                    await g1.updateDeath(g1);
+                    }
+                    )));
+            },PileFlag.self | PileFlag.field)
         };
+    }
+    /// <summary>
+    /// 测试用奥秘
+    /// 2费，释放奥秘：冰冻陷阱
+    /// </summary>
+    public class FreezingTrap : SpellCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x019;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
+            {
+                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
+            },async(g,c,a)=>
+            {
+                 await a.card.backToHand(g);
+                 await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
+            })
+        };
+    }
+    /// <summary>
+    /// 测试用奥秘
+    /// 2费，释放奥秘：蒸发
+    /// </summary>
+    public class Vaporize : SpellCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x020;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
+            {
+                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
+            },async(g,c,a)=>
+            {
+                 await a.card.setDead(g,true);
+                 await g.updateDeath(g);//死亡结算
+            })
+        };
+    }
+    public class ChargeServant : ServantCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x021;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.CHARGE };
     }
 }
