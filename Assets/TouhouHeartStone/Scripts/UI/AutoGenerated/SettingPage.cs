@@ -25,7 +25,6 @@ namespace UI
         }
         public void autoBind()
         {
-            this._Image = this.transform.Find("Image").GetComponent<Image>();
             this._SettingImage = this.transform.Find("Setting").GetComponent<Image>();
             this._TitleBarImage = this.transform.Find("Setting").Find("TitleBar").GetComponent<Image>();
             this._TitleText = this.transform.Find("Setting").Find("TitleBar").Find("Title").GetComponent<Text>();
@@ -34,19 +33,6 @@ namespace UI
             this._BGMGameOptionItemSlider = this.transform.Find("Setting").Find("SettingContainer").Find("BGM").GetComponent<GameOptionItemSlider>();
             this._SEGameOptionItemSlider = this.transform.Find("Setting").Find("SettingContainer").Find("SE").GetComponent<GameOptionItemSlider>();
             this._BackButtonBlack = this.transform.Find("Setting").Find("Back").GetComponent<ButtonBlack>();
-        }
-        [SerializeField()]
-        private Image _Image;
-        public Image Image
-        {
-            get
-            {
-                if ((this._Image == null))
-                {
-                    this._Image = this.transform.Find("Image").GetComponent<Image>();
-                }
-                return this._Image;
-            }
         }
         [SerializeField()]
         private Image _SettingImage;
