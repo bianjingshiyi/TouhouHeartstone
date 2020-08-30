@@ -119,6 +119,8 @@ namespace Tests
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<SylphyHorn>().cost + 1);
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
             you.cmdUse(game, you.hand.getCard<SylphyHorn>(), targets: you.master);
+            //Card.SetPropEventArg card = game.triggers.getRecordedEvents().OfType<Card.SetPropEventArg>().LastOrDefault(c =>c.card == you.master&&c.propName == PROPERTY.CURRENT_LIFE);
+            //game.logger.log("a:" + card.value);
             game.Dispose();
         }
 
@@ -658,6 +660,30 @@ namespace Tests
             Assert.False(you.field[0].hasTag(game, KEYWORD.TAUNT));
             Assert.AreEqual(defineLife, you.field[0].getCurrentLife(game));
             Assert.AreEqual(defineLife, you.field[0].getLife(game));
+
+            game.Dispose();
+        }
+
+        [Test]
+        public void Double_BurgeoningRiseTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(BurgeoningRise.ID, 2)
+            );
+            game.skipUntilCanUse<DefaultServant>(you);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse<BurgeoningRise>(you);
+            you.cmdUse(game, you.hand.getCard<BurgeoningRise>(), targets: you.field[0]);
+            game.skipUntilCanUse<BurgeoningRise>(you);
+            you.cmdUse(game, you.hand.getCard<BurgeoningRise>(), targets: you.field[0]);
+            you.field[0].die(game);
+            Assert.AreEqual(1, you.field.count);
+            var dead = you.field[0];
+            Assert.IsInstanceOf<DefaultServant>(dead.define);
+            Buff buff = dead.getBuffs()[0];
+            Assert.NotNull(buff);
+            Assert.AreEqual(game.getDefine<DefaultServant>().attack + 3, dead.getAttack(game));
+            Assert.AreEqual(game.getDefine<DefaultServant>().life + 3, dead.getLife(game));
 
             game.Dispose();
         }

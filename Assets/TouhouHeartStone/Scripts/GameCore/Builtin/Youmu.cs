@@ -30,12 +30,12 @@ namespace TouhouHeartstone.Builtin
 
             }
         }
-        public class RemovePreHeatEffect : THHEffectAfter<THHPlayer.UseEventArg>
+        public class RemovePreHeatEffect : THHEffectBefore<Pile.MoveCardEventArg>
         {
             public RemovePreHeatEffect() : base(PileFlag.field | PileFlag.warp | PileFlag.item,
             (g1, c1, a1) =>
             {
-                return a1.card == c1;
+                return a1.card == c1 && (a1.to == a1.card.getOwner().grave|| a1.to == c1.getOwner().deck);
             }, null, (g1, c1, a1) =>
             {
                 return setPreHeated(g1, c1, false);

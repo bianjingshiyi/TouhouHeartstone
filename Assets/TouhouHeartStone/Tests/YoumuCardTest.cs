@@ -32,13 +32,13 @@ namespace Tests
             );
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<SlashOfPresentWorld>().cost * 2);
             Card card = you.hand.First();
-            you.cmdUse(game, card);
             Assert.True(Youmu.isPreHeated(game, card));
-            Assert.AreEqual(4, you.master.getAttack(game));
-            card = you.hand.Last();
             you.cmdUse(game, card);
+            Assert.AreEqual(3, you.master.getAttack(game));
+            card = you.hand.Last();
             Assert.False(Youmu.isPreHeated(game, card));
-            Assert.AreEqual(6, you.master.getAttack(game));
+            you.cmdUse(game, card);
+            Assert.AreEqual(5, you.master.getAttack(game));
         }
 
         [Test]
