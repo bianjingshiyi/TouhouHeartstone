@@ -136,7 +136,7 @@ namespace TouhouHeartstone.Builtin
     /// 错乱之眼
     /// 2费，奥秘：当随从攻击时，召唤3个0/2且具有嘲讽的幻象并使其中随机一个成为攻击目标。
     /// </summary>
-    public class VisionaryTuning : SpellCardDefine
+    public class DisorderEye : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x005;
         public override int id { get; set; } = ID;
@@ -165,7 +165,6 @@ namespace TouhouHeartstone.Builtin
     /// 0/0/2
     /// 衍生物
     /// </summary>
-    [IgnoreCardDefine]
     public class Vision : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x006;
@@ -176,6 +175,30 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;//是衍生物吗？
                                                           //public override string[] tags { get; set; } = new string[];//种族标签
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };//关键词标签：
-
     }
+
+    /// <summary>
+    /// 幻视调律
+    /// 2费，奥秘：当敌方对一个目标使用法术时，使其目标变为其他随机目标。
+    /// </summary>
+    public class VisionaryTuning : SpellCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x007;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new SecretTriggerBefore<THHPlayer.UseEventArg>((g,c,a)=>
+            {
+                return a.card.getOwner() != c.getOwner()  && a.card.isSpell() && a.card.define.getActiveEffect() is ITargetEffect;
+            },async(g,c,a)=>
+            {
+                Card[] range = a.card.getAvaliableTargets(g);
+                Card[] targets = range.Where(target => target.Equals(a.targets)).random(g);
+                a.targets = targets;
+            })
+        };
+    }
+
 }

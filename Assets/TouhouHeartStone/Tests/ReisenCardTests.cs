@@ -121,7 +121,7 @@ namespace Tests
         }
 
         [Test]
-        public void ReisenVisionaryTuningTest()
+        public void ReisenDisorderEyeTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -130,17 +130,45 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<VisionaryTuning>(), 1)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<DisorderEye>(), 1)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<DisorderEye>(you);
+            you.cmdUse(game, you.hand.getCard<DisorderEye>());
+            you.cmdTurnEnd(game);
+
+            oppo.cmdAttack(game, oppo.field[0], you.master);
+
+            game.Dispose();
+        }
+
+        [Test]
+        public void ReisenVisionaryTuningTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 2).Concat(Enumerable.Repeat(game.getDefine<TestFreezeBrain>(), 1)));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 2).Concat(Enumerable.Repeat(game.getDefine<VisionaryTuning>(), 1)));
+            
+
+            for (int i = 0; i < 2; i++)
+            {
+                game.skipUntilCanUse<DefaultServant>(you);
+                you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            }
 
             game.skipUntilCanUse<VisionaryTuning>(you);
             you.cmdUse(game, you.hand.getCard<VisionaryTuning>());
             you.cmdTurnEnd(game);
 
-            oppo.cmdAttack(game, oppo.field[0], you.master);
-
+            oppo.cmdUse(game, oppo.hand.getCard<TestFreezeBrain>(), targets: you.field[0]);
+            Assert.False(you.field[0].isFreeze(game));
             game.Dispose();
         }
     }
