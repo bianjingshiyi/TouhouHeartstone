@@ -137,4 +137,28 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+
+    /// <summary>
+    /// 赤眼催眠
+    /// 2费，奥秘,当敌方不低于2攻随从攻击时，获得他的控制权。
+    /// </summary>
+    public class MineShaker : SpellCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x002;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
+            {
+                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g) && a.card.isServant() && a.card.getAttack(g) <= 2;
+            },async(g,c,a)=>
+            {
+                 a.isCanceled = true;   //取消攻击
+                 await a.card.getOwner().field.moveTo(g,a.card,c.getOwner().field);//交换控制权
+                 
+            })
+        };
+    }
 }
