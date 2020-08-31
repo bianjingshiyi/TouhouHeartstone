@@ -60,5 +60,40 @@ namespace Tests
 
             game.Dispose();
         }
+
+        [Test]
+        public void MindStopperTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(MindStopper.ID, 3)
+            );
+            game.skipUntilCanUse<MindStopper>(you);
+            you.cmdUse(game, you.hand.getCard<MindStopper>());
+            you.cmdTurnEnd(game);
+            Assert.AreEqual(3, oppo.gem);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            Assert.AreEqual(0, oppo.field.count);
+            Assert.AreEqual(2, oppo.gem);
+
+        }
+
+        [Test]
+        public void HareMonsterTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+                Enumerable.Repeat(game.getDefine<HareMonster>() as CardDefine, 1));
+
+            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
+            you.cmdUse(game, you.hand.getCard<HareMonster>());
+            Assert.AreEqual(1, you.field[0].getAttack(game));
+            you.cmdUse(game, you.skill,targets:oppo.master);
+            Assert.AreEqual(3, you.field[0].getAttack(game));
+        }
     }
 }

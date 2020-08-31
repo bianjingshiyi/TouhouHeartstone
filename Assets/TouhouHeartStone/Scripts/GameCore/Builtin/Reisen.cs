@@ -137,4 +137,49 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+
+    /// <summary>
+    /// 113 野兔兽妖 激励：攻击力变为3
+    /// </summary>
+    public class HareMonster : ServantCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x002;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 3;
+        public override string[] tags { get; set; } = { TAG.BEAST };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+              (g,c,a)=>{
+                    return a.player == c.getOwner() && a.card.isSkill();
+                }, null, async(g, c, a) =>
+                {
+                    await c.addBuff(g, new GeneratedBuff(ID,new AttackModifier(3,true)));
+                }
+                )
+        };
+    }
+
+    /// <summary>
+    /// 2 奥秘：生神停止 当敌方使用随从时，取消它的使用。
+    /// </summary>
+    public class MindStopper : SpellCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x003;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new SecretTriggerBefore<THHPlayer.UseEventArg>((g,c,a)=>
+            {
+                return a.card.getOwner() != c.getOwner() && a.card != c;
+            },async(g,c,a)=>
+            {
+                a.isCanceled = true;
+            })
+        };
+    }
 }

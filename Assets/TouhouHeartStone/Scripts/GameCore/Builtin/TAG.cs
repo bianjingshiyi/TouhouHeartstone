@@ -6,5 +6,6 @@
         public const string MACHINE = "Machine";
         public const string DEMON = "Demon";
         public const string ELEMENT = "Element";
+        public const string BEAST = "Beast";
     }
 }
