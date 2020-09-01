@@ -38,7 +38,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
-    
+
 
     /// <summary>
     /// 超短脑波
@@ -149,13 +149,13 @@ namespace TouhouHeartstone.Builtin
                 return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g) && a.card.isServant() && c.getOwner().field.count<=4;
             },async(g,c,a)=>
             {
-                 List<Card> tokens = new List<Card>(); 
+                 List<Card> tokens = new List<Card>();
                 for(int i=0 ; i<3; i++)
                 {
                     var token = await c.getOwner().createToken(g,g.getDefine<Vision>(),c.getOwner().field.count);
                     tokens.Add(token.card);
                 }
-                a.target = tokens.random(g);                
+                a.target = tokens.random(g);
             })
         };
     }
@@ -201,4 +201,31 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
+    /// <summary>
+    /// 幻视调律
+    /// 1费，复原你的技能并使你的技能在下一次使用前法力值消耗变为0。
+    /// </summary>
+    public class MindStarMine : SpellCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x008;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+           new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().skill.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true), new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.SKILL, (g, c, a) =>
+                                                                                                                                                               {
+                                                                                                                                                                   return a.player == c.getOwner() && a.card.isSkill();
+                                                                                                                                                               }, ID)));
+            if (card.getOwner().skill.isUsed(game))
+            {
+               await  card.getOwner().skill.setUsed(game,false);
+            }
+        }
+    }
 }
