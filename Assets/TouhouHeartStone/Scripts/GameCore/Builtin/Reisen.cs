@@ -228,4 +228,37 @@ namespace TouhouHeartstone.Builtin
             }
         }
     }
+
+    /// <summary>
+    /// 国士无双之药
+    /// 1，使一个友方随从获得+3/+3，下回合开始时消灭它
+    /// </summary>
+    public class PowrOverwhelming : SpellCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x009;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async (game, card, target) =>
+            {
+                await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3),new LifeModifier(3)));
+                await target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnStartEventArg>(
+                    PILE.FIELD,
+                    (g1, c1, a1) =>
+                    {
+                        return a1.player == c1.getOwner();
+                    },
+                    null,
+                    async (g1,c1,a1) =>
+                    {
+                    //起效部分，效果是消灭随从
+                    await c1.setDead(game, true);
+                    //由于回合开始不会进行死亡结算，所以这里要强制进行一次。
+                    await g1.updateDeath(g1);
+                    }
+                    )));
+            },PileFlag.self | PileFlag.field)
+        };
+    }
 }
