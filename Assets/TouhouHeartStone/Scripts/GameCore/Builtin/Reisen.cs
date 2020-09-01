@@ -319,4 +319,49 @@ namespace TouhouHeartstone.Builtin
                 })
         };
     }
+
+    /// <summary>
+    /// 1费 精神投弹 复原你的技能并使你的技能在下一次使用前能以随从作为目标。
+    /// </summary>
+    public class MentalBomb : SpellCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x024;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)//这不是个指向性技能
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            if (card.getOwner().skill.isUsed(game))
+            {
+                await card.getOwner().skill.setUsed(game, false);
+            }
+            var arg = await card.getOwner().skill.setDefine(game, game.getDefine<OpenFire_point>());
+            await card.getOwner().skill.addBuff(game, new GeneratedBuff(ID,
+                new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+              (g, c, a) => {
+                  return a.player == c.getOwner() && a.card.isSkill();
+              }, null, async (g, c, a) =>
+              {
+                  await card.getOwner().skill.setDefine(game, arg.beforeDefine);
+              }
+             )));
+        }
+    }
+    public class OpenFire_point : SkillCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SKILL | 0x777;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2; //技能花费
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async(g, c, t) =>
+            {
+                await t.damage(g,c,2);
+            })
+        };
+
+    }
 }

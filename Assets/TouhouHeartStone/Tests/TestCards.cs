@@ -746,4 +746,22 @@ namespace Tests
                 },PileFlag.both | PileFlag.character)
         };
     }
+
+    /// <summary>
+    /// 变形机制测试
+    /// 4费  变羊术
+    /// </summary>
+    public class Polymorph : SpellCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x023;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async(g, c, t) =>
+            {
+                await t.setDefine(g,g.getDefine<RushServant>());//没有羊
+            },PileFlag.both | PileFlag.field)
+        };
+    }
 }

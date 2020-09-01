@@ -214,5 +214,32 @@ namespace Tests
 
             game.Dispose();
         }
+
+        [Test]
+        public void MentalBombTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MentalBomb>(), 1)));
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            Card servant = oppo.hand.getCard<DefaultServant>();
+            oppo.cmdUse(game, servant);
+            oppo.cmdTurnEnd(game);
+            game.skipUntilCanUse<MentalBomb>(you);
+            you.setGem(game,10);
+            you.cmdUse(game, you.skill);
+            you.cmdUse(game, you.hand.getCard<MentalBomb>());
+            Assert.True(you.skill.define is OpenFire_point);
+            you.cmdUse(game, you.skill,targets:oppo.field[0]);
+            Assert.True(you.skill.define is OpenFire);
+            Assert.AreEqual(5, oppo.field[0].getCurrentLife(game));
+
+        }
+        
     }
 }

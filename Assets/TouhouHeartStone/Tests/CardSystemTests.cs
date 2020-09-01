@@ -448,5 +448,27 @@ namespace Tests
 
             game.Dispose();
         }
+
+        [Test]
+        public void PolymorphTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>[]
+                {
+                    new KeyValuePair<int, int>(Polymorph.ID, 6)
+                },
+                new KeyValuePair<int, int>[]
+                {
+                    new KeyValuePair<int, int>(DefaultServant.ID,30)
+                }
+            );
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            Card servant = oppo.hand.getCard<DefaultServant>();
+            oppo.cmdUse(game, servant);
+            oppo.cmdTurnEnd(game);
+            game.skipUntilCanUse<Polymorph>(you);
+            Card polymorph = you.hand.getCard<Polymorph>();
+            you.cmdUse(game, polymorph,targets:oppo.field[0]);
+        }
     }
 }

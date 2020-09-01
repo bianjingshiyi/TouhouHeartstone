@@ -730,7 +730,13 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static async Task resetCard(this Card card, THHGame game)
         {
-            if (card.define is ServantCardDefine servant)
+            await card.removeBuff(game, card.getBuffs());
+
+            if (card.define is MasterCardDefine master)
+            {
+                await card.setLife(game, master.life);
+            }
+            else if (card.define is ServantCardDefine servant)
             {
                 await card.setDead(game, false);
                 await card.setCurrentLife(game, servant.life);
@@ -739,7 +745,6 @@ namespace TouhouHeartstone
                 await card.setAttack(game, servant.attack);
                 await card.setLife(game, servant.life);
                 await card.setSpellDamage(game, servant.spellDamage);
-                await card.removeBuff(game, card.getBuffs());
                 await card.setKeywords(game, new string[0]);
                 foreach (string keyword in servant.keywords)
                 {
@@ -750,6 +755,27 @@ namespace TouhouHeartstone
                 await card.setProp(game, PROPERTY.KEYWORDS, servant.keywords);
                 await card.setProp(game, nameof(ServantCardDefine.tags), servant.tags);
             }
+            else if (card.define is SpellCardDefine spell)
+            {
+                await card.setCost(game, spell.cost);
+                foreach (var keyword in spell.keywords)
+                {
+                    if (string.IsNullOrEmpty(keyword))
+                        continue;
+                    await card.setProp(game, keyword, true);
+                }
+            }
+            else if (card.define is SkillCardDefine skill)
+            {
+                await card.setCost(game, skill.cost);
+            }
+            else if (card.define is ItemCardDefine item)
+            {
+                await card.setCost(game, item.cost);
+                await card.setAttack(game, item.attack);
+                await card.setLife(game, item.life);
+            }
+
         }
         public static async Task resetCard(this IEnumerable<Card> cards, THHGame game)
         {
@@ -1201,7 +1227,6 @@ namespace TouhouHeartstone
         {
             return "{card:" + card.define.id + "}";
         }
-
         /// <summary>
         /// 触发奥秘
         /// </summary>
@@ -1219,7 +1244,6 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
-
         public class SecretEventArg : EventArg, IDescribableEventArg
         {
             public Card card;
@@ -1236,6 +1260,44 @@ namespace TouhouHeartstone
             {
                 return null;//card.getFormatString() + "的护甲变为" + value;
             }
+        }
+
+        /// <summary>
+        /// 变形
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="define"></param>
+        public static async Task<SetDefineEventArg> setDefine(this Card card, IGame game, CardDefine define)
+        {
+            var eventArg = await game.triggers.doEvent(new SetDefineEventArg() { card = card, beforeDefine = card.define, afterDefine = define }, async arg =>
+            {
+                card.Morph(game, define);//变形
+                await card.resetCard(game as THHGame);//卡牌重置
+            });
+            return eventArg;
+        }
+        public class SetDefineEventArg : EventArg, IDescribableEventArg
+        {
+            public Card card;
+            public CardDefine beforeDefine;
+            public CardDefine afterDefine;
+
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
         }
     }
 }
