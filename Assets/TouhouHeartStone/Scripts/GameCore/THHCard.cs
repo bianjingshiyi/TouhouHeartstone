@@ -939,7 +939,7 @@ namespace TouhouHeartstone
                     if (s.isPoisonous(g) && !g.players.Any(p => p.master == c))
                         await c.setDead(game, true);
                     if (s.isDrain(g))
-                        await s.getOwner().master.heal(g, d);
+                        await s.getOwner().master.heal(g,c, d);
                 }
             }
         }
@@ -963,6 +963,7 @@ namespace TouhouHeartstone
             if (cards.Count() > count)
                 cards = cards.randomTake(game, count);
             return cards.damage(game, source, value);
+            
         }
         public class DamageEventArg : EventArg, IDescribableEventArg
         {
@@ -999,14 +1000,15 @@ namespace TouhouHeartstone
                 }
             }
         }
-        public static Task<HealEventArg> heal(this IEnumerable<Card> cards, THHGame game, int value)
+        public static Task<HealEventArg> heal(this IEnumerable<Card> cards, THHGame game, Card sourse, int value)
         {
             cards = cards.Where(c => c.getCurrentLife(game) < c.getLife(game));
             if (cards.Count() < 1)
                 return Task.FromResult<HealEventArg>(default);
-            return game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(), value = value }, async arg =>
+            return game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(),source = sourse, value = value }, async arg =>
             {
                 cards = arg.cards;
+                sourse = arg.source;
                 value = arg.value;
                 foreach (Card card in cards)
                 {
@@ -1032,13 +1034,15 @@ namespace TouhouHeartstone
                 }
             });
         }
-        public static Task<HealEventArg> heal(this Card card, THHGame game, int value)
+        public static Task<HealEventArg> heal(this Card card, THHGame game,Card sourse, int value)
         {
-            return heal(new Card[] { card }, game, value);
+            return heal(new Card[] { card }, game,sourse, value);
+            
         }
         public class HealEventArg : EventArg, IDescribableEventArg
         {
             public Card[] cards;
+            public Card source;
             public int value;
             public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
 

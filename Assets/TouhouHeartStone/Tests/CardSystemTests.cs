@@ -367,7 +367,7 @@ namespace Tests
             Assert.AreEqual(5, lightspawn.getAttack(game));
             lightspawn.damage(game, null, 2);
             Assert.AreEqual(3, lightspawn.getAttack(game));
-            lightspawn.heal(game, 1);
+            lightspawn.heal(game,null, 1);
             Assert.AreEqual(4, lightspawn.getAttack(game));
         }
         [Test]

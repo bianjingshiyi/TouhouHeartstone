@@ -237,7 +237,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x009;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 0;
+        public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
@@ -252,13 +252,70 @@ namespace TouhouHeartstone.Builtin
                     null,
                     async (g1,c1,a1) =>
                     {
-                    //起效部分，效果是消灭随从
-                    await c1.setDead(game, true);
-                    //由于回合开始不会进行死亡结算，所以这里要强制进行一次。
-                    await g1.updateDeath(g1);
+                        //起效部分，效果是消灭随从
+                        await c1.setDead(game, true);
+                        //由于回合开始不会进行死亡结算，所以这里要强制进行一次。
+                        await g1.updateDeath(g1);
                     }
                     )));
             },PileFlag.self | PileFlag.field)
+
+            
+        };
+    }
+
+    /// <summary>
+    /// 幻象震爆
+    /// 2,对敌方英雄打5
+    /// </summary>
+    public class MindExplosion : SpellCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x010;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            await game.getOpponent(card.getOwner()).master.damage(game, card, 5);
+        }
+    }
+
+    /// <summary>
+    /// 永琳
+    /// 英雄技能造成的伤害翻倍,治疗翻倍
+    /// </summary>
+    public class EirinYagokoro : ServantCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x023;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 6;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 8;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
+                (g, c, a) =>
+                {
+                    return a.source.getOwner() == c.getOwner() && a.source.isSkill();
+                },null,(g,c,a)=>
+                {
+                    a.value *= 2;
+                    return Task.CompletedTask;
+                }),
+            
+            new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
+                (g, c, a) =>
+                {
+                    return a.source.getOwner() == c.getOwner();
+                },null,(g,c,a)=>
+                {
+                    a.value *= 2;
+                    return Task.CompletedTask;
+                })
         };
     }
 }

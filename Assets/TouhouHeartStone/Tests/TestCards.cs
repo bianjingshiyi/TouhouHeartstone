@@ -593,53 +593,53 @@ namespace Tests
     /// 维伦
     /// 法术和英雄技能造成的伤害和治疗翻倍
     /// </summary>
-    //public class Velen : ServantCardDefine
-    //{
-    //    public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x018;
-    //    public override int id { get; set; } = ID;
-    //    public override int cost { get; set; } = 7;
-    //    public override int attack { get; set; } = 7;
-    //    public override int life { get; set; } = 7;
-    //    public override IEffect[] effects { get; set; } = new IEffect[]
-    //    {
-    //        new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
-    //            (g, c, a) =>
-    //            {
-    //                return a.source.getOwner() == c.getOwner() && a.source.isSkill();
-    //            },null,(g,c,a)=>
-    //            {
-    //                a.value *= 2;
-    //                return Task.CompletedTask;
-    //            }),
-    //        new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
-    //            (g, c, a) =>
-    //            {
-    //                return a.source.getOwner() == c.getOwner() && a.source.isSpell();
-    //            },null,(g,c,a)=>
-    //            {
-    //                a.value *= 2;
-    //                return Task.CompletedTask;
-    //            })
-    //        new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
-    //            (g, c, a) =>
-    //            {
-    //                return a..getOwner() == c.getOwner() && a.source.isSkill();
-    //            },null,(g,c,a)=>
-    //            {
-    //                a.value *= 2;
-    //                return Task.CompletedTask;
-    //            }),
-    //        new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
-    //            (g, c, a) =>
-    //            {
-    //                return a.source.getOwner() == c.getOwner() && a.source.isSpell();
-    //            },null,(g,c,a)=>
-    //            {
-    //                a.value *= 2;
-    //                return Task.CompletedTask;
-    //            })
-    //    };
-    //}
+    public class Velen : ServantCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x023;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 7;
+        public override int attack { get; set; } = 7;
+        public override int life { get; set; } = 7;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
+                (g, c, a) =>
+                {
+                    return a.source.getOwner() == c.getOwner() && a.source.isSkill();
+                },null,(g,c,a)=>
+                {
+                    a.value *= 2;
+                    return Task.CompletedTask;
+                }),
+            new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
+                (g, c, a) =>
+                {
+                    return a.source.getOwner() == c.getOwner() && a.source.isSpell();
+                },null,(g,c,a)=>
+                {
+                    a.value *= 2;
+                    return Task.CompletedTask;
+                }),
+            new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
+                (g, c, a) =>
+                {
+                    return a.source.getOwner() == c.getOwner() && a.source.isSkill();
+                },null,(g,c,a)=>
+                {
+                    a.value *= 2;
+                    return Task.CompletedTask;
+                }),
+            new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
+                (g, c, a) =>
+                {
+                    return a.source.getOwner() == c.getOwner() && a.source.isSpell();
+                },null,(g,c,a)=>
+                {
+                    a.value *= 2;
+                    return Task.CompletedTask;
+                })
+        };
+    }
 
 
     /// <summary>
@@ -726,5 +726,24 @@ namespace Tests
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.CHARGE };
+    }
+
+    /// <summary>
+    /// 治疗
+    /// 0，治疗3
+    /// </summary>
+    public class TestHeal : SpellCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x022;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+              new LambdaSingleTargetEffect((g, c, t) =>
+                {
+                    return t.heal(g,c,3);
+                },PileFlag.both | PileFlag.character)
+        };
     }
 }

@@ -369,7 +369,7 @@ namespace TouhouHeartstone.Builtin.Proble
             {
                 int heal = target.getLife(game);
                 if(((IList)target.getTags(game)).Contains(TAG.MACHINE)){
-                    await target.heal(game,heal);
+                    await target.heal(game,card,heal);
                 }else{
                     await target.damage(game, card, card.getOwner().getSpellDamage(game, heal));
                 }

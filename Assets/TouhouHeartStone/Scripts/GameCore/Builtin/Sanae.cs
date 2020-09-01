@@ -35,7 +35,7 @@ namespace TouhouHeartstone.Builtin
             },async (game,card,vars,targets)=>
             {
                 if(targets[0] is Card target)
-                    await target.heal(game, 2);
+                    await target.heal(game,card, 2);
             })
         };
     }

@@ -454,7 +454,7 @@ namespace TouhouHeartstone.Builtin
                 return false;
             },async (game,card,arg,targets)=>
             {
-                await game.players.Select(p=>p.master).heal(game,4);
+                await game.players.Select(p=>p.master).heal(game,card,4);
                 foreach (var p in game.players)
                 {
                     for (int i = 0; i < 2; i++)
