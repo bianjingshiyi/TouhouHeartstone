@@ -290,7 +290,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class EirinYagokoro : ServantCardDefine
     {
-        public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x023;
+        public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x011;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 4;
@@ -325,7 +325,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class MentalBomb : SpellCardDefine
     {
-        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x024;
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x012;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -352,7 +352,7 @@ namespace TouhouHeartstone.Builtin
     }
     public class OpenFire_point : SkillCardDefine
     {
-        public const int ID = Reisen.ID | CATEGORY.SKILL | 0x777;
+        public const int ID = Reisen.ID | CATEGORY.SKILL | 0x013;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2; //技能花费
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -363,5 +363,25 @@ namespace TouhouHeartstone.Builtin
             })
         };
 
+    }
+
+    /// <summary>
+    /// 334 贩药货郎 战吼：回复4点生命值
+    /// </summary>
+    public class DrugDealer : ServantCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x014;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 4;
+        public override string[] tags { get; set; } = { TAG.BEAST };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async(g,c,t)=>
+            {
+                await t.heal(g,c,6);
+            },PileFlag.both | PileFlag.character)
+        };
     }
 }
