@@ -231,9 +231,9 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 国士无双之药
-    /// 1，使一个友方随从获得+3/+3，下回合开始时消灭它
+    /// 1，使一个友方随从获得+3/+3，下回合开始时消灭它（警告：不要过量嗑药！）
     /// </summary>
-    public class PowrOverwhelming : SpellCardDefine
+    public class StateScholarOfNoEqual : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x009;
         public override int id { get; set; } = ID;
@@ -242,8 +242,10 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
-                await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3),new LifeModifier(3)));
-                await target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnStartEventArg>(
+                if(!target.getBuffs().Any(b => b.id == ID))
+                {
+                    await target.addBuff(game,new GeneratedBuff(ID,new PropModifier[]{ new AttackModifier(3), new LifeModifier(3) },
+                    new THHEffectBefore<THHGame.TurnStartEventArg>(
                     PILE.FIELD,
                     (g1, c1, a1) =>
                     {
@@ -252,12 +254,15 @@ namespace TouhouHeartstone.Builtin
                     null,
                     async (g1,c1,a1) =>
                     {
-                        //起效部分，效果是消灭随从
                         await c1.setDead(game, true);
-                        //由于回合开始不会进行死亡结算，所以这里要强制进行一次。
                         await g1.updateDeath(g1);
                     }
                     )));
+                }
+                else
+                {
+                    await target.setDead(game, true);
+                }
             },PileFlag.self | PileFlag.field)
 
             
