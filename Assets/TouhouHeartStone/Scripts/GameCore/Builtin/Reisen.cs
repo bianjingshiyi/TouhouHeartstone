@@ -384,4 +384,62 @@ namespace TouhouHeartstone.Builtin
             },PileFlag.both | PileFlag.character)
         };
     }
+
+    /// <summary>
+    /// 426 叛逃特工 每当你使用英雄技能时，对随机敌人造成3点伤害
+    /// </summary>
+    public class Marin : ServantCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x015;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 4;
+        //public override string[] tags { get; set; } = { TAG.BEAST };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+                                                      (g, c, a) =>
+                                                      {
+                                                          return a.player == c.getOwner() && a.card.isSkill();
+                                                      },null,
+                                                      async(g,c,a)=>{
+                                                          await g.getAllEnemies(c.getOwner()).random(g).damage(g,c,3);
+                                                      })
+        };
+    }
+
+    /// <summary>
+    /// 因幡帝
+    /// 英雄技能造成的伤害翻倍,治疗翻倍
+    /// </summary>
+    public class TewiInaba : ServantCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x016;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 5;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 4;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE, KEYWORD.STEALTH };//关键词标签：
+        public override string[] tags { get; set; } = { TAG.BEAST };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().draw(game);
+            var drawed = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
+            if (drawed.hasKeyword(game,KEYWORD.SECRET) && 
+                drawed.define is SpellCardDefine &&
+                card.getOwner().head.count < card.getOwner().head.maxCount &&
+                card.getOwner().head.All(c => c.define != card.define))
+            {
+                await card.getOwner().hand.moveTo(game, card, card.getOwner().head);
+                await effect(game, card);
+            }
+
+
+        }
+    }
 }

@@ -240,6 +240,23 @@ namespace Tests
             Assert.AreEqual(5, oppo.field[0].getCurrentLife(game));
 
         }
-        
+
+        [Test]
+        public void ReisenTewiInabaTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+                Enumerable.Repeat(game.getDefine<FreezingTrap>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<TewiInaba>(), 1)));
+
+            game.skipUntilCanUse<TewiInaba>(you);
+            
+            you.cmdUse(game, you.hand.getCard<TewiInaba>());
+            game.Dispose();
+        }
     }
 }
