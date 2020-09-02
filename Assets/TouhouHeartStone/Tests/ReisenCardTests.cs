@@ -251,11 +251,12 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<FreezingTrap>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<TewiInaba>(), 1)));
+                Enumerable.Repeat(game.getDefine<FreezingTrap>() as CardDefine, 9).Concat(Enumerable.Repeat(game.getDefine<TewiInaba>(), 1)));
 
             game.skipUntilCanUse<TewiInaba>(you);
-            
+            Assert.AreEqual(0, you.head.count);
             you.cmdUse(game, you.hand.getCard<TewiInaba>());
+            Assert.AreEqual(1, you.head.count);
             game.Dispose();
         }
     }

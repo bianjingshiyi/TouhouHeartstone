@@ -732,6 +732,10 @@ namespace TouhouHeartstone
         {
             await card.removeBuff(game, card.getBuffs());
 
+            foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
+            {
+                await effect.onDisable(game, card, null);
+            }
             if (card.define is MasterCardDefine master)
             {
                 await card.setLife(game, master.life);
@@ -764,6 +768,8 @@ namespace TouhouHeartstone
                         continue;
                     await card.setProp(game, keyword, true);
                 }
+                await card.setProp(game, PROPERTY.KEYWORDS, spell.keywords);
+                await card.setProp(game, nameof(SpellCardDefine.tags), spell.tags);
             }
             else if (card.define is SkillCardDefine skill)
             {
