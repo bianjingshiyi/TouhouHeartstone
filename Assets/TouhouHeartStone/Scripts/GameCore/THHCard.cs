@@ -1305,5 +1305,41 @@ namespace TouhouHeartstone
             }
 
         }
+
+
+        /// <summary>
+        /// 登场
+        /// </summary>
+        /// <param name="card">触发登场的牌</param>
+        /// <param name="game"></param>
+        /// <param name="target">登场效果目标，可以为null</param>
+        /// <param name="effects"></param>
+        /// <returns></returns>
+        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, IGame game,Card target)
+        {
+            var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card , target = target}, async arg =>
+            {
+                game.logger.log("触发战吼" + card + ",目标是" + target);
+            });
+            return eventArg;
+        }
+        public class ComeOnStageArg : EventArg, IDescribableEventArg
+        {
+            public Card card;
+            public Card target;
+
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return target;
+            }
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return null;//card.getFormatString() + "的护甲变为" + value;
+            }
+        }
     }
 }

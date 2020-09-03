@@ -415,8 +415,13 @@ namespace TouhouHeartstone
         }
         public override Task execute(THHGame game, Card card, Card target)
         {
-            if (_onExecute != null)
+            if (_onExecute != null) {
+                if(card.define is ServantCardDefine)
+                {
+                    card.ComeOnStage(game, target);
+                }              
                 return _onExecute(game, card, target);
+            }
             return Task.CompletedTask;
         }
     }
