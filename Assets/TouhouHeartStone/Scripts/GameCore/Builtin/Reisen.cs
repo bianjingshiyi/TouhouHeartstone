@@ -334,7 +334,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x012;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 4;
+        public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)//这不是个指向性技能
@@ -418,7 +418,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 因幡帝
-    /// 英雄技能造成的伤害翻倍,治疗翻倍
+    /// 抽一张牌，如果是奥秘则置入战场并重复此战吼
     /// </summary>
     public class TewiInaba : ServantCardDefine
     {
@@ -449,5 +449,67 @@ namespace TouhouHeartstone.Builtin
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// 1费 狂月爆破 复原你的技能并使你的技能在下一次伤害翻倍。
+    /// </summary>
+    public class LunaticBlast : SpellCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x017;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)//这不是个指向性技能
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            if (card.getOwner().skill.isUsed(game))
+            {
+                await card.getOwner().skill.setUsed(game, false);
+            }
+
+             await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
+                                                                                                                         (g, c, a) =>
+                                                                                                                         {
+                                                                                                                                return a.source.getOwner() == c.getOwner() && a.source.isSkill();
+                                                                                                                         }, null, (g, c, a) =>
+                                                                                                                         {
+                                                                                                                                a.value *= 2;
+                                                                                                                                return Task.CompletedTask;
+                                                                                                                         }), 
+                                                                              new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.SKILL, (g, c, a) =>
+                                                                                                                         {
+                                                                                                                                return a.player == c.getOwner() && a.card.isSkill();
+                                                                                                                          }, ID)));
+        }
+    }
+
+    /// <summary>
+    /// 332 狂月枪
+    /// 每当你将一个奥秘置入战场，便获得+1耐久度。
+    /// </summary>
+    public class LunaticGun : ItemCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.ITEM | 0x018;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<Pile.MoveCardEventArg>(PILE.ITEM,
+                                                      (g,c,a)=>{
+                                                          return a.from.owner == c.getOwner() &&
+                                                          a.to == c.getOwner().head &&
+                                                          a.card.define is SpellCardDefine && 
+                                                          a.card.hasKeyword(g,KEYWORD.SECRET);
+                                                      },null,
+                                                      async(g,c,a)=>{
+                                                          await c.addBuff(g,new GeneratedBuff(ID,new LifeModifier(1)));
+                                                      })
+          
+        };
     }
 }

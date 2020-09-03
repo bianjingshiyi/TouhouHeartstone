@@ -281,6 +281,24 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<StateScholarOfNoEqual>(), targets: you.field[0]);
             game.Dispose();
         }
-        
+
+        [Test]
+        public void ReisenLunaticGunTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+                Enumerable.Repeat(game.getDefine<FreezingTrap>() as CardDefine, 9).Concat(Enumerable.Repeat(game.getDefine<LunaticGun>(), 1)));
+
+            game.skipUntilCanUse<LunaticGun>(you);          
+            you.cmdUse(game, you.hand.getCard<LunaticGun>());
+            game.skipUntilCanUse<FreezingTrap>(you);
+            you.cmdUse(game, you.hand.getCard<FreezingTrap>());
+            game.Dispose();
+        }
     }
 }
