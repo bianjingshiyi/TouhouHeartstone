@@ -100,6 +100,9 @@ namespace UI
                     case CATEGORY.SPELL:
                         _onTypeControllerSpell.Invoke();
                         break;
+                    case CATEGORY.ITEM:
+                        _onTypeControllerItem.Invoke();
+                        break;
                     default://SERVANT
                         _onTypeControllerServant.Invoke();
                         break;
@@ -108,6 +111,8 @@ namespace UI
         }
         [SerializeField]
         private UnityEvent _onTypeControllerSpell;
+        [SerializeField]
+        private UnityEvent _onTypeControllerItem;
         [SerializeField]
         private UnityEvent _onTypeControllerServant;
         [SerializeField]

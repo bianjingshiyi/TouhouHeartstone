@@ -119,6 +119,8 @@ namespace TouhouHeartstone
                         continue;
                     card.setProp(this, keyword, true);
                 }
+                card.setProp(this, PROPERTY.KEYWORDS, spell.keywords);
+                card.setProp(this, nameof(SpellCardDefine.tags), spell.tags);
             }
             else if (define is SkillCardDefine skill)
             {

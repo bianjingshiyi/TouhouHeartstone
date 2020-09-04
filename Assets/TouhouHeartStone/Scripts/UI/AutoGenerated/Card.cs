@@ -355,6 +355,7 @@ namespace UI
         {
             Type_Servant,
             Type_Spell,
+            Type_Item,
         }
         public Type TypeController
         {

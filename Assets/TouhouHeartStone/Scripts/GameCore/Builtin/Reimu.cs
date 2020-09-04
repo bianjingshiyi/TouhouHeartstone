@@ -68,7 +68,7 @@ namespace TouhouHeartstone.Builtin
                 return false;
             },async (game,card,arg)=>
             {
-                await THHCard.heal(arg.player.field,game,1);
+                await THHCard.heal(arg.player.field,game,card,1);
             })
         };
     }

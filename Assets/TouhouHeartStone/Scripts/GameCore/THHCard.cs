@@ -748,6 +748,29 @@ namespace TouhouHeartstone
                 await card.setKeywords(game, servant.keywords);
                 await card.setProp(game, nameof(ServantCardDefine.tags), servant.tags);
             }
+            else if (card.define is SpellCardDefine spell)
+            {
+                await card.setCost(game, spell.cost);
+                foreach (var keyword in spell.keywords)
+                {
+                    if (string.IsNullOrEmpty(keyword))
+                        continue;
+                    await card.setProp(game, keyword, true);
+                }
+                await card.setProp(game, PROPERTY.KEYWORDS, spell.keywords);
+                await card.setProp(game, nameof(SpellCardDefine.tags), spell.tags);
+            }
+            else if (card.define is SkillCardDefine skill)
+            {
+                await card.setCost(game, skill.cost);
+            }
+            else if (card.define is ItemCardDefine item)
+            {
+                await card.setCost(game, item.cost);
+                await card.setAttack(game, item.attack);
+                await card.setLife(game, item.life);
+            }
+
         }
         public static async Task resetCard(this IEnumerable<Card> cards, THHGame game)
         {
@@ -937,7 +960,7 @@ namespace TouhouHeartstone
                     if (s.isPoisonous(g) && !g.players.Any(p => p.master == c))
                         await c.setDead(game, true);
                     if (s.isDrain(g))
-                        await s.getOwner().master.heal(g, d);
+                        await s.getOwner().master.heal(g,c, d);
                 }
             }
         }
@@ -961,6 +984,7 @@ namespace TouhouHeartstone
             if (cards.Count() > count)
                 cards = cards.randomTake(game, count);
             return cards.damage(game, source, value);
+            
         }
         public class DamageEventArg : EventArg, IDescribableEventArg
         {
@@ -997,14 +1021,15 @@ namespace TouhouHeartstone
                 }
             }
         }
-        public static Task<HealEventArg> heal(this IEnumerable<Card> cards, THHGame game, int value)
+        public static Task<HealEventArg> heal(this IEnumerable<Card> cards, THHGame game, Card sourse, int value)
         {
             cards = cards.Where(c => c.getCurrentLife(game) < c.getLife(game));
             if (cards.Count() < 1)
                 return Task.FromResult<HealEventArg>(default);
-            return game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(), value = value }, async arg =>
+            return game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(),source = sourse, value = value }, async arg =>
             {
                 cards = arg.cards;
+                sourse = arg.source;
                 value = arg.value;
                 foreach (Card card in cards)
                 {
@@ -1030,13 +1055,15 @@ namespace TouhouHeartstone
                 }
             });
         }
-        public static Task<HealEventArg> heal(this Card card, THHGame game, int value)
+        public static Task<HealEventArg> heal(this Card card, THHGame game,Card sourse, int value)
         {
-            return heal(new Card[] { card }, game, value);
+            return heal(new Card[] { card }, game,sourse, value);
+            
         }
         public class HealEventArg : EventArg, IDescribableEventArg
         {
             public Card[] cards;
+            public Card source;
             public int value;
             public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
 
@@ -1198,7 +1225,6 @@ namespace TouhouHeartstone
         {
             return "{card:" + card.define.id + "}";
         }
-
         /// <summary>
         /// 触发奥秘
         /// </summary>
@@ -1216,7 +1242,6 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
-
         public class SecretEventArg : EventArg, IDescribableEventArg
         {
             public Card card;
@@ -1228,6 +1253,88 @@ namespace TouhouHeartstone
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
+            }
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return null;//card.getFormatString() + "的护甲变为" + value;
+            }
+        }
+
+        /// <summary>
+        /// 变形
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="define"></param>
+        public static async Task<SetDefineEventArg> setDefine(this Card card, IGame game, CardDefine define)
+        {
+            var eventArg = await game.triggers.doEvent(new SetDefineEventArg() { card = card, beforeDefine = card.define, afterDefine = define }, async arg =>
+            {
+                card.Morph(game, define);//变形
+                await card.resetCard(game as THHGame);//卡牌重置
+            });
+            return eventArg;
+        }
+        public class SetDefineEventArg : EventArg, IDescribableEventArg
+        {
+            public Card card;
+            public CardDefine beforeDefine;
+            public CardDefine afterDefine;
+
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
+        }
+
+
+        /// <summary>
+        /// 登场
+        /// </summary>
+        /// <param name="card">触发登场的牌</param>
+        /// <param name="game"></param>
+        /// <param name="targets">登场效果目标，可以为null</param>
+        /// <param name="effects"></param>
+        /// <returns></returns>
+        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, IGame game,Card[] targets)
+        {
+            var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card , targets = targets}, async arg =>
+            {
+                if(targets != null &&
+                  targets.Length > 0)
+                {
+                    game.logger.log("触发战吼" + card + ",目标是" + targets[0]);                   
+                }
+                else
+                {
+                    game.logger.log("触发战吼" + card + ",目标是" + null);
+                }               
+            });
+            return eventArg;
+        }
+        public class ComeOnStageArg : EventArg, IDescribableEventArg
+        {
+            public Card card;
+            public Card[] targets;
+
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return targets;
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {

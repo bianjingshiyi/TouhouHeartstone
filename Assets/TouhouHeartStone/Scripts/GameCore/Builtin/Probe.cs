@@ -369,7 +369,7 @@ namespace TouhouHeartstone.Builtin.Proble
             {
                 int heal = target.getLife(game);
                 if(((IList)target.getTags(game)).Contains(TAG.MACHINE)){
-                    await target.heal(game,heal);
+                    await target.heal(game,card,heal);
                 }else{
                     await target.damage(game, card, card.getOwner().getSpellDamage(game, heal));
                 }
@@ -762,7 +762,7 @@ namespace TouhouHeartstone.Builtin.Proble
     }
 
     /// <summary>
-    /// 古墓亡魂(未完成)，随从
+    /// 古墓亡魂，随从
     /// 5/6/7，战吼，消灭一个友方随从，否则消灭自身
     /// “他同暮光升起，为了那些罪恶复仇；他于阴影中藏匿，为了平息痛苦；他随狂怒前行，将那伤痛铭记于心。”
     /// </summary>
@@ -778,9 +778,17 @@ namespace TouhouHeartstone.Builtin.Proble
         //public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((g,c,t)=>{
-                return t.setDead(g, true);
-            },PileFlag.self|PileFlag.field)
+            new LambdaSingleTargetEffect(
+            (g,c,t)=>
+            {  
+                return t.setDead(g, true);      
+            },
+            PileFlag.self|PileFlag.field,
+            null,
+            null,
+            (g,c)=>{
+                return c.setDead(g,true);
+            })
         };
     }
 
