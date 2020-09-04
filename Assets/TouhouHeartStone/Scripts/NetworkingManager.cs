@@ -11,6 +11,8 @@ using System.Linq;
 using System.Collections.Generic;
 using BJSYGameCore.UI;
 using System.Text.RegularExpressions;
+using NitoriNetwork.Common;
+
 namespace Game
 {
     public class NetworkingManager : Manager
@@ -199,15 +201,16 @@ namespace Game
         public void createRoom()
         {
             host.start(_port);
-            RoomInfo room = host.openRoom(new RoomInfo());
+            currentPlayer = new RoomPlayerInfo();
+            currentPlayer.name = "房主"; // todo: 替换为真实的玩家名称
+            currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
+
+            RoomInfo room = host.openRoom(new RoomInfo(currentPlayer.PlayerID));
             room.setOption(new GameOption()
             {
                 randomSeed = (int)DateTime.Now.ToBinary()
             });
             displayLoadingPanel();
-            currentPlayer = new RoomPlayerInfo();
-            currentPlayer.name = "房主"; // todo: 替换为真实的玩家名称
-            currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
 
             Task.Run(async () => { await client.joinRoom(room, currentPlayer); });
 
@@ -256,6 +259,9 @@ namespace Game
             ui.RoomButton.interactable = true;
             ui.RoomButton.image.color = Color.white;
         }
+        /// <summary>
+        /// [RPC] 开始游戏
+        /// </summary>
         public void start()
         {
             getManager<GameManager>().startRemoteGame(client, client.roomInfo.getOption(), client.roomInfo.playerList.ToArray());
@@ -378,20 +384,20 @@ namespace Game
             };
             roomPanel.OnStartClick += () =>
             {
-                _ = host.invokeAll<object>(host.room.playerList.Select(p => p.RoomID).ToArray(), nameof(start));
+                client.invokeHost(RPCHelper.GameStart());
             };
             roomPanel.OnRoomInfoUpdate += (info) =>
             {
                 if (host.RoomIsValid)
                 {
-                    host.updateRoomInfo(info);
+                    client.invokeHost(RPCHelper.RoomPropSet(RoomInfoName.OPTION_GAMEOPTION, info.getOption()));
                 }
             };
             roomPanel.OnPlayerRemove += (id) =>
             {
                 if (host.RoomIsValid)
                 {
-                    host.removePlayer(id);
+                    client.invokeHost(RPCHelper.RemovePlayer(id));
                 }
             };
             roomPanel.OnSetPlayerDeck += (id, cards) =>
