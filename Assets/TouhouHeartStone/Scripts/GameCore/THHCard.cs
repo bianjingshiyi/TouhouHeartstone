@@ -1312,21 +1312,29 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card">触发登场的牌</param>
         /// <param name="game"></param>
-        /// <param name="target">登场效果目标，可以为null</param>
+        /// <param name="targets">登场效果目标，可以为null</param>
         /// <param name="effects"></param>
         /// <returns></returns>
-        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, IGame game,Card target)
+        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, IGame game,Card[] targets)
         {
-            var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card , target = target}, async arg =>
+            var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card , targets = targets}, async arg =>
             {
-                game.logger.log("触发战吼" + card + ",目标是" + target);
+                if(targets != null &&
+                  targets.Length > 0)
+                {
+                    game.logger.log("触发战吼" + card + ",目标是" + targets[0]);                   
+                }
+                else
+                {
+                    game.logger.log("触发战吼" + card + ",目标是" + null);
+                }               
             });
             return eventArg;
         }
         public class ComeOnStageArg : EventArg, IDescribableEventArg
         {
             public Card card;
-            public Card target;
+            public Card[] targets;
 
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -1334,7 +1342,7 @@ namespace TouhouHeartstone
             }
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return target;
+                return targets;
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {

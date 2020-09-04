@@ -778,17 +778,17 @@ namespace TouhouHeartstone.Builtin.Proble
         //public override string[] keywords { get; set; } = new string[] { Keyword.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((g,c,t)=>{
-                if(t != null)
-                {
-                    return t.setDead(g, true);
-                }
-                else
-                {
-                     return c.setDead(g, true);
-                }
-                
-            },PileFlag.self|PileFlag.field)
+            new LambdaSingleTargetEffect(
+            (g,c,t)=>
+            {  
+                return t.setDead(g, true);      
+            },
+            PileFlag.self|PileFlag.field,
+            null,
+            null,
+            (g,c)=>{
+                return c.setDead(g,true);
+            })
         };
     }
 

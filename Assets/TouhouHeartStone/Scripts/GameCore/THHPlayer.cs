@@ -334,6 +334,7 @@ namespace TouhouHeartstone
                 {
                     //随从卡，将卡置入战场
                     await tryEnterField(game, arg.player.hand, arg.card, arg.position);
+                    await  card.ComeOnStage(game, targets);
                     await card.activeEffect(game, player, targets);
                     //ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
                     //if (effect != null)

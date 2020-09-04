@@ -368,23 +368,15 @@ namespace TouhouHeartstone
         }
         public override Task execute(IGame game, ICard card, object[] vars, object[] targets)
         {
-            if(card is SpellCardDefine)
-            {
-                if (targets != null &&
-                targets.Length > 0 &&
-                targets[0] is Card target)
-                    return execute(game as THHGame, card as Card, target);
-                return Task.CompletedTask;
-            }
+            
+             if (targets != null &&
+                  targets.Length > 0 &&
+                  targets[0] is Card target)
+                  return execute(game as THHGame, card as Card, target);
             else
             {
-
-                if (targets.Length > 0 &&
-                    targets[0] is Card target)
-                    return execute(game as THHGame, card as Card, target);
-                return Task.CompletedTask;
+                return execute(game as THHGame,card as Card, null);
             }
-            
         }
         public abstract Task execute(THHGame game, Card card, Card target);
     }
@@ -398,7 +390,9 @@ namespace TouhouHeartstone
         public delegate bool CheckTargetDelegate(THHGame game, Card card, Card target);
         CheckTargetDelegate _onCheckTarget = null;
         public delegate Task ExecuteDelegate(THHGame game, Card card, Card target);
+        public delegate Task ExecuteDelegate_NoTarget(THHGame game, Card card);
         ExecuteDelegate _onExecute = null;
+        ExecuteDelegate_NoTarget _noTargetExecute = null;
         /// <summary>
         /// 使用Lambda来构造一个单一目标效果
         /// </summary>
@@ -406,16 +400,19 @@ namespace TouhouHeartstone
         /// <param name="ranges">效果的目标范围</param>
         /// <param name="onCheckCondition">效果的条件</param>
         /// <param name="onCheckTarget">效果对于目标的条件</param>
+        /// <param name="noTargetExecute">target为null时执行的内容，默认为null</param>
         public LambdaSingleTargetEffect(ExecuteDelegate onExecute,
             PileFlag ranges = PileFlag.none,
             CheckConditionDelegate onCheckCondition = null,
-            CheckTargetDelegate onCheckTarget = null)
+            CheckTargetDelegate onCheckTarget = null,
+            ExecuteDelegate_NoTarget noTargetExecute = null)
         {
             if (ranges != PileFlag.none)
                 this.ranges = PILE.getPiles(ranges);
             _onCheckCondition = onCheckCondition;
             _onCheckTarget = onCheckTarget;
             _onExecute = onExecute;
+            _noTargetExecute = noTargetExecute;
         }
         public override bool checkCondition(THHGame game, Card card)
         {
@@ -430,10 +427,14 @@ namespace TouhouHeartstone
             if (_onExecute != null) {
                 if(!(card.define is SpellCardDefine))
                 {
-                   card.ComeOnStage(game, target);
+                  
                    if(target != null)
                    {
-                        return _onExecute(game, card, target);
+                       return _onExecute(game, card, target);
+                   }
+                   else
+                   {
+                       return _noTargetExecute(game, card);
                    }
                 }              
                 return _onExecute(game, card, target);
