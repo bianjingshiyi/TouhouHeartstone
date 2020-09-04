@@ -345,14 +345,14 @@ namespace TouhouHeartstone.Builtin
             {
                 await card.getOwner().skill.setUsed(game, false);
             }
-            var arg = await card.getOwner().skill.setDefine(game, game.getDefine<OpenFire_point>());
+            var arg = await THHCard.setDefine(card.getOwner().skill, game, game.getDefine<OpenFire_point>());
             await card.getOwner().skill.addBuff(game, new GeneratedBuff(ID,
                 new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
               (g, c, a) => {
                   return a.player == c.getOwner() && a.card.isSkill();
               }, null, async (g, c, a) =>
               {
-                  await card.getOwner().skill.setDefine(game, arg.beforeDefine);
+                  await THHCard.setDefine(card.getOwner().skill, game, arg.beforeDefine);
               }
              )));
         }

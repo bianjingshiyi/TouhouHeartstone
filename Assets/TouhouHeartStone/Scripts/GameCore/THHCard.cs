@@ -1270,7 +1270,7 @@ namespace TouhouHeartstone
         {
             var eventArg = await game.triggers.doEvent(new SetDefineEventArg() { card = card, beforeDefine = card.define, afterDefine = define }, async arg =>
             {
-                card.Morph(game, define);//变形
+                card.setDefine(game, define);//变形
                 await card.resetCard(game as THHGame);//卡牌重置
             });
             return eventArg;

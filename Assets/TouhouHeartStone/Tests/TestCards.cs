@@ -760,7 +760,7 @@ namespace Tests
         {
             new LambdaSingleTargetEffect(async(g, c, t) =>
             {
-                await t.setDefine(g,g.getDefine<RushServant>());//没有羊
+                await THHCard.setDefine(t, g,g.getDefine<RushServant>());//没有羊
             },PileFlag.both | PileFlag.field)
         };
     }
