@@ -819,7 +819,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            var createToken = await card.getOwner().createToken(game, game.getDefine<Chen_N>());
+            var createToken = await card.getOwner().createToken(game, game.getDefine<Chen_N>(),card.pile.indexOf(card) + 1);
             var chen = createToken.card;
             await chen.addBuff(game, new GeneratedBuff(ID,
                 new AttackModifier(3),
