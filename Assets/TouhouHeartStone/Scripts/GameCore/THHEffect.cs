@@ -356,7 +356,7 @@ namespace TouhouHeartstone
             return false;
         }
         /// <summary>
-        /// 默认实现，目标必须在可选范围内
+        /// 默认实现，战吼目标可以为空，但必须触发事件！
         /// </summary>
         /// <param name="game"></param>
         /// <param name="card"></param>
@@ -368,11 +368,23 @@ namespace TouhouHeartstone
         }
         public override Task execute(IGame game, ICard card, object[] vars, object[] targets)
         {
-            if (targets != null &&
+            if(card is SpellCardDefine)
+            {
+                if (targets != null &&
                 targets.Length > 0 &&
                 targets[0] is Card target)
-                return execute(game as THHGame, card as Card, target);
-            return Task.CompletedTask;
+                    return execute(game as THHGame, card as Card, target);
+                return Task.CompletedTask;
+            }
+            else
+            {
+
+                if (targets.Length > 0 &&
+                    targets[0] is Card target)
+                    return execute(game as THHGame, card as Card, target);
+                return Task.CompletedTask;
+            }
+            
         }
         public abstract Task execute(THHGame game, Card card, Card target);
     }
@@ -415,8 +427,17 @@ namespace TouhouHeartstone
         }
         public override Task execute(THHGame game, Card card, Card target)
         {
-            if (_onExecute != null)
+            if (_onExecute != null) {
+                if(!(card.define is SpellCardDefine))
+                {
+                   card.ComeOnStage(game, target);
+                   if(target != null)
+                   {
+                        return _onExecute(game, card, target);
+                   }
+                }              
                 return _onExecute(game, card, target);
+            }
             return Task.CompletedTask;
         }
     }

@@ -779,7 +779,15 @@ namespace TouhouHeartstone.Builtin.Proble
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect((g,c,t)=>{
-                return t.setDead(g, true);
+                if(t != null)
+                {
+                    return t.setDead(g, true);
+                }
+                else
+                {
+                     return c.setDead(g, true);
+                }
+                
             },PileFlag.self|PileFlag.field)
         };
     }
