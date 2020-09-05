@@ -10,6 +10,7 @@ using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone.Builtin
 {
+    [IgnoreCardDefine]
     public class Reisen : MasterCardDefine
     {
         public const int ID = 0x00600000 | CATEGORY.MASTER | 0x000;

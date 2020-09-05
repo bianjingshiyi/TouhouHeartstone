@@ -5,6 +5,7 @@ using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 namespace TouhouHeartstone.Builtin
 {
+    [IgnoreCardDefine]
     public class Reimu : MasterCardDefine
     {
         public const int ID = 0x00100000 | CATEGORY.MASTER | 0x000;

@@ -2,6 +2,7 @@
 using TouhouCardEngine.Interfaces;
 namespace TouhouHeartstone.Builtin
 {
+    [IgnoreCardDefine]
     public class Marisa : MasterCardDefine
     {
         public const int ID = 0x00200000 | CATEGORY.MASTER | 0x000;

@@ -2,6 +2,7 @@
 using TouhouCardEngine.Interfaces;
 namespace TouhouHeartstone.Builtin
 {
+    [IgnoreCardDefine]
     /// <summary>
     /// 东风谷早苗
     /// </summary>
