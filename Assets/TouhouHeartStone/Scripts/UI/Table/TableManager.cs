@@ -1007,8 +1007,16 @@ namespace Game
                 ui.AttackPropNumber.asText.text = card.getAttack(game).ToString();
                 ui.LifePropNumber.asText.text = card.getLife(game).ToString();
             }
-            else
+            else if (card.define.type == DEFINE.SPELL)
                 ui.type = CATEGORY.SPELL;
+            else if (card.define.type == DEFINE.ITEM)
+            {
+                ui.type = CATEGORY.ITEM;
+                ui.AttackPropNumber.asText.text = card.getAttack(game).ToString();
+                ui.LifePropNumber.asText.text = card.getLife(game).ToString();
+            }
+            else
+                throw new NotImplementedException();
         }
         Dictionary<Card, Servant> cardServantDic { get; } = new Dictionary<Card, Servant>();
         /// <summary>

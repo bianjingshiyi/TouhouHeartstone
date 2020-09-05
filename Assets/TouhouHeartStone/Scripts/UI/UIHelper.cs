@@ -1,6 +1,7 @@
 ﻿using UI;
 using TouhouHeartstone;
 using TouhouCardEngine;
+using System;
 namespace Game
 {
     static class UIHelper
@@ -20,8 +21,16 @@ namespace Game
                 ui.AttackPropNumber.asText.text = card.getAttack().ToString();
                 ui.LifePropNumber.asText.text = card.getLife().ToString();
             }
-            else
+            else if (card.type == DEFINE.SPELL)
                 ui.type = CATEGORY.SPELL;
+            else if (card.type == DEFINE.ITEM)
+            {
+                ui.type = CATEGORY.ITEM;
+                ui.AttackPropNumber.asText.text = card.getAttack().ToString();
+                ui.LifePropNumber.asText.text = card.getLife().ToString();
+            }
+            else
+                throw new NotImplementedException();
         }
     }
 }
