@@ -677,7 +677,7 @@ namespace Tests
             game.skipUntilCanUse<BurgeoningRise>(you);
             you.cmdUse(game, you.hand.getCard<BurgeoningRise>(), targets: you.field[0]);
             you.field[0].die(game);
-            Assert.AreEqual(1, you.field.count);
+            Assert.AreEqual(2, you.field.count);
             var dead = you.field[0];
             Assert.IsInstanceOf<DefaultServant>(dead.define);
             Buff buff = dead.getBuffs()[0];
