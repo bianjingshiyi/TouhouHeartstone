@@ -71,9 +71,10 @@ namespace UI
             }
 
             // 填充角色列表
-            var cards = cardManager.GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly
-            && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null);
-            allCharacters = cards.getCharactersID();
+            allCharacters = cardManager.GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly
+            && d is MasterCardDefine
+            && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null).Select(d => d.id).ToArray();
+
             DropdownCharacterDropdownLight.asDropdown.options.Clear();
             DropdownCharacterDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData("所有"));
             for (int i = 0; i < allCharacters.Length; i++)
