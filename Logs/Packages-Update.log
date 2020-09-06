@@ -97,3 +97,11 @@ Update Mode: updateDependencies
 
 The following packages were 已添加:
   com.unity.timeline@1.2.6
+
+=== Sun Sep  6 12:08:07 2020
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.test-framework from version 1.1.14 to 1.1.16
