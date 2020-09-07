@@ -405,10 +405,15 @@ namespace Game
                 item = ui.SelfItem;
                 return true;
             }
-            else
+            else if (game.getOpponent(player).item == card)
             {
                 item = ui.EnemyItem;
                 return true;
+            }
+            else
+            {
+                item = null;
+                return false;
             }
         }
         public void setItem(Item item, Card card)
