@@ -197,7 +197,6 @@ namespace UI
 
         void onSortMethodChange(int id)
         {
-            UberDebug.Log($"Sort method change: {id}");
             sortMethod = (SortMethod)id;
 
             onSortChange?.Invoke();

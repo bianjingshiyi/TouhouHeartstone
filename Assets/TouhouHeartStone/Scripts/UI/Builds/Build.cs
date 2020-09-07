@@ -407,6 +407,8 @@ namespace UI
                     Debug.LogWarning($"{item}.buildItem does not exists.");
                 }
             }
+
+            onSortChange(); // 更新排序
         }
 
         /// <summary>
