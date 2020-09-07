@@ -8,6 +8,7 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
 using BJSYGameCore.UI;
+using NitoriNetwork.Common;
 
 namespace UI
 {
