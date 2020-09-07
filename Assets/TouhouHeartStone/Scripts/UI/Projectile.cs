@@ -43,7 +43,7 @@ namespace UI
                 else if (_direction == Direction.right)
                     transform.right = target.position - transform.position;
                 transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
-                if (transform.position != target.position)
+                if (Vector3.Distance(transform.position, target.position) > 0.001f)
                     return;
                 else
                 {
