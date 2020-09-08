@@ -325,10 +325,10 @@ namespace TouhouHeartstone
                 return false;
             if (card.isSkill())
             {
-                //使用技能
+                //使用技能，设置技能使用状态为“已使用”
                 await card.setUsed(game, true);
             }
-            await setGem(game, gem - card.getCost(game));
+            await setGem(game, gem - card.getCost(game));//消耗法力值
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>
             {
                 THHPlayer player = arg.player;
@@ -337,25 +337,9 @@ namespace TouhouHeartstone
                 game.logger.log(arg.player + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
                 if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
                 {
-                    //随从卡，将卡置入战场
-                    await tryEnterField(game, arg.player.hand, arg.card, arg.position);
-                    await  card.ComeOnStage(game, targets);
-                    await card.activeEffect(game, player, targets);
-                    //ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    //if (effect != null)
-                    //{
-                    //    ActiveEventArg active = new ActiveEventArg(player, card, targets);
-                    //    await game.triggers.doEvent(active, activeLogic);
-                    //    async Task activeLogic(ActiveEventArg eventArg)
-                    //    {
-                    //        await effect.execute(game, card, new object[] { eventArg }, targets);
-                    //    }
-                    //}
-                    //IActiveEffect activeEffect = arg.card.define.getActiveEffect();
-                    //if (activeEffect != null)
-                    //{
-                    //    await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
-                    //}
+                    await tryEnterField(game, arg.player.hand, arg.card, arg.position);//随从卡，将卡置入战场
+                    await card.ComeOnStage(game, targets);//触发战吼事件
+                    await card.activeEffect(game, player, targets);//执行随从效果
                 }
                 else if (card.define is SkillCardDefine)
                 {
@@ -483,16 +467,16 @@ namespace TouhouHeartstone
                     game.logger.log(arg.player + "将" + arg.card + "从" + arg.from + "置入战场，位于" + arg.position);
                 else
                     game.logger.log(arg.player + "将" + arg.card + "置入战场，位于" + arg.position);
-                if (card.define is ServantCardDefine servant)
+                if (card.define is ServantCardDefine servant)//设置随从状态
                 {
                     await card.setDead(game, false);
                     await card.setCurrentLife(game, card.getLife(game));
                     await card.setReady(game, false);
                 }
                 if (from != null)
-                    await from.moveTo(game, arg.card, arg.player.field, arg.position);
+                    await from.moveTo(game, arg.card, arg.player.field, arg.position);//从某pile召唤随从
                 else
-                    await player.field.insert(game, card, position);
+                    await player.field.insert(game, card, position);//虚空生成随从
                 arg.attack = card.getAttack(game);
                 arg.life = card.getLife(game);
             }

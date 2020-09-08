@@ -1309,19 +1309,24 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static async Task<ComeOnStageArg> ComeOnStage(this Card card, IGame game,Card[] targets)
         {
-            var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card , targets = targets}, async arg =>
+            IActiveEffect activeEffect = card.define.getActiveEffect();
+            if (activeEffect != null)
             {
-                if(targets != null &&
-                  targets.Length > 0)
+                var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card, targets = targets }, async arg =>
                 {
-                    game.logger.log("触发战吼" + card + ",目标是" + targets[0]);                   
-                }
-                else
-                {
-                    game.logger.log("触发战吼" + card + ",目标是" + null);
-                }               
-            });
-            return eventArg;
+                    if (targets != null &&
+                      targets.Length > 0)
+                    {
+                        game.logger.log("触发战吼" + card + ",目标是" + targets[0]);
+                    }
+                    else
+                    {
+                        game.logger.log("触发战吼" + card + ",目标是" + null);
+                    }
+                });
+                return eventArg;
+            }
+            return null;
         }
         public class ComeOnStageArg : EventArg, IDescribableEventArg
         {
