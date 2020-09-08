@@ -15,7 +15,7 @@ using TouhouHeartstone;
 using System.IO;
 using IGensoukyo;
 using TouhouCardEngine;
-
+using BJSYGameCore;
 namespace Tests
 {
     public class CardManagerTests
