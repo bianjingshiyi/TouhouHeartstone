@@ -3,7 +3,7 @@ using BJSYGameCore.UI;
 using UI;
 namespace Game
 {
-    class MoveServantAnimation : EventAnimation<THHPlayer.EnterFieldEventArg>
+    class EnterFieldAnim : EventAnimation<THHPlayer.EnterFieldEventArg>
     {
         AnimAnim _anim;
         public override bool update(TableManager table, THHPlayer.EnterFieldEventArg eventArg)
