@@ -1,18 +1,3 @@
-ManifestFileVersion: 0
-CRC: 3898850517
-Hashes:
-  AssetFileHash:
-    serializedVersion: 2
-    Hash: 771f936724462d16361832c68351800f
-  TypeTreeHash:
-    serializedVersion: 2
-    Hash: c90fc19e2679e5295d10bd00f33cb4c3
-HashAppended: 0
-ClassTypes:
-- Class: 28
-  Script: {instanceID: 0}
-- Class: 213
-  Script: {instanceID: 0}
-Assets:
-- Assets/TouhouHeartStone/Tests/Resources/TestPicture.jpg
-Dependencies: []
+version https://git-lfs.github.com/spec/v1
+oid sha256:643f01e5e484936bcf6f5e4427b2ad468c75e19afe0b5341c41cadd0662d34fb
+size 422
