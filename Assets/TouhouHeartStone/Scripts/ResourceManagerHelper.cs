@@ -18,7 +18,7 @@ namespace Game
         /// <param name="curDir"></param>
         /// <param name="platform"></param>
         /// <returns></returns>
-        public static Task<AudioClip> loadAudio(this ResourceManager manager, string path, string curDir = null, PlatformCompability platform = null)
+        public static Task<AudioClip> loadAudio(this THHResourceManager manager, string path, string curDir = null, PlatformCompability platform = null)
         {
             if (string.IsNullOrEmpty(path))
                 return null;

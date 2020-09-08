@@ -33,7 +33,7 @@ namespace Tests
         private static CardManager createCardManager()
         {
             var go = new GameObject(nameof(CardManager));
-            go.AddComponent<ResourceManager>();
+            go.AddComponent<THHResourceManager>();
             CardManager cm = go.AddComponent<CardManager>();
             cm.setDefaultImagePath("Textures/DrBoom.png");
             return cm;
@@ -156,7 +156,7 @@ namespace Tests
         public IEnumerator loadCardsTest()
         {
             var go = new GameObject(nameof(CardManager));
-            go.AddComponent<ResourceManager>();
+            go.AddComponent<THHResourceManager>();
             CardManager cm = go.AddComponent<CardManager>();
 
             string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
@@ -198,7 +198,7 @@ namespace Tests
         public IEnumerator loadSkinsTest()
         {
             var go = new GameObject(nameof(CardManager));
-            go.AddComponent<ResourceManager>();
+            go.AddComponent<THHResourceManager>();
             CardManager cm = go.AddComponent<CardManager>();
 
             string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
@@ -230,7 +230,7 @@ namespace Tests
         public IEnumerator loadCardsTest_Android()
         {
             var go = new GameObject(nameof(CardManager));
-            go.AddComponent<ResourceManager>();
+            go.AddComponent<THHResourceManager>();
             CardManager cm = go.AddComponent<CardManager>();
 
             string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
@@ -266,7 +266,7 @@ namespace Tests
         public IEnumerator loadSkinsTest_Android()
         {
             var go = new GameObject(nameof(CardManager));
-            go.AddComponent<ResourceManager>();
+            go.AddComponent<THHResourceManager>();
             CardManager cm = go.AddComponent<CardManager>();
 
             string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
