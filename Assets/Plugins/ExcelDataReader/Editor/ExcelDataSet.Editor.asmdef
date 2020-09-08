@@ -1,0 +1,18 @@
+{
+    "name": "ExcelDataSet.Editor",
+    "references": [
+        "GUID:a271640aea1e78b45af671b2597adb18",
+        "GUID:c8ff882aa701b294a90955c370cdcf8d"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
