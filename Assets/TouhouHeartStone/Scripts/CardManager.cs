@@ -32,7 +32,7 @@ namespace Game
         {
             if (_defaultImage == null)
             {
-                Texture2D texture = await getManager<ResourceManager>().loadTexture(_defaultImagePath, null);
+                Texture2D texture = await getManager<THHResourceManager>().loadTexture(_defaultImagePath, null);
                 _defaultImage = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
             }
             return _defaultImage;
@@ -85,7 +85,7 @@ namespace Game
                     {
                         if (!PlatformCompability.Current.RequireWebRequest)
                         {
-                            var pathes = ResourceManager.GetDirectoryFiles(excelPath);
+                            var pathes = THHResourceManager.GetDirectoryFiles(excelPath);
                             // 去重
                             foreach (var item in pathes)
                             {
@@ -185,8 +185,8 @@ namespace Game
             try
             {
                 dataset = platform.SupportExcelReading ?
-                await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
-                await getManager<ResourceManager>().loadDataSet(path, platform);
+                await getManager<THHResourceManager>().loadExcelAsDataSet(path, platform) :
+                await getManager<THHResourceManager>().loadDataSet(path, platform);
             }
             catch (Exception e)
             {
@@ -248,8 +248,8 @@ namespace Game
             platform = platform ?? PlatformCompability.Current;
 
             DataSet dataset = platform.SupportExcelReading ?
-                await getManager<ResourceManager>().loadExcelAsDataSet(path, platform) :
-                await getManager<ResourceManager>().loadDataSet(path, platform);
+                await getManager<THHResourceManager>().loadExcelAsDataSet(path, platform) :
+                await getManager<THHResourceManager>().loadDataSet(path, platform);
 
             if (dataset.Tables.Count < 1) throw new Exception("空数据集");
             var cardTable = dataset.Tables[0];
@@ -317,7 +317,7 @@ namespace Game
                 }
                 else
                 {
-                    Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
+                    Texture2D texture = await getManager<THHResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
                     Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
                     skin.image = sprite;
                 }
@@ -349,7 +349,7 @@ namespace Game
                 }
                 else
                 {
-                    Texture2D texture = await getManager<ResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
+                    Texture2D texture = await getManager<THHResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
                     Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
                     skin.image = sprite;
                 }
@@ -362,12 +362,12 @@ namespace Game
             //加载音效
             string soundPath = datarow.ReadCol("Sound_onUse", "");
             if (!string.IsNullOrEmpty(soundPath))
-                skin.sound_onUse = await getManager<ResourceManager>().loadAudio(soundPath);
+                skin.sound_onUse = await getManager<THHResourceManager>().loadAudio(soundPath);
             //加载投射物
             string projPath = datarow.ReadCol("Projectile", "");
             if (!string.IsNullOrEmpty(projPath))
             {
-                skin.projectile = await getManager<ResourceManager>().loadObject<Projectile>(projPath);
+                skin.projectile = await getManager<THHResourceManager>().loadObject<Projectile>(projPath);
                 if (skin.projectile == null)
                     UberDebug.LogWarningChannel("Card", skin + "加载投射物" + projPath + "失败");
                 else

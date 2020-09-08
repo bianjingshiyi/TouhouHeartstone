@@ -9,6 +9,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using IGensoukyo;
 using System.Linq;
+using BJSYGameCore;
 
 namespace Tests
 {
@@ -32,7 +33,7 @@ namespace Tests
                 workbook.Save(stream);
             }
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             var task = manager.loadExcel(fileName, new PlatformCompability(RuntimePlatform.WindowsEditor));
             yield return new WaitUntil(() => task.IsCompleted);
             workbook = task.Result;
@@ -50,7 +51,7 @@ namespace Tests
         {
             const string fileName = "TestExcel.xls";
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             Task<Workbook> task = null;
             Assert.Throws<FileNotFoundException>(() =>
             {
@@ -81,7 +82,7 @@ namespace Tests
                 workbook.Save(stream);
             }
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             var task = manager.loadExcel(fileName, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
             workbook = task.Result;
@@ -99,7 +100,7 @@ namespace Tests
         {
             const string fileName = "SomeNonExistFileName";
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             Task<Workbook> task = manager.loadExcel(fileName, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
             Assert.Throws<FileNotFoundException>(() =>
@@ -125,7 +126,7 @@ namespace Tests
             Texture2D tx = new Texture2D(512, 512);
             File.WriteAllBytes(filePath, tx.EncodeToPNG());
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             var task = manager.loadTexture(fileName, null, new PlatformCompability(RuntimePlatform.WindowsPlayer));
             yield return new WaitUntil(() => task.IsCompleted);
 
@@ -135,7 +136,7 @@ namespace Tests
         public IEnumerator loadTexture_Failed()
         {
             const string fileName = "SomeNonExistFile.png";
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             Task<Texture2D> task = manager.loadTexture(fileName, null, new PlatformCompability(RuntimePlatform.WindowsEditor));
             yield return new WaitUntil(() => task.IsCompleted);
             Assert.Throws<FileNotFoundException>(() =>
@@ -158,7 +159,7 @@ namespace Tests
             Texture2D tx = new Texture2D(512, 512);
             File.WriteAllBytes(filePath, tx.EncodeToPNG());
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             var task = manager.loadTexture(fileName, null, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
 
@@ -169,7 +170,7 @@ namespace Tests
         {
             const string fileName = "SomeNonExistFile.png";
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             Task<Texture2D> task = manager.loadTexture(fileName, null, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
             Assert.Throws<FileNotFoundException>(() =>
@@ -192,7 +193,7 @@ namespace Tests
             Texture2D tx = new Texture2D(512, 512);
             File.WriteAllBytes(filePath, tx.EncodeToPNG());
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             var task = manager.loadTexture(fileName, "Textures", new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
 
@@ -209,7 +210,7 @@ namespace Tests
             Texture2D tx = new Texture2D(512, 512);
             File.WriteAllBytes(filePath, tx.EncodeToPNG());
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             var task = manager.loadTexture(fileNameFake, null, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
 
@@ -226,7 +227,7 @@ namespace Tests
             Texture2D tx = new Texture2D(512, 512);
             File.WriteAllBytes(filePath, tx.EncodeToPNG());
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             var task = manager.loadTexture(fileNameFake, "Textures", new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
 
@@ -243,7 +244,7 @@ namespace Tests
             Texture2D tx = new Texture2D(512, 512);
             File.WriteAllBytes(filePath, tx.EncodeToPNG());
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             var task = manager.loadTexture(fileNameFake, null, new PlatformCompability(RuntimePlatform.WindowsPlayer));
             yield return new WaitUntil(() => task.IsCompleted);
 
@@ -254,7 +255,7 @@ namespace Tests
         {
             const string TEX_NAME = "res:TestPicture";
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             var task = manager.loadTexture(TEX_NAME, null);
             yield return new WaitUntil(() => task.IsCompleted);
 
@@ -266,7 +267,7 @@ namespace Tests
         {
             const string audioName = "res:TestAudio";
 
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
             var task = manager.loadAudio(audioName);
             yield return new WaitUntil(() => task.IsCompleted);
 
@@ -281,7 +282,7 @@ namespace Tests
             var clip = Resources.Load<AudioClip>("TestAudio");
             var sem = new GameObject(nameof(SEManager)).AddComponent<SEManager>();
             sem.SEs = new SEManager.SEItem[1] { new SEManager.SEItem() { audio = clip, name = "testAudio" } };
-            ResourceManager manager = new GameObject(nameof(ResourceManager)).AddComponent<ResourceManager>();
+            THHResourceManager manager = new GameObject(nameof(THHResourceManager)).AddComponent<THHResourceManager>();
 
             var task = manager.loadAudio(audioName);
             yield return new WaitUntil(() => task.IsCompleted);
