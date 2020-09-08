@@ -9,6 +9,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using IGensoukyo;
 using System.Linq;
+using BJSYGameCore;
 
 namespace Tests
 {
