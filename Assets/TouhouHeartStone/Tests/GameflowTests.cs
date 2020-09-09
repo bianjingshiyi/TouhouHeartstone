@@ -620,15 +620,24 @@ namespace Tests
         {
             THHGame game = TestGameflow.initStandardGame();
             game.run();
-            //yield return new WaitUntil(() =>
-            //{
-            //    return game.answers.getLastRequest(game.players[0].id) is InitReplaceRequest;
-            //});
             yield return game.players[0].cmdSurrender(game).wait();
             THHGame.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.GameEndEventArg) as THHGame.GameEndEventArg;
             Assert.AreEqual(game.players[1], gameEnd.winners[0]);
             game.Dispose();
             yield break;
+        }
+        [UnityTest]
+        public IEnumerator LANGameTest()
+        {
+            HostManager host = new GameObject(nameof(HostManager)).AddComponent<HostManager>();
+            host.start();
+            RoomInfo room = host.openRoom(new RoomInfo());
+            room.setOption(GameOption.Default);
+            ClientManager localClient = new GameObject(nameof(localClient)).AddComponent<ClientManager>();
+            localClient.start();
+            yield return localClient.joinRoom(room, new RoomPlayerInfo() { name = "本地玩家" }).wait();
+
+            ClientManager remoteClient = new GameObject(nameof(remoteClient)).AddComponent<ClientManager>();
         }
     }
 }
