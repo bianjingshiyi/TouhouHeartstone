@@ -314,9 +314,6 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public async Task<bool> tryUse(THHGame game, Card card, int position, params Card[] targets)
         {
-            if (card.pile.name != PILE.HAND && card.pile.name != PILE.SKILL)
-                //你只能使用手牌和技能
-                return false;
             if (!card.isUsable(game, this, out _))
                 //卡牌不可用
                 return false;

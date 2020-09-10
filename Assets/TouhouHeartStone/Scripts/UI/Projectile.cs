@@ -42,11 +42,15 @@ namespace UI
                     transform.up = target.position - transform.position;
                 else if (_direction == Direction.right)
                     transform.right = target.position - transform.position;
-                transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
-                if (transform.position != target.position)
+                float delta = speed * Time.deltaTime;
+                if (Vector3.Distance(transform.position, target.position) > delta)
+                {
+                    transform.position = Vector3.MoveTowards(transform.position, target.position, delta);
                     return;
+                }
                 else
                 {
+                    transform.position = target.position;
                     try
                     {
                         _onHit.invokeBeforeAnim();

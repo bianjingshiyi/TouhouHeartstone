@@ -572,7 +572,7 @@ namespace TouhouHeartstone
                 info = "你不能使用不属于你的卡牌";
                 return false;
             }
-            if (card.pile.name != PILE.HAND || card.pile.name != PILE.SKILL)
+            if (card.pile.name != PILE.HAND && card.pile.name != PILE.SKILL)
             {
                 info = "你只能使用技能或手牌";
                 return false;
