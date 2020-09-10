@@ -629,15 +629,26 @@ namespace Tests
         [UnityTest]
         public IEnumerator LANGameTest()
         {
+            ULogger logger = new ULogger();
+            //创建房间
             HostManager host = new GameObject(nameof(HostManager)).AddComponent<HostManager>();
+            host.logger = logger;
             host.start();
             RoomInfo room = host.openRoom(new RoomInfo());
             room.setOption(GameOption.Default);
+            //本地玩家加入房间
             ClientManager localClient = new GameObject(nameof(localClient)).AddComponent<ClientManager>();
+            localClient.logger = logger;
             localClient.start();
-            yield return localClient.joinRoom(room, new RoomPlayerInfo() { name = "本地玩家" }).wait();
+            RoomPlayerInfo localPlayerInfo = new RoomPlayerInfo() { name = "本地玩家" };
+            localPlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
+            yield return localClient.joinRoom(room, localPlayerInfo).wait();
+            Assert.AreEqual(1, room.playerList.Count);
+            Assert.AreEqual("本地玩家", room.playerList[0].name);
+            room.playerList[0].RoomID
 
             ClientManager remoteClient = new GameObject(nameof(remoteClient)).AddComponent<ClientManager>();
+            remoteClient.logger = logger;
         }
     }
 }
