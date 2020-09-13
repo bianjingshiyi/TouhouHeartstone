@@ -37,6 +37,21 @@ namespace UI
             _dragStartPosition = eventData.position;
             _isDragging = false;
         }
+
+        Vector2 savedSizeDelta = Vector2.zero;
+
+        public void recovery()
+        {
+            count++;
+            getChild("Root").display();
+
+            if (savedSizeDelta != Vector2.zero)
+            {
+                rectTransform.sizeDelta = savedSizeDelta;
+                savedSizeDelta = Vector2.zero;
+            }
+        }
+
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
             if (Vector2.Distance(_dragStartPosition, eventData.position) > _dragThreshold)
@@ -48,6 +63,7 @@ namespace UI
                     if (count < 1)
                     {
                         getChild("Root").hide();
+                        savedSizeDelta = rectTransform.sizeDelta;
                         rectTransform.sizeDelta = Vector2.zero;
                     }
                 }
