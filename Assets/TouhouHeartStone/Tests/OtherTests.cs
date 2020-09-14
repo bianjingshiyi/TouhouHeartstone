@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
 using System.Text.RegularExpressions;
+using Random = System.Random;
 namespace Tests
 {
     public class OtherTests
@@ -222,6 +223,58 @@ namespace Tests
             {
                 Debug.Log(e);
             }
+        }
+        [Test]
+        public void drawTest()
+        {
+            List<float> drawList = new List<float>();
+            Random random = new Random();
+            for (int i = 0; i < 1000000; i++)
+            {
+                int draw = this.draw(random);
+                drawList.Add(draw);
+            }
+            Debug.Log(drawList.Average());
+        }
+        int draw(Random random)
+        {
+            int necklace = 0;
+            int earring = 0;
+            int count = 0;
+            do
+            {
+                int i = random.Next(0, 100);
+                if (i < 10)
+                    necklace++;
+                else if (i < 30)
+                    earring++;
+                count++;
+            }
+            while (necklace < 1 || earring < 2);
+            return count;
+        }
+        [Test]
+        public void cloneTest()
+        {
+            CloneChild a = new CloneChild();
+            Assert.AreEqual(1, a.i);
+            Assert.AreEqual(2, a.f);
+            var b = a.clone();
+            Assert.IsInstanceOf<CloneChild>(b);
+            Assert.AreEqual(1, b.i);
+            Assert.AreEqual(2, (b as CloneChild).f);
+        }
+        class CloneBase
+        {
+            public int i = 1;
+            public CloneBase clone()
+            {
+                return MemberwiseClone() as CloneBase;
+            }
+        }
+        class CloneChild : CloneBase
+        {
+            public float f = 2;
         }
     }
 }

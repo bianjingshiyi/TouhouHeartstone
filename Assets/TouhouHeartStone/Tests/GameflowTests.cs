@@ -645,7 +645,7 @@ namespace Tests
             yield return localClient.joinRoom(room, localPlayerInfo).wait();
             Assert.AreEqual(1, room.playerList.Count);
             Assert.AreEqual("本地玩家", room.playerList[0].name);
-            room.playerList[0].RoomID
+            Assert.AreEqual(0, room.playerList[0].RoomID);
 
             ClientManager remoteClient = new GameObject(nameof(remoteClient)).AddComponent<ClientManager>();
             remoteClient.logger = logger;
