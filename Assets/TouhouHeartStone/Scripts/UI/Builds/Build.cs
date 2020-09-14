@@ -452,7 +452,7 @@ namespace UI
             Vector3 localPosition = DeckViewScroll.GetComponent<RectTransform>().InverseTransformPoint(pointer.position);
             if (DeckViewScroll.GetComponent<RectTransform>().rect.Contains(localPosition))
             {
-                onReleaseItem();
+                item.recovery();
             }
             else
             {
