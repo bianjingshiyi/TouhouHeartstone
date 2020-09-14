@@ -10,21 +10,19 @@ using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone.Builtin
 {
-    [IgnoreCardDefine]
     public class Reisen : MasterCardDefine
     {
         public const int ID = 0x00600000 | CATEGORY.MASTER | 0x000;
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
-        public override int skillID { get; set; } = OpenFire.ID;//英雄技能的ID
+        public override int skillID { get; set; } = LunaticShoot.ID;//英雄技能的ID
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
     /// <summary>
     /// 技能：开火
     /// 对敌方英雄造成2点伤害
     /// </summary>
-    [Obsolete]
-    public class OpenFire : SkillCardDefine
+    public class LunaticShoot : SkillCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SKILL | 0x000;
         public override int id { get; set; } = ID;
@@ -38,9 +36,6 @@ namespace TouhouHeartstone.Builtin
             await game.getOpponent(card.owner as THHPlayer).master.damage(game, card, 2);
         }
     }
-
-
-
     /// <summary>
     /// 超短脑波
     /// 2费，奥秘,当敌方角色攻击时，取消攻击并使其受到相当于其攻击力的伤害。
@@ -67,7 +62,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 113 野兔兽妖 激励：攻击力变为3
     /// </summary>
-    public class HareMonster : ServantCardDefine
+    public class WildYoukaiRabbit : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x002;
         public override int id { get; set; } = ID;
@@ -102,9 +97,10 @@ namespace TouhouHeartstone.Builtin
             new SecretTriggerBefore<THHPlayer.UseEventArg>((g,c,a)=>
             {
                 return a.card.getOwner() != c.getOwner() && a.card.isServant();
-            },async(g,c,a)=>
+            },(g,c,a)=>
             {
                 a.isCanceled = true;
+                return Task.CompletedTask;
             })
         };
     }
@@ -113,7 +109,7 @@ namespace TouhouHeartstone.Builtin
     /// 赤眼催眠
     /// 2费，奥秘,当敌方不低于2攻随从攻击时，获得他的控制权。
     /// </summary>
-    public class MineShaker : SpellCardDefine
+    public class MindShaker : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x004;
         public override int id { get; set; } = ID;
@@ -153,7 +149,7 @@ namespace TouhouHeartstone.Builtin
                  List<Card> tokens = new List<Card>();
                 for(int i=0 ; i<3; i++)
                 {
-                    var token = await c.getOwner().createToken(g,g.getDefine<Vision>(),c.getOwner().field.count);
+                    var token = await c.getOwner().createToken(g,g.getDefine<AfterImage>(),c.getOwner().field.count);
                     tokens.Add(token.card);
                 }
                 a.target = tokens.random(g);
@@ -162,22 +158,20 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 幻象
+    /// 残像
     /// 0/0/2
     /// 衍生物
     /// </summary>
-    public class Vision : ServantCardDefine
+    public class AfterImage : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x006;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
-        public override int attack { get; set; } = 0;//随从的攻击力
-        public override int life { get; set; } = 2;//随从的血量上限
-        public override bool isToken { get; set; } = true;//是衍生物吗？
-                                                          //public override string[] tags { get; set; } = new string[];//种族标签
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };//关键词标签：
+        public override int attack { get; set; } = 0;
+        public override int life { get; set; } = 2;
+        public override bool isToken { get; set; } = true;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
     }
-
     /// <summary>
     /// 幻视调律
     /// 2费，奥秘：当敌方对一个目标使用法术时，使其目标变为其他随机目标。
@@ -193,39 +187,38 @@ namespace TouhouHeartstone.Builtin
             new SecretTriggerBefore<THHPlayer.UseEventArg>((g,c,a)=>
             {
                 return a.card.getOwner() != c.getOwner()  && a.card.isSpell() && a.card.define.getActiveEffect() is ITargetEffect;
-            },async(g,c,a)=>
+            },(g,c,a)=>
             {
                 Card[] range = a.card.getAvaliableTargets(g);
                 Card[] targets = range.Where(target => target.Equals(a.targets)).random(g);
                 a.targets = targets;
+                return Task.CompletedTask;
             })
         };
     }
 
     /// <summary>
-    /// 幻视调律
+    /// 紫外线场
     /// 1费，复原你的技能并使你的技能在下一次使用前法力值消耗变为0。
     /// </summary>
-    public class MindStarMine : SpellCardDefine
+    public class FieldUltraViolet : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x008;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        //public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
            new NoTargetEffect(effect)
         };
-
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().skill.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true), new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.SKILL, (g, c, a) =>
-                                                                                                                                                               {
-                                                                                                                                                                   return a.player == c.getOwner() && a.card.isSkill();
-                                                                                                                                                               }, ID)));
+            {
+                return a.player == c.getOwner() && a.card.isSkill();
+            }, ID)));
             if (card.getOwner().skill.isUsed(game))
             {
-               await  card.getOwner().skill.setUsed(game,false);
+                await card.getOwner().skill.setUsed(game, false);
             }
         }
     }
@@ -234,7 +227,7 @@ namespace TouhouHeartstone.Builtin
     /// 国士无双之药
     /// 1，使一个友方随从获得+3/+3，下回合开始时消灭它（警告：不要过量嗑药！）
     /// </summary>
-    public class StateScholarOfNoEqual : SpellCardDefine
+    public class PeerlessPatriotsElixir : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x009;
         public override int id { get; set; } = ID;
@@ -268,10 +261,9 @@ namespace TouhouHeartstone.Builtin
                 }
             },PileFlag.self | PileFlag.field)
 
-            
+
         };
     }
-
     /// <summary>
     /// 幻象震爆
     /// 2,对敌方英雄打5
@@ -285,7 +277,6 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-
         static async Task effect(THHGame game, Card card)
         {
             await game.getOpponent(card.getOwner()).master.damage(game, card, 5);
@@ -296,7 +287,7 @@ namespace TouhouHeartstone.Builtin
     /// 永琳
     /// 英雄技能造成的伤害翻倍,治疗翻倍
     /// </summary>
-    public class EirinYagokoro : ServantCardDefine
+    public class Eirin_TheMaster : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x011;
         public override int id { get; set; } = ID;
@@ -315,7 +306,7 @@ namespace TouhouHeartstone.Builtin
                     a.value *= 2;
                     return Task.CompletedTask;
                 }),
-            
+
             new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
                 (g, c, a) =>
                 {
@@ -331,7 +322,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 1费 精神投弹 复原你的技能并使你的技能在下一次使用前能以随从作为目标。
     /// </summary>
-    public class MentalBomb : SpellCardDefine
+    public class MindDropping : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x012;
         public override int id { get; set; } = ID;
@@ -346,10 +337,11 @@ namespace TouhouHeartstone.Builtin
             {
                 await card.getOwner().skill.setUsed(game, false);
             }
-            var arg = await THHCard.setDefine(card.getOwner().skill, game, game.getDefine<OpenFire_point>());
+            var arg = await THHCard.setDefine(card.getOwner().skill, game, game.getDefine<LunaticShoot_MindDropping>());
             await card.getOwner().skill.addBuff(game, new GeneratedBuff(ID,
                 new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
-              (g, c, a) => {
+              (g, c, a) =>
+              {
                   return a.player == c.getOwner() && a.card.isSkill();
               }, null, async (g, c, a) =>
               {
@@ -358,7 +350,7 @@ namespace TouhouHeartstone.Builtin
              )));
         }
     }
-    public class OpenFire_point : SkillCardDefine
+    public class LunaticShoot_MindDropping : SkillCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SKILL | 0x013;
         public override int id { get; set; } = ID;
@@ -376,7 +368,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 334 贩药货郎 战吼：回复4点生命值
     /// </summary>
-    public class DrugDealer : ServantCardDefine
+    public class MedicineSellman : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x014;
         public override int id { get; set; } = ID;
@@ -396,24 +388,24 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 426 叛逃特工 每当你使用英雄技能时，对随机敌人造成3点伤害
     /// </summary>
-    public class Marin : ServantCardDefine
+    public class DefectedAgent : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x015;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 4;
-        //public override string[] tags { get; set; } = { TAG.BEAST };
+        public override string[] tags { get; set; } = { TAG.BEAST };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
-                                                      (g, c, a) =>
-                                                      {
-                                                          return a.player == c.getOwner() && a.card.isSkill();
-                                                      },null,
-                                                      async(g,c,a)=>{
-                                                          await g.getAllEnemies(c.getOwner()).random(g).damage(g,c,3);
-                                                      })
+            (g, c, a) =>
+            {
+                return a.player == c.getOwner() && a.card.isSkill();
+            },null,
+            async(g,c,a)=>{
+                await g.getAllEnemies(c.getOwner()).random(g).damage(g,c,3);
+            })
         };
     }
 
@@ -453,16 +445,16 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 1费 狂月爆破 复原你的技能并使你的技能在下一次伤害翻倍。
+    /// 1费 红外线场 使你的技能下一次造成的伤害翻倍。
     /// </summary>
-    public class LunaticBlast : SpellCardDefine
+    public class FieldUltraRed : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x017;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect(effect)//这不是个指向性技能
+            new NoTargetEffect(effect)
         };
         static async Task effect(THHGame game, Card card)
         {
@@ -470,25 +462,24 @@ namespace TouhouHeartstone.Builtin
             {
                 await card.getOwner().skill.setUsed(game, false);
             }
-
-             await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
-                                                                                                                         (g, c, a) =>
-                                                                                                                         {
-                                                                                                                                return a.source.getOwner() == c.getOwner() && a.source.isSkill();
-                                                                                                                         }, null, (g, c, a) =>
-                                                                                                                         {
-                                                                                                                                a.value *= 2;
-                                                                                                                                return Task.CompletedTask;
-                                                                                                                         }), 
-                                                                              new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.SKILL, (g, c, a) =>
-                                                                                                                         {
-                                                                                                                                return a.player == c.getOwner() && a.card.isSkill();
-                                                                                                                          }, ID)));
+            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
+            (g, c, a) =>
+            {
+                return a.source.getOwner() == c.getOwner() && a.source.isSkill();
+            }, null, (g, c, a) =>
+            {
+                a.value *= 2;
+                return Task.CompletedTask;
+            }),
+            new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.SKILL, (g, c, a) =>
+            {
+                return a.player == c.getOwner() && a.card.isSkill();
+            }, ID)));
         }
     }
 
     /// <summary>
-    /// 332 狂月枪
+    /// 322 狂月枪
     /// 每当你将一个奥秘置入战场，便获得+1耐久度。
     /// </summary>
     public class LunaticGun : ItemCardDefine
@@ -496,21 +487,43 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Reisen.ID | CATEGORY.ITEM | 0x018;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
-        public override int attack { get; set; } = 3;
+        public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectAfter<Pile.MoveCardEventArg>(PILE.ITEM,
-                                                      (g,c,a)=>{
-                                                          return a.from.owner == c.getOwner() &&
-                                                          a.to == c.getOwner().head &&
-                                                          a.card.define is SpellCardDefine && 
-                                                          a.card.hasKeyword(g,KEYWORD.SECRET);
-                                                      },null,
-                                                      async(g,c,a)=>{
-                                                          await c.addBuff(g,new GeneratedBuff(ID,new LifeModifier(1)));
-                                                      })
-          
+            (g,c,a)=>{
+                return a.from.owner == c.getOwner() &&
+                a.to == c.getOwner().head &&
+                a.card.define is SpellCardDefine &&
+                a.card.hasKeyword(g,KEYWORD.SECRET);
+            },null,
+            async(g,c,a)=>{
+                await c.addBuff(g,new GeneratedBuff(ID,new LifeModifier(1)));
+            })
+        };
+    }
+    /// <summary>
+    /// 虚假幻象 1 将你本回合中使用的上一张法术牌的复制置入你的手牌。
+    /// </summary>
+    public class DisbeliefAspect : SpellCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SPELL | 0x019;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect((g,c)=>
+            {
+                var lastSpellUse = g.triggers.getRecordedEvents()
+                    .skipUntilLast(e=> e is THHGame.TurnStartEventArg turnStart)
+                    .OfType<THHPlayer.UseEventArg>()
+                    .LastOrDefault(u=> u.player==c.getOwner()&&u.card.isSpell());
+                if (lastSpellUse != null)
+                    return c.getOwner().hand.add(g,g.createCard(lastSpellUse.card.define));
+                else
+                    return Task.CompletedTask;
+            })
         };
     }
 }

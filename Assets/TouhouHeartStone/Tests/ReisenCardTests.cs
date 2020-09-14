@@ -14,50 +14,8 @@ namespace Tests
 {
     public class ResisenCardTests
     {
-        
-
         [Test]
-        public void PowrOverwhelmingTest()
-        {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<PowrOverwhelming>(), 3)));
-
-            game.skipUntilCanUse<DefaultServant>(you);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-
-            game.skipUntilCanUse<PowrOverwhelming>(you);
-            you.cmdUse(game, you.hand.getCard<PowrOverwhelming>(),targets: you.field[0]);
-            you.cmdTurnEnd(game);
-            game.Dispose();
-        }
-
-        [Test]
-        public void VelenTest()
-        {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<TestHeal>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<Velen>(), 1)));
-
-            game.skipUntilCanUse<Velen>(you);
-            you.cmdUse(game, you.hand.getCard<Velen>());
-            you.cmdUse(game, you.hand.getCard<TestHeal>(),targets: you.master);
-
-            game.Dispose();
-        }
-
-        [Test]
-        public void ReisenXWavegTest()
+        public void XWavegTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -97,7 +55,7 @@ namespace Tests
         }
 
         [Test]
-        public void HareMonsterTest()
+        public void WildYoukaiRabbitTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -106,17 +64,17 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<HareMonster>() as CardDefine, 1));
+                Enumerable.Repeat(game.getDefine<WildYoukaiRabbit>() as CardDefine, 1));
 
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
-            you.cmdUse(game, you.hand.getCard<HareMonster>());
+            you.cmdUse(game, you.hand.getCard<WildYoukaiRabbit>());
             Assert.AreEqual(1, you.field[0].getAttack(game));
             you.cmdUse(game, you.skill,targets:oppo.master);
             Assert.AreEqual(3, you.field[0].getAttack(game));
         }
 
         [Test]
-        public void ReisenMineShakerTest()
+        public void MineShakerTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -125,13 +83,13 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MineShaker>(), 1)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MindShaker>(), 1)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
 
-            game.skipUntilCanUse<MineShaker>(you);
-            you.cmdUse(game, you.hand.getCard<MineShaker>());
+            game.skipUntilCanUse<MindShaker>(you);
+            you.cmdUse(game, you.hand.getCard<MindShaker>());
             you.cmdTurnEnd(game);
 
             oppo.cmdAttack(game, oppo.field[0], you.master);
@@ -140,7 +98,7 @@ namespace Tests
         }
 
         [Test]
-        public void ReisenDisorderEyeTest()
+        public void DisorderEyeTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -164,7 +122,7 @@ namespace Tests
         }
 
         [Test]
-        public void ReisenVisionaryTuningTest()
+        public void VisionaryTuningTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -192,7 +150,7 @@ namespace Tests
         }
 
         [Test]
-        public void ReisenMindStarMineTest()
+        public void FieldUltraVioletTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -201,13 +159,13 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MindStarMine>(), 1)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<FieldUltraViolet>(), 1)));
 
             game.skipUntilHasGem(you, 3);
             Assert.False(you.skill.isUsed(game));
             you.cmdUse(game, you.skill);
             Assert.True(you.skill.isUsed(game));
-            you.cmdUse(game, you.hand.getCard<MindStarMine>());
+            you.cmdUse(game, you.hand.getCard<FieldUltraViolet>());
             Assert.False(you.skill.isUsed(game));
             you.cmdUse(game, you.skill);
             Assert.True(you.skill.isUsed(game));
@@ -216,7 +174,7 @@ namespace Tests
         }
 
         [Test]
-        public void MentalBombTest()
+        public void MindDroppingTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -225,24 +183,24 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MentalBomb>(), 1)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MindDropping>(), 1)));
             game.skipUntilCanUse<DefaultServant>(oppo);
             Card servant = oppo.hand.getCard<DefaultServant>();
             oppo.cmdUse(game, servant);
             oppo.cmdTurnEnd(game);
-            game.skipUntilCanUse<MentalBomb>(you);
+            game.skipUntilCanUse<MindDropping>(you);
             you.setGem(game,10);
             you.cmdUse(game, you.skill);
-            you.cmdUse(game, you.hand.getCard<MentalBomb>());
-            Assert.True(you.skill.define is OpenFire_point);
+            you.cmdUse(game, you.hand.getCard<MindDropping>());
+            Assert.True(you.skill.define is LunaticShoot_MindDropping);
             you.cmdUse(game, you.skill,targets:oppo.field[0]);
-            Assert.True(you.skill.define is OpenFire);
+            Assert.True(you.skill.define is LunaticShoot);
             Assert.AreEqual(5, oppo.field[0].getCurrentLife(game));
 
         }
 
         [Test]
-        public void ReisenTewiInabaTest()
+        public void TewiInabaTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -261,7 +219,7 @@ namespace Tests
         }
 
         [Test]
-        public void StateScholarOfNoEqualTest()
+        public void PeerlessPatriotsElixirTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -270,20 +228,20 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 3).Concat(Enumerable.Repeat(game.getDefine<StateScholarOfNoEqual>(), 4)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 3).Concat(Enumerable.Repeat(game.getDefine<PeerlessPatriotsElixir>(), 4)));
 
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<StateScholarOfNoEqual>(),targets:you.field[0]);
+            you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(),targets:you.field[0]);
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 5);
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<StateScholarOfNoEqual>(), targets: you.field[0]);
-            you.cmdUse(game, you.hand.getCard<StateScholarOfNoEqual>(), targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(), targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(), targets: you.field[0]);
             game.Dispose();
         }
 
         [Test]
-        public void ReisenLunaticGunTest()
+        public void LunaticGunTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
