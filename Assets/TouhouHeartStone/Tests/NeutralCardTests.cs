@@ -6,6 +6,8 @@ using TouhouHeartstone;
 using TouhouCardEngine;
 using TouhouHeartstone.Builtin;
 using System.Collections.Generic;
+using UnityEngine.XR;
+
 namespace Tests
 {
     public class NeutralCardTests
@@ -582,5 +584,7 @@ namespace Tests
             you.cmdUse(game, chen);
             Assert.True(chen.hasKeyword(game, KEYWORD.RUSH));
         }
+
+        
     }
 }

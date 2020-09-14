@@ -5,6 +5,7 @@ BestMagic.mp3
 TheGreatLibrary.mp3
 SpringWind.mp3
 ElementalHarvester.mp3
+StElmoPillar.mp3
 Author:ZapSplat
 
 SylphyHorn.mp3

@@ -2392,7 +2392,6 @@ Texture2D:
   m_MipCount: 10
   m_IsReadable: 1
   m_IgnoreMasterTextureLimit: 0
-  m_IsPreProcessed: 0
   m_StreamingMipmaps: 0
   m_StreamingMipmapsPriority: 0
   m_AlphaIsTransparency: 0
@@ -4821,6 +4820,8 @@ MonoBehaviour:
     audio: {fileID: 8300000, guid: a125612ecadf1cb4f9d47857c576027f, type: 3}
   - name: PhlogisticRain
     audio: {fileID: 8300000, guid: 03dc03f369a493443a3330d393a7f220, type: 3}
+  - name: StElmoPillar
+    audio: {fileID: 8300000, guid: 39ba6f8e9e6ece64fb8c4b2ab1ccc035, type: 3}
 --- !u!82 &1159673834
 AudioSource:
   m_ObjectHideFlags: 0
@@ -7556,7 +7557,6 @@ MonoBehaviour:
   _port: 9051
   _timeout: 30
   _autoStart: 0
-  _id: -1
 --- !u!114 &1750958370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7572,12 +7572,6 @@ MonoBehaviour:
   _port: 9050
   _autoStart: 0
   _timeout: 3
-  _room:
-    ip: 
-    port: 0
-    OwnerID: 0
-    playerList: []
-    _persistDataList: []
 --- !u!114 &1750958371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12748,7 +12742,7 @@ PrefabInstance:
     - target: {fileID: 5421060709278559635, guid: 6446fe25e4caa5d47848db50991178de,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -19.99997
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 5421060709278559635, guid: 6446fe25e4caa5d47848db50991178de,
         type: 3}
