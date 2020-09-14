@@ -42,14 +42,17 @@ namespace UI
                     transform.up = target.position - transform.position;
                 else if (_direction == Direction.right)
                     transform.right = target.position - transform.position;
+                float distance = Vector3.Distance(transform.position, target.position);
                 float delta = speed * Time.deltaTime;
-                if (Vector3.Distance(transform.position, target.position) > delta)
+                if (distance > delta)
                 {
+                    UberDebug.LogChannel("UI", this + "飞行，目标距离：" + distance + "，最大位移：" + delta);
                     transform.position = Vector3.MoveTowards(transform.position, target.position, delta);
                     return;
                 }
                 else
                 {
+                    UberDebug.LogChannel("UI", this + "命中目标");
                     transform.position = target.position;
                     try
                     {
