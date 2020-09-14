@@ -16,6 +16,7 @@ using TouhouCardEngine.Interfaces;
 using UnityEngine.UI;
 using Card = TouhouCardEngine.Card;
 using System.Text.RegularExpressions;
+using NitoriNetwork.Common;
 namespace Game
 {
     public class GameManager : Manager

@@ -6,7 +6,7 @@ using BJSYGameCore.UI;
 using TouhouHeartstone;
 using TouhouCardEngine;
 using UnityEngine.Events;
-
+using NitoriNetwork.Common;
 namespace Game
 {
     public class MainManager : Manager
