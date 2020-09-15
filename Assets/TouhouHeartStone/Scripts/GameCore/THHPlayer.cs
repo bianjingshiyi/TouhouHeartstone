@@ -346,12 +346,13 @@ namespace TouhouHeartstone
                 {
                     //法术卡,释放效果
                     await player.hand.moveTo(game, card, player.warp);
-                    await card.activeEffect(game, player, targets);
-                    await card.removeBuff(game);
-                    if (card.define is SpellCardDefine spell && spell.hasKeyword(KEYWORD.SECRET))
+                    if (card.hasKeyword(game, KEYWORD.SECRET))
                         await player.warp.moveTo(game, card, player.head);//如果是奥秘或任务，置入head
                     else
+                    {
+                        await card.activeEffect(game, player, targets);
                         await player.warp.moveTo(game, card, player.grave);//如果是普通法术，则送入墓地
+                    }
                 }
                 else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == DEFINE.ITEM))
                 {
@@ -408,6 +409,8 @@ namespace TouhouHeartstone
             public Card[] targets;
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
+                if (card.hasKeyword(game, KEYWORD.SECRET))
+                    return viewer == player ? card : null;
                 return card;
             }
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
@@ -416,6 +419,10 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
+                if (card.hasKeyword(game, KEYWORD.SECRET))
+                {
+                    return viewer == player ? player.name + "使用{card:" + card.define.id + "}" : player.name + "使用了一张奥秘牌";
+                }
                 if (targets == null || targets.Length < 1)
                     return player.name + "使用{card:" + card.define.id + "}";
                 else
