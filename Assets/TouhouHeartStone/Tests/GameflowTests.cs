@@ -620,15 +620,35 @@ namespace Tests
         {
             THHGame game = TestGameflow.initStandardGame();
             game.run();
-            //yield return new WaitUntil(() =>
-            //{
-            //    return game.answers.getLastRequest(game.players[0].id) is InitReplaceRequest;
-            //});
             yield return game.players[0].cmdSurrender(game).wait();
             THHGame.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.GameEndEventArg) as THHGame.GameEndEventArg;
             Assert.AreEqual(game.players[1], gameEnd.winners[0]);
             game.Dispose();
             yield break;
+        }
+        [UnityTest]
+        public IEnumerator LANGameTest()
+        {
+            ULogger logger = new ULogger();
+            //创建房间
+            HostManager host = new GameObject(nameof(HostManager)).AddComponent<HostManager>();
+            host.logger = logger;
+            host.start();
+            RoomInfo room = host.openRoom(new RoomInfo());
+            room.setOption(GameOption.Default);
+            //本地玩家加入房间
+            ClientManager localClient = new GameObject(nameof(localClient)).AddComponent<ClientManager>();
+            localClient.logger = logger;
+            localClient.start();
+            RoomPlayerInfo localPlayerInfo = new RoomPlayerInfo() { name = "本地玩家" };
+            localPlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
+            yield return localClient.joinRoom(room, localPlayerInfo).wait();
+            Assert.AreEqual(1, room.playerList.Count);
+            Assert.AreEqual("本地玩家", room.playerList[0].name);
+            Assert.AreEqual(0, room.playerList[0].RoomID);
+            //远程玩家加入房间
+            ClientManager remoteClient = new GameObject(nameof(remoteClient)).AddComponent<ClientManager>();
+            remoteClient.logger = logger;
         }
     }
 }
