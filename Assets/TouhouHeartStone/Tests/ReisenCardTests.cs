@@ -343,7 +343,7 @@ namespace Tests
         // 永琳
         // 治疗与英雄技能数值翻倍
         [Test]
-        public void ReisenEirinYagokoroTest()
+        public void ReisenEirin_TheMasterTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -352,47 +352,47 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<TestHeal>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<EirinYagokoro>(), 1)));
+                Enumerable.Repeat(game.getDefine<TestHeal>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<Eirin_TheMaster>(), 1)));
 
-            game.skipUntilCanUse<EirinYagokoro>(you);
-            you.cmdUse(game, you.hand.getCard<EirinYagokoro>());
+            game.skipUntilCanUse<Eirin_TheMaster>(you);
+            you.cmdUse(game, you.hand.getCard<Eirin_TheMaster>());
             you.cmdUse(game, you.hand.getCard<TestHeal>(), targets: you.master);
 
-            game.skipUntilCanUse<OpenFire>(you);
+            game.skipUntilCanUse<LunaticShoot>(you);
             you.cmdUse(game, you.skill);
 
             game.Dispose();
         }
 
         [Test]
-        public void ReisenMarinTest()
+        public void ReisenDefectedAgentTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(Marin.ID, 3)
+                new KeyValuePair<int, int>(DefectedAgent.ID, 3)
             );
 
-            game.skipUntilCanUse<Marin>(you);
-            you.cmdUse(game, you.hand.getCard<Marin>());
+            game.skipUntilCanUse<DefectedAgent>(you);
+            you.cmdUse(game, you.hand.getCard<DefectedAgent>());
 
 
-            game.skipUntilCanUse<OpenFire>(you);
+            game.skipUntilCanUse<LunaticShoot>(you);
             you.cmdUse(game, you.skill);
 
             game.Dispose();
         }
 
         [Test]
-        public void ReisenLunaticBlastTest()
+        public void ReisenDisbeliefAspectTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(LunaticBlast.ID, 3)
+                new KeyValuePair<int, int>(DisbeliefAspect.ID, 3)
             );
 
             game.skipUntilHasGem(you, 2);
             you.cmdUse(game, you.skill);
 
             game.skipUntilHasGem(you, 3);
-            you.cmdUse(game, you.hand.getCard<LunaticBlast>());
+            you.cmdUse(game, you.hand.getCard<DisbeliefAspect>());
             you.cmdUse(game, you.skill);
 
             game.Dispose();
