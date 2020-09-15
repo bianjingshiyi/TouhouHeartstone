@@ -23,7 +23,6 @@ namespace TouhouHeartstone.Builtin
     /// 技能：开火
     /// 对敌方英雄造成2点伤害
     /// </summary>
-    [Obsolete]
     public class OpenFire : SkillCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SKILL | 0x000;
@@ -43,7 +42,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 超短脑波
-    /// 2费，奥秘,当敌方角色攻击时，取消攻击并使其受到相当于其攻击力的伤害。
+    /// 2费，奥秘,当敌方角色攻击时，取消攻击并使其受到相当于其攻击力的伤害。+
     /// </summary>
     public class XWave : SpellCardDefine
     {
@@ -65,7 +64,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 113 野兔兽妖 激励：攻击力变为3
+    /// 113 野兔兽妖 激励：攻击力变为3+
     /// </summary>
     public class HareMonster : ServantCardDefine
     {
@@ -192,18 +191,19 @@ namespace TouhouHeartstone.Builtin
         {
             new SecretTriggerBefore<THHPlayer.UseEventArg>((g,c,a)=>
             {
-                return a.card.getOwner() != c.getOwner()  && a.card.isSpell() && a.card.define.getActiveEffect() is ITargetEffect;
+                return a.card.getOwner() != c.getOwner()  && a.card.isSpell() && a.card.define.getActiveEffect() is ITargetEffect ;
             },async(g,c,a)=>
             {
                 Card[] range = a.card.getAvaliableTargets(g);
-                Card[] targets = range.Where(target => target.Equals(a.targets)).random(g);
+                Card newTarget = range.Where(target => !target.Equals(a.targets)).random(g);
+                Card[] targets = new Card[]{newTarget};
                 a.targets = targets;
             })
         };
     }
 
     /// <summary>
-    /// 幻视调律
+    /// 紫外线场
     /// 1费，复原你的技能并使你的技能在下一次使用前法力值消耗变为0。
     /// </summary>
     public class MindStarMine : SpellCardDefine
