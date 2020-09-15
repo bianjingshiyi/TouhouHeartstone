@@ -17,7 +17,7 @@ namespace Tests
         //测试卡，力量的代价
         //这东西是怎么放在这里的。。。。
         [Test]
-        public void PowrOverwhelmingTest()
+        public void XWavegTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -107,7 +107,7 @@ namespace Tests
         //113 野兔兽妖 当你使用英雄技能后，攻击力变为3
        
         [Test]
-        public void ReisenHareMonsterTest()
+        public void WildYoukaiRabbitTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -116,10 +116,10 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<HareMonster>() as CardDefine, 1));
+                Enumerable.Repeat(game.getDefine<WildYoukaiRabbit>() as CardDefine, 1));
 
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
-            you.cmdUse(game, you.hand.getCard<HareMonster>());
+            you.cmdUse(game, you.hand.getCard<WildYoukaiRabbit>());
             Assert.AreEqual(1, you.field[0].getAttack(game));
             you.cmdUse(game, you.skill,targets:oppo.master);
             Assert.AreEqual(3, you.field[0].getAttack(game));
@@ -128,7 +128,7 @@ namespace Tests
         // 赤眼催眠
         // 2费，奥秘,当敌方不低于2攻随从攻击时，获得他的控制权。
         [Test]
-        public void ReisenMineShakerTest()
+        public void MineShakerTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -137,13 +137,13 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MineShaker>(), 1)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MindShaker>(), 1)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
 
-            game.skipUntilCanUse<MineShaker>(you);
-            you.cmdUse(game, you.hand.getCard<MineShaker>());
+            game.skipUntilCanUse<MindShaker>(you);
+            you.cmdUse(game, you.hand.getCard<MindShaker>());
             you.cmdTurnEnd(game);
 
             oppo.cmdAttack(game, oppo.field[0], you.master);
@@ -153,7 +153,7 @@ namespace Tests
         // 错乱之眼
         // 2费，奥秘：当随从攻击时，召唤3个0/2且具有嘲讽的幻象并使其中随机一个成为攻击目标。
         [Test]
-        public void ReisenDisorderEyeTest()
+        public void DisorderEyeTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -179,7 +179,7 @@ namespace Tests
         // 幻视调律
         // 2费，奥秘：当敌方对一个目标使用法术时，使其目标变为其他随机目标。
         [Test]
-        public void ReisenVisionaryTuningTest()
+        public void VisionaryTuningTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -209,7 +209,7 @@ namespace Tests
         // 紫外线场
         // 1费，复原你的技能并使你的技能在下一次使用前法力值消耗变为0。
         [Test]
-        public void ReisenMindStarMineTest()
+        public void FieldUltraVioletTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -218,13 +218,13 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MindStarMine>(), 1)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<FieldUltraViolet>(), 1)));
 
             game.skipUntilHasGem(you, 3);
             Assert.False(you.skill.isUsed(game));
             you.cmdUse(game, you.skill);
             Assert.True(you.skill.isUsed(game));
-            you.cmdUse(game, you.hand.getCard<MindStarMine>());
+            you.cmdUse(game, you.hand.getCard<FieldUltraViolet>());
             Assert.False(you.skill.isUsed(game));
             you.cmdUse(game, you.skill);
             Assert.True(you.skill.isUsed(game));
@@ -235,7 +235,7 @@ namespace Tests
         // 精神投弹
         //  1费,复原你的技能并使你的技能在下一次使用前能以随从作为目标。
         [Test]
-        public void MentalBombTest()
+        public void MindDroppingTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -244,18 +244,18 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MentalBomb>(), 1)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MindDropping>(), 1)));
             game.skipUntilCanUse<DefaultServant>(oppo);
             Card servant = oppo.hand.getCard<DefaultServant>();
             oppo.cmdUse(game, servant);
             oppo.cmdTurnEnd(game);
-            game.skipUntilCanUse<MentalBomb>(you);
+            game.skipUntilCanUse<MindDropping>(you);
             you.setGem(game,10);
             you.cmdUse(game, you.skill);
-            you.cmdUse(game, you.hand.getCard<MentalBomb>());
-            Assert.True(you.skill.define is OpenFire_point);
+            you.cmdUse(game, you.hand.getCard<MindDropping>());
+            Assert.True(you.skill.define is LunaticShoot_MindDropping);
             you.cmdUse(game, you.skill,targets:oppo.field[0]);
-            Assert.True(you.skill.define is OpenFire);
+            Assert.True(you.skill.define is LunaticShoot);
             Assert.AreEqual(5, oppo.field[0].getCurrentLife(game));
 
         }
@@ -263,7 +263,7 @@ namespace Tests
         // 因幡帝
         // 抽一张牌，如果是奥秘则置入战场并重复此战吼
         [Test]
-        public void ReisenTewiInabaTest()
+        public void TewiInabaTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -284,7 +284,7 @@ namespace Tests
         // 国士无双之药
         // 1，使一个友方随从获得+3/+3，下回合开始时消灭它（警告：不要过量嗑药！）
         [Test]
-        public void StateScholarOfNoEqualTest()
+        public void PeerlessPatriotsElixirTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {
@@ -293,22 +293,22 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 3).Concat(Enumerable.Repeat(game.getDefine<StateScholarOfNoEqual>(), 4)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 3).Concat(Enumerable.Repeat(game.getDefine<PeerlessPatriotsElixir>(), 4)));
 
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<StateScholarOfNoEqual>(),targets:you.field[0]);
+            you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(),targets:you.field[0]);
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 5);
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<StateScholarOfNoEqual>(), targets: you.field[0]);
-            you.cmdUse(game, you.hand.getCard<StateScholarOfNoEqual>(), targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(), targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(), targets: you.field[0]);
             game.Dispose();
         }
 
         // 332 狂月枪
         // 每当你将一个奥秘置入战场，便获得+1耐久度。
         [Test]
-        public void ReisenLunaticGunTest()
+        public void LunaticGunTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
             {

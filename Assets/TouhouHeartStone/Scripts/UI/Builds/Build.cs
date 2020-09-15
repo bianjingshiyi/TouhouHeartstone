@@ -398,14 +398,17 @@ namespace UI
             {
                 if (item.buildItem != null)
                 {
-                    item.buildItem.gameObject?.SetActive(FilterPanel.cardFilter(item.define, item.skin));
+                    item.buildItem.gameObject.SetActive(FilterPanel.cardFilter(item.define, item.skin));
                     item.buildItem.Card.isFaceup = true; // Animator默认状态是false，重置之后得还原
+                    item.buildItem.Card.setCard(item.define, item.skin);
                 }
                 else
                 {
                     Debug.LogWarning($"{item}.buildItem does not exists.");
                 }
             }
+
+            onSortChange(); // 更新排序
         }
 
         /// <summary>
@@ -449,7 +452,7 @@ namespace UI
             Vector3 localPosition = DeckViewScroll.GetComponent<RectTransform>().InverseTransformPoint(pointer.position);
             if (DeckViewScroll.GetComponent<RectTransform>().rect.Contains(localPosition))
             {
-                onReleaseItem();
+                item.recovery();
             }
             else
             {

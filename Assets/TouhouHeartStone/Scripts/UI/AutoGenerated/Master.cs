@@ -41,6 +41,7 @@ namespace UI
             this._DamageText = this.transform.Find("Root").Find("DamageImage").Find("DamageText").GetComponent<Text>();
             this._HealImage = this.transform.Find("Root").Find("HealImage").GetComponent<Image>();
             this._HealText = this.transform.Find("Root").Find("HealImage").Find("HealText").GetComponent<Text>();
+            this._Head = this.transform.Find("Root").Find("Head").GetComponent<Head>();
             this._ShieldImage = this.transform.Find("Root").Find("Shield").GetComponent<Image>();
         }
         [SerializeField()]
@@ -249,6 +250,19 @@ namespace UI
                     this._HealText = this.transform.Find("Root").Find("HealImage").Find("HealText").GetComponent<Text>();
                 }
                 return this._HealText;
+            }
+        }
+        [SerializeField()]
+        private Head _Head;
+        public Head Head
+        {
+            get
+            {
+                if ((this._Head == null))
+                {
+                    this._Head = this.transform.Find("Root").Find("Head").GetComponent<Head>();
+                }
+                return this._Head;
             }
         }
         [SerializeField()]

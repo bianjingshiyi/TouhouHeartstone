@@ -394,7 +394,7 @@ namespace Tests
             Card servant = oppo.hand.getCard<ChargeServant>();
             oppo.cmdUse(game, servant);
             oppo.cmdAttack(game, servant, you.master);
-            var eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            var eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretTriggerEventArg>().Last();
             Assert.NotNull(eventArg);
             Assert.AreEqual(secret, eventArg.card);
             Assert.True(oppo.hand.Contains(servant));
@@ -407,7 +407,7 @@ namespace Tests
             servant = oppo.hand.getCard<ChargeServant>();
             oppo.cmdUse(game, servant);
             oppo.cmdAttack(game, servant, you.master);
-            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretTriggerEventArg>().Last();
             Assert.AreEqual(secret, eventArg.card);
             Assert.True(oppo.grave.Contains(servant));
             oppo.cmdTurnEnd(game);
@@ -423,7 +423,7 @@ namespace Tests
             oppo.cmdUse(game, servant);
             oppo.cmdAttack(game, servant, you.master);
             //断点观察：you头上是否还有冰冻
-            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretTriggerEventArg>().Last();
             Assert.IsInstanceOf<Vaporize>(eventArg.card.define);
             Assert.IsInstanceOf<FreezingTrap>(you.head[0].define);
             servant = oppo.hand.getCard<ChargeServant>();
@@ -442,7 +442,7 @@ namespace Tests
             oppo.cmdUse(game, servant);
             oppo.cmdAttack(game, servant, you.master);
             //断点观察：you头上是否还有蒸发
-            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretTriggerEventArg>().Last();
             Assert.IsInstanceOf<FreezingTrap>(eventArg.card.define);
             Assert.IsInstanceOf<Vaporize>(you.head[0].define);
 
@@ -469,6 +469,44 @@ namespace Tests
             game.skipUntilCanUse<Polymorph>(you);
             Card polymorph = you.hand.getCard<Polymorph>();
             you.cmdUse(game, polymorph,targets:oppo.field[0]);
+        }
+        [Test]
+        public void PowrOverwhelmingTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<PowrOverwhelming>(), 3)));
+
+            game.skipUntilCanUse<DefaultServant>(you);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<PowrOverwhelming>(you);
+            you.cmdUse(game, you.hand.getCard<PowrOverwhelming>(), targets: you.field[0]);
+            you.cmdTurnEnd(game);
+            game.Dispose();
+        }
+        [Test]
+        public void VelenTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+                Enumerable.Repeat(game.getDefine<TestHeal>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<Velen>(), 1)));
+
+            game.skipUntilCanUse<Velen>(you);
+            you.cmdUse(game, you.hand.getCard<Velen>());
+            you.cmdUse(game, you.hand.getCard<TestHeal>(), targets: you.master);
+
+            game.Dispose();
         }
     }
 }
