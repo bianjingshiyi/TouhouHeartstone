@@ -1,12 +1,6 @@
 ﻿using UnityEngine;
 namespace UI
 {
-    partial class Secret
-    {
-        public SimpleAnim onEnter;
-        public SimpleAnim onTrigger;
-        public SimpleAnim onExit;
-    }
     partial class Head
     {
         [SerializeField]

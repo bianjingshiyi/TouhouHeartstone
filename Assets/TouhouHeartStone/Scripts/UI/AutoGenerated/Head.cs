@@ -26,7 +26,6 @@ namespace UI
         public void autoBind()
         {
             this._P1Image = this.transform.Find("P1").GetComponent<Image>();
-            this._Secret = this.transform.Find("P1").Find("Secret").GetComponent<Secret>();
             this._P2Image = this.transform.Find("P2").GetComponent<Image>();
             this._P3Image = this.transform.Find("P3").GetComponent<Image>();
             this._P4Image = this.transform.Find("P4").GetComponent<Image>();
@@ -43,19 +42,6 @@ namespace UI
                     this._P1Image = this.transform.Find("P1").GetComponent<Image>();
                 }
                 return this._P1Image;
-            }
-        }
-        [SerializeField()]
-        private Secret _Secret;
-        public Secret Secret
-        {
-            get
-            {
-                if ((this._Secret == null))
-                {
-                    this._Secret = this.transform.Find("P1").Find("Secret").GetComponent<Secret>();
-                }
-                return this._Secret;
             }
         }
         [SerializeField()]

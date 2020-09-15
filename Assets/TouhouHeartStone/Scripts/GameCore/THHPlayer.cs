@@ -347,7 +347,7 @@ namespace TouhouHeartstone
                     //法术卡,释放效果
                     await player.hand.moveTo(game, card, player.warp);
                     if (card.hasKeyword(game, KEYWORD.SECRET))
-                        await player.warp.moveTo(game, card, player.head);//如果是奥秘或任务，置入head
+                        await tryEnterHead(game, warp, card);
                     else
                     {
                         await card.activeEffect(game, player, targets);
@@ -459,7 +459,7 @@ namespace TouhouHeartstone
         public Task<EnterFieldEventArg> tryEnterField(THHGame game, Pile from, Card card, int position)
         {
             if (field.count >= field.maxCount)//没位置了
-                return null;
+                return Task.FromResult(default(EnterFieldEventArg));
             return game.triggers.doEvent(new EnterFieldEventArg() { player = this, from = from, card = card, position = position }, onEnterField);
             async Task onEnterField(EnterFieldEventArg arg)
             {
@@ -484,6 +484,13 @@ namespace TouhouHeartstone
                 arg.attack = card.getAttack(game);
                 arg.life = card.getLife(game);
             }
+        }
+        public async Task<bool> tryEnterHead(THHGame game, Pile from, Card card)
+        {
+            if (head.isFull)
+                return false;
+            await from.moveTo(game, card, head);
+            return true;
         }
         public class EnterFieldEventArg : EventArg, IDescribableEventArg
         {
