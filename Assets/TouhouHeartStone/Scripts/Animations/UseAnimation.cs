@@ -30,7 +30,8 @@ namespace Game
                         if (!_handToField.update(table))
                             return false;
                     }
-                    table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
+                    //table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
+                    //将使用随从的移除手牌转移至TryEnterFiledAnim
                     if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg))
                         return false;
                     table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
