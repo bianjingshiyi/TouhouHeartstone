@@ -54,9 +54,7 @@ MonoBehaviour:
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  _Image: {fileID: 0}
-  _Image_1: {fileID: 0}
-  _Image_2: {fileID: 0}
+  m_as_Image: {fileID: 1593629135382265370}
   _Text: {fileID: 3922328302987306335}
 --- !u!222 &301865424650061357
 CanvasRenderer:

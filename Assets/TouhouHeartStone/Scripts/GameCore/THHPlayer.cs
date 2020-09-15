@@ -314,9 +314,6 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public async Task<bool> tryUse(THHGame game, Card card, int position, params Card[] targets)
         {
-            if (card.pile.name != PILE.HAND && card.pile.name != PILE.SKILL)
-                //你只能使用手牌和技能
-                return false;
             if (!card.isUsable(game, this, out _))
                 //卡牌不可用
                 return false;
@@ -325,10 +322,10 @@ namespace TouhouHeartstone
                 return false;
             if (card.isSkill())
             {
-                //使用技能
+                //使用技能，设置技能使用状态为“已使用”
                 await card.setUsed(game, true);
             }
-            await setGem(game, gem - card.getCost(game));
+            await setGem(game, gem - card.getCost(game));//消耗法力值
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>
             {
                 THHPlayer player = arg.player;
@@ -337,25 +334,9 @@ namespace TouhouHeartstone
                 game.logger.log(arg.player + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
                 if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
                 {
-                    //随从卡，将卡置入战场
-                    await tryEnterField(game, arg.player.hand, arg.card, arg.position);
-                    await  card.ComeOnStage(game, targets);
-                    await card.activeEffect(game, player, targets);
-                    //ITriggerEffect effect = arg.card.define.getEffectOn<ActiveEventArg>(game.triggers);
-                    //if (effect != null)
-                    //{
-                    //    ActiveEventArg active = new ActiveEventArg(player, card, targets);
-                    //    await game.triggers.doEvent(active, activeLogic);
-                    //    async Task activeLogic(ActiveEventArg eventArg)
-                    //    {
-                    //        await effect.execute(game, card, new object[] { eventArg }, targets);
-                    //    }
-                    //}
-                    //IActiveEffect activeEffect = arg.card.define.getActiveEffect();
-                    //if (activeEffect != null)
-                    //{
-                    //    await activeEffect.execute(game, card, new object[] { new ActiveEventArg(player, card, targets) }, targets);
-                    //}
+                    await tryEnterField(game, arg.player.hand, arg.card, arg.position);//随从卡，将卡置入战场
+                    await card.ComeOnStage(game, targets);//触发战吼事件
+                    await card.activeEffect(game, player, targets);//执行随从效果
                 }
                 else if (card.define is SkillCardDefine)
                 {
@@ -365,12 +346,13 @@ namespace TouhouHeartstone
                 {
                     //法术卡,释放效果
                     await player.hand.moveTo(game, card, player.warp);
-                    await card.activeEffect(game, player, targets);
-                    await card.removeBuff(game);
-                    if (card.define is SpellCardDefine spell && spell.hasKeyword(KEYWORD.SECRET))
-                        await player.warp.moveTo(game, card, player.head);//如果是奥秘或任务，置入head
+                    if (card.hasKeyword(game, KEYWORD.SECRET))
+                        await tryEnterHead(game, warp, card);
                     else
+                    {
+                        await card.activeEffect(game, player, targets);
                         await player.warp.moveTo(game, card, player.grave);//如果是普通法术，则送入墓地
+                    }
                 }
                 else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == DEFINE.ITEM))
                 {
@@ -427,6 +409,8 @@ namespace TouhouHeartstone
             public Card[] targets;
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
+                if (card.hasKeyword(game, KEYWORD.SECRET))
+                    return viewer == player ? card : null;
                 return card;
             }
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
@@ -435,6 +419,10 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
+                if (card.hasKeyword(game, KEYWORD.SECRET))
+                {
+                    return viewer == player ? player.name + "使用{card:" + card.define.id + "}" : player.name + "使用了一张奥秘牌";
+                }
                 if (targets == null || targets.Length < 1)
                     return player.name + "使用{card:" + card.define.id + "}";
                 else
@@ -471,7 +459,7 @@ namespace TouhouHeartstone
         public Task<EnterFieldEventArg> tryEnterField(THHGame game, Pile from, Card card, int position)
         {
             if (field.count >= field.maxCount)//没位置了
-                return null;
+                return Task.FromResult(default(EnterFieldEventArg));
             return game.triggers.doEvent(new EnterFieldEventArg() { player = this, from = from, card = card, position = position }, onEnterField);
             async Task onEnterField(EnterFieldEventArg arg)
             {
@@ -483,19 +471,26 @@ namespace TouhouHeartstone
                     game.logger.log(arg.player + "将" + arg.card + "从" + arg.from + "置入战场，位于" + arg.position);
                 else
                     game.logger.log(arg.player + "将" + arg.card + "置入战场，位于" + arg.position);
-                if (card.define is ServantCardDefine servant)
+                if (card.define is ServantCardDefine servant)//设置随从状态
                 {
                     await card.setDead(game, false);
                     await card.setCurrentLife(game, card.getLife(game));
                     await card.setReady(game, false);
                 }
                 if (from != null)
-                    await from.moveTo(game, arg.card, arg.player.field, arg.position);
+                    await from.moveTo(game, arg.card, arg.player.field, arg.position);//从某pile召唤随从
                 else
-                    await player.field.insert(game, card, position);
+                    await player.field.insert(game, card, position);//虚空生成随从
                 arg.attack = card.getAttack(game);
                 arg.life = card.getLife(game);
             }
+        }
+        public async Task<bool> tryEnterHead(THHGame game, Pile from, Card card)
+        {
+            if (head.isFull)
+                return false;
+            await from.moveTo(game, card, head);
+            return true;
         }
         public class EnterFieldEventArg : EventArg, IDescribableEventArg
         {

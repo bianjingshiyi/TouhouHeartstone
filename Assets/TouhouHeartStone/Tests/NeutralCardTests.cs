@@ -380,14 +380,13 @@ namespace Tests
         public void AliceMargatroid_NTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(AliceMargatroid_N.ID, 5)
+                new KeyValuePair<int, int>(AliceMargatroid_N.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 3);
+            game.skipUntilCanUse<AliceMargatroid_N>(you);
             you.cmdUse(game, you.hand.getCard<AliceMargatroid_N>());
-            game.skipTurnWhen(() => you.gem < 4);
+            you.cmdTurnEnd(game);
+            Assert.AreEqual(2, you.field.count);
             Assert.IsInstanceOf<Doll_N>(you.field[1].define);
-            game.skipTurnWhen(() => you.gem < 5);
-            Assert.IsInstanceOf<Doll_N>(you.field[2].define);
         }
 
         [Test]
@@ -455,7 +454,7 @@ namespace Tests
             Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>().LastOrDefault(c => c.to == you.grave);
             Card throwcard = movecardevent.card;
             Assert.True(handBeforeUse.Contains(throwcard));
-            Assert.True(card.isDead(game));
+            Assert.True(oppo.grave.Contains(card));
         }
 
         [Test]
@@ -499,8 +498,8 @@ namespace Tests
             oppo.cmdUse(game, oppo.hand.First());
             Card card = oppo.field[0];
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<SaigyoujiYuyuko_N>(), targets: oppo.field[0]);
-            Assert.True(card.isDead(game));
+            you.cmdUse(game, you.hand.getCard<SaigyoujiYuyuko_N>(), targets: card);
+            Assert.True(oppo.grave.Contains(card));
         }
 
         [Test]

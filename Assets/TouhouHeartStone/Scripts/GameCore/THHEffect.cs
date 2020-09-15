@@ -618,8 +618,8 @@ namespace TouhouHeartstone
             else
                 triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
             Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
-            if (trigger != null)
-                return;
+            //if (trigger != null)
+            //    return;
             game.logger.log("Effect", card + "注册亡语" + triggerName);
             trigger = new Trigger<THHCard.DeathEventArg>(arg =>
             {
