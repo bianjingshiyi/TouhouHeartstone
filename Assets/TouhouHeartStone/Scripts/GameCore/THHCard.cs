@@ -572,6 +572,11 @@ namespace TouhouHeartstone
                 info = "你不能使用不属于你的卡牌";
                 return false;
             }
+            if (card.pile.name != PILE.HAND && card.pile.name != PILE.SKILL)
+            {
+                info = "你只能使用技能或手牌";
+                return false;
+            }
             if (card.define is ServantCardDefine servant)
             {
                 if (player.gem < card.getCost(game))//费用不够
@@ -587,7 +592,7 @@ namespace TouhouHeartstone
                 info = null;
                 return true;
             }
-            if (card.define is ItemCardDefine item)
+            else if (card.define is ItemCardDefine item)
             {
                 if (player.gem < card.getCost(game))//费用不够
                 {
@@ -960,7 +965,7 @@ namespace TouhouHeartstone
                     if (s.isPoisonous(g) && !g.players.Any(p => p.master == c))
                         await c.setDead(game, true);
                     if (s.isDrain(g))
-                        await s.getOwner().master.heal(g,c, d);
+                        await s.getOwner().master.heal(g, c, d);
                 }
             }
         }
@@ -984,7 +989,7 @@ namespace TouhouHeartstone
             if (cards.Count() > count)
                 cards = cards.randomTake(game, count);
             return cards.damage(game, source, value);
-            
+
         }
         public class DamageEventArg : EventArg, IDescribableEventArg
         {
@@ -1026,39 +1031,39 @@ namespace TouhouHeartstone
             cards = cards.Where(c => c.getCurrentLife(game) < c.getLife(game));
             if (cards.Count() < 1)
                 return Task.FromResult<HealEventArg>(default);
-            return game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(),source = sourse, value = value }, async arg =>
-            {
-                cards = arg.cards;
-                sourse = arg.source;
-                value = arg.value;
-                foreach (Card card in cards)
-                {
-                    if (card.getCurrentLife(game) + value < card.getLife(game))
-                    {
-                        await card.setCurrentLife(game, card.getCurrentLife(game) + value);
-                        arg.infoDic.Add(card, new HealEventArg.Info()
-                        {
-                            healedValue = value
-                        });
-                        game.logger.log(card + "恢复" + value + "点生命值，生命值=>" + card.getCurrentLife(game));
-                    }
-                    else
-                    {
-                        int healedValue = card.getLife(game) - card.getCurrentLife(game);
-                        await card.setCurrentLife(game, card.getLife(game));
-                        arg.infoDic.Add(card, new HealEventArg.Info()
-                        {
-                            healedValue = healedValue
-                        });
-                        game.logger.log(card + "恢复" + healedValue + "点生命值，生命值=>" + card.getCurrentLife(game));
-                    }
-                }
-            });
+            return game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(), source = sourse, value = value }, async arg =>
+             {
+                 cards = arg.cards;
+                 sourse = arg.source;
+                 value = arg.value;
+                 foreach (Card card in cards)
+                 {
+                     if (card.getCurrentLife(game) + value < card.getLife(game))
+                     {
+                         await card.setCurrentLife(game, card.getCurrentLife(game) + value);
+                         arg.infoDic.Add(card, new HealEventArg.Info()
+                         {
+                             healedValue = value
+                         });
+                         game.logger.log(card + "恢复" + value + "点生命值，生命值=>" + card.getCurrentLife(game));
+                     }
+                     else
+                     {
+                         int healedValue = card.getLife(game) - card.getCurrentLife(game);
+                         await card.setCurrentLife(game, card.getLife(game));
+                         arg.infoDic.Add(card, new HealEventArg.Info()
+                         {
+                             healedValue = healedValue
+                         });
+                         game.logger.log(card + "恢复" + healedValue + "点生命值，生命值=>" + card.getCurrentLife(game));
+                     }
+                 }
+             });
         }
-        public static Task<HealEventArg> heal(this Card card, THHGame game,Card sourse, int value)
+        public static Task<HealEventArg> heal(this Card card, THHGame game, Card sourse, int value)
         {
-            return heal(new Card[] { card }, game,sourse, value);
-            
+            return heal(new Card[] { card }, game, sourse, value);
+
         }
         public class HealEventArg : EventArg, IDescribableEventArg
         {
@@ -1307,21 +1312,26 @@ namespace TouhouHeartstone
         /// <param name="targets">登场效果目标，可以为null</param>
         /// <param name="effects"></param>
         /// <returns></returns>
-        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, IGame game,Card[] targets)
+        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, IGame game, Card[] targets)
         {
-            var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card , targets = targets}, async arg =>
+            IActiveEffect activeEffect = card.define.getActiveEffect();
+            if (activeEffect != null)
             {
-                if(targets != null &&
-                  targets.Length > 0)
+                var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card, targets = targets }, async arg =>
                 {
-                    game.logger.log("触发战吼" + card + ",目标是" + targets[0]);                   
-                }
-                else
-                {
-                    game.logger.log("触发战吼" + card + ",目标是" + null);
-                }               
-            });
-            return eventArg;
+                    if (targets != null &&
+                      targets.Length > 0)
+                    {
+                        game.logger.log("触发战吼" + card + ",目标是" + targets[0]);
+                    }
+                    else
+                    {
+                        game.logger.log("触发战吼" + card + ",目标是" + null);
+                    }
+                });
+                return eventArg;
+            }
+            return null;
         }
         public class ComeOnStageArg : EventArg, IDescribableEventArg
         {
