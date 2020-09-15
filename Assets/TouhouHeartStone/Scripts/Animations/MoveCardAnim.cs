@@ -4,6 +4,7 @@ using TouhouCardEngine;
 using UnityEngine;
 using BJSYGameCore;
 using Timer = BJSYGameCore.Timer;
+using Card = TouhouCardEngine.Card;
 namespace Game
 {
     class MoveCardAnim : EventAnimation<Pile.MoveCardEventArg>
@@ -23,6 +24,11 @@ namespace Game
                     if (!table.tryGetHand(eventArg.card, out var hand))
                         hand = table.createHand(eventArg.card);
                     if (!SimpleAnimHelper.update(table, ref _anim, hand.onCreate, hand.animator))
+                        return false;
+                }
+                else if (eventArg.to.name == PILE.HEAD)
+                {
+                    if (!onSecretEnter(table, eventArg.card))
                         return false;
                 }
             }
@@ -63,6 +69,11 @@ namespace Game
                     table.ui.SelfHandList.removeItem(hand);
                     table.ui.EnemyHandList.removeItem(hand);
                 }
+                else if (eventArg.to.name == PILE.HEAD)
+                {
+                    if (!onSecretEnter(table, eventArg.card))
+                        return false;
+                }
             }
             else if (eventArg.from.name == PILE.HAND)
             {
@@ -89,6 +100,11 @@ namespace Game
                         table.ui.SelfHandList.removeItem(hand);
                         table.ui.EnemyHandList.removeItem(hand);
                     }
+                    else if (eventArg.to.name == PILE.HEAD)
+                    {
+                        if (!onSecretEnter(table, eventArg.card))
+                            return false;
+                    }
                 }
             }
             else if (eventArg.from.name == PILE.GRAVE)
@@ -104,6 +120,11 @@ namespace Game
                         hand.GetComponentInChildren<PositionLerp>().setTarget(hand.rectTransform);
                     }
                     if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator))
+                        return false;
+                }
+                else if (eventArg.to.name == PILE.HEAD)
+                {
+                    if (!onSecretEnter(table, eventArg.card))
                         return false;
                 }
             }
@@ -128,6 +149,37 @@ namespace Game
                         return false;
 
                 }
+            }
+            else if (eventArg.from.name == PILE.HEAD)
+            {
+                if (!onSecretExit(table, eventArg.card))
+                    return false;
+            }
+            return true;
+        }
+        /// <summary>
+        /// 奥秘入场
+        /// </summary>
+        /// <param name="table"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        bool onSecretEnter(TableManager table, Card card)
+        {
+            if (!table.tryGetSecret(card, out var secret))
+            {
+                secret = table.createSecret(card);
+            }
+            if (!SimpleAnimHelper.update(table, ref _anim, secret.onEnter, secret.animator))
+                return false;
+            return true;
+        }
+        bool onSecretExit(TableManager table, Card card)
+        {
+            if (table.tryGetSecret(card, out var secret))
+            {
+                if (SimpleAnimHelper.update(table, ref _anim, secret.onExit, secret.animator))
+                    return false;
+                table.removeSecret(card);
             }
             return true;
         }

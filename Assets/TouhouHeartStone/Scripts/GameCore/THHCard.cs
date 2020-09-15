@@ -1237,20 +1237,18 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="effects"></param>
         /// <returns></returns>
-        public static async Task<SecretEventArg> TriggerSecret(this Card card, IGame game)
+        public static  Task<SecretTriggerEventArg> TriggerSecret(this Card card, IGame game)
         {
-            var eventArg = await game.triggers.doEvent(new SecretEventArg() { card = card }, async arg =>
+            return game.triggers.doEvent(new SecretTriggerEventArg() { card = card }, async arg =>
             {
                 game.logger.log("触发奥秘" + card);
                 THHPlayer player = arg.card.getOwner();
                 await player.head.moveTo(game, arg.card, player.grave);
             });
-            return eventArg;
         }
-        public class SecretEventArg : EventArg, IDescribableEventArg
+        public class SecretTriggerEventArg : EventArg, IDescribableEventArg
         {
             public Card card;
-
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
@@ -1261,7 +1259,7 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return null;//card.getFormatString() + "的护甲变为" + value;
+                return card.getFormatString() + "被触发！";
             }
         }
 

@@ -394,7 +394,7 @@ namespace Tests
             Card servant = oppo.hand.getCard<ChargeServant>();
             oppo.cmdUse(game, servant);
             oppo.cmdAttack(game, servant, you.master);
-            var eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            var eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretTriggerEventArg>().Last();
             Assert.NotNull(eventArg);
             Assert.AreEqual(secret, eventArg.card);
             Assert.True(oppo.hand.Contains(servant));
@@ -407,7 +407,7 @@ namespace Tests
             servant = oppo.hand.getCard<ChargeServant>();
             oppo.cmdUse(game, servant);
             oppo.cmdAttack(game, servant, you.master);
-            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretTriggerEventArg>().Last();
             Assert.AreEqual(secret, eventArg.card);
             Assert.True(oppo.grave.Contains(servant));
             oppo.cmdTurnEnd(game);
@@ -423,7 +423,7 @@ namespace Tests
             oppo.cmdUse(game, servant);
             oppo.cmdAttack(game, servant, you.master);
             //断点观察：you头上是否还有冰冻
-            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretTriggerEventArg>().Last();
             Assert.IsInstanceOf<Vaporize>(eventArg.card.define);
             Assert.IsInstanceOf<FreezingTrap>(you.head[0].define);
             servant = oppo.hand.getCard<ChargeServant>();
@@ -442,7 +442,7 @@ namespace Tests
             oppo.cmdUse(game, servant);
             oppo.cmdAttack(game, servant, you.master);
             //断点观察：you头上是否还有蒸发
-            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretEventArg>().Last();
+            eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretTriggerEventArg>().Last();
             Assert.IsInstanceOf<FreezingTrap>(eventArg.card.define);
             Assert.IsInstanceOf<Vaporize>(you.head[0].define);
 

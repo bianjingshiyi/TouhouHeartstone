@@ -50,6 +50,8 @@ namespace UI
             this._ServantPlaceHolder = this.transform.Find("Fields").Find("ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
             this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
             this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
+            this._CenterDisplayImage = this.transform.Find("CenterDisplay").GetComponent<Image>();
+            this._RightDisplayImage = this.transform.Find("RightDisplay").GetComponent<Image>();
             this._TipText = this.transform.Find("TipText").GetComponent<Text>();
             this._Fatigue = this.transform.Find("Fatigue").GetComponent<Fatigue>();
             this._TurnTipImage = this.transform.Find("TurnTipImage").GetComponent<Image>();
@@ -381,6 +383,32 @@ namespace UI
                     this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
                 }
                 return this._LargeCard;
+            }
+        }
+        [SerializeField()]
+        private Image _CenterDisplayImage;
+        public Image CenterDisplayImage
+        {
+            get
+            {
+                if ((this._CenterDisplayImage == null))
+                {
+                    this._CenterDisplayImage = this.transform.Find("CenterDisplay").GetComponent<Image>();
+                }
+                return this._CenterDisplayImage;
+            }
+        }
+        [SerializeField()]
+        private Image _RightDisplayImage;
+        public Image RightDisplayImage
+        {
+            get
+            {
+                if ((this._RightDisplayImage == null))
+                {
+                    this._RightDisplayImage = this.transform.Find("RightDisplay").GetComponent<Image>();
+                }
+                return this._RightDisplayImage;
             }
         }
         [SerializeField()]
