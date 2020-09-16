@@ -75,6 +75,9 @@ namespace UI
             && d is MasterCardDefine
             && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null).Select(d => d.id).ToArray();
 
+            // 添加中立卡的过滤
+            allCharacters = allCharacters.Append(CATEGORY.CHARACTER_NEUTRAL).ToArray();
+
             DropdownCharacterDropdownLight.asDropdown.options.Clear();
             DropdownCharacterDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData("所有"));
             for (int i = 0; i < allCharacters.Length; i++)

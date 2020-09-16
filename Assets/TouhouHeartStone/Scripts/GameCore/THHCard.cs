@@ -20,6 +20,10 @@ namespace TouhouHeartstone
         {
             return card.define is ServantCardDefine;
         }
+        public static bool isMaster(this Card card)
+        {
+            return card.define is MasterCardDefine;
+        }
         public static bool isSpell(this Card card)
         {
             return card.define is SpellCardDefine;
