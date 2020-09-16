@@ -361,7 +361,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async(g, c, t) =>
             {
                 await t.damage(g,c,2);
-            })
+            },PileFlag.both | PileFlag.character,onCheckTarget:(g,c,t)=> !(t.isMaster() && t.getOwner() == c.getOwner()))
         };
 
     }
