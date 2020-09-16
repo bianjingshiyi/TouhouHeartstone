@@ -64,7 +64,7 @@ MonoBehaviour:
   _useController: 0
   _initStates: []
   _InfoContainerImage: {fileID: 3488832779437730715}
-  _ButtonBlack: {fileID: 8578122301914456610}
+  _LogoutButtonBlack: {fileID: 0}
   _NickNameText: {fileID: 9149173640184535197}
   _EmailText: {fileID: 8676069843009167682}
   _HeadImage: {fileID: 3574367247287614987}
@@ -503,7 +503,7 @@ PrefabInstance:
     - target: {fileID: 7436077394168403808, guid: f85d347e47e809640b67ef5a900aaae4,
         type: 3}
       propertyPath: m_Name
-      value: LoginButton
+      value: Login
       objectReference: {fileID: 0}
     - target: {fileID: 7436077394168403808, guid: f85d347e47e809640b67ef5a900aaae4,
         type: 3}
@@ -540,7 +540,7 @@ PrefabInstance:
     - target: {fileID: 490584239171898832, guid: 8f87f95af032014448691606aece594a,
         type: 3}
       propertyPath: m_Name
-      value: ButtonBlack
+      value: Logout
       objectReference: {fileID: 0}
     - target: {fileID: 709257429625765140, guid: 8f87f95af032014448691606aece594a,
         type: 3}
@@ -670,15 +670,3 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7942404409616442801}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8578122301914456610 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1815665823035459475, guid: 8f87f95af032014448691606aece594a,
-    type: 3}
-  m_PrefabInstance: {fileID: 7942404409616442801}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7097e034c463e0849bb806592af71867, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

@@ -26,11 +26,11 @@ namespace UI
         public void autoBind()
         {
             this._InfoContainerImage = this.transform.Find("InfoContainer").GetComponent<Image>();
-            this._ButtonBlack = this.transform.Find("InfoContainer").Find("ButtonBlack").GetComponent<ButtonBlack>();
+            this._LogoutButtonBlack = this.transform.Find("InfoContainer").Find("Logout").GetComponent<ButtonBlack>();
             this._NickNameText = this.transform.Find("InfoContainer").Find("NickName").GetComponent<Text>();
             this._EmailText = this.transform.Find("InfoContainer").Find("Email").GetComponent<Text>();
             this._HeadImage = this.transform.Find("HeadImage").GetComponent<Image>();
-            this._LoginButtonButtonBlack = this.transform.Find("LoginButton").GetComponent<ButtonBlack>();
+            this._LoginButtonBlack = this.transform.Find("Login").GetComponent<ButtonBlack>();
         }
         [SerializeField()]
         private Image _InfoContainerImage;
@@ -46,16 +46,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private ButtonBlack _ButtonBlack;
-        public ButtonBlack ButtonBlack
+        private ButtonBlack _LogoutButtonBlack;
+        public ButtonBlack LogoutButtonBlack
         {
             get
             {
-                if ((this._ButtonBlack == null))
+                if ((this._LogoutButtonBlack == null))
                 {
-                    this._ButtonBlack = this.transform.Find("InfoContainer").Find("ButtonBlack").GetComponent<ButtonBlack>();
+                    this._LogoutButtonBlack = this.transform.Find("InfoContainer").Find("Logout").GetComponent<ButtonBlack>();
                 }
-                return this._ButtonBlack;
+                return this._LogoutButtonBlack;
             }
         }
         [SerializeField()]
@@ -98,16 +98,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private ButtonBlack _LoginButtonButtonBlack;
-        public ButtonBlack LoginButtonButtonBlack
+        private ButtonBlack _LoginButtonBlack;
+        public ButtonBlack LoginButtonBlack
         {
             get
             {
-                if ((this._LoginButtonButtonBlack == null))
+                if ((this._LoginButtonBlack == null))
                 {
-                    this._LoginButtonButtonBlack = this.transform.Find("LoginButton").GetComponent<ButtonBlack>();
+                    this._LoginButtonBlack = this.transform.Find("Login").GetComponent<ButtonBlack>();
                 }
-                return this._LoginButtonButtonBlack;
+                return this._LoginButtonBlack;
             }
         }
         partial void onAwake();
