@@ -33,12 +33,12 @@ namespace UI
             this._Text = this.transform.Find("Root").Find("Text").GetComponent<Text>();
             this._BorderImage = this.transform.Find("Root").Find("Border").GetComponent<Image>();
         }
-        private LogScrollView _parent;
-        public LogScrollView parent
+        private Main _parent;
+        public Main parent
         {
             get
             {
-                return this.transform.parent.parent.parent.GetComponent<LogScrollView>();
+                return this.transform.parent.parent.parent.parent.parent.parent.GetComponent<Main>();
             }
         }
         [SerializeField()]

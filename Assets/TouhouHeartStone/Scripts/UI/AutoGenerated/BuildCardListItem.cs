@@ -29,6 +29,14 @@ namespace UI
             this._Image = this.transform.Find("Image").GetComponent<Image>();
             this._RemainHintText = this.transform.Find("Image").Find("RemainHint").GetComponent<Text>();
         }
+        private BuildCardList _parent;
+        public BuildCardList parent
+        {
+            get
+            {
+                return this.transform.parent.GetComponent<BuildCardList>();
+            }
+        }
         [SerializeField()]
         private Card _Card;
         public Card Card

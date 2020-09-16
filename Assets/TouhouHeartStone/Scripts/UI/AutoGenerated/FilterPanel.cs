@@ -39,6 +39,7 @@ namespace UI
             this._DropdownTypeDropdownLight = this.transform.Find("Type").Find("DropdownType").GetComponent<DropdownLight>();
             this._LabelSearchText = this.transform.Find("Search").Find("LabelSearch").GetComponent<Text>();
             this._InputField = this.transform.Find("Search").Find("InputField").GetComponent<InputField>();
+            this._PanelImage = this.transform.Find("Panel").GetComponent<Image>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -220,6 +221,19 @@ namespace UI
                     this._InputField = this.transform.Find("Search").Find("InputField").GetComponent<InputField>();
                 }
                 return this._InputField;
+            }
+        }
+        [SerializeField()]
+        private Image _PanelImage;
+        public Image PanelImage
+        {
+            get
+            {
+                if ((this._PanelImage == null))
+                {
+                    this._PanelImage = this.transform.Find("Panel").GetComponent<Image>();
+                }
+                return this._PanelImage;
             }
         }
         partial void onAwake();
