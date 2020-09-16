@@ -14,6 +14,8 @@ using TouhouHeartstone.Builtin;
 using UnityEngine;
 using UnityEngine.TestTools;
 using NitoriNetwork.Common;
+using NUnit.Framework.Constraints;
+using System.Reflection;
 namespace Tests
 {
     public class GameflowTests
@@ -635,8 +637,9 @@ namespace Tests
             HostManager host = new GameObject(nameof(HostManager)).AddComponent<HostManager>();
             host.logger = logger;
             host.start();
-            RoomInfo room = host.openRoom(new RoomInfo());
+            RoomInfo room = new RoomInfo();
             room.setOption(GameOption.Default);
+            room = host.openRoom(room);
             //本地玩家加入房间
             ClientManager localClient = new GameObject(nameof(localClient)).AddComponent<ClientManager>();
             localClient.logger = logger;
@@ -650,6 +653,185 @@ namespace Tests
             //远程玩家加入房间
             ClientManager remoteClient = new GameObject(nameof(remoteClient)).AddComponent<ClientManager>();
             remoteClient.logger = logger;
+            remoteClient.start();
+            RoomPlayerInfo remotePlayerInfo = new RoomPlayerInfo() { name = "远端玩家" };
+            remotePlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
+            yield return remoteClient.joinRoom(room, remotePlayerInfo).wait();
+            Assert.AreEqual(2, room.playerList.Count);
+            Assert.AreEqual("远端玩家", room.playerList[1].name);
+            Assert.AreEqual(1, room.playerList[1].RoomID);
+            //开始游戏
+            CardManager cardManager = new GameObject(nameof(CardManager)).AddComponent<CardManager>();
+            yield return cardManager.load(new Assembly[] { typeof(TestMaster).Assembly }).wait();
+            GameManager localGameManager = new GameObject(nameof(GameManager)).AddComponent<GameManager>();
+            localClient.addInvokeTarget(localGameManager);
+            localGameManager.client = localClient;
+            GameManager remoteGameManager = new GameObject(nameof(GameManager)).AddComponent<GameManager>();
+            remoteClient.addInvokeTarget(remoteGameManager);
+            remoteGameManager.client = remoteClient;
+            yield return host.invokeAll<object>(new int[] { 0, 1 }, new RPCRequest(typeof(Task), nameof(GameManager.startRemoteGame), host.room, true)).wait();
+            THHGame localGame = localGameManager.game;
+            THHGame remoteGame = remoteGameManager.game;
+            Assert.AreEqual(localGame.option.randomSeed, remoteGame.option.randomSeed);
+            Assert.AreEqual(localGame.sortedPlayers[0].id, remoteGame.sortedPlayers[0].id);
+            Assert.AreEqual(localGame.sortedPlayers[1].id, remoteGame.sortedPlayers[1].id);
+            //交换手牌
+            THHPlayer localPlayer = localGameManager.localPlayer;
+            yield return localPlayer.cmdInitReplace(localGame, localPlayer.init[0]).wait();
+            THHPlayer remotePlayer = remoteGameManager.localPlayer;
+            yield return remotePlayer.cmdInitReplace(remoteGame, remotePlayer.init[0, 1]).wait();
+            do
+            {
+                if (localGame.currentPlayer == localPlayer)
+                {
+                    do
+                    {
+                        yield return localPlayer.cmdUse(localGame, localPlayer.hand[0], 0).wait();
+                    }
+                    while (localPlayer.hand.count > 0 && localPlayer.gem > localPlayer.hand[0].getCost(localGame) && !localPlayer.field.isFull);
+                    foreach (var servant in localPlayer.field)
+                    {
+                        if (servant.canAttack(localGame) && !localGame.getOpponent(localPlayer).master.isDead(localGame))
+                            yield return localPlayer.cmdAttack(localGame, servant, localGame.getOpponent(localPlayer).master).wait();
+                    }
+                    if (localGame.triggers.getRecordedEvents().OfType<THHGame.GameEndEventArg>().FirstOrDefault() is THHGame.GameEndEventArg gameEnd)
+                        break;
+                    else
+                        yield return localPlayer.cmdTurnEnd(localGame).wait();
+                }
+                else if (remoteGame.currentPlayer == remotePlayer)
+                {
+                    do
+                    {
+                        yield return remotePlayer.cmdUse(remoteGame, remotePlayer.hand[0], 0).wait();
+                    }
+                    while (remotePlayer.hand.count > 0 && remotePlayer.gem > remotePlayer.hand[0].getCost(remoteGame) && !remotePlayer.field.isFull);
+                    foreach (var servant in remotePlayer.field)
+                    {
+                        if (servant.canAttack(remoteGame) && !remoteGame.getOpponent(remotePlayer).master.isDead(remoteGame))
+                            yield return remotePlayer.cmdAttack(remoteGame, servant, remoteGame.getOpponent(remotePlayer).master).wait();
+                    }
+                    if (remoteGame.triggers.getRecordedEvents().OfType<THHGame.GameEndEventArg>().FirstOrDefault() is THHGame.GameEndEventArg gameEnd)
+                        break;
+                    else
+                        yield return remotePlayer.cmdTurnEnd(remoteGame).wait();
+                }
+                else
+                {
+                    Debug.LogError("行动玩家不同步");
+                    break;
+                }
+            }
+            while (true);
+            localGameManager.quitGame();
+            remoteGameManager.quitGame();
+            Object.Destroy(localGameManager.gameObject);
+            Object.Destroy(localClient.gameObject);
+            Object.Destroy(remoteGameManager.gameObject);
+            Object.Destroy(remoteClient.gameObject);
+            Object.Destroy(host.gameObject);
+        }
+        [UnityTest]
+        public IEnumerator serverGameTest()
+        {
+            ULogger logger = new ULogger();
+            //创建房间
+            HostManager host = new GameObject(nameof(HostManager)).AddComponent<HostManager>();
+            host.logger = logger;
+            host.start();
+            RoomInfo room = new RoomInfo();
+            room.setOption(GameOption.Default);
+            room = host.openRoom(room);
+            //本地玩家加入房间
+            ClientManager localClient = new GameObject(nameof(localClient)).AddComponent<ClientManager>();
+            localClient.logger = logger;
+            localClient.start();
+            RoomPlayerInfo localPlayerInfo = new RoomPlayerInfo() { name = "本地玩家" };
+            localPlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
+            yield return localClient.joinRoom(room, localPlayerInfo).wait();
+            Assert.AreEqual(1, room.playerList.Count);
+            Assert.AreEqual("本地玩家", room.playerList[0].name);
+            Assert.AreEqual(0, room.playerList[0].RoomID);
+            //远程玩家加入房间
+            ClientManager remoteClient = new GameObject(nameof(remoteClient)).AddComponent<ClientManager>();
+            remoteClient.logger = logger;
+            remoteClient.start();
+            RoomPlayerInfo remotePlayerInfo = new RoomPlayerInfo() { name = "远端玩家" };
+            remotePlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
+            yield return remoteClient.joinRoom(room, remotePlayerInfo).wait();
+            Assert.AreEqual(2, room.playerList.Count);
+            Assert.AreEqual("远端玩家", room.playerList[1].name);
+            Assert.AreEqual(1, room.playerList[1].RoomID);
+            //开始游戏
+            CardManager cardManager = new GameObject(nameof(CardManager)).AddComponent<CardManager>();
+            yield return cardManager.load(new Assembly[] { typeof(TestMaster).Assembly }).wait();
+            GameManager localGameManager = new GameObject(nameof(GameManager)).AddComponent<GameManager>();
+            localClient.addInvokeTarget(localGameManager);
+            localGameManager.client = localClient;
+            GameManager remoteGameManager = new GameObject(nameof(GameManager)).AddComponent<GameManager>();
+            remoteClient.addInvokeTarget(remoteGameManager);
+            remoteGameManager.client = remoteClient;
+            yield return host.invokeAll<object>(new int[] { 0, 1 }, new RPCRequest(typeof(Task), nameof(GameManager.startRemoteGame), host.room, true)).wait();
+            THHGame localGame = localGameManager.game;
+            THHGame remoteGame = remoteGameManager.game;
+            Assert.AreEqual(localGame.option.randomSeed, remoteGame.option.randomSeed);
+            Assert.AreEqual(localGame.sortedPlayers[0].id, remoteGame.sortedPlayers[0].id);
+            Assert.AreEqual(localGame.sortedPlayers[1].id, remoteGame.sortedPlayers[1].id);
+            //交换手牌
+            THHPlayer localPlayer = localGameManager.localPlayer;
+            yield return localPlayer.cmdInitReplace(localGame, localPlayer.init[0]).wait();
+            THHPlayer remotePlayer = remoteGameManager.localPlayer;
+            yield return remotePlayer.cmdInitReplace(remoteGame, remotePlayer.init[0, 1]).wait();
+            do
+            {
+                if (localGame.currentPlayer == localPlayer)
+                {
+                    do
+                    {
+                        yield return localPlayer.cmdUse(localGame, localPlayer.hand[0], 0).wait();
+                    }
+                    while (localPlayer.hand.count > 0 && localPlayer.gem > localPlayer.hand[0].getCost(localGame) && !localPlayer.field.isFull);
+                    foreach (var servant in localPlayer.field)
+                    {
+                        if (servant.canAttack(localGame) && !localGame.getOpponent(localPlayer).master.isDead(localGame))
+                            yield return localPlayer.cmdAttack(localGame, servant, localGame.getOpponent(localPlayer).master).wait();
+                    }
+                    if (localGame.triggers.getRecordedEvents().OfType<THHGame.GameEndEventArg>().FirstOrDefault() is THHGame.GameEndEventArg gameEnd)
+                        break;
+                    else
+                        yield return localPlayer.cmdTurnEnd(localGame).wait();
+                }
+                else if (remoteGame.currentPlayer == remotePlayer)
+                {
+                    do
+                    {
+                        yield return remotePlayer.cmdUse(remoteGame, remotePlayer.hand[0], 0).wait();
+                    }
+                    while (remotePlayer.hand.count > 0 && remotePlayer.gem > remotePlayer.hand[0].getCost(remoteGame) && !remotePlayer.field.isFull);
+                    foreach (var servant in remotePlayer.field)
+                    {
+                        if (servant.canAttack(remoteGame) && !remoteGame.getOpponent(remotePlayer).master.isDead(remoteGame))
+                            yield return remotePlayer.cmdAttack(remoteGame, servant, remoteGame.getOpponent(remotePlayer).master).wait();
+                    }
+                    if (remoteGame.triggers.getRecordedEvents().OfType<THHGame.GameEndEventArg>().FirstOrDefault() is THHGame.GameEndEventArg gameEnd)
+                        break;
+                    else
+                        yield return remotePlayer.cmdTurnEnd(remoteGame).wait();
+                }
+                else
+                {
+                    Debug.LogError("行动玩家不同步");
+                    break;
+                }
+            }
+            while (true);
+            localGameManager.quitGame();
+            remoteGameManager.quitGame();
+            Object.Destroy(localGameManager.gameObject);
+            Object.Destroy(localClient.gameObject);
+            Object.Destroy(remoteGameManager.gameObject);
+            Object.Destroy(remoteClient.gameObject);
+            Object.Destroy(host.gameObject);
         }
     }
 }

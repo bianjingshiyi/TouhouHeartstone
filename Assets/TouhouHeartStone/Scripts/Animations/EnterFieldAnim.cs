@@ -9,7 +9,7 @@ namespace Game
         AnimAnim _anim;
         public override bool update(TableManager table, THHPlayer.EnterFieldEventArg eventArg)
         {
-            if(eventArg.from != null)
+            if (eventArg.from != null)
             {
                 if (eventArg.from.name == PILE.HAND)
                 {
@@ -21,6 +21,12 @@ namespace Game
             if (!SimpleAnimHelper.update(table, ref _anim, servant.onSummon, servant.animator))
                 return false;
             return true;
+        }
+        public override bool blockAnim(UIAnimation nextAnim)
+        {
+            if (nextAnim is EnterFieldAnim enter && enter.tEventArg.card != tEventArg.card)
+                return false;
+            return base.blockAnim(nextAnim);
         }
     }
 }

@@ -145,9 +145,6 @@ namespace Game
             ui.SelfSkill.asButton.onClick.set(onClickSkill);
             ui.SelfSkill.onDrag.set(onDragSkill);
             ui.SelfSkill.onDragEnd.set(onDragSkillEnd);
-            //ui.SelfMaster.onClick.add(onClickMaster);
-            //ui.SelfMaster.onDrag.set(onDragMaster);
-            //ui.SelfMaster.onDragEnd.set(onDragEndMaster);
             ui.SelfItem.hide();
             ui.SelfHandList.clearItems();
             ui.SelfHandList.asButton.onClick.set(() =>
@@ -323,6 +320,7 @@ namespace Game
         public void initMaster(Master master)
         {
             master.onClick.add(onClickMaster);
+            master.Head.clearSecret();
         }
         /// <summary>
         /// 设置Master的UI
@@ -938,7 +936,7 @@ namespace Game
             if (!ui.SelfHandList.isExpanded &&
                 player.hand.count > 0)
             {
-                ui.TipBox.display("你有" + player.hand.count + "张手牌", pointer.position + _tipBoxOffset);
+                ui.TipBox.display(getCard(handList).getOwner().hand.count + "张手牌", pointer.position + _tipBoxOffset);
             }
         }
         void onHandPointerMove(HandListItem handList, Vector2 pointer)
@@ -1004,6 +1002,7 @@ namespace Game
             else
             {
                 ui.isFaceup = false;
+                return;
             }
 
             if (card.define.type == DEFINE.SERVANT)

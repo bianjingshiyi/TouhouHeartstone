@@ -7,6 +7,7 @@ using TouhouHeartstone;
 using TouhouCardEngine;
 using UnityEngine.Events;
 using NitoriNetwork.Common;
+using System;
 
 namespace Game
 {
@@ -76,7 +77,11 @@ namespace Game
             currentRoomInfo = new RoomInfo();
             var selfPlayer = new RoomPlayerInfo() { name = "自己" };
             currentRoomInfo.playerList.Add(selfPlayer);
-            currentRoomInfo.setOption(GameOption.Default);
+            GameOption option = new GameOption();
+            var rand = new byte[4];
+            System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
+            option.randomSeed = BitConverter.ToInt32(rand, 0);
+            currentRoomInfo.setOption(option);
 
             main.RoomPanel.ResetEvents();
             main.RoomPanel.SetMode(RoomPanel.Mode.Local);

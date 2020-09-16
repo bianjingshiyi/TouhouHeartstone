@@ -42,17 +42,19 @@ namespace Game
             base.onAwake();
             TaskExceptionHandler.register();
             _mainUI = this.findInstance<Main>();
-            _mainUI.game = this;
-            _mainUI.Game.GameResultDialog.ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
-
-            _ui = getManager<UIManager>().getObject<UI.Game>();
+            if (_mainUI != null)
+            {
+                _mainUI.game = this;
+                _mainUI.Game.GameResultDialog.ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
+                _ui = _mainUI.Game;
+            }
         }
         [SerializeField]
-        bool _useDefaultDeck = true;
+        bool _useDefaultDeck = false;
         [SerializeField]
         Deck _defaultDeck;
         [SerializeField]
-        bool _useTestDeck = true;
+        bool _useTestDeck = false;
         [SerializeField]
         Deck _testDeck;
         [CardDefineID]
@@ -68,7 +70,12 @@ namespace Game
             get { return getManager<CardManager>(); }
         }
         [SerializeField]
-        bool _testRandomDeck = true;
+        GameMode _mode = GameMode.none;
+        public GameMode mode
+        {
+            get { return _mode; }
+            private set { _mode = value; }
+        }
         private void Start()
         {
 #if !UNITY_EDITOR
@@ -76,20 +83,9 @@ namespace Game
             if (_useDefaultDeck)
                 _deck = _defaultDeck.toIdArray();
 #else
-            if (_testRandomDeck)
-            {
-                List<int> randomDeck = new List<int>();
-                randomDeck.Add(Reimu.ID);
-                System.Random random = new System.Random();
-                for (int i = 0; i < 30; i++)
-                {
-                    randomDeck.Add(cards.GetCardDefines(c => cards.isStandardCard(c)).randomTake(random, 1).First().id);
-                }
-                _deck = randomDeck.ToArray();
-            }
-            if (_useDefaultDeck)
+            if (_useDefaultDeck && _defaultDeck != null)
                 _deck = _defaultDeck.toIdArray();
-            if (_useTestDeck)
+            if (_useTestDeck && _testDeck != null)
                 _deck = _testDeck.toIdArray();
 #endif
         }
@@ -109,150 +105,124 @@ namespace Game
                 eventCache.poll();
             }
         }
-
-        public event Action onGameStart;
-
-        /// <summary>
-        /// 创建并开始本地游戏
-        /// </summary>
-        public void startLocalGame()
+        #region 外部接口
+        public Task startLocalGame(RoomInfo room)
         {
-            _mainUI.Game.GameResultDialog.hide();
-            if (_useTimeAsRandomSeed)
-                _option.randomSeed = (int)DateTime.Now.ToBinary();
-            game = new THHGame(_option, getManager<CardManager>().GetCardDefines())
+            //创建游戏
+            THHGame game = createGame(room);
+            //初始化本地玩家，AI，UI
+            foreach (var player in game.players)
             {
-                answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
-                triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
-                time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
-                logger = new UnityLogger()
-            };
-            (game.answers as AnswerManager).game = game;
-
-            //检查卡组合法性
-            int[] deck = _deck;
-            checkDeckValid(deck);
-
-            CardDefine playerMaster = game.getCardDefine(deck[0]);
-            CardDefine[] playerDeck = deck.Skip(1).Select(id => game.getCardDefine(id)).ToArray();
-            localPlayer = game.createPlayer(1, "本地玩家", playerMaster as MasterCardDefine,
-                playerDeck);
-            THHPlayer aiPlayer = game.createPlayer(2, "AI", playerMaster as MasterCardDefine,
-                deck.Skip(1).Select(id => game.getCardDefine(id)));
-            displayGameUI();
-            //AI玩家用AI
-            new AI(game, aiPlayer);
-            onGameStart?.Invoke();
-            gameTask = game.run();
-        }
-
-        public void startLocalGame(RoomInfo room)
-        {
-            _mainUI.Game.GameResultDialog.hide();
-
-            var option = room.getOption();
-            if (option.randomSeed == 0)
-            {
-                var rand = new byte[4];
-                System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
-                option.randomSeed = BitConverter.ToInt32(rand, 0);
+                if (player.id == room.playerList[0].RoomID) // 暂时的
+                {
+                    localPlayer = player;
+                    displayGameUI(localPlayer);
+                }
+                else
+                    new AI(game, player); //AI玩家用AI
             }
-
-            game = new THHGame(option, getManager<CardManager>().GetCardDefines())
+            mode = GameMode.local;
+            //开始游戏
+            return runGame(game);
+        }
+        [SerializeField]
+        ClientManager _client;
+        public ClientManager client
+        {
+            get { return _client; }
+            set { _client = value; }
+        }
+        public Task startRemoteGame(RoomInfo room, bool headless = false)
+        {
+            return startRemoteGame(client, room, headless);
+        }
+        public Task startRemoteGame(ClientManager client, RoomInfo room, bool headless = false)
+        {
+            //创建游戏
+            THHGame game = createGame(room);
+            //将游戏与网络连接
+            game.answers.client = client;
+            //初始化本地玩家与UI
+            foreach (var player in game.players)
+            {
+                if (client.id == player.id)
+                {
+                    localPlayer = player;
+                    if (!headless)
+                        displayGameUI(localPlayer);
+                }
+            }
+            mode = GameMode.remote;
+            return runGame(game);
+        }
+        public Task startReplayGame(Replay rep)
+        {
+            THHGame game = createGame(rep.option, rep.players);
+            new ReplayPlayer(rep, game);
+            localPlayer = game.players.First();
+            displayGameUI(localPlayer);
+            mode = GameMode.replay;
+            return runGame(game);
+        }
+        public event Action onGameStart;
+        #endregion
+        #region 内部功能
+        THHGame createGame(RoomInfo room)
+        {
+            if (room._persistDataList.Count > room.runtimeDic.Count)
+                room.deserialize();
+            return createGame(room.getOption(), room.playerList);
+        }
+        THHGame createGame(GameOption option, IEnumerable<RoomPlayerInfo> playerList)
+        {
+            THHGame game = new THHGame(option, getManager<CardManager>().GetCardDefines())
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
                 time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
-                logger = new UnityLogger()
+                logger = new ULogger()
             };
-            (game.answers as AnswerManager).game = game;
-
-            foreach (var info in room.playerList)
+            game.answers.game = game;
+            foreach (var info in playerList)
             {
                 int[] deck = info.getDeck();
-                checkDeckValid(deck);
+                checkDeckValid(game, deck);
 #if UNITY_EDITOR
                 //检查卡组合法性
                 if (_useTestDeck)
                     deck = _testDeck.toIdArray();
 #endif
-
                 THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getCardDefine(deck[0]) as MasterCardDefine,
                     deck.Skip(1).Select(id => game.getCardDefine(id)));
-                if (info.RoomID == room.playerList[0].RoomID) // 暂时的
-                {
-                    localPlayer = player;
-                    displayGameUI();
-                }
-                else
-                    new AI(game, player); //AI玩家用AI
             }
+            return game;
+        }
+        Task runGame(THHGame game)
+        {
+            this.game = game;
             onGameStart?.Invoke();
             gameTask = game.run();
+            return gameTask;
         }
-
-        public void startRemoteGame(ClientManager client, GameOption option, RoomPlayerInfo[] players)
+        public void quitGame()
         {
-            _mainUI.Game.GameResultDialog.hide();
-
-            game = new THHGame(option, getManager<CardManager>().GetCardDefines())
+            if (game != null)
             {
-                answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
-                triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
-                time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
-                logger = new ULogger()
-            };
-            (game.answers as AnswerManager).client = client;
-
-            foreach (var info in players)
-            {
-                checkDeckValid(info.getDeck());
-
-                THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getCardDefine(info.getDeck()[0]) as MasterCardDefine,
-                    info.getDeck().Skip(1).Select(id => game.getCardDefine(id)));
-                if (client.id == info.RoomID)
+                game.Dispose();
+                game = null;
+                gameTask = null;
+                mode = GameMode.none;
+                if (_mainUI != null)
                 {
-                    localPlayer = player;
-                    displayGameUI();
+                    getManager<TableManager>().setGame(null, null);
+                    _mainUI.display(_mainUI.MainMenu);
                 }
+                onGameEnd?.Invoke();
             }
-            onGameStart?.Invoke();
-            gameTask = game.run();
         }
-
-        public void startReplayGame(Replay rep)
-        {
-            _mainUI.Game.GameResultDialog.hide();
-
-            game = new THHGame(rep.option, getManager<CardManager>().GetCardDefines())
-            {
-                answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
-                triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
-                time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
-                logger = new ULogger()
-            };
-            (game.answers as AnswerManager).game = game;
-
-            foreach (var player in rep.players)
-            {
-                checkDeckValid(player.Deck);
-                checkDeckValid(new int[] { player.MasterCard });
-
-                THHPlayer p = game.createPlayer(
-                    player.ID,
-                    player.Name,
-                    game.getCardDefine(player.MasterCard) as MasterCardDefine,
-                    player.Deck.Select(c => game.getCardDefine(c)));
-            }
-
-            new ReplayPlayer(rep, game);
-
-            localPlayer = game.players.Last();
-            displayGameUI();
-            gameTask = game.run();
-        }
-
-        private void checkDeckValid(int[] deck)
+        public event Action onGameEnd;
+        #endregion
+        private void checkDeckValid(THHGame game, int[] deck)
         {
             if (deck == null)
                 return;
@@ -274,8 +244,9 @@ namespace Game
         /// 显示游戏UI，并指定本地玩家
         /// </summary>
         /// <param name="localPlayer"></param>
-        private void displayGameUI()
+        private void displayGameUI(THHPlayer localPlayer)
         {
+            _mainUI.Game.GameResultDialog.hide();
             //本地玩家用UI
             _mainUI.display(_mainUI.Game);
             getManager<TableManager>().setGame(game, localPlayer);
@@ -448,29 +419,6 @@ namespace Game
                     break;
             }
         }
-        public void quitGame()
-        {
-            if (game != null)
-            {
-                game.Dispose();
-                game = null;
-                getManager<TableManager>().setGame(null, null);
-                _mainUI.display(_mainUI.MainMenu);
-                gameTask = null;
-                onGameEnd?.Invoke();
-            }
-        }
-        public event Action onGameEnd;
-        void tryLoadDeckFromPrefs()
-        {
-            if (!PlayerPrefs.HasKey("DeckCount"))
-                return;
-            int count = PlayerPrefs.GetInt("DeckCount");
-            for (int i = 1; i < count; i++)
-            {
-                _deck[i] = PlayerPrefs.GetInt("Deck" + i);
-            }
-        }
         #region Events
         void onLogListItemEnter(LogListItem item)
         {
@@ -515,5 +463,12 @@ namespace Game
             Time.timeScale = GUILayout.HorizontalSlider(Time.timeScale, 0, 3, GUILayout.Width(300));
 #endif
         }
+    }
+    public enum GameMode
+    {
+        none,
+        local,
+        remote,
+        replay
     }
 }

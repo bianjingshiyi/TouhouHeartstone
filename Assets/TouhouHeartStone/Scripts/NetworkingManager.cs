@@ -264,7 +264,7 @@ namespace Game
         /// </summary>
         public void start()
         {
-            getManager<GameManager>().startRemoteGame(client, client.roomInfo.getOption(), client.roomInfo.playerList.ToArray());
+            getManager<GameManager>().startRemoteGame(client, client.roomInfo);
         }
         public void quitRoom()
         {
