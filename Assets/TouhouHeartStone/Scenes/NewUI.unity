@@ -7145,6 +7145,7 @@ MonoBehaviour:
   _initStates: []
   license: {fileID: 11400000, guid: 0a24e5d4ca88d7d40a4bc8580d0baa1f, type: 2}
   staff: {fileID: 4900000, guid: f0b91c6a28a8e9549b6412f6d5b682ad, type: 3}
+  _Image: {fileID: 0}
   _AboutImage: {fileID: 903408309}
   _TitleText: {fileID: 1486430554}
   _Scroll_View: {fileID: 478058694}
@@ -9933,7 +9934,7 @@ PrefabInstance:
     - target: {fileID: 3879115452516319067, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -50.00006
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 3879115452750856570, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}
@@ -10478,7 +10479,7 @@ PrefabInstance:
     - target: {fileID: 7989643840905976076, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -50.00006
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 8125256729857097632, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}
