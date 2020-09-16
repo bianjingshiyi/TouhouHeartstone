@@ -936,7 +936,7 @@ namespace Game
             if (!ui.SelfHandList.isExpanded &&
                 player.hand.count > 0)
             {
-                ui.TipBox.display("你有" + player.hand.count + "张手牌", pointer.position + _tipBoxOffset);
+                ui.TipBox.display(getCard(handList).getOwner().hand.count + "张手牌", pointer.position + _tipBoxOffset);
             }
         }
         void onHandPointerMove(HandListItem handList, Vector2 pointer)
