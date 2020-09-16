@@ -6125,14 +6125,14 @@ MonoBehaviour:
       count: 0
     - id: 8196
       count: 0
-  _useTestDeck: 0
+  _useTestDeck: 1
   _testDeck:
-    name: TestPatchouli
-    master: 4194304
+    name: 
+    master: 6291456
     deckList:
-    - id: 8226
+    - id: 6299650
       count: 15
-    - id: 4210694
+    - id: 6303749
       count: 15
   _deck: 00004000012000000120000001200000012000000120000002200000022000000220000002200000022000000220000002200000032000000320000003200000032000000320000003200000122040001220400007304000073040001220400006200000062000000620000006200000062000000620000006200000
   _testRandomDeck: 0
@@ -7189,6 +7189,7 @@ MonoBehaviour:
   _initStates: []
   license: {fileID: 11400000, guid: 0a24e5d4ca88d7d40a4bc8580d0baa1f, type: 2}
   staff: {fileID: 4900000, guid: f0b91c6a28a8e9549b6412f6d5b682ad, type: 3}
+  _Image: {fileID: 0}
   _AboutImage: {fileID: 903408309}
   _TitleText: {fileID: 1486430554}
   _Scroll_View: {fileID: 478058694}

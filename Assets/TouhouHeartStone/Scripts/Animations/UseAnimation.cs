@@ -75,7 +75,10 @@ namespace Game
                 {
                     if (table.tryGetHand(eventArg.card, out var hand))
                     {
-                        table.setCard(hand.Card, eventArg.card, true);
+                        if (eventArg.card.hasKeyword(table.game, KEYWORD.SECRET))
+                            table.setCard(hand.Card, eventArg.card, false);
+                        else
+                            table.setCard(hand.Card, eventArg.card, true);
                         hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
                         if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator))
                             return false;

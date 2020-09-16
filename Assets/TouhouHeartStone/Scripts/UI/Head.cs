@@ -7,48 +7,38 @@ namespace UI
         Secret _secretPrefab;
         public Secret addSecret()
         {
-            if (P1Image.transform.childCount < 1)
-                return Instantiate(_secretPrefab, P1Image.transform);
-            else if (P2Image.transform.childCount < 1)
-                return Instantiate(_secretPrefab, P2Image.transform);
-            else if (P3Image.transform.childCount < 1)
-                return Instantiate(_secretPrefab, P3Image.transform);
-            else if (P4Image.transform.childCount < 1)
-                return Instantiate(_secretPrefab, P4Image.transform);
-            else if (P5Image.transform.childCount < 1)
-                return Instantiate(_secretPrefab, P5Image.transform);
-            else
-                throw new SpaceNotEnoughException();
+            foreach (var p in getPArray())
+            {
+                if (p.childCount < 1)
+                    return Instantiate(_secretPrefab, p);
+            }
+            throw new SpaceNotEnoughException();
         }
         public bool removeSecret(Secret secret)
         {
-            if (P1Image.transform.GetChild(0) == secret.transform)
+            foreach (var p in getPArray())
             {
-                Destroy(secret.gameObject);
-                return true;
+                if (p.childCount > 0 && p.GetChild(0) == secret.transform)
+                {
+                    Destroy(secret.gameObject);
+                    return true;
+                }
             }
-            else if (P2Image.transform.GetChild(0) == secret.transform)
+            return false;
+        }
+        public void clearSecret()
+        {
+            foreach (var p in getPArray())
             {
-                Destroy(secret.gameObject);
-                return true;
+                for (int i = 0; i < p.childCount; i++)
+                {
+                    Destroy(p.GetChild(i).gameObject);
+                }
             }
-            else if (P3Image.transform.GetChild(0) == secret.transform)
-            {
-                Destroy(secret.gameObject);
-                return true;
-            }
-            else if (P4Image.transform.GetChild(0) == secret.transform)
-            {
-                Destroy(secret.gameObject);
-                return true;
-            }
-            else if (P5Image.transform.GetChild(0) == secret.transform)
-            {
-                Destroy(secret.gameObject);
-                return true;
-            }
-            else
-                return false;
+        }
+        private RectTransform[] getPArray()
+        {
+            return new RectTransform[] { P1Image.rectTransform, P2Image.rectTransform, P3Image.rectTransform, P4Image.rectTransform, P5Image.rectTransform };
         }
     }
 }
