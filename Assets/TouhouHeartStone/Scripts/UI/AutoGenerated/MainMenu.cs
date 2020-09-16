@@ -34,6 +34,9 @@ namespace UI
             this._AboutButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<ButtonBlack>();
             this._QuitButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<ButtonBlack>();
             this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
+            this._RegisterPanel = this.transform.Find("RegisterPanel").GetComponent<RegisterPanel>();
+            this._LoginPanel = this.transform.Find("LoginPanel").GetComponent<LoginPanel>();
+            this._PlayerInfoPanel = this.transform.Find("PlayerInfoPanel").GetComponent<PlayerInfoPanel>();
         }
         [SerializeField()]
         private Image _ButtonPanelImage;
@@ -150,6 +153,45 @@ namespace UI
                     this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
                 }
                 return this._LogoImage;
+            }
+        }
+        [SerializeField()]
+        private RegisterPanel _RegisterPanel;
+        public RegisterPanel RegisterPanel
+        {
+            get
+            {
+                if ((this._RegisterPanel == null))
+                {
+                    this._RegisterPanel = this.transform.Find("RegisterPanel").GetComponent<RegisterPanel>();
+                }
+                return this._RegisterPanel;
+            }
+        }
+        [SerializeField()]
+        private LoginPanel _LoginPanel;
+        public LoginPanel LoginPanel
+        {
+            get
+            {
+                if ((this._LoginPanel == null))
+                {
+                    this._LoginPanel = this.transform.Find("LoginPanel").GetComponent<LoginPanel>();
+                }
+                return this._LoginPanel;
+            }
+        }
+        [SerializeField()]
+        private PlayerInfoPanel _PlayerInfoPanel;
+        public PlayerInfoPanel PlayerInfoPanel
+        {
+            get
+            {
+                if ((this._PlayerInfoPanel == null))
+                {
+                    this._PlayerInfoPanel = this.transform.Find("PlayerInfoPanel").GetComponent<PlayerInfoPanel>();
+                }
+                return this._PlayerInfoPanel;
             }
         }
         partial void onAwake();
