@@ -387,7 +387,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 426 叛逃特工 每当你使用英雄技能时，对随机敌人造成3点伤害
+    /// 434 叛逃特工 每当你使用英雄技能时，对随机敌人造成3点伤害
     /// </summary>
     public class DefectedAgent : ServantCardDefine
     {
@@ -405,7 +405,7 @@ namespace TouhouHeartstone.Builtin
                 return a.player == c.getOwner() && a.card.isSkill();
             },null,
             async(g,c,a)=>{
-                await g.getAllEnemies(c.getOwner()).random(g).damage(g,c,3);
+                await g.getAllEnemies(c.getOwner()).random(g).damage(g,c,2);
             })
         };
     }
