@@ -740,13 +740,13 @@ namespace TouhouHeartstone
             game.logPlayerAction(id, response);
             return game.answers.answer(id, response);
         }
-        public void cmdTurnEnd(THHGame game)
+        public Task cmdTurnEnd(THHGame game)
         {
             var resp = new TurnEndResponse() { };
             game.logPlayerAction(id, resp);
-            game.answers.answer(id, resp);
+            return game.answers.answer(id, resp);
         }
-        public void cmdAttack(THHGame game, Card card, Card target)
+        public Task cmdAttack(THHGame game, Card card, Card target)
         {
             var resp = new AttackResponse()
             {
@@ -754,7 +754,7 @@ namespace TouhouHeartstone
                 targetId = target.id
             };
             game.logPlayerAction(id, resp);
-            game.answers.answer(id, resp);
+            return game.answers.answer(id, resp);
         }
         public Task cmdSurrender(THHGame game)
         {

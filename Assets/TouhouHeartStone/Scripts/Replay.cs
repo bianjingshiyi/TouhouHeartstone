@@ -5,13 +5,16 @@ using UnityEngine;
 using TouhouCardEngine.Interfaces;
 using System.Linq;
 using MongoDB.Bson;
+using NitoriNetwork.Common;
+
 namespace Game
 {
     [Serializable]
     public class Replay
     {
         public GameOption option;
-        public ReplayPlayer[] players;
+        public RoomPlayerInfo[] players;
+        //public ReplayPlayer[] players;
         public List<ReplayLogLine> logs = new List<ReplayLogLine>();
         [Serializable]
         public class ReplayPlayer
@@ -45,7 +48,12 @@ namespace Game
         public Replay(THHGame game)
         {
             option = game.option;
-            players = game.players.Select(p => new ReplayPlayer(p)).ToArray();
+            players = game.players.Select(p =>
+            {
+                var player = new RoomPlayerInfo() { RoomID = p.id, name = p.name };
+                player.setDeck(new int[] { p.master.define.id }.Concat(p.deck.Select(c => c.define.id)).ToArray());
+                return player;
+            }).ToArray();
         }
 #if UNITY_EDITOR
         [SerializeField]
