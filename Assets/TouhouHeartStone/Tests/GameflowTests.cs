@@ -20,6 +20,9 @@ namespace Tests
 {
     public class GameflowTests
     {
+        private const string SERVER_IP = "127.0.0.1";
+        private const int SERVER_PORT = 17035;
+
         [UnityTest]
         public IEnumerator initTest()
         {
@@ -639,7 +642,9 @@ namespace Tests
             host.start();
             RoomInfo room = new RoomInfo();
             room.setOption(GameOption.Default);
-            room = host.openRoom(room);
+            Task<RoomInfo> openRoomTask = host.openRoom(room);
+            yield return openRoomTask.wait();
+            room = openRoomTask.Result;
             //本地玩家加入房间
             ClientManager localClient = new GameObject(nameof(localClient)).AddComponent<ClientManager>();
             localClient.logger = logger;
@@ -735,33 +740,46 @@ namespace Tests
         public IEnumerator serverGameTest()
         {
             ULogger logger = new ULogger();
-            //创建房间
-            HostManager host = new GameObject(nameof(HostManager)).AddComponent<HostManager>();
-            host.logger = logger;
-            host.start();
-            RoomInfo room = new RoomInfo();
-            room.setOption(GameOption.Default);
-            room = host.openRoom(room);
-            //本地玩家加入房间
+            //客户端启动与登录
             ClientManager localClient = new GameObject(nameof(localClient)).AddComponent<ClientManager>();
             localClient.logger = logger;
             localClient.start();
+            Assert.True(string.IsNullOrEmpty(localClient.account));//账号为空表明当前处于未登录状态
+            yield return localClient.login(SERVER_IP, SERVER_PORT, "TestClient1", "password").wait();
+            Assert.AreEqual("TestClient1", localClient.account);//收到登录回应之后localClient处于登录状态
+            //创建房间
+            RoomInfo room = new RoomInfo();
+            room.setOption(GameOption.Default);
+            Task<RoomInfo> roomTask = localClient.openRoom(room);
+            yield return roomTask.wait();
+            room = roomTask.Result;
+            Assert.NotNull(room);
+            //本地玩家加入房间
             RoomPlayerInfo localPlayerInfo = new RoomPlayerInfo() { name = "本地玩家" };
             localPlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
-            yield return localClient.joinRoom(room, localPlayerInfo).wait();
+            roomTask = localClient.joinRoom(room, localPlayerInfo);
+            yield return roomTask.wait();
+            room = roomTask.Result;
             Assert.AreEqual(1, room.playerList.Count);
             Assert.AreEqual("本地玩家", room.playerList[0].name);
             Assert.AreEqual(0, room.playerList[0].RoomID);
-            //远程玩家加入房间
+            //远程玩家登录
             ClientManager remoteClient = new GameObject(nameof(remoteClient)).AddComponent<ClientManager>();
             remoteClient.logger = logger;
             remoteClient.start();
+            Assert.True(string.IsNullOrEmpty(remoteClient.account));
+            yield return remoteClient.login(SERVER_IP, SERVER_PORT, "TestClient2", "password").wait();
+            Assert.AreEqual("TestClient2", remoteClient.account);//一个客户端可以登录多个账号，使用不同的端口
+            //远程玩家加入房间
             RoomPlayerInfo remotePlayerInfo = new RoomPlayerInfo() { name = "远端玩家" };
             remotePlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
-            yield return remoteClient.joinRoom(room, remotePlayerInfo).wait();
+            roomTask = remoteClient.joinRoom(room, remotePlayerInfo);
+            yield return roomTask.wait();
+            room = roomTask.Result;
             Assert.AreEqual(2, room.playerList.Count);
             Assert.AreEqual("远端玩家", room.playerList[1].name);
             Assert.AreEqual(1, room.playerList[1].RoomID);
+            Assert.AreEqual(30, room.playerList[1].getDeck().Length);
             //开始游戏
             CardManager cardManager = new GameObject(nameof(CardManager)).AddComponent<CardManager>();
             yield return cardManager.load(new Assembly[] { typeof(TestMaster).Assembly }).wait();
@@ -771,7 +789,7 @@ namespace Tests
             GameManager remoteGameManager = new GameObject(nameof(GameManager)).AddComponent<GameManager>();
             remoteClient.addInvokeTarget(remoteGameManager);
             remoteGameManager.client = remoteClient;
-            yield return host.invokeAll<object>(new int[] { 0, 1 }, new RPCRequest(typeof(Task), nameof(GameManager.startRemoteGame), host.room, true)).wait();
+            yield return localClient.invokeAll<object>(new int[] { 0, 1 }, new RPCRequest(typeof(Task), nameof(GameManager.startRemoteGame), localClient.roomInfo, true)).wait();
             THHGame localGame = localGameManager.game;
             THHGame remoteGame = remoteGameManager.game;
             Assert.AreEqual(localGame.option.randomSeed, remoteGame.option.randomSeed);
@@ -831,7 +849,6 @@ namespace Tests
             Object.Destroy(localClient.gameObject);
             Object.Destroy(remoteGameManager.gameObject);
             Object.Destroy(remoteClient.gameObject);
-            Object.Destroy(host.gameObject);
         }
     }
 }
