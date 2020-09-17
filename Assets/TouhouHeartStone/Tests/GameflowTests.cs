@@ -745,11 +745,17 @@ namespace Tests
             localClient.logger = logger;
             localClient.start();
             //本地客户端注册
-            yield return localClient.register(SERVER_IP, SERVER_PORT, new AccountInfo( "TestClient1", "password", "TestClient1@igsk.fun", "本地玩家"), "xxxx").wait();
+            Task task = null;
+            try
+            {
+                task = localClient.register(SERVER_IP, SERVER_PORT, new AccountInfo("TestClient1", "password", "TestClient1@igsk.fun", "本地玩家"), "xxxx");
+            }
+            catch { }
+            yield return task.wait();
             //本地客户端登录
-            Assert.True(string.IsNullOrEmpty(localClient.account));//账号为空表明当前处于未登录状态
+            Assert.Null(localClient.account);//账号为空表明当前处于未登录状态
             yield return localClient.login(SERVER_IP, SERVER_PORT, "TestClient1", "password").wait();
-            Assert.AreEqual("TestClient1", localClient.account);//收到登录回应之后localClient处于登录状态
+            Assert.AreEqual("TestClient1", localClient.account.userName);//收到登录回应之后localClient处于登录状态
             //本地客户端创建房间
             RoomInfo room = new RoomInfo();
             room.setOption(GameOption.Default);
@@ -771,11 +777,16 @@ namespace Tests
             remoteClient.logger = logger;
             remoteClient.start();
             //远程客户端注册
-            yield return remoteClient.register(SERVER_IP, SERVER_PORT, new AccountInfo("TestClient2", "password", "TestClient2@igsk.fun", "远端玩家"), "xxxx").wait();
+            try
+            {
+                task = remoteClient.register(SERVER_IP, SERVER_PORT, new AccountInfo("TestClient2", "password", "TestClient2@igsk.fun", "远端玩家"), "xxxx");
+            }
+            catch { }
+            yield return task.wait();
             //远程客户端登录
-            Assert.True(string.IsNullOrEmpty(remoteClient.account));
+            Assert.Null(remoteClient.account);
             yield return remoteClient.login(SERVER_IP, SERVER_PORT, "TestClient2", "password").wait();
-            Assert.AreEqual("TestClient2", remoteClient.account);//一个客户端可以登录多个账号，使用不同的端口
+            Assert.AreEqual("TestClient2", remoteClient.account.userName);//一个客户端可以登录多个账号，使用不同的端口
             //远程玩家加入房间
             RoomPlayerInfo remotePlayerInfo = new RoomPlayerInfo() { name = "远端玩家" };
             remotePlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
@@ -854,9 +865,9 @@ namespace Tests
             localGameManager.quitGame();
             remoteGameManager.quitGame();
             yield return localClient.logout().wait();
-            Assert.True(string.IsNullOrEmpty(localClient.account));
+            Assert.Null(localClient.account);
             yield return remoteClient.logout().wait();
-            Assert.True(string.IsNullOrEmpty(remoteClient.account));
+            Assert.Null(remoteClient.account);
             Object.Destroy(localGameManager.gameObject);
             Object.Destroy(localClient.gameObject);
             Object.Destroy(remoteGameManager.gameObject);

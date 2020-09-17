@@ -6,6 +6,8 @@ namespace Tests
     {
         public static WaitUntil waitTask(Task task)
         {
+            if (task == null)
+                return null;
             return new WaitUntil(() =>
             {
                 if (task.IsCompleted)
