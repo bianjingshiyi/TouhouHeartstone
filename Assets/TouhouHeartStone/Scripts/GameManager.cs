@@ -116,7 +116,7 @@ namespace Game
                 if (player.id == room.playerList[0].RoomID) // 暂时的
                 {
                     localPlayer = player;
-                    displayGameUI(localPlayer);
+                    displayGameUI(game, localPlayer);
                 }
                 else
                     new AI(game, player); //AI玩家用AI
@@ -149,7 +149,7 @@ namespace Game
                 {
                     localPlayer = player;
                     if (!headless)
-                        displayGameUI(localPlayer);
+                        displayGameUI(game, localPlayer);
                 }
             }
             mode = GameMode.remote;
@@ -160,7 +160,7 @@ namespace Game
             THHGame game = createGame(rep.option, rep.players);
             new ReplayPlayer(rep, game);
             localPlayer = game.players.First();
-            displayGameUI(localPlayer);
+            displayGameUI(game, localPlayer);
             mode = GameMode.replay;
             return runGame(game);
         }
@@ -244,7 +244,7 @@ namespace Game
         /// 显示游戏UI，并指定本地玩家
         /// </summary>
         /// <param name="localPlayer"></param>
-        private void displayGameUI(THHPlayer localPlayer)
+        private void displayGameUI(THHGame game, THHPlayer localPlayer)
         {
             _mainUI.Game.GameResultDialog.hide();
             //本地玩家用UI
