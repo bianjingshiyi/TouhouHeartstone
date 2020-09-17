@@ -32,11 +32,25 @@ namespace UI
             this._HintImage = this.transform.Find("Hint").GetComponent<Image>();
             this._Hint_Text = this.transform.Find("Hint").Find("Text").GetComponent<Text>();
             this._ContainerVerticalLayoutGroup = this.transform.Find("Container").GetComponent<VerticalLayoutGroup>();
-            this._UserNameGameOptionItemText = this.transform.Find("Container").Find("UserName").GetComponent<GameOptionItemText>();
-            this._MailGameOptionItemText = this.transform.Find("Container").Find("Mail").GetComponent<GameOptionItemText>();
-            this._PasswordGameOptionItemText = this.transform.Find("Container").Find("Password").GetComponent<GameOptionItemText>();
-            this._NickNameGameOptionItemText = this.transform.Find("Container").Find("NickName").GetComponent<GameOptionItemText>();
-            this._CaptchaGameOptionItemText = this.transform.Find("Container").Find("Captcha").GetComponent<GameOptionItemText>();
+            this._UserNameImage = this.transform.Find("Container").Find("UserName").GetComponent<Image>();
+            this._TitleText = this.transform.Find("Container").Find("UserName").Find("Title").GetComponent<Text>();
+            this._InputFieldDark = this.transform.Find("Container").Find("UserName").Find("InputFieldDark").GetComponent<InputFieldDark>();
+            this._MailImage = this.transform.Find("Container").Find("Mail").GetComponent<Image>();
+            this._Mail_TitleText = this.transform.Find("Container").Find("Mail").Find("Title").GetComponent<Text>();
+            this._Mail_InputFieldDark = this.transform.Find("Container").Find("Mail").Find("InputFieldDark").GetComponent<InputFieldDark>();
+            this._PasswordImage = this.transform.Find("Container").Find("Password").GetComponent<Image>();
+            this._Password_TitleText = this.transform.Find("Container").Find("Password").Find("Title").GetComponent<Text>();
+            this._Password_InputFieldDark = this.transform.Find("Container").Find("Password").Find("InputFieldDark").GetComponent<InputFieldDark>();
+            this._RepeatPasswordImage = this.transform.Find("Container").Find("RepeatPassword").GetComponent<Image>();
+            this._RepeatPassword_TitleText = this.transform.Find("Container").Find("RepeatPassword").Find("Title").GetComponent<Text>();
+            this._RepeatPassword_InputFieldDark = this.transform.Find("Container").Find("RepeatPassword").Find("InputFieldDark").GetComponent<InputFieldDark>();
+            this._NickNameImage = this.transform.Find("Container").Find("NickName").GetComponent<Image>();
+            this._NickName_TitleText = this.transform.Find("Container").Find("NickName").Find("Title").GetComponent<Text>();
+            this._NickName_InputFieldDark = this.transform.Find("Container").Find("NickName").Find("InputFieldDark").GetComponent<InputFieldDark>();
+            this._CaptchaImage = this.transform.Find("Container").Find("Captcha").GetComponent<Image>();
+            this._Captcha_TitleText = this.transform.Find("Container").Find("Captcha").Find("Title").GetComponent<Text>();
+            this._Captcha_InputFieldDark = this.transform.Find("Container").Find("Captcha").Find("InputFieldDark").GetComponent<InputFieldDark>();
+            this._CaptchaImageButton = this.transform.Find("Container").Find("Captcha").Find("CaptchaImage").GetComponent<Button>();
             this._RegisterButtonBlack = this.transform.Find("Register").GetComponent<ButtonBlack>();
             this._LoginButtonBlack = this.transform.Find("Login").GetComponent<ButtonBlack>();
         }
@@ -132,68 +146,250 @@ namespace UI
             }
         }
         [SerializeField()]
-        private GameOptionItemText _UserNameGameOptionItemText;
-        public GameOptionItemText UserNameGameOptionItemText
+        private Image _UserNameImage;
+        public Image UserNameImage
         {
             get
             {
-                if ((this._UserNameGameOptionItemText == null))
+                if ((this._UserNameImage == null))
                 {
-                    this._UserNameGameOptionItemText = this.transform.Find("Container").Find("UserName").GetComponent<GameOptionItemText>();
+                    this._UserNameImage = this.transform.Find("Container").Find("UserName").GetComponent<Image>();
                 }
-                return this._UserNameGameOptionItemText;
+                return this._UserNameImage;
             }
         }
         [SerializeField()]
-        private GameOptionItemText _MailGameOptionItemText;
-        public GameOptionItemText MailGameOptionItemText
+        private Text _TitleText;
+        public Text TitleText
         {
             get
             {
-                if ((this._MailGameOptionItemText == null))
+                if ((this._TitleText == null))
                 {
-                    this._MailGameOptionItemText = this.transform.Find("Container").Find("Mail").GetComponent<GameOptionItemText>();
+                    this._TitleText = this.transform.Find("Container").Find("UserName").Find("Title").GetComponent<Text>();
                 }
-                return this._MailGameOptionItemText;
+                return this._TitleText;
             }
         }
         [SerializeField()]
-        private GameOptionItemText _PasswordGameOptionItemText;
-        public GameOptionItemText PasswordGameOptionItemText
+        private InputFieldDark _InputFieldDark;
+        public InputFieldDark InputFieldDark
         {
             get
             {
-                if ((this._PasswordGameOptionItemText == null))
+                if ((this._InputFieldDark == null))
                 {
-                    this._PasswordGameOptionItemText = this.transform.Find("Container").Find("Password").GetComponent<GameOptionItemText>();
+                    this._InputFieldDark = this.transform.Find("Container").Find("UserName").Find("InputFieldDark").GetComponent<InputFieldDark>();
                 }
-                return this._PasswordGameOptionItemText;
+                return this._InputFieldDark;
             }
         }
         [SerializeField()]
-        private GameOptionItemText _NickNameGameOptionItemText;
-        public GameOptionItemText NickNameGameOptionItemText
+        private Image _MailImage;
+        public Image MailImage
         {
             get
             {
-                if ((this._NickNameGameOptionItemText == null))
+                if ((this._MailImage == null))
                 {
-                    this._NickNameGameOptionItemText = this.transform.Find("Container").Find("NickName").GetComponent<GameOptionItemText>();
+                    this._MailImage = this.transform.Find("Container").Find("Mail").GetComponent<Image>();
                 }
-                return this._NickNameGameOptionItemText;
+                return this._MailImage;
             }
         }
         [SerializeField()]
-        private GameOptionItemText _CaptchaGameOptionItemText;
-        public GameOptionItemText CaptchaGameOptionItemText
+        private Text _Mail_TitleText;
+        public Text Mail_TitleText
         {
             get
             {
-                if ((this._CaptchaGameOptionItemText == null))
+                if ((this._Mail_TitleText == null))
                 {
-                    this._CaptchaGameOptionItemText = this.transform.Find("Container").Find("Captcha").GetComponent<GameOptionItemText>();
+                    this._Mail_TitleText = this.transform.Find("Container").Find("Mail").Find("Title").GetComponent<Text>();
                 }
-                return this._CaptchaGameOptionItemText;
+                return this._Mail_TitleText;
+            }
+        }
+        [SerializeField()]
+        private InputFieldDark _Mail_InputFieldDark;
+        public InputFieldDark Mail_InputFieldDark
+        {
+            get
+            {
+                if ((this._Mail_InputFieldDark == null))
+                {
+                    this._Mail_InputFieldDark = this.transform.Find("Container").Find("Mail").Find("InputFieldDark").GetComponent<InputFieldDark>();
+                }
+                return this._Mail_InputFieldDark;
+            }
+        }
+        [SerializeField()]
+        private Image _PasswordImage;
+        public Image PasswordImage
+        {
+            get
+            {
+                if ((this._PasswordImage == null))
+                {
+                    this._PasswordImage = this.transform.Find("Container").Find("Password").GetComponent<Image>();
+                }
+                return this._PasswordImage;
+            }
+        }
+        [SerializeField()]
+        private Text _Password_TitleText;
+        public Text Password_TitleText
+        {
+            get
+            {
+                if ((this._Password_TitleText == null))
+                {
+                    this._Password_TitleText = this.transform.Find("Container").Find("Password").Find("Title").GetComponent<Text>();
+                }
+                return this._Password_TitleText;
+            }
+        }
+        [SerializeField()]
+        private InputFieldDark _Password_InputFieldDark;
+        public InputFieldDark Password_InputFieldDark
+        {
+            get
+            {
+                if ((this._Password_InputFieldDark == null))
+                {
+                    this._Password_InputFieldDark = this.transform.Find("Container").Find("Password").Find("InputFieldDark").GetComponent<InputFieldDark>();
+                }
+                return this._Password_InputFieldDark;
+            }
+        }
+        [SerializeField()]
+        private Image _RepeatPasswordImage;
+        public Image RepeatPasswordImage
+        {
+            get
+            {
+                if ((this._RepeatPasswordImage == null))
+                {
+                    this._RepeatPasswordImage = this.transform.Find("Container").Find("RepeatPassword").GetComponent<Image>();
+                }
+                return this._RepeatPasswordImage;
+            }
+        }
+        [SerializeField()]
+        private Text _RepeatPassword_TitleText;
+        public Text RepeatPassword_TitleText
+        {
+            get
+            {
+                if ((this._RepeatPassword_TitleText == null))
+                {
+                    this._RepeatPassword_TitleText = this.transform.Find("Container").Find("RepeatPassword").Find("Title").GetComponent<Text>();
+                }
+                return this._RepeatPassword_TitleText;
+            }
+        }
+        [SerializeField()]
+        private InputFieldDark _RepeatPassword_InputFieldDark;
+        public InputFieldDark RepeatPassword_InputFieldDark
+        {
+            get
+            {
+                if ((this._RepeatPassword_InputFieldDark == null))
+                {
+                    this._RepeatPassword_InputFieldDark = this.transform.Find("Container").Find("RepeatPassword").Find("InputFieldDark").GetComponent<InputFieldDark>();
+                }
+                return this._RepeatPassword_InputFieldDark;
+            }
+        }
+        [SerializeField()]
+        private Image _NickNameImage;
+        public Image NickNameImage
+        {
+            get
+            {
+                if ((this._NickNameImage == null))
+                {
+                    this._NickNameImage = this.transform.Find("Container").Find("NickName").GetComponent<Image>();
+                }
+                return this._NickNameImage;
+            }
+        }
+        [SerializeField()]
+        private Text _NickName_TitleText;
+        public Text NickName_TitleText
+        {
+            get
+            {
+                if ((this._NickName_TitleText == null))
+                {
+                    this._NickName_TitleText = this.transform.Find("Container").Find("NickName").Find("Title").GetComponent<Text>();
+                }
+                return this._NickName_TitleText;
+            }
+        }
+        [SerializeField()]
+        private InputFieldDark _NickName_InputFieldDark;
+        public InputFieldDark NickName_InputFieldDark
+        {
+            get
+            {
+                if ((this._NickName_InputFieldDark == null))
+                {
+                    this._NickName_InputFieldDark = this.transform.Find("Container").Find("NickName").Find("InputFieldDark").GetComponent<InputFieldDark>();
+                }
+                return this._NickName_InputFieldDark;
+            }
+        }
+        [SerializeField()]
+        private Image _CaptchaImage;
+        public Image CaptchaImage
+        {
+            get
+            {
+                if ((this._CaptchaImage == null))
+                {
+                    this._CaptchaImage = this.transform.Find("Container").Find("Captcha").GetComponent<Image>();
+                }
+                return this._CaptchaImage;
+            }
+        }
+        [SerializeField()]
+        private Text _Captcha_TitleText;
+        public Text Captcha_TitleText
+        {
+            get
+            {
+                if ((this._Captcha_TitleText == null))
+                {
+                    this._Captcha_TitleText = this.transform.Find("Container").Find("Captcha").Find("Title").GetComponent<Text>();
+                }
+                return this._Captcha_TitleText;
+            }
+        }
+        [SerializeField()]
+        private InputFieldDark _Captcha_InputFieldDark;
+        public InputFieldDark Captcha_InputFieldDark
+        {
+            get
+            {
+                if ((this._Captcha_InputFieldDark == null))
+                {
+                    this._Captcha_InputFieldDark = this.transform.Find("Container").Find("Captcha").Find("InputFieldDark").GetComponent<InputFieldDark>();
+                }
+                return this._Captcha_InputFieldDark;
+            }
+        }
+        [SerializeField()]
+        private Button _CaptchaImageButton;
+        public Button CaptchaImageButton
+        {
+            get
+            {
+                if ((this._CaptchaImageButton == null))
+                {
+                    this._CaptchaImageButton = this.transform.Find("Container").Find("Captcha").Find("CaptchaImage").GetComponent<Button>();
+                }
+                return this._CaptchaImageButton;
             }
         }
         [SerializeField()]
