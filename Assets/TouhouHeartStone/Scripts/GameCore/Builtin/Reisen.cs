@@ -393,9 +393,9 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x015;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 3;
-        public override int attack { get; set; } = 3;
-        public override int life { get; set; } = 4;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 6;
         public override string[] tags { get; set; } = { TAG.BEAST };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
