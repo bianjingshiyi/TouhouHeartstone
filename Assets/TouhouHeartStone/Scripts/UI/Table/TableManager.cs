@@ -1449,7 +1449,7 @@ namespace Game
         void onDeckPointerEnter(UI.Deck deck, PointerEventData pointer)
         {
             if (player.deck.count > 0)
-                ui.TipBox.display("你的牌库里有" + player.deck.count + "张牌，点击打开", pointer.position + _tipBoxOffset);
+                ui.TipBox.display("牌库里有" + player.deck.count + "张牌", pointer.position + _tipBoxOffset);
             else
                 ui.TipBox.display("你已经没有卡牌了！", pointer.position + _tipBoxOffset);
         }
@@ -1470,9 +1470,9 @@ namespace Game
         void onGravePointerEnter(UI.Deck deck, PointerEventData pointer)
         {
             if (player.grave.count > 0)
-                ui.TipBox.display("你的墓地里有" + player.deck.count + "张牌，点击打开", pointer.position + _tipBoxOffset);
+                ui.TipBox.display("墓地里有" + player.deck.count + "张牌", pointer.position + _tipBoxOffset);
             else
-                ui.TipBox.display("你的墓地是空的，点击打开", pointer.position + _tipBoxOffset);
+                ui.TipBox.display("墓地是空的", pointer.position + _tipBoxOffset);
         }
 
         private void onDeckPointerMove(UI.Deck arg1, Vector2 arg2)
