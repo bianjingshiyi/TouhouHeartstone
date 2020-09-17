@@ -2,6 +2,8 @@
 using TouhouHeartstone;
 using TouhouCardEngine;
 using System;
+using UnityEngine;
+
 namespace Game
 {
     static class UIHelper
@@ -31,6 +33,10 @@ namespace Game
             }
             else
                 throw new NotImplementedException();
+        }
+        public static RectTransform getRoot(this Servant servant)
+        {
+            return servant.getChild("Root");
         }
     }
 }

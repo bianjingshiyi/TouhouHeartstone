@@ -36,11 +36,11 @@ namespace TouhouHeartstone.Builtin
         }
         public static CardDefine[] getElementCards(THHGame game)
         {
-            return game.getCardDefines().Where(c => getElements(c).Length == 1 && c is SpellCardDefine spell && !spell.isToken).ToArray();
+            return game.getDefines().Where(c => getElements(c).Length == 1 && c is SpellCardDefine spell && !spell.isToken).ToArray();
         }
         public static CardDefine[] getMixCards(THHGame game)
         {
-            return game.getCardDefines().Where(c => getElements(c).Length > 1).ToArray();
+            return game.getDefines().Where(c => getElements(c).Length > 1).ToArray();
         }
         public static CardDefine[] getMixCards(THHGame game, CardDefine a, CardDefine b)
         {
@@ -176,14 +176,14 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect((g1,c1)=>
             {
-                return c1.getOwner().addRandomCardToHand(g1,g1.getCardDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
+                return c1.getOwner().addRandomCardToHand(g1,g1.getDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
             }),
             new ItemTrigggerEffectBefore<THHGame.TurnEndEventArg>((g1,c1,a1)=>
             {
                 return a1.player==c1.getOwner();
             },(g2,c2,a2)=>
             {
-                return c2.getOwner().addRandomCardToHand(g2,g2.getCardDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
+                return c2.getOwner().addRandomCardToHand(g2,g2.getDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
             })
         };
         class ItemTrigggerEffectAfter<T> : THHEffectAfter<T> where T : IEventArg
@@ -407,7 +407,7 @@ namespace TouhouHeartstone.Builtin
         };
         static Task effect(THHGame game, Card card)
         {
-            return card.getOwner().addRandomCardToHand(game, game.getCardDefines(new int[] { AutumnEdge.ID, SpringWind.ID, WinterElement.ID, SummerRed.ID, DoyouSpear.ID }));
+            return card.getOwner().addRandomCardToHand(game, game.getDefines(new int[] { AutumnEdge.ID, SpringWind.ID, WinterElement.ID, SummerRed.ID, DoyouSpear.ID }));
         }
     }
     /// <summary>
