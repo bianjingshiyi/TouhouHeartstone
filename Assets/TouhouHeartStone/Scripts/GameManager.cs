@@ -78,16 +78,10 @@ namespace Game
         }
         private void Start()
         {
-#if !UNITY_EDITOR
-            tryLoadDeckFromPrefs();
-            if (_useDefaultDeck)
-                _deck = _defaultDeck.toIdArray();
-#else
             if (_useDefaultDeck && _defaultDeck != null)
                 _deck = _defaultDeck.toIdArray();
             if (_useTestDeck && _testDeck != null)
                 _deck = _testDeck.toIdArray();
-#endif
         }
         private void Update()
         {
