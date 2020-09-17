@@ -205,7 +205,7 @@ namespace Game
             currentPlayer.name = "房主"; // todo: 替换为真实的玩家名称
             currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
 
-            RoomInfo room = host.openRoom(new RoomInfo(currentPlayer.PlayerID));
+            RoomInfo room = host.openRoom(new RoomInfo(currentPlayer.PlayerID)).Result;
             room.setOption(new GameOption()
             {
                 randomSeed = (int)DateTime.Now.ToBinary()

@@ -740,21 +740,22 @@ namespace Tests
         public IEnumerator serverGameTest()
         {
             ULogger logger = new ULogger();
-            //客户端启动与登录
+            //本地客户端启动
             ClientManager localClient = new GameObject(nameof(localClient)).AddComponent<ClientManager>();
             localClient.logger = logger;
             localClient.start();
+            //本地客户端登录
             Assert.True(string.IsNullOrEmpty(localClient.account));//账号为空表明当前处于未登录状态
             yield return localClient.login(SERVER_IP, SERVER_PORT, "TestClient1", "password").wait();
             Assert.AreEqual("TestClient1", localClient.account);//收到登录回应之后localClient处于登录状态
-            //创建房间
+            //本地客户端创建房间
             RoomInfo room = new RoomInfo();
             room.setOption(GameOption.Default);
             Task<RoomInfo> roomTask = localClient.openRoom(room);
             yield return roomTask.wait();
             room = roomTask.Result;
             Assert.NotNull(room);
-            //本地玩家加入房间
+            //本地客户端加入房间
             RoomPlayerInfo localPlayerInfo = new RoomPlayerInfo() { name = "本地玩家" };
             localPlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
             roomTask = localClient.joinRoom(room, localPlayerInfo);
@@ -763,10 +764,11 @@ namespace Tests
             Assert.AreEqual(1, room.playerList.Count);
             Assert.AreEqual("本地玩家", room.playerList[0].name);
             Assert.AreEqual(0, room.playerList[0].RoomID);
-            //远程玩家登录
+            //远程客户端启动
             ClientManager remoteClient = new GameObject(nameof(remoteClient)).AddComponent<ClientManager>();
             remoteClient.logger = logger;
             remoteClient.start();
+            //远程客户端登录
             Assert.True(string.IsNullOrEmpty(remoteClient.account));
             yield return remoteClient.login(SERVER_IP, SERVER_PORT, "TestClient2", "password").wait();
             Assert.AreEqual("TestClient2", remoteClient.account);//一个客户端可以登录多个账号，使用不同的端口
@@ -800,6 +802,7 @@ namespace Tests
             yield return localPlayer.cmdInitReplace(localGame, localPlayer.init[0]).wait();
             THHPlayer remotePlayer = remoteGameManager.localPlayer;
             yield return remotePlayer.cmdInitReplace(remoteGame, remotePlayer.init[0, 1]).wait();
+            //战斗至死
             do
             {
                 if (localGame.currentPlayer == localPlayer)
@@ -843,8 +846,13 @@ namespace Tests
                 }
             }
             while (true);
+            //退出游戏
             localGameManager.quitGame();
             remoteGameManager.quitGame();
+            yield return localClient.logout().wait();
+            Assert.True(string.IsNullOrEmpty(localClient.account));
+            yield return remoteClient.logout().wait();
+            Assert.True(string.IsNullOrEmpty(remoteClient.account));
             Object.Destroy(localGameManager.gameObject);
             Object.Destroy(localClient.gameObject);
             Object.Destroy(remoteGameManager.gameObject);
