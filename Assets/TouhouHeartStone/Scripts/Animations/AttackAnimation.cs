@@ -10,6 +10,8 @@ namespace Game
         AnimAnim _attackedAnim;
         public override bool update(TableManager table, THHCard.AttackEventArg eventArg)
         {
+            if (eventArg.isCanceled)
+                return true;
             if (table.tryGetMaster(eventArg.card, out var attackMaster))
             {
                 if (table.tryGetMaster(eventArg.target, out var targetMaster))

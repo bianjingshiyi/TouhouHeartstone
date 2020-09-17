@@ -24,6 +24,9 @@ namespace Game
         AnimationCurve _moveToFieldCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
         public AnimationCurve handToFieldCurve => _moveToFieldCurve;
         [SerializeField]
+        AnimationCurve _fieldMoveCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+        public AnimationCurve fieldMoveCurve => _fieldMoveCurve;
+        [SerializeField]
         Gradient timeoutGradient = new Gradient();
         [SerializeField]
         UI.Card _cardPrefab;
@@ -227,8 +230,6 @@ namespace Game
         }
         void onResponse(IResponse response)
         {
-            if (response.playerId != player.id)
-                return;
             switch (response)
             {
                 case DiscoverResponse _:
@@ -248,6 +249,8 @@ namespace Game
         /// <param name="arg"></param>
         private void onEventBefore(IEventArg arg)
         {
+            if (arg.isCanceled)
+                return;
             UIAnimation anim;
             switch (arg)
             {

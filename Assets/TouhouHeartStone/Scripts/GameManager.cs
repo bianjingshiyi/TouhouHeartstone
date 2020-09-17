@@ -192,8 +192,8 @@ namespace Game
                 if (_useTestDeck)
                     deck = _testDeck.toIdArray();
 #endif
-                THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getCardDefine(deck[0]) as MasterCardDefine,
-                    deck.Skip(1).Select(id => game.getCardDefine(id)));
+                THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getDefine(deck[0]) as MasterCardDefine,
+                    deck.Skip(1).Select(id => game.getDefine(id)));
             }
             return game;
         }
@@ -226,14 +226,14 @@ namespace Game
         {
             if (deck == null)
                 return;
-            if (game.getCardDefine(deck[0]) == null)
+            if (game.getDefine(deck[0]) == null)
             {
                 UberDebug.LogError("非法角色ID" + deck[0] + "被替换为灵梦");
                 deck[0] = game.getDefine<Reimu>().id;
             }
             for (int i = 1; i < deck.Length; i++)
             {
-                if (game.getCardDefine(deck[i]) == null)
+                if (game.getDefine(deck[i]) == null)
                 {
                     UberDebug.LogError("非法随从ID" + deck[i] + "被替换为小野菊");
                     deck[i] = game.getDefine<RashFairy>().id;

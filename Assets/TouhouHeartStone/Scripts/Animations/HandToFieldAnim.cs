@@ -24,7 +24,6 @@ namespace Game
             field.defaultItem.rectTransform.SetAsFirstSibling();
             table.ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(index + 1);
             table.ui.ServantPlaceHolder.display();
-            _startPosition = _item.Card.rectTransform.position;
             _timer.start();
         }
         public override bool update(TableManager table)

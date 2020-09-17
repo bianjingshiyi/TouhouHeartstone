@@ -941,7 +941,7 @@ namespace TouhouHeartstone.Builtin.Proble
                                                       },null,
                                                       (g, c, a) =>
                                                       {
-                                                          c.getOwner().createToken(g,g.getCardDefine(a.card.define.id));
+                                                          c.getOwner().createToken(g,g.getDefine(a.card.define.id));
                                                           c.setDead(g,true);
                                                           g.updateDeath(g);
                                                           return Task.CompletedTask;

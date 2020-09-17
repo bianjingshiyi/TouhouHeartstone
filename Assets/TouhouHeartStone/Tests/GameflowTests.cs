@@ -431,7 +431,7 @@ namespace Tests
                         (localGame.answers as AnswerManager).client = local;
                         foreach (var playerInfo in newRoomInfo.playerList)
                         {
-                            localGame.createPlayer(playerInfo.RoomID, "玩家" + playerInfo.RoomID, localGame.getCardDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => localGame.getCardDefine(did)));
+                            localGame.createPlayer(playerInfo.RoomID, "玩家" + playerInfo.RoomID, localGame.getDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => localGame.getDefine(did)));
                         }
                         localGame.run();
                     }
@@ -468,7 +468,7 @@ namespace Tests
                         (remoteGame.answers as AnswerManager).client = remote;
                         foreach (var playerInfo in newRoomInfo.playerList)
                         {
-                            remoteGame.createPlayer(playerInfo.RoomID, "玩家" + playerInfo.RoomID, remoteGame.getCardDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => remoteGame.getCardDefine(did)));
+                            remoteGame.createPlayer(playerInfo.RoomID, "玩家" + playerInfo.RoomID, remoteGame.getDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => remoteGame.getDefine(did)));
                         }
                         remoteGame.run();
                     }

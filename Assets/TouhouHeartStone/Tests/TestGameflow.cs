@@ -35,18 +35,18 @@ namespace Tests
             game = initGameWithoutPlayers(null, option);
             IEnumerable<CardDefine> yourTrueDeck = createDeck(game, yourDeck);
             IEnumerable<CardDefine> oppoTrueDeck = createDeck(game, oppoDeck);
-            you = game.createPlayer(1, "玩家1", game.getCardDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
-            oppo = game.createPlayer(2, "玩家2", game.getCardDefine<MasterCardDefine>(oppoMaster), oppoTrueDeck);
+            you = game.createPlayer(1, "玩家1", game.getDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
+            oppo = game.createPlayer(2, "玩家2", game.getDefine<MasterCardDefine>(oppoMaster), oppoTrueDeck);
         }
 
         private static IEnumerable<CardDefine> createDeck(THHGame game, KeyValuePair<int, int>[] yourDeck)
         {
             IEnumerable<CardDefine> yourTrueDeck = yourDeck.Length > 0 ?
-            Enumerable.Repeat(game.getCardDefine(yourDeck[0].Key), yourDeck[0].Value) :
-            Enumerable.Repeat(game.getCardDefine(DefaultServant.ID), 30);
+            Enumerable.Repeat(game.getDefine(yourDeck[0].Key), yourDeck[0].Value) :
+            Enumerable.Repeat(game.getDefine(DefaultServant.ID), 30);
             for (int i = 1; i < yourDeck.Length; i++)
             {
-                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getCardDefine(yourDeck[i].Key), yourDeck[i].Value));
+                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getDefine(yourDeck[i].Key), yourDeck[i].Value));
             }
             int count = yourTrueDeck.Count();
             if (count < 30)
