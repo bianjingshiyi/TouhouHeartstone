@@ -764,15 +764,15 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 6/4/6 芙兰朵露·斯卡蕾特 唯一，战吼：弃一张牌，随机消灭一个敌方随从。
+    /// 6/6/4 芙兰朵露·斯卡蕾特 唯一，战吼：弃一张牌，随机消灭一个敌方随从。
     /// </summary>
     public class FlandreScarlet_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x033;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
-        public override int attack { get; set; } = 4;
-        public override int life { get; set; } = 6;
+        public override int attack { get; set; } = 6;
+        public override int life { get; set; } = 4;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
         public override IEffect[] effects { get; set; } = new IEffect[]{
             new NoTargetEffect(effect)
