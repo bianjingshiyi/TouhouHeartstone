@@ -20,8 +20,8 @@ namespace Tests
 {
     public class GameflowTests
     {
-        private const string SERVER_IP = "127.0.0.1";
-        private const int SERVER_PORT = 17035;
+        private const string SERVER_IP = "localhost";
+        private const int SERVER_PORT = 50112;
 
         [UnityTest]
         public IEnumerator initTest()
@@ -744,6 +744,8 @@ namespace Tests
             ClientManager localClient = new GameObject(nameof(localClient)).AddComponent<ClientManager>();
             localClient.logger = logger;
             localClient.start();
+            //本地客户端注册
+            yield return localClient.register(SERVER_IP, SERVER_PORT, new AccountInfo( "TestClient1", "password", "TestClient1@igsk.fun", "本地玩家"), "xxxx").wait();
             //本地客户端登录
             Assert.True(string.IsNullOrEmpty(localClient.account));//账号为空表明当前处于未登录状态
             yield return localClient.login(SERVER_IP, SERVER_PORT, "TestClient1", "password").wait();
@@ -768,6 +770,8 @@ namespace Tests
             ClientManager remoteClient = new GameObject(nameof(remoteClient)).AddComponent<ClientManager>();
             remoteClient.logger = logger;
             remoteClient.start();
+            //远程客户端注册
+            yield return remoteClient.register(SERVER_IP, SERVER_PORT, new AccountInfo("TestClient2", "password", "TestClient2@igsk.fun", "远端玩家"), "xxxx").wait();
             //远程客户端登录
             Assert.True(string.IsNullOrEmpty(remoteClient.account));
             yield return remoteClient.login(SERVER_IP, SERVER_PORT, "TestClient2", "password").wait();
