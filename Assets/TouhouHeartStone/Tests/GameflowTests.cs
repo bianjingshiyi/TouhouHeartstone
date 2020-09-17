@@ -20,8 +20,10 @@ namespace Tests
 {
     public class GameflowTests
     {
-        private const string SERVER_IP = "localhost";
-        private const int SERVER_PORT = 50112;
+        private const string SERVER_ACCOUNT_IP = "localhost";
+        private const int SERVER_ACCOUNT_PORT = 50112;
+        private const string SERVER_ROOM_IP = "127.0.0.1";
+        private const int SERVER_ROOM_PORT = 17035;
 
         [UnityTest]
         public IEnumerator initTest()
@@ -748,13 +750,13 @@ namespace Tests
             Task task = null;
             try
             {
-                task = localClient.register(SERVER_IP, SERVER_PORT, new AccountInfo("TestClient1", "password", "TestClient1@igsk.fun", "本地玩家"), "xxxx");
+                task = localClient.register(SERVER_ACCOUNT_IP, SERVER_ACCOUNT_PORT, new AccountInfo("TestClient1", "password", "TestClient1@igsk.fun", "本地玩家"), "xxxx");
             }
             catch { }
             yield return task.wait();
             //本地客户端登录
             Assert.Null(localClient.account);//账号为空表明当前处于未登录状态
-            yield return localClient.login(SERVER_IP, SERVER_PORT, "TestClient1", "password").wait();
+            yield return localClient.login(SERVER_ACCOUNT_IP, SERVER_ACCOUNT_PORT, "TestClient1", "password", "xxxx").wait();
             Assert.AreEqual("TestClient1", localClient.account.userName);//收到登录回应之后localClient处于登录状态
             //本地客户端创建房间
             RoomInfo room = new RoomInfo();
@@ -779,13 +781,13 @@ namespace Tests
             //远程客户端注册
             try
             {
-                task = remoteClient.register(SERVER_IP, SERVER_PORT, new AccountInfo("TestClient2", "password", "TestClient2@igsk.fun", "远端玩家"), "xxxx");
+                task = remoteClient.register(SERVER_ACCOUNT_IP, SERVER_ACCOUNT_PORT, new AccountInfo("TestClient2", "password", "TestClient2@igsk.fun", "远端玩家"), "xxxx");
             }
             catch { }
             yield return task.wait();
             //远程客户端登录
             Assert.Null(remoteClient.account);
-            yield return remoteClient.login(SERVER_IP, SERVER_PORT, "TestClient2", "password").wait();
+            yield return remoteClient.login(SERVER_ACCOUNT_IP, SERVER_ACCOUNT_PORT, "TestClient2", "password", "xxxx").wait();
             Assert.AreEqual("TestClient2", remoteClient.account.userName);//一个客户端可以登录多个账号，使用不同的端口
             //远程玩家加入房间
             RoomPlayerInfo remotePlayerInfo = new RoomPlayerInfo() { name = "远端玩家" };
