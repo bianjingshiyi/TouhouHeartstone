@@ -759,6 +759,7 @@ namespace Tests
             yield return localClient.login(SERVER_ACCOUNT_IP, SERVER_ACCOUNT_PORT, "TestClient1", "password", "xxxx").wait();
             Assert.AreEqual("TestClient1", localClient.account.userName);//收到登录回应之后localClient处于登录状态
             //本地客户端创建房间
+            yield return localClient.connectRoomServer(SERVER_ROOM_IP, SERVER_ROOM_PORT).wait();
             RoomInfo room = new RoomInfo();
             room.setOption(GameOption.Default);
             Task<RoomInfo> roomTask = localClient.openRoom(room);
@@ -768,9 +769,8 @@ namespace Tests
             //本地客户端加入房间
             RoomPlayerInfo localPlayerInfo = new RoomPlayerInfo() { name = "本地玩家" };
             localPlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
-            roomTask = localClient.joinRoom(room, localPlayerInfo);
-            yield return roomTask.wait();
-            room = roomTask.Result;
+            yield return localClient.joinRoom(room, localPlayerInfo).wait();
+            room = localClient.roomInfo;
             Assert.AreEqual(1, room.playerList.Count);
             Assert.AreEqual("本地玩家", room.playerList[0].name);
             Assert.AreEqual(0, room.playerList[0].RoomID);
@@ -790,6 +790,7 @@ namespace Tests
             yield return remoteClient.login(SERVER_ACCOUNT_IP, SERVER_ACCOUNT_PORT, "TestClient2", "password", "xxxx").wait();
             Assert.AreEqual("TestClient2", remoteClient.account.userName);//一个客户端可以登录多个账号，使用不同的端口
             //远程玩家加入房间
+            yield return remoteClient.connectRoomServer(SERVER_ROOM_IP, SERVER_ROOM_PORT);
             RoomPlayerInfo remotePlayerInfo = new RoomPlayerInfo() { name = "远端玩家" };
             remotePlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
             roomTask = remoteClient.joinRoom(room, remotePlayerInfo);
