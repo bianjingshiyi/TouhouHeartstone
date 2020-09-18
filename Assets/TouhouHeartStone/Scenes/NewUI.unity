@@ -2404,7 +2404,6 @@ Texture2D:
   m_MipCount: 10
   m_IsReadable: 1
   m_IgnoreMasterTextureLimit: 0
-  m_IsPreProcessed: 0
   m_StreamingMipmaps: 0
   m_StreamingMipmapsPriority: 0
   m_AlphaIsTransparency: 0
@@ -7667,6 +7666,13 @@ MonoBehaviour:
   _port: 9051
   _timeout: 30
   _autoStart: 0
+  _roomServerIP: 
+  _roomServerPort: 0
+  _account:
+    userName: 
+    password: 
+    mail: 
+    nickName: 
 --- !u!114 &1750958370
 MonoBehaviour:
   m_ObjectHideFlags: 0
