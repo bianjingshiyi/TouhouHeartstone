@@ -791,6 +791,9 @@ namespace Tests
             Assert.AreEqual("TestClient2", remoteClient.account.userName);//一个客户端可以登录多个账号，使用不同的端口
             //远程玩家加入房间
             yield return remoteClient.connectRoomServer(SERVER_ROOM_IP, SERVER_ROOM_PORT);
+            var roomsTask = remoteClient.getRooms();
+            yield return roomsTask.wait();
+            room = roomsTask.Result[0];
             RoomPlayerInfo remotePlayerInfo = new RoomPlayerInfo() { name = "远端玩家" };
             remotePlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
             roomTask = remoteClient.joinRoom(room, remotePlayerInfo);
