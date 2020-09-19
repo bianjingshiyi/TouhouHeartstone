@@ -1118,4 +1118,140 @@ namespace TouhouHeartstone.Builtin
             await card.getOwner().deck.moveTo(game,card ,card.getOwner().deck, card.getOwner().deck.indexOf(card.getOwner().deck.top));
         }
     }
+
+    /// <summary>
+    /// 上白泽慧音A 3/2/4 当你的回合结束时若位于手牌中则变形为半兽。战吼:将一张墓地中花费最高的牌洗入牌库。
+    /// </summary>
+    public class Keine_N_A : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x051;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 4;
+        //public override string[] tags { get; set; } = { TAG.BEAST };
+        //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect),
+            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND, 
+                                                        (g, c, a) =>
+                                                        {
+                                                            return a.player == c.getOwner() && c.pile == c.getOwner().hand;
+                                                        },null,
+                                                        async(g,c,a)=>{
+                                                            c.setDefine(g,g.getDefine<Keine_N_B>());
+                                                        })
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            List<Card> TopCards = new List<Card>();
+            int TopCost = 0;
+
+            //获取墓地里最高消耗
+            foreach (Card c in card.getOwner().grave)
+            {
+                if (c.getCost(game) > TopCost)
+                {
+                    TopCost = c.getCost(game);
+                }
+            }
+
+            //获取墓地里最高消耗的牌
+            foreach (Card c in card.getOwner().grave)
+            {
+                if (c.getCost(game) == TopCost)
+                {
+                    TopCards.Add(c);
+                }
+            }
+
+            await card.getOwner().reborn(game, TopCards.random(game), card.getOwner().deck);
+            
+        }
+    }
+
+
+    /// <summary>
+    /// 上白泽慧音B 3/4/2 当你的回合结束时若位于手牌中则变形为半人。战吼:将三张墓地中花费最低的牌送进墓地。
+    /// </summary>
+    public class Keine_N_B : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x052;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 2;
+        public override bool isToken { get; set; } = true;
+        public override string[] tags { get; set; } = { TAG.BEAST };
+        //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect),
+            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND,
+                                                        (g, c, a) =>
+                                                        {
+                                                            return a.player == c.getOwner() && c.pile == c.getOwner().hand;
+                                                        },null,
+                                                        async(g,c,a)=>{
+                                                            c.setDefine(g,g.getDefine<Keine_N_A>());
+                                                        })
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            List<Card> MinCards = new List<Card>();
+            int MinCost = 25;
+
+            //获取牌库里最低消耗
+            foreach (Card c in card.getOwner().deck)
+            {
+                if (c.getCost(game) > MinCost)
+                {
+                    MinCost = c.getCost(game);
+                }
+            }
+
+            //获取牌库里最低消耗的牌
+            foreach (Card c in card.getOwner().deck)
+            {
+                if (c.getCost(game) == MinCost)
+                {
+                    MinCards.Add(c);
+                }
+            }
+
+            if(MinCards.ToArray().Length < 3)
+            {
+                foreach(Card c in MinCards)
+                {
+                    await card.getOwner().deck.moveTo(game, c, card.getOwner().grave);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Card _card = MinCards.random(game);
+                    await card.getOwner().deck.moveTo(game, _card, card.getOwner().grave);
+                    MinCards.Remove(_card);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 上白泽慧音B 8/6/3 当你的回合结束时若位于手牌中则变形为半人。战吼:将三张墓地中花费最低的牌送进墓地。
+    /// </summary>
+    public class Mokou_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x047;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        //public override bool isToken { get; set; } = true;
+        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
+        public override IEffect[] effects { get; set; } = new IEffect[] { };
+    }
 }
