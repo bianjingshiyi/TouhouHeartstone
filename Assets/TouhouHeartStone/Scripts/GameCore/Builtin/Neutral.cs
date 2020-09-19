@@ -1124,7 +1124,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Keine_N_A : ServantCardDefine
     {
-        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x051;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x052;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
@@ -1177,7 +1177,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Keine_N_B : ServantCardDefine
     {
-        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x052;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x053;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
@@ -1240,11 +1240,11 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 上白泽慧音B 8/6/3 当你的回合结束时若位于手牌中则变形为半人。战吼:将三张墓地中花费最低的牌送进墓地。
+    /// 藤原妹红 8/6/3 亡语：返回手牌，并对所有随从造成2点伤害。
     /// </summary>
     public class Mokou_N : ServantCardDefine
     {
-        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x047;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x054;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
@@ -1252,6 +1252,13 @@ namespace TouhouHeartstone.Builtin
         //public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
-        public override IEffect[] effects { get; set; } = new IEffect[] { };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        { 
+            new DeathRattle(ID,async(g,c,a)=>{
+                await g.getAllServants().damage(g,c,2);
+                await c.backToHand(g);
+             
+            })
+        };
     }
 }
