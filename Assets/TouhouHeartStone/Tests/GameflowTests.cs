@@ -636,12 +636,14 @@ namespace Tests
         public IEnumerator LANGameTest()
         {
             ULogger logger = new ULogger();
+
+            RoomPlayerInfo localPlayerInfo = new RoomPlayerInfo() { name = "本地玩家" };
+
             //创建房间
             HostManager host = new GameObject(nameof(HostManager)).AddComponent<HostManager>();
             host.logger = logger;
             host.start();
-            RoomInfo room = new RoomInfo();
-            room.setOption(GameOption.Default);
+            RoomInfo room = new RoomInfo(localPlayerInfo.PlayerID);
             Task<RoomInfo> openRoomTask = host.openRoom(room);
             yield return openRoomTask.wait();
             room = openRoomTask.Result;
@@ -649,12 +651,15 @@ namespace Tests
             ClientManager localClient = new GameObject(nameof(localClient)).AddComponent<ClientManager>();
             localClient.logger = logger;
             localClient.start();
-            RoomPlayerInfo localPlayerInfo = new RoomPlayerInfo() { name = "本地玩家" };
+
             localPlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
             yield return localClient.joinRoom(room, localPlayerInfo).wait();
             Assert.AreEqual(1, room.playerList.Count);
             Assert.AreEqual("本地玩家", room.playerList[0].name);
             Assert.AreEqual(0, room.playerList[0].RoomID);
+            // 更新房间信息
+            yield return localClient.invokeHost(RPCHelper.RoomPropSet(RoomInfoName.OPTION_GAMEOPTION, GameOption.Default));
+
             //远程玩家加入房间
             ClientManager remoteClient = new GameObject(nameof(remoteClient)).AddComponent<ClientManager>();
             remoteClient.logger = logger;
@@ -665,6 +670,7 @@ namespace Tests
             Assert.AreEqual(2, room.playerList.Count);
             Assert.AreEqual("远端玩家", room.playerList[1].name);
             Assert.AreEqual(1, room.playerList[1].RoomID);
+
             //开始游戏
             CardManager cardManager = new GameObject(nameof(CardManager)).AddComponent<CardManager>();
             yield return cardManager.load(new Assembly[] { typeof(TestMaster).Assembly }).wait();
@@ -674,7 +680,7 @@ namespace Tests
             GameManager remoteGameManager = new GameObject(nameof(GameManager)).AddComponent<GameManager>();
             remoteClient.addInvokeTarget(remoteGameManager);
             remoteGameManager.client = remoteClient;
-            yield return host.invokeAll<object>(new int[] { 0, 1 }, new RPCRequest(typeof(Task), nameof(GameManager.startRemoteGame), host.room, true)).wait();
+            yield return localClient.invokeHost(RPCHelper.GameStart()).wait();
             THHGame localGame = localGameManager.game;
             THHGame remoteGame = remoteGameManager.game;
             Assert.AreEqual(localGame.option.randomSeed, remoteGame.option.randomSeed);
