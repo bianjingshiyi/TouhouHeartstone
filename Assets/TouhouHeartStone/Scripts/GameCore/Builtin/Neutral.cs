@@ -991,9 +991,9 @@ namespace TouhouHeartstone.Builtin
         //public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new DeathRattle(ID,(g1,c1,p)=>
+            new DeathRattle(ID,async(g1,c1,p)=>
             {
-                return c1.getOwner().addRandomCardToHand(g1, g1.getDefines(new int[] { Beetle_Wriggle_N.ID, Moth_Wriggle_N.ID, Spider_Wriggle_N.ID }));
+                await c1.getOwner().addRandomCardToHand(g1, g1.getDefines(new int[] { Beetle_Wriggle_N.ID, Moth_Wriggle_N.ID, Spider_Wriggle_N.ID }));
             })
         };
     }
