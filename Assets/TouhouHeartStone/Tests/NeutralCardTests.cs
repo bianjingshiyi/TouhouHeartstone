@@ -582,8 +582,28 @@ namespace Tests
             you.setGem(game, 10);
             you.cmdUse(game, chen);
             Assert.True(chen.hasKeyword(game, KEYWORD.RUSH));
-        }
-
+        }      
         
+        [Test]
+        public void MoonedInsect_Wriggle_NTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<Wriggle_N>(), 3)));
+
+            game.skipUntilCanUse<Wriggle_N>(you);
+            you.cmdUse(game, you.hand.getCard<Wriggle_N>());
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            you.field[0].setDead(game,true);
+            game.updateDeath(game);
+            
+            game.Dispose();
+        }
     }
 }

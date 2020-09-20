@@ -126,7 +126,16 @@ namespace Game
             get { return _client; }
             set { _client = value; }
         }
-        public Task startRemoteGame(RoomInfo room, bool headless = false)
+        /// <summary>
+        /// [RPC] 开始远程游戏
+        /// </summary>
+        /// <param name="room"></param>
+        public void startRemoteGame(RoomInfo room)
+        {
+            bool headless = _mainUI == null;
+            startRemoteGame(room, headless);
+        }
+        public Task startRemoteGame(RoomInfo room, bool headless)
         {
             return startRemoteGame(client, room, headless);
         }
