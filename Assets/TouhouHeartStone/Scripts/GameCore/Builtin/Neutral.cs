@@ -1115,7 +1115,7 @@ namespace TouhouHeartstone.Builtin
         {
             Card discover = await card.getOwner().discover(game, card.getOwner().deck);
             
-            await card.getOwner().deck.moveTo(game,card ,card.getOwner().deck, card.getOwner().deck.indexOf(card.getOwner().deck.top));
+            await card.getOwner().deck.moveTo(game,discover ,card.getOwner().deck, card.getOwner().deck.indexOf(card.getOwner().deck.top));
         }
     }
 
@@ -1139,7 +1139,7 @@ namespace TouhouHeartstone.Builtin
                                                             return a.player == c.getOwner() && c.pile == c.getOwner().hand;
                                                         },null,
                                                         async(g,c,a)=>{
-                                                            c.setDefine(g,g.getDefine<Keine_N_B>());
+                                                            await THHCard.setDefine(c,g,g.getDefine<Keine_N_B>());
                                                         })
         };
 
@@ -1193,7 +1193,7 @@ namespace TouhouHeartstone.Builtin
                                                             return a.player == c.getOwner() && c.pile == c.getOwner().hand;
                                                         },null,
                                                         async(g,c,a)=>{
-                                                            c.setDefine(g,g.getDefine<Keine_N_A>());
+                                                            await THHCard.setDefine(c,g,g.getDefine<Keine_N_B>());
                                                         })
         };
 

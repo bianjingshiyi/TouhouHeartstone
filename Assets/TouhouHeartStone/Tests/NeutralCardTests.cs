@@ -605,5 +605,82 @@ namespace Tests
             
             game.Dispose();
         }
+
+        [Test]
+        public void FlowerMix_Mystia_NTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<Mystia_N>(), 3)));
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<Mystia_N>(you);
+            you.cmdUse(game, you.hand.getCard<Mystia_N>(), targets: oppo.field[0]);
+           
+            you.cmdTurnEnd(game);
+            
+            oppo.cmdTurnEnd(game);
+            
+
+            game.Dispose();
+        }
+
+        [Test]
+        public void InvisibleFullMoon_Reisen_NTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Reisen_N.ID, 2)
+                
+            );
+            game.skipUntilCanUse<Reisen_N>(you);
+            you.cmdUse(game, you.hand.getCard<Reisen_N>());
+
+            game.Dispose();
+        }
+
+        [Test]
+        public void TewiInaba_NTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(TewiInaba_N.ID, 2)
+
+            );
+            game.skipUntilCanUse<TewiInaba_N>(you);
+            you.cmdUse(game, you.hand.getCard<TewiInaba_N>());
+
+            DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
+            int cardId = discoverRequest.cardIdArray[0];
+            Card card = you.deck.getCard(cardId);
+            you.cmdDiscover(game, cardId);
+            you.draw(game);
+            Assert.True(you.hand.Contains(card));
+            game.Dispose();
+        }
+        [Test]
+        public void FullMoonNight_Keine_N()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<LuckyCoin>() as CardDefine, 15).Concat(Enumerable.Repeat(game.getDefine<Keine_N_A>(), 1)));
+
+            game.skipUntilHasGem(you, 1);
+            game.skipUntilHasGem(you, 2);
+            game.skipUntilHasGem(you, 3);
+            game.skipUntilHasGem(you, 4);
+
+            game.Dispose();
+        }
     }
 }
