@@ -682,5 +682,39 @@ namespace Tests
 
             game.Dispose();
         }
+
+        [Test]
+        public void Mokou_NTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<Mokou_N>(), 1)));
+
+            for(int i=0; i<3; i++)
+            {
+                game.skipUntilCanUse<DefaultServant>(oppo);
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                game.skipUntilCanUse<DefaultServant>(you);
+                you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            }
+
+            game.skipUntilCanUse<Mokou_N>(you);
+            you.cmdUse(game, you.hand.getCard<Mokou_N>());
+            Assert.True(you.field[0].canAttack(game));
+
+            you.field[0].setDead(game, true);
+            game.updateDeath(game);
+
+            game.Dispose();
+        }
     }
 }
