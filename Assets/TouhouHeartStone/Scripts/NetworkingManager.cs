@@ -201,7 +201,8 @@ namespace Game
                 //服务器
                 currentPlayer = new RoomPlayerInfo()
                 {
-                    name = client.account.nickName
+                    name = client.account.nickName,
+                    PlayerID = client.account.uid
                 };
                 currentPlayer.setDeck(getManager<GameManager>().deck);
                 RoomInfo room = new RoomInfo(currentPlayer.PlayerID);
@@ -293,10 +294,25 @@ namespace Game
             if (roomInfo == null)
                 throw new ArgumentNullException(nameof(roomInfo));
             displayLoadingPanel();
-            currentPlayer = new RoomPlayerInfo();
-            currentPlayer.name = "玩家2"; // todo: 替换为真实的玩家名称
-            currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
-            await client.joinRoom(roomInfo, currentPlayer);
+            if (client.account != null)
+            {
+                //服务器
+                currentPlayer = new RoomPlayerInfo
+                {
+                    name = client.account.nickName,
+                    PlayerID = client.account.uid
+                };
+                currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
+                await client.joinRoom(roomInfo, currentPlayer);
+            }
+            else
+            {
+                //局域网
+                currentPlayer = new RoomPlayerInfo();
+                currentPlayer.name = "玩家2"; // todo: 替换为真实的玩家名称
+                currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
+                await client.joinRoom(roomInfo, currentPlayer);
+            }
 
             roomPanel.SetSelfID(currentPlayer.PlayerID);
 
@@ -312,7 +328,7 @@ namespace Game
         }
         public void quitRoom()
         {
-            if(host!=null)
+            if (host != null)
             {
                 if (host.RoomIsValid)
                     host.closeRoom();
