@@ -204,6 +204,14 @@ namespace Game
                     name = client.account.nickName
                 };
                 currentPlayer.setDeck(getManager<GameManager>().deck);
+                RoomInfo room = new RoomInfo(currentPlayer.PlayerID);
+                room.setOption(new GameOption()
+                {
+                    randomSeed = (int)DateTime.Now.ToBinary()
+                });
+                await client.openRoom(room);
+                displayLoadingPanel();
+                await client.joinRoom(room, currentPlayer);
             }
             else
             {
@@ -214,15 +222,15 @@ namespace Game
                     name = "房主" // todo: 替换为真实的玩家名称
                 };
                 currentPlayer.setDeck(getManager<GameManager>().deck);
+                RoomInfo room = new RoomInfo(currentPlayer.PlayerID);
+                room.setOption(new GameOption()
+                {
+                    randomSeed = (int)DateTime.Now.ToBinary()
+                });
+                await host.openRoom(room);
+                displayLoadingPanel();
+                await client.joinRoom(room, currentPlayer);
             }
-            RoomInfo room = new RoomInfo(currentPlayer.PlayerID);
-            room.setOption(new GameOption()
-            {
-                randomSeed = (int)DateTime.Now.ToBinary()
-            });
-            await host.openRoom(room);
-            displayLoadingPanel();
-            await client.joinRoom(room, currentPlayer);
 
             roomPanel.SetSelfID(currentPlayer.PlayerID);
             ui.RoomButton.interactable = true;
@@ -304,9 +312,12 @@ namespace Game
         }
         public void quitRoom()
         {
-            if (host.RoomIsValid)
-                host.closeRoom();
-            host.stop();
+            if(host!=null)
+            {
+                if (host.RoomIsValid)
+                    host.closeRoom();
+                host.stop();
+            }
             if (client.roomInfo != null)
                 client.quitRoom();
             currentPlayer = null;
