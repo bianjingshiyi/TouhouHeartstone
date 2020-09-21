@@ -572,7 +572,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 20, y: 3}
-  m_SizeDelta: {x: 120, y: -6}
+  m_SizeDelta: {x: 160, y: -6}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &6635775828788087294
 CanvasRenderer:
@@ -624,7 +624,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6635775829071118641}
-  - component: {fileID: 6635775829071118643}
   - component: {fileID: 6635775829071118642}
   m_Layer: 5
   m_Name: RoomPanel
@@ -653,14 +652,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &6635775829071118643
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6635775829071118646}
-  m_CullTransparentMesh: 0
 --- !u!114 &6635775829071118642
 MonoBehaviour:
   m_ObjectHideFlags: 0

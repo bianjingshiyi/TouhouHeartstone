@@ -29,6 +29,7 @@ namespace UI
             this._ButtonsVerticalLayoutGroup = this.transform.Find("ButtonPanel").Find("Buttons").GetComponent<VerticalLayoutGroup>();
             this._ManMachineButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("ManMachineButton").GetComponent<ButtonBlack>();
             this._NetworkButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("NetworkButton").GetComponent<ButtonBlack>();
+            this._LobbyButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("LobbyButton").GetComponent<ButtonBlack>();
             this._BuildButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<ButtonBlack>();
             this._SettingButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("SettingButton").GetComponent<ButtonBlack>();
             this._AboutButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<ButtonBlack>();
@@ -88,6 +89,19 @@ namespace UI
                     this._NetworkButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("NetworkButton").GetComponent<ButtonBlack>();
                 }
                 return this._NetworkButtonButtonBlack;
+            }
+        }
+        [SerializeField()]
+        private ButtonBlack _LobbyButtonButtonBlack;
+        public ButtonBlack LobbyButtonButtonBlack
+        {
+            get
+            {
+                if ((this._LobbyButtonButtonBlack == null))
+                {
+                    this._LobbyButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("LobbyButton").GetComponent<ButtonBlack>();
+                }
+                return this._LobbyButtonButtonBlack;
             }
         }
         [SerializeField()]

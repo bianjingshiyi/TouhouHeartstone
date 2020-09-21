@@ -17,6 +17,13 @@ namespace Game
 {
     public class NetworkingManager : Manager
     {
+        [Header("配置")]
+        [Tooltip("账号服务器IP")]
+        [SerializeField]
+        string _accountServerIP = "localhost";
+        [Tooltip("账号服务器端口")]
+        [SerializeField]
+        int _accountServerPort = 50112;
         [SerializeField]
         private HostManager _host;
         public HostManager host
@@ -68,6 +75,43 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
+            var mainUI = getManager<UIManager>().getObject<MainMenu>();
+            //登录与注册界面初始化
+            mainUI.RegisterPanel.onRegisterClick += async () =>
+            {
+                mainUI.RegisterPanel.hide();
+                loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out var password);
+                mainUI.LoginPanel.display(rememberUserName, userName, rememberPassword, password, await getCaptchaImage());
+            };
+            mainUI.RegisterPanel.CaptchaImageButton.onClick.set(async () =>
+            {
+                mainUI.RegisterPanel.setCaptach(await getCaptchaImage());
+            });
+            mainUI.RegisterPanel.RegisterButtonBlack.asButton.onClick.AddListener(onRegisterClick);
+            mainUI.RegisterPanel.hide();
+            mainUI.LoginPanel.OnRegisterClick += async () =>
+            {
+                mainUI.RegisterPanel.display(await getCaptchaImage());
+                mainUI.LoginPanel.hide();
+            };
+            mainUI.LoginPanel.CaptchaImgButton.onClick.set(async () =>
+            {
+                mainUI.LoginPanel.setCaptcha(await getCaptchaImage());
+            });
+            mainUI.LoginPanel.LoginButtonBlack.asButton.onClick.set(onLoginClick);
+            mainUI.LoginPanel.hide();
+            mainUI.PlayerInfoPanel.OnLoginClick += async () =>
+            {
+                loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out var password);
+                mainUI.LoginPanel.display(rememberUserName, userName, rememberPassword, password, await getCaptchaImage());
+            };
+            mainUI.PlayerInfoPanel.OnLogoutClick += () =>
+            {
+                mainUI.PlayerInfoPanel.SetPlayerInfo(null);
+                _ = client.logout();
+            };
+            mainUI.PlayerInfoPanel.SetPlayerInfo(null);
+
             host.logger = new ULogger("Host");
             client.logger = new ULogger("Client");
 
@@ -79,12 +123,12 @@ namespace Game
             // todo: Client断开后退出房间
             client.onQuitRoom += Client_onQuitRoom;
             gameManager.onGameEnd += onGameEnd;
-
+            //局域网界面回调注册
             ui.LANButton.onClick.set(() =>
             {
-                displayLANPanel();
+                _ = displayPanelForLAN();
             });
-
+            //房间界面初始化和回调注册
             ui.RoomButton.interactable = false;
             ui.RoomButton.image.color = Color.gray;
             ui.RoomButton.onClick.set(() =>
@@ -99,6 +143,7 @@ namespace Game
         protected void Start()
         {
             client.start();
+            _ = updateAccountPanel();
         }
         protected void Update()
         {
@@ -108,85 +153,6 @@ namespace Game
                 _LANUpdateTimer.start();
             }
         }
-        private void Client_onRoomFound(RoomInfo obj)
-        {
-            if (obj is RoomInfo tHHRoom)
-            {
-                int index = _LANRoomList.FindIndex(r => r.id == tHHRoom.id);
-
-                if (index < 0)
-                {
-                    if (!obj.isSameRoom(host.room))
-                    {
-                        _LANRoomList.Add(tHHRoom);
-                        RoomListItem item = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.addItem();
-                        refreshRoomListItem(item, tHHRoom);
-                    }
-                }
-                else
-                {
-                    if (!obj.isSameRoom(host.room))
-                    {
-                        _LANRoomList[index] = tHHRoom;
-                        RoomListItem item = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.getItems()[index];
-                        refreshRoomListItem(item, tHHRoom);
-                    }
-                    else
-                    {
-                        _LANRoomList.RemoveAt(index);
-                        RoomList list = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList;
-                        list.removeItem(list.getItems()[index]);
-                    }
-                }
-            }
-        }
-        async Task updateRoomInfo(RoomInfo roomInfo)
-        {
-            RoomInfo newRoomInfo = await client.checkRoomInfo(roomInfo);
-            if (newRoomInfo != null)
-            {
-                int index = _LANRoomList.FindIndex(r => r.isSameRoom(roomInfo));
-                if (index >= -1)
-                {
-                    _LANRoomList[index] = newRoomInfo;
-                    RoomList list = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList;
-                    RoomListItem item = list.getItems()[index];
-                    refreshRoomListItem(item, newRoomInfo);
-                }
-            }
-            else
-            {
-                int index = _LANRoomList.FindIndex(r => r.isSameRoom(roomInfo));
-                if (index > -1)
-                {
-                    _LANRoomList.RemoveAt(index);
-                    RoomList list = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList;
-                    list.removeItem(list.getItems()[index]);
-                }
-            }
-        }
-        private void Client_onJoinRoom(RoomInfo obj)
-        {
-            displayRoomPanel();
-            setRoomPanel(obj);
-        }
-        private void Client_onRoomInfoUpdate(RoomInfo now, RoomInfo updated)
-        {
-            if (updated.playerList.Count < now.playerList.Count)
-            {
-                //有玩家离开了
-                var roomPlayer = now.playerList.First(p => !updated.playerList.Exists(p2 => p2.RoomID == p.RoomID));
-                if (getManager<GameManager>().game is THHGame game)
-                {
-                    game.getPlayer(roomPlayer.RoomID).cmdSurrender(game);
-                }
-            }
-            setRoomPanel(updated);
-        }
-        private void Client_onQuitRoom()
-        {
-            displayLANPanel();
-        }
         private void onGameEnd()
         {
             client.quitRoom();
@@ -194,40 +160,110 @@ namespace Game
             host.stop();
         }
         #region Logic
+        public async Task<Sprite> getCaptchaImage()
+        {
+            Texture2D texture = new Texture2D(512, 512);
+            try
+            {
+                texture.LoadImage(await client.getCaptchaImage(_accountServerIP, _accountServerPort));
+            }
+            catch (NetClientException e)
+            {
+                Debug.LogWarning(e.Message);
+                return null;
+            }
+            return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+        }
+        void saveRemeberAccount(bool rememeberUserName, string userName, bool rememberPassword, string password)
+        {
+            PlayerPrefs.SetInt("RememberAccount", rememeberUserName ? 1 : 0);
+            PlayerPrefs.SetInt("RememberPassword", rememberPassword ? 1 : 0);
+            PlayerPrefs.SetString("UserName", rememeberUserName ? userName : null);
+            PlayerPrefs.SetString("Password", rememberPassword ? password : null);
+            PlayerPrefs.Save();
+            // todo: 使用一种更安全的方式存储密码
+        }
+        void loadRememberAccount(out bool rememberUserName, out string userName, out bool rememberPassword, out string password)
+        {
+            rememberUserName = PlayerPrefs.GetInt("RememberAccount", 0) > 0;
+            rememberPassword = PlayerPrefs.GetInt("RememberPassword", 0) > 0;
+            userName = PlayerPrefs.GetString("UserName", null);
+            password = PlayerPrefs.GetString("Password", null);
+        }
         /// <summary>
         /// 创建一个房间
         /// </summary>
         /// <returns></returns>
-        public void createRoom()
+        public async Task createRoom()
         {
-            host.start(_port);
-            currentPlayer = new RoomPlayerInfo();
-            currentPlayer.name = "房主"; // todo: 替换为真实的玩家名称
-            currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
-
-            RoomInfo room = host.openRoom(new RoomInfo(currentPlayer.PlayerID)).Result;
+            if (client.account != null)
+            {
+                //服务器
+                currentPlayer = new RoomPlayerInfo()
+                {
+                    name = client.account.nickName
+                };
+                currentPlayer.setDeck(getManager<GameManager>().deck);
+            }
+            else
+            {
+                //局域网
+                host.start(_port);
+                currentPlayer = new RoomPlayerInfo
+                {
+                    name = "房主" // todo: 替换为真实的玩家名称
+                };
+                currentPlayer.setDeck(getManager<GameManager>().deck);
+            }
+            RoomInfo room = new RoomInfo(currentPlayer.PlayerID);
             room.setOption(new GameOption()
             {
                 randomSeed = (int)DateTime.Now.ToBinary()
             });
+            await host.openRoom(room);
             displayLoadingPanel();
-
-            Task.Run(async () => { await client.joinRoom(room, currentPlayer); });
+            await client.joinRoom(room, currentPlayer);
 
             roomPanel.SetSelfID(currentPlayer.PlayerID);
-
             ui.RoomButton.interactable = true;
             ui.RoomButton.image.color = Color.white;
         }
-        public void findLANRooms()
+        public async Task findRooms()
         {
-            client.findRoom(_port);
+            if (client.account != null)
+            {
+                //服务器获取房间列表
+                ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.clearItems();
+                var rooms = await client.getRooms();
+                foreach (var room in rooms)
+                {
+                    RoomListItem item = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.addItem();
+                    refreshRoomListItem(item, room);
+                }
+            }
+            else
+                client.findRoom(_port);
         }
-        public void flushLANRooms()
+        public async Task flushRooms()
         {
-            _LANRoomList.Clear();
-            ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.clearItems();
-            findLANRooms();
+            if (client.account != null)
+            {
+                //服务器获取房间列表
+                ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.clearItems();
+                var rooms = await client.getRooms();
+                foreach (var room in rooms)
+                {
+                    RoomListItem item = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.addItem();
+                    refreshRoomListItem(item, room);
+                }
+            }
+            else
+            {
+                //局域网寻找房间
+                _LANRoomList.Clear();
+                ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.clearItems();
+                await findRooms();
+            }
         }
         public void updateAllRooms()
         {
@@ -281,26 +317,39 @@ namespace Game
         }
         #endregion
         #region UI
+        async Task updateAccountPanel()
+        {
+            var playerInfoPanel = getManager<UIManager>().getObject<PlayerInfoPanel>();
+            try
+            {
+                var info = await client.getUserInfo(_accountServerIP, _accountServerPort);
+                playerInfoPanel.SetPlayerInfo(info);
+            }
+            catch (NetClientException)
+            {
+                playerInfoPanel.SetPlayerInfo(null);
+            }
+        }
         void displayLoadingPanel()
         {
             ui.NetworkingPageGroup.display(null);
         }
         [SerializeField]
         int _port;
-        public void displayLANPanel()
+        public async Task displayPanelForLAN()
         {
             LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
             ui.NetworkingPageGroup.display(lanPanel);
             lanPanel.LoadingPanelImage.gameObject.SetActive(false);
-            lanPanel.FlushRoomButton.onClick.set(() =>
+            lanPanel.FlushRoomButton.onClick.set(async () =>
             {
-                flushLANRooms();
+                await flushRooms();
             });
             lanPanel.CreateRoomButtonButtonBlack.asButton.interactable = !host.RoomIsValid;
-            lanPanel.CreateRoomButtonButtonBlack.asButton.onClick.set(() =>
+            lanPanel.CreateRoomButtonButtonBlack.asButton.onClick.set(async () =>
             {
                 lanPanel.LoadingPanelImage.gameObject.SetActive(true);
-                createRoom();
+                await createRoom();
             });
             lanPanel.ReturnBtnButtonBlack.asButton.onClick.AddListener(() =>
             {
@@ -341,7 +390,62 @@ namespace Game
             }
             else
             {
-                findLANRooms();
+                await findRooms();
+            }
+        }
+        public async Task displayPanelForLobby()
+        {
+            LANPanel panel = ui.NetworkingPageGroup.LANPanel;
+            ui.NetworkingPageGroup.display(panel);
+            panel.LoadingPanelImage.gameObject.SetActive(false);
+            panel.FlushRoomButton.onClick.set(async () =>
+            {
+                await flushRooms();
+            });
+            panel.CreateRoomButtonButtonBlack.asButton.interactable = !host.RoomIsValid;
+            panel.CreateRoomButtonButtonBlack.asButton.onClick.set(async () =>
+            {
+                panel.LoadingPanelImage.gameObject.SetActive(true);
+                await createRoom();
+            });
+            panel.ReturnBtnButtonBlack.asButton.onClick.AddListener(() =>
+            {
+                ui.parent.display(ui.parent.MainMenu);
+            });
+            panel.ConnectButtonButtonBlack.asButton.onClick.set(() =>
+            {
+                int port = _port;
+                string address = "";
+                var uri = new Uri("http://" + panel.IPInputField.text);
+                if (uri.HostNameType == UriHostNameType.Dns)
+                {
+                    address = Dns.GetHostAddresses(uri.Host).FirstOrDefault(e => e.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+                }
+                else
+                {
+                    address = uri.Host;
+                }
+                if (uri.Port != 80)
+                    port = uri.Port;
+                _ = joinRoom(new RoomInfo()
+                {
+                    ip = address,
+                    port = port
+                });
+                // getManager<UIManager>().getObject<Dialog>().display("输入的地址格式有误", null);
+            });
+            //panel.IPInputField.hide();
+            //panel.ConnectButtonButtonBlack.hide();
+            panel.NameText.text = null;
+            panel.IPText.text = null;
+            panel.DescText.text = null;
+            if (host.RoomIsValid)
+            {
+                displayRoomPanel();
+            }
+            else
+            {
+                await findRooms();
             }
         }
         private void refreshRoomListItem(RoomListItem item, RoomInfo obj)
@@ -368,11 +472,35 @@ namespace Game
                 _ = joinRoom(obj);
             });
         }
+        async Task updateRoomInfo(RoomInfo roomInfo)
+        {
+            RoomInfo newRoomInfo = await client.checkRoomInfo(roomInfo);
+            if (newRoomInfo != null)
+            {
+                int index = _LANRoomList.FindIndex(r => r.isSameRoom(roomInfo));
+                if (index >= -1)
+                {
+                    _LANRoomList[index] = newRoomInfo;
+                    RoomList list = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList;
+                    RoomListItem item = list.getItems()[index];
+                    refreshRoomListItem(item, newRoomInfo);
+                }
+            }
+            else
+            {
+                int index = _LANRoomList.FindIndex(r => r.isSameRoom(roomInfo));
+                if (index > -1)
+                {
+                    _LANRoomList.RemoveAt(index);
+                    RoomList list = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList;
+                    list.removeItem(list.getItems()[index]);
+                }
+            }
+        }
         private void setRoomPanel(RoomInfo room)
         {
             roomPanel.SetInfo(room);
         }
-
         private void displayRoomPanel()
         {
             roomPanel.ResetEvents();
@@ -415,6 +543,149 @@ namespace Game
 
             roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
             roomPanel.SetMode(host.RoomIsValid ? RoomPanel.Mode.NetworkingHost : RoomPanel.Mode.NetworkingClient);
+        }
+        #endregion
+        #region 网络事件处理
+        private void Client_onRoomFound(RoomInfo obj)
+        {
+            if (obj is RoomInfo tHHRoom)
+            {
+                int index = _LANRoomList.FindIndex(r => r.id == tHHRoom.id);
+
+                if (index < 0)
+                {
+                    if (!obj.isSameRoom(host.room))
+                    {
+                        _LANRoomList.Add(tHHRoom);
+                        RoomListItem item = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.addItem();
+                        refreshRoomListItem(item, tHHRoom);
+                    }
+                }
+                else
+                {
+                    if (!obj.isSameRoom(host.room))
+                    {
+                        _LANRoomList[index] = tHHRoom;
+                        RoomListItem item = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.getItems()[index];
+                        refreshRoomListItem(item, tHHRoom);
+                    }
+                    else
+                    {
+                        _LANRoomList.RemoveAt(index);
+                        RoomList list = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList;
+                        list.removeItem(list.getItems()[index]);
+                    }
+                }
+            }
+        }
+        private void Client_onJoinRoom(RoomInfo obj)
+        {
+            displayRoomPanel();
+            setRoomPanel(obj);
+        }
+        private void Client_onRoomInfoUpdate(RoomInfo now, RoomInfo updated)
+        {
+            if (updated.playerList.Count < now.playerList.Count)
+            {
+                //有玩家离开了
+                var roomPlayer = now.playerList.First(p => !updated.playerList.Exists(p2 => p2.RoomID == p.RoomID));
+                if (getManager<GameManager>().game is THHGame game)
+                {
+                    game.getPlayer(roomPlayer.RoomID).cmdSurrender(game);
+                }
+            }
+            setRoomPanel(updated);
+        }
+        private void Client_onQuitRoom()
+        {
+            _ = displayPanelForLAN();
+        }
+        #endregion
+        #region UI事件处理
+        async void onRegisterClick()
+        {
+            var ui = getManager<UIManager>().getObject<RegisterPanel>();
+
+            ui.HideMessage();
+
+            var userName = ui.InputFieldDark.asInputField.text;
+            var password = ui.Password_InputFieldDark.asInputField.text;
+            var repeatPassword = ui.RepeatPassword_InputFieldDark.asInputField.text;
+            var email = ui.Mail_InputFieldDark.asInputField.text;
+            var nickName = ui.NickName_InputFieldDark.asInputField.text;
+            var captcha = ui.Captcha_InputFieldDark.asInputField.text;
+
+            if (string.IsNullOrEmpty(userName))
+            {
+                ui.ShowMessage("用户名不能为空");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(email))
+            {
+                ui.ShowMessage("邮箱不能为空");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(captcha))
+            {
+                ui.ShowMessage("验证码不能为空");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(nickName))
+            {
+                ui.ShowMessage("昵称不能为空");
+                return;
+            }
+
+            if (password != repeatPassword)
+            {
+                ui.ShowMessage("两次输入的密码不匹配");
+                return;
+            }
+
+            try
+            {
+                await client.register(_accountServerIP, _accountServerPort, new AccountInfo(userName, password, email, nickName), ui.Captcha_InputFieldDark.asInputField.text);
+                ui.hide();
+                loadRememberAccount(out var rememberUserName, out userName, out var rememberPassword, out password);
+                getManager<UIManager>().getObject<LoginPanel>().display(rememberUserName, userName, rememberPassword, password, await getCaptchaImage());
+            }
+            catch (NetClientException e)
+            {
+                ui.ShowMessage(e.Message);
+                ui.setCaptach(await getCaptchaImage());
+            }
+        }
+        async void onLoginClick()
+        {
+            var panel = getManager<UIManager>().getObject<LoginPanel>();
+            panel.HideMessage();
+            if (string.IsNullOrEmpty(panel.UserName))
+            {
+                panel.ShowMessage("用户名不能为空");
+                return;
+            }
+            if (string.IsNullOrEmpty(panel.Password))
+            {
+                panel.ShowMessage("验证码不能为空");
+                return;
+            }
+            try
+            {
+                await client.login(_accountServerIP, _accountServerPort, panel.UserName, panel.Password, panel.Captcha);
+                saveRemeberAccount(
+                    panel.RememberAccountUIToggle.asToggle.isOn, panel.UserName,
+                    panel.RememberPasswordUIToggle.asToggle.isOn, panel.Password);
+                panel.hide();
+                await updateAccountPanel();
+            }
+            catch (NetClientException e)
+            {
+                panel.ShowMessage(e.Message);
+                panel.setCaptcha(await getCaptchaImage());
+            }
         }
         #endregion
     }
