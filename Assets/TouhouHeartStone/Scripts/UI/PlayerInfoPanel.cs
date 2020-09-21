@@ -23,7 +23,7 @@ namespace UI
                 OnLogoutClick?.Invoke();
             });
         }
-        public void SetPlayerInfo(PublicUserInfo info)
+        public void SetPlayerInfo(PublicBasicUserInfo info)
         {
             if (info == null)
             {
@@ -31,8 +31,8 @@ namespace UI
             }
             else
             {
-                NickNameText.text = info.name;
-                EmailText.text = "UID: " + info.uid;
+                NickNameText.text = info.Name;
+                EmailText.text = "UID: " + info.UID;
                 // todo: 加载头像
                 toggleLoginStatus(true);
             }

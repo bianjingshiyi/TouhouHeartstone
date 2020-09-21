@@ -974,4 +974,291 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+
+    //永远亭系列
+
+    /// <summary>
+    /// 莉格露·奈特巴格 1/1/1 亡语：将一个小虫置入手牌
+    /// </summary>
+    public class Wriggle_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x045;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] tags { get; set; } = { TAG.BEAST,TAG.BUG  };
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new DeathRattle(ID,async(g1,c1,p)=>
+            {
+                await c1.getOwner().addRandomCardToHand(g1, g1.getDefines(new int[] { Beetle_Wriggle_N.ID, Moth_Wriggle_N.ID, Spider_Wriggle_N.ID }));
+            })
+        };
+    }
+
+    /// <summary>
+    /// 甲虫（莉格露·奈特巴格） 1/1/1 嘲讽
+    /// </summary>
+    public class Beetle_Wriggle_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x046;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override bool isToken { get; set; } = true;
+        public override string[] tags { get; set; } = { TAG.BEAST,TAG.BUG };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override IEffect[] effects { get; set; } = new IEffect[]{ };
+    }
+
+    /// <summary>
+    /// 飞蛾（莉格露·奈特巴格） 1/1/1 突袭
+    /// </summary>
+    public class Moth_Wriggle_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x047;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override bool isToken { get; set; } = true;
+        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
+        public override IEffect[] effects { get; set; } = new IEffect[] { };
+    }
+
+    /// <summary>
+    /// 蜘蛛（莉格露·奈特巴格） 1/1/1 剧毒
+    /// </summary>
+    public class Spider_Wriggle_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x048;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override bool isToken { get; set; } = true;
+        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+        public override IEffect[] effects { get; set; } = new IEffect[] { };
+    }
+
+    /// <summary>
+    /// 米斯蒂娅·萝拉蕾 2/2/2 战吼：直到你的回合开始，使目标随从的攻击力变为1
+    /// </summary>
+    public class Mystia_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x049;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        public override string[] tags { get; set; } = { TAG.BEAST };
+      //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new LambdaSingleTargetEffect(async (g, c, t) =>
+            {
+                await t.addBuff(g,new GeneratedBuff(ID,new AttackModifier(1,true),
+                                                       new RemoveBuffAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g1, c1, a) =>
+                                                                                {
+                                                                                    return a.player == c1.getOwner();
+                                                                                }, ID)));
+            })
+        };
+    }
+
+    /// <summary>
+    /// 铃仙·优昙华院·因幡 5/4/4 战吼：对敌方英雄造成2点伤害2次
+    /// </summary>
+    public class Reisen_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x050;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 5;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 4;
+        //public override string[] tags { get; set; } = { TAG.BEAST };
+        //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            for(int i=0; i<2; i++)
+            {
+                await game.getOpponent(card.getOwner()).master.damage(game, card, 2);
+            }     
+        }
+    }
+
+    /// <summary>
+    /// 因幡帝 3/4/3 战吼：发现一张牌库里的牌，将它置顶
+    /// </summary>
+    public class TewiInaba_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x051;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 3;
+        public override string[] tags { get; set; } = { TAG.BEAST };
+        //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            Card discover = await card.getOwner().discover(game, card.getOwner().deck);
+            
+            await card.getOwner().deck.moveTo(game,discover ,card.getOwner().deck, card.getOwner().deck.indexOf(card.getOwner().deck.top));
+        }
+    }
+
+    /// <summary>
+    /// 上白泽慧音A 3/2/4 当你的回合结束时若位于手牌中则变形为半兽。战吼:将一张墓地中花费最高的牌洗入牌库。
+    /// </summary>
+    public class Keine_N_A : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x052;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 4;
+        //public override string[] tags { get; set; } = { TAG.BEAST };
+        //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect),
+            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND, 
+                                                        (g, c, a) =>
+                                                        {
+                                                            return a.player == c.getOwner() && c.pile == c.getOwner().hand;
+                                                        },null,
+                                                        async(g,c,a)=>{
+                                                            await THHCard.setDefine(c,g,g.getDefine<Keine_N_B>());
+                                                        })
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            List<Card> TopCards = new List<Card>();
+            int TopCost = 0;
+
+            //获取墓地里最高消耗
+            foreach (Card c in card.getOwner().grave)
+            {
+                if (c.getCost(game) > TopCost)
+                {
+                    TopCost = c.getCost(game);
+                }
+            }
+
+            //获取墓地里最高消耗的牌
+            foreach (Card c in card.getOwner().grave)
+            {
+                if (c.getCost(game) == TopCost)
+                {
+                    TopCards.Add(c);
+                }
+            }
+
+            await card.getOwner().reborn(game, TopCards.random(game), card.getOwner().deck);
+            
+        }
+    }
+
+
+    /// <summary>
+    /// 上白泽慧音B 3/4/2 当你的回合结束时若位于手牌中则变形为半人。战吼:将三张墓地中花费最低的牌送进墓地。
+    /// </summary>
+    public class Keine_N_B : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x053;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 2;
+        public override bool isToken { get; set; } = true;
+        public override string[] tags { get; set; } = { TAG.BEAST };
+        //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+        public override IEffect[] effects { get; set; } = new IEffect[] {
+            new NoTargetEffect(effect),
+            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND,
+                                                        (g, c, a) =>
+                                                        {
+                                                            return a.player == c.getOwner() && c.pile == c.getOwner().hand;
+                                                        },null,
+                                                        async(g,c,a)=>{
+                                                            await THHCard.setDefine(c,g,g.getDefine<Keine_N_B>());
+                                                        })
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            List<Card> MinCards = new List<Card>();
+            int MinCost = 25;
+
+            //获取牌库里最低消耗
+            foreach (Card c in card.getOwner().deck)
+            {
+                if (c.getCost(game) > MinCost)
+                {
+                    MinCost = c.getCost(game);
+                }
+            }
+
+            //获取牌库里最低消耗的牌
+            foreach (Card c in card.getOwner().deck)
+            {
+                if (c.getCost(game) == MinCost)
+                {
+                    MinCards.Add(c);
+                }
+            }
+
+            if(MinCards.ToArray().Length < 3)
+            {
+                foreach(Card c in MinCards)
+                {
+                    await card.getOwner().deck.moveTo(game, c, card.getOwner().grave);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Card _card = MinCards.random(game);
+                    await card.getOwner().deck.moveTo(game, _card, card.getOwner().grave);
+                    MinCards.Remove(_card);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 藤原妹红 8/6/3 亡语：返回手牌，并对所有随从造成2点伤害。
+    /// </summary>
+    public class Mokou_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x054;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        //public override bool isToken { get; set; } = true;
+        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        { 
+            new DeathRattle(ID,async(g,c,a)=>{
+                await g.getAllServants().damage(g,c,2);
+                await c.backToHand(g);
+             
+            })
+        };
+    }
 }
