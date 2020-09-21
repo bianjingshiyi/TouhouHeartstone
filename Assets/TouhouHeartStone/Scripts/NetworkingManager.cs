@@ -190,12 +190,16 @@ namespace Game
             userName = PlayerPrefs.GetString("UserName", null);
             password = PlayerPrefs.GetString("Password", null);
         }
+
+        bool isHost = true;
+
         /// <summary>
         /// 创建一个房间
         /// </summary>
         /// <returns></returns>
         public async Task createRoom()
         {
+            isHost = true;
             if (client.account != null)
             {
                 //服务器
@@ -205,6 +209,8 @@ namespace Game
                     PlayerID = client.account.uid
                 };
                 currentPlayer.setDeck(getManager<GameManager>().deck);
+                roomPanel.SetSelfID(currentPlayer.PlayerID);
+
                 RoomInfo room = new RoomInfo(currentPlayer.PlayerID);
                 room.setOption(new GameOption()
                 {
@@ -222,6 +228,8 @@ namespace Game
                     name = "房主" // todo: 替换为真实的玩家名称
                 };
                 currentPlayer.setDeck(getManager<GameManager>().deck);
+                roomPanel.SetSelfID(currentPlayer.PlayerID);
+
                 RoomInfo room = new RoomInfo(currentPlayer.PlayerID);
                 room.setOption(new GameOption()
                 {
@@ -232,7 +240,6 @@ namespace Game
                 await client.joinRoom(room, currentPlayer);
             }
 
-            roomPanel.SetSelfID(currentPlayer.PlayerID);
             ui.RoomButton.interactable = true;
             ui.RoomButton.image.color = Color.white;
         }
@@ -292,6 +299,8 @@ namespace Game
         {
             if (roomInfo == null)
                 throw new ArgumentNullException(nameof(roomInfo));
+            isHost = false;
+
             displayLoadingPanel();
             if (client.account != null)
             {
@@ -542,14 +551,14 @@ namespace Game
             };
             roomPanel.OnRoomInfoUpdate += (info) =>
             {
-                if (host.RoomIsValid)
+                if (isHost)
                 {
                     client.invokeHost(RPCHelper.RoomPropSet(RoomInfoName.OPTION_GAMEOPTION, info.getOption()));
                 }
             };
             roomPanel.OnPlayerRemove += (id) =>
             {
-                if (host.RoomIsValid)
+                if (isHost)
                 {
                     client.invokeHost(RPCHelper.RemovePlayer(id));
                 }
@@ -568,7 +577,7 @@ namespace Game
             ui.parent.display(roomPanel);
 
             roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
-            roomPanel.SetMode(host.RoomIsValid ? RoomPanel.Mode.NetworkingHost : RoomPanel.Mode.NetworkingClient);
+            roomPanel.SetMode(isHost ? RoomPanel.Mode.NetworkingHost : RoomPanel.Mode.NetworkingClient);
         }
         #endregion
         #region 网络事件处理

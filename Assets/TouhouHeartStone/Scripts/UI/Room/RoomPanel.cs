@@ -258,6 +258,11 @@ namespace UI
                 }
             }
 
+            if (selfPlayer == null)
+            {
+                Debug.LogWarning($"SelfPlayer是空的。PlayerID：{selfPlayerID}, players: {room.playerList.Select(e => e.PlayerID.ToString())}");
+            }
+
             if (currentMode == Mode.Local && aiPlayer == null)
             {
                 var item = RoomPlayerList.addItem();
@@ -271,12 +276,20 @@ namespace UI
             }
 
             // 设置房间选项
-            var seed = room.getOption().randomSeed;
-            RandomSeedContainerGameOptionItemText.InputField.text = seed == 0 ? "" : seed.ToString();
-            ShuffleContainerGameOptionItemToggle.Toggle.isOn = room.getOption().shuffle;
-            InitReplacementContainerGameOptionItemText.InputField.text = room.getOption().timeoutForInitReplace.ToString();
-            TurnTimeContainerGameOptionItemText.InputField.text = room.getOption().timeoutForTurn.ToString();
-            IsSortedToggleGameOptionItemToggle.Toggle.isOn = room.getOption().sortedPlayers != null;
+            try
+            {
+                GameOption option = room.getOption();
+                var seed = option.randomSeed;
+                RandomSeedContainerGameOptionItemText.InputField.text = seed == 0 ? "" : seed.ToString();
+                ShuffleContainerGameOptionItemToggle.Toggle.isOn = option.shuffle;
+                InitReplacementContainerGameOptionItemText.InputField.text = option.timeoutForInitReplace.ToString();
+                TurnTimeContainerGameOptionItemText.InputField.text = option.timeoutForTurn.ToString();
+                IsSortedToggleGameOptionItemToggle.Toggle.isOn = option.sortedPlayers != null;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
 
             if (isHost)
             {
