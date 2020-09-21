@@ -210,9 +210,8 @@ namespace Game
                 {
                     randomSeed = (int)DateTime.Now.ToBinary()
                 });
-                await client.openRoom(room);
                 displayLoadingPanel();
-                await client.joinRoom(room, currentPlayer);
+                await client.openRoom(room, currentPlayer);
             }
             else
             {
@@ -607,6 +606,7 @@ namespace Game
         }
         private void Client_onJoinRoom(RoomInfo obj)
         {
+            obj.deserialize();
             displayRoomPanel();
             setRoomPanel(obj);
         }

@@ -765,17 +765,17 @@ namespace Tests
             Assert.AreEqual("TestClient1", localClient.account.userName);
             //本地客户端创建房间
             RoomInfo room = new RoomInfo();
-            // room.setOption(GameOption.Default); // 不能这么干的呀兄弟
-
-            Task<RoomInfo> roomTask = localClient.openRoom(room);
-            yield return roomTask.wait();
-            room = roomTask.Result;
-            Assert.NotNull(room);
-            //本地客户端加入房间
+            // 不能这么干的呀兄弟
+            room.setOption(new GameOption()
+            {
+                randomSeed = 42
+            });//我就是要这么干呀！
             RoomPlayerInfo localPlayerInfo = new RoomPlayerInfo() { name = "本地玩家", PlayerID = localClient.uid };
             localPlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
-            yield return localClient.joinRoom(room, localPlayerInfo).wait();
-            room = localClient.roomInfo;
+            Task<RoomInfo> roomTask = localClient.openRoom(room, localPlayerInfo);
+            yield return roomTask.wait();
+            room = roomTask.Result;
+            Assert.AreEqual(42, room.getOption().randomSeed);
             Assert.AreEqual(1, room.playerList.Count);
             Assert.AreEqual("本地玩家", room.playerList[0].name);
             Assert.AreEqual(0, room.playerList[0].RoomID);
@@ -804,6 +804,7 @@ namespace Tests
             roomTask = remoteClient.joinRoom(room, remotePlayerInfo);
             yield return roomTask.wait();
             room = roomTask.Result;
+            Assert.AreEqual(42, room.getOption().randomSeed);
             Assert.AreEqual(2, room.playerList.Count);
             Assert.AreEqual("远端玩家", room.playerList[1].name);
             Assert.AreEqual(1, room.playerList[1].RoomID);
