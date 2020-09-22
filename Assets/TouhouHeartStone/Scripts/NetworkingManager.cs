@@ -20,10 +20,7 @@ namespace Game
         [Header("配置")]
         [Tooltip("账号服务器IP")]
         [SerializeField]
-        string _accountServerIP = "localhost";
-        [Tooltip("账号服务器端口")]
-        [SerializeField]
-        int _accountServerPort = 50112;
+        string _accountServerBaseUri = "https://serv.igsk.fun";
         [SerializeField]
         private HostManager _host;
         public HostManager host
@@ -120,6 +117,7 @@ namespace Game
             client.onRoomFound += Client_onRoomFound;
             client.onJoinRoom += Client_onJoinRoom;
             client.onRoomInfoUpdate += Client_onRoomInfoUpdate;
+            client.InitServerClient(_accountServerBaseUri);
             _LANUpdateTimer.start();
             // todo: Client断开后退出房间
             client.onQuitRoom += Client_onQuitRoom;
@@ -166,7 +164,7 @@ namespace Game
             Texture2D texture = new Texture2D(512, 512);
             try
             {
-                texture.LoadImage(await client.getCaptchaImage(_accountServerIP, _accountServerPort));
+                texture.LoadImage(await client.getCaptchaImage());
             }
             catch (NetClientException e)
             {
@@ -360,7 +358,7 @@ namespace Game
             var playerInfoPanel = getManager<UIManager>().getObject<PlayerInfoPanel>();
             try
             {
-                var info = await client.getUserInfo(_accountServerIP, _accountServerPort);
+                var info = await client.getUserInfo();
                 playerInfoPanel.SetPlayerInfo(info);
             }
             catch (NetClientException)
@@ -686,7 +684,7 @@ namespace Game
 
             try
             {
-                await client.register(_accountServerIP, _accountServerPort, new AccountInfo(userName, password, email, nickName), ui.Captcha_InputFieldDark.asInputField.text);
+                await client.register(new AccountInfo(userName, password, email, nickName), ui.Captcha_InputFieldDark.asInputField.text);
                 ui.hide();
                 loadRememberAccount(out var rememberUserName, out userName, out var rememberPassword, out password);
                 getManager<UIManager>().getObject<LoginPanel>().display(rememberUserName, userName, rememberPassword, password, await getCaptchaImage());
@@ -713,7 +711,7 @@ namespace Game
             }
             try
             {
-                await client.login(_accountServerIP, _accountServerPort, panel.UserName, panel.Password, panel.Captcha);
+                await client.login(panel.UserName, panel.Password, panel.Captcha);
                 saveRemeberAccount(
                     panel.RememberAccountUIToggle.asToggle.isOn, panel.UserName,
                     panel.RememberPasswordUIToggle.asToggle.isOn, panel.Password);
