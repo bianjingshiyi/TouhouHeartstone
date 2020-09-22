@@ -115,7 +115,8 @@ namespace Game
             host.logger = new ULogger("Host");
             client.logger = new ULogger("Client");
 
-            client.addInvokeTarget(this);
+            client.addInvokeTarget(gameManager);
+            gameManager.client = client;
             client.onRoomFound += Client_onRoomFound;
             client.onJoinRoom += Client_onJoinRoom;
             client.onRoomInfoUpdate += Client_onRoomInfoUpdate;
@@ -311,6 +312,8 @@ namespace Game
                     PlayerID = client.account.uid
                 };
                 currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
+                roomPanel.SetSelfID(currentPlayer.PlayerID);
+
                 await client.joinRoom(roomInfo, currentPlayer);
             }
             else
@@ -319,10 +322,10 @@ namespace Game
                 currentPlayer = new RoomPlayerInfo();
                 currentPlayer.name = "玩家2"; // todo: 替换为真实的玩家名称
                 currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
+                roomPanel.SetSelfID(currentPlayer.PlayerID);
+
                 await client.joinRoom(roomInfo, currentPlayer);
             }
-
-            roomPanel.SetSelfID(currentPlayer.PlayerID);
 
             ui.RoomButton.interactable = true;
             ui.RoomButton.image.color = Color.white;
