@@ -368,6 +368,7 @@ namespace TouhouHeartstone.Builtin
         };
         public override IPassiveEffect[] effects { get; }
         public override int instanceID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+       
 
         public override Buff clone()
         {
@@ -1246,10 +1247,9 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x054;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 1;
-        //public override bool isToken { get; set; } = true;
+        public override int cost { get; set; } = 8;
+        public override int attack { get; set; } = 6;
+        public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -1259,6 +1259,173 @@ namespace TouhouHeartstone.Builtin
                 await c.backToHand(g);
              
             })
+        };
+    }
+
+    // 伪抉择：发现提供两张假卡作为选项，然后根据选项触发效果
+
+    /// <summary>
+    /// 八意永琳 10/8/8 部署：选择一个英雄，然后选择一项：使她剩余生命值翻倍；或使她剩余生命值减半
+    /// </summary>
+    public class Eirin_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x055;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override int attack { get; set; } = 8;
+        public override int life { get; set; } = 8;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async (g, c, t) =>
+            {
+                int health = t.getCurrentLife(g);
+                List<Card> options = new List<Card>{g.createCard<Eirin_N_A>(),g.createCard<Eirin_N_B>() };
+                Card choice = await c.getOwner().discover(g,options,2,"选择一项");
+                if(choice.define == g.getDefine<Eirin_N_A>())
+                {
+                    if(health <= t.getLife(g))
+                    {
+                        await t.setCurrentLife(g,health*2);
+                    }
+                    else
+                    {
+                        await t.setCurrentLife(g,t.getLife(g));
+                    }
+                    
+                }
+                else
+                {
+                    await t.setCurrentLife(g,health/2);
+                }
+            },PileFlag.both | PileFlag.master)
+        };
+    }
+
+    /// <summary>
+    /// 生命游戏-苏活：假卡，无实际效果。
+    /// 使其剩余生命值翻倍
+    /// </summary>
+    public class Eirin_N_A : SpellCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x056;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+       
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+        };
+    }
+
+    /// <summary>
+    /// 生命游戏-衰亡：假卡，无实际效果。
+    /// 使其剩余生命值翻倍
+    /// </summary>
+    public class Eirin_N_B : SpellCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x057;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+        
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+        };
+    }
+
+    /// <summary>
+    /// 蓬莱山辉夜 10/5/10 部署：选择一项：每个玩家禁止抽牌两个回合；或每个玩家抽3张牌。
+    /// </summary>
+    public class Kaguya_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x058;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override int attack { get; set; } = 5;
+        public override int life { get; set; } = 10;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+            
+        };
+
+        static async Task effect(THHGame g, Card c)
+        {
+            List<Card> options = new List<Card> { g.createCard<Kaguya_N_A>(), g.createCard<Kaguya_N_B>() };
+            Card choice = await c.getOwner().discover(g, options, 2, "选择一项");
+            if (choice.define == g.getDefine<Kaguya_N_A>())
+            {
+                await c.getOwner().master.addBuff(g, new GeneratedBuff(ID,new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
+                                                                                                                (g1, c1, a1) =>
+                                                                                                                {
+                                                                                                                    return a1.player == c1.getOwner();
+                                                                                                                },
+                                                                                                                null,
+                                                                                                                async (g1, c1, a1) =>
+                                                                                                                {
+                                                                                                                    a1.isCanceled = true;
+                                                                                                                }
+                                                                                                                ),new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,ID,2)));
+
+                await g.getOpponent(c.getOwner()).master.addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
+                                                                                                                (g1, c1, a1) =>
+                                                                                                                {
+                                                                                                                    return a1.player == c1.getOwner();
+                                                                                                                },
+                                                                                                                null,
+                                                                                                                async (g1, c1, a1) =>
+                                                                                                                {
+                                                                                                                    a1.isCanceled = true;
+                                                                                                                }
+                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER, ID, 2)));
+
+            }
+            else
+            {
+                for(int i=0; i<3; i++)
+                {
+                    await c.getOwner().draw(g);
+                }
+
+                for (int i = 0; i < 3; i++)
+                {
+                    await g.getOpponent(c.getOwner()).draw(g);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 永夜归-永恒：假卡，无实际效果。
+    /// 使其剩余生命值翻倍
+    /// </summary>
+    public class Kaguya_N_A : SpellCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x059;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+        };
+    }
+
+    /// <summary>
+    /// 永夜返-须臾：假卡，无实际效果。
+    /// 使其剩余生命值翻倍
+    /// </summary>
+    public class Kaguya_N_B : SpellCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x060;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
         };
     }
 }
