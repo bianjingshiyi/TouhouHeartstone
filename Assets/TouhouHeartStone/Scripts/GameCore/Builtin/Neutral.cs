@@ -980,7 +980,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 莉格露·奈特巴格 1/1/1 亡语：将一个小虫置入手牌
     /// </summary>
-    public class Wriggle_N : ServantCardDefine
+    public class WriggleNightbug_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x045;
         public override int id { get; set; } = ID;
@@ -993,7 +993,7 @@ namespace TouhouHeartstone.Builtin
         {
             new DeathRattle(ID,async(g1,c1,p)=>
             {
-                await c1.getOwner().addRandomCardToHand(g1, g1.getDefines(new int[] { Beetle_Wriggle_N.ID, Moth_Wriggle_N.ID, Spider_Wriggle_N.ID }));
+                await c1.getOwner().addRandomCardToHand(g1, g1.getDefines(new int[] { Beetle_N.ID, Moth_N.ID, Spider_N.ID }));
             })
         };
     }
@@ -1001,7 +1001,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 甲虫（莉格露·奈特巴格） 1/1/1 嘲讽
     /// </summary>
-    public class Beetle_Wriggle_N : ServantCardDefine
+    public class Beetle_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x046;
         public override int id { get; set; } = ID;
@@ -1017,7 +1017,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 飞蛾（莉格露·奈特巴格） 1/1/1 突袭
     /// </summary>
-    public class Moth_Wriggle_N : ServantCardDefine
+    public class Moth_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x047;
         public override int id { get; set; } = ID;
@@ -1033,7 +1033,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 蜘蛛（莉格露·奈特巴格） 1/1/1 剧毒
     /// </summary>
-    public class Spider_Wriggle_N : ServantCardDefine
+    public class Spider_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x048;
         public override int id { get; set; } = ID;
@@ -1049,7 +1049,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 米斯蒂娅·萝拉蕾 2/2/2 战吼：直到你的回合开始，使目标随从的攻击力变为1
     /// </summary>
-    public class Mystia_N : ServantCardDefine
+    public class MystiaLorelei_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x049;
         public override int id { get; set; } = ID;
@@ -1073,7 +1073,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 铃仙·优昙华院·因幡 5/4/4 战吼：对敌方英雄造成2点伤害2次
     /// </summary>
-    public class Reisen_N : ServantCardDefine
+    public class ReisenUdongeinInaba_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x050;
         public override int id { get; set; } = ID;
@@ -1122,7 +1122,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 上白泽慧音A 3/2/4 当你的回合结束时若位于手牌中则变形为半兽。战吼:将一张墓地中花费最高的牌洗入牌库。
     /// </summary>
-    public class Keine_N_A : ServantCardDefine
+    public class KamishirasawaKeine_Human_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x052;
         public override int id { get; set; } = ID;
@@ -1139,7 +1139,7 @@ namespace TouhouHeartstone.Builtin
                                                             return a.player == c.getOwner() && c.pile == c.getOwner().hand;
                                                         },null,
                                                         async(g,c,a)=>{
-                                                            await THHCard.setDefine(c,g,g.getDefine<Keine_N_B>());
+                                                            await THHCard.setDefine(c,g,g.getDefine<KamishirasawaKeine_Beast_N>());
                                                         })
         };
 
@@ -1175,7 +1175,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 上白泽慧音B 3/4/2 当你的回合结束时若位于手牌中则变形为半人。战吼:将三张墓地中花费最低的牌送进墓地。
     /// </summary>
-    public class Keine_N_B : ServantCardDefine
+    public class KamishirasawaKeine_Beast_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x053;
         public override int id { get; set; } = ID;
@@ -1193,7 +1193,7 @@ namespace TouhouHeartstone.Builtin
                                                             return a.player == c.getOwner() && c.pile == c.getOwner().hand;
                                                         },null,
                                                         async(g,c,a)=>{
-                                                            await THHCard.setDefine(c,g,g.getDefine<Keine_N_B>());
+                                                            await THHCard.setDefine(c,g,g.getDefine<KamishirasawaKeine_Beast_N>());
                                                         })
         };
 
@@ -1242,7 +1242,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 藤原妹红 8/6/3 亡语：返回手牌，并对所有随从造成2点伤害。
     /// </summary>
-    public class Mokou_N : ServantCardDefine
+    public class HuziwaraNoMokou_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x054;
         public override int id { get; set; } = ID;

@@ -594,10 +594,10 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<Wriggle_N>(), 3)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<WriggleNightbug_N>(), 3)));
 
-            game.skipUntilCanUse<Wriggle_N>(you);
-            you.cmdUse(game, you.hand.getCard<Wriggle_N>());
+            game.skipUntilCanUse<WriggleNightbug_N>(you);
+            you.cmdUse(game, you.hand.getCard<WriggleNightbug_N>());
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
             you.field[0].setDead(game,true);
@@ -616,13 +616,13 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<Mystia_N>(), 3)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<MystiaLorelei_N>(), 3)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
 
-            game.skipUntilCanUse<Mystia_N>(you);
-            you.cmdUse(game, you.hand.getCard<Mystia_N>(), targets: oppo.field[0]);
+            game.skipUntilCanUse<MystiaLorelei_N>(you);
+            you.cmdUse(game, you.hand.getCard<MystiaLorelei_N>(), targets: oppo.field[0]);
            
             you.cmdTurnEnd(game);
             
@@ -636,11 +636,11 @@ namespace Tests
         public void InvisibleFullMoon_Reisen_NTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(Reisen_N.ID, 2)
+                new KeyValuePair<int, int>(ReisenUdongeinInaba_N.ID, 2)
                 
             );
-            game.skipUntilCanUse<Reisen_N>(you);
-            you.cmdUse(game, you.hand.getCard<Reisen_N>());
+            game.skipUntilCanUse<ReisenUdongeinInaba_N>(you);
+            you.cmdUse(game, you.hand.getCard<ReisenUdongeinInaba_N>());
 
             game.Dispose();
         }
@@ -673,7 +673,7 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getDefine<LuckyCoin>() as CardDefine, 15).Concat(Enumerable.Repeat(game.getDefine<Keine_N_A>(), 1)));
+                Enumerable.Repeat(game.getDefine<LuckyCoin>() as CardDefine, 15).Concat(Enumerable.Repeat(game.getDefine<KamishirasawaKeine_Human_N>(), 1)));
 
             game.skipUntilHasGem(you, 1);
             game.skipUntilHasGem(you, 2);
@@ -693,7 +693,7 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<Mokou_N>(), 1)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<HuziwaraNoMokou_N>(), 1)));
 
             for(int i=0; i<3; i++)
             {
@@ -707,8 +707,8 @@ namespace Tests
                 you.cmdUse(game, you.hand.getCard<DefaultServant>());
             }
 
-            game.skipUntilCanUse<Mokou_N>(you);
-            you.cmdUse(game, you.hand.getCard<Mokou_N>());
+            game.skipUntilCanUse<HuziwaraNoMokou_N>(you);
+            you.cmdUse(game, you.hand.getCard<HuziwaraNoMokou_N>());
             Assert.True(you.field[0].canAttack(game));
 
             you.field[0].setDead(game, true);

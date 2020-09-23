@@ -5950,6 +5950,7 @@ MonoBehaviour:
     password: 
     mail: 
     nickName: 
+    uid: 0
 --- !u!114 &1750958370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5977,8 +5978,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 646ae330dd8b05e42a10fbb26e617b85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _accountServerIP: localhost
-  _accountServerPort: 50112
+  _accountServerBaseUri: https://serv.igsk.fun
   _host: {fileID: 0}
   _client: {fileID: 0}
   _LANRoomList: []
@@ -8853,6 +8853,11 @@ PrefabInstance:
     - target: {fileID: 6040560418421003226, guid: dfd017d4e4484df40ae97e3101b4a5e6,
         type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6040560418421003226, guid: dfd017d4e4484df40ae97e3101b4a5e6,
+        type: 3}
+      propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6040560418596739094, guid: dfd017d4e4484df40ae97e3101b4a5e6,
