@@ -571,6 +571,40 @@ namespace TouhouHeartstone
         {
         }
     }
+
+    public class RemoveBuffAfterTimeUp<T> : THHEffectAfter<T> where T : IEventArg
+    {
+        public RemoveBuffAfterTimeUp(string pile, int buffId,int time) : base(pile, null, null, (game, card, arg) =>
+        {
+            if(time == 0)
+            {
+                return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+            }
+            else
+            {
+                time--;
+                return Task.CompletedTask;
+            }
+            
+        })
+        {
+        }
+        public RemoveBuffAfterTimeUp(string pile, CheckConditionDelegate onCheckCondition, int buffId,int time) : base(pile, onCheckCondition, null, (game, card, arg) =>
+        {
+            if (time == 0)
+            {
+                return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+            }
+            else
+            {
+                time--;
+                return Task.CompletedTask;
+            }
+            
+        })
+        {
+        }
+    }
     /// <summary>
     /// 
     /// </summary>
@@ -852,4 +886,25 @@ namespace TouhouHeartstone
             return Task.CompletedTask;
         }
     }
+
+    
+    //public class ChooseOneEffect : SingleTargetEffect
+    //{
+    //    /// <summary>
+    //    /// 选择一项：从以下效果中选择一个触发
+    //    /// </summary>
+    //    /// <param name="cards">抉择选项，实质是法术衍生牌</param>
+    //    /// <param name="targetRange">指向型抉择的指向范围</param>
+    //    /// <param name="targetRange">指向型抉择的指向范围</param>
+    //    /// <returns></returns>
+    //    public ChooseOneEffect()
+    //    {
+
+    //    }
+    //    public override Task execute(THHGame game, Card card, Card target)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
+
 }

@@ -716,5 +716,74 @@ namespace Tests
 
             game.Dispose();
         }
+
+        [Test]
+        public void Eirin_NTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Eirin_N.ID, 2)
+            );
+            game.skipUntilCanUse<Eirin_N>(you);
+            you.cmdUse(game, you.hand.getCard<Eirin_N>(),targets: oppo.master);
+            DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
+            int cardId = discoverRequest.cardIdArray[1];
+           // Card card = you.deck.getCard(cardId);
+            you.cmdDiscover(game, cardId);
+
+            game.skipUntilCanUse<Eirin_N>(you);
+            you.cmdUse(game, you.hand.getCard<Eirin_N>(),targets: oppo.master);
+            DiscoverRequest discoverRequest2 = game.answers.getRequest<DiscoverRequest>(you.id);
+            int cardId2 = discoverRequest2.cardIdArray[0];
+            you.cmdDiscover(game, cardId2);
+
+            game.Dispose();
+        }
+
+        [Test]
+        public void Kaguya_NTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Kaguya_N.ID, 2)
+            );
+            //清空手牌
+            game.skipUntilHasGem(you, 10);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdTurnEnd(game);
+
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdTurnEnd(game);
+
+            game.skipUntilCanUse<Kaguya_N>(you);
+            you.cmdUse(game, you.hand.getCard<Kaguya_N>());
+            DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
+            int cardId = discoverRequest.cardIdArray[1];
+            you.cmdDiscover(game, cardId);
+
+
+
+            game.skipUntilCanUse<Kaguya_N>(you);
+            you.cmdUse(game, you.hand.getCard<Kaguya_N>());
+            DiscoverRequest discoverRequest2 = game.answers.getRequest<DiscoverRequest>(you.id);
+            int cardId2 = discoverRequest2.cardIdArray[0];
+            you.cmdDiscover(game, cardId2);
+
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            game.Dispose();
+        }
     }
 }
