@@ -1267,7 +1267,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 八意永琳 10/8/8 部署：选择一个英雄，然后选择一项：使她剩余生命值翻倍；或使她剩余生命值减半
     /// </summary>
-    public class Eirin_N : ServantCardDefine
+    public class YagokoroEirin_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x055;
         public override int id { get; set; } = ID;
@@ -1280,9 +1280,9 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (g, c, t) =>
             {
                 int health = t.getCurrentLife(g);
-                List<Card> options = new List<Card>{g.createCard<Eirin_N_A>(),g.createCard<Eirin_N_B>() };
+                List<Card> options = new List<Card>{g.createCard<GameOfLife_Rise_N>(),g.createCard<GameOfLife_Fall_N>() };
                 Card choice = await c.getOwner().discover(g,options,2,"选择一项");
-                if(choice.define == g.getDefine<Eirin_N_A>())
+                if(choice.define == g.getDefine<GameOfLife_Rise_N>())
                 {
                     if(health <= t.getLife(g))
                     {
@@ -1306,7 +1306,7 @@ namespace TouhouHeartstone.Builtin
     /// 生命游戏-苏活：假卡，无实际效果。
     /// 使其剩余生命值翻倍
     /// </summary>
-    public class Eirin_N_A : SpellCardDefine
+    public class GameOfLife_Rise_N : SpellCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x056;
         public override int id { get; set; } = ID;
@@ -1322,7 +1322,7 @@ namespace TouhouHeartstone.Builtin
     /// 生命游戏-衰亡：假卡，无实际效果。
     /// 使其剩余生命值翻倍
     /// </summary>
-    public class Eirin_N_B : SpellCardDefine
+    public class GameOfLife_Fall_N : SpellCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x057;
         public override int id { get; set; } = ID;
@@ -1337,7 +1337,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 蓬莱山辉夜 10/5/10 部署：选择一项：每个玩家禁止抽牌两个回合；或每个玩家抽3张牌。
     /// </summary>
-    public class Kaguya_N : ServantCardDefine
+    public class HouraisanKaguya_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x058;
         public override int id { get; set; } = ID;
@@ -1353,9 +1353,9 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame g, Card c)
         {
-            List<Card> options = new List<Card> { g.createCard<Kaguya_N_A>(), g.createCard<Kaguya_N_B>() };
+            List<Card> options = new List<Card> { g.createCard<ReturnOfImperishableNight_Eternity_N>(), g.createCard<EndOfImperishableNight_Instant_N>() };
             Card choice = await c.getOwner().discover(g, options, 2, "选择一项");
-            if (choice.define == g.getDefine<Kaguya_N_A>())
+            if (choice.define == g.getDefine<ReturnOfImperishableNight_Eternity_N>())
             {
                 await c.getOwner().master.addBuff(g, new GeneratedBuff(ID,new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
                                                                                                                 (g1, c1, a1) =>
@@ -1401,7 +1401,7 @@ namespace TouhouHeartstone.Builtin
     /// 永夜归-永恒：假卡，无实际效果。
     /// 使其剩余生命值翻倍
     /// </summary>
-    public class Kaguya_N_A : SpellCardDefine
+    public class ReturnOfImperishableNight_Eternity_N : SpellCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x059;
         public override int id { get; set; } = ID;
@@ -1417,7 +1417,7 @@ namespace TouhouHeartstone.Builtin
     /// 永夜返-须臾：假卡，无实际效果。
     /// 使其剩余生命值翻倍
     /// </summary>
-    public class Kaguya_N_B : SpellCardDefine
+    public class EndOfImperishableNight_Instant_N : SpellCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x060;
         public override int id { get; set; } = ID;
