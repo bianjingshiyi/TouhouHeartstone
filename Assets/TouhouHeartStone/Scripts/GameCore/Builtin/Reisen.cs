@@ -149,8 +149,12 @@ namespace TouhouHeartstone.Builtin
                  List<Card> tokens = new List<Card>();
                 for(int i=0 ; i<3; i++)
                 {
-                    var token = await c.getOwner().createToken(g,g.getDefine<AfterImage>(),c.getOwner().field.count);
-                    tokens.Add(token.card);
+                    Card token;
+                    if(i!=1)
+                        token = (await c.getOwner().createToken(g,g.getDefine<AfterImage>(),c.getOwner().field.count)).card;
+                    else
+                        token = (await c.getOwner().createToken(g,g.getDefine<AfterImage_Main>(),c.getOwner().field.count)).card;
+                    tokens.Add(token);
                 }
                 a.target = tokens.random(g);
             })
@@ -529,5 +533,15 @@ namespace TouhouHeartstone.Builtin
                     return Task.CompletedTask;
             })
         };
+    }
+    public class AfterImage_Main : ServantCardDefine
+    {
+        public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x020;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override int attack { get; set; } = 0;
+        public override int life { get; set; } = 2;
+        public override bool isToken { get; set; } = true;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
     }
 }
