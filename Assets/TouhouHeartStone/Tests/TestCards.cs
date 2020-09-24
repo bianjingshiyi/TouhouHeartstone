@@ -298,7 +298,7 @@ namespace Tests
         public const int ID = 0x0011FFFF;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 1;
+        public override int attack { get; set; } = 3;
         public override int life { get; set; } = 7;
         public override string[] tags { get; set; } = new string[0];
         public override string[] keywords { get; set; } = new string[0];

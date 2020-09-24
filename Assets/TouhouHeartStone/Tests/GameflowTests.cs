@@ -20,8 +20,7 @@ namespace Tests
 {
     public class GameflowTests
     {
-        private const string SERVER_ACCOUNT_IP = "localhost";
-        private const int SERVER_ACCOUNT_PORT = 50112;
+        private const string TEST_SERVER_URI = "http://localhost:50112";
 
         [UnityTest]
         public IEnumerator initTest()
@@ -750,32 +749,33 @@ namespace Tests
             ClientManager localClient = new GameObject(nameof(localClient)).AddComponent<ClientManager>();
             localClient.logger = logger;
             localClient.start();
+            localClient.InitServerClient(TEST_SERVER_URI);
             //本地客户端注册
             Task task = null;
             try
             {
-                task = localClient.register(SERVER_ACCOUNT_IP, SERVER_ACCOUNT_PORT, new AccountInfo("TestClient1", "password", "TestClient1@igsk.fun", "本地玩家"), "xxxx");
+                task = localClient.register(new AccountInfo("TestClient1", "password", "TestClient1@igsk.fun", "本地玩家"), "xxxx");
             }
             catch { }
             yield return task.wait();
             //本地客户端登录
             Assert.Null(localClient.account);//账号为空表明当前处于未登录状态
-            yield return localClient.login(SERVER_ACCOUNT_IP, SERVER_ACCOUNT_PORT, "TestClient1", "password", "xxxx").wait();
+            yield return localClient.login("TestClient1", "password", "xxxx").wait();
             Assert.NotNull(localClient.account);//收到登录回应之后localClient处于登录状态
             Assert.AreEqual("TestClient1", localClient.account.userName);
             //本地客户端创建房间
             RoomInfo room = new RoomInfo();
-            // room.setOption(GameOption.Default); // 不能这么干的呀兄弟
-
-            Task<RoomInfo> roomTask = localClient.openRoom(room);
-            yield return roomTask.wait();
-            room = roomTask.Result;
-            Assert.NotNull(room);
-            //本地客户端加入房间
+            // 不能这么干的呀兄弟
+            room.setOption(new GameOption()
+            {
+                randomSeed = 42
+            });//我就是要这么干呀！
             RoomPlayerInfo localPlayerInfo = new RoomPlayerInfo() { name = "本地玩家", PlayerID = localClient.uid };
             localPlayerInfo.setDeck(new int[] { TestMaster.ID }.Concat(Enumerable.Repeat(DefaultServant.ID, 30)).ToArray());
-            yield return localClient.joinRoom(room, localPlayerInfo).wait();
-            room = localClient.roomInfo;
+            Task<RoomInfo> roomTask = localClient.openRoom(room, localPlayerInfo);
+            yield return roomTask.wait();
+            room = roomTask.Result;
+            Assert.AreEqual(42, room.getOption().randomSeed);
             Assert.AreEqual(1, room.playerList.Count);
             Assert.AreEqual("本地玩家", room.playerList[0].name);
             Assert.AreEqual(0, room.playerList[0].RoomID);
@@ -787,13 +787,13 @@ namespace Tests
             //远程客户端注册
             try
             {
-                task = remoteClient.register(SERVER_ACCOUNT_IP, SERVER_ACCOUNT_PORT, new AccountInfo("TestClient2", "password", "TestClient2@igsk.fun", "远端玩家"), "xxxx");
+                task = remoteClient.register(new AccountInfo("TestClient2", "password", "TestClient2@igsk.fun", "远端玩家"), "xxxx");
             }
             catch { }
             yield return task.wait();
             //远程客户端登录
             Assert.Null(remoteClient.account);
-            yield return remoteClient.login(SERVER_ACCOUNT_IP, SERVER_ACCOUNT_PORT, "TestClient2", "password", "xxxx").wait();
+            yield return remoteClient.login("TestClient2", "password", "xxxx").wait();
             Assert.AreEqual("TestClient2", remoteClient.account.userName);//一个客户端可以登录多个账号，使用不同的端口
             //远程玩家加入房间
             var roomsTask = remoteClient.getRooms();
@@ -804,6 +804,7 @@ namespace Tests
             roomTask = remoteClient.joinRoom(room, remotePlayerInfo);
             yield return roomTask.wait();
             room = roomTask.Result;
+            Assert.AreEqual(42, room.getOption().randomSeed);
             Assert.AreEqual(2, room.playerList.Count);
             Assert.AreEqual("远端玩家", room.playerList[1].name);
             Assert.AreEqual(1, room.playerList[1].RoomID);

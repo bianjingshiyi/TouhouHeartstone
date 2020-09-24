@@ -368,6 +368,7 @@ namespace TouhouHeartstone.Builtin
         };
         public override IPassiveEffect[] effects { get; }
         public override int instanceID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+       
 
         public override Buff clone()
         {
@@ -980,7 +981,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 莉格露·奈特巴格 1/1/1 亡语：将一个小虫置入手牌
     /// </summary>
-    public class Wriggle_N : ServantCardDefine
+    public class WriggleNightbug_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x045;
         public override int id { get; set; } = ID;
@@ -988,12 +989,12 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override string[] tags { get; set; } = { TAG.BEAST,TAG.BUG  };
-        //public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD };
+       
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new DeathRattle(ID,async(g1,c1,p)=>
             {
-                await c1.getOwner().addRandomCardToHand(g1, g1.getDefines(new int[] { Beetle_Wriggle_N.ID, Moth_Wriggle_N.ID, Spider_Wriggle_N.ID }));
+                await c1.getOwner().addRandomCardToHand(g1, g1.getDefines(new int[] { Beetle_N.ID, Moth_N.ID, Spider_N.ID }));
             })
         };
     }
@@ -1001,7 +1002,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 甲虫（莉格露·奈特巴格） 1/1/1 嘲讽
     /// </summary>
-    public class Beetle_Wriggle_N : ServantCardDefine
+    public class Beetle_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x046;
         public override int id { get; set; } = ID;
@@ -1017,7 +1018,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 飞蛾（莉格露·奈特巴格） 1/1/1 突袭
     /// </summary>
-    public class Moth_Wriggle_N : ServantCardDefine
+    public class Moth_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x047;
         public override int id { get; set; } = ID;
@@ -1033,7 +1034,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 蜘蛛（莉格露·奈特巴格） 1/1/1 剧毒
     /// </summary>
-    public class Spider_Wriggle_N : ServantCardDefine
+    public class Spider_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x048;
         public override int id { get; set; } = ID;
@@ -1049,7 +1050,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 米斯蒂娅·萝拉蕾 2/2/2 战吼：直到你的回合开始，使目标随从的攻击力变为1
     /// </summary>
-    public class Mystia_N : ServantCardDefine
+    public class MystiaLorelei_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x049;
         public override int id { get; set; } = ID;
@@ -1073,7 +1074,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 铃仙·优昙华院·因幡 5/4/4 战吼：对敌方英雄造成2点伤害2次
     /// </summary>
-    public class Reisen_N : ServantCardDefine
+    public class ReisenUdongeinInaba_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x050;
         public override int id { get; set; } = ID;
@@ -1106,7 +1107,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = { TAG.BEAST };
-        //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+       
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
@@ -1115,22 +1116,21 @@ namespace TouhouHeartstone.Builtin
         {
             Card discover = await card.getOwner().discover(game, card.getOwner().deck);
             
-            await card.getOwner().deck.moveTo(game,card ,card.getOwner().deck, card.getOwner().deck.indexOf(card.getOwner().deck.top));
+            await card.getOwner().deck.moveTo(game,discover ,card.getOwner().deck, card.getOwner().deck.indexOf(card.getOwner().deck.top));
         }
     }
 
     /// <summary>
     /// 上白泽慧音A 3/2/4 当你的回合结束时若位于手牌中则变形为半兽。战吼:将一张墓地中花费最高的牌洗入牌库。
     /// </summary>
-    public class Keine_N_A : ServantCardDefine
+    public class KamishirasawaKeine_Human_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x052;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
-        //public override string[] tags { get; set; } = { TAG.BEAST };
-        //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+        
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect),
             new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND, 
@@ -1139,7 +1139,7 @@ namespace TouhouHeartstone.Builtin
                                                             return a.player == c.getOwner() && c.pile == c.getOwner().hand;
                                                         },null,
                                                         async(g,c,a)=>{
-                                                            c.setDefine(g,g.getDefine<Keine_N_B>());
+                                                            await THHCard.setDefine(c,g,g.getDefine<KamishirasawaKeine_Beast_N>());
                                                         })
         };
 
@@ -1175,7 +1175,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 上白泽慧音B 3/4/2 当你的回合结束时若位于手牌中则变形为半人。战吼:将三张墓地中花费最低的牌送进墓地。
     /// </summary>
-    public class Keine_N_B : ServantCardDefine
+    public class KamishirasawaKeine_Beast_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x053;
         public override int id { get; set; } = ID;
@@ -1193,7 +1193,7 @@ namespace TouhouHeartstone.Builtin
                                                             return a.player == c.getOwner() && c.pile == c.getOwner().hand;
                                                         },null,
                                                         async(g,c,a)=>{
-                                                            c.setDefine(g,g.getDefine<Keine_N_A>());
+                                                            await THHCard.setDefine(c,g,g.getDefine<KamishirasawaKeine_Beast_N>());
                                                         })
         };
 
@@ -1242,23 +1242,190 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 藤原妹红 8/6/3 亡语：返回手牌，并对所有随从造成2点伤害。
     /// </summary>
-    public class Mokou_N : ServantCardDefine
+    public class HuziwaraNoMokou_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x054;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 1;
-        //public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
+        public override int cost { get; set; } = 8;
+        public override int attack { get; set; } = 6;
+        public override int life { get; set; } = 3;
+       
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         { 
             new DeathRattle(ID,async(g,c,a)=>{
                 await g.getAllServants().damage(g,c,2);
+                await g.updateDeath(g);
                 await c.backToHand(g);
              
             })
+        };
+    }
+
+    // 伪抉择：发现提供两张假卡作为选项，然后根据选项触发效果
+
+    /// <summary>
+    /// 八意永琳 10/8/8 部署：选择一个英雄，然后选择一项：使她剩余生命值翻倍；或使她剩余生命值减半
+    /// </summary>
+    public class YagokoroEirin_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x055;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override int attack { get; set; } = 8;
+        public override int life { get; set; } = 8;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async (g, c, t) =>
+            {
+                int health = t.getCurrentLife(g);
+                List<Card> options = new List<Card>{g.createCard<GameOfLife_Rise_N>(),g.createCard<GameOfLife_Fall_N>() };
+                Card choice = await c.getOwner().discover(g,options,2,"选择一项");
+                if(choice.define == g.getDefine<GameOfLife_Rise_N>())
+                {
+                    if(health <= t.getLife(g))
+                    {
+                        await t.setCurrentLife(g,health*2);
+                    }
+                    else
+                    {
+                        await t.setCurrentLife(g,t.getLife(g));
+                    }
+                    
+                }
+                else
+                {
+                    await t.setCurrentLife(g,health/2);
+                }
+            },PileFlag.both | PileFlag.master)
+        };
+    }
+
+    /// <summary>
+    /// 生命游戏-苏活：假卡，无实际效果。
+    /// 使其剩余生命值翻倍
+    /// </summary>
+    public class GameOfLife_Rise_N : SpellCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x056;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+       
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+        };
+    }
+
+    /// <summary>
+    /// 生命游戏-衰亡：假卡，无实际效果。
+    /// 使其剩余生命值翻倍
+    /// </summary>
+    public class GameOfLife_Fall_N : SpellCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x057;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+        
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+        };
+    }
+
+    /// <summary>
+    /// 蓬莱山辉夜 10/5/10 部署：选择一项：每个玩家禁止抽牌两个回合；或每个玩家抽3张牌。
+    /// </summary>
+    public class HouraisanKaguya_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x058;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override int attack { get; set; } = 5;
+        public override int life { get; set; } = 10;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+            
+        };
+
+        static async Task effect(THHGame g, Card c)
+        {
+            List<Card> options = new List<Card> { g.createCard<ReturnOfImperishableNight_Eternity_N>(), g.createCard<EndOfImperishableNight_Instant_N>() };
+            Card choice = await c.getOwner().discover(g, options, 2, "选择一项");
+            if (choice.define == g.getDefine<ReturnOfImperishableNight_Eternity_N>())
+            {
+                await c.getOwner().master.addBuff(g, new GeneratedBuff(ID,new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
+                                                                                                                (g1, c1, a1) =>
+                                                                                                                {
+                                                                                                                    return a1.player == c1.getOwner();
+                                                                                                                },
+                                                                                                                null,
+                                                                                                                async (g1, c1, a1) =>
+                                                                                                                {
+                                                                                                                    a1.isCanceled = true;
+                                                                                                                }
+                                                                                                                ),new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,ID,2)));
+
+                await g.getOpponent(c.getOwner()).master.addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
+                                                                                                                (g1, c1, a1) =>
+                                                                                                                {
+                                                                                                                    return a1.player == c1.getOwner();
+                                                                                                                },
+                                                                                                                null,
+                                                                                                                async (g1, c1, a1) =>
+                                                                                                                {
+                                                                                                                    a1.isCanceled = true;
+                                                                                                                }
+                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER, ID, 2)));
+
+            }
+            else
+            {
+                for(int i=0; i<3; i++)
+                {
+                    await c.getOwner().draw(g);
+                }
+
+                for (int i = 0; i < 3; i++)
+                {
+                    await g.getOpponent(c.getOwner()).draw(g);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 永夜归-永恒：假卡，无实际效果。
+    /// 使其剩余生命值翻倍
+    /// </summary>
+    public class ReturnOfImperishableNight_Eternity_N : SpellCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x059;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+        };
+    }
+
+    /// <summary>
+    /// 永夜返-须臾：假卡，无实际效果。
+    /// 使其剩余生命值翻倍
+    /// </summary>
+    public class EndOfImperishableNight_Instant_N : SpellCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x060;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
         };
     }
 }

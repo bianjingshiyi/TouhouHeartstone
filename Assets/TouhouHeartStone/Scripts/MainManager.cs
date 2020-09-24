@@ -20,13 +20,8 @@ namespace Game
 
         [SerializeField]
         UnityEvent onLoadingFinish;
-
         Main mainUI => ui.getObject<Main>();
-
         RoomInfo currentRoomInfo = new RoomInfo();
-
-
-
         protected override void onAwake()
         {
             base.onAwake();
@@ -36,7 +31,17 @@ namespace Game
             main.MainMenu.NetworkButtonButtonBlack.asButton.onClick.set(() =>
             {
                 main.display(main.NetworkingPage);
-                network.displayLANPanel();
+                _ = network.displayPanelForLAN();
+            });
+            main.MainMenu.LobbyButtonButtonBlack.asButton.onClick.set(() =>
+            {
+                if (network.client.account != null)
+                {
+                    main.display(main.NetworkingPage);
+                    _ = network.displayPanelForLobby();
+                }
+                else
+                    ui.getObject<Dialog>().display("你必须先登录才能进入服务器大厅！", null);
             });
             main.display(main.Loading);
         }
