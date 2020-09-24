@@ -1264,7 +1264,7 @@ namespace TouhouHeartstone.Builtin
                                                                                                                               },null,
                                                                                                                               async (g1, c1, a1) =>
                                                                                                                               {
-                                                                                                                                  await c1.getOwner().reborn(g1,card,c1.getOwner().hand);
+                                                                                                                                  await c1.getOwner().grave.moveTo(g1,card,c1.getOwner().hand);
                                                                                                                                   
                                                                                                                                   await c1.getOwner().master.removeBuff(g1);
                                                                                                                               })));
