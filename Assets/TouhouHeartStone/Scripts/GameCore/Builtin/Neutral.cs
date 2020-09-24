@@ -1067,7 +1067,7 @@ namespace TouhouHeartstone.Builtin
                                                                                 {
                                                                                     return a.player == c1.getOwner();
                                                                                 }, ID)));
-            })
+            },PileFlag.both | PileFlag.field)
         };
     }
 
@@ -1253,11 +1253,22 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         { 
-            new DeathRattle(ID,async(g,c,a)=>{
-                await g.getAllServants().damage(g,c,2);
-                await g.updateDeath(g);
-                await c.backToHand(g);
-             
+            
+            new DeathRattle(ID,async(game,card,arg)=>{
+                await game.getAllServants().damage(game,card,2);
+               
+                await card.getOwner().master.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.MASTER,
+                                                                                                                              (g1, c1, a1) =>
+                                                                                                                              {
+                                                                                                                                  return a1.player == c1.getOwner() && card.pile == card.getOwner().grave;
+                                                                                                                              },null,
+                                                                                                                              async (g1, c1, a1) =>
+                                                                                                                              {
+                                                                                                                                  await c1.getOwner().grave.moveTo(g1,card,c1.getOwner().hand);
+                                                                                                                                  
+                                                                                                                                  await c1.getOwner().master.removeBuff(g1);
+                                                                                                                              })));
+                await game.updateDeath(game);
             })
         };
     }

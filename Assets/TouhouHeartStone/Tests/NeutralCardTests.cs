@@ -713,6 +713,11 @@ namespace Tests
 
             you.field[0].setDead(game, true);
             game.updateDeath(game);
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
 
             game.Dispose();
         }

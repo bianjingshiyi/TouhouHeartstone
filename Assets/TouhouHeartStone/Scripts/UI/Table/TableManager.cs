@@ -1335,7 +1335,7 @@ namespace Game
         void onGravePointerEnter(UI.Deck deck, PointerEventData pointer)
         {
             if (player.grave.count > 0)
-                ui.TipBox.display("墓地里有" + player.deck.count + "张牌", pointer.position + _tipBoxOffset);
+                ui.TipBox.display("墓地里有" + player.grave.count + "张牌", pointer.position + _tipBoxOffset);
             else
                 ui.TipBox.display("墓地是空的", pointer.position + _tipBoxOffset);
         }

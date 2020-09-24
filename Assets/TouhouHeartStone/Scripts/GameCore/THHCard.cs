@@ -755,7 +755,9 @@ namespace TouhouHeartstone
                 await card.setLife(game, servant.life);
                 await card.setSpellDamage(game, servant.spellDamage);
                 await card.setKeywords(game, servant.keywords);
-                await card.setProp(game, nameof(ServantCardDefine.tags), servant.tags);
+                await card.setTags(game, servant.tags);
+               
+                
             }
             else if (card.define is SpellCardDefine spell)
             {
@@ -1214,6 +1216,7 @@ namespace TouhouHeartstone
                 {
                     game.logger.log(g.Key + "的手牌已满，无法将" + string.Join(",", g) + "置入手牌");
                     await g.setDead(game, true);
+                    await game.updateDeath(game);
                 }
                 else if (g.Key.hand.count + g.Count() <= g.Key.hand.maxCount)
                 {
