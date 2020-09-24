@@ -755,7 +755,9 @@ namespace TouhouHeartstone
                 await card.setLife(game, servant.life);
                 await card.setSpellDamage(game, servant.spellDamage);
                 await card.setKeywords(game, servant.keywords);
-                await card.setProp(game, nameof(ServantCardDefine.tags), servant.tags);
+                await card.setTags(game, servant.tags);
+               
+                
             }
             else if (card.define is SpellCardDefine spell)
             {
