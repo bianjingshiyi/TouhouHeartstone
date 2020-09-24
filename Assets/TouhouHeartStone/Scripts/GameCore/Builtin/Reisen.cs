@@ -236,7 +236,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x009;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
+        public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
@@ -391,7 +391,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 434 叛逃特工 每当你使用英雄技能时，对随机敌人造成3点伤害
+    /// 434 叛逃特工 每当你使用英雄技能时，对随机敌人造成2点伤害
     /// </summary>
     public class DefectedAgent : ServantCardDefine
     {
@@ -463,10 +463,6 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            if (card.getOwner().skill.isUsed(game))
-            {
-                await card.getOwner().skill.setUsed(game, false);
-            }
             await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
             (g, c, a) =>
             {
