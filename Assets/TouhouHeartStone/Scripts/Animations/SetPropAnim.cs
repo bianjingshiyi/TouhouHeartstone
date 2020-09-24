@@ -4,6 +4,7 @@ using TouhouHeartstone;
 using Card = TouhouCardEngine.Card;
 using System.Linq;
 using BJSYGameCore.UI;
+
 namespace Game
 {
     class SetPropAnim : EventAnimation<Card.SetPropEventArg>

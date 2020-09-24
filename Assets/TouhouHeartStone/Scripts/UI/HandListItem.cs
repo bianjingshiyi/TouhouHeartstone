@@ -102,5 +102,6 @@ namespace UI
         public SimpleAnim onSelfUse;
         public SimpleAnim onHoverCard;
         public SimpleAnim onexitHoverCard;
+        public SimpleAnim onSetDefine;
     }
 }

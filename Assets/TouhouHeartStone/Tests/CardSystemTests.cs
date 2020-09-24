@@ -367,7 +367,7 @@ namespace Tests
             Assert.AreEqual(5, lightspawn.getAttack(game));
             lightspawn.damage(game, null, 2);
             Assert.AreEqual(3, lightspawn.getAttack(game));
-            lightspawn.heal(game,null, 1);
+            lightspawn.heal(game, null, 1);
             Assert.AreEqual(4, lightspawn.getAttack(game));
         }
         [Test]
@@ -468,7 +468,7 @@ namespace Tests
             oppo.cmdTurnEnd(game);
             game.skipUntilCanUse<Polymorph>(you);
             Card polymorph = you.hand.getCard<Polymorph>();
-            you.cmdUse(game, polymorph,targets:oppo.field[0]);
+            you.cmdUse(game, polymorph, targets: oppo.field[0]);
         }
         [Test]
         public void PowrOverwhelmingTest()
@@ -507,6 +507,19 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<TestHeal>(), targets: you.master);
 
             game.Dispose();
+        }
+        [Test]
+        public void multipleHaloTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var _,
+                new KeyValuePair<int, int>(SorcererApprentice.ID, 2),
+                new KeyValuePair<int, int>(FireBall.ID, 1));
+            game.skipUntilCanUse(you, game.getDefine<SorcererApprentice>(),
+                                      game.getDefine<SorcererApprentice>(),
+                                      game.getDefine<FireBall>());
+            you.cmdUse(game, you.hand.getCard<SorcererApprentice>());
+            you.cmdUse(game, you.hand.getCard<SorcererApprentice>());
+            Assert.AreEqual(game.getDefine<FireBall>().cost - 2, you.hand.getCard<FireBall>().getCost(game));
         }
     }
 }

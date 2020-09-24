@@ -24,5 +24,6 @@ namespace UI
         public SimpleAnim onEquip;
         public SimpleAnim onLifeDown;
         public SimpleAnim onDestroy;
+        public SimpleAnim onSetDefine;
     }
 }
