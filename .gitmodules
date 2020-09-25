@@ -13,3 +13,6 @@
 [submodule "Assets/TouhouHeartStone/MassResources"]
 	path = Assets/TouhouHeartStone/MassResources
 	url = https://github.com/bianjingshiyi/TouhouHeartstone.MassResources.git
+[submodule "Assets/Plugins/InGameLogWindow"]
+	path = Assets/Plugins/InGameLogWindow
+	url = https://code.lotlab.org/IGensokyo/InGameLogWindow

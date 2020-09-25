@@ -80,5 +80,6 @@ namespace UI
         public SimpleAnim onCanAttackFalse;
         public SimpleAnim onSelectableTrue;
         public SimpleAnim onSelectableFalse;
+        public SimpleAnim onSetDefine;
     }
 }

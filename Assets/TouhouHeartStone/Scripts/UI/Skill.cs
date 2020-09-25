@@ -92,6 +92,6 @@ namespace UI
         [SerializeField]
         private UnityEvent _onIsUsedControllerTrue;
         //public UnityEvent onIsUsedControllerTrue => _onIsUsedControllerTrue;
-
+        public SimpleAnim onSetDefine;
     }
 }

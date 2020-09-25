@@ -755,7 +755,9 @@ namespace TouhouHeartstone
                 await card.setLife(game, servant.life);
                 await card.setSpellDamage(game, servant.spellDamage);
                 await card.setKeywords(game, servant.keywords);
-                await card.setProp(game, nameof(ServantCardDefine.tags), servant.tags);
+                await card.setTags(game, servant.tags);
+               
+                
             }
             else if (card.define is SpellCardDefine spell)
             {
@@ -1214,6 +1216,7 @@ namespace TouhouHeartstone
                 {
                     game.logger.log(g.Key + "的手牌已满，无法将" + string.Join(",", g) + "置入手牌");
                     await g.setDead(game, true);
+                    await game.updateDeath(game);
                 }
                 else if (g.Key.hand.count + g.Count() <= g.Key.hand.maxCount)
                 {
@@ -1230,10 +1233,6 @@ namespace TouhouHeartstone
                 await card.removeBuff(game, card.getBuffs(b => b.id == buffId));
             }
         }
-        public static string getFormatString(this Card card)
-        {
-            return "{card:" + card.define.id + "}";
-        }
         /// <summary>
         /// 触发奥秘
         /// </summary>
@@ -1241,7 +1240,7 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="effects"></param>
         /// <returns></returns>
-        public static  Task<SecretTriggerEventArg> TriggerSecret(this Card card, IGame game)
+        public static Task<SecretTriggerEventArg> TriggerSecret(this Card card, IGame game)
         {
             return game.triggers.doEvent(new SecretTriggerEventArg() { card = card }, async arg =>
             {
@@ -1273,39 +1272,12 @@ namespace TouhouHeartstone
         /// <param name="card"></param>
         /// <param name="game"></param>
         /// <param name="define"></param>
-        public static async Task<SetDefineEventArg> setDefine(this Card card, IGame game, CardDefine define)
+        public static async Task<Card.SetDefineEventArg> setDefine(this Card card, IGame game, CardDefine define)
         {
-            var eventArg = await game.triggers.doEvent(new SetDefineEventArg() { card = card, beforeDefine = card.define, afterDefine = define }, async arg =>
-            {
-                card.setDefine(game, define);//变形
-                await card.resetCard(game as THHGame);//卡牌重置
-            });
+            var eventArg = await card.setDefine(game, define);
+            await card.resetCard(game as THHGame);//卡牌重置
             return eventArg;
         }
-        public class SetDefineEventArg : EventArg, IDescribableEventArg
-        {
-            public Card card;
-            public CardDefine beforeDefine;
-            public CardDefine afterDefine;
-
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return card;
-            }
-
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return null;
-            }
-
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                return null;
-            }
-
-        }
-
-
         /// <summary>
         /// 登场
         /// </summary>

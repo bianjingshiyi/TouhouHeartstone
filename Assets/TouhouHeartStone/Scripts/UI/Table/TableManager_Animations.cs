@@ -8,7 +8,6 @@ using TouhouCardEngine.Interfaces;
 using System.Reflection;
 using TouhouCardEngine;
 using System.Linq;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 namespace Game
 {

@@ -572,16 +572,16 @@ namespace TouhouHeartstone
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));
-            if (field.count >= field.maxCount)
+            if (pile.count >= pile.maxCount)
                 return null;
             if (position < 0)
-                position = field.count;
+                position = pile.count;
             RebornEventArg eventArg = new RebornEventArg() { player = this, card = card, pile = pile, position = position };
             await game.triggers.doEvent(eventArg, async arg =>
             {
                 THHPlayer player = arg.player;
                 position = arg.position;
-                if (field.count >= field.maxCount)
+                if (pile.count >= pile.maxCount)
                     return;
                 game.logger.log(player + "复活" + arg.card.define.GetType().Name + "位于" + position);
                 await arg.player.grave.moveTo(game, arg.card, arg.pile, position);

@@ -989,7 +989,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override string[] tags { get; set; } = { TAG.BEAST,TAG.BUG  };
-        //public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD };
+       
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new DeathRattle(ID,async(g1,c1,p)=>
@@ -1067,7 +1067,7 @@ namespace TouhouHeartstone.Builtin
                                                                                 {
                                                                                     return a.player == c1.getOwner();
                                                                                 }, ID)));
-            })
+            },PileFlag.both | PileFlag.field)
         };
     }
 
@@ -1107,7 +1107,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = { TAG.BEAST };
-        //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+       
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
@@ -1130,8 +1130,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
-        //public override string[] tags { get; set; } = { TAG.BEAST };
-        //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+        
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect),
             new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND, 
@@ -1250,14 +1249,26 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 8;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
+       
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         { 
-            new DeathRattle(ID,async(g,c,a)=>{
-                await g.getAllServants().damage(g,c,2);
-                await c.backToHand(g);
-             
+            
+            new DeathRattle(ID,async(game,card,arg)=>{
+                await game.getAllServants().damage(game,card,2);
+               
+                await card.getOwner().master.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.MASTER,
+                                                                                                                              (g1, c1, a1) =>
+                                                                                                                              {
+                                                                                                                                  return a1.player == c1.getOwner() && card.pile == card.getOwner().grave;
+                                                                                                                              },null,
+                                                                                                                              async (g1, c1, a1) =>
+                                                                                                                              {
+                                                                                                                                  await c1.getOwner().grave.moveTo(g1,card,c1.getOwner().hand);
+                                                                                                                                  
+                                                                                                                                  await c1.getOwner().master.removeBuff(g1);
+                                                                                                                              })));
+                await game.updateDeath(game);
             })
         };
     }

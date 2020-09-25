@@ -368,14 +368,14 @@ namespace TouhouHeartstone
         }
         public override Task execute(IGame game, ICard card, object[] vars, object[] targets)
         {
-            
-             if (targets != null &&
-                  targets.Length > 0 &&
-                  targets[0] is Card target)
-                  return execute(game as THHGame, card as Card, target);
+
+            if (targets != null &&
+                 targets.Length > 0 &&
+                 targets[0] is Card target)
+                return execute(game as THHGame, card as Card, target);
             else
             {
-                return execute(game as THHGame,card as Card, null);
+                return execute(game as THHGame, card as Card, null);
             }
         }
         public abstract Task execute(THHGame game, Card card, Card target);
@@ -424,19 +424,20 @@ namespace TouhouHeartstone
         }
         public override Task execute(THHGame game, Card card, Card target)
         {
-            if (_onExecute != null) {
-                if(!(card.define is SpellCardDefine))
+            if (_onExecute != null)
+            {
+                if (!(card.define is SpellCardDefine))
                 {
-                  
-                   if(target != null)
-                   {
-                       return _onExecute(game, card, target);
-                   }
-                   else
-                   {
-                       return _noTargetExecute(game, card);
-                   }
-                }              
+
+                    if (target != null)
+                    {
+                        return _onExecute(game, card, target);
+                    }
+                    else
+                    {
+                        return _noTargetExecute(game, card);
+                    }
+                }
                 return _onExecute(game, card, target);
             }
             return Task.CompletedTask;
@@ -451,8 +452,34 @@ namespace TouhouHeartstone
         Func<THHGame, Card, Pile[]> getRange { get; }
         Func<THHGame, Card, bool> filter { get; }
         Buff buff { get; }
-        Dictionary<Card, Buff> buffDic { get; } = new Dictionary<Card, Buff>();
-        Trigger<Pile.MoveCardEventArg> onCardEnterHandTrigger { get; set; } = null;
+        private Dictionary<Card, Buff> getBuffDic(THHGame game, Card card, Buff buff)
+        {
+            string propName = getPropName(buff, "buffDic");
+            Dictionary<Card, Buff> buffDic = card.getProp<Dictionary<Card, Buff>>(game, propName);
+            if (buffDic == null)
+            {
+                buffDic = new Dictionary<Card, Buff>();
+                card.setProp(game, propName, buffDic);
+            }
+            return buffDic;
+        }
+
+        private string getPropName(Buff buff, string propName)
+        {
+            propName = this.buff.id + nameof(Halo) + '.' + propName;
+            if (buff != null)
+                propName += buff.ToString();
+            return propName;
+        }
+
+        private Trigger<Pile.MoveCardEventArg> getOnCardEnterHandTrigger(THHGame game, Card card, Buff buff)
+        {
+            return card.getProp<Trigger<Pile.MoveCardEventArg>>(game, getPropName(buff, "onCardEnterHandTrigger"));
+        }
+        private void setOnCardEnterHandTrigger(Trigger<Pile.MoveCardEventArg> value)
+        {
+            onCardEnterHandTrigger1 = value;
+        }
         /// <summary>
         /// 简化的构造器
         /// </summary>
@@ -461,11 +488,8 @@ namespace TouhouHeartstone
         /// <param name="pile">光环拥有者必须位于起效范围内，光环才会起效。默认是位于己方的战场上。</param>
         /// <param name="filter">光环的作用条件。</param>
         public Halo(Buff buff, PileFlag range, PileFlag pile = PileFlag.self | PileFlag.field, Func<THHGame, Card, bool> filter = null)
+            : this(PILE.getPiles(pile), (game, card) => range.getPiles(game, card.getOwner()), filter, buff)
         {
-            this.buff = buff;
-            piles = PILE.getPiles(pile);
-            getRange = (game, card) => range.getPiles(game, card.getOwner());
-            this.filter = filter;
         }
         public Halo(string[] piles, Func<THHGame, Card, Pile[]> getRange, Func<THHGame, Card, bool> filter, Buff buff)
         {
@@ -477,56 +501,56 @@ namespace TouhouHeartstone
         public override async Task onEnable(THHGame game, Card card, Buff buff)
         {
             Pile[] ranges = getRange != null ? getRange(game, card) : null;
-            if (onCardEnterHandTrigger == null)
+            if (GetonCardEnterHandTrigger() == null)
             {
-                onCardEnterHandTrigger = new Trigger<Pile.MoveCardEventArg>(async arg =>
+                setOnCardEnterHandTrigger(new Trigger<Pile.MoveCardEventArg>(async arg =>
                 {
                     if (ranges == null)
                         return;
                     if (ranges.Contains(arg.to) &&
                        (filter == null || filter(game, arg.card)))
                     {
-                        if (!buffDic.ContainsKey(arg.card))
+                        if (!getBuffDic().ContainsKey(arg.card))
                         {
                             Buff b = this.buff.clone();
                             await arg.card.addBuff(game, b);
-                            buffDic.Add(arg.card, b);
+                            getBuffDic().Add(arg.card, b);
                         }
                     }
                     else if (ranges.Contains(arg.from) && (filter == null || filter(game, arg.card)))
                     {
-                        if (buffDic.ContainsKey(arg.card))
-                            await arg.card.removeBuff(game, buffDic[arg.card]);
+                        if (getBuffDic().ContainsKey(arg.card))
+                            await arg.card.removeBuff(game, getBuffDic()[arg.card]);
                     }
                     return;
-                });
-                game.triggers.registerAfter(onCardEnterHandTrigger);
+                }));
+                game.triggers.registerAfter(GetonCardEnterHandTrigger());
             }
             foreach (var range in ranges)
             {
                 foreach (var target in range.Where(c => filter == null || filter(game, c)))
                 {
-                    if (!buffDic.ContainsKey(target))
+                    if (!getBuffDic().ContainsKey(target))
                     {
                         Buff b = this.buff.clone();
                         await target.addBuff(game, b);
-                        buffDic.Add(target, b);
+                        getBuffDic().Add(target, b);
                     }
                 }
             }
         }
         public override async Task onDisable(THHGame game, Card card, Buff buff)
         {
-            if (onCardEnterHandTrigger != null)
+            if (GetonCardEnterHandTrigger() != null)
             {
-                game.triggers.removeAfter(onCardEnterHandTrigger);
-                onCardEnterHandTrigger = null;
+                game.triggers.removeAfter(GetonCardEnterHandTrigger());
+                setOnCardEnterHandTrigger(null);
             }
-            foreach (var pair in buffDic)
+            foreach (var pair in getBuffDic())
             {
                 await pair.Key.removeBuff(game, pair.Value);
             }
-            buffDic.Clear();
+            getBuffDic().Clear();
         }
     }
     public class AddBuffAfter<T> : THHEffectAfter<T> where T : IEventArg
@@ -574,34 +598,34 @@ namespace TouhouHeartstone
 
     public class RemoveBuffAfterTimeUp<T> : THHEffectAfter<T> where T : IEventArg
     {
-        public RemoveBuffAfterTimeUp(string pile, int buffId,int time) : base(pile, null, null, (game, card, arg) =>
-        {
-            if(time == 0)
-            {
-                return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-            }
-            else
-            {
-                time--;
-                return Task.CompletedTask;
-            }
-            
-        })
+        public RemoveBuffAfterTimeUp(string pile, int buffId, int time) : base(pile, null, null, (game, card, arg) =>
+         {
+             if (time == 0)
+             {
+                 return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+             }
+             else
+             {
+                 time--;
+                 return Task.CompletedTask;
+             }
+
+         })
         {
         }
-        public RemoveBuffAfterTimeUp(string pile, CheckConditionDelegate onCheckCondition, int buffId,int time) : base(pile, onCheckCondition, null, (game, card, arg) =>
-        {
-            if (time == 0)
-            {
-                return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-            }
-            else
-            {
-                time--;
-                return Task.CompletedTask;
-            }
-            
-        })
+        public RemoveBuffAfterTimeUp(string pile, CheckConditionDelegate onCheckCondition, int buffId, int time) : base(pile, onCheckCondition, null, (game, card, arg) =>
+         {
+             if (time == 0)
+             {
+                 return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+             }
+             else
+             {
+                 time--;
+                 return Task.CompletedTask;
+             }
+
+         })
         {
         }
     }
@@ -887,7 +911,7 @@ namespace TouhouHeartstone
         }
     }
 
-    
+
     //public class ChooseOneEffect : SingleTargetEffect
     //{
     //    /// <summary>
