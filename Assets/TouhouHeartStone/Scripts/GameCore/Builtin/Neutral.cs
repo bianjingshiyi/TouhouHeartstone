@@ -1193,7 +1193,7 @@ namespace TouhouHeartstone.Builtin
                                                             return a.player == c.getOwner() && c.pile == c.getOwner().hand;
                                                         },null,
                                                         async(g,c,a)=>{
-                                                            await THHCard.setDefine(c,g,g.getDefine<KamishirasawaKeine_Beast_N>());
+                                                            await THHCard.setDefine(c,g,g.getDefine<KamishirasawaKeine_Human_N>());
                                                         })
         };
 
@@ -1295,7 +1295,7 @@ namespace TouhouHeartstone.Builtin
                 Card choice = await c.getOwner().discover(g,options,2,"选择一项");
                 if(choice.define == g.getDefine<GameOfLife_Rise_N>())
                 {
-                    if(health <= t.getLife(g))
+                    if(health <= t.getLife(g)/2)
                     {
                         await t.setCurrentLife(g,health*2);
                     }
