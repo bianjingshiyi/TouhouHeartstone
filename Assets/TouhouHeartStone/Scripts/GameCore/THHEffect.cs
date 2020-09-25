@@ -476,9 +476,9 @@ namespace TouhouHeartstone
         {
             return card.getProp<Trigger<Pile.MoveCardEventArg>>(game, getPropName(buff, "onCardEnterHandTrigger"));
         }
-        private void setOnCardEnterHandTrigger(Trigger<Pile.MoveCardEventArg> value)
+        private void setOnCardEnterHandTrigger(THHGame game, Card card, Buff buff, Trigger<Pile.MoveCardEventArg> value)
         {
-            onCardEnterHandTrigger1 = value;
+            card.setProp(game, getPropName(buff, "onCardEnterHandTrigger"), value);
         }
         /// <summary>
         /// 简化的构造器
@@ -501,56 +501,56 @@ namespace TouhouHeartstone
         public override async Task onEnable(THHGame game, Card card, Buff buff)
         {
             Pile[] ranges = getRange != null ? getRange(game, card) : null;
-            if (GetonCardEnterHandTrigger() == null)
+            if (getOnCardEnterHandTrigger(game, card, buff) == null)
             {
-                setOnCardEnterHandTrigger(new Trigger<Pile.MoveCardEventArg>(async arg =>
+                setOnCardEnterHandTrigger(game, card, buff, new Trigger<Pile.MoveCardEventArg>(async arg =>
                 {
                     if (ranges == null)
                         return;
                     if (ranges.Contains(arg.to) &&
                        (filter == null || filter(game, arg.card)))
                     {
-                        if (!getBuffDic().ContainsKey(arg.card))
+                        if (!getBuffDic(game, card, buff).ContainsKey(arg.card))
                         {
                             Buff b = this.buff.clone();
                             await arg.card.addBuff(game, b);
-                            getBuffDic().Add(arg.card, b);
+                            getBuffDic(game, card, buff).Add(arg.card, b);
                         }
                     }
                     else if (ranges.Contains(arg.from) && (filter == null || filter(game, arg.card)))
                     {
-                        if (getBuffDic().ContainsKey(arg.card))
-                            await arg.card.removeBuff(game, getBuffDic()[arg.card]);
+                        if (getBuffDic(game, card, buff).ContainsKey(arg.card))
+                            await arg.card.removeBuff(game, getBuffDic(game, card, buff)[arg.card]);
                     }
                     return;
                 }));
-                game.triggers.registerAfter(GetonCardEnterHandTrigger());
+                game.triggers.registerAfter(getOnCardEnterHandTrigger(game, card, buff));
             }
             foreach (var range in ranges)
             {
                 foreach (var target in range.Where(c => filter == null || filter(game, c)))
                 {
-                    if (!getBuffDic().ContainsKey(target))
+                    if (!getBuffDic(game, card, buff).ContainsKey(target))
                     {
                         Buff b = this.buff.clone();
                         await target.addBuff(game, b);
-                        getBuffDic().Add(target, b);
+                        getBuffDic(game, card, buff).Add(target, b);
                     }
                 }
             }
         }
         public override async Task onDisable(THHGame game, Card card, Buff buff)
         {
-            if (GetonCardEnterHandTrigger() != null)
+            if (getOnCardEnterHandTrigger(game, card, buff) != null)
             {
-                game.triggers.removeAfter(GetonCardEnterHandTrigger());
-                setOnCardEnterHandTrigger(null);
+                game.triggers.removeAfter(getOnCardEnterHandTrigger(game, card, buff));
+                setOnCardEnterHandTrigger(game, card, buff, null);
             }
-            foreach (var pair in getBuffDic())
+            foreach (var pair in getBuffDic(game, card, buff))
             {
                 await pair.Key.removeBuff(game, pair.Value);
             }
-            getBuffDic().Clear();
+            getBuffDic(game, card, buff).Clear();
         }
     }
     public class AddBuffAfter<T> : THHEffectAfter<T> where T : IEventArg
