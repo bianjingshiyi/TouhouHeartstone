@@ -117,6 +117,9 @@ MonoBehaviour:
   _NickNameImage: {fileID: 0}
   _NickName_TitleText: {fileID: 0}
   _NickName_InputFieldDark: {fileID: 0}
+  _KeyImage: {fileID: 0}
+  _Key_TitleText: {fileID: 0}
+  _Key_InputFieldDark: {fileID: 0}
   _CaptchaImage: {fileID: 0}
   _Captcha_TitleText: {fileID: 0}
   _Captcha_InputFieldDark: {fileID: 0}
@@ -443,7 +446,7 @@ GameObject:
   - component: {fileID: 2973131544574856623}
   - component: {fileID: 7449723217862813484}
   m_Layer: 5
-  m_Name: Key
+  m_Name: Invite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1240,7 +1243,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u6FC0\u6D3B\u7801"
+  m_Text: "\u9080\u8BF7\u7801"
 --- !u!1 &7811997220982946559
 GameObject:
   m_ObjectHideFlags: 0
@@ -1869,7 +1872,7 @@ PrefabInstance:
     - target: {fileID: 2085164224098065606, guid: 4e0d5fda7cc24a1409761ed61aafaf8d,
         type: 3}
       propertyPath: m_Text
-      value: "\u516D\u4F4D\u6FC0\u6D3B\u7801"
+      value: "\u516D\u4F4D\u9080\u8BF7\u7801"
       objectReference: {fileID: 0}
     - target: {fileID: 2085164224098065606, guid: 4e0d5fda7cc24a1409761ed61aafaf8d,
         type: 3}
