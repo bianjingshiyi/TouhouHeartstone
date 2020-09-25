@@ -47,6 +47,9 @@ namespace UI
             this._NickNameImage = this.transform.Find("Container").Find("NickName").GetComponent<Image>();
             this._NickName_TitleText = this.transform.Find("Container").Find("NickName").Find("Title").GetComponent<Text>();
             this._NickName_InputFieldDark = this.transform.Find("Container").Find("NickName").Find("InputFieldDark").GetComponent<InputFieldDark>();
+            this._KeyImage = this.transform.Find("Container").Find("Key").GetComponent<Image>();
+            this._Key_TitleText = this.transform.Find("Container").Find("Key").Find("Title").GetComponent<Text>();
+            this._Key_InputFieldDark = this.transform.Find("Container").Find("Key").Find("InputFieldDark").GetComponent<InputFieldDark>();
             this._CaptchaImage = this.transform.Find("Container").Find("Captcha").GetComponent<Image>();
             this._Captcha_TitleText = this.transform.Find("Container").Find("Captcha").Find("Title").GetComponent<Text>();
             this._Captcha_InputFieldDark = this.transform.Find("Container").Find("Captcha").Find("InputFieldDark").GetComponent<InputFieldDark>();
@@ -338,6 +341,45 @@ namespace UI
                     this._NickName_InputFieldDark = this.transform.Find("Container").Find("NickName").Find("InputFieldDark").GetComponent<InputFieldDark>();
                 }
                 return this._NickName_InputFieldDark;
+            }
+        }
+        [SerializeField()]
+        private Image _KeyImage;
+        public Image KeyImage
+        {
+            get
+            {
+                if ((this._KeyImage == null))
+                {
+                    this._KeyImage = this.transform.Find("Container").Find("Key").GetComponent<Image>();
+                }
+                return this._KeyImage;
+            }
+        }
+        [SerializeField()]
+        private Text _Key_TitleText;
+        public Text Key_TitleText
+        {
+            get
+            {
+                if ((this._Key_TitleText == null))
+                {
+                    this._Key_TitleText = this.transform.Find("Container").Find("Key").Find("Title").GetComponent<Text>();
+                }
+                return this._Key_TitleText;
+            }
+        }
+        [SerializeField()]
+        private InputFieldDark _Key_InputFieldDark;
+        public InputFieldDark Key_InputFieldDark
+        {
+            get
+            {
+                if ((this._Key_InputFieldDark == null))
+                {
+                    this._Key_InputFieldDark = this.transform.Find("Container").Find("Key").Find("InputFieldDark").GetComponent<InputFieldDark>();
+                }
+                return this._Key_InputFieldDark;
             }
         }
         [SerializeField()]

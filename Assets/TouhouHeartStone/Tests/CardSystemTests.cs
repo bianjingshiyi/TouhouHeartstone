@@ -520,6 +520,9 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<SorcererApprentice>());
             you.cmdUse(game, you.hand.getCard<SorcererApprentice>());
             Assert.AreEqual(game.getDefine<FireBall>().cost - 2, you.hand.getCard<FireBall>().getCost(game));
+            you.field.getCard<SorcererApprentice>().die(game);
+            game.updateDeath(game);
+            Assert.AreEqual(game.getDefine<FireBall>().cost - 1, you.hand.getCard<FireBall>().getCost(game));
         }
     }
 }

@@ -650,6 +650,7 @@ namespace Game
             var repeatPassword = ui.RepeatPassword_InputFieldDark.asInputField.text;
             var email = ui.Mail_InputFieldDark.asInputField.text;
             var nickName = ui.NickName_InputFieldDark.asInputField.text;
+            var key = ui.Key_InputFieldDark.asInputField.text;
             var captcha = ui.Captcha_InputFieldDark.asInputField.text;
 
             if (string.IsNullOrEmpty(userName))
@@ -663,7 +664,11 @@ namespace Game
                 ui.ShowMessage("邮箱不能为空");
                 return;
             }
-
+            if (string.IsNullOrEmpty(key))
+            {
+                ui.ShowMessage("激活码不能为空");
+                return;
+            }
             if (string.IsNullOrEmpty(captcha))
             {
                 ui.ShowMessage("验证码不能为空");
@@ -684,7 +689,7 @@ namespace Game
 
             try
             {
-                await client.register(new AccountInfo(userName, password, email, nickName), ui.Captcha_InputFieldDark.asInputField.text);
+                await client.register(new AccountInfo(userName, password, email, nickName, key), captcha);
                 ui.hide();
                 loadRememberAccount(out var rememberUserName, out userName, out var rememberPassword, out password);
                 getManager<UIManager>().getObject<LoginPanel>().display(rememberUserName, userName, rememberPassword, password, await getCaptchaImage());

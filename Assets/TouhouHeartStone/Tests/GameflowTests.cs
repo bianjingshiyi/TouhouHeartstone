@@ -754,7 +754,7 @@ namespace Tests
             Task task = null;
             try
             {
-                task = localClient.register(new AccountInfo("TestClient1", "password", "TestClient1@igsk.fun", "本地玩家"), "xxxx");
+                task = localClient.register(new AccountInfo("TestClient1", "password", "TestClient1@igsk.fun", "本地玩家", null), "xxxx");
             }
             catch { }
             yield return task.wait();
@@ -787,7 +787,7 @@ namespace Tests
             //远程客户端注册
             try
             {
-                task = remoteClient.register(new AccountInfo("TestClient2", "password", "TestClient2@igsk.fun", "远端玩家"), "xxxx");
+                task = remoteClient.register(new AccountInfo("TestClient2", "password", "TestClient2@igsk.fun", "远端玩家", null), "xxxx");
             }
             catch { }
             yield return task.wait();

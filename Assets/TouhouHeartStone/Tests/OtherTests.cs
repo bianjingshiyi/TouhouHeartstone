@@ -223,5 +223,17 @@ namespace Tests
                 Debug.Log(e);
             }
         }
+        [Test]
+        public void keyTest()
+        {
+            using (StreamWriter writer = new StreamWriter("Keys.txt"))
+            {
+                foreach (var key in KeyGeneration.generateUniqueKeys(100, 6))
+                {
+                    writer.WriteLine(key);
+                }
+                writer.Flush();
+            }
+        }
     }
 }
