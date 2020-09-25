@@ -335,7 +335,6 @@ namespace TouhouHeartstone
                     await card.setAttackTimes(this, 0);
                 }
                 //使自己可以攻击
-                await player.master.setReady(this, true);
                 await player.master.setAttackTimes(this, 0);
             });
             //倒计时75秒

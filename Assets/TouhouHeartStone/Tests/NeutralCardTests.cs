@@ -521,16 +521,19 @@ namespace Tests
             Assert.IsInstanceOf<YakumoYukari_N>(you.field[0].define);
             Assert.AreEqual(0, oppo.field.count);
             Assert.AreEqual(10, oppo.hand.count);
-            //oppo.cmdUse(game, oppo.hand.First());
-            //Card oppocard = oppo.field[0];
-            //oppo.cmdTurnEnd(game);
-            //you.cmdUse(game, you.hand.getCard<Doll_N>());
-            //Card youcard = you.field[0];
-            //you.cmdTurnEnd(game);
-            //oppo.cmdTurnEnd(game);
-            //you.cmdUse(game, you.hand.getCard<YakumoYukari_N>());
-            //Assert.True(you.hand.Contains(youcard));
-            //Assert.True(oppo.hand.Contains(oppocard));
+        }
+        [Test]
+        public void caseYukariOverflowTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out _,
+                new KeyValuePair<int, int>(YakumoYukari_N.ID, 1));
+            game.skipUntilCanUse<YakumoYukari_N>(you);
+            _ = you.createToken(game, 6, game.getDefine<DefaultServant>());
+            Assert.AreEqual(6, you.field.count);
+            int graveCount = you.grave.count;
+            you.cmdUse(game, you.hand.getCard<YakumoYukari_N>());
+            Assert.AreEqual(10, you.hand.count);
+            Assert.AreEqual(graveCount + 5, you.grave.count);
         }
         [Test]
         public void Rumia_NTest()
@@ -565,9 +568,8 @@ namespace Tests
             Assert.True(you.field.Any(c => c.define is MerlinPrismriver_N));
             Assert.True(you.field.Any(c => c.define is LyricaPrismriver_N));
         }
-
         [Test]
-        public void xxxTest()
+        public void yakumoRanTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(YakumoRan_N.ID, 2),
@@ -582,8 +584,26 @@ namespace Tests
             you.setGem(game, 10);
             you.cmdUse(game, chen);
             Assert.True(chen.hasKeyword(game, KEYWORD.RUSH));
-        }      
-        
+        }
+        [Test]
+        public void caseChenBackToHandTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Chen_N.ID, 1));
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse(you, game.getDefine<Chen_N>(), game.getDefine<Chen_N>());
+            you.cmdUse(game, you.hand.getCard<Chen_N>());
+            Assert.True(you.field.getCard<Chen_N>().isRush(game));
+            Assert.True(you.field.getCard<Chen_N>().canAttack(game));
+            you.cmdAttack(game, you.field.getCard<Chen_N>(), oppo.field[0]);
+            you.field.getCard<Chen_N>().backToHand(game);
+            Assert.False(you.hand.getCard<Chen_N>().isRush(game));
+            you.cmdUse(game, you.hand.getCard<Chen_N>());
+            Assert.True(you.field.getCard<Chen_N>().isRush(game));
+            Assert.True(you.field.getCard<Chen_N>().canAttack(game));
+            you.cmdAttack(game, you.field.getCard<Chen_N>(), oppo.field[0]);
+        }
         [Test]
         public void MoonedInsect_Wriggle_NTest()
         {
@@ -600,9 +620,9 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<WriggleNightbug_N>());
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            you.field[0].setDead(game,true);
+            you.field[0].setDead(game, true);
             game.updateDeath(game);
-            
+
             game.Dispose();
         }
 
@@ -623,11 +643,11 @@ namespace Tests
 
             game.skipUntilCanUse<MystiaLorelei_N>(you);
             you.cmdUse(game, you.hand.getCard<MystiaLorelei_N>(), targets: oppo.field[0]);
-           
+
             you.cmdTurnEnd(game);
-            
+
             oppo.cmdTurnEnd(game);
-            
+
 
             game.Dispose();
         }
@@ -637,7 +657,7 @@ namespace Tests
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(ReisenUdongeinInaba_N.ID, 2)
-                
+
             );
             game.skipUntilCanUse<ReisenUdongeinInaba_N>(you);
             you.cmdUse(game, you.hand.getCard<ReisenUdongeinInaba_N>());
@@ -695,7 +715,7 @@ namespace Tests
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<HuziwaraNoMokou_N>(), 1)));
 
-            for(int i=0; i<3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
                 oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
@@ -729,14 +749,14 @@ namespace Tests
                 new KeyValuePair<int, int>(YagokoroEirin_N.ID, 2)
             );
             game.skipUntilCanUse<YagokoroEirin_N>(you);
-            you.cmdUse(game, you.hand.getCard<YagokoroEirin_N>(),targets: oppo.master);
+            you.cmdUse(game, you.hand.getCard<YagokoroEirin_N>(), targets: oppo.master);
             DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
             int cardId = discoverRequest.cardIdArray[1];
-           // Card card = you.deck.getCard(cardId);
+            // Card card = you.deck.getCard(cardId);
             you.cmdDiscover(game, cardId);
 
             game.skipUntilCanUse<YagokoroEirin_N>(you);
-            you.cmdUse(game, you.hand.getCard<YagokoroEirin_N>(),targets: oppo.master);
+            you.cmdUse(game, you.hand.getCard<YagokoroEirin_N>(), targets: oppo.master);
             DiscoverRequest discoverRequest2 = game.answers.getRequest<DiscoverRequest>(you.id);
             int cardId2 = discoverRequest2.cardIdArray[0];
             you.cmdDiscover(game, cardId2);

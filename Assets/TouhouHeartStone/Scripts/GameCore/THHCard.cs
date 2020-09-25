@@ -202,15 +202,19 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool canAttack(this Card card, THHGame game)
         {
-            if (card.hasKeyword(game, KEYWORD.CANTATTACK))
+            if (card.hasKeyword(game, KEYWORD.CANTATTACK))//不能攻击
                 return false;
             if (card.getAttack(game) <= 0)//没有攻击力
                 return false;
-            if (!card.isReady(game)//还没准备好
+            if (card.pile.name == PILE.FIELD)
+            {
+                //随从限定
+                if (!card.isReady(game)//还没准备好
                 && !card.isCharge(game)//且没有冲锋
                 && !(card.isRush(game) && game.getOpponent(card.getOwner()).field.Any(c => card.isAttackable(game, card.getOwner(), c, out _)))//且并非有突袭且有可以攻击的敌方随从
                 )
-                return false;
+                    return false;
+            }
             if (card.getAttackTimes(game) >= card.getMaxAttackTimes(game))//已经攻击过了
                 return false;
             if (card.isFreeze(game))
@@ -749,15 +753,14 @@ namespace TouhouHeartstone
             {
                 await card.setDead(game, false);
                 await card.setCurrentLife(game, servant.life);
-                await card.setReady(game, false);
                 await card.setCost(game, servant.cost);
                 await card.setAttack(game, servant.attack);
                 await card.setLife(game, servant.life);
                 await card.setSpellDamage(game, servant.spellDamage);
                 await card.setKeywords(game, servant.keywords);
                 await card.setTags(game, servant.tags);
-               
-                
+                await card.setReady(game, false);
+                await card.setAttackTimes(game, 0);
             }
             else if (card.define is SpellCardDefine spell)
             {
@@ -1194,37 +1197,30 @@ namespace TouhouHeartstone
                 return new Card[] { card.pile[card.pile.count - 2] };
             return new Card[] { card.pile[index - 1], card.pile[index + 1] };
         }
-        public static async Task backToHand(this Card card, THHGame game)
+        public static Task backToHand(this Card card, THHGame game)
         {
-            if (card.getOwner().hand.isFull)
-            {
-                game.logger.log(card.getOwner() + "的手牌已满，无法将" + card + "置入手牌");
-                await card.setDead(game, true);
-            }
-            else
-            {
-                game.logger.log("将" + card + "置入" + card.getOwner() + "的手牌");
-                await card.resetCard(game);
-                await card.getOwner().field.moveTo(game, card, card.getOwner().hand);
-            }
+            return backToHand(new Card[] { card }, game);
         }
         public static async Task backToHand(this IEnumerable<Card> cards, THHGame game)
         {
             foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
             {
-                if (g.Key.hand.isFull)
+                int restCount = g.Key.hand.maxCount - g.Key.hand.count;
+                if (restCount > 0)
                 {
-                    game.logger.log(g.Key + "的手牌已满，无法将" + string.Join(",", g) + "置入手牌");
-                    await g.setDead(game, true);
-                    await game.updateDeath(game);
-                }
-                else if (g.Key.hand.count + g.Count() <= g.Key.hand.maxCount)
-                {
-                    game.logger.log("将" + string.Join("，", g) + "置入" + g.Key + "的手牌");
+                    var toHand = g.Take(restCount);
+                    game.logger.log("将" + string.Join("，", toHand) + "置入" + g.Key + "的手牌");
                     await cards.resetCard(game);
-                    await g.Key.field.moveTo(game, g, g.Key.hand);
+                    await g.Key.field.moveTo(game, toHand, g.Key.hand);
+                }
+                if (restCount < g.Count())
+                {
+                    var toGrave = g.Skip(restCount);
+                    game.logger.log(g.Key + "的手牌已满，无法将" + string.Join(",", toGrave) + "置入手牌");
+                    await toGrave.setDead(game, true);
                 }
             }
+            await game.updateDeath(game);
         }
         public static async Task removeBuff(this IEnumerable<Card> cards, IGame game, int buffId)
         {
@@ -1300,7 +1296,7 @@ namespace TouhouHeartstone
                     }
                     else
                     {
-                        game.logger.log("触发战吼" + card + ",目标是" + null);
+                        game.logger.log("触发战吼" + card);
                     }
                 });
                 return eventArg;

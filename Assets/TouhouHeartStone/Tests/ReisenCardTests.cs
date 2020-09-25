@@ -13,7 +13,7 @@ namespace Tests
 {
     public class ResisenCardTests
     {
-        
+
         //测试卡，力量的代价
         //这东西是怎么放在这里的。。。。
         [Test]
@@ -32,7 +32,7 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
 
             game.skipUntilCanUse<PowrOverwhelming>(you);
-            you.cmdUse(game, you.hand.getCard<PowrOverwhelming>(),targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<PowrOverwhelming>(), targets: you.field[0]);
             you.cmdTurnEnd(game);
             game.Dispose();
         }
@@ -53,7 +53,7 @@ namespace Tests
 
             game.skipUntilCanUse<Velen>(you);
             you.cmdUse(game, you.hand.getCard<Velen>());
-            you.cmdUse(game, you.hand.getCard<TestHeal>(),targets: you.master);
+            you.cmdUse(game, you.hand.getCard<TestHeal>(), targets: you.master);
 
             game.Dispose();
         }
@@ -103,9 +103,9 @@ namespace Tests
 
         }
 
-        
+
         //113 野兔兽妖 当你使用英雄技能后，攻击力变为3
-       
+
         [Test]
         public void WildYoukaiRabbitTest()
         {
@@ -121,7 +121,7 @@ namespace Tests
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
             you.cmdUse(game, you.hand.getCard<WildYoukaiRabbit>());
             Assert.AreEqual(1, you.field[0].getAttack(game));
-            you.cmdUse(game, you.skill,targets:oppo.master);
+            you.cmdUse(game, you.skill, targets: oppo.master);
             Assert.AreEqual(3, you.field[0].getAttack(game));
         }
 
@@ -147,7 +147,7 @@ namespace Tests
             you.cmdTurnEnd(game);
 
             oppo.cmdAttack(game, oppo.field[0], you.master);
-            
+
             game.Dispose();
         }
         // 错乱之眼
@@ -189,7 +189,7 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<TestFreezeBrain>(), 1)));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<VisionaryTuning>(), 1)));
-            
+
 
             for (int i = 0; i < 2; i++)
             {
@@ -250,11 +250,11 @@ namespace Tests
             oppo.cmdUse(game, servant);
             oppo.cmdTurnEnd(game);
             game.skipUntilCanUse<MindDropping>(you);
-            you.setGem(game,10);
+            you.setGem(game, 10);
             you.cmdUse(game, you.skill);
             you.cmdUse(game, you.hand.getCard<MindDropping>());
             Assert.True(you.skill.define is LunaticShoot_MindDropping);
-            you.cmdUse(game, you.skill,targets:oppo.field[0]);
+            you.cmdUse(game, you.skill, targets: oppo.field[0]);
             Assert.True(you.skill.define is LunaticShoot);
             Assert.AreEqual(5, oppo.field[0].getCurrentLife(game));
 
@@ -297,7 +297,7 @@ namespace Tests
 
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(),targets:you.field[0]);
+            you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(), targets: you.field[0]);
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 5);
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
             you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(), targets: you.field[0]);
@@ -319,7 +319,7 @@ namespace Tests
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<FreezingTrap>() as CardDefine, 9).Concat(Enumerable.Repeat(game.getDefine<LunaticGun>(), 1)));
 
-            game.skipUntilCanUse<LunaticGun>(you);          
+            game.skipUntilCanUse<LunaticGun>(you);
             you.cmdUse(game, you.hand.getCard<LunaticGun>());
             game.skipUntilCanUse<FreezingTrap>(you);
             you.cmdUse(game, you.hand.getCard<FreezingTrap>());
@@ -396,6 +396,18 @@ namespace Tests
             you.cmdUse(game, you.skill);
 
             game.Dispose();
+        }
+        [Test]
+        public void medicineSellmanTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var _,
+                new KeyValuePair<int, int>(MedicineSellman.ID, 1));
+            game.skipUntilCanUse(you, game.getDefine<DefaultServant>(), game.getDefine<MedicineSellman>());
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.field.getCard<DefaultServant>().damage(game, null, 6);
+            Assert.AreEqual(1, you.field.getCard<DefaultServant>().getCurrentLife(game));
+            you.cmdUse(game, you.hand.getCard<MedicineSellman>(), 0, you.field.getCard<DefaultServant>());
+            Assert.AreEqual(5, you.field.getCard<DefaultServant>().getCurrentLife(game));
         }
     }
 }

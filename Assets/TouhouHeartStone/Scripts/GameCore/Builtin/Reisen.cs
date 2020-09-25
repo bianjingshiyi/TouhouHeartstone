@@ -385,7 +385,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async(g,c,t)=>
             {
-                await t.heal(g,c,6);
+                await t.heal(g,c,4);
             },PileFlag.both | PileFlag.character)
         };
     }

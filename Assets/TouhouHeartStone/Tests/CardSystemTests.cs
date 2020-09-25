@@ -524,5 +524,24 @@ namespace Tests
             game.updateDeath(game);
             Assert.AreEqual(game.getDefine<FireBall>().cost - 1, you.hand.getCard<FireBall>().getCost(game));
         }
+        [Test]
+        public void rushServantBackToHandTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(RushServant.ID, 1));
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse(you, game.getDefine<RushServant>(), game.getDefine<RushServant>());
+            you.cmdUse(game, you.hand.getCard<RushServant>());
+            Assert.True(you.field.getCard<RushServant>().isRush(game));
+            Assert.True(you.field.getCard<RushServant>().canAttack(game));
+            _ = you.field.getCard<RushServant>().backToHand(game);
+            Assert.True(you.hand.getCard<RushServant>().isRush(game));
+            you.cmdUse(game, you.hand.getCard<RushServant>());
+            Assert.True(you.field.getCard<RushServant>().isRush(game));
+            Assert.True(you.field.getCard<RushServant>().canAttack(game));
+            you.cmdAttack(game, you.field.getCard<RushServant>(), oppo.field[0]);
+            Assert.True(game.triggers.getRecordedEvents().OfType<THHCard.AttackEventArg>().Count() > 0);
+        }
     }
 }
