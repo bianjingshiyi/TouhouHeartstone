@@ -41,7 +41,10 @@ namespace Game
                     _ = network.displayPanelForLobby();
                 }
                 else
-                    ui.getObject<Dialog>().display("你必须先登录才能进入服务器大厅！", null);
+                {
+                    main.MainMenu.RegisterPanel.hide();
+                    main.MainMenu.LoginPanel.display();
+                }
             });
             main.display(main.Loading);
         }
