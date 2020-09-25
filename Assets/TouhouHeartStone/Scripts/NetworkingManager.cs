@@ -664,11 +664,6 @@ namespace Game
                 ui.ShowMessage("邮箱不能为空");
                 return;
             }
-            if (string.IsNullOrEmpty(invite))
-            {
-                ui.ShowMessage("激活码不能为空");
-                return;
-            }
             if (string.IsNullOrEmpty(captcha))
             {
                 ui.ShowMessage("验证码不能为空");
