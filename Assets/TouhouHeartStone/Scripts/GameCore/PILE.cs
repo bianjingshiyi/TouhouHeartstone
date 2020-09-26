@@ -15,7 +15,7 @@ namespace TouhouHeartstone
         public const string GRAVE = "Grave";
         public const string WARP = "Warp";
         public const string ITEM = "Item";
-        public const string HEAD = "head";
+        public const string HEAD = "Head";
 
         public static string[] getPiles(this PileFlag flag)
         {
@@ -83,22 +83,22 @@ namespace TouhouHeartstone
     [Flags]
     public enum PileFlag
     {
-        none = 0b_00000000,
-        master = 0b_000000001,
-        init = 0b_000000010,
-        hand = 0b_000000100,
-        skill = 0b_000001000,
-        deck = 0b_000010000,
-        field = 0b_000100000,
-        grave = 0b_001000000,
-        warp = 0b_010000000,
-        item = 0b_100000000,
-        head = 0b_100000001,
+        none = 0b_000000000,
+        master = 0b_0000000001,
+        init = 0b_0000000010,
+        hand = 0b_0000000100,
+        skill = 0b_0000001000,
+        deck = 0b_0000010000,
+        field = 0b_0000100000,
+        grave = 0b_0001000000,
+        warp = 0b_0010000000,
+        item = 0b_0100000000,
+        head = 0b_1000000000,
         all = master | init | hand | skill | deck | field | grave | warp | item | head ,
         character = field | master,
 
-        self = 0b_01000000000,
-        oppo = 0b_10000000000,
+        self = 0b_010000000000,
+        oppo = 0b_100000000000,
         both = self | oppo,
     }
 }
