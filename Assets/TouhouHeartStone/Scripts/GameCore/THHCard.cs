@@ -856,10 +856,11 @@ namespace TouhouHeartstone
                     card = arg.card;
                     target = arg.target;
                     game.logger.log(card + "攻击" + target);
-                    if (card.getAttack(game) > 0)
-                        await target.damage(game, card, card.getAttack(game));
-                    if (target.getAttack(game) > 0)
-                        await card.damage(game, target, target.getAttack(game));
+                    await damage(game, new Dictionary<Card, DamageEventArg.Info>()
+                    {
+                        { card, new DamageEventArg.Info(target.getAttack(game),target) },
+                        { target, new DamageEventArg.Info(card.getAttack(game),card) }
+                    });
                     //消耗耐久
                     foreach (var p in game.players)
                     {
@@ -893,33 +894,44 @@ namespace TouhouHeartstone
         }
         public static Task<DamageEventArg> damage(this Card card, THHGame game, Card source, int value)
         {
-            return damage(new Card[] { card }, game, source, value);
+            return damage(game, new Dictionary<Card, DamageEventArg.Info>()
+            {
+                { card, new DamageEventArg.Info(value,source) }
+            });
         }
         public static Task<DamageEventArg> damage(this IEnumerable<Card> cards, THHGame game, Card source, int value)
         {
-            return game.triggers.doEvent(new DamageEventArg() { cards = cards.ToArray(), source = source, value = value }, async arg =>
+            return damage(game, cards.ToDictionary(c => c, c => new DamageEventArg.Info(value, source)));
+        }
+        public static Task<DamageEventArg> damage(THHGame game, Dictionary<Card, DamageEventArg.Info> damageInfoDic)
+        {
+            return game.triggers.doEvent(new DamageEventArg() { infoDic = damageInfoDic }, async arg =>
             {
-                cards = arg.cards;
-                source = arg.source;
-                value = arg.value;
-                if (source != null && source.isStealth(game))
-                    source.setStealth(game, false);
-                if (value < 1)
-                {
-                    arg.isCanceled = true;
-                }
-                foreach (Card card in cards)
+                damageInfoDic = arg.infoDic;
+                List<Card> removeKeys = new List<Card>();
+                foreach (Card card in damageInfoDic.Keys)
                 {
                     if (card == null)
                         continue;
+                    DamageEventArg.Info info = damageInfoDic[card];
+                    Card source = info.source;
+                    int value = info.damageValue;
+                    if (source != null && source.isStealth(game))
+                        source.setStealth(game, false);
+                    if (value < 1)
+                    {
+                        removeKeys.Add(card);
+                    }
                     else if (card.isImmunity(game))
                     {
                         game.logger.log(card + "免疫，不受伤害");
+                        removeKeys.Add(card);
                     }
                     else if (card.isShield(game))
                     {
                         game.logger.log(card + "受到伤害，失去圣盾");
                         card.setShield(game, false);
+                        removeKeys.Add(card);
                     }
                     else
                     {
@@ -942,7 +954,9 @@ namespace TouhouHeartstone
                                     await card.loseArmor(game, damage);
                                     game.logger.log(card + "受到" + damage + "点伤害，护甲=>" + card.getArmor(game));
                                     await onDealKeywords(game, source, card, damage);
-                                    arg.infoDic.Add(card, new DamageEventArg.Info(damage, card.getArmor(game), card.getCurrentLife(game)));
+                                    info.damagedValue = damage;
+                                    info.currentArmor = card.getArmor(game);
+                                    info.currentLife = card.getCurrentLife(game);
                                 }
                                 else
                                 {
@@ -951,7 +965,9 @@ namespace TouhouHeartstone
                                     await card.setCurrentLife(game, card.getCurrentLife(game) - leakDamage);
                                     game.logger.log(card + "受到" + damage + "点伤害，护甲=>" + card.getArmor(game) + "，生命值=>" + card.getCurrentLife(game));
                                     await onDealKeywords(game, source, card, damage);
-                                    arg.infoDic.Add(card, new DamageEventArg.Info(damage, card.getArmor(game), card.getCurrentLife(game)));
+                                    info.damagedValue = damage;
+                                    info.currentArmor = card.getArmor(game);
+                                    info.currentLife = card.getLife(game);
                                 }
                             }
                             else
@@ -959,12 +975,21 @@ namespace TouhouHeartstone
                                 await card.setCurrentLife(game, card.getCurrentLife(game) - damage);
                                 game.logger.log(card + "受到" + damage + "点伤害，生命值=>" + card.getCurrentLife(game));
                                 await onDealKeywords(game, source, card, damage);
-                                arg.infoDic.Add(card, new DamageEventArg.Info(damage, card.getArmor(game), card.getCurrentLife(game)));
+                                info.damagedValue = damage;
+                                info.currentArmor = card.getArmor(game);
+                                info.currentLife = card.getCurrentLife(game);
                             }
                         }
                         else
+                        {
                             game.logger.log(card + "的伤害" + value + "被减伤" + damageReduce + "抵消");
+                            removeKeys.Add(card);
+                        }
                     }
+                }
+                foreach (var key in removeKeys)
+                {
+                    damageInfoDic.Remove(key);
                 }
             });
             async Task onDealKeywords(THHGame g, Card s, Card c, int d)
@@ -978,8 +1003,6 @@ namespace TouhouHeartstone
                 }
             }
         }
-
-
         public static async Task<DamageEventArg[]> damageByRandom(this IEnumerable<Card> cards, THHGame game, Card source, int value)
         {
             List<DamageEventArg> list = new List<DamageEventArg>();
@@ -1024,14 +1047,15 @@ namespace TouhouHeartstone
 
             public class Info
             {
-                public int damagedValue;
-                public int currentArmor;
-                public int currentLife;
-                public Info(int damage, int armor, int life)
+                public Card source;
+                public int damageValue;
+                public int damagedValue = 0;
+                public int currentArmor = 0;
+                public int currentLife = 0;
+                public Info(int damage, Card source)
                 {
-                    damagedValue = damage;
-                    currentArmor = armor;
-                    currentLife = life;
+                    damageValue = damage;
+                    this.source = source;
                 }
             }
         }

@@ -127,7 +127,7 @@ namespace UI
             _isHovered = false;
             onPointerExit.invoke(this, eventData);
         }
-        private void Update()
+        protected void Update()
         {
             if (_isHovered)
             {
@@ -137,6 +137,15 @@ namespace UI
                     onPointerExit.invoke(this, null);
                 }
             }
+        }
+        protected void OnDestroy()
+        {
+            if (_isHovered)
+            {
+                if (ui.getManager<InputManager>().isPointerOver(rectTransform))
+                    onPointerExit.invoke(this, null);
+            }
+            _isHovered = false;
         }
         public void OnPointerDown(PointerEventData eventData)
         {
