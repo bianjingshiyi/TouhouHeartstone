@@ -249,8 +249,6 @@ namespace Game
         /// <param name="arg"></param>
         private void onEventBefore(IEventArg arg)
         {
-            if (arg.isCanceled)
-                return;
             UIAnimation anim;
             switch (arg)
             {

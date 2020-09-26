@@ -410,7 +410,7 @@ namespace Tests
             Assert.AreEqual(5, you.field.getCard<DefaultServant>().getCurrentLife(game));
         }
 
-        
+
         [Test]
         public void FieldUltraRedTest()
         {
@@ -431,6 +431,21 @@ namespace Tests
             you.cmdUse(game, you.skill);
 
             game.Dispose();
+        }
+        [Test]
+        public void caseTooMuchUltraRedTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo, Reisen.ID,
+                new KeyValuePair<int, int>(FieldUltraRed.ID, 2));
+            game.skipUntilCanUse(you, game.getDefine<FieldUltraRed>(), game.getDefine<FieldUltraRed>(), game.getDefine<LunaticShoot>());
+            you.cmdUse<FieldUltraRed>(game);
+            you.cmdUse<FieldUltraRed>(game);
+            you.cmdUse(game, you.skill);
+            Assert.AreEqual(8, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().infoDic.First().Value.damagedValue);
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            you.cmdUse(game, you.skill);
+            Assert.AreEqual(2, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().infoDic.First().Value.damagedValue);
         }
     }
 }

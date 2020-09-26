@@ -10,7 +10,7 @@ namespace Game
     {
         Vector3 _startPosition;
         Timer _timer = new Timer() { duration = 1f };
-        HandToFieldAnim _handToField;
+        TableAnimation _moveAnim;
         Timer _targetingTimer = new Timer() { duration = .8f };
         AnimAnim _useAnim;
         AnimAnim _equipAnim;
@@ -22,39 +22,65 @@ namespace Game
             {
                 if (eventArg.player == table.player)
                 {
-                    if (!table.ui.ServantPlaceHolder.Servant.isDisplaying)
+                    if (!eventArg.isCanceled)
                     {
+                        if (!table.ui.ServantPlaceHolder.isDisplaying)
+                        {
+                            HandListItem item = table.getHand(eventArg.card);
+                            if (_moveAnim == null)
+                                _moveAnim = new HandToFieldAnim(table, item, table.ui.SelfFieldList, eventArg.position);
+                            if (!_moveAnim.update(table))
+                                return false;
+                        }
+                        //table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
+                        //将使用随从的移除手牌转移至TryEnterFiledAnim
+                        if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg))
+                            return false;
+                        table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
+                        table.ui.ServantPlaceHolder.hide();
+                    }
+                    else
+                    {
+                        if (table.ui.ServantPlaceHolder.isDisplaying)
+                        {
+                            table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
+                            table.ui.ServantPlaceHolder.hide();
+                        }
                         HandListItem item = table.getHand(eventArg.card);
-                        if (_handToField == null)
-                            _handToField = new HandToFieldAnim(table, item, table.ui.SelfFieldList, eventArg.position);
-                        if (!_handToField.update(table))
+                        if (_moveAnim == null)
+                            _moveAnim = new HandMoveAnim(item, item.rectTransform, table.handToFieldCurve);
+                        if (!_moveAnim.update(table))
                             return false;
                     }
-                    //table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
-                    //将使用随从的移除手牌转移至TryEnterFiledAnim
-                    if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg))
-                        return false;
-                    table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
-                    table.ui.ServantPlaceHolder.hide();
                 }
                 else
                 {
                     var hand = table.getHand(eventArg.card);
-                    if (hand == null && _handToField == null)
+                    if (hand == null && _moveAnim == null)
                         throw new ActorNotFoundException(eventArg.card);
-                    if (!table.ui.ServantPlaceHolder.Servant.isDisplaying)
+                    if (!table.ui.ServantPlaceHolder.isDisplaying)
                     {
                         //敌方使用随从
-                        if (_handToField == null)
-                            _handToField = new HandToFieldAnim(table, hand, table.ui.EnemyFieldList, eventArg.position);
-                        if (!_handToField.update(table))
+                        if (_moveAnim == null)
+                            _moveAnim = new HandToFieldAnim(table, hand, table.ui.EnemyFieldList, eventArg.position);
+                        if (!_moveAnim.update(table))
                             return false;
                     }
-                    table.ui.EnemyHandList.removeItem(hand);
-                    if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg))
-                        return false;
-                    table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
-                    table.ui.ServantPlaceHolder.hide();
+                    if (!eventArg.isCanceled)
+                    {
+                        table.ui.EnemyHandList.removeItem(hand);
+                        if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg))
+                            return false;
+                        table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
+                        table.ui.ServantPlaceHolder.hide();
+                    }
+                    else
+                    {
+                        if (_targetedAnim == null)
+                            _targetedAnim = new HandMoveAnim(hand, hand.rectTransform, table.handToFieldCurve);
+                        if (!_targetedAnim.update(table))
+                            return false;
+                    }
                 }
             }
             else if (eventArg.card.define is SpellCardDefine)
