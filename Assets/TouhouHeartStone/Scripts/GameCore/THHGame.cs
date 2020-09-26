@@ -380,7 +380,7 @@ namespace TouhouHeartstone
                     case TurnEndResponse _:
                         return;
                     case SurrenderResponse _:
-                        await this.surrender(player);
+                        await surrender(player);
                         return;
                 }
             }

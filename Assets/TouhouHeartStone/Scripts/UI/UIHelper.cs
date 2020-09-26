@@ -25,6 +25,8 @@ namespace Game
             }
             else if (card.type == DEFINE.SPELL)
                 ui.type = CATEGORY.SPELL;
+            else if (card.type == DEFINE.SKILL)
+                ui.type = CATEGORY.SKILL;
             else if (card.type == DEFINE.ITEM)
             {
                 ui.type = CATEGORY.ITEM;

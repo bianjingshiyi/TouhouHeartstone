@@ -1037,8 +1037,8 @@ namespace TouhouHeartstone
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 return string.Join("，", infoDic.Select(p => p.Value.source != null ?
-                    p.Value.source.getFormatString() + "对" + p.Key + "造成" + p.Value.damagedValue + "点伤害" :
-                    p.Key + "受到" + p.Value.damagedValue + "点伤害"));
+                    p.Value.source.getFormatString() + "对" + p.Key.getFormatString() + "造成" + p.Value.damagedValue + "点伤害" :
+                    p.Key.getFormatString() + "受到" + p.Value.damagedValue + "点伤害"));
             }
 
             public class Info

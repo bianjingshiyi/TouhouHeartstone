@@ -1463,6 +1463,20 @@ MonoBehaviour:
           m_StringArgument: Type_Item
           m_BoolArgument: 0
         m_CallState: 2
+  _onTypeControllerSkill:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 613913946243370178}
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Type_Skill
+          m_BoolArgument: 0
+        m_CallState: 2
   _onTypeControllerServant:
     m_PersistentCalls:
       m_Calls:
@@ -1950,6 +1964,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Attack
+      objectReference: {fileID: 0}
+    - target: {fileID: 2872538149249012041, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7176695291515966001, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
