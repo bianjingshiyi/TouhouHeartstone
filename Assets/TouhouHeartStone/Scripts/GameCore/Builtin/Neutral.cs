@@ -500,11 +500,11 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async(game,card,target)=>
             {
-                target.setFreeze(game,true);
-                return Task.CompletedTask;
-            }, PileFlag.oppo | PileFlag.character)
+                await target.setFreeze(game,true);
+               
+            },PileFlag.oppo | PileFlag.character)
         };
     }
     /// <summary>
