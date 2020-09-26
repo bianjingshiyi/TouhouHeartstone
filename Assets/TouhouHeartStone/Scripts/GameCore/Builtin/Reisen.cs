@@ -131,7 +131,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 错乱之眼
-    /// 2费，奥秘：当随从攻击时，召唤3个0/2且具有嘲讽的幻象并使其中随机一个成为攻击目标。
+    /// 2费，奥秘：当敌方角色攻击时，召唤3个0/2且具有嘲讽的幻象并使其中随机一个成为攻击目标。
     /// </summary>
     public class DisorderEye : SpellCardDefine
     {
@@ -143,7 +143,7 @@ namespace TouhouHeartstone.Builtin
         {
             new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
             {
-                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g) && a.card.isServant() && c.getOwner().field.count<=4;
+                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g) && c.getOwner().field.count<=4;
             },async(g,c,a)=>
             {
                  List<Card> tokens = new List<Card>();
@@ -236,7 +236,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x009;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
+        public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
@@ -328,13 +328,13 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 1费 精神投弹 复原你的技能并使你的技能在下一次使用前能以随从作为目标。
+    /// 0费 精神投弹 复原你的技能并使你的技能在下一次使用前能以随从作为目标。
     /// </summary>
     public class MindDropping : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x012;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
+        public override int cost { get; set; } = 0;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)//这不是个指向性技能
@@ -394,15 +394,15 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 434 叛逃特工 每当你使用英雄技能时，对随机敌人造成2点伤害
+    /// 333 叛逃特工 每当你使用英雄技能时，对随机敌人造成2点伤害
     /// </summary>
     public class DefectedAgent : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x015;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 4;
+        public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
-        public override int life { get; set; } = 6;
+        public override int life { get; set; } = 4;
         public override string[] tags { get; set; } = { TAG.BEAST };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
