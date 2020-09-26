@@ -17,7 +17,11 @@ namespace Game
             ui.DescText.text = skin.desc;
             ui.isFaceup = true;
 
-            if (card.type == DEFINE.SERVANT)
+            if (card.type == DEFINE.MASTER)
+            {
+                ui.type = CATEGORY.MASTER;
+            }
+            else if (card.type == DEFINE.SERVANT)
             {
                 ui.type = CATEGORY.SERVANT;
                 ui.AttackPropNumber.asText.text = card.getAttack().ToString();

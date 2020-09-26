@@ -918,6 +918,8 @@ MonoBehaviour:
   _ServantPlaceHolder: {fileID: 7302553298077521841}
   _InitReplaceDialog: {fileID: 7302553299061385380}
   _LargeCard: {fileID: 8489179749493710129}
+  _CenterDisplayImage: {fileID: 0}
+  _RightDisplayImage: {fileID: 0}
   _TipText: {fileID: 7302553299198861746}
   _Fatigue: {fileID: 7302553299056267206}
   _TurnTipImage: {fileID: 7302553297513925029}
@@ -3978,6 +3980,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7302553298759104264}
     m_Modifications:
+    - target: {fileID: 1481337722858127746, guid: a49b84cb4773c864a9d5015169fa9cf8,
+        type: 3}
+      propertyPath: _secretPrefab
+      value: 
+      objectReference: {fileID: -3983998948755825187, guid: 118b6e12a73030840966f0d934394b12,
+        type: 3}
     - target: {fileID: 4110266745766897071, guid: a49b84cb4773c864a9d5015169fa9cf8,
         type: 3}
       propertyPath: m_IsActive
@@ -6707,6 +6715,12 @@ PrefabInstance:
       propertyPath: m_Color.b
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1481337722858127746, guid: a49b84cb4773c864a9d5015169fa9cf8,
+        type: 3}
+      propertyPath: _secretPrefab
+      value: 
+      objectReference: {fileID: -3983998948755825187, guid: 118b6e12a73030840966f0d934394b12,
+        type: 3}
     - target: {fileID: 4110266745766897071, guid: a49b84cb4773c864a9d5015169fa9cf8,
         type: 3}
       propertyPath: m_IsActive
