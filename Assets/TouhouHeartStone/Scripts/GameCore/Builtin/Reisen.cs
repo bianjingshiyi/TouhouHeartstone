@@ -305,13 +305,16 @@ namespace TouhouHeartstone.Builtin
             new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
                 (g, c, a) =>
                 {
-                    return a.source.getOwner() == c.getOwner() && a.source.isSkill();
+                    return a.infoDic.Any(p=>p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill()) ;
                 },null,(g,c,a)=>
                 {
-                    a.value *= 2;
+                    foreach (var p in a.infoDic)
+                    {
+                         if(p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill())
+                            p.Value.damageValue *= 2;
+	                }
                     return Task.CompletedTask;
                 }),
-
             new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
                 (g, c, a) =>
                 {
@@ -432,9 +435,9 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
         static async Task effect(THHGame game, Card card)
-        { 
+        {
             Card topCard = card.getOwner().deck.top;
-            if(topCard.hasKeyword(game, KEYWORD.SECRET) &&
+            if (topCard.hasKeyword(game, KEYWORD.SECRET) &&
                topCard.define is SpellCardDefine &&
                card.getOwner().head.count < card.getOwner().head.maxCount &&
                card.getOwner().head.All(c => c.define != topCard.define))
@@ -466,10 +469,14 @@ namespace TouhouHeartstone.Builtin
             await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
             (g, c, a) =>
             {
-                return a.source.getOwner() == c.getOwner() && a.source.isSkill();
+                return a.infoDic.Any(p => p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill());
             }, null, (g, c, a) =>
             {
-                a.value *= 2;
+                foreach (var p in a.infoDic)
+                {
+                    if (p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill())
+                        p.Value.damageValue *= 2;
+                }
                 return Task.CompletedTask;
             }),
             new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.SKILL, (g, c, a) =>

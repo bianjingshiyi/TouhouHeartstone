@@ -147,8 +147,8 @@ namespace Tests
 
             //对3个随从造成3点伤害
             THHCard.DamageEventArg damage = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DamageEventArg) as THHCard.DamageEventArg;
-            Assert.AreEqual(3, damage.cards.Length);
-            Assert.AreEqual(3, damage.value);
+            Assert.AreEqual(3, damage.infoDic.Count);
+            Assert.AreEqual(3, damage.infoDic.First().Value.damagedValue);
             Assert.AreEqual(1, game.sortedPlayers[0].field.count);
         }
         [Test]
@@ -175,7 +175,7 @@ namespace Tests
             Assert.IsInstanceOf<FlameFairy>(game.sortedPlayers[1].field[0].define);//第二个行动的玩家拍一个炎之妖精，这个时候应该触发战吼的
             Assert.AreEqual(0, game.sortedPlayers[0].field.count);//对面的妖精应该被打死了
             var damage = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DamageEventArg) as THHCard.DamageEventArg;//这会产生一个伤害事件
-            Assert.AreEqual(1, damage.value);//伤害值为1
+            Assert.AreEqual(1, damage.infoDic.First().Value.damagedValue);//伤害值为1
 
             //大概就是这样了，稍微测试一下保证每一张卡都在正常工作吧，能减少很多bug。
             //出了个随从重名的小问题，测试结果看看Log还是挺正常的，那就没有问题了。

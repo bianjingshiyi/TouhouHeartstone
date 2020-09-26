@@ -1025,13 +1025,10 @@ namespace TouhouHeartstone
         }
         public class DamageEventArg : EventArg, IDescribableEventArg
         {
-            public Card[] cards;
-            public Card source;
-            public int value;
             public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
-                return source;
+                return infoDic.Count > 0 ? infoDic.First().Value.source : null;
             }
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
@@ -1039,10 +1036,9 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                if (source != null)
-                    return source.getFormatString() + "对" + string.Join("，", infoDic.Select(p => p.Key.getFormatString() + "造成" + p.Value.damagedValue + "点伤害"));
-                else
-                    return string.Join("，", infoDic.Select(p => p.Key.getFormatString() + "受到" + p.Value.damagedValue + "点伤害"));
+                return string.Join("，", infoDic.Select(p => p.Value.source != null ?
+                    p.Value.source.getFormatString() + "对" + p.Key + "造成" + p.Value.damagedValue + "点伤害" :
+                    p.Key + "受到" + p.Value.damagedValue + "点伤害"));
             }
 
             public class Info

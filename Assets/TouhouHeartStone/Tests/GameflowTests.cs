@@ -280,10 +280,10 @@ namespace Tests
             Assert.NotNull(attack);
             THHCard.DamageEventArg d1 = attack.getChildEvents()[0] as THHCard.DamageEventArg;
             Assert.NotNull(d1);
-            Assert.AreEqual(2, d1.value);
+            Assert.AreEqual(2, d1.infoDic.First().Value.damagedValue);
             THHCard.DamageEventArg d2 = attack.getChildEvents()[1] as THHCard.DamageEventArg;
             Assert.NotNull(d2);
-            Assert.AreEqual(2, d2.value);
+            Assert.AreEqual(2, d2.infoDic.First().Value.damagedValue);
             THHCard.DeathEventArg d3 = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DeathEventArg) as THHCard.DeathEventArg;
             Assert.NotNull(d3);
             Assert.AreEqual(2, d3.infoDic.Count);

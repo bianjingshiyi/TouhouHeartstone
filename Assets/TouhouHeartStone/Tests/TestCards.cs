@@ -605,28 +605,14 @@ namespace Tests
             new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
                 (g, c, a) =>
                 {
-                    return a.source.getOwner() == c.getOwner() && a.source.isSkill();
+                    return a.infoDic.Any(p=>p.Value.source.getOwner() == c.getOwner() && (p.Value.source.isSkill() || p.Value.source.isSpell()));
                 },null,(g,c,a)=>
                 {
-                    a.value *= 2;
-                    return Task.CompletedTask;
-                }),
-            new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
-                (g, c, a) =>
-                {
-                    return a.source.getOwner() == c.getOwner() && a.source.isSpell();
-                },null,(g,c,a)=>
-                {
-                    a.value *= 2;
-                    return Task.CompletedTask;
-                }),
-            new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
-                (g, c, a) =>
-                {
-                    return a.source.getOwner() == c.getOwner() && a.source.isSkill();
-                },null,(g,c,a)=>
-                {
-                    a.value *= 2;
+                    foreach (var p in a.infoDic)
+                    {
+                        if(p.Value.source.getOwner() == c.getOwner() && (p.Value.source.isSkill() || p.Value.source.isSpell()))
+                            p.Value.damageValue *= 2;
+	                }
                     return Task.CompletedTask;
                 }),
             new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,

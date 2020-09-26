@@ -93,7 +93,7 @@ namespace Tests
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 2);
             you.master.gainArmor(game, 5);
             you.cmdUse(game, you.hand.getCard<HalfPhantonSlam>(), targets: oppo.field[0]);
-            Assert.True(game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().value == you.master.getArmor(game));
+            Assert.True(game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().infoDic.First().Value.damagedValue == you.master.getArmor(game));
         }
 
         [Test]
