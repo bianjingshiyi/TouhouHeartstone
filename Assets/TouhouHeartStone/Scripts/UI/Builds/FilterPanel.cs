@@ -26,15 +26,13 @@ namespace UI
         };
         enum SortMethod
         {
-            ID,
-            ID_R,
             Cost,
             Cost_R,
             Attack,
             Attack_R
         };
 
-        string[] sortMethodsName = { "默认", "倒序", "费用升序", "费用降序", "攻击升序", "攻击降序" };
+        string[] sortMethodsName = { "费用升序", "费用降序", "攻击升序", "攻击降序" };
 
         string filterKeyword = "";
         string filterType = "";
@@ -183,10 +181,6 @@ namespace UI
             switch (sortMethod)
             {
                 default:
-                case SortMethod.ID:
-                    return a.id - b.id;
-                case SortMethod.ID_R:
-                    return b.id - a.id;
                 case SortMethod.Cost:
                     return a.getCost() - b.getCost();
                 case SortMethod.Attack:
