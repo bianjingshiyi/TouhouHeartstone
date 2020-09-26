@@ -244,7 +244,7 @@ namespace TouhouHeartstone.Builtin
                 if(!target.getBuffs().Any(b => b.id == ID))
                 {
                     await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3),new LifeModifier(3)));
-                    await target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnStartEventArg>(
+                    await target.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<THHGame.TurnStartEventArg>(
                     PILE.FIELD,
                     (g1, c1, a1) =>
                     {
@@ -466,7 +466,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
+            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new THHEffectBefore<THHCard.DamageEventArg>(PILE.MASTER,
             (g, c, a) =>
             {
                 return a.infoDic.Any(p => p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill());
@@ -479,8 +479,9 @@ namespace TouhouHeartstone.Builtin
                 }
                 return Task.CompletedTask;
             }),
-            new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.SKILL, (g, c, a) =>
+            new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.MASTER, (g, c, a) =>
             {
+                
                 return a.player == c.getOwner() && a.card.isSkill();
             }, ID)));
         }

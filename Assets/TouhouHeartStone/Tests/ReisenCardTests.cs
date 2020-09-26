@@ -409,5 +409,28 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<MedicineSellman>(), 0, you.field.getCard<DefaultServant>());
             Assert.AreEqual(5, you.field.getCard<DefaultServant>().getCurrentLife(game));
         }
+
+        
+        [Test]
+        public void FieldUltraRedTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<FieldUltraRed>(), 3)));
+
+            game.skipUntilHasGem(you, 10);
+            you.cmdUse(game, you.hand.getCard<FieldUltraRed>());
+            you.cmdUse(game, you.hand.getCard<FieldUltraRed>());
+            you.cmdUse(game, you.skill);
+            you.skill.setUsed(game, false);
+            you.cmdUse(game, you.skill);
+
+            game.Dispose();
+        }
     }
 }

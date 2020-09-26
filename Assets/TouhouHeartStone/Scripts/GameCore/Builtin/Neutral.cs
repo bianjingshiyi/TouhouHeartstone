@@ -500,11 +500,11 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new LambdaSingleTargetEffect(async(game,card,target)=>
             {
-                target.setFreeze(game,true);
-                return Task.CompletedTask;
-            }, PileFlag.oppo | PileFlag.character)
+                await target.setFreeze(game,true);
+               
+            },PileFlag.oppo | PileFlag.character)
         };
     }
     /// <summary>
@@ -1065,7 +1065,7 @@ namespace TouhouHeartstone.Builtin
                 await t.addBuff(g,new GeneratedBuff(ID,new AttackModifier(1,true),
                                                        new RemoveBuffAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g1, c1, a) =>
                                                                                 {
-                                                                                    return a.player == c1.getOwner();
+                                                                                    return a.player == c.getOwner();
                                                                                 }, ID)));
             },PileFlag.both | PileFlag.field)
         };
