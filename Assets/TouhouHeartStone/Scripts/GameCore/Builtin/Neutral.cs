@@ -1065,7 +1065,7 @@ namespace TouhouHeartstone.Builtin
                 await t.addBuff(g,new GeneratedBuff(ID,new AttackModifier(1,true),
                                                        new RemoveBuffAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g1, c1, a) =>
                                                                                 {
-                                                                                    return a.player == c1.getOwner();
+                                                                                    return a.player == c.getOwner();
                                                                                 }, ID)));
             },PileFlag.both | PileFlag.field)
         };
