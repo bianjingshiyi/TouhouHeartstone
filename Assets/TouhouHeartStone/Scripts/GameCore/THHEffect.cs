@@ -8,6 +8,7 @@ namespace TouhouHeartstone
 {
     public class THHEffect : ITriggerEffect
     {
+        protected string _name;
         public TriggerTime[] triggers { get; }
         string[] ITriggerEffect.events
         {
@@ -46,8 +47,9 @@ namespace TouhouHeartstone
             else
                 return Task.CompletedTask;
         }
-        public THHEffect(TriggerTime trigger, string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute)
+        public THHEffect(TriggerTime trigger, string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute, string name = null)
         {
+            _name = name;
             triggers = new TriggerTime[] { trigger };
             piles = new string[] { pile };
             this.onCheckCondition = onCheckCondition;
@@ -66,36 +68,49 @@ namespace TouhouHeartstone
         {
             foreach (TriggerTime time in triggers)
             {
+                string effectName = getEffectName(game, card, buff, time);
                 Trigger trigger = new Trigger(args =>
                 {
                     if ((this as ITriggerEffect).checkCondition(game, card, args))
                         return (this as ITriggerEffect).execute(game, card, args, new object[0]);
                     else
                         return Task.CompletedTask;
-                });
-                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                }, name: effectName);
                 await card.setProp(game, effectName, trigger);
                 game.logger.log("Effect", card + "注册效果" + effectName);
                 game.triggers.register(time.getEventName(game.triggers), trigger);
             }
         }
+
+        protected string getEffectName(IGame game, ICard card, IBuff buff, TriggerTime time)
+        {
+            string name = string.IsNullOrEmpty(_name) ? "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers) : _name;
+            if (buff != null)
+                name += buff.instanceID;
+            return name;
+        }
+
         public virtual Task onDisable(IGame game, ICard card, IBuff buff)
         {
             foreach (TriggerTime time in triggers)
             {
-                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                string effectName = getEffectName(game, card, buff, time);
                 Trigger trigger = card.getProp<Trigger>(game, effectName);
                 game.logger.log("Effect", card + "注销效果" + effectName);
                 game.triggers.remove(trigger);
             }
             return Task.CompletedTask;
         }
+        public override string ToString()
+        {
+            return string.IsNullOrEmpty(_name) ? base.ToString() : _name;
+        }
     }
     public class THHEffectBefore<T> : THHEffect where T : IEventArg
     {
         public new delegate bool CheckConditionDelegate(THHGame game, Card card, T eventArg);
         public new delegate Task ExecuteDelegate(THHGame game, Card card, T eventArg);
-        public THHEffectBefore(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
+        public THHEffectBefore(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute, string name = null) :
         base(new Before<T>(), pile, (game, card, vars) =>
         {
             if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
@@ -108,7 +123,7 @@ namespace TouhouHeartstone
                 return onExecute.Invoke(game, card, t);
             else
                 return Task.CompletedTask;
-        })
+        }, name)
         {
         }
         public THHEffectBefore(PileFlag pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
@@ -131,14 +146,14 @@ namespace TouhouHeartstone
         {
             foreach (TriggerTime time in triggers)
             {
+                string effectName = getEffectName(game, card, buff, time);
                 Trigger<T> trigger = new Trigger<T>(arg =>
                 {
                     if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
                         return (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
                     else
                         return Task.CompletedTask;
-                });
-                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                }, name: effectName);
                 await card.setProp(game, effectName, trigger);
                 game.logger.log("Effect", card + "注册效果" + effectName);
                 game.triggers.registerBefore(trigger);
@@ -148,7 +163,7 @@ namespace TouhouHeartstone
         {
             foreach (TriggerTime time in triggers)
             {
-                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                string effectName = getEffectName(game, card, buff, time);
                 Trigger<T> trigger = card.getProp<Trigger<T>>(game, effectName);
                 game.logger.log("Effect", card + "注销效果" + effectName);
                 game.triggers.removeBefore(trigger);
@@ -181,7 +196,7 @@ namespace TouhouHeartstone
     {
         public new delegate bool CheckConditionDelegate(THHGame game, Card card, T eventArg);
         public new delegate Task ExecuteDelegate(THHGame game, Card card, T eventArg);
-        public THHEffectAfter(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
+        public THHEffectAfter(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute, string name = null) :
         base(new After<T>(), pile, (game, card, vars) =>
         {
             if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
@@ -194,7 +209,7 @@ namespace TouhouHeartstone
                 return onExecute.Invoke(game, card, t);
             else
                 return Task.CompletedTask;
-        })
+        }, name)
         {
         }
         public THHEffectAfter(PileFlag pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
@@ -217,14 +232,14 @@ namespace TouhouHeartstone
         {
             foreach (TriggerTime time in triggers)
             {
+                string effectName = getEffectName(game, card, buff, time);
                 Trigger<T> trigger = new Trigger<T>(arg =>
                 {
                     if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
                         return (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
                     else
                         return Task.CompletedTask;
-                });
-                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                }, name: effectName);
                 await card.setProp(game, effectName, trigger);
                 game.logger.log("Effect", card + "注册效果" + effectName);
                 game.triggers.registerAfter(trigger);
@@ -234,7 +249,7 @@ namespace TouhouHeartstone
         {
             foreach (TriggerTime time in triggers)
             {
-                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                string effectName = getEffectName(game, card, buff, time);
                 Trigger<T> trigger = card.getProp<Trigger<T>>(game, effectName);
                 game.logger.log("Effect", card + "注销效果" + effectName);
                 game.triggers.removeAfter(trigger);
@@ -276,6 +291,11 @@ namespace TouhouHeartstone
     }
     public abstract class ActiveEffect : IActiveEffect
     {
+        string _name;
+        public ActiveEffect(string name = null)
+        {
+            _name = name;
+        }
         public string[] piles => throw new NotImplementedException();
         public string[] events => throw new NotImplementedException();
         public string[] getEvents(ITriggerManager manager)
@@ -288,13 +308,17 @@ namespace TouhouHeartstone
         }
         public abstract bool checkCondition(THHGame game, Card card);
         public abstract Task execute(IGame game, ICard card, object[] vars, object[] targets);
+        public override string ToString()
+        {
+            return string.IsNullOrEmpty(_name) ? base.ToString() : _name;
+        }
     }
     public delegate Task ExecuteDelegate(THHGame game, Card card);
     public class NoTargetEffect : ActiveEffect
     {
         CheckConditionDelegate _onCheckCondition;
         ExecuteDelegate _onExecute;
-        public NoTargetEffect(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null)
+        public NoTargetEffect(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null, string name = null) : base(name)
         {
             _onCheckCondition = onCheckCondition;
             _onExecute = onExecute;
@@ -585,13 +609,13 @@ namespace TouhouHeartstone
         public RemoveBuffAfter(string pile, int buffId) : base(pile, null, null, (game, card, arg) =>
         {
             return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-        })
+        }, "移除Buff")
         {
         }
         public RemoveBuffAfter(string pile, CheckConditionDelegate onCheckCondition, int buffId) : base(pile, onCheckCondition, null, (game, card, arg) =>
         {
             return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-        })
+        }, "移除Buff")
         {
         }
     }
@@ -847,6 +871,7 @@ namespace TouhouHeartstone
         {
             foreach (TriggerTime time in triggers)
             {
+                string effectName = getEffectName(game, card, buff, time);
                 Trigger<T> trigger = new Trigger<T>(async arg =>
                 {
                     if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
@@ -854,8 +879,7 @@ namespace TouhouHeartstone
                         await (card as Card).TriggerSecret(game);
                         await (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
                     }
-                });
-                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                }, name: effectName);
                 await card.setProp(game, effectName, trigger);
                 game.logger.log("Effect", card + "注册效果" + effectName);
                 game.triggers.registerBefore(trigger);
@@ -865,7 +889,7 @@ namespace TouhouHeartstone
         {
             foreach (TriggerTime time in triggers)
             {
-                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                string effectName = getEffectName(game, card, buff, time);
                 Trigger<T> trigger = card.getProp<Trigger<T>>(game, effectName);
                 game.logger.log("Effect", card + "注销效果" + effectName);
                 game.triggers.removeBefore(trigger);
@@ -882,6 +906,7 @@ namespace TouhouHeartstone
         {
             foreach (TriggerTime time in triggers)
             {
+                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
                 Trigger<T> trigger = new Trigger<T>(arg =>
                 {
                     if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
@@ -891,8 +916,7 @@ namespace TouhouHeartstone
                     }
                     else
                         return Task.CompletedTask;
-                });
-                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                }, name: effectName);
                 await card.setProp(game, effectName, trigger);
                 game.logger.log("Effect", card + "注册效果" + effectName);
                 game.triggers.registerAfter(trigger);

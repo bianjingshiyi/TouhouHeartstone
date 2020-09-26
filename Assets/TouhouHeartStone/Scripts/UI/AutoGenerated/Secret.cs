@@ -25,34 +25,20 @@ namespace UI
         }
         public void autoBind()
         {
-            this.m_as_Image = this.GetComponent<Image>();
-            this._Text = this.transform.Find("Text").GetComponent<Text>();
+            this._image = this.transform.Find("image").GetComponent<Image>();
             this._Card = this.transform.Find("Card").GetComponent<Card>();
         }
         [SerializeField()]
-        private Image m_as_Image;
-        public Image asImage
+        private Image _image;
+        public Image image
         {
             get
             {
-                if ((this.m_as_Image == null))
+                if ((this._image == null))
                 {
-                    this.m_as_Image = this.GetComponent<Image>();
+                    this._image = this.transform.Find("image").GetComponent<Image>();
                 }
-                return this.m_as_Image;
-            }
-        }
-        [SerializeField()]
-        private Text _Text;
-        public Text Text
-        {
-            get
-            {
-                if ((this._Text == null))
-                {
-                    this._Text = this.transform.Find("Text").GetComponent<Text>();
-                }
-                return this._Text;
+                return this._image;
             }
         }
         [SerializeField()]

@@ -28,6 +28,10 @@ namespace Tests
         {
             createGame(out game, out you, out oppo, option, yourMaster, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
         }
+        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, int yourMaster, params KeyValuePair<int, int>[] yourDeck)
+        {
+            createGame(out game, out you, out oppo, new GameOption() { shuffle = false }, yourMaster, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
+        }
         public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option,
             int yourMaster, KeyValuePair<int, int>[] yourDeck,
             int oppoMaster, KeyValuePair<int, int>[] oppoDeck)

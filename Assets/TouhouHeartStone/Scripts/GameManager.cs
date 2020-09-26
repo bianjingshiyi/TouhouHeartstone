@@ -367,7 +367,9 @@ namespace Game
                 case THHPlayer.UseEventArg use:
                     item.IconImage.sprite = item.useIcon;
                     item.Text.text = "使用";
-                    item.Image.sprite = getManager<TableManager>().getSkin(use.card).image;
+                    item.Image.sprite = use.card.hasKeyword(game, KEYWORD.SECRET) ?
+                        getManager<TableManager>().getSkin(use.card.getOwner().master).image :
+                        getManager<TableManager>().getSkin(use.card).image;
                     item.BorderImage.color = use.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.CreateTokenEventArg token:

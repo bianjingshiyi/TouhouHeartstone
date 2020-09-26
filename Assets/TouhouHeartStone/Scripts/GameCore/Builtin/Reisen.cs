@@ -230,7 +230,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 国士无双之药
-    /// 2，使一个友方随从获得+3/+3，下回合开始时消灭它（警告：不要过量嗑药！）
+    /// 2，使一个随从获得+3/+3，下回合开始时消灭它（警告：不要过量嗑药！）
     /// </summary>
     public class PeerlessPatriotsElixir : SpellCardDefine
     {
@@ -312,7 +312,7 @@ namespace TouhouHeartstone.Builtin
                     {
                          if(p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill())
                             p.Value.damageValue *= 2;
-	                }
+                    }
                     return Task.CompletedTask;
                 }),
             new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
@@ -462,7 +462,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect(effect)
+            new NoTargetEffect(effect, name: "下次技能伤害翻倍")
         };
         static async Task effect(THHGame game, Card card)
         {
@@ -478,10 +478,9 @@ namespace TouhouHeartstone.Builtin
                         p.Value.damageValue *= 2;
                 }
                 return Task.CompletedTask;
-            }),
+            }, "技能伤害翻倍"),
             new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.MASTER, (g, c, a) =>
             {
-                
                 return a.player == c.getOwner() && a.card.isSkill();
             }, ID)));
         }
