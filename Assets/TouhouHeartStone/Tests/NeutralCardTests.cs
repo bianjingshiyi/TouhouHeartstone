@@ -810,5 +810,21 @@ namespace Tests
             oppo.cmdTurnEnd(game);
             game.Dispose();
         }
+        [Test]
+        public void HoanMeirinTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(HoanMeirin_N.ID, 1));
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse<DefaultServant>(game);
+            game.skipUntilCanUse<HoanMeirin_N>(you);
+            you.cmdUse<HoanMeirin_N>(game);
+            game.skipUntilYourTurn(oppo);
+            int originAttack = game.getDefine<HoanMeirin_N>().attack;
+            Assert.AreEqual(originAttack, you.field.getCard<HoanMeirin_N>().getAttack(game));
+            oppo.cmdAttack<DefaultServant>(game, you.field.getCard<HoanMeirin_N>());
+            Assert.AreEqual(game.getDefine<DefaultServant>().life - originAttack, oppo.field.getCard<DefaultServant>().getCurrentLife(game));
+            Assert.AreEqual(originAttack + 3, you.field.getCard<HoanMeirin_N>().getAttack(game));
+        }
     }
 }

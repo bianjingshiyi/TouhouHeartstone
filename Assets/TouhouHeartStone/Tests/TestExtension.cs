@@ -69,5 +69,13 @@ namespace Tests
         {
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= card.Sum(c => c.getCost()));
         }
+        public static void cmdUse<T>(this THHPlayer player, THHGame game, int position = 0, params Card[] targets) where T : CardDefine
+        {
+            player.cmdUse(game, player.hand.getCard<T>(), position, targets);
+        }
+        public static void cmdAttack<T>(this THHPlayer player, THHGame game, Card target) where T : CardDefine
+        {
+            player.cmdAttack(game, player.field.getCard<T>(), target);
+        }
     }
 }

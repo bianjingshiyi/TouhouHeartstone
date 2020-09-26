@@ -368,7 +368,7 @@ namespace TouhouHeartstone.Builtin
         };
         public override IPassiveEffect[] effects { get; }
         public override int instanceID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-       
+
 
         public override Buff clone()
         {
@@ -820,7 +820,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            var createToken = await card.getOwner().createToken(game, game.getDefine<Chen_N>(),card.pile.indexOf(card) + 1);
+            var createToken = await card.getOwner().createToken(game, game.getDefine<Chen_N>(), card.pile.indexOf(card) + 1);
             var chen = createToken.card;
             await chen.addBuff(game, new GeneratedBuff(ID,
                 new AttackModifier(3),
@@ -988,8 +988,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
-        public override string[] tags { get; set; } = { TAG.BEAST,TAG.BUG  };
-       
+        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new DeathRattle(ID,async(g1,c1,p)=>
@@ -1010,9 +1010,9 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = { TAG.BEAST,TAG.BUG };
+        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
-        public override IEffect[] effects { get; set; } = new IEffect[]{ };
+        public override IEffect[] effects { get; set; } = new IEffect[] { };
     }
 
     /// <summary>
@@ -1058,7 +1058,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
         public override string[] tags { get; set; } = { TAG.BEAST };
-      //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+        //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (g, c, t) =>
             {
@@ -1089,10 +1089,10 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            for(int i=0; i<2; i++)
+            for (int i = 0; i < 2; i++)
             {
                 await game.getOpponent(card.getOwner()).master.damage(game, card, 2);
-            }     
+            }
         }
     }
 
@@ -1107,7 +1107,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = { TAG.BEAST };
-       
+
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
@@ -1115,8 +1115,8 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             Card discover = await card.getOwner().discover(game, card.getOwner().deck);
-            
-            await card.getOwner().deck.moveTo(game,discover ,card.getOwner().deck, card.getOwner().deck.indexOf(card.getOwner().deck.top));
+
+            await card.getOwner().deck.moveTo(game, discover, card.getOwner().deck, card.getOwner().deck.indexOf(card.getOwner().deck.top));
         }
     }
 
@@ -1130,10 +1130,10 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
-        
+
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect),
-            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND, 
+            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND,
                                                         (g, c, a) =>
                                                         {
                                                             return a.player == c.getOwner() && c.pile == c.getOwner().hand;
@@ -1167,7 +1167,7 @@ namespace TouhouHeartstone.Builtin
             }
 
             await card.getOwner().reborn(game, TopCards.random(game), card.getOwner().deck);
-            
+
         }
     }
 
@@ -1220,9 +1220,9 @@ namespace TouhouHeartstone.Builtin
                 }
             }
 
-            if(MinCards.ToArray().Length < 3)
+            if (MinCards.ToArray().Length < 3)
             {
-                foreach(Card c in MinCards)
+                foreach (Card c in MinCards)
                 {
                     await card.getOwner().deck.moveTo(game, c, card.getOwner().grave);
                 }
@@ -1249,14 +1249,14 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 8;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 3;
-       
+
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[]
-        { 
-            
+        {
+
             new DeathRattle(ID,async(game,card,arg)=>{
                 await game.getAllServants().damage(game,card,2);
-               
+
                 await card.getOwner().master.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.MASTER,
                                                                                                                               (g1, c1, a1) =>
                                                                                                                               {
@@ -1265,7 +1265,7 @@ namespace TouhouHeartstone.Builtin
                                                                                                                               async (g1, c1, a1) =>
                                                                                                                               {
                                                                                                                                   await c1.getOwner().grave.moveTo(g1,card,c1.getOwner().hand);
-                                                                                                                                  
+
                                                                                                                                   await c1.getOwner().master.removeBuff(g1);
                                                                                                                               })));
                 await game.updateDeath(game);
@@ -1303,7 +1303,7 @@ namespace TouhouHeartstone.Builtin
                     {
                         await t.setCurrentLife(g,t.getLife(g));
                     }
-                    
+
                 }
                 else
                 {
@@ -1323,7 +1323,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 10;
         public override bool isToken { get; set; } = true;
-       
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
         };
@@ -1339,7 +1339,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 10;
         public override bool isToken { get; set; } = true;
-        
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
         };
@@ -1359,7 +1359,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
-            
+
         };
 
         static async Task effect(THHGame g, Card c)
@@ -1368,7 +1368,7 @@ namespace TouhouHeartstone.Builtin
             Card choice = await c.getOwner().discover(g, options, 2, "选择一项");
             if (choice.define == g.getDefine<ReturnOfImperishableNight_Eternity_N>())
             {
-                await c.getOwner().master.addBuff(g, new GeneratedBuff(ID,new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
+                await c.getOwner().master.addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
                                                                                                                 (g1, c1, a1) =>
                                                                                                                 {
                                                                                                                     return a1.player == c1.getOwner();
@@ -1378,7 +1378,7 @@ namespace TouhouHeartstone.Builtin
                                                                                                                 {
                                                                                                                     a1.isCanceled = true;
                                                                                                                 }
-                                                                                                                ),new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,ID,2)));
+                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER, ID, 2)));
 
                 await g.getOpponent(c.getOwner()).master.addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
                                                                                                                 (g1, c1, a1) =>
@@ -1395,7 +1395,7 @@ namespace TouhouHeartstone.Builtin
             }
             else
             {
-                for(int i=0; i<3; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     await c.getOwner().draw(g);
                 }
@@ -1437,6 +1437,28 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
+        };
+    }
+    /// <summary>
+    /// 红美铃 407 嘲讽 当该随从受到伤害后攻击力+3
+    /// </summary>
+    public class HoanMeirin_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x061;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 0;
+        public override int life { get; set; } = 7;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field,(g,c,a)=>
+            {
+                return a.infoDic.ContainsKey(c);
+            },null,(g,c,a)=>
+            {
+                return c.addBuff(g,new GeneratedBuff(ID,new AttackModifier(3)));
+            })
         };
     }
 }
