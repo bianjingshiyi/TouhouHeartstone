@@ -432,19 +432,19 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
         static async Task effect(THHGame game, Card card)
-        {
-            await card.getOwner().draw(game);
-            if (card.getOwner().deck.count >= 0)
+        { 
+            Card topCard = card.getOwner().deck.top;
+            if(topCard.hasKeyword(game, KEYWORD.SECRET) &&
+               topCard.define is SpellCardDefine &&
+               card.getOwner().head.count < card.getOwner().head.maxCount &&
+               card.getOwner().head.All(c => c.define != topCard.define))
             {
-                var drawed = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
-                if (drawed.hasKeyword(game, KEYWORD.SECRET) &&
-                    drawed.define is SpellCardDefine &&
-                    card.getOwner().head.count < card.getOwner().head.maxCount &&
-                    card.getOwner().head.All(c => c.define != drawed.define))
-                {
-                    await card.getOwner().hand.moveTo(game, drawed, card.getOwner().head);
-                    await effect(game, card);
-                }
+                await card.getOwner().hand.moveTo(game, topCard, card.getOwner().head);
+                await effect(game, card);
+            }
+            else
+            {
+                await card.getOwner().draw(game);
             }
         }
     }
