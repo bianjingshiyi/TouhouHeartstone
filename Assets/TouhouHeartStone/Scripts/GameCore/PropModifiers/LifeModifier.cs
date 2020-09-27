@@ -21,7 +21,7 @@ namespace TouhouHeartstone
             int changedValue = value - this.value;
             await base.setValue(game, card, value);
             if (isSet)
-                await card.setCurrentLife(game, (value));
+                await card.setCurrentLife(game, value);
             else
             {
                 int life = card.getLife(game);
@@ -31,11 +31,21 @@ namespace TouhouHeartstone
                     await card.setCurrentLife(game, life);
                 }
                 else if (card.getCurrentLife(game) > life)
+                {
+                    game?.logger?.log("由于" + card + "当前生命值" + card.getCurrentLife(game) + "大于生命最大值" + card.getLife(game) + "，重置生命值为" + life);
                     await card.setCurrentLife(game, life);
+                }
                 else
                 {
-                    await card.setCurrentLife(game, (card.getCurrentLife(game) + changedValue));
-                    game?.logger?.log("由于" + card + "受伤了，修正值变为" + value + "之后生命值变为" + card.getCurrentLife(game));
+                    if (changedValue > 0)
+                    {
+                        game?.logger?.log("由于" + card + "受伤了，修正值变为" + value + "之后生命值变为" + (card.getCurrentLife(game) + changedValue));
+                        await card.setCurrentLife(game, card.getCurrentLife(game) + changedValue);
+                    }
+                    else
+                    {
+                        game?.logger?.log("由于" + card + "受伤了，修正值变为" + value + "之后生命值保持不变");
+                    }
                 }
             }
         }

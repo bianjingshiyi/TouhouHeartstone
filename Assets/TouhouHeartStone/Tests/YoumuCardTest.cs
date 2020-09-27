@@ -174,29 +174,38 @@ namespace Tests
         [Test]
         public void HalfPhantomTest()
         {
-            TestGameflow.createGame(out var game, out var you, out var oppo,
+            TestGameflow.createGame(out var game, out var you, out _,
                 new KeyValuePair<int, int>(HalfPhantom.ID, 1)
             );
             game.skipUntilCanUse<HalfPhantom>(you);
+            int originAttack = game.getDefine<HalfPhantom>().attack;
+            int originLife = game.getDefine<HalfPhantom>().life;
             you.master.gainArmor(game, 6);
             you.cmdUse(game, you.hand.getCard<HalfPhantom>());
-            Assert.AreEqual(9, you.field[0].getAttack(game));
-            Assert.AreEqual(9, you.field[0].getCurrentLife(game));
-            Assert.AreEqual(9, you.field[0].getLife(game));
+            Assert.AreEqual(originAttack + 6, you.field[0].getAttack(game));
+            Assert.AreEqual(originLife + 6, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(originLife + 6, you.field[0].getLife(game));
             you.master.gainArmor(game, 1);
-            Assert.AreEqual(10, you.field[0].getAttack(game));
-            Assert.AreEqual(10, you.field[0].getCurrentLife(game));
-            Assert.AreEqual(10, you.field[0].getLife(game));
+            Assert.AreEqual(originAttack + 7, you.field[0].getAttack(game));
+            Assert.AreEqual(originLife + 7, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(originLife + 7, you.field[0].getLife(game));
             you.field[0].damage(game, null, 1);
-            Assert.AreEqual(9, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(originLife + 7 - 1, you.field[0].getCurrentLife(game));
             you.master.gainArmor(game, 1);
-            Assert.AreEqual(11, you.field[0].getAttack(game));
-            Assert.AreEqual(10, you.field[0].getCurrentLife(game));
-            Assert.AreEqual(11, you.field[0].getLife(game));
+            Assert.AreEqual(originAttack + 8, you.field[0].getAttack(game));
+            Assert.AreEqual(originLife + 8 - 1, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(originLife + 8, you.field[0].getLife(game));
             you.master.loseArmor(game, 2);
-            Assert.AreEqual(9, you.field[0].getAttack(game));
-            Assert.AreEqual(9, you.field[0].getCurrentLife(game));
-            Assert.AreEqual(9, you.field[0].getLife(game));
+            Assert.AreEqual(originAttack + 6, you.field[0].getAttack(game));
+            Assert.AreEqual(originLife + 6, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(originLife + 6, you.field[0].getLife(game));
+            //特殊情况，如果受到的伤害足以杀死半灵会如何？
+            you.field[0].damage(game, null, originLife);
+            Assert.AreEqual(6, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(originLife + 6, you.field[0].getLife(game));
+            you.master.loseArmor(game, 6);
+            Assert.AreEqual(6, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(originLife, you.field[0].getLife(game));
         }
 
         [Test]
