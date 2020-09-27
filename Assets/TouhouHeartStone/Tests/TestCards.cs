@@ -612,7 +612,7 @@ namespace Tests
                     {
                         if(p.Value.source.getOwner() == c.getOwner() && (p.Value.source.isSkill() || p.Value.source.isSpell()))
                             p.Value.damageValue *= 2;
-	                }
+                    }
                     return Task.CompletedTask;
                 }),
             new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
@@ -748,6 +748,21 @@ namespace Tests
             {
                 await THHCard.setDefine(t, g,g.getDefine<RushServant>());//没有羊
             },PileFlag.both | PileFlag.field)
+        };
+    }
+    public class EnemyOnlyBattleCry : ServantCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x024;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect((g,c,t)=>
+            {
+                return t.damage(g,c,1);
+            }, PileFlag.oppo | PileFlag.character)
         };
     }
 }
