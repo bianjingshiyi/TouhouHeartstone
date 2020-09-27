@@ -280,6 +280,7 @@ namespace Game
                 case THHCard.HealEventArg _:
                 case THHCard.SilenceEventArg _:
                 case THHCard.DeathEventArg _:
+                case THHCard.SecretTriggerEventArg _:
                     var item = ui.LogScrollView.LogList.addItem();
                     item.setProp("event", obj);
                     item.onPointerEnter.set(onLogListItemEnter);
@@ -413,6 +414,12 @@ namespace Game
                     item.Text.text = "沉默";
                     item.Image.sprite = getManager<TableManager>().getSkin(silence.cards[0]).image;
                     item.BorderImage.color = silence.cards[0].getOwner() == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
+                case THHCard.SecretTriggerEventArg secret:
+                    item.IconImage.sprite = item.secretIcon;
+                    item.Text.text = "奥秘";
+                    item.Image.sprite = getManager<TableManager>().getSkin(secret.card).image;
+                    item.BorderImage.color = secret.card.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHCard.DeathEventArg death:
                     item.IconImage.sprite = item.deathIcon;

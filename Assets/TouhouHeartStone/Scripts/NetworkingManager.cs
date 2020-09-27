@@ -155,8 +155,11 @@ namespace Game
         private void onGameEnd()
         {
             client.quitRoom();
-            host.closeRoom();
-            host.stop();
+            if (host != null)
+            {
+                host.closeRoom();
+                host.stop();
+            }
         }
         #region Logic
         public async Task<Sprite> getCaptchaImage()
@@ -207,7 +210,6 @@ namespace Game
                     name = client.account.nickName,
                     PlayerID = client.account.uid
                 };
-                currentPlayer.setDeck(getManager<GameManager>().deck);
                 roomPanel.SetSelfID(currentPlayer.PlayerID);
 
                 RoomInfo room = new RoomInfo(currentPlayer.PlayerID);
@@ -226,7 +228,6 @@ namespace Game
                 {
                     name = "房主" // todo: 替换为真实的玩家名称
                 };
-                currentPlayer.setDeck(getManager<GameManager>().deck);
                 roomPanel.SetSelfID(currentPlayer.PlayerID);
 
                 RoomInfo room = new RoomInfo(currentPlayer.PlayerID);
@@ -309,7 +310,6 @@ namespace Game
                     name = client.account.nickName,
                     PlayerID = client.account.uid
                 };
-                currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
                 roomPanel.SetSelfID(currentPlayer.PlayerID);
 
                 await client.joinRoom(roomInfo, currentPlayer);
@@ -319,7 +319,6 @@ namespace Game
                 //局域网
                 currentPlayer = new RoomPlayerInfo();
                 currentPlayer.name = "玩家2"; // todo: 替换为真实的玩家名称
-                currentPlayer.setProp(RoomPlayerInfoName.DECK_INTARRAY, getManager<GameManager>().deck);
                 roomPanel.SetSelfID(currentPlayer.PlayerID);
 
                 await client.joinRoom(roomInfo, currentPlayer);

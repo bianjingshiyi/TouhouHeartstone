@@ -17,7 +17,11 @@ namespace Game
         public HandToFieldAnim(TableManager table, HandListItem item, FieldList field, int index)
         {
             _item = item;
+            var animator = _item.GetComponent<Animator>();
+            if (animator != null)
+                animator.enabled = false;
             _startPosition = item.Card.rectTransform.position;
+            table.game.logger.log("Animation", item + "移动到" + index);
             _timer = new Timer() { duration = table.handToFieldCurve.keys.Last().time };
 
             field.addChild(table.ui.ServantPlaceHolder.rectTransform);
@@ -30,9 +34,15 @@ namespace Game
         {
             if (!_timer.isExpired())
             {
-                _item.Card.rectTransform.position = Vector3.Lerp(_startPosition, table.ui.ServantPlaceHolder.rectTransform.position, table.handToFieldCurve.Evaluate(_timer.time));
+                Vector3 newPos = Vector3.Lerp(_startPosition, table.ui.ServantPlaceHolder.rectTransform.position, table.handToFieldCurve.Evaluate(_timer.time));
+                _item.Card.rectTransform.position = newPos;
+                table.game.logger.log("Animation", _item + "移动到" + newPos);
                 return false;
             }
+            var animator = _item.GetComponent<Animator>();
+            if (animator != null)
+                animator.enabled = true;
+            table.game.logger.log("Animation", _item + "移动动画结束");
             return true;
         }
     }
