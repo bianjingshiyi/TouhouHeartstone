@@ -140,7 +140,6 @@ namespace TouhouHeartstone
                 value = arg.value;
                 if (value < 0)
                     value = 0;
-                game.logger.log(card + "的护甲值变为" + value);
                 card.setProp(game, PROPERTY.ARMOR, value);
                 return Task.CompletedTask;
             });

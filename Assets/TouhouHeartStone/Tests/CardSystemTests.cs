@@ -543,5 +543,13 @@ namespace Tests
             you.cmdAttack(game, you.field.getCard<RushServant>(), oppo.field[0]);
             Assert.True(game.triggers.getRecordedEvents().OfType<THHCard.AttackEventArg>().Count() > 0);
         }
+        [Test]
+        public void singleTargetEffectFilterTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(EnemyOnlyBattleCry.ID, 1));
+            game.skipUntilCanUse<EnemyOnlyBattleCry>(you);
+            Assert.False(you.hand.getCard<EnemyOnlyBattleCry>().isValidTarget(game, you.master));
+        }
     }
 }

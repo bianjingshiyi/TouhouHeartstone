@@ -339,11 +339,7 @@ namespace TouhouHeartstone
         /// <summary>
         /// 可选目标范围。
         /// </summary>
-        public string[] ranges { get; protected set; } = new string[]
-        {
-            PILE.FIELD,
-            PILE.MASTER
-        };
+        public PileFlag ranges { get; protected set; } = PileFlag.character;
         /// <summary>
         /// 默认实现，存在可以作为目标的卡片。
         /// </summary>
@@ -355,9 +351,9 @@ namespace TouhouHeartstone
         {
             foreach (var player in game.players)
             {
-                foreach (var pileName in ranges)
+                foreach (var pile in ranges.getPiles(game, card.getOwner()))
                 {
-                    foreach (var target in player[pileName])
+                    foreach (var target in pile)
                     {
                         if (checkTarget(game, card, target))
                             return true;
@@ -388,7 +384,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public virtual bool checkTarget(THHGame game, Card card, Card target)
         {
-            return ranges.Contains(target.pile.name);
+            return ranges.getPiles(game, card.getOwner()).Any(p => p.Contains(target));
         }
         public override Task execute(IGame game, ICard card, object[] vars, object[] targets)
         {
@@ -432,7 +428,7 @@ namespace TouhouHeartstone
             ExecuteDelegate_NoTarget noTargetExecute = null)
         {
             if (ranges != PileFlag.none)
-                this.ranges = PILE.getPiles(ranges);
+                this.ranges = ranges;
             _onCheckCondition = onCheckCondition;
             _onCheckTarget = onCheckTarget;
             _onExecute = onExecute;
