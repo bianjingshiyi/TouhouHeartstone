@@ -1,5 +1,6 @@
 ﻿using TouhouHeartstone;
 using UI;
+using UnityEngine;
 namespace Game
 {
     class SecretTriggerAnim : EventAnimation<THHCard.SecretTriggerEventArg>
@@ -9,10 +10,15 @@ namespace Game
         {
             if (table.tryGetSecret(eventArg.card, out var secret))
             {
-                table.setCard(secret.Card, eventArg.card, true);
-                secret.Card.GetComponent<PositionLerp>().setTarget(table.ui.CenterDisplayImage.rectTransform);
+                if (_anim == null)
+                {
+                    secret.Card.GetComponent<PositionLerp>().setTarget(table.ui.CenterDisplayImage.rectTransform);
+                }
                 if (!SimpleAnimHelper.update(table, ref _anim, secret.onTrigger, secret.animator))
+                {
+                    table.setCard(secret.Card, eventArg.card, true);
                     return false;
+                }
             }
             return true;
         }

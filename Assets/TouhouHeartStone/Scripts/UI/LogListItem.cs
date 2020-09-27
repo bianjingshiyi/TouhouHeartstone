@@ -102,6 +102,12 @@ namespace UI
             get { return _silenceIcon; }
         }
         [SerializeField]
+        Sprite _secretIcon;
+        public Sprite secretIcon
+        {
+            get { return _secretIcon; }
+        }
+        [SerializeField]
         Sprite _deathIcon;
         public Sprite deathIcon
         {

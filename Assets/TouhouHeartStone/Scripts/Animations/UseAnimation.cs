@@ -41,14 +41,20 @@ namespace Game
                     }
                     else
                     {
+                        HandListItem item = table.getHand(eventArg.card);
+                        if (item == null)
+                            throw new ActorNotFoundException(eventArg.card);
                         if (table.ui.ServantPlaceHolder.isDisplaying)
                         {
                             table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
                             table.ui.ServantPlaceHolder.hide();
                         }
-                        HandListItem item = table.getHand(eventArg.card);
                         if (_moveAnim == null)
+                        {
+                            item.Card.display();
+                            table.setCard(item.Card, eventArg.card, true);
                             _moveAnim = new HandMoveAnim(item, item.rectTransform, table.handToFieldCurve);
+                        }
                         if (!_moveAnim.update(table))
                             return false;
                     }
