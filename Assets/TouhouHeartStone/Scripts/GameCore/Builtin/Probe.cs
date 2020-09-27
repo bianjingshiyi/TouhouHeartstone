@@ -939,12 +939,12 @@ namespace TouhouHeartstone.Builtin.Proble
                                                       {
                                                           return a.player == g.getOpponent(c.getOwner()) && a.card.isServant();
                                                       },null,
-                                                      (g, c, a) =>
+                                                      async(g, c, a) =>
                                                       {
-                                                          c.getOwner().createToken(g,g.getDefine(a.card.define.id));
-                                                          c.setDead(g,true);
-                                                          g.updateDeath(g);
-                                                          return Task.CompletedTask;
+                                                          await c.getOwner().createToken(g,g.getDefine(a.card.define.id));
+                                                          await c.setDead(g,true);
+                                                          await g.updateDeath(g);
+                                                       
                                                       })
         };
     }
