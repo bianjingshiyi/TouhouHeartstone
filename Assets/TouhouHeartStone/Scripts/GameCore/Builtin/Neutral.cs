@@ -538,7 +538,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 4;
+        public override int life { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new ConditionalPassiveEffect(new Halo(new GeneratedBuff(ID,new CostModifier(1)), PileFlag.both | PileFlag.hand),
