@@ -392,7 +392,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 433 半幽灵 具有等同于护甲值的额外属性值
+    /// 404 半幽灵 具有等同于护甲值的额外属性值
     /// </summary>
     public class HalfPhantom : ServantCardDefine
     {
@@ -400,7 +400,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 0;
-        public override int life { get; set; } = 8;
+        public override int life { get; set; } = 4;
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
