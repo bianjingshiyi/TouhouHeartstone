@@ -399,8 +399,8 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SERVANT | 0x016;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override int attack { get; set; } = 3;
-        public override int life { get; set; } = 3;
+        public override int attack { get; set; } = 0;
+        public override int life { get; set; } = 8;
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
