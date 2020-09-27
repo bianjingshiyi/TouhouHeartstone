@@ -526,7 +526,8 @@ MonoBehaviour:
   _damageIcon: {fileID: 21300000, guid: d54a9728519c5d54bbe09aff5bd95284, type: 3}
   _armorIcon: {fileID: 21300000, guid: 1815ea71c4e799e45b0db8899c240c4a, type: 3}
   _healIcon: {fileID: 21300000, guid: 8747fbd096b50834ab608c29a3c05bcc, type: 3}
-  _silenceIcon: {fileID: 21300000, guid: 2251011a5d10c124ea35f86c11f5d53b, type: 3}
+  _silenceIcon: {fileID: 21300000, guid: a5b6ecdbc26aa9f47b973c7481d1268a, type: 3}
+  _secretIcon: {fileID: 21300000, guid: cca9ca156bf61e445b872555e11ba23e, type: 3}
   _deathIcon: {fileID: 21300000, guid: ea48f42d704ced14b89d95cf206a788f, type: 3}
   _isHovered: 0
 --- !u!1 &4514938058591415649

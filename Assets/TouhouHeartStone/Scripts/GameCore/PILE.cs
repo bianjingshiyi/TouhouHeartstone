@@ -15,7 +15,7 @@ namespace TouhouHeartstone
         public const string GRAVE = "Grave";
         public const string WARP = "Warp";
         public const string ITEM = "Item";
-        public const string HEAD = "head";
+        public const string HEAD = "Head";
 
         public static string[] getPiles(this PileFlag flag)
         {
