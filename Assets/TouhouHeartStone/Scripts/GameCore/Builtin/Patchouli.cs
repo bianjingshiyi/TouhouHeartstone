@@ -656,7 +656,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 6 木火符【森林大火】 使所有友方随从获得+2/2，你每控制一个随从便对目标造成1点伤害
+    /// 6 木火符【森林大火】 使所有友方随从获得+2/2，你每控制一个随从便对一个敌方随从造成1点伤害
     /// </summary>
     public class ForestBlaze : SpellCardDefine
     {
@@ -674,7 +674,7 @@ namespace TouhouHeartstone.Builtin
                 }
                 await target.damage(game,card,card.getOwner().field.count);
                 await Patchouli.tryMix(game, card);
-            },PileFlag.both | PileFlag.field)
+            },PileFlag.oppo | PileFlag.field)
         };
     }
     /// <summary>
