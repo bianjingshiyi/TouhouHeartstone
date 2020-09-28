@@ -104,7 +104,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect((game,card,target)=>
             {
                 return target.damage(game, card, 1);
-            })
+            },PileFlag.both | PileFlag.character)
         };
     }
     /// <summary>
