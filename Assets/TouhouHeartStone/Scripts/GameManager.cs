@@ -188,7 +188,7 @@ namespace Game
             game.answers.game = game;
             foreach (var info in playerList)
             {
-                int[] deck = info.getDeck();
+                var deck = info.getDeck();
                 checkDeckValid(game, deck);
 #if UNITY_EDITOR
                 //检查卡组合法性

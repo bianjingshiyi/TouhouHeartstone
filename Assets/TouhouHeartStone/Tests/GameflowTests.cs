@@ -430,7 +430,7 @@ namespace Tests
                     if (newRoomInfo.playerList.Count > 1)
                     {
                         localGame = TestGameflow.initGameWithoutPlayers("本地游戏", newRoomInfo.getOption());
-                        (localGame.answers as AnswerManager).client = local;
+                        localGame.answers.client = local;
                         foreach (var playerInfo in newRoomInfo.playerList)
                         {
                             localGame.createPlayer(playerInfo.RoomID, "玩家" + playerInfo.RoomID, localGame.getDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => localGame.getDefine(did)));
@@ -467,7 +467,7 @@ namespace Tests
                     if (newRoomInfo.playerList.Count > 1)
                     {
                         remoteGame = TestGameflow.initGameWithoutPlayers("远端游戏", newRoomInfo.getOption());
-                        (remoteGame.answers as AnswerManager).client = remote;
+                        remoteGame.answers.client = remote;
                         foreach (var playerInfo in newRoomInfo.playerList)
                         {
                             remoteGame.createPlayer(playerInfo.RoomID, "玩家" + playerInfo.RoomID, remoteGame.getDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => remoteGame.getDefine(did)));

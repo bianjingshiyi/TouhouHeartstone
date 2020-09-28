@@ -317,7 +317,7 @@ namespace UI
             {
                 // 判断准备状态
                 StartButtonButtonBlack.Text.text = selfPlayer.ready ? "取消准备" : "准备";
-                StartButtonButtonBlack.asButton.setSelectable(selfPlayer.tryGetDeck(out int[] deck) && selfPlayer.getDeck().Length >= 30);
+                StartButtonButtonBlack.asButton.setSelectable(selfPlayer.tryGetDeck(out var deck) && deck != null && deck.Length == 31);
             }
         }
 

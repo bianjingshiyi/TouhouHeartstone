@@ -339,7 +339,7 @@ namespace TouhouHeartstone
         /// <summary>
         /// 可选目标范围。
         /// </summary>
-        public PileFlag ranges { get; protected set; } = PileFlag.character;
+        public PileFlag ranges { get; protected set; } = PileFlag.character | PileFlag.both;
         /// <summary>
         /// 默认实现，存在可以作为目标的卡片。
         /// </summary>
