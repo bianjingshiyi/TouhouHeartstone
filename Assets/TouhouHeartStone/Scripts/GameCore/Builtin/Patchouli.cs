@@ -226,7 +226,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await target.damage(game, card, card.getOwner().getSpellDamage(game, 7));
                 await Patchouli.tryMix(game,card);
-            })
+            },PileFlag.both | PileFlag.character)
         };
     }
     /// <summary>

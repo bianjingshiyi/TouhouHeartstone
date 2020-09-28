@@ -97,7 +97,6 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            int attack;
             if (!Youmu.isPreHeated(game, card))
                 await card.getOwner().master.addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(2),
@@ -176,7 +175,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.damage(game,card,card.getOwner().master.getArmor(game));
-            }, PileFlag.field)
+            },PileFlag.both | PileFlag.field)
         };
     }
     /// <summary>
