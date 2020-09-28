@@ -99,6 +99,7 @@ namespace Game
             mainUI.LoginPanel.hide();
             mainUI.PlayerInfoPanel.OnLoginClick += async () =>
             {
+                mainUI.RegisterPanel.hide();
                 loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out var password);
                 mainUI.LoginPanel.display(rememberUserName, userName, rememberPassword, password, await getCaptchaImage());
             };

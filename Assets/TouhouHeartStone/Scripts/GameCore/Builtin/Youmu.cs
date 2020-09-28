@@ -176,7 +176,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.damage(game,card,card.getOwner().master.getArmor(game));
-            }, PileFlag.field)
+            },PileFlag.both | PileFlag.field)
         };
     }
     /// <summary>
