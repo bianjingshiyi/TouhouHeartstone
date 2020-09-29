@@ -369,6 +369,7 @@ namespace UI
             OnPlayerRemove = null;
             OnAIPlayerAdd = null;
             OnSetPlayerDeck = null;
+            OnPlayerReadyChange = null;
         }
     }
 

@@ -207,7 +207,10 @@ namespace Game
             gameTask = game.run();
             return gameTask;
         }
-        public void quitGame()
+        /// <summary>
+        /// 关闭游戏
+        /// </summary>
+        public void endGame()
         {
             if (game != null)
             {
@@ -215,13 +218,30 @@ namespace Game
                 game = null;
                 gameTask = null;
                 mode = GameMode.none;
-                if (_mainUI != null)
-                {
-                    getManager<TableManager>().setGame(null, null);
-                    _mainUI.display(_mainUI.MainMenu);
-                }
+
                 onGameEnd?.Invoke();
             }
+        }
+
+        /// <summary>
+        /// 关闭游戏UI并回到主页面
+        /// </summary>
+        public void closeGameUI()
+        {
+            if (_mainUI != null)
+            {
+                getManager<TableManager>().setGame(null, null);
+                _mainUI.display(_mainUI.MainMenu);
+            }
+        }
+        
+        /// <summary>
+        /// 关闭游戏和UI
+        /// </summary>
+        public void quitGame()
+        {
+            endGame();
+            closeGameUI();
         }
         public event Action onGameEnd;
         #endregion
