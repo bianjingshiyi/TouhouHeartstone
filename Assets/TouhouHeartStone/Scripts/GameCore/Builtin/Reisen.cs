@@ -230,7 +230,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 国士无双之药
-    /// 2，使一个随从获得+3/+3，下回合开始时消灭它（警告：不要过量嗑药！）
+    /// 1，使一个随从获得+3/+3，下回合开始时消灭它（警告：不要过量嗑药！）
     /// </summary>
     public class PeerlessPatriotsElixir : SpellCardDefine
     {

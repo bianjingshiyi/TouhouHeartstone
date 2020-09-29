@@ -82,7 +82,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 1 现世斩 使你的英雄在本回合内获得攻击力+2，蓄力：改为攻击力+4
+    /// 1 现世斩 使你的英雄在本回合内获得攻击力+2，蓄力：改为攻击力+3
     /// </summary>
     public class SlashOfPresentWorld : SpellCardDefine
     {
@@ -97,7 +97,6 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            int attack;
             if (!Youmu.isPreHeated(game, card))
                 await card.getOwner().master.addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(2),

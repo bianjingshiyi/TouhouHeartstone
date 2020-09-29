@@ -226,7 +226,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await target.damage(game, card, card.getOwner().getSpellDamage(game, 7));
                 await Patchouli.tryMix(game,card);
-            })
+            },PileFlag.both | PileFlag.character)
         };
     }
     /// <summary>
@@ -523,7 +523,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                target.setFreeze(game, true);
+                await target.setFreeze(game, true);
                 await Patchouli.tryMix(game,card);
             },PileFlag.both | PileFlag.field)
         };

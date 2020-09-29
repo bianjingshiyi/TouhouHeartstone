@@ -20,6 +20,8 @@ namespace UI
         public void ShowGameResult(bool success)
         {
             gameObject.SetActive(true);
+            this.findInstance<GameManager>()?.endGame();
+
             if (success)
             {
                 onGameSuccess?.Invoke();
@@ -33,7 +35,7 @@ namespace UI
         public void WindowClose()
         {
             gameObject.SetActive(false);
-            this.findInstance<GameManager>()?.quitGame();
+            this.findInstance<GameManager>()?.closeGameUI();
         }
     }
 }

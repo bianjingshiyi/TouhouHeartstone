@@ -49,7 +49,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect((game,card,target)=>
             {
                 return target.damage(game,card,2);
-            })
+            },PileFlag.both | PileFlag.character)
         };
     }
     /// <summary>
@@ -530,7 +530,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 214 蕾蒂 双方使用的第一张牌法力值消耗增加1点。
+    /// 213 蕾蒂 双方使用的第一张牌法力值消耗增加1点。
     /// </summary>
     public class LettyWhiterock_N : ServantCardDefine
     {
@@ -611,7 +611,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 212 橙 战吼：本回合获得+2攻击力和突袭
+    /// 212 橙 战吼：获得+2攻击力和突袭
     /// </summary>
     public class Chen_N : ServantCardDefine
     {
@@ -844,7 +844,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect((game,card,target)=>
             {
                 return target.setDead(game,true);
-            }, PileFlag.field)
+            },PileFlag.both | PileFlag.field)
         };
     }
     /// <summary>
@@ -1240,7 +1240,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 藤原妹红 8/6/3 亡语：返回手牌，并对所有随从造成2点伤害。
+    /// 藤原妹红 8/6/3 亡语：并对所有随从造成2点伤害,下回合开始时，返回手牌。
     /// </summary>
     public class HuziwaraNoMokou_N : ServantCardDefine
     {
