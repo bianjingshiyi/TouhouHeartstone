@@ -486,7 +486,7 @@ namespace Game
         }
         private void refreshRoomListItem(RoomListItem item, RoomInfo obj)
         {
-            item.RoomNameText.text = obj.ip + ":" + obj.port;
+            item.RoomNameText.text = obj.playerList.Find(p => p.PlayerID == obj.OwnerID)?.name + "的房间";
             item.asButton.onClick.set(() =>
             {
                 LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
@@ -507,6 +507,7 @@ namespace Game
             {
                 _ = joinRoom(obj);
             });
+            item.ButtonButtonBlack.asButton.interactable = obj.playerList.Count < 2;
         }
         async Task updateRoomInfo(RoomInfo roomInfo)
         {
