@@ -401,9 +401,14 @@ namespace TouhouHeartstone
                     if (chara.isFreeze(this))
                     {
                         //chara.setAttackTimes(chara.getAttackTimes(this) + 1);
-                        if ((chara.getMaxAttackTimes(this) - chara.getAttackTimes(this) >= 1))
+                        if ((chara.getMaxAttackTimes(this) - chara.getAttackTimes(this) >= 1) && chara.define is ServantCardDefine && chara.isReady(this))
                         {
                             logger.log("被冻结的随从解除冰冻");
+                            chara.setFreeze(this, false);
+                        }
+                        else if((chara.getMaxAttackTimes(this) - chara.getAttackTimes(this) >= 1) && chara.define is MasterCardDefine)
+                        {
+                            logger.log("被冻结的英雄解除冰冻");
                             chara.setFreeze(this, false);
                         }
                     }
