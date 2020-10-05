@@ -56,10 +56,13 @@ namespace TouhouHeartstone.Builtin
                 var mixCard = await player.discover(game, mixableCards, -1, "选择一张卡片进行元素融合");
                 var mixedResults = getMixCards(game, card.define, mixCard.define).Select(define => game.createCard(define)).ToArray();
                 var mixedResult = await player.discover(game, mixedResults, -1, "选择一张融合元素法术加入你的手牌");
-                await player.discard(game, mixCard);
-                await player.tryAddCardToHand(game, mixedResult);
+                //await player.discard(game, mixCard);
+                //await player.tryAddCardToHand(game, mixedResult);
+                await THHCard.setDefine(mixCard, game, mixedResult.define);
             }
         }
+
+        //中立帕秋莉使用的方法
         public static async Task tryMix(THHGame game, THHPlayer player, Card a, Card b)
         {
             var mixedResults = getMixCards(game, a.define, b.define).Select(define => game.createCard(define)).ToArray();
