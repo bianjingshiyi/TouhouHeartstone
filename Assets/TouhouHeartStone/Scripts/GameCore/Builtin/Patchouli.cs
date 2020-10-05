@@ -162,7 +162,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 4 贤者之石 04 每当回合结束，随机将一张花费大于0的元素法术置入你的手牌，耐久-1。战吼：将一张随机元素法术置入你的手牌。
+    /// 4 贤者之石 05 每当回合结束，随机将一张花费大于0的元素法术置入你的手牌，耐久-1。战吼：将一张随机元素法术置入你的手牌。
     /// </summary>
     public class PhilosopherStone : ItemCardDefine
     {
@@ -176,7 +176,9 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect((g1,c1)=>
             {
+                c1.damage(g1,c1,1);
                 return c1.getOwner().addRandomCardToHand(g1,g1.getDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
+                
             }),
             new ItemTrigggerEffectBefore<THHGame.TurnEndEventArg>((g1,c1,a1)=>
             {
