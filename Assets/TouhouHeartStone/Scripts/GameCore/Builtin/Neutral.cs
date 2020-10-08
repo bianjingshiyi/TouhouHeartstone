@@ -1328,7 +1328,11 @@ namespace TouhouHeartstone.Builtin
                                                                                                                 {
                                                                                                                     a1.isCanceled = true;
                                                                                                                 }
-                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER, ID, 2)));
+                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,
+                                                                                                                                                                       (g1, c1, a1) =>
+                                                                                                                                                                       {
+                                                                                                                                                                            return a1.player == c1.getOwner();
+                                                                                                                                                                        }, ID, 2)));
 
                 await g.getOpponent(c.getOwner()).master.addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
                                                                                                                 (g1, c1, a1) =>
@@ -1340,7 +1344,11 @@ namespace TouhouHeartstone.Builtin
                                                                                                                 {
                                                                                                                     a1.isCanceled = true;
                                                                                                                 }
-                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER, ID, 2)));
+                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,
+                                                                                                                                                                        (g1, c1, a1) =>
+                                                                                                                                                                        {
+                                                                                                                                                                            return a1.player == c1.getOwner();
+                                                                                                                                                                        }, ID, 2)));
 
             }
             else

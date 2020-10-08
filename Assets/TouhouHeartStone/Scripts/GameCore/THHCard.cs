@@ -753,8 +753,8 @@ namespace TouhouHeartstone
                 await card.setDead(game, false);
                 await card.setCurrentLife(game, servant.life);
                 await card.setCost(game, servant.cost);
-                await card.setAttack(game, servant.attack);
-                await card.setLife(game, servant.life);
+                //await card.setAttack(game, servant.attack);
+                //await card.setLife(game, servant.life);
                 await card.setSpellDamage(game, servant.spellDamage);
                 await card.setKeywords(game, servant.keywords);
                 await card.setTags(game, servant.tags);
@@ -1337,7 +1337,7 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return null;//card.getFormatString() + "的护甲变为" + value;
+                return null;
             }
         }
     }

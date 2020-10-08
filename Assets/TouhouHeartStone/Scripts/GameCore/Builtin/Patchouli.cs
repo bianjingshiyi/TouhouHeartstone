@@ -56,10 +56,13 @@ namespace TouhouHeartstone.Builtin
                 var mixCard = await player.discover(game, mixableCards, -1, "选择一张卡片进行元素融合");
                 var mixedResults = getMixCards(game, card.define, mixCard.define).Select(define => game.createCard(define)).ToArray();
                 var mixedResult = await player.discover(game, mixedResults, -1, "选择一张融合元素法术加入你的手牌");
-                await player.discard(game, mixCard);
-                await player.tryAddCardToHand(game, mixedResult);
+                //await player.discard(game, mixCard);
+                //await player.tryAddCardToHand(game, mixedResult);
+                await THHCard.setDefine(mixCard, game, mixedResult.define);
             }
         }
+
+        //中立帕秋莉使用的方法
         public static async Task tryMix(THHGame game, THHPlayer player, Card a, Card b)
         {
             var mixedResults = getMixCards(game, a.define, b.define).Select(define => game.createCard(define)).ToArray();
@@ -162,7 +165,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 4 贤者之石 04 每当回合结束，随机将一张花费大于0的元素法术置入你的手牌，耐久-1。战吼：将一张随机元素法术置入你的手牌。
+    /// 4 贤者之石 05 每当回合结束，随机将一张花费大于0的元素法术置入你的手牌，耐久-1。战吼：将一张随机元素法术置入你的手牌。
     /// </summary>
     public class PhilosopherStone : ItemCardDefine
     {
@@ -176,7 +179,9 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect((g1,c1)=>
             {
+                c1.damage(g1,c1,1);
                 return c1.getOwner().addRandomCardToHand(g1,g1.getDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
+                
             }),
             new ItemTrigggerEffectBefore<THHGame.TurnEndEventArg>((g1,c1,a1)=>
             {
