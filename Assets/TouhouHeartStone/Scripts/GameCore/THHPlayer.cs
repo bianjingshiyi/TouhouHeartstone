@@ -262,10 +262,17 @@ namespace TouhouHeartstone
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                if (viewer == player)
-                    return player.name + "抽{card:" + card.define.id + "}";
+                if (!isCanceled)
+                {
+                    if (viewer == player)
+                        return player.name + "抽{card:" + card.define.id + "}";
+                    else
+                        return player.name + "抽了一张牌";
+                }
                 else
-                    return player.name + "抽了一张牌";
+                {
+                    return null;
+                }
             }
         }
         public class BurnEventArg : EventArg, IDescribableEventArg

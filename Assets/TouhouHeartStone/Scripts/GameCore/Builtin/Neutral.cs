@@ -503,7 +503,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async(game,card,target)=>
             {
                 await target.setFreeze(game,true);
-               
+
             },PileFlag.oppo | PileFlag.character)
         };
     }
@@ -1145,29 +1145,10 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            List<Card> TopCards = new List<Card>();
-            int TopCost = 0;
-
-            //获取墓地里最高消耗
-            foreach (Card c in card.getOwner().grave)
-            {
-                if (c.getCost(game) > TopCost)
-                {
-                    TopCost = c.getCost(game);
-                }
-            }
-
-            //获取墓地里最高消耗的牌
-            foreach (Card c in card.getOwner().grave)
-            {
-                if (c.getCost(game) == TopCost)
-                {
-                    TopCards.Add(c);
-                }
-            }
-
-            await card.getOwner().reborn(game, TopCards.random(game), card.getOwner().deck);
-
+            THHPlayer player = card.getOwner();
+            var topCostCard = player.grave.OrderByDescending(c => c.getCost(game)).FirstOrDefault();
+            if (topCostCard != null)
+                await player.grave.moveTo(game, topCostCard, player.deck, game.randomInt(0, player.deck.count));
         }
     }
 
@@ -1199,42 +1180,11 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            List<Card> MinCards = new List<Card>();
-            int MinCost = 25;
-
-            //获取牌库里最低消耗
-            foreach (Card c in card.getOwner().deck)
+            THHPlayer player = card.getOwner();
+            var lowCostCards = player.deck.OrderBy(c => c.getCost(game)).Take(3);
+            foreach (var c in lowCostCards)
             {
-                if (c.getCost(game) > MinCost)
-                {
-                    MinCost = c.getCost(game);
-                }
-            }
-
-            //获取牌库里最低消耗的牌
-            foreach (Card c in card.getOwner().deck)
-            {
-                if (c.getCost(game) == MinCost)
-                {
-                    MinCards.Add(c);
-                }
-            }
-
-            if (MinCards.ToArray().Length < 3)
-            {
-                foreach (Card c in MinCards)
-                {
-                    await card.getOwner().deck.moveTo(game, c, card.getOwner().grave);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    Card _card = MinCards.random(game);
-                    await card.getOwner().deck.moveTo(game, _card, card.getOwner().grave);
-                    MinCards.Remove(_card);
-                }
+                await player.deck.moveTo(game, c, player.grave, game.randomInt(0, player.grave.count));
             }
         }
     }
@@ -1378,7 +1328,11 @@ namespace TouhouHeartstone.Builtin
                                                                                                                 {
                                                                                                                     a1.isCanceled = true;
                                                                                                                 }
-                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER, ID, 2)));
+                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,
+                                                                                                                                                                       (g1, c1, a1) =>
+                                                                                                                                                                       {
+                                                                                                                                                                            return a1.player == c1.getOwner();
+                                                                                                                                                                        }, ID, 2)));
 
                 await g.getOpponent(c.getOwner()).master.addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
                                                                                                                 (g1, c1, a1) =>
@@ -1390,7 +1344,11 @@ namespace TouhouHeartstone.Builtin
                                                                                                                 {
                                                                                                                     a1.isCanceled = true;
                                                                                                                 }
-                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER, ID, 2)));
+                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,
+                                                                                                                                                                        (g1, c1, a1) =>
+                                                                                                                                                                        {
+                                                                                                                                                                            return a1.player == c1.getOwner();
+                                                                                                                                                                        }, ID, 2)));
 
             }
             else

@@ -551,5 +551,21 @@ namespace Tests
             game.skipUntilCanUse<EnemyOnlyBattleCry>(you);
             Assert.False(you.hand.getCard<EnemyOnlyBattleCry>().isValidTarget(game, you.master));
         }
+
+        [Test]
+        public void freezeServantTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var _,
+                new KeyValuePair<int, int>(TestFreezeBrain.ID, 3),
+                new KeyValuePair<int, int>(DefaultServant.ID, 1));
+
+            game.skipUntilCanUse<DefaultServant>(you);
+            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(),targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(), targets: you.master);
+            you.cmdTurnEnd(game);
+
+            
+        }
     }
 }
