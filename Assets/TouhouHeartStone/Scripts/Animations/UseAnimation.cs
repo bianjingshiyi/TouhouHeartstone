@@ -64,29 +64,28 @@ namespace Game
                     var hand = table.getHand(eventArg.card);
                     if (hand == null && _moveAnim == null)
                         throw new ActorNotFoundException(eventArg.card);
-                    if (!table.ui.ServantPlaceHolder.isDisplaying)
-                    {
-                        //敌方使用随从
-                        if (_moveAnim == null)
-                            _moveAnim = new HandToFieldAnim(table, hand, table.ui.EnemyFieldList, eventArg.position);
-                        if (!_moveAnim.update(table))
-                            return false;
-                    }
+                    if (_moveAnim == null)
+                        _moveAnim = new HandToFieldAnim(table, hand, table.ui.EnemyFieldList, eventArg.position);
+                    if (hand != null && !_moveAnim.update(table))
+                        return false;
                     if (!eventArg.isCanceled)
                     {
                         table.ui.EnemyHandList.removeItem(hand);
                         if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg))
                             return false;
-                        table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
-                        table.ui.ServantPlaceHolder.hide();
                     }
                     else
                     {
                         if (_targetedAnim == null)
+                        {
                             _targetedAnim = new HandMoveAnim(hand, hand.rectTransform, table.handToFieldCurve);
+                            table.setCard(hand.Card, eventArg.card, true);
+                        }
                         if (!_targetedAnim.update(table))
                             return false;
                     }
+                    table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
+                    table.ui.ServantPlaceHolder.hide();
                 }
             }
             else if (eventArg.card.define is SpellCardDefine)

@@ -97,6 +97,9 @@ namespace UI
             {
                 switch (value)
                 {
+                    case CATEGORY.MASTER:
+                        _onTypeControllerMaster.Invoke();
+                        break;
                     case CATEGORY.SPELL:
                         _onTypeControllerSpell.Invoke();
                         break;
@@ -112,6 +115,8 @@ namespace UI
                 }
             }
         }
+        [SerializeField]
+        private UnityEvent _onTypeControllerMaster;
         [SerializeField]
         private UnityEvent _onTypeControllerSpell;
         [SerializeField]
