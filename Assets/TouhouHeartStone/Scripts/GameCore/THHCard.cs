@@ -1299,7 +1299,6 @@ namespace TouhouHeartstone
         /// <param name="card">触发登场的牌</param>
         /// <param name="game"></param>
         /// <param name="targets">登场效果目标，可以为null</param>
-        /// <param name="effects"></param>
         /// <returns></returns>
         public static async Task<ComeOnStageArg> ComeOnStage(this Card card, IGame game, Card[] targets)
         {
@@ -1340,5 +1339,7 @@ namespace TouhouHeartstone
                 return null;
             }
         }
+
+        
     }
 }

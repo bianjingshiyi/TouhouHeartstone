@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone.Builtin;
+using UnityEditor.Build;
+
 namespace TouhouHeartstone
 {
     public class THHPlayer : Player
@@ -725,6 +727,65 @@ namespace TouhouHeartstone
             }
             return cardList.ToArray();
         }
+
+
+        /// <summary>
+        /// 揭示Reveal
+        /// 向双方展示牌库里的一张牌
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="cards">被展示卡的来源</param>
+        /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
+        /// <returns></returns>
+
+        public async Task<Card> Reveal(THHGame game, Pile cards, int define=0)
+        {
+            Card show = null;
+            switch (define)
+            {
+                case 0:
+                    show = cards.random(game);
+                    game.logger.log("揭示一张牌:" + show);
+                    break;
+                case 1:
+                    show = cards.Where(c => c.isSpell()).random(game);
+                    game.logger.log("揭示法术牌:" + show);
+                    break;
+                case 2:
+                    show = cards.Where(c => c.isServant()).random(game);
+                    game.logger.log("揭示随从牌:" + show);
+                    break;
+                case 3:
+                    show = cards.Where(c => c.isItem()).random(game);
+                    game.logger.log("揭示武器牌:" + show);
+                    break;
+                default:
+                    game.logger.log("揭示失败：类别不对");
+                    break;
+            }
+            return show;
+        }
+
+        public class RevealArg : EventArg, IDescribableEventArg
+        {
+            public THHPlayer player;
+            Card card;  //被揭示的牌
+            
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            public ICard[] getTargets(IGame game, IPlayer viewer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public string toString(IGame game, IPlayer viewer)
+            {
+                return null;
+            }           
+        }
+
         #region Command
         public Task cmdInitReplace(THHGame game, params Card[] cards)
         {
