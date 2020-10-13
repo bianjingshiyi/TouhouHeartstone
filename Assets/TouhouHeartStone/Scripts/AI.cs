@@ -6,6 +6,7 @@ using System.Linq;
 using Card = TouhouCardEngine.Card;
 using TouhouHeartstone.Builtin;
 using System;
+using System.Resources;
 
 namespace Game
 {
@@ -200,6 +201,10 @@ namespace Game
                     return value;
                 if (calcYoumuValue(game, player, card, opponent, target, out value))
                     return value;
+                if (calcReisenValue(game, player, card, opponent, target, out value))
+                    return value;
+                // if (calcBattlecryValue(game, player, card, opponent, target, out value))
+                //     return value;
                 else
                     value = card.getCost(game);
             }
@@ -392,6 +397,61 @@ namespace Game
         {
             if (target == opponent.master || opponent.field.Contains(target))
                 return target.getAttack(game);
+            return 0;
+        }
+        bool calcReisenValue(THHGame game, THHPlayer player, Card card, THHPlayer opponent, Card target, out float value)
+        {
+            switch (card.define)
+            {
+                case LunaticShoot _:
+                    value = calcDamageValue(game, player, opponent, opponent.master, 2);
+                    return true;
+                case LunaticShoot_MindDropping _:
+                    value = calcDamageValue(game, player, opponent, target, 2);
+                    return true;
+                case XWave _:
+                    value = 2 + opponent.field.count;
+                    return true;
+                case MindStopper _:
+                    value = 2 + opponent.field.count == 0?1:0;
+                    return true;
+                case MindShaker _:
+                    value = 2 + opponent.field.count;
+                    return true;
+                case DisorderEye _:
+                    value = 2 + opponent.field.count == 0?0:1;
+                    return true;
+                case VisionaryTuning _:
+                    value = 2 + player.field.count + player.master.getCurrentLife(game)<15?2:0;
+                    return true;
+                case FieldUltraViolet _:
+                    value = 1;
+                    return true;
+                case PeerlessPatriotsElixir _:
+                    value = calcBuffValue(game, player, opponent, target, 3, 3) - calcServantValue(game, player,
+                        opponent, target.getCurrentLife(game), target.getAttack(game));
+                    return true;
+                case MindExplosion _:
+                    value = calcDamageValue(game, player, opponent, opponent.master, 5);
+                    return true;
+                case MindDropping _:
+                    value = 1;
+                    return true;
+                case LunaticGun _:
+                    value = player.item==null?calcWeaponValue(game, card):0;
+                    return true;
+                case DisbeliefAspect _:
+                    value = 1;
+                    return true;
+                default:
+                    value = 0;
+                    return false;
+            }
+        }
+        float calcHealingValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
+        {
+            if (target == player.master || player.field.Contains(target))
+                return target.getCurrentLife(game) - target.getLife(game);
             return 0;
         }
     }
