@@ -1,5 +1,6 @@
 ﻿using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using System.Threading.Tasks;
 namespace TouhouHeartstone.Builtin
 {
     [IgnoreCardDefine]
@@ -13,6 +14,53 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = WindStopMiracle.ID;
         public override IEffect[] effects { get; set; } = new Effect[0];
+
+        /// <summary>
+        /// 揭示对决
+        /// 双方揭示牌库里的一张牌，法力消耗大的胜利
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
+        /// <returns></returns>
+        public static async Task<RevealDuelArg> revealDuel(THHPlayer player, THHGame game, int define = 0)
+        {
+            Card card1 = await player.Reveal(game, player.deck, define);
+            Card card2 = await game.getOpponent(player).Reveal(game, game.getOpponent(player).deck, define);
+            bool result = false;
+
+            if (card1.getCost(game) > card2.getCost(game))
+            {
+                result = true;
+            }
+
+            var eventArg = await game.triggers.doEvent(new RevealDuelArg() { player = player, card1 = card1, card2 = card2, result = result }, async arg =>
+            {
+                game.logger.log(player + "发动了对决，她揭示了：" + card1 + "。她的对手揭示了：" + card2 + "。结果是" + result);
+            });
+            return eventArg;
+        }
+
+        public class RevealDuelArg : EventArg, IDescribableEventArg
+        {
+            public THHPlayer player;   //对决发起方
+            public Card card1;     //发起方揭示的牌
+            public Card card2;     //另一方揭示的牌
+            public bool result;    //是否胜利
+            public ICard getCard(IGame game, IPlayer viewer)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public ICard[] getTargets(IGame game, IPlayer viewer)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public string toString(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+        }
     }
     /// <summary>
     /// 风止奇迹：治愈2点生命值。
@@ -30,5 +78,43 @@ namespace TouhouHeartstone.Builtin
                                                 },PileFlag.both | PileFlag.character)
         };
     }
+
+    /// <summary>
+    /// 星之仪式
+    /// 召请神明 如果神明回应了你，抽一张法力值消耗最高的牌；否则将一张全新的“星之仪式”置入手牌
+    /// </summary>
+    public class StarCeremony : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SKILL | 0x001;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer you = card.getOwner();
+            var duel = await Sanae.revealDuel(you,game);
+            if (duel.result)
+            {
+                //遍历牌库寻找法力消耗最高的牌
+                Card _card = card.getOwner().deck.top;
+                foreach (Card c in card.getOwner().deck)
+                {
+                    if (c.getCost(game) > _card.getCost(game))
+                    {
+                        _card = c;
+                    }
+                }
+                await card.getOwner().draw(game, _card);
+            }
+            else
+            {
+                await you.addCardToHand<StarCeremony>(game);
+            }
+        }
+    }
+
 
 }

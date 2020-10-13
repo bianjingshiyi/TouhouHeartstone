@@ -6,6 +6,7 @@ using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone.Builtin;
 using UnityEditor.Build;
+using System.Runtime.CompilerServices;
 
 namespace TouhouHeartstone
 {
@@ -738,7 +739,7 @@ namespace TouhouHeartstone
         /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
         /// <returns></returns>
 
-        public async Task<Card> Reveal(THHGame game, Pile cards, int define=0)
+        public async Task<Card> Reveal(THHGame game, Pile cards, int define = 0)
         {
             Card show = null;
             switch (define)
@@ -770,7 +771,7 @@ namespace TouhouHeartstone
         {
             public THHPlayer player;
             Card card;  //被揭示的牌
-            
+
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
@@ -783,8 +784,14 @@ namespace TouhouHeartstone
             public string toString(IGame game, IPlayer viewer)
             {
                 return null;
-            }           
+            }
+
+
         }
+
+
+        
+
 
         #region Command
         public Task cmdInitReplace(THHGame game, params Card[] cards)
