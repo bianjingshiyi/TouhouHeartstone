@@ -1533,6 +1533,9 @@ MonoBehaviour:
           m_StringArgument: IsFaceup_True
           m_BoolArgument: 0
         m_CallState: 2
+  _flipToFaceAnimName: Card_FlipToFace
+  _flipToBackAnimName: Card_FlipToBack
+  _notifyAnimName: Card_Notice
   onCast:
     beforeAnim:
       m_PersistentCalls:
