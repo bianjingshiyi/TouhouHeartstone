@@ -746,31 +746,35 @@ namespace TouhouHeartstone
             {
                 case 0:
                     show = cards.random(game);
-                    game.logger.log("揭示一张牌:" + show);
                     break;
                 case 1:
                     show = cards.Where(c => c.isSpell()).random(game);
-                    game.logger.log("揭示法术牌:" + show);
                     break;
                 case 2:
                     show = cards.Where(c => c.isServant()).random(game);
-                    game.logger.log("揭示随从牌:" + show);
                     break;
                 case 3:
                     show = cards.Where(c => c.isItem()).random(game);
-                    game.logger.log("揭示武器牌:" + show);
                     break;
                 default:
                     game.logger.log("揭示失败：类别不对");
                     break;
             }
+
+            await game.triggers.doEvent(new RevealArg() { player = this, card = show }, async arg =>
+            {
+                game.logger.log("揭示了{card:" + show.define.id + "}");
+            });
+            
+            
+
             return show;
         }
 
         public class RevealArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
-            Card card;  //被揭示的牌
+            public Card card;  //被揭示的牌
 
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -778,12 +782,12 @@ namespace TouhouHeartstone
             }
             public ICard[] getTargets(IGame game, IPlayer viewer)
             {
-                throw new NotImplementedException();
+                return null;
             }
 
             public string toString(IGame game, IPlayer viewer)
             {
-                return null;
+                return player.name+ "揭示了{card:" + card.define.id + "}";
             }
 
 

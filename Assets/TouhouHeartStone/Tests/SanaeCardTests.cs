@@ -77,5 +77,31 @@ namespace Tests
 
             game.Dispose();
         }
+
+        [Test]
+        public void GrayThaumaturgyTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
+                Enumerable.Repeat(game.getDefine<TestFreezeBrain>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getDefine<GrayThaumaturgy>(), 2)));
+
+            game.skipUntilHasGem(you, 2);
+            you.master.damage(game, null, 10);
+
+            you.cmdUse(game, you.hand.getCard<GrayThaumaturgy>(), targets: you.master);
+            you.Reveal(game, you.deck);
+            you.Reveal(game, you.deck);
+            you.Reveal(game, you.deck);
+
+            
+            you.cmdUse(game, you.hand.getCard<GrayThaumaturgy>(),targets: you.master);
+
+            game.Dispose();
+        }
     }
 }

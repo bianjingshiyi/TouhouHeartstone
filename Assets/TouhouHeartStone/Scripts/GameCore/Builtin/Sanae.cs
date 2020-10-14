@@ -1,6 +1,8 @@
 ﻿using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using System.Threading.Tasks;
+using System.Linq;
+
 namespace TouhouHeartstone.Builtin
 {
     [IgnoreCardDefine]
@@ -24,18 +26,18 @@ namespace TouhouHeartstone.Builtin
         /// <returns></returns>
         public static async Task<RevealDuelArg> revealDuel(THHPlayer player, THHGame game, int define = 0)
         {
-            Card card1 = await player.Reveal(game, player.deck, define);
-            Card card2 = await game.getOpponent(player).Reveal(game, game.getOpponent(player).deck, define);
+            Card youCard = await player.Reveal(game, player.deck, define);
+            Card oppoCard = await game.getOpponent(player).Reveal(game, game.getOpponent(player).deck, define);
             bool result = false;
 
-            if (card1.getCost(game) > card2.getCost(game))
+            if (youCard.getCost(game) > oppoCard.getCost(game))
             {
                 result = true;
             }
 
-            var eventArg = await game.triggers.doEvent(new RevealDuelArg() { player = player, card1 = card1, card2 = card2, result = result }, async arg =>
+            var eventArg = await game.triggers.doEvent(new RevealDuelArg() { player = player, card1 = youCard, card2 = oppoCard, result = result }, async arg =>
             {
-                game.logger.log(player + "发动了对决，她揭示了：" + card1 + "。她的对手揭示了：" + card2 + "。结果是" + result);
+                game.logger.log(player + "发动了对决，她揭示了：" + youCard + "。她的对手揭示了：" + oppoCard + "。结果是" + result);
             });
             return eventArg;
         }
@@ -48,17 +50,17 @@ namespace TouhouHeartstone.Builtin
             public bool result;    //是否胜利
             public ICard getCard(IGame game, IPlayer viewer)
             {
-                throw new System.NotImplementedException();
+                return null;
             }
 
             public ICard[] getTargets(IGame game, IPlayer viewer)
             {
-                throw new System.NotImplementedException();
+                return null;
             }
 
             public string toString(IGame game, IPlayer viewer)
             {
-                return null;
+                return player.name + "发动了对决，她揭示了:{ card:"  + card1.define.id + "} " + "。她的对手揭示了：{ card:" + card2 + "}。结果是" + result;
             }
         }
     }
@@ -116,5 +118,29 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
+    /// <summary>
+    /// 灰色秘术
+    /// 治愈2点生命值。本回合你每揭示过一次，重复一遍。
+    /// </summary>
+    public class GrayThaumaturgy : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SKILL | 0x002;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async (game, card, target) =>
+            {
+                int count = game.triggers.getRecordedEvents().skipUntilLast(e=> e is THHGame.TurnStartEventArg turnStart)
+                    .OfType<THHPlayer.RevealArg>().Count();
 
+                await target.heal(game,card,2);
+                for(int i=0; i < count; i++)
+                {
+                    await target.heal(game,card,2);
+                }
+            })
+        };
+       
+    }
 }
