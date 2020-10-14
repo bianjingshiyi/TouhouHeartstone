@@ -35,7 +35,7 @@ namespace TouhouHeartstone.Builtin
                 result = true;
             }
 
-            var eventArg = await game.triggers.doEvent(new RevealDuelArg() { player = player, card1 = youCard, card2 = oppoCard, result = result }, async arg =>
+            var eventArg = await game.triggers.doEvent(new RevealDuelArg() { player = player, youCard = youCard, oppoCard = oppoCard, result = result }, async arg =>
             {
                 game.logger.log(player + "发动了对决，她揭示了：" + youCard + "。她的对手揭示了：" + oppoCard + "。结果是" + result);
             });
@@ -44,10 +44,22 @@ namespace TouhouHeartstone.Builtin
 
         public class RevealDuelArg : EventArg, IDescribableEventArg
         {
-            public THHPlayer player;   //对决发起方
-            public Card card1;     //发起方揭示的牌
-            public Card card2;     //另一方揭示的牌
-            public bool result;    //是否胜利
+            /// <summary>
+            /// 对决发起方
+            /// </summary>
+            public THHPlayer player;  
+            /// <summary>
+            /// 发起方揭示的牌
+            /// </summary>
+            public Card youCard;  
+            /// <summary>
+            /// 另一方揭示的牌
+            /// </summary>
+            public Card oppoCard; 
+            /// <summary>
+            /// 是否胜利
+            /// </summary>
+            public bool result;   
             public ICard getCard(IGame game, IPlayer viewer)
             {
                 return null;
@@ -60,7 +72,7 @@ namespace TouhouHeartstone.Builtin
 
             public string toString(IGame game, IPlayer viewer)
             {
-                return player.name + "发动了对决，她揭示了:{ card:"  + card1.define.id + "} " + "。她的对手揭示了：{ card:" + card2 + "}。结果是" + result;
+                return player.name + "发动了对决，她揭示了:{ card:"  + youCard.define.id + "} " + "。她的对手揭示了：{ card:" + oppoCard + "}。结果是" + result;
             }
         }
     }
