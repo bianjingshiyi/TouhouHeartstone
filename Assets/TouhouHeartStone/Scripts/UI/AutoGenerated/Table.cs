@@ -50,6 +50,7 @@ namespace UI
             this._ServantPlaceHolder = this.transform.Find("Fields").Find("ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
             this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
             this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
+            this._LeftDisplayImage = this.transform.Find("LeftDisplay").GetComponent<Image>();
             this._CenterDisplayImage = this.transform.Find("CenterDisplay").GetComponent<Image>();
             this._RightDisplayImage = this.transform.Find("RightDisplay").GetComponent<Image>();
             this._TipText = this.transform.Find("TipText").GetComponent<Text>();
@@ -383,6 +384,19 @@ namespace UI
                     this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
                 }
                 return this._LargeCard;
+            }
+        }
+        [SerializeField()]
+        private Image _LeftDisplayImage;
+        public Image LeftDisplayImage
+        {
+            get
+            {
+                if ((this._LeftDisplayImage == null))
+                {
+                    this._LeftDisplayImage = this.transform.Find("LeftDisplay").GetComponent<Image>();
+                }
+                return this._LeftDisplayImage;
             }
         }
         [SerializeField()]

@@ -12,6 +12,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Card = TouhouCardEngine.Card;
 using BJSYGameCore.UI;
+
 namespace Game
 {
     public partial class TableManager : Manager
@@ -26,6 +27,9 @@ namespace Game
         [SerializeField]
         AnimationCurve _fieldMoveCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
         public AnimationCurve fieldMoveCurve => _fieldMoveCurve;
+        [SerializeField]
+        AnimationCurve _cardShowCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.2f, 1));
+        public AnimationCurve cardShowCurve => _cardShowCurve;
         [SerializeField]
         Gradient timeoutGradient = new Gradient();
         [SerializeField]
