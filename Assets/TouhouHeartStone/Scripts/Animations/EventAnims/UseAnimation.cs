@@ -3,7 +3,7 @@ using BJSYGameCore;
 using UnityEngine;
 using UI;
 using BJSYGameCore.UI;
-using UObject = UnityEngine.Object;
+
 namespace Game
 {
     class UseAnimation : EventAnimation<THHPlayer.UseEventArg>
@@ -53,7 +53,7 @@ namespace Game
                         {
                             item.Card.display();
                             table.setCard(item.Card, eventArg.card, true);
-                            _moveAnim = new HandMoveAnim(item, item.rectTransform, table.handToFieldCurve);
+                            _moveAnim = new CardMoveAnim(item.Card, item.rectTransform, table.handToFieldCurve);
                         }
                         if (!_moveAnim.update(table))
                             return false;
@@ -78,7 +78,7 @@ namespace Game
                     {
                         if (_targetedAnim == null)
                         {
-                            _targetedAnim = new HandMoveAnim(hand, hand.rectTransform, table.handToFieldCurve);
+                            _targetedAnim = new CardMoveAnim(hand.Card, hand.rectTransform, table.handToFieldCurve);
                             table.setCard(hand.Card, eventArg.card, true);
                         }
                         if (!_targetedAnim.update(table))

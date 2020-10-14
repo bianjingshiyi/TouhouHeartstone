@@ -6,10 +6,10 @@ using System;
 namespace Game
 {
     [Serializable]
-    class HandMoveAnim : TableAnimation
+    class CardMoveAnim : TableAnimation
     {
         [SerializeField]
-        HandListItem _hand;
+        Card _card;
         [SerializeField]
         Vector3 _startPosition;
         [SerializeField]
@@ -20,19 +20,19 @@ namespace Game
         AnimationCurve _curve;
         [SerializeField]
         Timer _timer;
-        public HandMoveAnim(HandListItem hand, Vector3 targetPosition, AnimationCurve curve)
+        public CardMoveAnim(Card card, Vector3 targetPosition, AnimationCurve curve)
         {
-            _hand = hand;
-            _startPosition = hand.Card.rectTransform.position;
+            _card = card;
+            _startPosition = card.rectTransform.position;
             _targetPosition = targetPosition;
             _curve = curve;
             _timer = new Timer() { duration = curve.keys.Last().time };
             _timer.start();
         }
-        public HandMoveAnim(HandListItem hand, Transform target, AnimationCurve curve)
+        public CardMoveAnim(Card card, Transform target, AnimationCurve curve)
         {
-            _hand = hand;
-            _startPosition = hand.Card.rectTransform.position;
+            _card = card;
+            _startPosition = card.rectTransform.position;
             _target = target;
             _curve = curve;
             _timer = new Timer() { duration = curve.keys.Last().time };
@@ -42,7 +42,7 @@ namespace Game
         {
             if (!_timer.isExpired())
             {
-                _hand.Card.rectTransform.position = Vector3.Lerp(_startPosition, _target != null ? _target.position : _targetPosition, _curve.Evaluate(_timer.time));
+                _card.rectTransform.position = Vector3.Lerp(_startPosition, _target != null ? _target.position : _targetPosition, _curve.Evaluate(_timer.time));
                 return false;
             }
             return true;
