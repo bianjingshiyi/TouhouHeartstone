@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-using TouhouHeartstone.Builtin;
-using UnityEditor.Build;
-using System.Runtime.CompilerServices;
 
 namespace TouhouHeartstone
 {
