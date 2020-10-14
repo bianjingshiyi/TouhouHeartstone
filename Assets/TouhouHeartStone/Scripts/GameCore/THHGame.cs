@@ -188,6 +188,12 @@ namespace TouhouHeartstone
             THHPlayer opponent = getOpponent(player);
             return opponent.field.Concat(new Card[] { opponent.master }).ToArray();
         }
+
+        public Card[] getAllAllys(THHPlayer player)
+        {
+            return player.field.Concat(new Card[] { player.master }).ToArray();
+        }
+
         #endregion
         #region Gameflow
         public bool isRunning { get; private set; } = false;

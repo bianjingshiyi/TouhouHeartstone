@@ -95,7 +95,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 星之仪式
-    /// 召请神明 如果神明回应了你，抽一张法力值消耗最高的牌；否则将一张全新的“星之仪式”置入手牌
+    /// 信仰对决 将一张全新的“星之仪式”置入手牌；获胜时改为抽一张法力值消耗最高的牌
     /// </summary>
     public class StarCeremony : SpellCardDefine
     {
@@ -154,5 +154,53 @@ namespace TouhouHeartstone.Builtin
             })
         };
        
+    }
+
+    /// <summary>
+    /// 商业繁荣祈愿
+    /// 信仰对决（随从牌） 对目标随从造成3点伤害；获胜时再治愈你的英雄4点生命值。
+    /// </summary>
+    public class CharmofGoodCommerce : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SKILL | 0x003;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async (game, card, target) =>
+            {
+                THHPlayer you = card.getOwner();
+                var duel = await Sanae.revealDuel(you, game,2);
+                if (duel.result)
+                {
+                    await you.master.heal(game,card,4);
+                }
+                await target.damage(game,card,3);
+                
+            })
+        };    
+    }
+
+    /// <summary>
+    /// 五谷丰穰
+    /// 治愈10点生命值，分配到所有友方角色身上。
+    /// </summary>
+    public class BumperCropRiceShower : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SKILL | 0x004;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            for(int i=0; i<10; i++)
+            {
+                await game.getAllAllys(card.getOwner()).Where(e => e.isDamage(game)).random(game).heal(game, card, 1);
+            }
+        }
     }
 }

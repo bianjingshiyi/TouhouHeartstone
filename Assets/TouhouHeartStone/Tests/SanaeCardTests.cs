@@ -103,5 +103,34 @@ namespace Tests
 
             game.Dispose();
         }
+
+        /// <summary>
+        /// 星之仪式测试
+        /// 召请神明 如果神明回应了你，抽一张法力值消耗最高的牌；否则将一张全新的“星之仪式”置入手牌
+        /// </summary>
+        [Test]
+        public void BumperCropRiceShowerTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<BumperCropRiceShower>(), 1)));
+
+            for(int i = 0; i < 3; i = i + 1)
+            {
+                game.skipUntilCanUse<DefaultServant>(you);
+                you.cmdUse(game, you.hand.getCard<DefaultServant>());
+                you.field[0].damage(game, null, 3);
+            }
+            you.master.damage(game,null,3);
+            game.skipUntilCanUse<BumperCropRiceShower>(you);
+            you.cmdUse(game, you.hand.getCard<BumperCropRiceShower>());
+
+            game.Dispose();
+        }
     }
 }
