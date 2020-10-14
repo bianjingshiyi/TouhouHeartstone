@@ -203,4 +203,61 @@ namespace TouhouHeartstone.Builtin
             }
         }
     }
+
+    /// <summary>
+    /// 客星之奇迹
+    /// 信仰对决（随从牌） 对所有敌方随从造成2点伤害；获胜时再抽一张牌。
+    /// </summary>
+    public class DaytimeGuestStars : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SKILL | 0x005;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer you = card.getOwner();
+            var duel = await Sanae.revealDuel(you, game);
+            await game.getOpponent(you).field.damage(game, card, 2);
+            if (duel.result)
+            {
+                await you.draw(game);
+            }
+            
+        }
+
+    }
+
+    /// <summary>
+    /// 开海之奇迹
+    /// 信仰对决（随从牌）对目标随从相邻的随从造成4点伤害；获胜时再对目标随从造成2点伤害。
+    /// </summary>
+    public class TheDayTheSeaSplit : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SKILL | 0x006;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async (game, card, target) =>
+            {
+                THHPlayer you = card.getOwner();
+                var duel = await Sanae.revealDuel(you, game,2);
+
+                foreach( Card t in target.getNearbyCards())
+                {
+                    await t.damage(game,card,4);
+                }
+                if (duel.result)
+                {
+                    await target.damage(game,card,2);
+                }
+                
+
+            })
+        };
+    }
 }
