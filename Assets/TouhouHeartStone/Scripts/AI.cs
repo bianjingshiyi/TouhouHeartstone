@@ -111,7 +111,7 @@ namespace Game
             {
                 if (!card.isUsable(game, player, out _))
                     continue;
-                if (card.define is ServantCardDefine && card.define.getActiveEffect()!=null)
+                if (card.define is ServantCardDefine && card.define.getActiveEffect()==null)
                 {
                     for (int i = 0; i < player.field.count + 1; i++)
                     {
