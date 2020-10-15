@@ -8,5 +8,6 @@
         public const string ELEMENT = "Element";
         public const string BEAST = "Beast";
         public const string BUG = "Bug";
+        public const string GOD = "God";
     }
 }
