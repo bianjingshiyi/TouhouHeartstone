@@ -34,10 +34,7 @@ namespace TouhouHeartstone
         public override string type { get; set; }
         public override string isUsable(CardEngine engine, Player player, Card card)
         {
-            string script = getProp<string>("condition");
-            if (string.IsNullOrEmpty(script))
-                return null;
-            return engine.runFunc<string>(script, new EffectGlobals() { engine = engine, player = player, card = card, targetCards = null });
+            throw new NotImplementedException();
         }
         public override IEffect[] effects
         {

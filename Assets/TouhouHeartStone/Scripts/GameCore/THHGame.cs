@@ -25,11 +25,11 @@ namespace TouhouHeartstone
             get { return base.time as TimeManager; }
             set { base.time = value; }
         }
-        public THHGame(params CardDefine[] defines) : base(null, null, GameOption.Default.randomSeed, defines)
+        public THHGame(params CardDefine[] defines) : base(GameOption.Default.randomSeed, defines)
         {
             option = GameOption.Default;
         }
-        public THHGame(GameOption option, params CardDefine[] defines) : base(null, null, option.randomSeed, defines)
+        public THHGame(GameOption option, params CardDefine[] defines) : base(option.randomSeed, defines)
         {
             this.option = option;
         }
@@ -412,7 +412,7 @@ namespace TouhouHeartstone
                             logger.log("被冻结的随从解除冰冻");
                             chara.setFreeze(this, false);
                         }
-                        else if((chara.getMaxAttackTimes(this) - chara.getAttackTimes(this) >= 1) && chara.define is MasterCardDefine)
+                        else if ((chara.getMaxAttackTimes(this) - chara.getAttackTimes(this) >= 1) && chara.define is MasterCardDefine)
                         {
                             logger.log("被冻结的英雄解除冰冻");
                             chara.setFreeze(this, false);
