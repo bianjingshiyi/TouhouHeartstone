@@ -70,10 +70,10 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<TestFreezeBrain>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<StarCeremony>(), 1)));
+                Enumerable.Repeat(game.getDefine<TestFreezeBrain>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<StarRitual>(), 1)));
 
-            game.skipUntilCanUse<StarCeremony>(you);
-            you.cmdUse(game, you.hand.getCard<StarCeremony>());
+            game.skipUntilCanUse<StarRitual>(you);
+            you.cmdUse(game, you.hand.getCard<StarRitual>());
 
             game.Dispose();
         }
@@ -118,7 +118,7 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<BumperCropRiceShower>(), 1)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<BumperCrop>(), 1)));
 
             for(int i = 0; i < 3; i = i + 1)
             {
@@ -127,8 +127,8 @@ namespace Tests
                 you.field[0].damage(game, null, 3);
             }
             you.master.damage(game,null,3);
-            game.skipUntilCanUse<BumperCropRiceShower>(you);
-            you.cmdUse(game, you.hand.getCard<BumperCropRiceShower>());
+            game.skipUntilCanUse<BumperCrop>(you);
+            you.cmdUse(game, you.hand.getCard<BumperCrop>());
 
             game.Dispose();
         }
