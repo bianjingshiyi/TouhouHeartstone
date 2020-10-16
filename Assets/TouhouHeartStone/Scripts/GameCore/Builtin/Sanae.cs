@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Boo.Lang;
 using System.Runtime.InteropServices;
+using System;
 
 namespace TouhouHeartstone.Builtin
 {
@@ -552,5 +553,182 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 3;
         public override bool isToken { get; set; } = true;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+    }
+
+    /// <summary>
+    /// 泄矢诹访子
+    /// 唯一，突袭
+    /// 位于手牌中时，本局对战你每揭示过一次法力值消耗减少（1）点。
+    /// 亡语：随机释放一场灾祸。
+    /// </summary>
+
+    public class SuwakoMoriya : ServantCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x019;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 4;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE,KEYWORD.RUSH };
+        public override string[] tags { get; set; } = { TAG.GOD };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHPlayer.RevealArg>(PILE.HAND,
+                (game, card, arg) =>
+                {
+                    return arg.player == card.getOwner();
+                },null,async(game,card,arg)=>
+                {
+                    await card.addBuff(game,new GeneratedBuff(ID,new CostModifier(-1)));
+                }),
+            new DeathRattle(ID, async (game, card, p) =>
+            {
+                int index = game.randomInt(1,4);
+                THHPlayer you = card.getOwner();
+                THHPlayer oppo = game.getOpponent(you);
+                switch (index)
+                {
+                    case 1:
+                        await oppo.field.random(game).setDead(game,true);
+                        await game.updateDeath(game);
+                        break;
+                    case 2:
+                        await you.createToken(game,game.getDefine<Frog>());
+                        await you.createToken(game,game.getDefine<Frog>());
+                        break;
+                    case 3:
+                        foreach(Card c in oppo.field)
+                        {
+                            await c.addBuff(game,new GeneratedBuff(ID,new AttackModifier(1,true)));
+                        }
+                        break;
+                    default:
+                        await you.grave.moveTo(game,card,you.hand);
+                        await card.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
+                        break;
+                }
+            })
+        };
+        
+        
+    }
+
+    /// <summary>
+    /// 青蛙
+    /// 衍生卡，2/2/2嘲讽
+    /// </summary>
+    public class Frog : ServantCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x020;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        public override bool isToken { get; set; } = true;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+    }
+
+    /// <summary>
+    /// 赤口之灾祸
+    /// 假卡，随机消灭一个随从
+    /// </summary>
+    public class SuwakoMoriya_A : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x021;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+
+        };
+    }
+
+    /// <summary>
+    /// 青蛙之灾祸
+    /// 假卡，召唤2个2/2并具有嘲讽的青蛙。
+    /// </summary>
+    public class SuwakoMoriya_B : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x022;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+
+        };
+    }
+
+    /// <summary>
+    /// 荒芜之灾祸
+    /// 假卡，使所有敌方随从攻击力变为1。
+    /// </summary>
+    public class SuwakoMoriya_C : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x023;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+
+        };
+    }
+
+    /// <summary>
+    /// 休眠之灾祸
+    /// 假卡，返回手牌并获得+2/+2。
+    /// </summary>
+    public class SuwakoMoriya_D : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x024;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+
+        };
+    }
+
+    public class GodWind : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x025;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+       // public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHPlayer.RevealArg>(PILE.HAND,
+                (game, card, arg) =>
+                {
+                    return arg.player == card.getOwner();
+                },null,async(game,card,arg)=>
+                {
+                    await card.addBuff(game,new GeneratedBuff(ID,new CostModifier(-1)));
+                }),
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer you = card.getOwner();
+            THHPlayer oppo = game.getOpponent(you);
+    
+            foreach (Card c1 in oppo.field)
+            {
+                int count = oppo.deck.count;
+                int index = game.randomInt(0, count);
+                await you.field.moveTo(game, c1, oppo.deck,index);
+            }
+
+            foreach (Card c1 in you.field)
+            {
+                int  count = oppo.deck.count;
+                int index = game.randomInt(0, count);
+                await you.field.moveTo(game, c1, oppo.deck, index);
+            }
+
+        }
     }
 }
