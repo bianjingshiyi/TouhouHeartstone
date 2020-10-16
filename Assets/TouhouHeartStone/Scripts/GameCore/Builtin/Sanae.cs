@@ -146,7 +146,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
                 int count = game.triggers.getRecordedEvents().skipUntilLast(e=> e is THHGame.TurnStartEventArg turnStart)
-                    .OfType<THHPlayer.RevealArg>().Count();
+                    .OfType<Sanae.RevealDuelArg>().Count();
 
                 await target.heal(game,card,2);
                 for(int i=0; i < count; i++)
@@ -359,7 +359,7 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID, async(game, card,p) =>
             {
                 int count = game.triggers.getRecordedEvents().skipUntilLast(e=> e is THHGame.StartEventArg GameStart)
-                    .OfType<THHPlayer.RevealArg>().Count();
+                    .OfType<Sanae.RevealDuelArg>().Count();
 
                 for(int i=0; i<count; i++)
                 {
@@ -420,7 +420,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            bool isRevealed = (game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).OfType<THHPlayer.RevealArg>().Count() != 0);
+            bool isRevealed = (game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).OfType<Sanae.RevealDuelArg>().Count() != 0);
             if (isRevealed)
             {
                 await game.getOpponent(card.getOwner()).field.Where(c => c.getAttack(game) <= 3).random(game).setDead(game,true);
@@ -572,14 +572,13 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = { TAG.GOD };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.RevealArg>(PILE.HAND,
-                (game, card, arg) =>
-                {
-                    return arg.player == card.getOwner();
-                },null,async(game,card,arg)=>
-                {
-                    await card.addBuff(game,new GeneratedBuff(ID,new CostModifier(-1)));
-                }),
+            new IntPropFixer<Sanae.RevealDuelArg>(PileFlag.hand,
+                new IntPropFixer<Sanae.RevealDuelArg>.ModifierFixer(
+                    new AttackModifier(0),(g,c,b,a)=>
+                    {
+                        int count = - g.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).OfType<Sanae.RevealDuelArg>().Count();
+                        return count;
+                    })),
             new DeathRattle(ID, async (game, card, p) =>
             {
                 int index = game.randomInt(1,4);
