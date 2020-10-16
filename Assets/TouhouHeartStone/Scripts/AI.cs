@@ -573,7 +573,7 @@ namespace Game
         float calcHealingValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
         {
             if (game.getAllAllys(player).Contains(target))
-                return target.getCurrentLife(game) - target.getLife(game);
+                return target.getLife(game) - target.getCurrentLife(game);
             if (game.getAllEnemies(player).Contains(target))
                 return -1;
             return 0;
