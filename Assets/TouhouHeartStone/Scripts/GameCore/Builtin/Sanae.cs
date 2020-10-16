@@ -310,8 +310,8 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             THHPlayer you = card.getOwner();
-            Card c = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
-            var servant = await you.createToken(game, c.define);
+            Card god = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
+            var servant = await you.createToken(game, god.define);
             await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
         }
     }
@@ -333,8 +333,8 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             THHPlayer you = card.getOwner();
-            Card c = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
-            var servant = await you.createToken(game, c.define);
+            Card god = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
+            var servant = await you.createToken(game, god.define);
             await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.SHIELD), new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.TAUNT)));
         }
     }
