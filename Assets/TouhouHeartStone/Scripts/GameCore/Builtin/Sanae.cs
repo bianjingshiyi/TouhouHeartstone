@@ -2,6 +2,8 @@
 using TouhouCardEngine.Interfaces;
 using System.Threading.Tasks;
 using System.Linq;
+using Boo.Lang;
+using System.Runtime.InteropServices;
 
 namespace TouhouHeartstone.Builtin
 {
@@ -99,7 +101,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class StarCeremony : SpellCardDefine
     {
-        public const int ID = Sanae.ID | CATEGORY.SKILL | 0x001;
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x001;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -136,7 +138,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class GrayThaumaturgy : SpellCardDefine
     {
-        public const int ID = Sanae.ID | CATEGORY.SKILL | 0x002;
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x002;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -162,7 +164,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class CharmofGoodCommerce : SpellCardDefine
     {
-        public const int ID = Sanae.ID | CATEGORY.SKILL | 0x003;
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x003;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -187,7 +189,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class BumperCropRiceShower : SpellCardDefine
     {
-        public const int ID = Sanae.ID | CATEGORY.SKILL | 0x004;
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x004;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -202,5 +204,353 @@ namespace TouhouHeartstone.Builtin
                 await game.getAllAllys(card.getOwner()).Where(e => e.isDamage(game)).random(game).heal(game, card, 1);
             }
         }
+    }
+
+    /// <summary>
+    /// 客星之奇迹
+    /// 信仰对决（随从牌） 对所有敌方随从造成2点伤害；获胜时再抽一张牌。
+    /// </summary>
+    public class DaytimeGuestStars : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x005;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer you = card.getOwner();
+            var duel = await Sanae.revealDuel(you, game);
+            await game.getOpponent(you).field.damage(game, card, 2);
+            if (duel.result)
+            {
+                await you.draw(game);
+            }
+            
+        }
+
+    }
+
+    /// <summary>
+    /// 开海之奇迹
+    /// 信仰对决（随从牌）对目标随从相邻的随从造成4点伤害；获胜时再对目标随从造成2点伤害。
+    /// </summary>
+    public class TheDayTheSeaSplit : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x006;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async (game, card, target) =>
+            {
+                THHPlayer you = card.getOwner();
+                var duel = await Sanae.revealDuel(you, game,2);
+
+                foreach( Card t in target.getNearbyCards())
+                {
+                    await t.damage(game,card,4);
+                }
+                if (duel.result)
+                {
+                    await target.damage(game,card,2);
+                }
+                
+
+            })
+        };
+    }
+
+    /// <summary>
+    /// 虔诚的参拜客
+    /// 每当一个友方角色获得治疗后，攻击力+1。
+    /// </summary>
+    public class DevoutPilgrim : ServantCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x007;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 6;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHCard.HealEventArg>(PILE.FIELD, (game, card, arg) =>
+            {
+                return arg.source.getOwner() == card.getOwner() && arg != null;
+            },null,async(game,card,arg)=>
+            {
+                foreach(Card c in arg.cards)
+                {
+                    if (c.getOwner() == card.getOwner())
+                    {
+                        await card.addBuff(game,new GeneratedBuff(ID,new AttackModifier(1)));
+                    }
+                }
+            })
+        };
+    }
+
+
+    /// <summary>
+    /// 神明招来 突
+    /// 召唤手牌中的一张随机神明随从牌的复制，并使其获得突袭。
+    /// </summary>
+    public class SummonTakeminakata_Rush : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x008;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 6;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer you = card.getOwner();
+            Card c = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
+            var servant = await you.createToken(game, c.define);
+            await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
+        }
+    }
+
+    /// <summary>
+    /// 神明招来 盾
+    /// 召唤手牌中的一张随机神明随从牌的复制，并使其获得圣盾和嘲讽。
+    /// </summary>
+    public class SummonTakeminakata_Shield : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x009;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 6;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer you = card.getOwner();
+            Card c = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
+            var servant = await you.createToken(game, c.define);
+            await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.SHIELD), new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.TAUNT)));
+        }
+    }
+
+    /// <summary>
+    /// 被操纵的巨蛙
+    /// 嘲讽，亡语：本局对战你每揭示过一次，对所有随从造成1点伤害。
+    /// 我真不知道这东西该如何起名。。。。。。。
+    /// </summary>
+    
+    public class BigFrog : ServantCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x010;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 5;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 5;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override string[] tags { get; set; } = { TAG.BEAST };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new DeathRattle(ID, async(game, card,p) =>
+            {
+                int count = game.triggers.getRecordedEvents().skipUntilLast(e=> e is THHGame.StartEventArg GameStart)
+                    .OfType<THHPlayer.RevealArg>().Count();
+
+                for(int i=0; i<count; i++)
+                {
+                    await game.getAllServants().damage(game,card,1);
+                }
+            })
+        };
+    }
+
+    /// <summary>
+    /// 妖怪信众
+    /// 信仰对决(法术牌) 获胜时抽一张牌
+    /// </summary>
+
+    public class YoukaiDisciple : ServantCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x011;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 5;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 6;
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        //public override string[] tags { get; set; } = { TAG.BEAST };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer you = card.getOwner();
+            var duel = await Sanae.revealDuel(you, game,1);
+            if (duel.result)
+            {
+                await you.draw(game);
+            }
+            
+        }
+    }
+
+    /// <summary>
+    /// 神代大蛇
+    /// 战吼：若你本回合揭示过，则随机消灭一个攻击力小于等于3的敌方随从。
+    /// </summary>
+
+    public class OrochiOfAncientTimes : ServantCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x012;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 7;
+        public override int attack { get; set; } = 6;
+        public override int life { get; set; } = 7;
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override string[] tags { get; set; } = { TAG.BEAST };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+             new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            bool isRevealed = (game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).OfType<THHPlayer.RevealArg>().Count() != 0);
+            if (isRevealed)
+            {
+                await game.getOpponent(card.getOwner()).field.Where(c => c.getAttack(game) <= 3).random(game).setDead(game,true);
+                await game.updateDeath(game);
+            }
+        }
+
+    }
+
+
+    /// <summary>
+    /// 八坂神奈子
+    /// 唯一
+    /// 战吼：选择一种神迹并释放。从。
+    /// </summary>
+
+    public class KanakoYasaka : ServantCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x013;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override int attack { get; set; } = 8;
+        public override int life { get; set; } = 8;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override string[] tags { get; set; } = { TAG.GOD };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+             new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            List<Card> options = new List<Card> { game.createCard<KanakoYasaka_A>(), game.createCard<KanakoYasaka_B>(), game.createCard<KanakoYasaka_C>(), game.createCard<KanakoYasaka_D>() };
+            Card choice = await card.getOwner().discover(game,options, 4, "见证神迹！");
+
+            if(choice.define == game.getDefine<KanakoYasaka_A>())
+            {
+                await game.getOpponent(card.getOwner()).field.damage(game, card, 3);
+            }else if (choice.define == game.getDefine<KanakoYasaka_B>())
+            {
+                await card.getOwner().createToken(game, game.getDefine<Onbashira>());
+                await card.getOwner().createToken(game, game.getDefine<Onbashira>());
+            }
+            else if (choice.define == game.getDefine<KanakoYasaka_C>())
+            {
+                await game.getOpponent(card.getOwner()).master.damage(game, card, 6);
+            }
+            else
+            {
+                await card.getOwner().draw(game);
+                await card.getOwner().draw(game);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 风雨之神迹
+    /// 假卡，对所有敌方随从造成3点伤害。
+    /// </summary>
+    public class KanakoYasaka_A : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x014;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+
+        };
+    }
+
+    /// <summary>
+    /// 御柱之神迹
+    /// 假卡，召唤2个3/3并具有嘲讽的御柱。
+    /// </summary>
+    public class KanakoYasaka_B : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x015;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+
+        };
+    }
+
+    /// <summary>
+    /// 战争之神迹
+    /// 假卡，对敌方英雄造成6点伤害。
+    /// </summary>
+    public class KanakoYasaka_C : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x016;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+
+        };
+    }
+
+    /// <summary>
+    /// 革新之神迹
+    /// 假卡，抽2张牌。
+    /// </summary>
+    public class KanakoYasaka_D : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x017;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 10;
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+
+        };
+    }
+
+    /// <summary>
+    /// 御柱
+    /// 衍生卡，3/3/3嘲讽
+    /// </summary>
+    public class Onbashira : ServantCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x018;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 3;
+        public override bool isToken { get; set; } = true;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
     }
 }
