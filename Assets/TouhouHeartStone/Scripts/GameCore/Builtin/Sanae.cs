@@ -8,7 +8,6 @@ using System;
 
 namespace TouhouHeartstone.Builtin
 {
-    [IgnoreCardDefine]
     /// <summary>
     /// 东风谷早苗
     /// </summary>
@@ -100,7 +99,7 @@ namespace TouhouHeartstone.Builtin
     /// 星之仪式
     /// 信仰对决 将一张全新的“星之仪式”置入手牌；获胜时改为抽一张法力值消耗最高的牌
     /// </summary>
-    public class StarCeremony : SpellCardDefine
+    public class StarRitual : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x001;
         public override int id { get; set; } = ID;
@@ -128,7 +127,7 @@ namespace TouhouHeartstone.Builtin
             }
             else
             {
-                await you.addCardToHand<StarCeremony>(game);
+                await you.addCardToHand<StarRitual>(game);
             }
         }
     }
@@ -163,7 +162,7 @@ namespace TouhouHeartstone.Builtin
     /// 商业繁荣祈愿
     /// 信仰对决（随从牌） 对目标随从造成3点伤害；获胜时再治愈你的英雄4点生命值。
     /// </summary>
-    public class CharmofGoodCommerce : SpellCardDefine
+    public class CharmOfGoodCommerce : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x003;
         public override int id { get; set; } = ID;
@@ -188,7 +187,7 @@ namespace TouhouHeartstone.Builtin
     /// 五谷丰穰
     /// 治愈10点生命值，分配到所有友方角色身上。
     /// </summary>
-    public class BumperCropRiceShower : SpellCardDefine
+    public class BumperCrop : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x004;
         public override int id { get; set; } = ID;
@@ -211,7 +210,7 @@ namespace TouhouHeartstone.Builtin
     /// 客星之奇迹
     /// 信仰对决（随从牌） 对所有敌方随从造成2点伤害；获胜时再抽一张牌。
     /// </summary>
-    public class DaytimeGuestStars : SpellCardDefine
+    public class GuestStarsMiracle : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x005;
         public override int id { get; set; } = ID;
@@ -238,7 +237,7 @@ namespace TouhouHeartstone.Builtin
     /// 开海之奇迹
     /// 信仰对决（随从牌）对目标随从相邻的随从造成4点伤害；获胜时再对目标随从造成2点伤害。
     /// </summary>
-    public class TheDayTheSeaSplit : SpellCardDefine
+    public class OpenSeaMiracle : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x006;
         public override int id { get; set; } = ID;
@@ -298,7 +297,7 @@ namespace TouhouHeartstone.Builtin
     /// 神明招来 突
     /// 召唤手牌中的一张随机神明随从牌的复制，并使其获得突袭。
     /// </summary>
-    public class SummonTakeminakata_Rush : SpellCardDefine
+    public class GodSummon_Thrust : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x008;
         public override int id { get; set; } = ID;
@@ -321,7 +320,7 @@ namespace TouhouHeartstone.Builtin
     /// 神明招来 盾
     /// 召唤手牌中的一张随机神明随从牌的复制，并使其获得圣盾和嘲讽。
     /// </summary>
-    public class SummonTakeminakata_Shield : SpellCardDefine
+    public class GodSummon_Shield : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x009;
         public override int id { get; set; } = ID;
@@ -346,7 +345,7 @@ namespace TouhouHeartstone.Builtin
     /// 我真不知道这东西该如何起名。。。。。。。
     /// </summary>
     
-    public class BigFrog : ServantCardDefine
+    public class ManipulatedGaintFrog : ServantCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x010;
         public override int id { get; set; } = ID;
@@ -375,7 +374,7 @@ namespace TouhouHeartstone.Builtin
     /// 信仰对决(法术牌) 获胜时抽一张牌
     /// </summary>
 
-    public class YoukaiDisciple : ServantCardDefine
+    public class YoukaiBelievers : ServantCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x011;
         public override int id { get; set; } = ID;
@@ -438,7 +437,7 @@ namespace TouhouHeartstone.Builtin
     /// 战吼：选择一种神迹并释放。从。
     /// </summary>
 
-    public class KanakoYasaka : ServantCardDefine
+    public class YasakaKanako : ServantCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x013;
         public override int id { get; set; } = ID;
@@ -453,18 +452,18 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            List<Card> options = new List<Card> { game.createCard<KanakoYasaka_A>(), game.createCard<KanakoYasaka_B>(), game.createCard<KanakoYasaka_C>(), game.createCard<KanakoYasaka_D>() };
+            List<Card> options = new List<Card> { game.createCard<GodMiracleOfRain>(), game.createCard<GodMiracleOfOnbashira>(), game.createCard<GodMiracleOfWar>(), game.createCard<GodMiracleOfRevolution>() };
             Card choice = await card.getOwner().discover(game,options, 4, "见证神迹！");
 
-            if(choice.define == game.getDefine<KanakoYasaka_A>())
+            if(choice.define == game.getDefine<GodMiracleOfRain>())
             {
                 await game.getOpponent(card.getOwner()).field.damage(game, card, 3);
-            }else if (choice.define == game.getDefine<KanakoYasaka_B>())
+            }else if (choice.define == game.getDefine<GodMiracleOfOnbashira>())
             {
                 await card.getOwner().createToken(game, game.getDefine<Onbashira>());
                 await card.getOwner().createToken(game, game.getDefine<Onbashira>());
             }
-            else if (choice.define == game.getDefine<KanakoYasaka_C>())
+            else if (choice.define == game.getDefine<GodMiracleOfWar>())
             {
                 await game.getOpponent(card.getOwner()).master.damage(game, card, 6);
             }
@@ -480,7 +479,7 @@ namespace TouhouHeartstone.Builtin
     /// 风雨之神迹
     /// 假卡，对所有敌方随从造成3点伤害。
     /// </summary>
-    public class KanakoYasaka_A : SpellCardDefine
+    public class GodMiracleOfRain : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x014;
         public override int id { get; set; } = ID;
@@ -496,7 +495,7 @@ namespace TouhouHeartstone.Builtin
     /// 御柱之神迹
     /// 假卡，召唤2个3/3并具有嘲讽的御柱。
     /// </summary>
-    public class KanakoYasaka_B : SpellCardDefine
+    public class GodMiracleOfOnbashira : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x015;
         public override int id { get; set; } = ID;
@@ -512,7 +511,7 @@ namespace TouhouHeartstone.Builtin
     /// 战争之神迹
     /// 假卡，对敌方英雄造成6点伤害。
     /// </summary>
-    public class KanakoYasaka_C : SpellCardDefine
+    public class GodMiracleOfWar : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x016;
         public override int id { get; set; } = ID;
@@ -528,7 +527,7 @@ namespace TouhouHeartstone.Builtin
     /// 革新之神迹
     /// 假卡，抽2张牌。
     /// </summary>
-    public class KanakoYasaka_D : SpellCardDefine
+    public class GodMiracleOfRevolution : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x017;
         public override int id { get; set; } = ID;
@@ -562,7 +561,7 @@ namespace TouhouHeartstone.Builtin
     /// 亡语：随机释放一场灾祸。
     /// </summary>
 
-    public class SuwakoMoriya : ServantCardDefine
+    public class MoriyaSuwako : ServantCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x019;
         public override int id { get; set; } = ID;
@@ -632,7 +631,7 @@ namespace TouhouHeartstone.Builtin
     /// 赤口之灾祸
     /// 假卡，随机消灭一个随从
     /// </summary>
-    public class SuwakoMoriya_A : SpellCardDefine
+    public class PlagueOfMishaguchi : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x021;
         public override int id { get; set; } = ID;
@@ -648,7 +647,7 @@ namespace TouhouHeartstone.Builtin
     /// 青蛙之灾祸
     /// 假卡，召唤2个2/2并具有嘲讽的青蛙。
     /// </summary>
-    public class SuwakoMoriya_B : SpellCardDefine
+    public class PlagueOfFrogs : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x022;
         public override int id { get; set; } = ID;
@@ -664,7 +663,7 @@ namespace TouhouHeartstone.Builtin
     /// 荒芜之灾祸
     /// 假卡，使所有敌方随从攻击力变为1。
     /// </summary>
-    public class SuwakoMoriya_C : SpellCardDefine
+    public class PlagueOfCrops : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x023;
         public override int id { get; set; } = ID;
@@ -680,7 +679,7 @@ namespace TouhouHeartstone.Builtin
     /// 休眠之灾祸
     /// 假卡，返回手牌并获得+2/+2。
     /// </summary>
-    public class SuwakoMoriya_D : SpellCardDefine
+    public class PlagueOfHibernation : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x024;
         public override int id { get; set; } = ID;
