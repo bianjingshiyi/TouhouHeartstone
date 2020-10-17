@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using UnityEditor.UIElements;
+
 namespace Tests
 {
     class TestMaster : MasterCardDefine
@@ -304,6 +306,7 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
+    
     public class MountainGaint : ServantCardDefine
     {
         public const int ID = 0x00110010;

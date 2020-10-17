@@ -287,7 +287,7 @@ namespace TouhouHeartstone.Builtin
         {
             new THHEffectAfter<THHCard.HealEventArg>(PILE.FIELD, (game, card, arg) =>
             {
-                return arg.source.getOwner() == card.getOwner() && arg != null;
+                return arg != null;
             },null,async(game,card,arg)=>
             {
                 foreach(Card c in arg.cards)
