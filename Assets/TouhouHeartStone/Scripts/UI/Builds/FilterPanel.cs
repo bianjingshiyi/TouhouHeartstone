@@ -123,7 +123,7 @@ namespace UI
             // 过滤名字
             if (!string.IsNullOrEmpty(filterKeyword))
             {
-                if (!sd.name.Contains(filterKeyword)) return false;
+                if (!sd.name.Contains(filterKeyword) && !sd.desc.Contains(filterKeyword)) return false;
             }
 
             return true;
