@@ -106,7 +106,6 @@ namespace Tests
 
         /// <summary>
         /// 星之仪式测试
-        /// 召请神明 如果神明回应了你，抽一张法力值消耗最高的牌；否则将一张全新的“星之仪式”置入手牌
         /// </summary>
         [Test]
         public void BumperCropRiceShowerTest()
@@ -129,6 +128,28 @@ namespace Tests
             you.master.damage(game,null,3);
             game.skipUntilCanUse<BumperCrop>(you);
             you.cmdUse(game, you.hand.getCard<BumperCrop>());
+
+            game.Dispose();
+        }
+
+        [Test]
+        public void CharmOfGoodCommerceTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
+                Enumerable.Repeat(game.getDefine<DefectedAgent>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<CharmOfGoodCommerce>(), 1)));
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            game.skipUntilCanUse<CharmOfGoodCommerce>(you);
+            you.master.damage(game, null,4);
+            you.cmdUse(game, you.hand.getCard<CharmOfGoodCommerce>(), targets: oppo.field[0]);
 
             game.Dispose();
         }

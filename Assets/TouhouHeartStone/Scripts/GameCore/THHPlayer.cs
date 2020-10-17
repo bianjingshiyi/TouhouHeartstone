@@ -739,33 +739,93 @@ namespace TouhouHeartstone
         public async Task<Card> Reveal(THHGame game, Pile cards, int define = 0)
         {
             Card show = null;
+
             switch (define)
             {
                 case 0:
-                    show = cards.random(game);
-                    break;
-                case 1:
-                    show = cards.Where(c => c.isSpell()).random(game);
-                    break;
+                    if(cards.count > 0)
+                    {
+                        show = cards.random(game);
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = show }, async arg =>
+                        {
+                            game.logger.log("揭示了{card:" + show.define.id + "}");
+                        });
+                        return show;
+                        
+                    }
+                    else
+                    {
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = null }, async arg =>
+                        {
+                            game.logger.log("揭示了null");
+                        });
+                        return show;
+                    }
+                    
+                case 1:                   
+                    if (cards.Count(c => c.isSpell()) > 0)
+                    {
+                        show = cards.Where(c => c.isSpell()).random(game);
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = show }, async arg =>
+                        {
+                            game.logger.log("揭示了{card:" + show.define.id + "}");
+                        });
+                        return show;
+
+                    }
+                    else
+                    {
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = null }, async arg =>
+                        {
+                            game.logger.log("揭示了null");
+                        });
+                        return show;
+                    }
                 case 2:
-                    show = cards.Where(c => c.isServant()).random(game);
-                    break;
+                    if (cards.Count(c => c.isServant()) > 0)
+                    {
+                        show = cards.Where(c => c.isServant()).random(game);
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = show }, async arg =>
+                        {
+                            game.logger.log("揭示了{card:" + show.define.id + "}");
+                        });
+                        return show;
+
+                    }
+                    else
+                    {
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = null }, async arg =>
+                        {
+                            game.logger.log("揭示了null");
+                        });
+                        return show;
+                    }
                 case 3:
-                    show = cards.Where(c => c.isItem()).random(game);
-                    break;
+                    if (cards.Count(c => c.isItem()) > 0)
+                    {
+                        show = cards.Where(c => c.isItem()).random(game);
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = show }, async arg =>
+                        {
+                            game.logger.log("揭示了{card:" + show.define.id + "}");
+                        });
+                        return show;
+
+                    }
+                    else
+                    {
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = null }, async arg =>
+                        {
+                            game.logger.log("揭示了null");
+                        });
+                        return show;
+                    }
                 default:
                     game.logger.log("揭示失败：类别不对");
-                    break;
+                    return null;
+
+                    
+
             }
-
-            await game.triggers.doEvent(new RevealArg() { player = this, card = show }, async arg =>
-            {
-                game.logger.log("揭示了{card:" + show.define.id + "}");
-            });
-            
-            
-
-            return show;
         }
 
         public class RevealArg : EventArg, IDescribableEventArg
@@ -784,7 +844,7 @@ namespace TouhouHeartstone
 
             public string toString(IGame game, IPlayer viewer)
             {
-                return player.name+ "揭示了{card:" + card.define.id + "}";
+                return card == null ? "揭示了个寂寞" : player.name + "揭示了{card:" + card.define.id + "}";
             }
 
 
