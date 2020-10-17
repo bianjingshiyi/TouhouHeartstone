@@ -4,7 +4,7 @@ using System.Reflection;
 using TouhouCardEngine;
 using System.Collections.Generic;
 using MongoDB.Bson;
-using ILogger = TouhouCardEngine.Interfaces.ILogger;
+using ILogger = TouhouCardEngine.Shared.ILogger;
 namespace TouhouHeartstone
 {
     public class CardHelper
