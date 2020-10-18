@@ -32,14 +32,23 @@ namespace TouhouHeartstone.Builtin
             Card oppoCard = await game.getOpponent(player).Reveal(game, game.getOpponent(player).deck, define);
             bool result = false;
 
-            if (youCard.getCost(game) > oppoCard.getCost(game))
+
+            if (youCard != null && youCard.getCost(game) > oppoCard.getCost(game))
             {
                 result = true;
             }
 
             var eventArg = await game.triggers.doEvent(new RevealDuelArg() { player = player, youCard = youCard, oppoCard = oppoCard, result = result }, async arg =>
             {
-                game.logger.log(player + "发动了对决，她揭示了：" + youCard + "。她的对手揭示了：" + oppoCard + "。结果是" + result);
+                if(youCard != null)
+                {
+                    game.logger.log(player + "发动了对决，她揭示了：" + youCard + "。她的对手揭示了：" + oppoCard + "。结果是" + result);
+                }
+                else
+                {
+                    game.logger.log(player + "揭示了个寂寞，输掉了对决。");
+                }
+                
             });
             return eventArg;
         }
@@ -74,7 +83,7 @@ namespace TouhouHeartstone.Builtin
 
             public string toString(IGame game, IPlayer viewer)
             {
-                return player.name + "发动了对决，她揭示了:{ card:"  + youCard.define.id + "} " + "。她的对手揭示了：{ card:" + oppoCard + "}。结果是" + result;
+                return youCard != null ? player.name + "发动了对决，她揭示了:{ card:"  + youCard.define.id + "} " + "。她的对手揭示了：{ card:" + oppoCard + "}。结果是" + result : player + "揭示了个寂寞，输掉了对决。";
             }
         }
     }
@@ -278,7 +287,7 @@ namespace TouhouHeartstone.Builtin
         {
             new THHEffectAfter<THHCard.HealEventArg>(PILE.FIELD, (game, card, arg) =>
             {
-                return arg.source.getOwner() == card.getOwner() && arg != null;
+                return arg != null;
             },null,async(game,card,arg)=>
             {
                 foreach(Card c in arg.cards)
