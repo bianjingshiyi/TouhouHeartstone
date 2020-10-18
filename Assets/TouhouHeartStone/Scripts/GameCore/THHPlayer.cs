@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-using TouhouHeartstone.Builtin;
+
 namespace TouhouHeartstone
 {
     public class THHPlayer : Player
@@ -725,6 +725,135 @@ namespace TouhouHeartstone
             }
             return cardList.ToArray();
         }
+
+
+        /// <summary>
+        /// 揭示Reveal
+        /// 向双方展示牌库里的一张牌
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="cards">被展示卡的来源</param>
+        /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
+        /// <returns></returns>
+
+        public async Task<Card> Reveal(THHGame game, Pile cards, int define = 0)
+        {
+            Card show = null;
+
+            switch (define)
+            {
+                case 0:
+                    if(cards.count > 0)
+                    {
+                        show = cards.random(game);
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = show }, async arg =>
+                        {
+                            game.logger.log("揭示了{card:" + show.define.id + "}");
+                        });
+                        return show;
+                        
+                    }
+                    else
+                    {
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = null }, async arg =>
+                        {
+                            game.logger.log("揭示了null");
+                        });
+                        return show;
+                    }
+                    
+                case 1:                   
+                    if (cards.Count(c => c.isSpell()) > 0)
+                    {
+                        show = cards.Where(c => c.isSpell()).random(game);
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = show }, async arg =>
+                        {
+                            game.logger.log("揭示了{card:" + show.define.id + "}");
+                        });
+                        return show;
+
+                    }
+                    else
+                    {
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = null }, async arg =>
+                        {
+                            game.logger.log("揭示了null");
+                        });
+                        return show;
+                    }
+                case 2:
+                    if (cards.Count(c => c.isServant()) > 0)
+                    {
+                        show = cards.Where(c => c.isServant()).random(game);
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = show }, async arg =>
+                        {
+                            game.logger.log("揭示了{card:" + show.define.id + "}");
+                        });
+                        return show;
+
+                    }
+                    else
+                    {
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = null }, async arg =>
+                        {
+                            game.logger.log("揭示了null");
+                        });
+                        return show;
+                    }
+                case 3:
+                    if (cards.Count(c => c.isItem()) > 0)
+                    {
+                        show = cards.Where(c => c.isItem()).random(game);
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = show }, async arg =>
+                        {
+                            game.logger.log("揭示了{card:" + show.define.id + "}");
+                        });
+                        return show;
+
+                    }
+                    else
+                    {
+                        await game.triggers.doEvent(new RevealArg() { player = this, card = null }, async arg =>
+                        {
+                            game.logger.log("揭示了null");
+                        });
+                        return show;
+                    }
+                default:
+                    game.logger.log("揭示失败：类别不对");
+                    return null;
+
+                    
+
+            }
+        }
+
+        public class RevealArg : EventArg, IDescribableEventArg
+        {
+            public THHPlayer player;
+            public Card card;  //被揭示的牌
+
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            public ICard[] getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
+            public string toString(IGame game, IPlayer viewer)
+            {
+                return card == null ? "揭示了个寂寞" : player.name + "揭示了{card:" + card.define.id + "}";
+            }
+
+
+        }
+
+
+        
+
+
         #region Command
         public Task cmdInitReplace(THHGame game, params Card[] cards)
         {

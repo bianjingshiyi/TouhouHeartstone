@@ -12,7 +12,7 @@ using System.Data;
 using IGensoukyo.Utilities;
 using TouhouHeartstone;
 using MongoDB.Bson;
-using ILogger = TouhouCardEngine.Interfaces.ILogger;
+using ILogger = TouhouCardEngine.Shared.ILogger;
 using IGensoukyo;
 using System.Text.RegularExpressions;
 

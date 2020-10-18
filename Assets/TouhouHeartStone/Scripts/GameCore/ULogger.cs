@@ -2,7 +2,7 @@
 
 namespace TouhouHeartstone
 {
-    public class ULogger : TouhouCardEngine.Interfaces.ILogger
+    public class ULogger : TouhouCardEngine.Shared.ILogger
     {
         string name { get; } = null;
         public ULogger()

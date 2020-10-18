@@ -129,6 +129,9 @@ namespace UI
         private UnityEvent _onFaceupControllerFalse;
         [SerializeField]
         private UnityEvent _onFaceupControllerTrue;
+        public string _flipToFaceAnimName;
+        public string _flipToBackAnimName;
+        public string _notifyAnimName;
         public SimpleAnim onCast;
     }
 }

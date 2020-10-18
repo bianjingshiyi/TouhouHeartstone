@@ -567,5 +567,18 @@ namespace Tests
 
             
         }
+        [Test]
+        public void RevealTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(DefaultServant.ID, 30)
+            );  
+            var reveal = you.Reveal(game, you.deck);
+            Assert.True(reveal.IsCompleted);
+            
+            game.Dispose();
+        }
+
+        
     }
 }

@@ -1054,6 +1054,18 @@ namespace TouhouHeartstone
                 }
             }
         }
+
+        public static bool isDamage(this Card card, IGame game)
+        {
+            if (card.getCurrentLife(game) < card.getLife(game))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public static Task<HealEventArg> heal(this IEnumerable<Card> cards, THHGame game, Card sourse, int value)
         {
             cards = cards.Where(c => c.getCurrentLife(game) < c.getLife(game));
@@ -1299,7 +1311,6 @@ namespace TouhouHeartstone
         /// <param name="card">触发登场的牌</param>
         /// <param name="game"></param>
         /// <param name="targets">登场效果目标，可以为null</param>
-        /// <param name="effects"></param>
         /// <returns></returns>
         public static async Task<ComeOnStageArg> ComeOnStage(this Card card, IGame game, Card[] targets)
         {
@@ -1337,8 +1348,13 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return null;
+                if (targets == null || targets.Length < 1)
+                    return card.define.id + "的战吼。";
+                else
+                    return card.define.id + "的战吼。，目标：" + string.Join("，", targets.Select(c => "{card:" + c.define.id + "}"));
             }
         }
+
+        
     }
 }

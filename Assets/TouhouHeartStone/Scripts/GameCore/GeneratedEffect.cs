@@ -56,27 +56,11 @@ namespace TouhouHeartstone
         }
         public override bool checkTarget(CardEngine engine, Player player, Card card, Card[] targetCards)
         {
-            if (string.IsNullOrEmpty(filterScript))
-                return true;
-            try
-            {
-                return engine.runFunc<bool>(filterScript, new EffectGlobals() { engine = engine, player = player, card = card, targetCards = targetCards });
-            }
-            catch (Exception e)
-            {
-                throw new ContentException("卡片" + card.define + "的" + trigger + "效果执行失败：\n" + e.ToString());
-            }
+            throw new NotImplementedException();
         }
         public override void execute(CardEngine engine, Player player, Card card, Card[] targetCards)
         {
-            try
-            {
-                engine.runAction(actionScript, new EffectGlobals() { engine = engine, player = player, card = card, targetCards = targetCards });
-            }
-            catch (Exception e)
-            {
-                throw new ContentException("卡片" + card.define + "的" + trigger + "效果执行失败：\n" + e.ToString());
-            }
+            throw new NotImplementedException();
         }
     }
 }
