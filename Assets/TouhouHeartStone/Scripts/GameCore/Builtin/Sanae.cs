@@ -223,7 +223,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x005;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
+        public override int cost { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -443,7 +443,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 八坂神奈子
     /// 唯一
-    /// 战吼：选择一种神迹并释放。从。
+    /// 战吼：选择一种神迹并释放。
     /// </summary>
 
     public class YasakaKanako : ServantCardDefine
