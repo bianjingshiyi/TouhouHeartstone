@@ -462,7 +462,14 @@ namespace TouhouHeartstone
             if (oldKeywords == null)
                 oldKeywords = keywords;
             else
-                oldKeywords = oldKeywords.Concat(keywords).Distinct().ToArray();
+                foreach(string key in keywords)
+                {
+                    if (!card.hasKeyword(game, key))
+                    {
+                        oldKeywords = oldKeywords.Append(key).Distinct().ToArray();
+                    }
+                }
+    
             return card.setKeywords(game, oldKeywords);
         }
         public static Task<ISetPropEventArg> removeKeywords(this Card card, IGame game, params string[] keywords)

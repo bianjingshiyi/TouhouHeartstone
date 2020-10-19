@@ -323,7 +323,8 @@ namespace TouhouHeartstone.Builtin
             if(god != null)
             { 
                 var servant = await you.createToken(game, god.define);
-                await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
+                await servant.card.addKeywords(game, KEYWORD.RUSH);
+                //await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
             }
         }
     }
@@ -349,7 +350,8 @@ namespace TouhouHeartstone.Builtin
             if(god != null)
             {
                 var servant = await you.createToken(game, god.define);
-                await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.SHIELD), new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.TAUNT)));
+                await servant.card.addKeywords(game, KEYWORD.SHIELD,KEYWORD.TAUNT);
+                //await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.SHIELD), new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.TAUNT)));
             }
             
         }
