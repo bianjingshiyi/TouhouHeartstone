@@ -170,20 +170,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
+            new LambdaSingleTargetEffect(async (g, c, t) =>
             {
-                return true;
-            },(game,card,targets)=>
-            {
-                if(targets[0] is Card target && target.pile.name == PILE.FIELD)
-                    return true;
-                return false;
-            },async(game,card,arg,targets)=>
-            {
-                if(targets[0] is Card target)
-                await target.addBuff(game, new GeneratedBuff(ID,
-                    new KeywordsModifier(KeywordsModifier.ModifyType.add,KEYWORD.STEALTH)));
-            })
+                await t.addKeywords(g,KEYWORD.STEALTH);
+            },PileFlag.both|PileFlag.field)
         };
     }
     /// <summary>
@@ -622,11 +612,10 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect((game,card)=>
+            new NoTargetEffect(async(game,card)=>
             {
-                return card.addBuff(game,new GeneratedBuff(ID,
-                    new AttackModifier(2),
-                    new KeywordsModifier(KeywordsModifier.ModifyType.add,KEYWORD.RUSH)));
+                await card.addKeywords(game,KEYWORD.RUSH);
+                await card.addBuff(game,new GeneratedBuff(ID, new AttackModifier(2)));
             })
         };
     }
@@ -824,8 +813,8 @@ namespace TouhouHeartstone.Builtin
             var chen = createToken.card;
             await chen.addBuff(game, new GeneratedBuff(ID,
                 new AttackModifier(3),
-                new LifeModifier(1),
-                new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
+                new LifeModifier(1)));
+            await chen.addKeywords(game, KEYWORD.RUSH);
         }
     }
     /// <summary>

@@ -365,9 +365,19 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
+            await card.getOwner().item.addKeywords(game, KEYWORD.IMMUNITY);
             await card.getOwner().item.addBuff(game, new GeneratedBuff(ID,
-                new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.IMMUNITY),
-                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.ITEM, ID)));
+                new THHEffectBefore<THHGame.TurnEndEventArg>(PILE.ITEM,(g,c,a)=> 
+                {
+                    return a.player == c.getOwner();
+                },null,async(g,c,a)=> 
+                {
+                    await c.removeKeywords(g, KEYWORD.IMMUNITY);
+                }),
+                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.ITEM,(g,c,a)=> 
+                {
+                    return a.player == c.getOwner();
+                },ID)));
         }
     }
     /// <summary>
@@ -433,7 +443,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     return a1.card == c1 && c1.getOwner().item != null;
                 },null,
-                (g1,c1,a1)=>
+                async (g1,c1,a1)=>
                 {
                     a1.action = async arg =>
                     {
@@ -441,7 +451,7 @@ namespace TouhouHeartstone.Builtin
                         await player.item.addBuff(g1,new GeneratedBuff(ID,new LifeModifier(c1.getLife(g1))));
                         await player.hand.moveTo(g1,c1,player.grave);
                     };
-                    return Task.CompletedTask;
+                   
                 })
         };
 
