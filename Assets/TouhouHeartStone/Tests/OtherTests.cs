@@ -17,6 +17,9 @@ using Newtonsoft.Json;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
 using System.Text.RegularExpressions;
+using UnityEditor;
+using System.Reflection;
+
 namespace Tests
 {
     public class OtherTests
@@ -226,14 +229,20 @@ namespace Tests
         [Test]
         public void keyTest()
         {
-            using (StreamWriter writer = new StreamWriter("Keys.txt"))
+            using (StreamWriter writer = new StreamWriter("Keys.txt", true))
             {
+                writer.WriteLine();
                 foreach (var key in KeyGeneration.generateUniqueKeys(100, 6))
                 {
                     writer.WriteLine(key);
                 }
                 writer.Flush();
             }
+        }
+        [Test]
+        public void codeVersionTest()
+        {
+            Debug.Log(GetType().Assembly.GetName().Version);
         }
     }
 }
