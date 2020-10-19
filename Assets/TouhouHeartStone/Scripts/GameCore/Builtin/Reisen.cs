@@ -345,17 +345,21 @@ namespace TouhouHeartstone.Builtin
             {
                 await card.getOwner().skill.setUsed(game, false);
             }
-            var arg = await THHCard.setDefine(card.getOwner().skill, game, game.getDefine<LunaticShoot_MindDropping>());
-            await card.getOwner().skill.addBuff(game, new GeneratedBuff(ID,
-                new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
-              (g, c, a) =>
-              {
-                  return a.player == c.getOwner() && a.card.isSkill();
-              }, null, async (g, c, a) =>
-              {
-                  await THHCard.setDefine(card.getOwner().skill, game, arg.beforeDefine);
-              }
-             )));
+            if(!(card.getOwner().skill.define.Equals(game.getDefine<LunaticShoot_MindDropping>())))
+            {
+                var arg = await THHCard.setDefine(card.getOwner().skill, game, game.getDefine<LunaticShoot_MindDropping>());
+                await card.getOwner().skill.addBuff(game, new GeneratedBuff(ID,
+                    new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+                  (g, c, a) =>
+                  {
+                      return a.player == c.getOwner() && a.card.isSkill();
+                  }, null, async (g, c, a) =>
+                  {
+                      await THHCard.setDefine(card.getOwner().skill, game, arg.beforeDefine);
+                  }
+                 )));
+            }
+            
         }
     }
     public class LunaticShoot_MindDropping : SkillCardDefine
