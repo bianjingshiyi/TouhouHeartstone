@@ -188,7 +188,7 @@ namespace TouhouHeartstone.Builtin
                 }
                 await target.damage(game,card,3);
                 
-            })
+            },PileFlag.both | PileFlag.field)
         };    
     }
 
@@ -268,7 +268,7 @@ namespace TouhouHeartstone.Builtin
                 }
                 
 
-            })
+            },PileFlag.both | PileFlag.field)
         };
     }
 
@@ -320,8 +320,11 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer you = card.getOwner();
             Card god = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
-            var servant = await you.createToken(game, god.define);
-            await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
+            if(god != null)
+            { 
+                var servant = await you.createToken(game, god.define);
+                await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
+            }
         }
     }
 
@@ -343,8 +346,12 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer you = card.getOwner();
             Card god = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
-            var servant = await you.createToken(game, god.define);
-            await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.SHIELD), new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.TAUNT)));
+            if(god != null)
+            {
+                var servant = await you.createToken(game, god.define);
+                await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.SHIELD), new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.TAUNT)));
+            }
+            
         }
     }
 
@@ -432,8 +439,11 @@ namespace TouhouHeartstone.Builtin
             bool isRevealed = (game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).OfType<Sanae.RevealDuelArg>().Count() != 0);
             if (isRevealed)
             {
-                await game.getOpponent(card.getOwner()).field.Where(c => c.getAttack(game) <= 3).random(game).setDead(game,true);
-                await game.updateDeath(game);
+                if(game.getOpponent(card.getOwner()).field.Where(c => c.getAttack(game) <= 3).Count() > 0)
+                {
+                    await game.getOpponent(card.getOwner()).field.Where(c => c.getAttack(game) <= 3).random(game).setDead(game, true);
+                    await game.updateDeath(game);
+                }             
             }
         }
 
