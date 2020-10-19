@@ -19,7 +19,7 @@ using MongoDB.Bson;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using System.Reflection;
-
+using TouhouCardEngine;
 namespace Tests
 {
     public class OtherTests
@@ -243,6 +243,25 @@ namespace Tests
         public void codeVersionTest()
         {
             Debug.Log(GetType().Assembly.GetName().Version);
+        }
+        [Test]
+        public void getTypeTest()
+        {
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Debug.Log("Assembly:" + assembly.FullName);
+            }
+            foreach (var type in typeof(Room).Assembly.GetTypes())
+            {
+                Debug.Log("Type:" + type.FullName);
+            }
+        }
+        [Test]
+        public async void asyncTest()
+        {
+            Debug.Log(Time.time);
+            await Task.Delay(3000);
+            Debug.Log(Time.time);
         }
     }
 }
