@@ -9,7 +9,9 @@
         "Game",
         "BJSYGameCore",
         "ExcelDataSet.Editor",
-        "BJSYGameCore.Editor"
+        "BJSYGameCore.Editor",
+        "TouhouCardEngine.Library",
+        "TouhouCardEngine.Shared"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

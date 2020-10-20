@@ -11,7 +11,7 @@ namespace Game
     {
         Vector3 _startPosition;
         Timer _timer = new Timer() { duration = .4f };
-        HandListItem _item;
+        UI.Card _card;
         TableAnimation _anim;
         TableAnimation _anim2;
         public override bool update(TableManager table, Pile.MoveCardEventArg eventArg)
@@ -169,6 +169,26 @@ namespace Game
                                     if (!_anim.update(table))
                                         return false;
                                     return true;
+                                }
+                            case PILE.DECK:
+                                {
+                                    //洗回牌库
+                                    if (table.tryGetServant(eventArg.card, out var servant))
+                                    {
+                                        table.ui.SelfFieldList.removeItem(servant);
+                                        table.ui.EnemyFieldList.removeItem(servant);
+                                    }
+                                    //创建卡牌
+                                    if (_card == null)
+                                        _card = table.createCard(eventArg.card);
+                                    //播放动画
+                                    if (_anim == null)
+                                        _anim = new CardMoveAnim(_card, eventArg.to == table.player.deck ? table.ui.SelfDeck.transform : table.ui.EnemyDeck.transform, table.handToFieldCurve);
+                                    if (!_anim.update(table))//没放完动画就让它接着放
+                                        return false;
+                                    //摧毁卡牌
+                                    Object.Destroy(_card.gameObject);
+                                    return true;//放完了
                                 }
                             default:
                                 return true;

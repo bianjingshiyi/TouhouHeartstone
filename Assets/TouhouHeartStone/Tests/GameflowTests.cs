@@ -13,7 +13,7 @@ using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using UnityEngine;
 using UnityEngine.TestTools;
-using NitoriNetwork.Common;
+using BJSYGameCore;
 using NUnit.Framework.Constraints;
 using System.Reflection;
 namespace Tests

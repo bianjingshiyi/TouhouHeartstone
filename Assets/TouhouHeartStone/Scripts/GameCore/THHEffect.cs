@@ -775,15 +775,31 @@ namespace TouhouHeartstone
         {
         }
     }
+    /// <summary>
+    /// 整数属性修改器，继承PassiveEffect表示它是一个被动效果。
+    /// </summary>
+    /// <typeparam name="T">T表示属性修正将会在什么事件发生的时候进行更改</typeparam>
     public class IntPropFixer<T> : PassiveEffect where T : IEventArg
     {
+        /// <summary>
+        /// 被动效果生效的牌堆，比如默认大部分效果是在战场上生效的，你肯定不会希望鱼人领军者在手牌就能给战场上的鱼人提供光环。
+        /// </summary>
         public override string[] piles { get; }
+        /// <summary>
+        /// 修改器修正器
+        /// </summary>
         public struct ModifierFixer
         {
+            /// <summary>
+            /// 整数属性修改器
+            /// </summary>
             public IntPropModifier modifier;
+            /// <summary>
+            /// 用于校准修改器数值的委托
+            /// </summary>
             public Func<IGame, Card, Buff, T, int> fixer;
             /// <summary>
-            /// 
+            /// 修改器修正器构造函数
             /// </summary>
             /// <param name="modifier">属性修改器</param>
             /// <param name="fixer">当事件发生时，属性修改器的修改值如何发生改变？</param>
@@ -794,13 +810,26 @@ namespace TouhouHeartstone
             }
         }
         ModifierFixer[] modifiers { get; }
+        /// <summary>
+        /// 整数属性修正器
+        /// </summary>
+        /// <param name="pile"></param>
+        /// <param name="modifiers"></param>
         public IntPropFixer(PileFlag pile, params ModifierFixer[] modifiers)
         {
             piles = pile.getPiles();
             this.modifiers = modifiers;
         }
+        /// <summary>
+        /// 当被动效果生效的时候被调用
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="buff"></param>
+        /// <returns></returns>
         public override async Task onEnable(THHGame game, Card card, Buff buff)
         {
+            //首先为卡片添加属性修改器，比如山岭巨人的“费用修改器”，然后设置修改器的初始值。
             foreach (var pair in modifiers)
             {
                 IntPropModifier modifier = card.getProp<IntPropModifier>(game, getModifierName(pair.modifier, buff));
@@ -812,6 +841,10 @@ namespace TouhouHeartstone
                 }
                 await modifier.setValue(game, card, pair.fixer(game, card, buff, default));
             }
+            //注册当事件发生后的触发器，比如山岭巨人会注册“当卡牌移动”（手牌数量变动也属于卡牌移动的一种）事件，
+            //当事件发生之后，调用fixer来修改modifier的修正值。
+            //也就是说“每当卡牌发生移动的时候，将山岭巨人的费用修正器的费用修正为等于手牌数量的负数”
+            //这里注册触发器就是为了实现这个效果。
             Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(buff));
             if (trigger == null)
             {
@@ -833,25 +866,42 @@ namespace TouhouHeartstone
             }
             game.triggers.registerAfter(trigger);
         }
-
+        /// <summary>
+        /// 为触发器生成一个独一无二的属性名。
+        /// </summary>
+        /// <param name="buff"></param>
+        /// <returns></returns>
         private static string getTriggerName(Buff buff)
         {
             return nameof(IntPropFixer<T>) + "Trigger" + (buff != null ? buff.instanceID.ToString() : "");
         }
-
+        /// <summary>
+        /// 为修改器生成一个独一无二的属性名。
+        /// </summary>
+        /// <param name="modifier"></param>
+        /// <param name="buff"></param>
+        /// <returns></returns>
         private string getModifierName(IntPropModifier modifier, Buff buff)
         {
             return nameof(IntPropFixer<T>) + modifier.GetType().Name + (buff != null ? buff.instanceID.ToString() : "");
         }
-
+        /// <summary>
+        /// 当效果失效的时候被调用。
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="buff"></param>
+        /// <returns></returns>
         public override async Task onDisable(THHGame game, Card card, Buff buff)
         {
+            //移除所有修改器
             foreach (var pair in modifiers)
             {
                 IntPropModifier modifier = card.getProp<IntPropModifier>(game, getModifierName(pair.modifier, buff));
                 if (modifier != null)
                     await card.removeModifier(game, modifier);
             }
+            //注销所有触发器
             Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(buff));
             if (trigger != null)
                 game.triggers.removeAfter(trigger);

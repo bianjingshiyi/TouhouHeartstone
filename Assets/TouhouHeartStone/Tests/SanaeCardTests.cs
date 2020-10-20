@@ -252,5 +252,60 @@ namespace Tests
 
             game.Dispose();
         }
+
+        [Test]
+        public void OrochiOfAncientTimesTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getDefine<OrochiOfAncientTimes>(), 2)));
+            for (int i = 0; i < 3; i = i + 1)
+            {
+                game.skipUntilCanUse<DefaultServant>(oppo);
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            }
+            for (int i = 0; i < 3; i = i + 1)
+            {
+                game.skipUntilCanUse<DefaultServant>(you);
+                you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            }
+            game.skipUntilCanUse<OrochiOfAncientTimes>(you);
+            you.cmdUse(game, you.hand.getCard<OrochiOfAncientTimes>());
+            game.skipUntilCanUse<OrochiOfAncientTimes>(you);
+            Sanae.revealDuel(you, game);
+            you.cmdUse(game, you.hand.getCard<OrochiOfAncientTimes>());
+            game.Dispose();
+        }
+
+        [Test]
+        public void YasakaKanakoTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 26).Concat(Enumerable.Repeat(game.getDefine<YasakaKanako>(), 4)));
+
+            for (int i = 0; i < 3; i = i + 1)
+            {
+                game.skipUntilCanUse<DefaultServant>(oppo);
+                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            }
+            
+            game.skipUntilCanUse<OrochiOfAncientTimes>(you);
+            you.cmdUse(game, you.hand.getCard<OrochiOfAncientTimes>());
+            game.skipUntilCanUse<OrochiOfAncientTimes>(you);
+            Sanae.revealDuel(you, game);
+            you.cmdUse(game, you.hand.getCard<OrochiOfAncientTimes>());
+            game.Dispose();
+        }
     }
 }

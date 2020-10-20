@@ -188,7 +188,7 @@ namespace TouhouHeartstone.Builtin
                 }
                 await target.damage(game,card,3);
                 
-            })
+            },PileFlag.both | PileFlag.field)
         };    
     }
 
@@ -223,7 +223,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x005;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
+        public override int cost { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -268,7 +268,7 @@ namespace TouhouHeartstone.Builtin
                 }
                 
 
-            })
+            },PileFlag.both | PileFlag.field)
         };
     }
 
@@ -290,6 +290,9 @@ namespace TouhouHeartstone.Builtin
                 return arg != null;
             },null,async(game,card,arg)=>
             {
+                //game:game
+                //card:参拜客
+                //arg:事件
                 foreach(Card c in arg.cards)
                 {
                     if (c.getOwner() == card.getOwner())
@@ -320,8 +323,12 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer you = card.getOwner();
             Card god = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
-            var servant = await you.createToken(game, god.define);
-            await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
+            if(god != null)
+            { 
+                var servant = await you.createToken(game, god.define);
+                await servant.card.addKeywords(game, KEYWORD.RUSH);
+                //await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
+            }
         }
     }
 
@@ -343,8 +350,13 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer you = card.getOwner();
             Card god = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
-            var servant = await you.createToken(game, god.define);
-            await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.SHIELD), new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.TAUNT)));
+            if(god != null)
+            {
+                var servant = await you.createToken(game, god.define);
+                await servant.card.addKeywords(game, KEYWORD.SHIELD,KEYWORD.TAUNT);
+                //await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.SHIELD), new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.TAUNT)));
+            }
+            
         }
     }
 
@@ -367,8 +379,10 @@ namespace TouhouHeartstone.Builtin
         {
             new DeathRattle(ID, async(game, card,p) =>
             {
-                int count = game.triggers.getRecordedEvents().skipUntilLast(e=> e is THHGame.StartEventArg GameStart)
-                    .OfType<Sanae.RevealDuelArg>().Count();
+                int count = game.triggers.getRecordedEvents().
+                skipUntilLast(e=> e is THHGame.StartEventArg GameStart).
+                OfType<Sanae.RevealDuelArg>().
+                Where(e2=>e2.player == card.getOwner()).Count();
 
                 for(int i=0; i<count; i++)
                 {
@@ -432,8 +446,11 @@ namespace TouhouHeartstone.Builtin
             bool isRevealed = (game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).OfType<Sanae.RevealDuelArg>().Count() != 0);
             if (isRevealed)
             {
-                await game.getOpponent(card.getOwner()).field.Where(c => c.getAttack(game) <= 3).random(game).setDead(game,true);
-                await game.updateDeath(game);
+                if(game.getOpponent(card.getOwner()).field.Where(c => c.getAttack(game) <= 3).Count() > 0)
+                {
+                    await game.getOpponent(card.getOwner()).field.Where(c => c.getAttack(game) <= 3).random(game).setDead(game, true);
+                    await game.updateDeath(game);
+                }             
             }
         }
 
@@ -443,7 +460,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 八坂神奈子
     /// 唯一
-    /// 战吼：选择一种神迹并释放。从。
+    /// 战吼：选择一种神迹并释放。
     /// </summary>
 
     public class YasakaKanako : ServantCardDefine
@@ -585,7 +602,10 @@ namespace TouhouHeartstone.Builtin
                 new IntPropFixer<Sanae.RevealDuelArg>.ModifierFixer(
                     new AttackModifier(0),(g,c,b,a)=>
                     {
-                        int count = - g.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).OfType<Sanae.RevealDuelArg>().Count();
+                        int count = - g.triggers.getRecordedEvents().
+                        skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
+                        OfType<Sanae.RevealDuelArg>().
+                        Where(e2 => e2.player == c.getOwner()).Count();
                         return count;
                     })),
             new DeathRattle(ID, async (game, card, p) =>

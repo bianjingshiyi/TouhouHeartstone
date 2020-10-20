@@ -1,7 +1,7 @@
 {
     "name": "UIEffect.Editor",
     "references": [
-        "GUID:04fc4c34da21bb645900a23283a782b3"
+        "GUID:e8c1681e1339373419eabe5626d9809b"
     ],
     "includePlatforms": [
         "Editor"
