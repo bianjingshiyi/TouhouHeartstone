@@ -461,7 +461,7 @@ GameObject:
   m_Component:
   - component: {fileID: 429178867268526854}
   - component: {fileID: 4045731696908071791}
-  - component: {fileID: 3032609579816535311}
+  - component: {fileID: 4148923571440998774}
   - component: {fileID: 8635624750960485427}
   m_Layer: 5
   m_Name: DescText
@@ -497,7 +497,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2033829485842722558}
   m_CullTransparentMesh: 0
---- !u!114 &3032609579816535311
+--- !u!114 &4148923571440998774
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -506,7 +506,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2033829485842722558}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Script: {fileID: 11500000, guid: c96e25a4ce8e1584bbd138c7d688715c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -529,7 +529,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 0.8
-  m_Text: "\u521A\u597D\u4E94\u5341\u5B57\u521A\u597D\u4E94\u5341\u5B57\u521A\u597D\u4E94\u5341\u5B57\u521A\u597D\u4E94\u5341\u5B57\u521A\u597D\u4E94\u5341\u5B57\u521A\u597D\u4E94\u5341\u5B57\u521A\u597D\u4E94\u5341\u5B57\u521A\u597D\u4E94\u5341\u5B57\u521A\u597D\u4E94\u5341\u5B57"
+  m_Text: "\u83AB\u628A\u6E56\u9762\u5012\u5F71\u5F53\u4F5C\u591C\u7A7A\u7E41\u661F\u83AB\u628A\u6E56\u9762\u5012\u5F71\u5F53\u4F5C\u591C\u7A7A\u7E41\u661F\u83AB\u628A\u6E56\u9762\u5012\u5F71\u5F53\u4F5C\u591C\u7A7A\u7E41\u661F\u83AB\u628A\u6E56\u9762\u5012\u5F71\u5F53\u4F5C\u591C\u7A7A\u7E41\u661F\u83AB\u628A"
 --- !u!114 &8635624750960485427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1376,7 +1376,7 @@ MonoBehaviour:
   _NameText: {fileID: 5938416541120205926}
   _DescShadowImage: {fileID: 6046089851005868003}
   _SubNameText: {fileID: 4780553373060387644}
-  _DescText: {fileID: 3032609579816535311}
+  _DescText: {fileID: 0}
   _RaceText: {fileID: 7141724517573644477}
   _BorderImage: {fileID: 4064673707873042981}
   _CardFace_Image: {fileID: 1229200602832887063}
