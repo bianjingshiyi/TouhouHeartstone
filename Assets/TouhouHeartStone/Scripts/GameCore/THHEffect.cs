@@ -839,6 +839,10 @@ namespace TouhouHeartstone
                     await card.setProp(game, getModifierName(pair.modifier, buff), modifier);
                     await card.addModifier(game, modifier);
                 }
+                if (!card.getModifiers().Contains(modifier))
+                {
+                    await card.addModifier(game, modifier);
+                }
                 await modifier.setValue(game, card, pair.fixer(game, card, buff, default));
             }
             //注册当事件发生后的触发器，比如山岭巨人会注册“当卡牌移动”（手牌数量变动也属于卡牌移动的一种）事件，
