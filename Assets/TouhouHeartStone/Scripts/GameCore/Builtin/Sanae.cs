@@ -597,7 +597,10 @@ namespace TouhouHeartstone.Builtin
                 new IntPropFixer<Sanae.RevealDuelArg>.ModifierFixer(
                     new AttackModifier(0),(g,c,b,a)=>
                     {
-                        int count = - g.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).OfType<Sanae.RevealDuelArg>().Count();
+                        int count = - g.triggers.getRecordedEvents().
+                        skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
+                        OfType<Sanae.RevealDuelArg>().
+                        Where(e2 => e2.player == c.getOwner()).Count();
                         return count;
                     })),
             new DeathRattle(ID, async (game, card, p) =>

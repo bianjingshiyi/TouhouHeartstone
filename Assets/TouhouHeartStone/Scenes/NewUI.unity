@@ -1994,7 +1994,6 @@ Texture2D:
   m_MipCount: 10
   m_IsReadable: 1
   m_IgnoreMasterTextureLimit: 0
-  m_IsPreProcessed: 0
   m_StreamingMipmaps: 0
   m_StreamingMipmapsPriority: 0
   m_AlphaIsTransparency: 0
@@ -4483,14 +4482,14 @@ MonoBehaviour:
       count: 0
     - id: 8196
       count: 0
-  _useTestDeck: 0
+  _useTestDeck: 1
   _testDeck:
     name: 
-    master: 6291456
+    master: 3145728
     deckList:
-    - id: 4206624
+    - id: 3153939
       count: 15
-    - id: 8226
+    - id: 3158025
       count: 15
   _deck: 00004000012000000120000001200000012000000120000002200000022000000220000002200000022000000220000002200000032000000320000003200000032000000320000003200000122040001220400007304000073040001220400006200000062000000620000006200000062000000620000006200000
   _mode: 0
