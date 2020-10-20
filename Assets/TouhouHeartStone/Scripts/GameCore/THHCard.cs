@@ -755,13 +755,12 @@ namespace TouhouHeartstone
         public static async Task resetCard(this Card card, THHGame game)
         {
             await card.removeBuff(game, card.getBuffs());
+      
             if (card.define is ServantCardDefine servant)
             {
                 await card.setDead(game, false);
                 await card.setCurrentLife(game, servant.life);
                 await card.setCost(game, servant.cost);
-                //await card.setAttack(game, servant.attack);
-                //await card.setLife(game, servant.life);
                 await card.setSpellDamage(game, servant.spellDamage);
                 await card.setKeywords(game, servant.keywords);
                 await card.setTags(game, servant.tags);
