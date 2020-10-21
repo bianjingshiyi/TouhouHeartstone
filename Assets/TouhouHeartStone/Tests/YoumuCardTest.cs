@@ -204,8 +204,29 @@ namespace Tests
             Assert.AreEqual(6, you.field[0].getCurrentLife(game));
             Assert.AreEqual(originLife + 6, you.field[0].getLife(game));
             you.master.loseArmor(game, 6);
-            Assert.AreEqual(6, you.field[0].getCurrentLife(game));
+            Assert.AreEqual(4, you.field[0].getCurrentLife(game));
             Assert.AreEqual(originLife, you.field[0].getLife(game));
+            //沉默半灵测试
+            you.field.getCard<HalfPhantom>().silence(game);
+            Assert.AreEqual(0, you.field.getCard<HalfPhantom>().getAttack(game));
+            Assert.AreEqual(4, you.field.getCard<HalfPhantom>().getLife(game));
+        }
+        
+        [Test]
+        public void HalfPhantomBackToHandTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(HalfPhantom.ID, 1));
+            you.master.setArmor(game,2);
+            game.skipUntilCanUse<HalfPhantom>(you);
+            you.cmdUse<HalfPhantom>(game);
+            Assert.AreEqual(you.master.getArmor(game),you.field.getCard<HalfPhantom>().getAttack(game));
+            you.field.getCard<HalfPhantom>().backToHand(game);
+            Assert.True(you.field.count==0);
+            game.skipUntilCanUse<HalfPhantom>(you);
+            you.cmdUse<HalfPhantom>(game);
+            Assert.AreEqual(you.master.getArmor(game), you.field.getCard<HalfPhantom>().getAttack(game));
+            Assert.AreEqual(4+you.master.getArmor(game), you.field.getCard<HalfPhantom>().getLife(game));
         }
 
         [Test]
