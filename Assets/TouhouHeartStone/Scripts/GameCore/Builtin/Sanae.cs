@@ -290,6 +290,9 @@ namespace TouhouHeartstone.Builtin
                 return arg != null;
             },null,async(game,card,arg)=>
             {
+                //game:game
+                //card:参拜客
+                //arg:事件
                 foreach(Card c in arg.cards)
                 {
                     if (c.getOwner() == card.getOwner())
@@ -376,8 +379,10 @@ namespace TouhouHeartstone.Builtin
         {
             new DeathRattle(ID, async(game, card,p) =>
             {
-                int count = game.triggers.getRecordedEvents().skipUntilLast(e=> e is THHGame.StartEventArg GameStart)
-                    .OfType<Sanae.RevealDuelArg>().Count();
+                int count = game.triggers.getRecordedEvents().
+                skipUntilLast(e=> e is THHGame.StartEventArg GameStart).
+                OfType<Sanae.RevealDuelArg>().
+                Where(e2=>e2.player == card.getOwner()).Count();
 
                 for(int i=0; i<count; i++)
                 {
