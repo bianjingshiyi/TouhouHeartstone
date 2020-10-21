@@ -263,5 +263,9 @@ namespace Tests
             await Task.Delay(3000);
             Debug.Log(Time.time);
         }
+        [Test]
+        public void taskCastTest()
+        {
+        }
     }
 }
