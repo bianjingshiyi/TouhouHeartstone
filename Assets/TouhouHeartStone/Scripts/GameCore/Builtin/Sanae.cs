@@ -387,6 +387,7 @@ namespace TouhouHeartstone.Builtin
                 for(int i=0; i<count; i++)
                 {
                     await game.getAllServants().damage(game,card,1);
+                    await game.updateDeath(game);
                 }
             })
         };
