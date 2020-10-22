@@ -564,11 +564,12 @@ namespace Game
                             if (!isSelectingTarget)
                             {
                                 isSelectingTarget = true;//TODO:这个地方一定要重写，怎么能这样的？isSelectingTarget就应该被usingCard取代
-                                highlightTargets(targets);
-                                ui.SelfHandList.shrink();
+                                highlightTargets(targets);//高亮所有可选目标
+                                ui.SelfHandList.shrink();//手牌缩小
                             }
-                            hand.Card.hide();
+                            hand.Card.hide();//将那张牌暂时隐藏
                             if (tryGetMaster(usingCard.getOwner().master, out var castMaster))
+                                //拖出箭头
                                 displayArrow(castMaster.rectTransform, castMaster.rectTransform.position, pointer.position);
                         }
                     }
@@ -649,15 +650,24 @@ namespace Game
                 {
                     if (usingCard.isNeedTarget(game, out _))
                     {
-                        //进入选择目标状态，高亮可以选择的目标
+                        //获取鼠标停留的那张卡，就是目标
                         if (isOnTarget(pointer, out var target))
-                        {
-                            if (usingCard.isUsable(game, player, out info) && usingCard.isValidTarget(game, target))
+                        {                          
+                            if (usingCard.isValidTarget(game, target))
+                            {
+                                //合法目标，生效
                                 player.cmdUse(game, usingCard, 0, target);
+                                resetUse(true, false);
+                            }                               
                             else
+                            {
+                                //非法目标，跳出非法信息
                                 showTip(info);
+                                resetUse(true, true);
+                                hand.Card.display();
+                            }                               
                         }
-                        resetUse(true, false);
+                        
                     }
                     else
                     {
@@ -744,7 +754,7 @@ namespace Game
             {
                 HandListItem usingHand = getHand(usingCard);
                 usingHand.Card.display();
-                usingHand.Card.isFaceup = true;
+                setCard(usingHand.Card, usingCard, true);              
                 usingHand.Card.rectTransform.localScale = Vector3.one;
                 usingHand.Card.rectTransform.localPosition = Vector2.zero;
             }
