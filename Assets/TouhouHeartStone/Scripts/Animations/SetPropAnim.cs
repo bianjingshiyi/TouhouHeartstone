@@ -19,18 +19,12 @@ namespace Game
                 animator = servant.animator;
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
                 {
-                    //if (attack > beforeAttack)
-                    //    simpleAnim = servant.onAttackUp;
-                    //else
-                    //    simpleAnim = servant.onAttackDown;
+                    
                     servant.AttackTextPropNumber.asText.text = attack.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
                 {
-                    //if (currentLife > beforeCurrentLife)
-                    //    simpleAnim = servant.onLifeUp;
-                    //else
-                    //    simpleAnim = servant.onLifeDown;
+                    
                     servant.HpTextPropNumber.asText.text = currentLife.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.KEYWORDS)
@@ -57,26 +51,46 @@ namespace Game
                 }
                 table.setServant(servant, eventArg.card);
 
-                
-                
+                if (table.tryGetAllPropNumber(eventArg.card, out var numbers))
+                {
+                    animator = numbers[0].animator;
+                    //生命值
+                    if (eventArg.card.getCurrentLife(table.game) < eventArg.card.getLife(table.game))
+                    {
+                        simpleAnim = numbers[0].RedText;
+                    }
+                    else if (eventArg.card.getLife(table.game) > eventArg.card.define.getLife())
+                    {
+                        simpleAnim = numbers[0].GreenText;
+                    }
+                    else
+                    {
+                        simpleAnim = numbers[0].WhiteText;
+                    }
+
+                    //攻击力
+                    if (eventArg.card.getAttack(table.game) > eventArg.card.define.getAttack())
+                    {
+                        simpleAnim = numbers[1].GreenText;
+                    }
+                    else
+                    {
+                        simpleAnim = numbers[1].WhiteText;
+                    }
+
+                }
+
             }
             else if (table.tryGetMaster(eventArg.card, out var master))
             {
                 animator = master.animator;
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
                 {
-                    //if (attack > beforeAttack)
-                    //    simpleAnim = master.onAttackUp;
-                    //else
-                    //    simpleAnim = master.onAttackDown;
+                    
                     master.AttackPropNumber.asText.text = attack.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
                 {
-                    //if (currentLife > beforeCurrentLife)
-                    //    simpleAnim = master.onLifeUp;
-                    //else
-                    //    simpleAnim = master.onLifeDown;
                     master.LifePropNumber.asText.text = currentLife.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.KEYWORDS)
@@ -108,24 +122,16 @@ namespace Game
                 animator = item.animator;
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
                 {
-                    //if (attack > beforeAttack)
-                    //    simpleAnim = item.onAttackUp;
-                    //else
-                    //    simpleAnim = item.onAttackDown;
                     item.AttackPropNumber.asText.text = attack.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
                 {
-                    //if (currentLife > beforeCurrentLife)
-                    //    simpleAnim = item.onLifeUp;
-                    //else
-                    //simpleAnim = item.onLifeDown;
+                   
                     item.DurabilityPropNumber.asText.text = currentLife.ToString();
                 }
             }
 
-            //else
-            //    throw new ActorNotFoundException(eventArg.card);
+            
             if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator))
                 return false;
             return true;
