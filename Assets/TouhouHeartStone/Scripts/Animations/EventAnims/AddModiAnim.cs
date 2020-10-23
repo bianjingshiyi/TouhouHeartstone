@@ -16,18 +16,18 @@ namespace Game
                 animator = servant.animator;
                 if (eventArg.modifier is AttackModifier atkMod)
                 {
-                    if (atkMod.value > 0)
-                        simpleAnim = servant.onAttackUp;
-                    else
-                        simpleAnim = servant.onAttackDown;
+                    //if (atkMod.value > 0)
+                    //    simpleAnim = servant.onAttackUp;
+                    //else
+                    //    simpleAnim = servant.onAttackDown;
                     servant.AttackTextPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
                 else if (eventArg.modifier is LifeModifier lifMod)
                 {
-                    if (lifMod.value > 0)
-                        simpleAnim = servant.onLifeUp;
-                    else
-                        simpleAnim = servant.onLifeDown;
+                    //if (lifMod.value > 0)
+                    //    simpleAnim = servant.onLifeUp;
+                    //else
+                    //    simpleAnim = servant.onLifeDown;
                     servant.HpTextPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
             }
@@ -36,26 +36,26 @@ namespace Game
                 animator = hand.animator;
                 if (eventArg.modifier is AttackModifier atkMod)
                 {
-                    if (atkMod.value > 0)
-                        simpleAnim = hand.onAttackUp;
-                    else
-                        simpleAnim = hand.onAttackDown;
+                    //if (atkMod.value > 0)
+                    //    simpleAnim = hand.onAttackUp;
+                    //else
+                    //    simpleAnim = hand.onAttackDown;
                     hand.Card.AttackPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
                 else if (eventArg.modifier is LifeModifier lifMod)
                 {
-                    if (lifMod.value > 0)
-                        simpleAnim = hand.onLifeUp;
-                    else
-                        simpleAnim = hand.onLifeDown;
+                    //if (lifMod.value > 0)
+                    //    simpleAnim = hand.onLifeUp;
+                    //else
+                    //    simpleAnim = hand.onLifeDown;
                     hand.Card.LifePropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
                 else if (eventArg.modifier is CostModifier costMod)
                 {
-                    if (costMod.value > 0)
-                        simpleAnim = hand.onCostUp;
-                    else
-                        simpleAnim = hand.onCostDown;
+                    //if (costMod.value > 0)
+                    //    simpleAnim = hand.onCostUp;
+                    //else
+                    //    simpleAnim = hand.onCostDown;
                     hand.Card.CostPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
             }

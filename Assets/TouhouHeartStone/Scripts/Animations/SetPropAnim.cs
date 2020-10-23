@@ -19,18 +19,18 @@ namespace Game
                 animator = servant.animator;
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
                 {
-                    if (attack > beforeAttack)
-                        simpleAnim = servant.onAttackUp;
-                    else
-                        simpleAnim = servant.onAttackDown;
+                    //if (attack > beforeAttack)
+                    //    simpleAnim = servant.onAttackUp;
+                    //else
+                    //    simpleAnim = servant.onAttackDown;
                     servant.AttackTextPropNumber.asText.text = attack.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
                 {
-                    if (currentLife > beforeCurrentLife)
-                        simpleAnim = servant.onLifeUp;
-                    else
-                        simpleAnim = servant.onLifeDown;
+                    //if (currentLife > beforeCurrentLife)
+                    //    simpleAnim = servant.onLifeUp;
+                    //else
+                    //    simpleAnim = servant.onLifeDown;
                     servant.HpTextPropNumber.asText.text = currentLife.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.KEYWORDS)
@@ -56,6 +56,9 @@ namespace Game
 
                 }
                 table.setServant(servant, eventArg.card);
+
+                
+                
             }
             else if (table.tryGetMaster(eventArg.card, out var master))
             {
@@ -116,10 +119,11 @@ namespace Game
                     //if (currentLife > beforeCurrentLife)
                     //    simpleAnim = item.onLifeUp;
                     //else
-                    simpleAnim = item.onLifeDown;
+                    //simpleAnim = item.onLifeDown;
                     item.DurabilityPropNumber.asText.text = currentLife.ToString();
                 }
             }
+
             //else
             //    throw new ActorNotFoundException(eventArg.card);
             if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator))
