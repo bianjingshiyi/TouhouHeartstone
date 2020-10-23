@@ -17,7 +17,7 @@ namespace Game
             if (table.tryGetServant(eventArg.card, out var servant))
             {
                 animator = servant.animator;
-                if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
+                if (eventArg.propName == PROPERTY.ATTACK && eventArg.value is int attack)
                 {
                     servant.AttackTextPropNumber.asText.text = attack.ToString();
                     if (eventArg.card.getAttack(table.game) > eventArg.card.define.getAttack())
@@ -29,7 +29,7 @@ namespace Game
                         simpleAnim = servant.AttackTextPropNumber.WhiteText;
                     }
                 }
-                else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
+                else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.value is int currentLife)
                 {
                     servant.HpTextPropNumber.asText.text = currentLife.ToString();
 
@@ -105,6 +105,20 @@ namespace Game
                 {
 
                 }
+
+                //判断是否是红字
+                if (eventArg.card.getCurrentLife(table.game) < eventArg.card.getLife(table.game))
+                {
+                    simpleAnim = master.LifePropNumber.RedText;
+                }
+                else if (eventArg.card.getLife(table.game) > eventArg.card.define.getLife())
+                {
+                    simpleAnim = master.LifePropNumber.GreenText;
+                }
+                else
+                {
+                    simpleAnim = master.LifePropNumber.WhiteText;                  
+                }
                 table.setMaster(master, eventArg.card);
             }
             else if (table.tryGetItem(eventArg.card, out var item))
@@ -119,6 +133,21 @@ namespace Game
                    
                     item.DurabilityPropNumber.asText.text = currentLife.ToString();
                 }
+
+                //判断是否是红字
+                if (eventArg.card.getCurrentLife(table.game) < eventArg.card.getLife(table.game))
+                {
+                    simpleAnim = item.DurabilityPropNumber.RedText;
+                }
+                else if (eventArg.card.getLife(table.game) > eventArg.card.define.getLife())
+                {
+                    simpleAnim = item.DurabilityPropNumber.GreenText;
+                }
+                else
+                {
+                    simpleAnim = item.DurabilityPropNumber.WhiteText;
+                }
+                table.setItem(item, eventArg.card);
             }
 
             
