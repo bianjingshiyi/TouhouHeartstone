@@ -20,6 +20,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using System.Reflection;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 namespace Tests
 {
     public class OtherTests
@@ -229,12 +230,28 @@ namespace Tests
         [Test]
         public void keyTest()
         {
-            using (StreamWriter writer = new StreamWriter("Keys.txt", true))
+            using (FileStream stream = new FileStream("Keys.txt", FileMode.OpenOrCreate))
             {
-                writer.WriteLine();
-                foreach (var key in KeyGeneration.generateUniqueKeys(100, 6))
+                StreamReader reader = new StreamReader(stream);
+                HashSet<string> keySet = new HashSet<string>();
+                string key = null;
+                do
                 {
-                    writer.WriteLine(key);
+                    key = reader.ReadLine()?.Trim();
+                    if (!string.IsNullOrEmpty(key))
+                    {
+                        Debug.Log(key);
+                        keySet.Add(key);
+                    }
+                    else
+                        break;
+                }
+                while (true);
+                StreamWriter writer = new StreamWriter(stream);
+                writer.WriteLine();
+                foreach (var newKey in KeyGeneration.generateUniqueKeys(100, 6, existingKeys: keySet))
+                {
+                    writer.WriteLine(newKey);
                 }
                 writer.Flush();
             }
