@@ -698,8 +698,15 @@ namespace TouhouHeartstone.Builtin
                 await target.addBuff(game, new GeneratedBuff(ID,new DeathRattle(ID,async (g,c,b,p)=>
                 {
                     var createToken = await card.getOwner().createToken(game,c.define,c.getOwner().field.count);
-                    if(createToken!=null)
+                    if (createToken != null)
+                    {
+                        foreach (IPassiveEffect effect in createToken.card.define.effects.OfType<IPassiveEffect>())
+                        {
+                            await effect.onEnable(game, createToken.card, null);
+                        }
                         await createToken.card.addBuff(game,new GeneratedBuff(ID+1,new AttackModifier(3),new LifeModifier(3)));
+                    }
+                    
                 })));
                 await Patchouli.tryMix(game, card);
             },PileFlag.both | PileFlag.field)
