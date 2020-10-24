@@ -10,12 +10,17 @@ using Game;
 using TouhouHeartstone.Builtin;
 using System;
 using BJSYGameCore.UI;
+using System.IO.Compression;
+using System.IO;
+
 namespace UI
 {
     partial class Build
     {
         CardManager cm => ui.getManager<CardManager>();
         DeckManager dm => ui.getManager<DeckManager>();
+
+        const string exportStringHeader = "# 醉梦传说卡组";
 
         /// <summary>
         /// 当前正在编辑的卡组ID
@@ -75,6 +80,138 @@ namespace UI
             }
         }
 
+        /// <summary>
+        /// 导出卡组
+        /// </summary>
+        void exportDeck()
+        {
+            var deck = dm.GetDeck(currentDeckID);
+            string outputString = exportStringHeader + " " + deck.Name + "\n";
+
+            byte[] dataBytes = new byte[(currentDeckCards.Count + 1) * sizeof(int)];
+
+            int offset = 0;
+            BitConverter.GetBytes(deck.MasterID).CopyTo(dataBytes, offset);
+            offset += 4;
+
+            foreach (var item in currentDeckCards)
+            {
+                BitConverter.GetBytes(item).CopyTo(dataBytes, offset);
+                offset += 4;
+            }
+
+            outputString += Convert.ToBase64String(gzipCompress(dataBytes));
+            GUIUtility.systemCopyBuffer = outputString;
+
+            UIDialog.ShowConfirm("提示", "卡组已导出到剪贴板", null);
+        }
+
+        void tryImportDeck()
+        {
+            // 解析数据
+            string clipboardString = GUIUtility.systemCopyBuffer.Trim();
+            if (!clipboardString.StartsWith(exportStringHeader))
+            {
+                UIDialog.ShowConfirm("错误", "剪贴板中没有可导入的卡组", null);
+                return;
+            }
+
+            var lbIndex = clipboardString.IndexOf("\n");
+            var deckName = clipboardString.Substring(exportStringHeader.Length + 1, lbIndex - exportStringHeader.Length - 1);
+            var deckContent = clipboardString.Substring(lbIndex + 1);
+
+            try
+            {
+                var compressdData = Convert.FromBase64String(deckContent);
+                var decompressedData = gzipDecompress(compressdData);
+                List<int> cards = new List<int>();
+                int master = 0;
+                for (int i = 0; i < decompressedData.Length; i += 4)
+                {
+                    var card = BitConverter.ToInt32(decompressedData, i);
+
+                    if (cm.GetCardDefine(card) == null)
+                        throw new Exception($"卡 {card} 不存在");
+                    
+                    if (i == 0)
+                        master = card;
+                    else
+                        cards.Add(card);
+                }
+
+                // 创建卡组
+                long deckID = dm.CreateDeck(deckName, master);
+                foreach (var item in cards)
+                {
+                    dm.AddCard(deckID, item);
+                }
+                
+                // 进入编辑模式
+                reloadDeckList();
+                deckEnterEditMode((int)deckID);
+            }
+            catch (Exception e)
+            {
+                UIDialog.ShowConfirm("错误", "导入错误\n" + e.Message, null);
+            }
+        }
+
+        /// <summary>
+        /// 压缩字节
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        byte[] gzipCompress(byte[] data)
+        {
+            using (var outputStream = new MemoryStream())
+            {
+                using (var inputStream = new GZipStream(outputStream, CompressionMode.Compress))
+                {
+                    inputStream.Write(data, 0, data.Length);
+                }
+                return outputStream.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// 解压字节
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        byte[] gzipDecompress(byte[] data)
+        {
+            using (var originalStream = new MemoryStream(data))
+            {
+                using (var decompressedStream = new MemoryStream())
+                {
+                    using (var decompressionStream = new GZipStream(originalStream, CompressionMode.Decompress))
+                    {
+                        decompressionStream.CopyTo(decompressedStream);
+                    }
+                    return decompressedStream.ToArray();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 导出当前卡组
+        /// </summary>
+        void onExportDeckClick()
+        {
+            // 卡组保存
+            if (currentDeckCards.Count < 30)
+            {
+                UIDialog.ShowQuestion("当前卡组不完整，无法在游戏中使用。\n是否要导出？", () =>
+                {
+                    exportDeck();
+                });
+            }
+            else
+            {
+                exportDeck();
+            }
+        }
+
         partial void onAwake()
         {
             BackButtonBlack.asButton.onClick.AddListener(onBackBtnClick);
@@ -86,6 +223,8 @@ namespace UI
             EditingDeckDeckListItem.SetMode(DeckListItem.Mode.DeckTitle);
 
             SaveButtonBlackIcon.asButton.onClick.AddListener(onSaveDeckClick);
+            ExportButtonBlackIcon.asButton.onClick.AddListener(onExportDeckClick);
+            ImportButtonBlackIcon.asButton.onClick.AddListener(tryImportDeck);
             BackButtonBlackIcon.asButton.onClick.AddListener(() =>
             {
                 uiModeSwitch(true);
