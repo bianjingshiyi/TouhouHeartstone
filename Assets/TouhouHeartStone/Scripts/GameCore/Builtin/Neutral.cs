@@ -127,21 +127,14 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return false;
-            },async (game,card,arg,targets)=>
-            {
-                THHPlayer opponent = game.getOpponent(arg.player);
-                if(opponent.field.count>0)
-                {
-                    await opponent.field.randomTake(game,1).damage(game,card,1);
-                }
-            })
+            new NoTargetEffect(effect)
         };
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer oppo = game.getOpponent(card.getOwner());
+            await oppo.field.random(game).damage(game, card, 1);
+        }
+
     }
     /// <summary>
     /// 桑尼·缪尔可 潜行
