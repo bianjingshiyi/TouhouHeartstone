@@ -81,6 +81,7 @@ namespace Game
         }
         HandToFieldAnim _handToFieldAnim = null;
         public Card attackingCard { get; set; } = null;
+        public SimpleAnim simpleAnim = null;
         protected override void onAwake()
         {
             base.onAwake();
@@ -343,6 +344,7 @@ namespace Game
                 master.AttackPropNumber.asText.text = card.getAttack(game).ToString();
                 master.AtkImage.display();
                 master.AttackPropNumber.asText.display();
+
             }
             else
             {
@@ -387,6 +389,10 @@ namespace Game
                 master.onCanAttackFalse.invokeBeforeAnim();
                 master.onCanAttackFalse.invokeAfterAnim();
             }
+
+            
+            
+
             if (card.hasKeyword(game, KEYWORD.SHIELD))
                 master.ShieldImage.display();
             else
@@ -970,6 +976,9 @@ namespace Game
                 return false;
             }
         }
+        
+
+
         /// <summary>
         /// 设置随从
         /// </summary>
@@ -1266,6 +1275,61 @@ namespace Game
             }
             return null;
         }
+
+        /// <summary>
+        /// 获取一张卡上的数字
+        /// </summary>
+        public bool tryGetAllPropNumber(Card card, out PropNumber[] numbers)
+        {
+            if(tryGetMaster(card,out var master))
+            {
+                PropNumber[] props = { master.LifePropNumber, master.AttackPropNumber };
+                numbers = props;
+                return true;
+            }
+            if(tryGetHand(card,out var hand))
+            {
+                if(card.define is ServantCardDefine)
+                {
+                    PropNumber[] props = { hand.Card.CostPropNumber, hand.Card.LifePropNumber, hand.Card.AttackPropNumber };
+                    numbers = props;
+                    return true;
+                }
+                if(card.define is SpellCardDefine)
+                {
+                    PropNumber[] props = { hand.Card.CostPropNumber };
+                    numbers = props;
+                    return true;
+                }
+                if(card.define is ItemCardDefine)
+                {
+                    PropNumber[] props = { hand.Card.CostPropNumber, hand.Card.LifePropNumber, hand.Card.AttackPropNumber  };
+                    numbers = props;
+                    return true;
+                }
+            }
+            if(tryGetItem(card,out var item))
+            {
+                PropNumber[] props = { item.DurabilityPropNumber, item.AttackPropNumber};
+                numbers = props;
+                return true;
+            }
+            if(tryGetSkill(card,out var skill))
+            {
+                PropNumber[] props = { skill.CostPropNumber };
+                numbers = props;
+                return true;
+            }
+            if(tryGetServant(card,out var servant))
+            {
+                PropNumber[] props = { servant.HpTextPropNumber,servant.AttackTextPropNumber };
+                numbers = props;
+                return true;
+            }          
+            numbers = null;
+            return false;          
+        }
+
         /// <summary>
         /// 隐藏随从的占位符
         /// </summary>
@@ -1275,6 +1339,9 @@ namespace Game
             ui.ServantPlaceHolder.Servant.hide();
             ui.ServantPlaceHolder.hide();
         }
+
+
+
         public void displayDiscoverDialog(int[] cardIdArray, string title)
         {
             ui.Discover.display();

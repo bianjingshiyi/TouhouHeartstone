@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
  public class CustomText : Text
     {
-        private readonly string mArkList = @"(\！|\？|\，|\。|\(|\)|\：|\“|\‘|\、|\；|\+|\-)";
+        private readonly string mArkList = @"(\，|\。|\：|\“|\‘|\、|\；|\+|\-)";
 
         public override void SetVerticesDirty()
         {

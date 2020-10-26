@@ -112,6 +112,42 @@ MonoBehaviour:
   _useController: 0
   _initStates: []
   m_as_Text: {fileID: 7176695291515966001}
+  RedText:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 1
+      target: {fileID: 7176695291515966001}
+      color: {r: 0.9019608, g: 0.0901961, b: 0.0901961, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  WhiteText:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 1
+      target: {fileID: 7176695291515966001}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  GreenText:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 1
+      target: {fileID: 7176695291515966001}
+      color: {r: 0.09000002, g: 0.9, b: 0.09000002, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!95 &-6452358433351254311
 Animator:
   serializedVersion: 3

@@ -4482,7 +4482,7 @@ MonoBehaviour:
       count: 0
     - id: 8196
       count: 0
-  _useTestDeck: 1
+  _useTestDeck: 0
   _testDeck:
     name: 
     master: 3145728
@@ -5620,6 +5620,18 @@ MonoBehaviour:
   _canControl: 1
   _usingPosition: 0
   _isSelectingTarget: 0
+  simpleAnim:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
   _projectileList: []
   _tipTimer:
     startTime: -1
