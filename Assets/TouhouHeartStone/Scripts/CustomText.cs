@@ -23,7 +23,7 @@ using System.Text.RegularExpressions;
 
                 if (isMark)
                 {
-                    if(text[lineList[i-1].startCharIdx].ToString() == ">")
+                    if(text[lineList[i].startCharIdx-1].ToString() == ">")
                         changeIndex = lineList[i].startCharIdx - 5;
                     else
                         changeIndex = lineList[i].startCharIdx - 1;
