@@ -5,6 +5,7 @@ using System.Linq;
 using Boo.Lang;
 using System.Runtime.InteropServices;
 using System;
+using System.Security.Policy;
 
 namespace TouhouHeartstone.Builtin
 {
@@ -724,7 +725,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x025;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 10;
+        public override int cost { get; set; } = 0;
        // public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
@@ -742,20 +743,11 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer you = card.getOwner();
             THHPlayer oppo = game.getOpponent(you);
-    
-            foreach (Card c1 in oppo.field)
-            {
-                int count = oppo.deck.count;
-                int index = game.randomInt(0, count);
-                await you.field.moveTo(game, c1, oppo.deck,index);
-            }
 
-            foreach (Card c1 in you.field)
-            {
-                int  count = oppo.deck.count;
-                int index = game.randomInt(0, count);
-                await you.field.moveTo(game, c1, oppo.deck, index);
-            }
+            await you.field.moveTo(game, you.field, oppo.deck);
+            await oppo.field.moveTo(game, oppo.field, oppo.deck);
+
+            oppo.deck.shuffle(game);
 
         }
     }
