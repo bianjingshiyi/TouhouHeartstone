@@ -117,8 +117,8 @@ namespace UI
             }
 
             var lbIndex = clipboardString.IndexOf("\n");
-            var deckName = clipboardString.Substring(exportStringHeader.Length + 1, lbIndex - exportStringHeader.Length - 1);
-            var deckContent = clipboardString.Substring(lbIndex + 1);
+            var deckName = clipboardString.Substring(exportStringHeader.Length + 1, lbIndex - exportStringHeader.Length - 1).Trim();
+            var deckContent = clipboardString.Substring(lbIndex + 1).Trim();
 
             try
             {
@@ -131,8 +131,11 @@ namespace UI
                     var card = BitConverter.ToInt32(decompressedData, i);
 
                     if (cm.GetCardDefine(card) == null)
-                        throw new Exception($"卡 {card} 不存在");
-                    
+                    {
+                        UIDialog.ShowConfirm("错误", $"ID为{card}的卡不存在", null);
+                        return;
+                    }
+
                     if (i == 0)
                         master = card;
                     else
@@ -150,9 +153,18 @@ namespace UI
                 reloadDeckList();
                 deckEnterEditMode((int)deckID);
             }
+            catch (FormatException e)
+            {
+                UIDialog.ShowConfirm("错误", "卡组代码不完整", null);
+            }
+            catch (IOException e)
+            {
+                UIDialog.ShowConfirm("错误", "卡组数据已损坏", null);
+            }
             catch (Exception e)
             {
                 UIDialog.ShowConfirm("错误", "导入错误\n" + e.Message, null);
+                Debug.LogWarning(e);
             }
         }
 
