@@ -23,12 +23,12 @@ using System.Text.RegularExpressions;
 
                 if (isMark)
                 {
-                    bool b = Regex.IsMatch(text[lineList[i].startCharIdx].ToString(), mArkList);
-                    if (b)
-                    {
+                    if(text[lineList[i-1].startCharIdx].ToString() == ">")
+                        changeIndex = lineList[i].startCharIdx - 5;
+                    else
                         changeIndex = lineList[i].startCharIdx - 1;
-                        break;
-                    }
+                    break;
+                    
                 }
             }
 
