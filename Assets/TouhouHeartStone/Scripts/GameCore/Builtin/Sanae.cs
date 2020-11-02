@@ -5,6 +5,7 @@ using System.Linq;
 using Boo.Lang;
 using System.Runtime.InteropServices;
 using System;
+using System.Security.Policy;
 
 namespace TouhouHeartstone.Builtin
 {
@@ -601,7 +602,7 @@ namespace TouhouHeartstone.Builtin
         {
             new IntPropFixer<Sanae.RevealDuelArg>(PileFlag.hand,
                 new IntPropFixer<Sanae.RevealDuelArg>.ModifierFixer(
-                    new AttackModifier(0),(g,c,b,a)=>
+                    new CostModifier(0),(g,c,b,a)=>
                     {
                         int count = - g.triggers.getRecordedEvents().
                         skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
@@ -742,20 +743,11 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer you = card.getOwner();
             THHPlayer oppo = game.getOpponent(you);
-    
-            foreach (Card c1 in oppo.field)
-            {
-                int count = oppo.deck.count;
-                int index = game.randomInt(0, count);
-                await you.field.moveTo(game, c1, oppo.deck,index);
-            }
 
-            foreach (Card c1 in you.field)
-            {
-                int  count = oppo.deck.count;
-                int index = game.randomInt(0, count);
-                await you.field.moveTo(game, c1, oppo.deck, index);
-            }
+            await you.field.moveTo(game, you.field, oppo.deck);
+            await oppo.field.moveTo(game, oppo.field, oppo.deck);
+
+            oppo.deck.shuffle(game);
 
         }
     }
