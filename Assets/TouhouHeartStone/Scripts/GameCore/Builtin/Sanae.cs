@@ -602,7 +602,7 @@ namespace TouhouHeartstone.Builtin
         {
             new IntPropFixer<Sanae.RevealDuelArg>(PileFlag.hand,
                 new IntPropFixer<Sanae.RevealDuelArg>.ModifierFixer(
-                    new AttackModifier(0),(g,c,b,a)=>
+                    new CostModifier(0),(g,c,b,a)=>
                     {
                         int count = - g.triggers.getRecordedEvents().
                         skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).

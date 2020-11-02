@@ -4482,7 +4482,7 @@ MonoBehaviour:
       count: 0
     - id: 8196
       count: 0
-  _useTestDeck: 1
+  _useTestDeck: 0
   _testDeck:
     name: 
     master: 3145728
@@ -5614,7 +5614,8 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 4
     m_NumAlphaKeys: 2
-  _cardPrefab: {fileID: 0}
+  _cardPrefab: {fileID: 1195777761491610246, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+    type: 3}
   _tipBoxOffset: {x: 20, y: 20}
   _table: {fileID: 1004327311}
   _canControl: 1
