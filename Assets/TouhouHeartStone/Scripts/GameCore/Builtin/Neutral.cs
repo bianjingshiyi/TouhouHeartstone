@@ -1401,4 +1401,92 @@ namespace TouhouHeartstone.Builtin
             })
         };
     }
+
+    //风
+
+    /// <summary>
+    /// 秋静叶
+    /// 每当该随从攻击时，对一个随机敌方随从造成2点伤害
+    /// </summary>
+    public class AkiSizuha_N : ServantCardDefine 
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x062;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 2;
+        public override string[] tags { get; set; } = { TAG.GOD };
+
+
+        public override IEffect[] effects { get; set; } = new IEffect[] 
+        {
+            new THHEffectAfter<THHCard.AttackEventArg>(PILE.FIELD,(game,card,arg)=>
+            {
+                return arg.card == card;
+            },null,async(game,card,arg)=>
+            {
+                await game.getOpponent(card.getOwner()).field.random(game).damage(game,card,2);
+            })
+        };
+    }
+
+    /// <summary>
+    /// 秋穰子
+    /// 部署：治愈2点生命值
+    /// 这俩是姐妹？？？
+    /// </summary>
+    public class AkiMinoriko_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x063;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 3;
+        public override string[] tags { get; set; } = { TAG.GOD };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async(game, card, target) =>
+            {
+                await target.heal(game,card,2);
+            })
+        };        
+    }
+
+    /// <summary>
+    /// 键山雏
+    /// 部署:沉默一个友方随从
+    /// </summary>
+    public class KagiyamaHina_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x064;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 5;
+        public override string[] tags { get; set; } = { TAG.GOD };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async(game, card, target) =>
+            {
+                await target.silence(game);
+            },PileFlag.self | PileFlag.field)
+        };
+    }
+
+    /// <summary>
+    /// 河城荷取
+    /// 护盾，潜行
+    /// </summary>
+    public class KawasiroNitori_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x065;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD,KEYWORD.STEALTH };
+        public override IEffect[] effects { get; set; } = new IEffect[] { };
+    }
+
+
 }
