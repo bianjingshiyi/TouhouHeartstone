@@ -605,7 +605,7 @@ namespace TouhouHeartstone.Builtin
                     new CostModifier(0),(g,c,b,a)=>
                     {
                         int count = - g.triggers.getRecordedEvents().
-                        skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
+                        skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart). 
                         OfType<Sanae.RevealDuelArg>().
                         Where(e2 => e2.player == c.getOwner()).Count();
                         return count;
@@ -743,12 +743,20 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer you = card.getOwner();
             THHPlayer oppo = game.getOpponent(you);
+            int index = 0;
 
-            await you.field.moveTo(game, you.field, oppo.deck);
-            await oppo.field.moveTo(game, oppo.field, oppo.deck);
+            while(you.field.count != 0)
+            {
+                index = game.randomInt(0, oppo.deck.count);
+                await you.field.moveTo(game, you.field[0], oppo.deck,index);
+            }
 
-            oppo.deck.shuffle(game);
-
+            while (oppo.field.count != 0)
+            {
+                index = game.randomInt(0, oppo.deck.count);
+                await oppo.field.moveTo(game, oppo.field[0], oppo.deck,index);
+            }
+        
         }
     }
 }

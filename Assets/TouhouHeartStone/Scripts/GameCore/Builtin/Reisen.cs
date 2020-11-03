@@ -345,7 +345,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await card.getOwner().skill.setUsed(game, false);
             }
-            if(!(card.getOwner().skill.define.Equals(game.getDefine<LunaticShoot_MindDropping>())))
+            if (!(card.getOwner().skill.define.Equals(game.getDefine<LunaticShoot_MindDropping>())))
             {
                 var arg = await THHCard.setDefine(card.getOwner().skill, game, game.getDefine<LunaticShoot_MindDropping>());
                 await card.getOwner().skill.addBuff(game, new GeneratedBuff(ID,
@@ -359,7 +359,7 @@ namespace TouhouHeartstone.Builtin
                   }
                  )));
             }
-            
+
         }
     }
     public class LunaticShoot_MindDropping : SkillCardDefine
@@ -441,18 +441,25 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             Card topCard = card.getOwner().deck.top;
-            if (topCard.hasKeyword(game, KEYWORD.SECRET) &&
-               topCard.define is SpellCardDefine &&
-               card.getOwner().head.count < card.getOwner().head.maxCount &&
-               card.getOwner().head.All(c => c.define != topCard.define))
+
+            while (true)
             {
-                await card.getOwner().hand.moveTo(game, topCard, card.getOwner().head);
-                await effect(game, card);
+                if (topCard.hasKeyword(game, KEYWORD.SECRET) &&
+                topCard.define is SpellCardDefine &&
+                card.getOwner().head.count < card.getOwner().head.maxCount &&
+                card.getOwner().head.All(c => c.define != topCard.define))
+                {
+                    await card.getOwner().hand.moveTo(game, topCard, card.getOwner().head);
+                    topCard = card.getOwner().deck.top;
+                }
+                else
+                {
+                    await card.getOwner().draw(game);
+                    break;
+                }
             }
-            else
-            {
-                await card.getOwner().draw(game);
-            }
+
+
         }
     }
 
