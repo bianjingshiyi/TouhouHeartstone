@@ -1313,8 +1313,8 @@ namespace TouhouHeartstone.Builtin
                                                                                                                 ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,
                                                                                                                                                                        (g1, c1, a1) =>
                                                                                                                                                                        {
-                                                                                                                                                                            return a1.player == c1.getOwner();
-                                                                                                                                                                        }, ID, 2)));
+                                                                                                                                                                           return a1.player == c1.getOwner();
+                                                                                                                                                                       }, ID, 2)));
 
                 await g.getOpponent(c.getOwner()).master.addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
                                                                                                                 (g1, c1, a1) =>
@@ -1408,7 +1408,7 @@ namespace TouhouHeartstone.Builtin
     /// 秋静叶
     /// 每当该随从攻击时，对一个随机敌方随从造成2点伤害
     /// </summary>
-    public class AkiSizuha_N : ServantCardDefine 
+    public class AkiSizuha_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x062;
         public override int id { get; set; } = ID;
@@ -1418,7 +1418,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = { TAG.GOD };
 
 
-        public override IEffect[] effects { get; set; } = new IEffect[] 
+        public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectAfter<THHCard.AttackEventArg>(PILE.FIELD,(game,card,arg)=>
             {
@@ -1449,7 +1449,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await target.heal(game,card,2);
             })
-        };        
+        };
     }
 
     /// <summary>
@@ -1484,9 +1484,172 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD,KEYWORD.STEALTH };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD, KEYWORD.STEALTH };
         public override IEffect[] effects { get; set; } = new IEffect[] { };
     }
 
 
+    /// <summary>
+    /// 犬走椛
+    /// 嘲讽，部署:如果对手控制了至少2个随从，抽一张牌
+    /// </summary>
+    public class InubashiriMomizi_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x066;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 5;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 5;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer oppo = game.getOpponent(card.getOwner());
+            if (oppo.field.count >= 2)
+            {
+                await card.getOwner().draw(game);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 寒光天狗（划掉）射命丸文
+    /// 突袭，部署:你和你的对手抽一张牌
+    /// </summary>
+    public class ShameimaruAya_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x067;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 6;
+        public override int attack { get; set; } = 6;
+        public override int life { get; set; } = 3;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            await game.getOpponent(card.getOwner()).draw(game);
+            await card.getOwner().draw(game);
+        }
+    }
+
+    /// <summary>
+    /// 洩矢诹访子
+    /// 突袭，遗愿：召唤2个2/4具有卫士的青蛙
+    /// 这比职业青蛙强了啊。。。。
+    /// </summary>
+    public class MoriyaSuwako_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x068;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 6;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 4;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD.UNIQUE };
+        public override string[] tags { get; set; } = { TAG.GOD };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new DeathRattle(ID, async (game, card, p) =>
+            {
+                await card.getOwner().createToken(game,game.getDefine<Frog_N>());
+                await card.getOwner().createToken(game,game.getDefine<Frog_N>());
+            })
+        };
+    }
+
+    /// <summary>
+    /// 青蛙
+    /// 衍生卡，3/2/4嘲讽
+    /// </summary>
+    public class Frog_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x069;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 4;
+        public override bool isToken { get; set; } = true;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+    }
+
+    /// <summary>
+    /// 早苗
+    /// 抽牌，直到牌库顶的牌法力值消耗小于刚抽的牌才停下
+    /// </summary>
+    public class Sanae_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x070;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 7;
+        public override int attack { get; set; } = 6;
+        public override int life { get; set; } = 6;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override string[] tags { get; set; } = { TAG.GOD };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            Card top;
+            Card draw;
+            do
+            {
+                await card.getOwner().draw(game, out var arg);
+                draw = arg.card;
+                top = card.getOwner().deck.top;
+            } while (top.getCost(game) > draw.getCost(game));
+        }
+    }
+
+    /// <summary>
+    /// 中立神妈
+    /// </summary>
+    public class YasakaKanako_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x071;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 7;
+        public override int attack { get; set; } = 6;
+        public override int life { get; set; } = 6;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override string[] tags { get; set; } = { TAG.GOD };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectBefore<THHGame.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
+            {
+                return arg.player == card.getOwner();
+            },null,async(game,card,arg)=>
+            {
+                var a = await game.getOpponent(card.getOwner()).field.damage(game,card,4);
+
+                if(a.infoDic.Any(e => e.Value.currentLife<0))
+                {
+                    await card.getOwner().createToken(game,game.getDefine<Onbashira_N>());
+                }
+            })
+        };
+    }
+
+    /// <summary>
+    /// 御柱
+    /// 衍生卡，3/3/3嘲讽
+    /// </summary>
+    public class Onbashira_N : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x072;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 4;
+        public override bool isToken { get; set; } = true;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+    }
 }
