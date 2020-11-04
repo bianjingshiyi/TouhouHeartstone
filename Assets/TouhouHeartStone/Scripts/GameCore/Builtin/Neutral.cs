@@ -1425,7 +1425,11 @@ namespace TouhouHeartstone.Builtin
                 return arg.card == card;
             },null,async(game,card,arg)=>
             {
-                await game.getOpponent(card.getOwner()).field.random(game).damage(game,card,2);
+                Card target = game.getOpponent(card.getOwner()).field.random(game);
+                if(target != null)
+                {
+                    await target.damage(game,card,2);
+                }
             })
         };
     }
