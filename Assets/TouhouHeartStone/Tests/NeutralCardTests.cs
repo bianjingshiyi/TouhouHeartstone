@@ -826,5 +826,57 @@ namespace Tests
             Assert.AreEqual(game.getDefine<DefaultServant>().life - originAttack, oppo.field.getCard<DefaultServant>().getCurrentLife(game));
             Assert.AreEqual(originAttack + 3, you.field.getCard<HoanMeirin_N>().getAttack(game));
         }
+
+        [Test]
+        public void AkiSizuha_NTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(AkiSizuha_N.ID, 1));
+
+            game.skipUntilCanUse<AkiSizuha_N>(you);
+            you.cmdUse(game, you.hand.getCard<AkiSizuha_N>());
+            you.cmdTurnEnd(game);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdTurnEnd(game);
+            you.cmdAttack(game, you.field[0], target: oppo.master);
+
+            game.Dispose();
+        }
+
+        [Test]
+        public void Sanae_NTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 10).Concat(Enumerable.Repeat(game.getDefine<TestFreezeBrain>(), 10)).Concat(Enumerable.Repeat(game.getDefine<Sanae_N>(), 10)));
+
+            game.skipUntilCanUse<Sanae_N>(you);
+            you.cmdUse(game, you.hand.getCard<Sanae_N>());
+
+            game.Dispose();
+
+        }
+
+        [Test]
+        public void YasakaKanako_NTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(YasakaKanako_N.ID, 1));
+
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.field[0].damage(game, null, 6);
+
+            game.skipUntilCanUse<YasakaKanako_N>(you);
+            you.cmdUse(game, you.hand.getCard<YasakaKanako_N>());
+            you.cmdTurnEnd(game);
+
+            game.Dispose();
+        }
     }
 }
