@@ -59,8 +59,8 @@ namespace Game
             if (!_moveBackSelf.update(table) || !_moveBackOppo.update(table))
                 return false;
             //销毁实例
-            UObject.Destroy(_cardSelf);
-            UObject.Destroy(_cardOppo);
+            UObject.Destroy(_cardSelf.gameObject);
+            UObject.Destroy(_cardOppo.gameObject);
             return true;
         }
     }
