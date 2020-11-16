@@ -72,7 +72,12 @@ namespace UI
     }
     public abstract class EventAnimation : TableAnimation
     {
+        public virtual string eventName { get => throw new NotImplementedException(); }
         public abstract IEventArg eventArg { get; set; }
+        public EventAnimation clone()
+        {
+            throw new NotImplementedException();
+        }
     }
     [Serializable]
     public abstract class EventAnimation<T> : EventAnimation where T : IEventArg

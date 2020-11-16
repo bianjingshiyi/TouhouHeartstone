@@ -114,7 +114,7 @@ namespace Game
             //随从牌使用预览
             if (_handToFieldAnim != null)
             {
-                if (_handToFieldAnim.update(this))
+                if (_handToFieldAnim.update(this, Time.time))
                 {
                     _handToFieldAnim = null;
                     if (tryGetHand(usingCard, out var hand))
@@ -390,8 +390,8 @@ namespace Game
                 master.onCanAttackFalse.invokeAfterAnim();
             }
 
-            
-            
+
+
 
             if (card.hasKeyword(game, KEYWORD.SHIELD))
                 master.ShieldImage.display();
@@ -658,22 +658,22 @@ namespace Game
                     {
                         //获取鼠标停留的那张卡，就是目标
                         if (isOnTarget(pointer, out var target))
-                        {                          
+                        {
                             if (usingCard.isValidTarget(game, target))
                             {
                                 //合法目标，生效
                                 player.cmdUse(game, usingCard, 0, target);
                                 resetUse(true, false);
-                            }                               
+                            }
                             else
                             {
                                 //非法目标，跳出非法信息
                                 showTip(info);
                                 resetUse(true, true);
                                 hand.Card.display();
-                            }                               
+                            }
                         }
-                        
+
                     }
                     else
                     {
@@ -760,7 +760,7 @@ namespace Game
             {
                 HandListItem usingHand = getHand(usingCard);
                 usingHand.Card.display();
-                setCard(usingHand.Card, usingCard, true);              
+                setCard(usingHand.Card, usingCard, true);
                 usingHand.Card.rectTransform.localScale = Vector3.one;
                 usingHand.Card.rectTransform.localPosition = Vector2.zero;
             }
@@ -976,7 +976,7 @@ namespace Game
                 return false;
             }
         }
-        
+
 
 
         /// <summary>
@@ -1281,53 +1281,53 @@ namespace Game
         /// </summary>
         public bool tryGetAllPropNumber(Card card, out PropNumber[] numbers)
         {
-            if(tryGetMaster(card,out var master))
+            if (tryGetMaster(card, out var master))
             {
                 PropNumber[] props = { master.LifePropNumber, master.AttackPropNumber };
                 numbers = props;
                 return true;
             }
-            if(tryGetHand(card,out var hand))
+            if (tryGetHand(card, out var hand))
             {
-                if(card.define is ServantCardDefine)
+                if (card.define is ServantCardDefine)
                 {
                     PropNumber[] props = { hand.Card.CostPropNumber, hand.Card.LifePropNumber, hand.Card.AttackPropNumber };
                     numbers = props;
                     return true;
                 }
-                if(card.define is SpellCardDefine)
+                if (card.define is SpellCardDefine)
                 {
                     PropNumber[] props = { hand.Card.CostPropNumber };
                     numbers = props;
                     return true;
                 }
-                if(card.define is ItemCardDefine)
+                if (card.define is ItemCardDefine)
                 {
-                    PropNumber[] props = { hand.Card.CostPropNumber, hand.Card.LifePropNumber, hand.Card.AttackPropNumber  };
+                    PropNumber[] props = { hand.Card.CostPropNumber, hand.Card.LifePropNumber, hand.Card.AttackPropNumber };
                     numbers = props;
                     return true;
                 }
             }
-            if(tryGetItem(card,out var item))
+            if (tryGetItem(card, out var item))
             {
-                PropNumber[] props = { item.DurabilityPropNumber, item.AttackPropNumber};
+                PropNumber[] props = { item.DurabilityPropNumber, item.AttackPropNumber };
                 numbers = props;
                 return true;
             }
-            if(tryGetSkill(card,out var skill))
+            if (tryGetSkill(card, out var skill))
             {
                 PropNumber[] props = { skill.CostPropNumber };
                 numbers = props;
                 return true;
             }
-            if(tryGetServant(card,out var servant))
+            if (tryGetServant(card, out var servant))
             {
-                PropNumber[] props = { servant.HpTextPropNumber,servant.AttackTextPropNumber };
+                PropNumber[] props = { servant.HpTextPropNumber, servant.AttackTextPropNumber };
                 numbers = props;
                 return true;
-            }          
+            }
             numbers = null;
-            return false;          
+            return false;
         }
 
         /// <summary>
