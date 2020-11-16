@@ -118,7 +118,7 @@ namespace Game
             [TypeString(typeof(EventArg))]
             [SerializeField]
             string _eventType;
-            public override bool update(TableManager table)
+            public override bool update(TableManager table, float time)
             {
                 throw new NotImplementedException();
             }
@@ -137,7 +137,7 @@ namespace Game
         {
             return _animationQueue.ToArray();
         }
-        public void updateAnim(TableManager table)
+        public void updateAnim(TableManager table, float time)
         {
             if (_animationQueue.Count > 0)
             {
@@ -168,7 +168,7 @@ namespace Game
                         continue;
                     try
                     {
-                        if (anim is TableAnimation tAnim ? tAnim.update(table) : anim.update(table.ui))
+                        if (anim is TableAnimation tAnim ? tAnim.update(table, time) : anim.update(table.ui))
                         {
                             _animationQueue.RemoveAt(i);
                             i--;
@@ -291,7 +291,7 @@ namespace Game
             [TypeString(typeof(EventArg))]
             [SerializeField]
             string _eventType;
-            public override bool update(TableManager table)
+            public override bool update(TableManager table, float time)
             {
                 throw new NotImplementedException();
             }
@@ -341,7 +341,7 @@ namespace Game
                         continue;
                     try
                     {
-                        if (anim is TableAnimation tAnim ? tAnim.update(this) : anim.update(ui))
+                        if (anim is TableAnimation tAnim ? tAnim.update(this, Time.deltaTime) : anim.update(ui))
                         {
                             _animationQueue.RemoveAt(i);
                             i--;

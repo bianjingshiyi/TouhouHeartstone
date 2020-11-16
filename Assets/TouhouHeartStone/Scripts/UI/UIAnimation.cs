@@ -68,7 +68,7 @@ namespace UI
         public virtual void init(TableManager table)
         {
         }
-        public abstract bool update(TableManager table);
+        public abstract bool update(TableManager table, float time);
     }
     public abstract class EventAnimation : TableAnimation
     {
@@ -96,7 +96,7 @@ namespace UI
         public virtual void init(TableManager table, T eventArg)
         {
         }
-        public sealed override bool update(TableManager table)
+        public sealed override bool update(TableManager table, float time)
         {
             return update(table, eventArg is T t ? t : default);
         }

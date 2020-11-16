@@ -25,7 +25,7 @@ namespace Game
             servant.rectTransform.SetSiblingIndex(index + 1);
             _timer.start();
         }
-        public override bool update(TableManager table)
+        public override bool update(TableManager table, float time)
         {
             if (!_timer.isExpired())
             {
