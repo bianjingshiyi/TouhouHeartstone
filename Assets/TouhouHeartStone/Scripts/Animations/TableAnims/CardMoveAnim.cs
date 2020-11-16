@@ -38,7 +38,7 @@ namespace Game
             _timer = new Timer() { duration = curve.keys.Last().time };
             _timer.start();
         }
-        public override bool update(TableManager table)
+        public override bool update(TableManager table, float time)
         {
             if (!_timer.isExpired())
             {

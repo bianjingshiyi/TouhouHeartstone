@@ -6,7 +6,7 @@ namespace Game
 {
     class PreHeatAnim : EventAnimation<Youmu.PreHeatEventArg>
     {
-        public override bool update(TableManager table, Youmu.PreHeatEventArg eventArg)
+        public override bool update(TableManager table, Youmu.PreHeatEventArg eventArg, float time)
         {
             if (table.tryGetHand(eventArg.card, out var hand))
             {

@@ -10,7 +10,7 @@ namespace Game
     class SetPropAnim : EventAnimation<Card.SetPropEventArg>
     {
         AnimAnim _anim;
-        public override bool update(TableManager table, Card.SetPropEventArg eventArg)
+        public override bool update(TableManager table, Card.SetPropEventArg eventArg, float time)
         {
             SimpleAnim simpleAnim = null;
             Animator animator = null;
@@ -151,7 +151,7 @@ namespace Game
             }
 
             
-            if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator))
+            if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator, time))
                 return false;
             return true;
         }

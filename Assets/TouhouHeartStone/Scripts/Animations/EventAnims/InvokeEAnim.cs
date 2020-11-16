@@ -18,7 +18,7 @@ namespace Game
         AnimAnim _flipBackOppo;
         CardMoveAnim _moveBackSelf;
         CardMoveAnim _moveBackOppo;
-        public override bool update(TableManager table, Sanae.RevealDuelArg eventArg)
+        public override bool update(TableManager table, Sanae.RevealDuelArg eventArg, float time)
         {
             //在对应的卡组上创建卡牌实例
             _cardSelf = UObject.Instantiate(table.cardPrefab, table.ui.SelfDeck.transform.position, Quaternion.identity, table.ui.SelfDeck.transform);
@@ -30,7 +30,7 @@ namespace Game
                 _moveToSelf = new CardMoveAnim(_cardSelf, table.ui.LeftDisplayImage.transform, table.cardShowCurve);
             if (_moveToOppo == null)
                 _moveToOppo = new CardMoveAnim(_cardOppo, table.ui.RightDisplayImage.transform, table.cardShowCurve);
-            if (!_moveToSelf.update(table) || !_moveToOppo.update(table))
+            if (!_moveToSelf.update(table, time) || !_moveToOppo.update(table, time))
             {
                 UObject.Destroy(_cardSelf.gameObject);
                 UObject.Destroy(_cardOppo.gameObject);
@@ -42,7 +42,7 @@ namespace Game
                 _flipFaceSelf = new AnimAnim(_cardSelf.animator, _cardSelf._flipToFaceAnimName);
             if (_flipFaceOppo == null)
                 _flipFaceOppo = new AnimAnim(_cardOppo.animator, _cardOppo._flipToBackAnimName);
-            if (!_flipFaceSelf.update(table) || !_flipFaceOppo.update(table))
+            if (!_flipFaceSelf.update(table, time) || !_flipFaceOppo.update(table, time))
             {
                 UObject.Destroy(_cardSelf.gameObject);
                 UObject.Destroy(_cardOppo.gameObject);
@@ -52,7 +52,7 @@ namespace Game
             //如果胜利应该有一个胜利动画
             if (eventArg.result == true)
                 _winAnim = new AnimAnim(_cardSelf.animator, _cardSelf._notifyAnimName);
-            if (_winAnim != null && !_winAnim.update(table))
+            if (_winAnim != null && !_winAnim.update(table, time))
             {
                 UObject.Destroy(_cardSelf.gameObject);
                 UObject.Destroy(_cardOppo.gameObject);
@@ -64,7 +64,7 @@ namespace Game
                 _flipBackSelf = new AnimAnim(_cardSelf.animator, _cardSelf._flipToBackAnimName);
             if (_flipBackOppo == null)
                 _flipBackOppo = new AnimAnim(_cardOppo.animator, _cardOppo._flipToBackAnimName);
-            if (!_flipBackSelf.update(table) || !_flipBackOppo.update(table))
+            if (!_flipBackSelf.update(table, time) || !_flipBackOppo.update(table, time))
             {
                 UObject.Destroy(_cardSelf.gameObject);
                 UObject.Destroy(_cardOppo.gameObject);
@@ -76,7 +76,7 @@ namespace Game
                 _moveBackSelf = new CardMoveAnim(_cardSelf, table.ui.LeftDisplayImage.transform, table.cardShowCurve);
             if (_moveBackOppo == null)
                 _moveBackOppo = new CardMoveAnim(_cardOppo, table.ui.RightDisplayImage.transform, table.cardShowCurve);
-            if (!_moveBackSelf.update(table) || !_moveBackOppo.update(table))
+            if (!_moveBackSelf.update(table, time) || !_moveBackOppo.update(table, time))
             {
                 UObject.Destroy(_cardSelf.gameObject);
                 UObject.Destroy(_cardOppo.gameObject);

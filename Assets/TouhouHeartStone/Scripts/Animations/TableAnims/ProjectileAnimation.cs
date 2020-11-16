@@ -11,7 +11,7 @@ namespace Game
             this.projectile = projectile;
             projectile.target = target.rectTransform;
         }
-        public override bool update(TableManager table)
+        public override bool update(TableManager table, float time)
         {
             if (projectile != null)
                 return false;

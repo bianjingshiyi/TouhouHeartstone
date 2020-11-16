@@ -15,7 +15,7 @@ namespace Game
         AnimAnim _useAnim;
         AnimAnim _equipAnim;
         TableAnimation _targetedAnim;
-        public override bool update(TableManager table, THHPlayer.UseEventArg eventArg)
+        public override bool update(TableManager table, THHPlayer.UseEventArg eventArg, float time)
         {
             UIObject sourceActor;
             if (eventArg.card.define is ServantCardDefine)
@@ -29,12 +29,12 @@ namespace Game
                             HandListItem item = table.getHand(eventArg.card);
                             if (_moveAnim == null)
                                 _moveAnim = new HandToFieldAnim(table, item, table.ui.SelfFieldList, eventArg.position);
-                            if (!_moveAnim.update(table))
+                            if (!_moveAnim.update(table, time))
                                 return false;
                         }
                         //table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
                         //将使用随从的移除手牌转移至TryEnterFiledAnim
-                        if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg))
+                        if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg, time))
                             return false;
                         table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
                         table.ui.ServantPlaceHolder.hide();
@@ -55,7 +55,7 @@ namespace Game
                             table.setCard(item.Card, eventArg.card, true);
                             _moveAnim = new CardMoveAnim(item.Card, item.rectTransform, table.handToFieldCurve);
                         }
-                        if (!_moveAnim.update(table))
+                        if (!_moveAnim.update(table, time))
                             return false;
                     }
                 }
@@ -66,12 +66,12 @@ namespace Game
                         throw new ActorNotFoundException(eventArg.card);
                     if (_moveAnim == null)
                         _moveAnim = new HandToFieldAnim(table, hand, table.ui.EnemyFieldList, eventArg.position);
-                    if (hand != null && !_moveAnim.update(table))
+                    if (hand != null && !_moveAnim.update(table, time))
                         return false;
                     if (!eventArg.isCanceled)
                     {
                         table.ui.EnemyHandList.removeItem(hand);
-                        if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg))
+                        if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg, time))
                             return false;
                     }
                     else
@@ -81,7 +81,7 @@ namespace Game
                             _targetedAnim = new CardMoveAnim(hand.Card, hand.rectTransform, table.handToFieldCurve);
                             table.setCard(hand.Card, eventArg.card, true);
                         }
-                        if (!_targetedAnim.update(table))
+                        if (!_targetedAnim.update(table, time))
                             return false;
                     }
                     table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
@@ -94,12 +94,12 @@ namespace Game
                 {
                     if (table.tryGetHand(eventArg.card, out var hand))
                     {
-                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onSelfUse, hand.animator))
+                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onSelfUse, hand.animator, time))
                             return false;
                         table.ui.SelfHandList.removeItem(hand);
                     }
                     table.getManager<SEManager>().playSE(table.getSkin(eventArg.card).sound_onUse);
-                    if (tryTargetedAnim(table, table.ui.SelfMaster, eventArg))
+                    if (tryTargetedAnim(table, table.ui.SelfMaster, eventArg, time))
                         return false;
                 }
                 else
@@ -111,12 +111,12 @@ namespace Game
                         else
                             table.setCard(hand.Card, eventArg.card, true);
                         hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
-                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator))
+                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator, time))
                             return false;
                         table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
                     }
                     table.getManager<SEManager>().playSE(table.getSkin(eventArg.card).sound_onUse);
-                    if (tryTargetedAnim(table, table.ui.EnemyMaster, eventArg))
+                    if (tryTargetedAnim(table, table.ui.EnemyMaster, eventArg, time))
                         return false;
                 }
             }
@@ -133,7 +133,7 @@ namespace Game
                     sourceActor = table.ui.EnemySkill;
                 }
                 table.getManager<SEManager>().playSE(table.getSkin(eventArg.card).sound_onUse);
-                if (tryTargetedAnim(table, sourceActor, eventArg))
+                if (tryTargetedAnim(table, sourceActor, eventArg, time))
                     return false;
             }
             else if (eventArg.card.isItem())
@@ -142,12 +142,12 @@ namespace Game
                 {
                     if (table.tryGetHand(eventArg.card, out var hand))
                     {
-                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onSelfUse, hand.animator))
+                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onSelfUse, hand.animator, time))
                             return false;
                         table.ui.SelfHandList.removeItem(hand);
                     }
                     table.setMaster(table.ui.SelfMaster, table.player.master);
-                    if (tryTargetedAnim(table, table.ui.SelfItem, eventArg))
+                    if (tryTargetedAnim(table, table.ui.SelfItem, eventArg, time))
                         return false;
                 }
                 else
@@ -156,18 +156,18 @@ namespace Game
                     {
                         table.setCard(hand.Card, eventArg.card, true);
                         hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
-                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator))
+                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator, time))
                             return false;
                         table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
                     }
                     table.setMaster(table.ui.EnemyMaster, table.game.getOpponent(table.player).master);
-                    if (tryTargetedAnim(table, table.ui.EnemyItem, eventArg))
+                    if (tryTargetedAnim(table, table.ui.EnemyItem, eventArg, time))
                         return false;
                 }
             }
             return true;
         }
-        bool tryTargetedAnim(TableManager table, UIObject sourceActor, THHPlayer.UseEventArg eventArg)
+        bool tryTargetedAnim(TableManager table, UIObject sourceActor, THHPlayer.UseEventArg eventArg, float time)
         {
             if (eventArg.targets != null && eventArg.targets.Length > 0 && eventArg.targets[0] is var targetCard)
             {
@@ -186,7 +186,7 @@ namespace Game
                             table.createProjectile(skin.projectile, sourceActor.rectTransform, targetActor.rectTransform),
                             targetActor);
                     }
-                    if (!_targetedAnim.update(table))
+                    if (!_targetedAnim.update(table, time))
                         return true;
                 }
                 else
@@ -208,7 +208,7 @@ namespace Game
                         else
                             throw new ActorNotFoundException(targetCard);
                     }
-                    if (!SimpleAnimHelper.update(table, ref _targetedAnim, simpleAnim, animator, next => false))
+                    if (!SimpleAnimHelper.update(table, ref _targetedAnim, simpleAnim, animator, time, next => false))
                         return true;
                 }
             }

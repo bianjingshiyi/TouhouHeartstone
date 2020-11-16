@@ -4,7 +4,7 @@ namespace Game
 {
     class SilenceAnim : EventAnimation<THHCard.SilenceEventArg>
     {
-        public override bool update(TableManager table, THHCard.SilenceEventArg eventArg)
+        public override bool update(TableManager table, THHCard.SilenceEventArg eventArg, float time)
         {
             foreach (var card in eventArg.cards)
             {

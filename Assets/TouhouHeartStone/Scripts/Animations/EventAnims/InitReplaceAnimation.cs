@@ -4,7 +4,7 @@ namespace Game
 {
     class InitReplaceAnimation : EventAnimation<THHPlayer.InitReplaceEventArg>
     {
-        public override bool update(TableManager table, THHPlayer.InitReplaceEventArg eventArg)
+        public override bool update(TableManager table, THHPlayer.InitReplaceEventArg eventArg, float time)
         {
             table.ui.InitReplaceDialog.hide();
             return true;

@@ -16,7 +16,7 @@ namespace Game
         /// <param name="table">游戏桌面UI管理器</param>
         /// <param name="eventArg">死亡事件</param>
         /// <returns></returns>
-        public override bool update(TableManager table, THHCard.DeathEventArg eventArg)
+        public override bool update(TableManager table, THHCard.DeathEventArg eventArg, float time)
         {
             if (_animList == null)
             {
@@ -45,7 +45,7 @@ namespace Game
             bool isAllAnimDone = true;
             foreach (var anim in _animList)
             {
-                if (!anim.update(table))
+                if (!anim.update(table, time))
                     isAllAnimDone = false;
             }
             if (!isAllAnimDone)

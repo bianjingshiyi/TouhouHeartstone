@@ -6,7 +6,7 @@ namespace Game
 {
     class InitAnimation : EventAnimation<THHGame.InitEventArg>
     {
-        public override bool update(TableManager table, THHGame.InitEventArg eventArg)
+        public override bool update(TableManager table, THHGame.InitEventArg eventArg, float time)
         {
             table.setMaster(table.ui.SelfMaster, table.player.master);
             table.setSkill(table.ui.SelfSkill, table.player.skill);

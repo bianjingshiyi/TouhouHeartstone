@@ -4,7 +4,7 @@ namespace Game
 {
     class GemChangeAnimation : EventAnimation<THHPlayer.SetGemEventArg>
     {
-        public override bool update(TableManager table, THHPlayer.SetGemEventArg eventArg)
+        public override bool update(TableManager table, THHPlayer.SetGemEventArg eventArg, float time)
         {
             if (eventArg.player == table.player)
                 table.ui.SelfGem.Text.text = eventArg.player.gem.ToString();

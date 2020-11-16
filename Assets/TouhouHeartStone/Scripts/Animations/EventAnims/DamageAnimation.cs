@@ -9,7 +9,7 @@ namespace Game
     class DamageAnimation : EventAnimation<THHCard.DamageEventArg>
     {
         List<AnimAnim> _animList = null;
-        public override bool update(TableManager table, THHCard.DamageEventArg eventArg)
+        public override bool update(TableManager table, THHCard.DamageEventArg eventArg, float time)
         {
             if (_animList == null)
             {
@@ -41,7 +41,7 @@ namespace Game
             bool isAllAnimDone = true;
             foreach (var anim in _animList)
             {
-                if (!anim.update(table))
+                if (!anim.update(table, time))
                     isAllAnimDone = false;
             }
             if (!isAllAnimDone)
