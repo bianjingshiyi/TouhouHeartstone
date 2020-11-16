@@ -31,36 +31,61 @@ namespace Game
             if (_moveToOppo == null)
                 _moveToOppo = new CardMoveAnim(_cardOppo, table.ui.RightDisplayImage.transform, table.cardShowCurve);
             if (!_moveToSelf.update(table) || !_moveToOppo.update(table))
+            {
+                UObject.Destroy(_cardSelf.gameObject);
+                UObject.Destroy(_cardOppo.gameObject);
                 return false;
+
+            }
             //翻转揭示
             if (_flipFaceSelf == null)
                 _flipFaceSelf = new AnimAnim(_cardSelf.animator, _cardSelf._flipToFaceAnimName);
             if (_flipFaceOppo == null)
                 _flipFaceOppo = new AnimAnim(_cardOppo.animator, _cardOppo._flipToBackAnimName);
             if (!_flipFaceSelf.update(table) || !_flipFaceOppo.update(table))
+            {
+                UObject.Destroy(_cardSelf.gameObject);
+                UObject.Destroy(_cardOppo.gameObject);
                 return false;
+
+            }
             //如果胜利应该有一个胜利动画
             if (eventArg.result == true)
                 _winAnim = new AnimAnim(_cardSelf.animator, _cardSelf._notifyAnimName);
             if (_winAnim != null && !_winAnim.update(table))
+            {
+                UObject.Destroy(_cardSelf.gameObject);
+                UObject.Destroy(_cardOppo.gameObject);
                 return false;
+
+            }
             //重新翻回
             if (_flipBackSelf == null)
                 _flipBackSelf = new AnimAnim(_cardSelf.animator, _cardSelf._flipToBackAnimName);
             if (_flipBackOppo == null)
                 _flipBackOppo = new AnimAnim(_cardOppo.animator, _cardOppo._flipToBackAnimName);
             if (!_flipBackSelf.update(table) || !_flipBackOppo.update(table))
+            {
+                UObject.Destroy(_cardSelf.gameObject);
+                UObject.Destroy(_cardOppo.gameObject);
                 return false;
+            }
+                
             //放回牌库
             if (_moveBackSelf == null)
                 _moveBackSelf = new CardMoveAnim(_cardSelf, table.ui.LeftDisplayImage.transform, table.cardShowCurve);
             if (_moveBackOppo == null)
                 _moveBackOppo = new CardMoveAnim(_cardOppo, table.ui.RightDisplayImage.transform, table.cardShowCurve);
             if (!_moveBackSelf.update(table) || !_moveBackOppo.update(table))
+            {
+                UObject.Destroy(_cardSelf.gameObject);
+                UObject.Destroy(_cardOppo.gameObject);
                 return false;
+
+            }
             //销毁实例
-            UObject.Destroy(_cardSelf);
-            UObject.Destroy(_cardOppo);
+            UObject.Destroy(_cardSelf.gameObject);
+            UObject.Destroy(_cardOppo.gameObject);
             return true;
         }
     }
