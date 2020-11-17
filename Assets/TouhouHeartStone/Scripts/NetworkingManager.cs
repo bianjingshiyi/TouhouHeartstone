@@ -18,9 +18,13 @@ namespace Game
     public class NetworkingManager : Manager
     {
         [Header("配置")]
-        [Tooltip("账号服务器IP")]
+        [Tooltip("正式服务器地址")]
         [SerializeField]
         string _accountServerBaseUri = "https://serv.igsk.fun";
+        [Tooltip("测试服务器地址")]
+        [SerializeField]
+        string _testAccountServerBaseUri = "https://test.serv.igsk.fun";
+
         [SerializeField]
         private HostManager _host;
         public HostManager host
@@ -118,7 +122,14 @@ namespace Game
             client.onRoomFound += Client_onRoomFound;
             client.onJoinRoom += Client_onJoinRoom;
             client.onRoomInfoUpdate += Client_onRoomInfoUpdate;
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // 测试服务器
+            client.InitServerClient(_testAccountServerBaseUri);
+#else
             client.InitServerClient(_accountServerBaseUri);
+#endif
+
             _LANUpdateTimer.start();
             // todo: Client断开后退出房间
             client.onQuitRoom += Client_onQuitRoom;
@@ -162,7 +173,7 @@ namespace Game
                 host.stop();
             }
         }
-        #region Logic
+#region Logic
         public async Task<Sprite> getCaptchaImage()
         {
             Texture2D texture = new Texture2D(512, 512);
@@ -351,8 +362,8 @@ namespace Game
             ui.RoomButton.image.color = Color.gray;
             updateAllRooms();
         }
-        #endregion
-        #region UI
+#endregion
+#region UI
         async Task updateAccountPanel()
         {
             var playerInfoPanel = getManager<UIManager>().getObject<PlayerInfoPanel>();
@@ -581,8 +592,8 @@ namespace Game
             roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
             roomPanel.SetMode(isHost ? RoomPanel.Mode.NetworkingHost : RoomPanel.Mode.NetworkingClient);
         }
-        #endregion
-        #region 网络事件处理
+#endregion
+#region 网络事件处理
         private void Client_onRoomFound(RoomInfo obj)
         {
             if (obj is RoomInfo tHHRoom)
@@ -638,8 +649,8 @@ namespace Game
         {
             _ = displayPanelForLAN();
         }
-        #endregion
-        #region UI事件处理
+#endregion
+#region UI事件处理
         async void onRegisterClick()
         {
             var ui = getManager<UIManager>().getObject<RegisterPanel>();
@@ -725,7 +736,7 @@ namespace Game
                 panel.setCaptcha(await getCaptchaImage());
             }
         }
-        #endregion
+#endregion
     }
     public static class RoomInfoName
     {

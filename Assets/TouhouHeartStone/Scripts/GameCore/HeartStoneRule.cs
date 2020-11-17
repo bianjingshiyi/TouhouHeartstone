@@ -21,7 +21,7 @@ namespace TouhouHeartstone
             //加载参数卡池
             //加载外置卡池
         }
-        public override void onGameStart(RoomPlayerInfo[] playersInfo)
+        public override void onGameStart(CardEngine game, RoomPlayerInfo[] playersInfo)
         {
             throw new NotImplementedException();
         }
