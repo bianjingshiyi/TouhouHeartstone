@@ -416,7 +416,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 2 大图书馆 发现一张牌库中的法术，抽这张牌并使其花费-1
+    /// 2 大图书馆 从牌库5张牌中选择一张，抽这张牌
     /// </summary>
     public class TheGreatLibrary : SpellCardDefine
     {
@@ -428,12 +428,9 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            var discovered = await card.getOwner().discover(game, card.getOwner().deck.Where(c => c.isSpell()));
-            if (!card.getOwner().hand.isFull)
-            {
-                await card.getOwner().draw(game, discovered);
-                await discovered.addBuff(game, new GeneratedBuff(ID, new CostModifier(-1)));
-            }
+            var discovered = await card.getOwner().discover(game, card.getOwner().deck.Where(c => c.isSpell()),5);
+            await card.getOwner().draw(game, discovered);
+           
         }
     }
     /// <summary>
@@ -457,7 +454,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 4 奥术知识 抽两张法术牌并使其花费-1
+    /// 4 奥术知识 从牌库5张牌中选择一张牌，重复2次，然后抽取所有被选中的牌。
     /// </summary>
     public class ArcaneKnowledge : SpellCardDefine
     {
@@ -471,9 +468,8 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 2; i++)
             {
-                await card.getOwner().draw(game);
-                var drawed = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
-                await drawed.addBuff(game, new GeneratedBuff(ID, new CostModifier(-1)));
+                var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5);
+                await card.getOwner().draw(game, discovered);
             }
         }
     }

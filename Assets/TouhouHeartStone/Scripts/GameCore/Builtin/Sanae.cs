@@ -748,12 +748,14 @@ namespace TouhouHeartstone.Builtin
             while(you.field.count != 0)
             {
                 index = game.randomInt(0, oppo.deck.count);
+                await you.field[0].resetCard(game);
                 await you.field.moveTo(game, you.field[0], oppo.deck,index);
             }
 
             while (oppo.field.count != 0)
             {
                 index = game.randomInt(0, oppo.deck.count);
+                await oppo.field[0].resetCard(game);
                 await oppo.field.moveTo(game, oppo.field[0], oppo.deck,index);
             }
         
