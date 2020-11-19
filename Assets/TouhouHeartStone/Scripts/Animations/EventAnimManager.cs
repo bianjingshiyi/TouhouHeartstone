@@ -26,15 +26,15 @@ namespace Game
         /// </summary>
         /// <param name="eventName"></param>
         /// <returns></returns>
-        public UIAnimation getAnim4Event(string eventName)
+        public EventAnimation getAnim4Event(string eventName)
         {
             throw new NotImplementedException();
         }
-        public void addAnimToQueue(EventAnimation anim)
+        public void addAnimToQueue(TableAnimation anim)
         {
             throw new NotImplementedException();
         }
-        public EventAnimation[] getAnimsInQueue()
+        public TableAnimation[] getAnimsInQueue()
         {
             throw new NotImplementedException();
         }

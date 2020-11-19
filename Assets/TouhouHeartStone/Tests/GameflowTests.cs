@@ -16,61 +16,9 @@ using UnityEngine.TestTools;
 using BJSYGameCore;
 using NUnit.Framework.Constraints;
 using System.Reflection;
-using UI;
 using Card = TouhouCardEngine.Card;
 namespace Tests
 {
-    public class EventAnimTests
-    {
-        const string ANIM_NAME_ATOM = "Atom";
-        const string ANIM_NAME_COMP = "Comp";
-        /// <summary>
-        /// 为事件设置动画，并且当每一次事件发生的时候，都可以获取到设置动画的复制实例。
-        /// </summary>
-        [Test]
-        public void setAndGetAnimTest()
-        {
-            EventAnimManager manager = new EventAnimManager();
-            AtomAnim atomOrigin = new AtomAnim();
-            manager.setAnim4Event(ANIM_NAME_ATOM, atomOrigin);
-            CompAnim compOrigin = new CompAnim();
-            manager.setAnim4Event(ANIM_NAME_COMP, compOrigin);
-            Assert.IsInstanceOf<AtomAnim>(manager.getAnim4Event(ANIM_NAME_ATOM));
-            Assert.IsInstanceOf<CompAnim>(manager.getAnim4Event(ANIM_NAME_COMP));
-            Assert.AreNotEqual(atomOrigin, manager.getAnim4Event(ANIM_NAME_ATOM));
-            Assert.AreNotEqual(compOrigin, manager.getAnim4Event(ANIM_NAME_COMP));
-            Assert.AreNotEqual(manager.getAnim4Event(ANIM_NAME_ATOM), manager.getAnim4Event(ANIM_NAME_ATOM));
-            Assert.AreNotEqual(manager.getAnim4Event(ANIM_NAME_COMP), manager.getAnim4Event(ANIM_NAME_COMP));
-        }
-        /// <summary>
-        /// 将动画加入队列
-        /// </summary>
-        [Test]
-        public void addAndGetAnimInQueueTest()
-        {
-            EventAnimManager manager = new EventAnimManager();
-            manager.setAnim4Event(ANIM_NAME_ATOM, new AtomAnim());
-            manager.setAnim4Event(ANIM_NAME_COMP, new CompAnim());
-        }
-        class AtomAnim : EventAnimation
-        {
-            public override string eventName { get; } = ANIM_NAME_ATOM;
-            public override IEventArg eventArg { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-            public override bool update(TableManager table, float time)
-            {
-                throw new System.NotImplementedException();
-            }
-        }
-        class CompAnim : EventAnimation
-        {
-            public override string eventName { get; } = ANIM_NAME_COMP;
-            public override IEventArg eventArg { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-            public override bool update(TableManager table, float time)
-            {
-                throw new System.NotImplementedException();
-            }
-        }
-    }
     public class GameflowTests
     {
         private const string TEST_SERVER_URI = "http://localhost:50112";
