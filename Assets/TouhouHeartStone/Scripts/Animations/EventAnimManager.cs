@@ -4,6 +4,7 @@ using UI;
 using TouhouHeartstone;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine.Interfaces;
 using System.Reflection;
 using TouhouCardEngine;
@@ -19,7 +20,11 @@ namespace Game
         /// <param name="anim"></param>
         public void setAnim4Event(string eventName, EventAnimation anim)
         {
-            throw new NotImplementedException();
+            if (builtInAnimationList.ContainsKey(eventName))
+            {
+                UberDebug.LogWarningChannel("UI", "事件存在冲突的动画" + eventName);
+                builtInAnimationList[eventName] = anim;
+            } else builtInAnimationList.Add(eventName,anim);
         }
         /// <summary>
         /// 当事件发生时，为事件获取一个新的动画实例。
@@ -28,18 +33,23 @@ namespace Game
         /// <returns></returns>
         public EventAnimation getAnim4Event(string eventName)
         {
-            throw new NotImplementedException();
+            if (builtInAnimationList.TryGetValue(eventName, out EventAnimation anim))
+                return anim.clone();
+            return default;
         }
         public void addAnimToQueue(TableAnimation anim)
         {
-            throw new NotImplementedException();
+            animQueue.AddLast(anim);
         }
         public TableAnimation[] getAnimsInQueue()
         {
-            throw new NotImplementedException();
+            return animQueue.ToArray();
         }
         #endregion
         #region Builtin
+        Dictionary<string, EventAnimation> builtInAnimationList { get; } = new Dictionary<string, EventAnimation>();
+        LinkedList<EventAnimation> animQueue { get; } = new LinkedList<EventAnimation>();
+
         Dictionary<Type, ConstructorInfo> animConstructorDic { get; } = new Dictionary<Type, ConstructorInfo>();
         /// <summary>
         /// 加载动画

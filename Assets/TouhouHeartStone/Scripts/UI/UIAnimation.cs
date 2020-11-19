@@ -1,5 +1,4 @@
 ﻿using System;
-
 using UnityEngine;
 using TouhouCardEngine.Interfaces;
 using Game;
@@ -72,11 +71,11 @@ namespace UI
     }
     public abstract class EventAnimation : TableAnimation
     {
-        public virtual string eventName { get => throw new NotImplementedException(); }
+        public virtual string eventName { get => throw new NotImplementedException();}//ToString();
         public abstract IEventArg eventArg { get; set; }
-        public EventAnimation clone()
+        public virtual EventAnimation clone()
         {
-            throw new NotImplementedException();
+            return MemberwiseClone() as EventAnimation;
         }
     }
     [Serializable]
