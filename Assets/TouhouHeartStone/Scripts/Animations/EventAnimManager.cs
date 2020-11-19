@@ -24,7 +24,9 @@ namespace Game
             {
                 UberDebug.LogWarningChannel("UI", "事件存在冲突的动画" + eventName);
                 builtInAnimationList[eventName] = anim;
-            } else builtInAnimationList.Add(eventName,anim);
+            }
+            else
+                builtInAnimationList.Add(eventName, anim);
         }
         /// <summary>
         /// 当事件发生时，为事件获取一个新的动画实例。
@@ -45,10 +47,18 @@ namespace Game
         {
             return animQueue.ToArray();
         }
+        public void onEvent(string eventName)
+        {
+            throw new NotImplementedException();
+        }
+        public void update(float time)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
         #region Builtin
         Dictionary<string, EventAnimation> builtInAnimationList { get; } = new Dictionary<string, EventAnimation>();
-        LinkedList<EventAnimation> animQueue { get; } = new LinkedList<EventAnimation>();
+        LinkedList<TableAnimation> animQueue { get; } = new LinkedList<TableAnimation>();
 
         Dictionary<Type, ConstructorInfo> animConstructorDic { get; } = new Dictionary<Type, ConstructorInfo>();
         /// <summary>

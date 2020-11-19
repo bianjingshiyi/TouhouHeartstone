@@ -1,4 +1,5 @@
-﻿using Game;
+﻿using BJSYGameCore;
+using Game;
 using NUnit.Framework;
 using TouhouCardEngine.Interfaces;
 using UI;
@@ -32,9 +33,7 @@ namespace Tests
         [Test]
         public void addAndGetAnimInQueueTest()
         {
-            EventAnimManager manager = new EventAnimManager();
-            manager.setAnim4Event(ANIM_NAME_ATOM, new AtomAnim());
-            manager.setAnim4Event(ANIM_NAME_COMP, new CompAnim());
+            EventAnimManager manager = createManager();
             EventAnimation atomAnim = manager.getAnim4Event(ANIM_NAME_ATOM);
             manager.addAnimToQueue(atomAnim);
             EventAnimation compAnim = manager.getAnim4Event(ANIM_NAME_COMP);
@@ -43,13 +42,46 @@ namespace Tests
             Assert.AreEqual(atomAnim, anims[0]);
             Assert.AreEqual(compAnim, anims[1]);
         }
+
+        private static EventAnimManager createManager()
+        {
+            EventAnimManager manager = new EventAnimManager();
+            manager.setAnim4Event(ANIM_NAME_ATOM, new AtomAnim());
+            manager.setAnim4Event(ANIM_NAME_COMP, new CompAnim());
+            return manager;
+        }
+        [Test]
+        public void onEventTest()
+        {
+            EventAnimManager manager = createManager();
+            manager.onEvent(ANIM_NAME_ATOM);
+            manager.onEvent(ANIM_NAME_COMP);
+            var anims = manager.getAnimsInQueue();
+            Assert.IsInstanceOf<AtomAnim>(anims[0]);
+            Assert.IsInstanceOf<CompAnim>(anims[1]);
+        }
+        [Test]
+        public void updateTest()
+        {
+            EventAnimManager manager = createManager();
+            manager.onEvent(ANIM_NAME_ATOM);
+            Assert.IsInstanceOf<AtomAnim>(manager.getAnimsInQueue()[0]);
+            manager.update(.25f);
+            Assert.AreEqual(1, manager.getAnimsInQueue().Length);
+            manager.update(.3f);
+            Assert.AreEqual(0, manager.getAnimsInQueue().Length);
+        }
         class AtomAnim : EventAnimation
         {
             public override string eventName { get; } = ANIM_NAME_ATOM;
             public override IEventArg eventArg { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+            Timer _timer = new Timer() { duration = .5f };
             public override bool update(TableManager table, float time)
             {
-                throw new System.NotImplementedException();
+                _timer.update(time);
+                if (!_timer.isExpired())
+                    return false;
+                return true;
             }
         }
         class CompAnim : EventAnimation
