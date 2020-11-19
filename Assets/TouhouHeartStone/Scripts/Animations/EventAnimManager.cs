@@ -4,7 +4,6 @@ using UI;
 using TouhouHeartstone;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using TouhouCardEngine.Interfaces;
 using System.Reflection;
 using TouhouCardEngine;
@@ -41,7 +40,7 @@ namespace Game
         }
         public void addAnimToQueue(TableAnimation anim)
         {
-            animQueue.AddLast(anim);
+            animQueue.Enqueue(anim);
         }
         public TableAnimation[] getAnimsInQueue()
         {
@@ -49,16 +48,26 @@ namespace Game
         }
         public void onEvent(string eventName)
         {
-            throw new NotImplementedException();
+            if (builtInAnimationList.TryGetValue(eventName, out EventAnimation anim))
+            {
+                animQueue.Enqueue(anim);
+            }
         }
         public void update(float time)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < animQueue.Count; i++)
+            {
+                TableAnimation anim = animQueue.Dequeue();
+                if (!anim.update(null, time))
+                {
+                    animQueue.Enqueue(anim);
+                }
+            }
         }
         #endregion
         #region Builtin
         Dictionary<string, EventAnimation> builtInAnimationList { get; } = new Dictionary<string, EventAnimation>();
-        LinkedList<TableAnimation> animQueue { get; } = new LinkedList<TableAnimation>();
+        Queue<TableAnimation> animQueue { get; } = new Queue<TableAnimation>();
 
         Dictionary<Type, ConstructorInfo> animConstructorDic { get; } = new Dictionary<Type, ConstructorInfo>();
         /// <summary>
