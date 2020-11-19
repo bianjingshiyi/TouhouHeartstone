@@ -9,7 +9,7 @@ namespace Game
         {
             _action = action;
         }
-        public override bool update(TableManager table)
+        public override bool update(TableManager table, float time)
         {
             _action();
             return true;

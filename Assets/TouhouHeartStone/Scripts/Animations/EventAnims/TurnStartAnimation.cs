@@ -8,7 +8,7 @@ namespace Game
     class TurnStartAnimation : EventAnimation<THHGame.TurnStartEventArg>
     {
         Timer _timer = new Timer() { duration = 2 };
-        public override bool update(TableManager table, THHGame.TurnStartEventArg eventArg)
+        public override bool update(TableManager table, THHGame.TurnStartEventArg eventArg, float time)
         {
             if (!_timer.isStarted)
             {

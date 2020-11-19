@@ -7,7 +7,7 @@ namespace Game
     {
         //随从的入场动画
         AnimAnim _anim;
-        public override bool update(TableManager table, THHPlayer.EnterFieldEventArg eventArg)
+        public override bool update(TableManager table, THHPlayer.EnterFieldEventArg eventArg, float time)
         {
             if (eventArg.from != null)
             {
@@ -18,7 +18,7 @@ namespace Game
             }
             if (!table.tryGetServant(eventArg.card, out var servant))
                 servant = table.createServant(eventArg.card, eventArg.position, eventArg.attack, eventArg.life);
-            if (!SimpleAnimHelper.update(table, ref _anim, servant.onSummon, servant.animator))
+            if (!SimpleAnimHelper.update(table, ref _anim, servant.onSummon, servant.animator, time))
                 return false;
             return true;
         }

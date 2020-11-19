@@ -5,7 +5,7 @@ namespace Game
 {
     class SetArmorAnim : EventAnimation<THHCard.SetArmorEventArg>
     {
-        public override bool update(TableManager table, THHCard.SetArmorEventArg eventArg)
+        public override bool update(TableManager table, THHCard.SetArmorEventArg eventArg, float time)
         {
             if (eventArg.card.getOwner() == table.player)
             {

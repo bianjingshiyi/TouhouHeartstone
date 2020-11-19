@@ -21,7 +21,7 @@ namespace Game
             _animName = animName;
             _onBlockAnim = onBlockAnim;
         }
-        public override bool update(TableManager table)
+        public override bool update(TableManager table, float time)
         {
             return AnimHelper.update(_animator, _animName, ref _isPlayed, ref _isFinished);
         }

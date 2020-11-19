@@ -5,7 +5,7 @@ namespace Game
 {
     class TurnEndAnimation : EventAnimation<THHGame.TurnEndEventArg>
     {
-        public override bool update(TableManager table, THHGame.TurnEndEventArg eventArg)
+        public override bool update(TableManager table, THHGame.TurnEndEventArg eventArg, float time)
         {
             table.canControl = false;
             table.ui.TimeoutSlider.hide();

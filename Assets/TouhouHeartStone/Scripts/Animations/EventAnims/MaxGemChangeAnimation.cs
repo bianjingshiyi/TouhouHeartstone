@@ -4,7 +4,7 @@ namespace Game
 {
     class MaxGemChangeAnimation : EventAnimation<THHPlayer.SetMaxGemEventArg>
     {
-        public override bool update(TableManager table, THHPlayer.SetMaxGemEventArg eventArg)
+        public override bool update(TableManager table, THHPlayer.SetMaxGemEventArg eventArg, float time)
         {
             return true;
         }

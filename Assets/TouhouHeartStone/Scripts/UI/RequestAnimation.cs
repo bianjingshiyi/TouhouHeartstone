@@ -19,7 +19,7 @@ namespace UI
             get { return _request; }
             set { _request = value is T t ? t : default; }
         }
-        public override bool update(TableManager table)
+        public override bool update(TableManager table, float time)
         {
             return display(table, request is T t ? t : default);
         }

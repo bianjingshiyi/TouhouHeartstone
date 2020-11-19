@@ -8,7 +8,7 @@ namespace Game
     {
         Timer _timer = new Timer() { duration = .2f };
         Card _card;
-        public override bool update(TableManager table, THHPlayer.BurnEventArg eventArg)
+        public override bool update(TableManager table, THHPlayer.BurnEventArg eventArg, float time)
         {
             if (!_timer.isStarted)
             {

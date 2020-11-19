@@ -7,7 +7,7 @@ namespace Game
     class HealAnimation : EventAnimation<THHCard.HealEventArg>
     {
         Timer _timer = new Timer() { duration = .2f };
-        public override bool update(TableManager table, THHCard.HealEventArg eventArg)
+        public override bool update(TableManager table, THHCard.HealEventArg eventArg, float time)
         {
             if (!_timer.isStarted)
             {

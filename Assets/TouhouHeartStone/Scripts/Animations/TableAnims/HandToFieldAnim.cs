@@ -30,7 +30,7 @@ namespace Game
             table.ui.ServantPlaceHolder.display();
             _timer.start();
         }
-        public override bool update(TableManager table)
+        public override bool update(TableManager table, float time)
         {
             if (!_timer.isExpired())
             {

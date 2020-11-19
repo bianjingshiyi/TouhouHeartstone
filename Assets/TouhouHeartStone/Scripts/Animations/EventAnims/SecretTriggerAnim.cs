@@ -6,7 +6,7 @@ namespace Game
     class SecretTriggerAnim : EventAnimation<THHCard.SecretTriggerEventArg>
     {
         AnimAnim _anim;
-        public override bool update(TableManager table, THHCard.SecretTriggerEventArg eventArg)
+        public override bool update(TableManager table, THHCard.SecretTriggerEventArg eventArg, float time)
         {
             if (table.tryGetSecret(eventArg.card, out var secret))
             {
@@ -14,7 +14,7 @@ namespace Game
                 {
                     secret.Card.GetComponent<PositionLerp>().setTarget(table.ui.CenterDisplayImage.rectTransform);
                 }
-                if (!SimpleAnimHelper.update(table, ref _anim, secret.onTrigger, secret.animator))
+                if (!SimpleAnimHelper.update(table, ref _anim, secret.onTrigger, secret.animator, time))
                 {
                     table.setCard(secret.Card, eventArg.card, true);
                     return false;

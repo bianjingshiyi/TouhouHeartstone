@@ -7,7 +7,7 @@ namespace Game
     class AddModiAnim : EventAnimation<Card.AddModiEventArg>
     {
         AnimAnim _anim;
-        public override bool update(TableManager table, Card.AddModiEventArg eventArg)
+        public override bool update(TableManager table, Card.AddModiEventArg eventArg, float time)
         {
             SimpleAnim simpleAnim = null;
             Animator animator = null;
@@ -105,7 +105,7 @@ namespace Game
                     }
                 }
             }
-            if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator))
+            if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator, time))
                 return false;
             return true;
         }

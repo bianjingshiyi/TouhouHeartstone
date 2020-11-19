@@ -68,11 +68,16 @@ namespace UI
         public virtual void init(TableManager table)
         {
         }
-        public abstract bool update(TableManager table);
+        public abstract bool update(TableManager table, float time);
     }
     public abstract class EventAnimation : TableAnimation
     {
+        public virtual string eventName { get => throw new NotImplementedException(); }
         public abstract IEventArg eventArg { get; set; }
+        public EventAnimation clone()
+        {
+            throw new NotImplementedException();
+        }
     }
     [Serializable]
     public abstract class EventAnimation<T> : EventAnimation where T : IEventArg
@@ -96,11 +101,11 @@ namespace UI
         public virtual void init(TableManager table, T eventArg)
         {
         }
-        public sealed override bool update(TableManager table)
+        public sealed override bool update(TableManager table, float time)
         {
-            return update(table, eventArg is T t ? t : default);
+            return update(table, eventArg is T t ? t : default, time);
         }
-        public abstract bool update(TableManager table, T eventArg);
+        public abstract bool update(TableManager table, T eventArg, float time);
     }
     [Serializable]
     public abstract class UIAnimation<T> : UIAnimation where T : IEventArg

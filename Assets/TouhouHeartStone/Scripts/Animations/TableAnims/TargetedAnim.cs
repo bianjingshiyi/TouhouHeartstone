@@ -11,7 +11,7 @@ namespace Game
         {
             _target = target;
         }
-        public override bool update(TableManager table)
+        public override bool update(TableManager table, float time)
         {
             if (!_targetingTimer.isStarted)
             {

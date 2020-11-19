@@ -8,10 +8,10 @@ namespace Game
     {
         AnimAnim _anim;
         Timer _timer = new Timer() { duration = 1.5f };
-        public override bool update(TableManager table, THHPlayer.FatigueEventArg eventArg)
+        public override bool update(TableManager table, THHPlayer.FatigueEventArg eventArg, float time)
         {
             var deck = eventArg.player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck;
-            if (!SimpleAnimHelper.update(table, ref _anim, deck.onFatigue, deck.animator))
+            if (!SimpleAnimHelper.update(table, ref _anim, deck.onFatigue, deck.animator, time))
                 return false;
             //if (!_timer.isStarted)
             //{

@@ -14,7 +14,7 @@ namespace Game
         UI.Card _card;
         TableAnimation _anim;
         TableAnimation _anim2;
-        public override bool update(TableManager table, Pile.MoveCardEventArg eventArg)
+        public override bool update(TableManager table, Pile.MoveCardEventArg eventArg, float time)
         {
             if (eventArg.from == null)
             {
@@ -23,12 +23,12 @@ namespace Game
                     //发现，印卡
                     if (!table.tryGetHand(eventArg.card, out var hand))
                         hand = table.createHand(eventArg.card);
-                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onCreate, hand.animator))
+                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onCreate, hand.animator, time))
                         return false;
                 }
                 else if (eventArg.to.name == PILE.HEAD)
                 {
-                    if (!onSecretEnter(table, eventArg.card))
+                    if (!onSecretEnter(table, eventArg.card, time))
                         return false;
                 }
                 return true;
@@ -54,7 +54,7 @@ namespace Game
                                 hand.rectTransform.position = deckTransform.position;
                                 hand.GetComponentInChildren<PositionLerp>().setTarget(hand.rectTransform);
                             }
-                            if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator))
+                            if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator, time))
                                 return false;
                         }
                         else if (eventArg.to.name == PILE.WARP)
@@ -64,16 +64,16 @@ namespace Game
                                 hand = table.createHand(eventArg.card);
                                 hand.GetComponentInChildren<PositionLerp>().setTarget(deckTransform);
                             }
-                            if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator))
+                            if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator, time))
                                 return false;
-                            if (!SimpleAnimHelper.update(table, ref _anim2, hand.onDiscard, hand.animator))
+                            if (!SimpleAnimHelper.update(table, ref _anim2, hand.onDiscard, hand.animator, time))
                                 return false;
                             table.ui.SelfHandList.removeItem(hand);
                             table.ui.EnemyHandList.removeItem(hand);
                         }
                         else if (eventArg.to.name == PILE.HEAD)
                         {
-                            if (!onSecretEnter(table, eventArg.card))
+                            if (!onSecretEnter(table, eventArg.card, time))
                                 return false;
                         }
                         return true;
@@ -87,13 +87,13 @@ namespace Game
                                 var item = eventArg.to.owner == table.player ? table.ui.SelfItem : table.ui.EnemyItem;
                                 table.setItem(item, eventArg.card);
                                 item.display();
-                                if (!SimpleAnimHelper.update(table, ref _anim, item.onEquip, item.animator))
+                                if (!SimpleAnimHelper.update(table, ref _anim, item.onEquip, item.animator, time))
                                     return false;
                             }
                             else if (eventArg.to.name == PILE.GRAVE)
                             {
                                 //弃牌
-                                if (!SimpleAnimHelper.update(table, ref _anim, hand.onDiscard, hand.animator, next =>
+                                if (!SimpleAnimHelper.update(table, ref _anim, hand.onDiscard, hand.animator, time, next =>
                                 {
                                     if (next is MoveCardAnim moveCard && moveCard.tEventArg.card != eventArg.card)
                                         return true;
@@ -105,7 +105,7 @@ namespace Game
                             }
                             else if (eventArg.to.name == PILE.HEAD)
                             {
-                                if (!onSecretEnter(table, eventArg.card))
+                                if (!onSecretEnter(table, eventArg.card, time))
                                     return false;
                             }
                         }
@@ -123,12 +123,12 @@ namespace Game
                                 hand.rectTransform.position = graveTransform.position;
                                 hand.GetComponentInChildren<PositionLerp>().setTarget(hand.rectTransform);
                             }
-                            if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator))
+                            if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator, time))
                                 return false;
                         }
                         else if (eventArg.to.name == PILE.HEAD)
                         {
-                            if (!onSecretEnter(table, eventArg.card))
+                            if (!onSecretEnter(table, eventArg.card, time))
                                 return false;
                         }
                         return true;
@@ -152,7 +152,7 @@ namespace Game
                                         hand.rectTransform.position = fieldTransform.position;
                                         hand.GetComponentInChildren<PositionLerp>().setTarget(hand.rectTransform);
                                     }
-                                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator))
+                                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator, time))
                                         return false;
                                     return true;
                                 }
@@ -166,7 +166,7 @@ namespace Game
                                         else
                                             throw new ActorNotFoundException(eventArg.card);
                                     }
-                                    if (!_anim.update(table))
+                                    if (!_anim.update(table, time))
                                         return false;
                                     return true;
                                 }
@@ -184,7 +184,7 @@ namespace Game
                                     //播放动画
                                     if (_anim == null)
                                         _anim = new CardMoveAnim(_card, eventArg.to == table.player.deck ? table.ui.SelfDeck.transform : table.ui.EnemyDeck.transform, table.handToFieldCurve);
-                                    if (!_anim.update(table))//没放完动画就让它接着放
+                                    if (!_anim.update(table, time))//没放完动画就让它接着放
                                         return false;
                                     //摧毁卡牌
                                     Object.Destroy(_card.gameObject);
@@ -195,13 +195,13 @@ namespace Game
                         }
                     }
                 case PILE.HEAD:
-                    if (!onSecretExit(table, eventArg.card))
+                    if (!onSecretExit(table, eventArg.card, time))
                         return false;
                     return true;
                 case PILE.WARP:
                     if (eventArg.to.name == PILE.HEAD)
                     {
-                        if (!onSecretEnter(table, eventArg.card))
+                        if (!onSecretEnter(table, eventArg.card, time))
                             return false;
                     }
                     return true;
@@ -215,21 +215,21 @@ namespace Game
         /// <param name="table"></param>
         /// <param name="card"></param>
         /// <returns></returns>
-        bool onSecretEnter(TableManager table, Card card)
+        bool onSecretEnter(TableManager table, Card card, float time)
         {
             if (!table.tryGetSecret(card, out var secret))
             {
                 secret = table.createSecret(card);
             }
-            if (!SimpleAnimHelper.update(table, ref _anim, secret.onEnter, secret.animator))
+            if (!SimpleAnimHelper.update(table, ref _anim, secret.onEnter, secret.animator, time))
                 return false;
             return true;
         }
-        bool onSecretExit(TableManager table, Card card)
+        bool onSecretExit(TableManager table, Card card, float time)
         {
             if (table.tryGetSecret(card, out var secret))
             {
-                if (SimpleAnimHelper.update(table, ref _anim, secret.onExit, secret.animator))
+                if (SimpleAnimHelper.update(table, ref _anim, secret.onExit, secret.animator, time))
                     return false;
                 table.removeSecret(card);
             }
