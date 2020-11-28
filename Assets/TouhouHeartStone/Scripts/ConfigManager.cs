@@ -11,12 +11,14 @@ namespace Game
         const string keyVolume = "Volume";
         const string keyBGM = "BGM";
         const string keySE = "SE";
+        const string keyFullScreen = "FullScreen";
 
         public class PlayerConfig
         {
             public float Volume;
             public float BGM;
             public float SE;
+            public bool FullScreen;
         }
 
         public PlayerConfig Config { get; } = new PlayerConfig();
@@ -31,7 +33,7 @@ namespace Game
             Config.Volume = PlayerPrefs.HasKey(keyVolume) ? PlayerPrefs.GetFloat(keyVolume) : 1;
             Config.BGM = PlayerPrefs.HasKey(keyBGM) ? PlayerPrefs.GetFloat(keyBGM) : 1;
             Config.SE = PlayerPrefs.HasKey(keySE) ? PlayerPrefs.GetFloat(keySE) : 1;
-
+            Config.FullScreen = (PlayerPrefs.HasKey(keyFullScreen) ? PlayerPrefs.GetInt(keyFullScreen, 0) : 0) == 1;
             MarkChange();
         }
 
@@ -40,11 +42,13 @@ namespace Game
             PlayerPrefs.SetFloat(keyVolume, Config.Volume);
             PlayerPrefs.SetFloat(keyBGM, Config.BGM);
             PlayerPrefs.SetFloat(keySE, Config.SE);
+            PlayerPrefs.SetInt(keyFullScreen, Config.FullScreen ? 1 : 0);
         }
 
         public void MarkChange()
         {
             updateVolumeMixer();
+            Screen.fullScreen = Config.FullScreen;
             OnConfigChange?.Invoke(Config);
         }
 
