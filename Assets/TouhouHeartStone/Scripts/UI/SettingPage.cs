@@ -30,14 +30,25 @@ namespace UI
                 var parent = GetComponentInParent<Main>();
                 parent.display(parent.MainMenu);
             });
+            Toggle.onValueChanged.AddListener(onFullScreenToggleValueChange);
         }
 
         private void OnEnable()
         {
+            _isUpdating = true;
             VolumeGameOptionItemSlider.Slider.value = config.Config.Volume;
             BGMGameOptionItemSlider.Slider.value = config.Config.BGM;
             SEGameOptionItemSlider.Slider.value = config.Config.SE;
+            Toggle.isOn = config.Config.FullScreen;
+            _isUpdating = false;
         }
+        private void onFullScreenToggleValueChange(bool value)
+        {
+            if (_isUpdating)
+                return;
+            config.Config.FullScreen = value;
+            config.MarkChange();
+        }
+        bool _isUpdating = false;
     }
-
 }

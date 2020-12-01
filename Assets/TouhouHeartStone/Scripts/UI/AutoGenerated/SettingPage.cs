@@ -32,6 +32,9 @@ namespace UI
             this._VolumeGameOptionItemSlider = this.transform.Find("Setting").Find("SettingContainer").Find("Volume").GetComponent<GameOptionItemSlider>();
             this._BGMGameOptionItemSlider = this.transform.Find("Setting").Find("SettingContainer").Find("BGM").GetComponent<GameOptionItemSlider>();
             this._SEGameOptionItemSlider = this.transform.Find("Setting").Find("SettingContainer").Find("SE").GetComponent<GameOptionItemSlider>();
+            this._FullScreenImage = this.transform.Find("Setting").Find("SettingContainer").Find("FullScreen").GetComponent<Image>();
+            this._FullScreen_TitleText = this.transform.Find("Setting").Find("SettingContainer").Find("FullScreen").Find("Title").GetComponent<Text>();
+            this._Toggle = this.transform.Find("Setting").Find("SettingContainer").Find("FullScreen").Find("Toggle").GetComponent<Toggle>();
             this._BackButtonBlack = this.transform.Find("Setting").Find("Back").GetComponent<ButtonBlack>();
         }
         [SerializeField()]
@@ -123,6 +126,45 @@ namespace UI
                     this._SEGameOptionItemSlider = this.transform.Find("Setting").Find("SettingContainer").Find("SE").GetComponent<GameOptionItemSlider>();
                 }
                 return this._SEGameOptionItemSlider;
+            }
+        }
+        [SerializeField()]
+        private Image _FullScreenImage;
+        public Image FullScreenImage
+        {
+            get
+            {
+                if ((this._FullScreenImage == null))
+                {
+                    this._FullScreenImage = this.transform.Find("Setting").Find("SettingContainer").Find("FullScreen").GetComponent<Image>();
+                }
+                return this._FullScreenImage;
+            }
+        }
+        [SerializeField()]
+        private Text _FullScreen_TitleText;
+        public Text FullScreen_TitleText
+        {
+            get
+            {
+                if ((this._FullScreen_TitleText == null))
+                {
+                    this._FullScreen_TitleText = this.transform.Find("Setting").Find("SettingContainer").Find("FullScreen").Find("Title").GetComponent<Text>();
+                }
+                return this._FullScreen_TitleText;
+            }
+        }
+        [SerializeField()]
+        private Toggle _Toggle;
+        public Toggle Toggle
+        {
+            get
+            {
+                if ((this._Toggle == null))
+                {
+                    this._Toggle = this.transform.Find("Setting").Find("SettingContainer").Find("FullScreen").Find("Toggle").GetComponent<Toggle>();
+                }
+                return this._Toggle;
             }
         }
         [SerializeField()]
