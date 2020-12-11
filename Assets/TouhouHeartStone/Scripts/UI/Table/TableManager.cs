@@ -149,7 +149,7 @@ namespace Game
             ui.InitReplaceDialog.hide();
             ui.TurnTipImage.hide();
             initMaster(ui.SelfMaster);
-            ui.SelfGem.Text.text = "0";
+            ui.SelfGem.text.text = "0";
             ui.SelfSkill.asButton.onClick.set(onClickSkill);
             ui.SelfSkill.onDrag.set(onDragSkill);
             ui.SelfSkill.onDragEnd.set(onDragSkillEnd);
@@ -175,7 +175,7 @@ namespace Game
             ui.LargeCard.hide();
             ui.TipText.hide();
             initMaster(ui.EnemyMaster);
-            ui.EnemyGem.Text.text = "0";
+            ui.EnemyGem.text.text = "0";
             ui.EnemyItem.hide();
             ui.EnemyFieldList.clearItems();
             ui.EnemyHandList.clearItems();
