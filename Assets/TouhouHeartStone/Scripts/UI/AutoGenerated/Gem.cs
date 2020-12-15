@@ -10,28 +10,50 @@
 
 namespace UI
 {
-    using BJSYGameCore.UI;
-    using UnityEngine;
-    using BJSYGameCore.AutoCompo;
     using System;
+    using UnityEngine;
     using UnityEngine.UI;
+    using BJSYGameCore.UI;
     
-    [AutoCompoAttribute(18830)]
     public partial class Gem : UIObject
     {
-        public void init()
+        protected override void Awake()
         {
-            this._text = this.transform.findByPath("./Text").GetComponent<Text>();
+            base.Awake();
+            this.autoBind();
+            this.onAwake();
+        }
+        public void autoBind()
+        {
+            this.m_as_Image = this.GetComponent<Image>();
+            this._Text = this.transform.Find("Text").GetComponent<Text>();
         }
         [SerializeField()]
-        [AutoCompoAttribute(27082, "./Text")]
-        private Text _text;
-        public Text text
+        private Image m_as_Image;
+        public Image asImage
         {
             get
             {
-                return this._text;
+                if ((this.m_as_Image == null))
+                {
+                    this.m_as_Image = this.GetComponent<Image>();
+                }
+                return this.m_as_Image;
             }
         }
+        [SerializeField()]
+        private Text _Text;
+        public Text Text
+        {
+            get
+            {
+                if ((this._Text == null))
+                {
+                    this._Text = this.transform.Find("Text").GetComponent<Text>();
+                }
+                return this._Text;
+            }
+        }
+        partial void onAwake();
     }
 }
