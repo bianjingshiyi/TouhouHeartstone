@@ -10,36 +10,39 @@
 
 namespace UI
 {
-    using System;
-    using UnityEngine;
-    using UnityEngine.UI;
     using BJSYGameCore.UI;
+    using UnityEngine;
+    using BJSYGameCore.AutoCompo;
+    using System;
+    using UnityEngine.UI;
     
+    [AutoCompoAttribute(23298)]
     public partial class PropNumber : UIObject
     {
-        protected override void Awake()
+        public void init()
         {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
-        }
-        public void autoBind()
-        {
-            this.m_as_Text = this.GetComponent<Text>();
+            this._asText = this.transform.findByPath("./").GetComponent<Text>();
+            this._asAnimator = this.transform.findByPath("./").GetComponent<Animator>();
         }
         [SerializeField()]
-        private Text m_as_Text;
+        [AutoCompoAttribute(24812, "./")]
+        private Text _asText;
         public Text asText
         {
             get
             {
-                if ((this.m_as_Text == null))
-                {
-                    this.m_as_Text = this.GetComponent<Text>();
-                }
-                return this.m_as_Text;
+                return this._asText;
             }
         }
-        partial void onAwake();
+        [SerializeField()]
+        [AutoCompoAttribute(24818, "./")]
+        private Animator _asAnimator;
+        public Animator asAnimator
+        {
+            get
+            {
+                return this._asAnimator;
+            }
+        }
     }
 }
