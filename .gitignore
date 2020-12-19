@@ -74,3 +74,5 @@ Assets/StreamingAssets/Save.meta
 /Assets/Editor/UIScriptGeneratorPrefs.asset
 
 /Assets/InitTestScene*.unity*
+*.ini
+*.ini.meta
