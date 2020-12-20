@@ -17,30 +17,30 @@ namespace UI
     using UnityEngine.UI;
     using UI;
     
-    [AutoCompoAttribute(31838)]
+    [AutoCompoAttribute(31532)]
     public partial class EquipmentCardFace : UIObject
     {
         public void init()
         {
-            this._Image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
+            this._image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
             this._nameText = this.transform.findByPath("./NameText").GetComponent<Text>();
             this._descText = this.transform.findByPath("./DescText").GetComponent<Text>();
-            this._lifePropNum = this.transform.findByPath("./LifePropNum ").GetComponent<PropNum>();
+            this._lifePropNum = this.transform.findByPath("./LifePropNum").GetComponent<PropNum>();
             this._attackPropNum = this.transform.findByPath("./AttackPropNum").GetComponent<PropNum>();
             this._costPropNum = this.transform.findByPath("./CostPropNum").GetComponent<PropNum>();
         }
         [SerializeField()]
-        [AutoCompoAttribute(31858, "./Mask/Image")]
-        private Image _Image;
+        [AutoCompoAttribute(32042, "./Mask/Image")]
+        private Image _image;
         public Image image
         {
             get
             {
-                return this._Image;
+                return this._image;
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(31952, "./NameText")]
+        [AutoCompoAttribute(32954, "./NameText")]
         private Text _nameText;
         public Text nameText
         {
@@ -50,7 +50,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(31960, "./DescText")]
+        [AutoCompoAttribute(32542, "./DescText")]
         private Text _descText;
         public Text descText
         {
@@ -60,7 +60,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(35962, "./LifePropNum ")]
+        [AutoCompoAttribute(32550, "./LifePropNum")]
         private PropNum _lifePropNum;
         public PropNum lifePropNum
         {
@@ -70,7 +70,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(35948, "./AttackPropNum")]
+        [AutoCompoAttribute(32556, "./AttackPropNum")]
         private PropNum _attackPropNum;
         public PropNum attackPropNum
         {
@@ -80,7 +80,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(35958, "./CostPropNum")]
+        [AutoCompoAttribute(32546, "./CostPropNum")]
         private PropNum _costPropNum;
         public PropNum costPropNum
         {
