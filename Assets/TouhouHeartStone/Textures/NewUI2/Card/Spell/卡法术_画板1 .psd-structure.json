@@ -1,0 +1,15 @@
+{"type":"root","options":{
+
+},"size":{"width":450,"height":655},"children":[{"name":"DecroTop","type":"png","options":{
+
+},"offset":{"left":26,"top":51},"size":{"width":396,"height":551},"relativePath":"DecroTop","children":[
+
+]},{"name":"Frame","type":"png","options":{
+
+},"offset":{"left":65,"top":67},"size":{"width":356,"height":517},"relativePath":"Frame","children":[
+
+]},{"name":"DecroBottom","type":"png","options":{
+
+},"offset":{"left":43,"top":272},"size":{"width":384,"height":346},"relativePath":"DecroBottom","children":[
+
+]}]}
