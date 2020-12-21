@@ -248,6 +248,23 @@ namespace Tests
             you.master.gainArmor(game, 2);
             Assert.AreEqual(3+you.master.getArmor(game), you.field.getCard<HalfPhantom>().getAttack(game));
         }
+        
+        [Test]
+        public void HalfPhantomBurgeoningRiseTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(HalfPhantom.ID, 1),new KeyValuePair<int, int>(BurgeoningRise.ID,1));
+            you.master.setArmor(game,2);
+            game.skipUntilCanUse<HalfPhantom>(you);
+            you.cmdUse<HalfPhantom>(game);
+            Assert.AreEqual(you.master.getArmor(game),you.field.getCard<HalfPhantom>().getAttack(game));
+            game.skipUntilCanUse<BurgeoningRise>(you);
+            you.cmdUse<BurgeoningRise>(game);
+            you.field[0].die(game);
+            Assert.AreEqual(3+you.master.getArmor(game), you.field.getCard<HalfPhantom>().getAttack(game));
+            you.master.gainArmor(game, 2);
+            Assert.AreEqual(3+you.master.getArmor(game), you.field.getCard<HalfPhantom>().getAttack(game));
+        }
 
         [Test]
         public void TwoHundredYojanaOneSlashTest()
