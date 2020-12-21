@@ -267,17 +267,22 @@ PrefabInstance:
     - target: {fileID: 2349838879644968400, guid: 8be6eed5753f4f447b420b3a7029356d,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2349838879644968400, guid: 8be6eed5753f4f447b420b3a7029356d,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2349838879644968400, guid: 8be6eed5753f4f447b420b3a7029356d,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 114
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5232093295216086807, guid: 8be6eed5753f4f447b420b3a7029356d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -258
       objectReference: {fileID: 0}
     - target: {fileID: 5714850945591636720, guid: 8be6eed5753f4f447b420b3a7029356d,
         type: 3}
@@ -287,7 +292,7 @@ PrefabInstance:
     - target: {fileID: 5714850945591636720, guid: 8be6eed5753f4f447b420b3a7029356d,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8316716169236442545, guid: 8be6eed5753f4f447b420b3a7029356d,
         type: 3}
@@ -414,6 +419,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ServantCardFace
       objectReference: {fileID: 0}
+    - target: {fileID: 852895531107296401, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1272509381087109898, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -522,17 +532,17 @@ PrefabInstance:
     - target: {fileID: 6066750349859142227, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6066750349859142227, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6066750349859142227, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 114
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bbd135490d7a22f4fb7b9bc7c3d9902f, type: 3}
