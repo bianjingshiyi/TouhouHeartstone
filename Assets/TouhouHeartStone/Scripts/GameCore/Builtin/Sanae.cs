@@ -632,7 +632,7 @@ namespace TouhouHeartstone.Builtin
                         }
                         break;
                     default:
-                        await you.grave.moveTo(game,card,you.hand);
+                        await card.backToHand(game);
                         await card.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
                         break;
                 }
