@@ -307,5 +307,16 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<OrochiOfAncientTimes>());
             game.Dispose();
         }
+        
+        [Test]
+        public void SuwakoBackToFullHandTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo, new KeyValuePair<int, int>(MoriyaSuwako.ID,1));
+            game.skipUntilCanUse<MoriyaSuwako>(you);
+            you.cmdUse(game, you.hand.getCard<MoriyaSuwako>());
+            game.skipTurnUntil(() => { return you.hand.count == 10;});
+            you.field[0].backToHand(game);
+            Assert.AreEqual(10,you.hand.count);
+        }
     }
 }
