@@ -165,7 +165,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5276555276016952724
 RectTransform:
   m_ObjectHideFlags: 0
@@ -231,6 +231,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5276555276201579365}
+  - component: {fileID: 1956165957881574588}
   m_Layer: 5
   m_Name: Servant
   m_TagString: Untagged
@@ -266,6 +267,25 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!95 &1956165957881574588
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5276555276201579364}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: bf14f256839a0254bbb42a24d3543ebd, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &5276555276408296388
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,7 +303,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5276555276408296389
 RectTransform:
   m_ObjectHideFlags: 0
@@ -446,7 +466,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5276555276649924982
 RectTransform:
   m_ObjectHideFlags: 0
@@ -873,6 +893,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2985286715403160490, guid: 904437fea26acbe4296180ed828ba712,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8498423067628678396, guid: 904437fea26acbe4296180ed828ba712,
         type: 3}
       propertyPath: m_Name
@@ -898,12 +923,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 8846835303029632616, guid: 904437fea26acbe4296180ed828ba712,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9174473248558067133, guid: 904437fea26acbe4296180ed828ba712,
         type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: aebedcd226b3f384fbe05f46c7edb64d,
         type: 3}
+    - target: {fileID: 9174473248558067133, guid: 904437fea26acbe4296180ed828ba712,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 904437fea26acbe4296180ed828ba712, type: 3}
 --- !u!224 &5070449313313652779 stripped
@@ -982,7 +1017,7 @@ PrefabInstance:
     - target: {fileID: 1110082160913815343, guid: 904437fea26acbe4296180ed828ba712,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -143.5
+      value: -140.5
       objectReference: {fileID: 0}
     - target: {fileID: 1110082160913815343, guid: 904437fea26acbe4296180ed828ba712,
         type: 3}
@@ -1044,6 +1079,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2985286715403160490, guid: 904437fea26acbe4296180ed828ba712,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8498423067628678396, guid: 904437fea26acbe4296180ed828ba712,
         type: 3}
       propertyPath: m_Name
@@ -1069,12 +1109,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8846835303029632616, guid: 904437fea26acbe4296180ed828ba712,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9174473248558067133, guid: 904437fea26acbe4296180ed828ba712,
         type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 21ca601634d05aa42a597ef69a673cd9,
         type: 3}
+    - target: {fileID: 9174473248558067133, guid: 904437fea26acbe4296180ed828ba712,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 904437fea26acbe4296180ed828ba712, type: 3}
 --- !u!224 &5070449314442439010 stripped
