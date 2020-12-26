@@ -163,11 +163,8 @@ MonoBehaviour:
   _RaceText: {fileID: 0}
   _BorderImage: {fileID: 0}
   _CardFace_Image: {fileID: 0}
-  _CostImage: {fileID: 0}
   _CostPropNumber: {fileID: 0}
-  _AttackImage: {fileID: 0}
   _AttackPropNumber: {fileID: 0}
-  _LifeImage: {fileID: 0}
   _LifePropNumber: {fileID: 0}
   _CrossImage: {fileID: 0}
   _useCurve:
@@ -270,11 +267,8 @@ MonoBehaviour:
   _RaceText: {fileID: 0}
   _BorderImage: {fileID: 0}
   _CardFace_Image: {fileID: 0}
-  _CostImage: {fileID: 0}
   _CostPropNumber: {fileID: 0}
-  _AttackImage: {fileID: 0}
   _AttackPropNumber: {fileID: 0}
-  _LifeImage: {fileID: 0}
   _LifePropNumber: {fileID: 0}
   _CrossImage: {fileID: 0}
   _useCurve:
@@ -5149,6 +5143,12 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7552501258643873164, guid: a49b84cb4773c864a9d5015169fa9cf8,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 5fec71b8445334c4f8ceef73d772017e,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a49b84cb4773c864a9d5015169fa9cf8, type: 3}
 --- !u!224 &979601541909154686 stripped
@@ -5452,27 +5452,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 434557653808379024, guid: 7583531f85baf3340b4ee592873c34f5,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 7a46b5fc9cc300447aba704d5005030e,
-        type: 3}
-    - target: {fileID: 434557653808379025, guid: 7583531f85baf3340b4ee592873c34f5,
-        type: 3}
-      propertyPath: m_CullTransparentMesh
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 434557653808379027, guid: 7583531f85baf3340b4ee592873c34f5,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.95
-      objectReference: {fileID: 0}
-    - target: {fileID: 434557653808379027, guid: 7583531f85baf3340b4ee592873c34f5,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.95
       objectReference: {fileID: 0}
     - target: {fileID: 434557654365780004, guid: 7583531f85baf3340b4ee592873c34f5,
         type: 3}
@@ -6768,26 +6747,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 434557653808379024, guid: 7583531f85baf3340b4ee592873c34f5,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 7a46b5fc9cc300447aba704d5005030e,
-        type: 3}
     - target: {fileID: 434557653808379026, guid: 7583531f85baf3340b4ee592873c34f5,
         type: 3}
       propertyPath: m_IsActive
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 434557653808379027, guid: 7583531f85baf3340b4ee592873c34f5,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.95
-      objectReference: {fileID: 0}
-    - target: {fileID: 434557653808379027, guid: 7583531f85baf3340b4ee592873c34f5,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.95
       objectReference: {fileID: 0}
     - target: {fileID: 434557654737351542, guid: 7583531f85baf3340b4ee592873c34f5,
         type: 3}

@@ -10,29 +10,20 @@
 
 namespace UI
 {
-    using BJSYGameCore.UI;
     using UnityEngine;
+    using BJSYGameCore.UI;
     using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
     
-    [AutoCompoAttribute(23298)]
+    [AutoCompoAttribute(24304)]
     public partial class PropNumber : UIObject
     {
         public void init()
         {
-            this._asText = this.transform.findByPath("./").GetComponent<Text>();
             this._asAnimator = this.transform.findByPath("./").GetComponent<Animator>();
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(24812, "./")]
-        private Text _asText;
-        public Text asText
-        {
-            get
-            {
-                return this._asText;
-            }
+            this._text = this.transform.findByPath("./Text").GetComponent<Text>();
+            this._icon = this.transform.findByPath("./Icon").GetComponent<Image>();
         }
         [SerializeField()]
         [AutoCompoAttribute(24818, "./")]
@@ -42,6 +33,26 @@ namespace UI
             get
             {
                 return this._asAnimator;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(84460, "./Text")]
+        private Text _text;
+        public Text text
+        {
+            get
+            {
+                return this._text;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(84456, "./Icon")]
+        private Image _icon;
+        public Image icon
+        {
+            get
+            {
+                return this._icon;
             }
         }
     }

@@ -40,11 +40,8 @@ namespace UI
             this._RaceText = this.transform.Find("CardFace").Find("RaceText").GetComponent<Text>();
             this._BorderImage = this.transform.Find("CardFace").Find("Border").GetComponent<Image>();
             this._CardFace_Image = this.transform.Find("CardFace").Find("Image").GetComponent<Image>();
-            this._CostImage = this.transform.Find("CardFace").Find("CostImage").GetComponent<Image>();
             this._CostPropNumber = this.transform.Find("CardFace").Find("Cost").GetComponent<PropNumber>();
-            this._AttackImage = this.transform.Find("CardFace").Find("AttackImage").GetComponent<Image>();
             this._AttackPropNumber = this.transform.Find("CardFace").Find("Attack").GetComponent<PropNumber>();
-            this._LifeImage = this.transform.Find("CardFace").Find("LifeImage").GetComponent<Image>();
             this._LifePropNumber = this.transform.Find("CardFace").Find("Life").GetComponent<PropNumber>();
             this._CrossImage = this.transform.Find("Cross").GetComponent<Image>();
         }
@@ -244,19 +241,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _CostImage;
-        public Image CostImage
-        {
-            get
-            {
-                if ((this._CostImage == null))
-                {
-                    this._CostImage = this.transform.Find("CardFace").Find("CostImage").GetComponent<Image>();
-                }
-                return this._CostImage;
-            }
-        }
-        [SerializeField()]
         private PropNumber _CostPropNumber;
         public PropNumber CostPropNumber
         {
@@ -270,19 +254,6 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Image _AttackImage;
-        public Image AttackImage
-        {
-            get
-            {
-                if ((this._AttackImage == null))
-                {
-                    this._AttackImage = this.transform.Find("CardFace").Find("AttackImage").GetComponent<Image>();
-                }
-                return this._AttackImage;
-            }
-        }
-        [SerializeField()]
         private PropNumber _AttackPropNumber;
         public PropNumber AttackPropNumber
         {
@@ -293,19 +264,6 @@ namespace UI
                     this._AttackPropNumber = this.transform.Find("CardFace").Find("Attack").GetComponent<PropNumber>();
                 }
                 return this._AttackPropNumber;
-            }
-        }
-        [SerializeField()]
-        private Image _LifeImage;
-        public Image LifeImage
-        {
-            get
-            {
-                if ((this._LifeImage == null))
-                {
-                    this._LifeImage = this.transform.Find("CardFace").Find("LifeImage").GetComponent<Image>();
-                }
-                return this._LifeImage;
             }
         }
         [SerializeField()]
@@ -335,27 +293,13 @@ namespace UI
             }
         }
         partial void onAwake();
-        public enum IsFaceup
-        {
-            IsFaceup_False,
-            IsFaceup_True,
-        }
-        public IsFaceup IsFaceupController
-        {
-            get
-            {
-                return ((IsFaceup)(Enum.Parse(typeof(IsFaceup), this.getController("IsFaceup", Enum.GetNames(typeof(IsFaceup))))));
-            }
-            set
-            {
-                this.setController("IsFaceup", Enum.GetName(typeof(IsFaceup), value));
-            }
-        }
         public enum Type
         {
             Type_Servant,
             Type_Spell,
             Type_Item,
+            Type_Skill,
+            Type_Master,
         }
         public Type TypeController
         {
@@ -366,6 +310,24 @@ namespace UI
             set
             {
                 this.setController("Type", Enum.GetName(typeof(Type), value));
+            }
+        }
+        public enum IsFaceup
+        {
+            IsFaceup_False,
+            IsFaceup_True,
+            Card_FlipToBack,
+            Card_FlipToFace,
+        }
+        public IsFaceup IsFaceupController
+        {
+            get
+            {
+                return ((IsFaceup)(Enum.Parse(typeof(IsFaceup), this.getController("IsFaceup", Enum.GetNames(typeof(IsFaceup))))));
+            }
+            set
+            {
+                this.setController("IsFaceup", Enum.GetName(typeof(IsFaceup), value));
             }
         }
     }

@@ -25,8 +25,8 @@ namespace UI
             {
                 Image.sprite = skin.image;
             }
-            AttackTextPropNumber.asText.text = card.getAttack().ToString();
-            HpTextPropNumber.asText.text = card.getLife().ToString();
+            AttackTextPropNumber.text.text = card.getAttack().ToString();
+            HpTextPropNumber.text.text = card.getLife().ToString();
         }
         [SerializeField]
         float _attackThreshold = 70;

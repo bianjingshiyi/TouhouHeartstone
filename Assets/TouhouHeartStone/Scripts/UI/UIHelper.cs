@@ -10,7 +10,7 @@ namespace Game
     {
         public static void setCard(this UI.Card ui, CardDefine card, CardSkinData skin)
         {
-            ui.CostPropNumber.asText.text = card.getCost().ToString();
+            ui.CostPropNumber.text.text = card.getCost().ToString();
 
             ui.Image.sprite = skin.image;
             ui.NameText.text = skin.name;
@@ -24,8 +24,8 @@ namespace Game
             else if (card.type == DEFINE.SERVANT)
             {
                 ui.type = CATEGORY.SERVANT;
-                ui.AttackPropNumber.asText.text = card.getAttack().ToString();
-                ui.LifePropNumber.asText.text = card.getLife().ToString();
+                ui.AttackPropNumber.text.text = card.getAttack().ToString();
+                ui.LifePropNumber.text.text = card.getLife().ToString();
             }
             else if (card.type == DEFINE.SPELL)
                 ui.type = CATEGORY.SPELL;
@@ -34,8 +34,8 @@ namespace Game
             else if (card.type == DEFINE.ITEM)
             {
                 ui.type = CATEGORY.ITEM;
-                ui.AttackPropNumber.asText.text = card.getAttack().ToString();
-                ui.LifePropNumber.asText.text = card.getLife().ToString();
+                ui.AttackPropNumber.text.text = card.getAttack().ToString();
+                ui.LifePropNumber.text.text = card.getLife().ToString();
             }
             else
                 throw new NotImplementedException();

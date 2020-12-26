@@ -11,23 +11,21 @@ namespace Game
             {
                 if (eventArg.value > 0)
                 {
-                    table.ui.SelfMaster.ArmorImage.display();
                     table.ui.SelfMaster.ArmorPropNumber.display();
-                    table.ui.SelfMaster.ArmorPropNumber.asText.text = eventArg.value.ToString();
+                    table.ui.SelfMaster.ArmorPropNumber.text.text = eventArg.value.ToString();
                 }
                 else
-                    table.ui.SelfMaster.ArmorImage.hide();
+                    table.ui.SelfMaster.ArmorPropNumber.hide();
             }
             else
             {
                 if (eventArg.value > 0)
                 {
-                    table.ui.EnemyMaster.ArmorImage.display();
                     table.ui.EnemyMaster.ArmorPropNumber.display();
-                    table.ui.EnemyMaster.ArmorPropNumber.asText.text = eventArg.value.ToString();
+                    table.ui.EnemyMaster.ArmorPropNumber.text.text = eventArg.value.ToString();
                 }
                 else
-                    table.ui.EnemyMaster.ArmorImage.hide();
+                    table.ui.EnemyMaster.ArmorPropNumber.hide();
             }
             return true;
         }

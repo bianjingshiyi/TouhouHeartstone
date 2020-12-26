@@ -19,20 +19,20 @@ namespace Game
                     if (table.tryGetServant(card, out var servant))
                     {
                         servant.DamageText.text = "-" + eventArg.infoDic[card].damagedValue;
-                        servant.HpTextPropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
+                        servant.HpTextPropNumber.text.text = eventArg.infoDic[card].currentLife.ToString();
                         servant.onDamage.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(servant.animator, servant.onDamage.animName));
                     }
                     else if (table.tryGetMaster(card, out Master master))
                     {
                         master.DamageText.text = "-" + eventArg.infoDic[card].damagedValue;
-                        master.LifePropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
+                        master.LifePropNumber.text.text = eventArg.infoDic[card].currentLife.ToString();
                         master.onDamage.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(master.animator, master.onDamage.animName));
                     }
                     else if (table.tryGetItem(card, out var item))
                     {
-                        item.DurabilityPropNumber.asText.text = eventArg.infoDic[card].currentLife.ToString();
+                        item.DurabilityPropNumber.text.text = eventArg.infoDic[card].currentLife.ToString();
                         item.onLifeDown.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(item.animator, item.onLifeDown.animName));
                     }
