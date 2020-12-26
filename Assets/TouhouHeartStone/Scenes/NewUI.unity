@@ -9646,6 +9646,21 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5130995760808147462, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: _initStates.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5130995760808147462, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: _initStates.Array.data[0]
+      value: Type/Type_Servant
+      objectReference: {fileID: 0}
+    - target: {fileID: 5130995760808147462, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: _initStates.Array.data[1]
+      value: IsFaceup/IsFaceup_False
+      objectReference: {fileID: 0}
     - target: {fileID: 5159180619753920363, guid: 83c0b33294cc7ac4295dbe5157864e9d,
         type: 3}
       propertyPath: m_AnchorMin.y
