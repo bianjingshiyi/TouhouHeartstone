@@ -16,3 +16,6 @@
 [submodule "Assets/Plugins/InGameLogWindow"]
 	path = Assets/Plugins/InGameLogWindow
 	url = https://code.lotlab.org/IGensokyo/InGameLogWindow
+[submodule "Assets/Plugins/MukioI18n"]
+	path = Assets/Plugins/MukioI18n
+	url = https://code.lotlab.org/IGensokyo/MukioI18n
