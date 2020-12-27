@@ -18,7 +18,7 @@ namespace UI
     using UI;
     
     [AutoCompoAttribute(24494)]
-    public partial class Card : UIObject
+    public partial class NewCard : UIObject
     {
         public void init()
         {
