@@ -17,7 +17,7 @@ namespace Game
                 if (eventArg.modifier is AttackModifier atkMod)
                 {
                     
-                    servant.AttackTextPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
+                    servant.AttackTextPropNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                     if (eventArg.card.getAttack(table.game) > eventArg.card.define.getAttack())
                     {
                         simpleAnim = servant.AttackTextPropNumber.GreenText;
@@ -33,7 +33,7 @@ namespace Game
                     //    simpleAnim = servant.onLifeUp;
                     //else
                     //    simpleAnim = servant.onLifeDown;
-                    servant.HpTextPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
+                    servant.HpTextPropNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
             }
             else if (table.tryGetHand(eventArg.card, out var hand))
@@ -41,7 +41,7 @@ namespace Game
                 animator = hand.animator;
                 if (eventArg.modifier is AttackModifier atkMod)
                 {                 
-                    hand.Card.AttackPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
+                    hand.Card.AttackPropNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                     if (eventArg.card.getAttack(table.game) > eventArg.card.define.getAttack())
                     {
                         simpleAnim = hand.Card.AttackPropNumber.GreenText;
@@ -53,7 +53,7 @@ namespace Game
                 }
                 else if (eventArg.modifier is LifeModifier lifMod)
                 {                    
-                    hand.Card.LifePropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
+                    hand.Card.LifePropNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                     if (eventArg.card.getLife(table.game) > eventArg.card.define.getLife())
                     {
                         simpleAnim = hand.Card.LifePropNumber.GreenText;
@@ -65,7 +65,7 @@ namespace Game
                 }
                 else if (eventArg.modifier is CostModifier costMod)
                 {
-                    hand.Card.CostPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
+                    hand.Card.CostPropNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                     if (eventArg.card.getCost(table.game) < eventArg.card.define.getCost())
                     {
                         simpleAnim = hand.Card.CostPropNumber.GreenText;
@@ -85,7 +85,7 @@ namespace Game
                 animator = master.animator;
                 if (eventArg.modifier is AttackModifier atkMod)
                 {                  
-                    master.AttackPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
+                    master.AttackPropNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
                 table.setMaster(master, eventArg.card);
             }
@@ -94,7 +94,7 @@ namespace Game
                 animator = item.animator;
                 if (eventArg.modifier is AttackModifier atkMod)
                 {                  
-                    item.AttackPropNumber.asText.text = eventArg.valueAfter is int i ? i.ToString() : "?";
+                    item.AttackPropNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                     if (eventArg.card.getAttack(table.game) > eventArg.card.define.getAttack())
                     {
                         simpleAnim = item.AttackPropNumber.GreenText;

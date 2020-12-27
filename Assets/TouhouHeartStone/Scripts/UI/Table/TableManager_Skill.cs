@@ -34,7 +34,7 @@ namespace Game
         {
             CardSkinData skin = getSkin(card);
             skill.Image.sprite = skin.image;
-            skill.CostPropNumber.asText.text = card.getCost(game).ToString();
+            skill.CostPropNumber.text.text = card.getCost(game).ToString();
             if (card.isUsed(game))
             {
                 // skill.IsUsedController = Skill.IsUsed.True;

@@ -19,7 +19,7 @@ namespace Game
                 animator = servant.animator;
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.value is int attack)
                 {
-                    servant.AttackTextPropNumber.asText.text = attack.ToString();
+                    servant.AttackTextPropNumber.text.text = attack.ToString();
                     if (eventArg.card.getAttack(table.game) > eventArg.card.define.getAttack())
                     {
                         simpleAnim = servant.AttackTextPropNumber.GreenText;
@@ -31,7 +31,7 @@ namespace Game
                 }
                 else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.value is int currentLife)
                 {
-                    servant.HpTextPropNumber.asText.text = currentLife.ToString();
+                    servant.HpTextPropNumber.text.text = currentLife.ToString();
 
                     //判断是否是红字
                     if (eventArg.card.getCurrentLife(table.game) < eventArg.card.getLife(table.game))
@@ -77,11 +77,11 @@ namespace Game
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
                 {
                     
-                    master.AttackPropNumber.asText.text = attack.ToString();
+                    master.AttackPropNumber.text.text = attack.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
                 {
-                    master.LifePropNumber.asText.text = currentLife.ToString();
+                    master.LifePropNumber.text.text = currentLife.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.KEYWORDS)
                 {
@@ -126,12 +126,12 @@ namespace Game
                 animator = item.animator;
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
                 {
-                    item.AttackPropNumber.asText.text = attack.ToString();
+                    item.AttackPropNumber.text.text = attack.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
                 {
                    
-                    item.DurabilityPropNumber.asText.text = currentLife.ToString();
+                    item.DurabilityPropNumber.text.text = currentLife.ToString();
                 }
 
                 //判断是否是红字

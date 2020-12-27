@@ -14,14 +14,14 @@ namespace UI
         {
             this.card = card;
 
-            CostPropNumber.asText.text = card.getCost(null).ToString();
+            CostPropNumber.text.text = card.getCost(null).ToString();
             if (card.define.type == DEFINE.SERVANT)
             {
                 type = CATEGORY.SERVANT;
                 // TypeController = Type.Servant;
                 //onTypeControllerServant?.Invoke();
-                AttackPropNumber.asText.text = card.getAttack(null).ToString();
-                LifePropNumber.asText.text = card.getLife(null).ToString();
+                AttackPropNumber.text.text = card.getAttack(null).ToString();
+                LifePropNumber.text.text = card.getLife(null).ToString();
             }
             else if (card.define.type == DEFINE.SPELL)
             {
@@ -47,9 +47,9 @@ namespace UI
         [Obsolete]
         public void update(CardDefine card, CardSkinData skin)
         {
-            CostPropNumber.asText.text = card.getCost().ToString();
-            AttackPropNumber.asText.text = card.getAttack().ToString();
-            LifePropNumber.asText.text = card.getLife().ToString();
+            CostPropNumber.text.text = card.getCost().ToString();
+            AttackPropNumber.text.text = card.getAttack().ToString();
+            LifePropNumber.text.text = card.getLife().ToString();
 
             Image.sprite = skin.image;
             NameText.text = skin.name;

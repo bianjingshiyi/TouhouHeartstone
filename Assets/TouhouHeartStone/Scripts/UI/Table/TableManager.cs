@@ -338,29 +338,27 @@ namespace Game
         {
             CardSkinData skin = getSkin(card);
             master.Image.sprite = skin.image;
-            master.LifePropNumber.asText.text = card.getCurrentLife(game).ToString();
+            master.LifePropNumber.text.text = card.getCurrentLife(game).ToString();
             if (card.getAttack(game) > 0)
             {
-                master.AttackPropNumber.asText.text = card.getAttack(game).ToString();
+                master.AttackPropNumber.text.text = card.getAttack(game).ToString();
                 master.AtkImage.display();
-                master.AttackPropNumber.asText.display();
+                master.AttackPropNumber.text.display();
 
             }
             else
             {
-                master.AttackPropNumber.asText.hide();
+                master.AttackPropNumber.text.hide();
                 master.AtkImage.hide();
             }
             if (card.getArmor(game) > 0)
             {
-                master.ArmorPropNumber.asText.text = card.getArmor(game).ToString();
+                master.ArmorPropNumber.text.text = card.getArmor(game).ToString();
                 master.ArmorPropNumber.display();
-                master.ArmorImage.display();
             }
             else
             {
-                master.ArmorPropNumber.asText.hide();
-                master.ArmorImage.hide();
+                master.ArmorPropNumber.hide();
             }
 
             if (isSelectable)
@@ -436,8 +434,8 @@ namespace Game
             CardSkinData skin = getSkin(card);
             item.Image.sprite = skin.image;
 
-            item.AttackPropNumber.asText.text = card.getAttack(game).ToString();
-            item.DurabilityPropNumber.asText.text = card.getCurrentLife(game).ToString();
+            item.AttackPropNumber.text.text = card.getAttack(game).ToString();
+            item.DurabilityPropNumber.text.text = card.getCurrentLife(game).ToString();
         }
         void displayArrow(RectTransform source, Vector2 from, Vector2 to)
         {
@@ -875,7 +873,7 @@ namespace Game
         /// <param name="isFaceup"></param>
         public void setCard(UI.Card ui, Card card, bool isFaceup)
         {
-            ui.CostPropNumber.asText.text = card.getCost(game).ToString();
+            ui.CostPropNumber.text.text = card.getCost(game).ToString();
 
             if (isFaceup)//因为isFaceup控制了很多GameObject的Active，所以它必须放在最上面。
             {
@@ -894,16 +892,16 @@ namespace Game
             if (card.define.type == DEFINE.SERVANT)
             {
                 ui.type = CATEGORY.SERVANT;
-                ui.AttackPropNumber.asText.text = card.getAttack(game).ToString();
-                ui.LifePropNumber.asText.text = card.getLife(game).ToString();
+                ui.AttackPropNumber.text.text = card.getAttack(game).ToString();
+                ui.LifePropNumber.text.text = card.getLife(game).ToString();
             }
             else if (card.define.type == DEFINE.SPELL)
                 ui.type = CATEGORY.SPELL;
             else if (card.define.type == DEFINE.ITEM)
             {
                 ui.type = CATEGORY.ITEM;
-                ui.AttackPropNumber.asText.text = card.getAttack(game).ToString();
-                ui.LifePropNumber.asText.text = card.getLife(game).ToString();
+                ui.AttackPropNumber.text.text = card.getAttack(game).ToString();
+                ui.LifePropNumber.text.text = card.getLife(game).ToString();
             }
             else
                 throw new NotImplementedException();
@@ -992,8 +990,8 @@ namespace Game
             {
                 servant.Image.sprite = skin.image;
             }
-            servant.AttackTextPropNumber.asText.text = attack < 0 ? card.getAttack(game).ToString() : attack.ToString();
-            servant.HpTextPropNumber.asText.text = life < 0 ? card.getCurrentLife(game).ToString() : life.ToString();
+            servant.AttackTextPropNumber.text.text = attack < 0 ? card.getAttack(game).ToString() : attack.ToString();
+            servant.HpTextPropNumber.text.text = life < 0 ? card.getCurrentLife(game).ToString() : life.ToString();
 
             servant.onDrag.remove(onDragServant);
             if (isSelectable)
@@ -1248,8 +1246,8 @@ namespace Game
             {
                 servant.Image.sprite = skin.image;
             }
-            servant.AttackTextPropNumber.asText.text = card.getAttack().ToString();
-            servant.HpTextPropNumber.asText.text = card.getLife().ToString();
+            servant.AttackTextPropNumber.text.text = card.getAttack().ToString();
+            servant.HpTextPropNumber.text.text = card.getLife().ToString();
             if (card.hasKeyword(KEYWORD.TAUNT))
             {
                 servant.onTauntTrue.invokeBeforeAnim();
