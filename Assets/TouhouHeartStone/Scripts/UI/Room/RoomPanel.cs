@@ -9,6 +9,7 @@ using TouhouHeartstone;
 using UnityEngine;
 using BJSYGameCore.UI;
 using NitoriNetwork.Common;
+using MukioI18n;
 
 namespace UI
 {
@@ -42,9 +43,12 @@ namespace UI
             initEvents();
         }
 
+        [TranslateMsg]
+        private const string Cards_Name = "选择你的卡组";
+
         private void OnEnable()
         {
-            DeckSelectionDeckListItem.SetContent(0, "选择你的卡组", null);
+            DeckSelectionDeckListItem.SetContent(0, I18n._(Cards_Name), null);
         }
 
         void initEvents()
@@ -155,8 +159,13 @@ namespace UI
             IsSortedToggleGameOptionItemToggle.Toggle.setSelectable(isHost);
 
             // 准备按钮
-            StartButtonButtonBlack.Text.text = isHost ? "开始游戏" : "准备";
+            StartButtonButtonBlack.Text.text = isHost ? I18n._(STR_START_GAME) : I18n._(STR_PREPARE);
         }
+        [TranslateMsg]
+        private const String STR_START_GAME = "开始游戏";
+        [TranslateMsg]
+        private const String STR_PREPARE = "准备";
+
 
         int selfPlayerID = -1;
 
@@ -316,10 +325,12 @@ namespace UI
             else
             {
                 // 判断准备状态
-                StartButtonButtonBlack.Text.text = selfPlayer.ready ? "取消准备" : "准备";
+                StartButtonButtonBlack.Text.text = selfPlayer.ready ? I18n._(STR_REQUEST_PREPRAE) : I18n._(STR_REQUEST_PREPRAE);
                 StartButtonButtonBlack.asButton.setSelectable(selfPlayer.tryGetDeck(out var deck) && deck != null && deck.Length == 31);
             }
         }
+        [TranslateMsg]
+        private const String STR_REQUEST_PREPRAE = "取消准备";
 
         /// <summary>
         /// 设置右上角的（IP地址）文本
