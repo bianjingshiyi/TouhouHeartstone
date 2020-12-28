@@ -124,6 +124,7 @@ GameObject:
   - component: {fileID: 1995795149051416152}
   - component: {fileID: 6237401151002748400}
   - component: {fileID: 6565702686005183345}
+  - component: {fileID: 8647042821300803536}
   m_Layer: 5
   m_Name: Card
   m_TagString: Untagged
@@ -198,6 +199,120 @@ MonoBehaviour:
   _time: 0
   _targetTransform: {fileID: 0}
   _stopDistance: 0
+--- !u!114 &8647042821300803536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3796596474975032773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b950bfa1b977214418bd32ec73cc66f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ui: {fileID: 0}
+  _useController: 0
+  _initStates: []
+  _CardBackImage: {fileID: 0}
+  _CardBackEffectImage: {fileID: 0}
+  _ShadowImage: {fileID: 0}
+  _BackgroundImage: {fileID: 0}
+  _Mask: {fileID: 0}
+  _Image: {fileID: 0}
+  _CardFaceEffectImage: {fileID: 0}
+  _NameShadowImage: {fileID: 0}
+  _NameText: {fileID: 0}
+  _DescShadowImage: {fileID: 0}
+  _SubNameText: {fileID: 0}
+  _DescText: {fileID: 0}
+  _RaceText: {fileID: 0}
+  _BorderImage: {fileID: 0}
+  _CardFace_Image: {fileID: 0}
+  _CostPropNumber: {fileID: 0}
+  _AttackPropNumber: {fileID: 0}
+  _LifePropNumber: {fileID: 0}
+  _CrossImage: {fileID: 0}
+  _useCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _drawCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _onTypeControllerMaster:
+    m_PersistentCalls:
+      m_Calls: []
+  _onTypeControllerSpell:
+    m_PersistentCalls:
+      m_Calls: []
+  _onTypeControllerItem:
+    m_PersistentCalls:
+      m_Calls: []
+  _onTypeControllerSkill:
+    m_PersistentCalls:
+      m_Calls: []
+  _onTypeControllerServant:
+    m_PersistentCalls:
+      m_Calls: []
+  _onFaceupControllerFalse:
+    m_PersistentCalls:
+      m_Calls: []
+  _onFaceupControllerTrue:
+    m_PersistentCalls:
+      m_Calls: []
+  _flipToFaceAnimName: 
+  _flipToBackAnimName: 
+  _notifyAnimName: 
+  onCast:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  _CardAnimator: {fileID: 0}
+  __CardBackImage: {fileID: 0}
+  __CardBackEffectImage: {fileID: 0}
+  _ItemCardMask: {fileID: 0}
+  _ItemCardMaskImage: {fileID: 0}
+  _SpellCardMask: {fileID: 0}
+  _ItemCostPropNumber: {fileID: 0}
+  _ItemCostPropNumberAnimator: {fileID: 0}
+  _ItemLifePropNumber: {fileID: 0}
+  _ItemLifePropNumberAnimator: {fileID: 0}
+  _ItemAttackPropNumber: {fileID: 0}
+  _ItemAttackPropNumberAnimator: {fileID: 0}
+  _ItemNameText: {fileID: 0}
+  _ItemDescText: {fileID: 0}
+  _SpellCardImage: {fileID: 0}
+  _SpellDescImage: {fileID: 0}
+  _SpellDescText: {fileID: 0}
+  _SpellCardName: {fileID: 0}
+  _SpellCostPropNumber: {fileID: 0}
+  _SpellCostPropNumberAnimator: {fileID: 0}
+  _ServantCardMask: {fileID: 0}
+  _ServantCardMaskImage: {fileID: 0}
+  _DescImage: {fileID: 0}
+  _ServantCardAttackPropNumber: {fileID: 0}
+  _ServantCardAttackPropNumberAnimator: {fileID: 0}
+  _ServantCardLifePropNumber: {fileID: 0}
+  _ServantCardLifePropNumberAnimator: {fileID: 0}
+  _ServantCardCostPropNumber: {fileID: 0}
+  _ServantCardCostPropNumberAnimator: {fileID: 0}
+  _ServantCardNameText: {fileID: 0}
+  _ServantCardNameSubName: {fileID: 0}
+  _ServantCardDescText: {fileID: 0}
 --- !u!1 &5829200048353087595
 GameObject:
   m_ObjectHideFlags: 0
