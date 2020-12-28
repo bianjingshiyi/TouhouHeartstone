@@ -8,6 +8,7 @@ using TouhouCardEngine;
 using UnityEngine.Events;
 using NitoriNetwork.Common;
 using System;
+using MukioI18n;
 
 namespace Game
 {
@@ -73,17 +74,22 @@ namespace Game
             else if (_loadCardTask.IsFaulted || _loadCardTask.IsCanceled)
             {
                 UIManager ui = getManager<UIManager>();
-                ui.getObject<Dialog>().display("游戏资源加载失败！请重新启动游戏", () => Application.Quit());
+                ui.getObject<Dialog>().display(I18n._(MMANAGE_GAME_FAIL_LOAD), () => Application.Quit());
                 _loadCardTask = null;
             }
         }
+
+        [TranslateMsg]
+        private const String MMANAGE_GAME_FAIL_LOAD = "游戏资源加载失败！请重新启动游戏";
+        [TranslateMsg]
+        private const String MMANGGE_MYSELF = "自己";
 
         private void showLocalRoom()
         {
             Main main = ui.getObject<Main>();
 
             currentRoomInfo = new RoomInfo();
-            var selfPlayer = new RoomPlayerInfo() { name = "自己" };
+            var selfPlayer = new RoomPlayerInfo() { name = I18n._(MMANGGE_MYSELF) };
             currentRoomInfo.playerList.Add(selfPlayer);
             GameOption option = new GameOption();
             var rand = new byte[4];

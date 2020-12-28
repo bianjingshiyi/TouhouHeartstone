@@ -12,6 +12,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Card = TouhouCardEngine.Card;
 using BJSYGameCore.UI;
+using MukioI18n;
 
 namespace Game
 {
@@ -720,11 +721,14 @@ namespace Game
                 }
                 else
                 {
-                    showTip("这不是一个有效的目标！");
+                    showTip(I18n._(TAB_THIS_INVALIDATION));
                     resetUse(true, true);
                 }
             }
         }
+        [TranslateMsg]
+        private const string TAB_THIS_INVALIDATION = "这不是一个有效的目标！";
+
         /// <summary>
         /// 点击随从卡
         /// </summary>
@@ -742,7 +746,7 @@ namespace Game
                 }
                 else
                 {
-                    showTip("这不是一个有效的目标！");
+                    showTip(I18n._(TAB_THIS_INVALIDATION));
                     resetUse(true, true);
                 }
             }
@@ -813,6 +817,8 @@ namespace Game
         /// </summary>
         /// <param name="handList"></param>
         /// <param name="pointer"></param>
+        [TranslateMsg]
+        private const String TAB_CARD_NUMBER = "张手牌";
         void onHandPointerEnter(HandListItem handList, PointerEventData pointer)
         {
             handList.onHoverCard.invokeAfterAnim();
@@ -820,7 +826,7 @@ namespace Game
             if (!ui.SelfHandList.isExpanded &&
                 player.hand.count > 0)
             {
-                ui.TipBox.display(getCard(handList).getOwner().hand.count + "张手牌", pointer.position + _tipBoxOffset);
+                ui.TipBox.display(getCard(handList).getOwner().hand.count + I18n._(TAB_CARD_NUMBER), pointer.position + _tipBoxOffset);
             }
         }
         void onHandPointerMove(HandListItem handList, Vector2 pointer)
@@ -1360,16 +1366,20 @@ namespace Game
                 });
             }
         }
+        [TranslateMsg]
+        private const String TAB_SHOW = "显示";
+        [TranslateMsg]
+        private const String TAB_HIDE = "隐藏";
         void onDiscoverHideButtonClick()
         {
             if (ui.Discover.PanelImage.gameObject.activeSelf)
             {
-                ui.Discover.ButtonButtonBlack.asButton.setText("显示");
+                ui.Discover.ButtonButtonBlack.asButton.setText(I18n._(TAB_SHOW));
                 ui.Discover.PanelImage.hide();
             }
             else
             {
-                ui.Discover.ButtonButtonBlack.asButton.setText("隐藏");
+                ui.Discover.ButtonButtonBlack.asButton.setText(I18n._(TAB_HIDE));
                 ui.Discover.PanelImage.display();
                 displayDiscoverDialog(game.answers.getRequest<DiscoverRequest>(player.id).cardIdArray, ui.Discover.Text.text);
             }
@@ -1378,9 +1388,16 @@ namespace Game
         {
             ui.Discover.hide();
         }
+
+        [TranslateMsg]
+        private const String TAB_YOUR_BOX = "你的牌库";
+        [TranslateMsg]
+        private const String TAB_BOX_HAS = "牌库里有";
+        [TranslateMsg]
+        private const String TAB_YOUR_NO_HAVE_CARD = "你已经没有卡牌了";
         void onDeckClick()
         {
-            ui.PilePanel.display("你的牌库");
+            ui.PilePanel.display(I18n._(TAB_YOUR_BOX));
             ui.PilePanel.VerticalOverflowCardList.clearItems();
             foreach (var card in player.deck.OrderBy(c => c.define.getCost()))
             {
@@ -1391,17 +1408,20 @@ namespace Game
         void onDeckPointerEnter(UI.Deck deck, PointerEventData pointer)
         {
             if (player.deck.count > 0)
-                ui.TipBox.display("牌库里有" + player.deck.count + "张牌", pointer.position + _tipBoxOffset);
+                ui.TipBox.display(I18n._(TAB_BOX_HAS) + player.deck.count + I18n._(TAB_CARD_NUMBER), pointer.position + _tipBoxOffset);
             else
-                ui.TipBox.display("你已经没有卡牌了！", pointer.position + _tipBoxOffset);
+                ui.TipBox.display(I18n._(TAB_YOUR_NO_HAVE_CARD), pointer.position + _tipBoxOffset);
         }
         void onDeckPointerExit(UI.Deck deck, PointerEventData pointer)
         {
             ui.TipBox.hide();
         }
+        [TranslateMsg]
+        private const String TAB_YOUR_GRAVEYARD = "你的墓地";
+
         void onGraveClick()
         {
-            ui.PilePanel.display("你的墓地");
+            ui.PilePanel.display(I18n._(TAB_YOUR_GRAVEYARD));
             ui.PilePanel.VerticalOverflowCardList.clearItems();
             foreach (var card in player.grave)
             {
@@ -1409,12 +1429,16 @@ namespace Game
                 setCard(item.Card, card, true);
             }
         }
+        [TranslateMsg]
+        private const String TAB_GRAVEYARD_HAS = "墓地里有";
+        [TranslateMsg]
+        private const String TAB_GRAVEYARD_NULL = "墓地是空的";
         void onGravePointerEnter(UI.Deck deck, PointerEventData pointer)
         {
             if (player.grave.count > 0)
-                ui.TipBox.display("墓地里有" + player.grave.count + "张牌", pointer.position + _tipBoxOffset);
+                ui.TipBox.display(I18n._(TAB_GRAVEYARD_HAS) + player.grave.count + I18n._(TAB_CARD_NUMBER), pointer.position + _tipBoxOffset);
             else
-                ui.TipBox.display("墓地是空的", pointer.position + _tipBoxOffset);
+                ui.TipBox.display(I18n._(TAB_GRAVEYARD_NULL), pointer.position + _tipBoxOffset);
         }
 
         private void onDeckPointerMove(UI.Deck arg1, Vector2 arg2)

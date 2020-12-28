@@ -17,6 +17,7 @@ using UnityEngine.UI;
 using Card = TouhouCardEngine.Card;
 using System.Text.RegularExpressions;
 using NitoriNetwork.Common;
+using MukioI18n;
 
 namespace Game
 {
@@ -363,31 +364,31 @@ namespace Game
                     break;
                 case THHPlayer.DrawEventArg draw:
                     item.IconImage.sprite = item.drawIcon;
-                    item.Text.text = "抽牌";
+                    item.Text.text = I18n._(GAME_MANAGER_DRAW);
                     item.Image.sprite = getManager<TableManager>().getSkin(draw.player == localPlayer ? draw.card : draw.player.master).image;
                     item.BorderImage.color = draw.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.BurnEventArg burn:
                     item.IconImage.sprite = item.burnIcon;
-                    item.Text.text = "爆牌";
+                    item.Text.text = I18n._(GAME_MANAGER_BURN);
                     item.Image.sprite = getManager<TableManager>().getSkin(burn.card).image;
                     item.BorderImage.color = burn.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.FatigueEventArg fatigue:
                     item.IconImage.sprite = item.fatigueIcon;
-                    item.Text.text = "疲劳";
+                    item.Text.text = I18n._(GAME_MANAGER_FATIGUE);
                     item.Image.sprite = getManager<TableManager>().getSkin(fatigue.player.master).image;
                     item.BorderImage.color = fatigue.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.DiscardEventArg discard:
                     item.IconImage.sprite = item.discardIcon;
-                    item.Text.text = "弃牌";
+                    item.Text.text = I18n._(GAME_MANAGER_DISCARD);
                     item.Image.sprite = getManager<TableManager>().getSkin(discard.cards[0]).image;
                     item.BorderImage.color = discard.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.UseEventArg use:
                     item.IconImage.sprite = item.useIcon;
-                    item.Text.text = "使用";
+                    item.Text.text = I18n._(GAME_MANAGER_USE);
                     item.Image.sprite = use.card.hasKeyword(game, KEYWORD.SECRET) ?
                         getManager<TableManager>().getSkin(use.card.getOwner().master).image :
                         getManager<TableManager>().getSkin(use.card).image;
@@ -395,19 +396,19 @@ namespace Game
                     break;
                 case THHPlayer.CreateTokenEventArg token:
                     item.IconImage.sprite = item.rebornIcon;
-                    item.Text.text = "召唤";
+                    item.Text.text = I18n._(GAME_MANAGER_TOKEN);
                     item.Image.sprite = getManager<TableManager>().getSkin(token.card).image;
                     item.BorderImage.color = token.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.RebornEventArg reborn:
                     item.IconImage.sprite = item.rebornIcon;
-                    item.Text.text = "复活";
+                    item.Text.text = I18n._(GAME_MANAGER_REBORN);
                     item.Image.sprite = getManager<TableManager>().getSkin(reborn.card).image;
                     item.BorderImage.color = reborn.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHCard.AttackEventArg attack:
                     item.IconImage.sprite = item.attackIcon;
-                    item.Text.text = "攻击";
+                    item.Text.text = I18n._(GAME_MANAGER_ATTACK);
                     item.Image.sprite = getManager<TableManager>().getSkin(attack.card).image;
                     item.BorderImage.color = attack.card.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                     break;
@@ -431,19 +432,19 @@ namespace Game
                     break;
                 case THHCard.SilenceEventArg silence:
                     item.IconImage.sprite = item.healIcon;
-                    item.Text.text = "沉默";
+                    item.Text.text = I18n._(GAME_MANAGER_SILENCE);
                     item.Image.sprite = getManager<TableManager>().getSkin(silence.cards[0]).image;
                     item.BorderImage.color = silence.cards[0].getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHCard.SecretTriggerEventArg secret:
                     item.IconImage.sprite = item.secretIcon;
-                    item.Text.text = "奥秘";
+                    item.Text.text = I18n._(GAME_MANAGER_SECRET);
                     item.Image.sprite = getManager<TableManager>().getSkin(secret.card).image;
                     item.BorderImage.color = secret.card.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHCard.DeathEventArg death:
                     item.IconImage.sprite = item.deathIcon;
-                    item.Text.text = "死亡";
+                    item.Text.text = I18n._(GAME_MANAGER_DEATH);
                     item.Image.sprite = getManager<TableManager>().getSkin(death.infoDic.First().Key).image;
                     item.BorderImage.color = death.infoDic.First().Key.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                     break;
@@ -451,6 +452,29 @@ namespace Game
                     break;
             }
         }
+        [TranslateMsg]
+        private const String GAME_MANAGER_DEATH = "死亡";
+        [TranslateMsg]
+        private const String GAME_MANAGER_SECRET = "奥秘";
+        [TranslateMsg]
+        private const String GAME_MANAGER_SILENCE = "沉默";
+        [TranslateMsg]
+        private const String GAME_MANAGER_ATTACK = "攻击";
+        [TranslateMsg]
+        private const String GAME_MANAGER_REBORN = "复活";
+        [TranslateMsg]
+        private const String GAME_MANAGER_TOKEN = "召唤";
+        [TranslateMsg]
+        private const String GAME_MANAGER_USE = "使用";
+        [TranslateMsg]
+        private const String GAME_MANAGER_DISCARD = "弃牌";
+        [TranslateMsg]
+        private const String GAME_MANAGER_FATIGUE = "疲劳";
+        [TranslateMsg]
+        private const String GAME_MANAGER_BURN = "爆牌";
+        [TranslateMsg]
+        private const String GAME_MANAGER_DRAW = "抽牌";
+
         #region Events
         void onLogListItemEnter(LogListItem item)
         {
