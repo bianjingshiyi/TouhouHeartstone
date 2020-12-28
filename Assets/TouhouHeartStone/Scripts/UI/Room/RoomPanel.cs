@@ -9,6 +9,7 @@ using TouhouHeartstone;
 using UnityEngine;
 using BJSYGameCore.UI;
 using NitoriNetwork.Common;
+using MukioI18n;
 
 namespace UI
 {
@@ -155,9 +156,12 @@ namespace UI
             IsSortedToggleGameOptionItemToggle.Toggle.setSelectable(isHost);
 
             // 准备按钮
-            StartButtonButtonBlack.Text.text = isHost ? "开始游戏" : "准备";
+            StartButtonButtonBlack.Text.text = isHost ? I18n._(STR_START_GAME) : I18n._(STR_PREPARE);
         }
-
+        [TranslateMsg]
+        const string STR_START_GAME = "开始游戏";
+        [TranslateMsg]
+        const string STR_PREPARE = "准备";
         int selfPlayerID = -1;
 
         /// <summary>
