@@ -162,10 +162,9 @@ namespace UI
             StartButtonButtonBlack.Text.text = isHost ? I18n._(STR_START_GAME) : I18n._(STR_PREPARE);
         }
         [TranslateMsg]
-        private const String STR_START_GAME = "开始游戏";
+        const string STR_START_GAME = "开始游戏";
         [TranslateMsg]
-        private const String STR_PREPARE = "准备";
-
+        const string STR_PREPARE = "准备";
 
         int selfPlayerID = -1;
 
