@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using BJSYGameCore.UI;
 using System.Text.RegularExpressions;
 using NitoriNetwork.Common;
+using MukioI18n;
 
 namespace Game
 {
@@ -238,7 +239,7 @@ namespace Game
                 host.start(_port);
                 currentPlayer = new RoomPlayerInfo
                 {
-                    name = "房主" // todo: 替换为真实的玩家名称
+                    name = I18n._(NETMANAGER_HOMEMASTER) // todo: 替换为真实的玩家名称
                 };
                 roomPanel.SetSelfID(currentPlayer.PlayerID);
 
@@ -255,6 +256,10 @@ namespace Game
             ui.RoomButton.interactable = true;
             ui.RoomButton.image.color = Color.white;
         }
+
+        [TranslateMsg]
+        private const String NETMANAGER_HOMEMASTER = "房主";
+
         public async Task findRooms()
         {
             if (client.account != null)
@@ -330,7 +335,7 @@ namespace Game
             {
                 //局域网
                 currentPlayer = new RoomPlayerInfo();
-                currentPlayer.name = "玩家2"; // todo: 替换为真实的玩家名称
+                currentPlayer.name = I18n._(NETMANAGER_PLAYER2); // todo: 替换为真实的玩家名称
                 roomPanel.SetSelfID(currentPlayer.PlayerID);
 
                 await client.joinRoom(roomInfo, currentPlayer);
@@ -339,6 +344,9 @@ namespace Game
             ui.RoomButton.interactable = true;
             ui.RoomButton.image.color = Color.white;
         }
+
+        [TranslateMsg]
+        private const String NETMANAGER_PLAYER2 = "玩家2";
         /// <summary>
         /// [RPC] 开始游戏
         /// </summary>
@@ -495,9 +503,13 @@ namespace Game
                 await findRooms();
             }
         }
+        [TranslateMsg]
+        private const String NETMANAGER_DESCRIBE = "描述";
+        [TranslateMsg]
+        private const String NETMANAGER_HOME = "的房间";
         private void refreshRoomListItem(RoomListItem item, RoomInfo obj)
         {
-            item.RoomNameText.text = obj.playerList.Find(p => p.PlayerID == obj.OwnerID)?.name + "的房间";
+            item.RoomNameText.text = obj.playerList.Find(p => p.PlayerID == obj.OwnerID)?.name + I18n._(NETMANAGER_HOME);
             item.asButton.onClick.set(() =>
             {
                 LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
@@ -511,7 +523,7 @@ namespace Game
                 {
                     lanPanel.NameText.text = obj.id.ToString();
                     lanPanel.IPText.text = obj.ip;
-                    lanPanel.DescText.text = "描述";
+                    lanPanel.DescText.text = I18n._(NETMANAGER_DESCRIBE);
                 }
             });
             item.ButtonButtonBlack.asButton.onClick.set(() =>
@@ -649,8 +661,18 @@ namespace Game
         {
             _ = displayPanelForLAN();
         }
-#endregion
-#region UI事件处理
+        #endregion
+        #region UI事件处理
+        [TranslateMsg]
+        private const String NETMANAGER_USERNAME_NULL = "用户名不能为空";
+        [TranslateMsg]
+        private const String NETMANAGER_EMAIL_NULL = "邮箱不能为空";
+        [TranslateMsg]
+        private const String NETMANAGER_CHECK_CODE_NULL = "校验码不能为空";
+        [TranslateMsg]
+        private const String NETMANAGER_NICKNAME_NULL = "昵称不能为空";
+        [TranslateMsg]
+        private const String NETMANAGER_PASSWORD_ERROR = "两次输入的密码不匹配";
         async void onRegisterClick()
         {
             var ui = getManager<UIManager>().getObject<RegisterPanel>();
@@ -667,30 +689,30 @@ namespace Game
 
             if (string.IsNullOrEmpty(userName))
             {
-                ui.ShowMessage("用户名不能为空");
+                ui.ShowMessage(I18n._(NETMANAGER_USERNAME_NULL));
                 return;
             }
 
             if (string.IsNullOrEmpty(email))
             {
-                ui.ShowMessage("邮箱不能为空");
+                ui.ShowMessage(I18n._(NETMANAGER_EMAIL_NULL));
                 return;
             }
             if (string.IsNullOrEmpty(captcha))
             {
-                ui.ShowMessage("验证码不能为空");
+                ui.ShowMessage(I18n._(NETMANAGER_CHECK_CODE_NULL));
                 return;
             }
 
             if (string.IsNullOrEmpty(nickName))
             {
-                ui.ShowMessage("昵称不能为空");
+                ui.ShowMessage(I18n._(NETMANAGER_NICKNAME_NULL));
                 return;
             }
 
             if (password != repeatPassword)
             {
-                ui.ShowMessage("两次输入的密码不匹配");
+                ui.ShowMessage(I18n._(NETMANAGER_PASSWORD_ERROR));
                 return;
             }
 
@@ -713,12 +735,12 @@ namespace Game
             panel.HideMessage();
             if (string.IsNullOrEmpty(panel.UserName))
             {
-                panel.ShowMessage("用户名不能为空");
+                panel.ShowMessage(I18n._(NETMANAGER_USERNAME_NULL));
                 return;
             }
             if (string.IsNullOrEmpty(panel.Password))
             {
-                panel.ShowMessage("验证码不能为空");
+                panel.ShowMessage(I18n._(NETMANAGER_CHECK_CODE_NULL));
                 return;
             }
             try

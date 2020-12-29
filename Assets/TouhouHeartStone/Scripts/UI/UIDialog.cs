@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MukioI18n;
+using System;
 namespace UI
 {
     partial class UIDialog
@@ -31,10 +32,11 @@ namespace UI
 
             gameObject.SetActive(true);
         }
-
+        [TranslateMsg]
+        private const String DIALOG_QUESTION = "提示";
         public void ShowQuestion(string content, Action onConfirm, Action onCancle = null)
         {
-            ShowQuestion("提示", content, onConfirm, onCancle);
+            ShowQuestion(I18n._(DIALOG_QUESTION), content, onConfirm, onCancle);
         }
 
         /// <summary>
@@ -61,7 +63,7 @@ namespace UI
 
         public void ShowConfirm(string content, Action onConfirm)
         {
-            ShowConfirm("提示", content, onConfirm);
+            ShowConfirm(I18n._(DIALOG_QUESTION), content, onConfirm);
         }
     }
 }
