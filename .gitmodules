@@ -19,3 +19,6 @@
 [submodule "Assets/Plugins/MukioI18n"]
 	path = Assets/Plugins/MukioI18n
 	url = https://code.lotlab.org/IGensokyo/MukioI18n
+[submodule "Assets/StreamingAssets/i18n"]
+	path = Assets/StreamingAssets/i18n
+	url = https://code.lotlab.org/IGensokyo/TouhouHearthstoneTranslation.git
