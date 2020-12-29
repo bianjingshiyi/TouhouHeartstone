@@ -8,12 +8,11 @@ using System.Xml;
 using UnityEngine;
 using UnityEditor;
 using TouhouCardEngine;
-using TouhouHeartstone.Builtin;
-using UI;
-using ExcelLibrary;
 using ExcelLibrary.SpreadSheet;
 using Game;
 using BJSYGameCore;
+using UI;
+
 namespace TouhouHeartstone
 {
     class CardDefineExporterWindow : EditorWindow
@@ -146,7 +145,7 @@ namespace TouhouHeartstone
         {
             await _manager.load();
 
-            if (trySelectFilePath(ref _outputPath, "选择要覆盖的文件", "Cards", "xls"))
+            if (EditorHelper.trySelectFilePath(ref _outputPath, "选择要覆盖的文件", "Cards", "xls"))
             {
                 Workbook workbook;
                 using (FileStream stream = new FileStream(_outputPath, FileMode.Open))
@@ -170,32 +169,10 @@ namespace TouhouHeartstone
             else
                 Debug.LogError("不存在覆盖文件" + Path.GetDirectoryName(_outputPath));
         }
-        /// <summary>
-        /// 尝试选择文件路径并将它保存为字段，下一次选择路径会优先打开上一次选择的文件夹。
-        /// </summary>
-        /// <param name="pathField">路径字段</param>
-        /// <param name="title"></param>
-        /// <param name="defaultName"></param>
-        /// <param name="extension">不需要带.</param>
-        /// <param name="defaultDir">如果不填，那么是Application.streamingAssetsPath</param>
-        /// <returns></returns>
-        bool trySelectFilePath(ref string pathField, string title, string defaultName, string extension, string defaultDir = null)
-        {
-            pathField = EditorUtility.SaveFilePanel(title,
-                        File.Exists(pathField) ? Path.GetDirectoryName(pathField) : (Directory.Exists(defaultDir) ? defaultDir : Application.streamingAssetsPath), defaultName, extension);
-            if (Directory.Exists(Path.GetDirectoryName(pathField)))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
         bool isExcelContainCard(Worksheet sheet, CardDefine card)
         {
-            int idIndex = findColIndex(sheet, "ID");
-            int classIndex = findColIndex(sheet, "Class");
+            int idIndex = ExcelHelper.findColIndex(sheet, "ID");
+            int classIndex = ExcelHelper.findColIndex(sheet, "Class");
             foreach (var pRow in sheet.Cells.Rows)
             {
                 if (numberToInt(pRow.Value.GetCell(idIndex).Value) == card.id)
@@ -211,8 +188,8 @@ namespace TouhouHeartstone
         }
         void saveCardToExcel(CardDefine card, Worksheet sheet)
         {
-            int idIndex = findColIndex(sheet, "ID");
-            int classIndex = findColIndex(sheet, "Class");
+            int idIndex = ExcelHelper.findColIndex(sheet, "ID");
+            int classIndex = ExcelHelper.findColIndex(sheet, "Class");
             int cardRow = sheet.Cells.Rows.Count;//如果表里没有这张卡，那么就新增
             foreach (var pRow in sheet.Cells.Rows)
             {
@@ -229,7 +206,7 @@ namespace TouhouHeartstone
             }
 
             sheet.Cells[cardRow, idIndex] = new Cell(card.id);
-            int typeIndex = findColIndex(sheet, "Type");
+            int typeIndex = ExcelHelper.findColIndex(sheet, "Type");
             if (card is ServantCardDefine)
                 sheet.Cells[cardRow, typeIndex] = new Cell("Servant");
             else if (card is MasterCardDefine)
@@ -240,18 +217,18 @@ namespace TouhouHeartstone
                 sheet.Cells[cardRow, typeIndex] = new Cell("Spell");
             else if (card is ItemCardDefine)
                 sheet.Cells[cardRow, typeIndex] = new Cell("Item");
-            int costIndex = findColIndex(sheet, "Cost");
+            int costIndex = ExcelHelper.findColIndex(sheet, "Cost");
             sheet.Cells[cardRow, costIndex] = new Cell(card.getProp<int>("cost"));
-            int attackIndex = findColIndex(sheet, "Attack");
+            int attackIndex = ExcelHelper.findColIndex(sheet, "Attack");
             sheet.Cells[cardRow, attackIndex] = new Cell(card.getProp<int>("attack"));
-            int lifeIndex = findColIndex(sheet, "Life");
+            int lifeIndex = ExcelHelper.findColIndex(sheet, "Life");
             sheet.Cells[cardRow, lifeIndex] = new Cell(card.getProp<int>("life"));
-            int tagsIndex = findColIndex(sheet, "Tags");
+            int tagsIndex = ExcelHelper.findColIndex(sheet, "Tags");
             if (card.getProp<string[]>("tags") is string[] tags)
                 sheet.Cells[cardRow, tagsIndex] = new Cell(string.Join(",", tags));
             else
                 sheet.Cells[cardRow, tagsIndex] = new Cell(null);
-            int keywordsIndex = findColIndex(sheet, "Keywords");
+            int keywordsIndex = ExcelHelper.findColIndex(sheet, "Keywords");
             if (card.getProp<string[]>("keywords") is string[] keywords)
                 sheet.Cells[cardRow, keywordsIndex] = new Cell(string.Join(",", keywords));
             else
@@ -259,7 +236,7 @@ namespace TouhouHeartstone
             if (_manager != null)
             {
                 var skin = _manager.getSkin(card.id);
-                int imageIndex = findColIndex(sheet, "Image");
+                int imageIndex = ExcelHelper.findColIndex(sheet, "Image");
                 if (skin == null)
                     sheet.Cells[cardRow, imageIndex] = new Cell(sheet.Cells[cardRow, imageIndex].StringValue);
                 else
@@ -278,9 +255,9 @@ namespace TouhouHeartstone
                     else
                         sheet.Cells[cardRow, imageIndex] = new Cell(sheet.Cells[cardRow, imageIndex].StringValue);
                 }
-                int nameIndex = findColIndex(sheet, "Name");
+                int nameIndex = ExcelHelper.findColIndex(sheet, "Name");
                 sheet.Cells[cardRow, nameIndex] = new Cell(skin == null ? (!string.IsNullOrEmpty(sheet.Cells[cardRow, nameIndex].StringValue) ? sheet.Cells[cardRow, nameIndex].StringValue : card.GetType().Name) : skin.name);
-                int descIndex = findColIndex(sheet, "Desc");
+                int descIndex = ExcelHelper.findColIndex(sheet, "Desc");
                 sheet.Cells[cardRow, descIndex] = new Cell(skin == null ? sheet.Cells[cardRow, descIndex].StringValue : skin.desc);
             }
         }
@@ -294,15 +271,6 @@ namespace TouhouHeartstone
                 return (int)f;
             else
                 return 0;
-        }
-        int findColIndex(Worksheet worksheet, string name)
-        {
-            foreach (var p in worksheet.Cells.Rows[0])
-            {
-                if (p.Value.StringValue == name)
-                    return p.Key;
-            }
-            return -1;
         }
         private void exportAsXml(List<CardDefine> cardList)
         {
