@@ -281,8 +281,35 @@ namespace Tests
             Debug.Log(Time.time);
         }
         [Test]
-        public void taskCastTest()
+        public void overwriteColTest()
         {
+            Worksheet sheetA = new Worksheet("A");
+            Worksheet sheetB = new Worksheet("B");
+            sheetA.Cells[0, 0] = new Cell("ID");
+            sheetA.Cells[0, 1] = new Cell("Name");
+            sheetA.Cells[0, 2] = new Cell("Effect");
+            sheetA.Cells[1, 0] = new Cell(1);
+            sheetA.Cells[1, 1] = new Cell("CardA");
+            sheetA.Cells[1, 2] = new Cell("XXX");
+            sheetA.Cells[3, 0] = new Cell(3);
+            sheetA.Cells[3, 1] = new Cell("CardB");
+            sheetA.Cells[3, 2] = new Cell("YYY");
+
+            sheetB.Cells[0, 0] = new Cell("ID");
+            sheetB.Cells[1, 0] = new Cell(1);
+            ExcelHelper.migrateCols(sheetA, sheetB, new string[]
+            {
+                "Name"
+            });
+            //旧的数据被删除
+            Assert.AreEqual("Effect", sheetA.Cells[0, 1].Value);
+            Assert.AreEqual("XXX", sheetA.Cells[1, 1].Value);
+            Assert.AreEqual("YYY", sheetA.Cells[3, 1].Value);
+            //新的数据增加
+            Assert.AreEqual("Name", sheetB.Cells[0, 1].Value);
+            Assert.AreEqual("CardA", sheetB.Cells[1, 1].Value);
+            Assert.AreEqual(3, sheetB.Cells[2, 0].Value);
+            Assert.AreEqual("CardB", sheetB.Cells[2, 1].Value);
         }
     }
 }

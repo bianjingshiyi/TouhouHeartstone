@@ -51,7 +51,7 @@ namespace TouhouHeartstone
         /// sheet的第0行为head，其他行可能是别的乱七八糟的注释和元数据，但是剩下的行都是数据行。
         /// sheet一定有一个ID列，其他列的位置不确定，ID列内容为非0数字的是数据行。
         /// </remarks>
-        public static void overwriteCols(Worksheet sheetA, Worksheet sheetB, string[] cols)
+        public static void migrateCols(Worksheet sheetA, Worksheet sheetB, string[] cols)
         {
             throw new NotImplementedException();
         }

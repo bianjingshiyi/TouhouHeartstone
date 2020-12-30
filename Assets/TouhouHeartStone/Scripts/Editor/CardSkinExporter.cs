@@ -135,14 +135,17 @@ namespace TouhouHeartstone
             //    if (cardDescIndex>=0)
             //}
             MukioPotGenerator potGenerator = new MukioPotGenerator("ZMCS", "Translation Team");
-            foreach (var row in cardsheet.Cells.Rows.Values)
+            foreach (var pair in cardsheet.Cells.Rows)
             {
+                if (pair.Key == 0 || pair.Key == 1)
+                    continue;
+                Row row = pair.Value;
                 string name = row.GetCell(cardNameIndex).StringValue;
                 //string image = row.GetCell(cardImageIndex).StringValue;
                 //string illu = row.GetCell(cardIllustratorIndex).StringValue;
                 string desc = row.GetCell(cardDescIndex).StringValue;
-                potGenerator.AddString(name, name);
-                potGenerator.AddString(desc, desc);
+                potGenerator.AddString(name);
+                potGenerator.AddString(desc);
             }
             potGenerator.WriteOut(Path.Combine(Application.streamingAssetsPath, "i18n", "skin", Path.GetFileNameWithoutExtension(_outputPath) + ".pot"));
             //using (FileStream stream = new FileStream(_outputPath, FileMode.Create))

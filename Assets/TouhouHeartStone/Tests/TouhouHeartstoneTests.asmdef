@@ -11,7 +11,8 @@
         "ExcelDataSet.Editor",
         "BJSYGameCore.Editor",
         "TouhouCardEngine.Library",
-        "TouhouCardEngine.Shared"
+        "TouhouCardEngine.Shared",
+        "Editor"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
