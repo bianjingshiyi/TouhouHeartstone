@@ -44,6 +44,10 @@ namespace UI
                 return this._asAnimator;
             }
         }
+        private const string ANIM_PARAM_ISDESTROY = "isDestroy";
+        private const string ANIM_PARAM_ISSPELL = "isSpell";
+        private const string ANIM_PARAM_ISSERVANT = "isServant";
+        private const string ANIM_PARAM_ISITEM = "isItem";
         [SerializeField()]
         [AutoCompoAttribute(20142, "./Highlight")]
         private GameObject _highlight;

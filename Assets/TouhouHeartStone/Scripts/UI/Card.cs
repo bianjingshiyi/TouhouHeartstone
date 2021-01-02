@@ -102,15 +102,24 @@ namespace UI
                         _onTypeControllerMaster.Invoke();
                         break;
                     case CATEGORY.SPELL:
+                        asAnimator.SetBool(ANIM_PARAM_ISSERVANT, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISSPELL, true);
+                        asAnimator.SetBool(ANIM_PARAM_ISITEM, false);
                         _onTypeControllerSpell.Invoke();
                         break;
                     case CATEGORY.ITEM:
+                        asAnimator.SetBool(ANIM_PARAM_ISSERVANT, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISSPELL, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISITEM, true);
                         _onTypeControllerItem.Invoke();
                         break;
                     case CATEGORY.SKILL:
                         _onTypeControllerSkill.Invoke();
                         break;
                     default://SERVANT
+                        asAnimator.SetBool(ANIM_PARAM_ISSERVANT, true);
+                        asAnimator.SetBool(ANIM_PARAM_ISSPELL, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISITEM, false);
                         _onTypeControllerServant.Invoke();
                         break;
                 }
