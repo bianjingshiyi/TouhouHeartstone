@@ -7,6 +7,11 @@ namespace UI
 {
     partial class Card
     {
+        protected override void Awake()
+        {
+            base.Awake();
+            init();
+        }
         [Obsolete("Use table.getCard instead")]
         public TouhouCardEngine.Card card { get; set; }
         //[Obsolete]
