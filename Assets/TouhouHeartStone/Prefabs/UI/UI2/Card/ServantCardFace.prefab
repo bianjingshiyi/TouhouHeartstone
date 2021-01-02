@@ -550,6 +550,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4574603629638151253}
+  - component: {fileID: -3722281499543136864}
   m_Layer: 5
   m_Name: ServantCardFace
   m_TagString: Untagged
@@ -587,6 +588,28 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 664, y: 1000}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &-3722281499543136864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6713078729178785058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba0cbcf8afee1f449e7f7e8adf8ab18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ui: {fileID: 0}
+  _useController: 0
+  _initStates: []
+  _image: {fileID: 0}
+  _attackPropNumber: {fileID: 0}
+  _lifePropNumber: {fileID: 0}
+  _costPropNumber: {fileID: 0}
+  _nameText: {fileID: 0}
+  _subNameText: {fileID: 0}
+  _descText: {fileID: 0}
 --- !u!1 &7907101447134100444
 GameObject:
   m_ObjectHideFlags: 0

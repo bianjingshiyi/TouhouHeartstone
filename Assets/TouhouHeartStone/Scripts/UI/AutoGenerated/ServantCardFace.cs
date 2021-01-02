@@ -17,21 +17,21 @@ namespace UI
     using UnityEngine.UI;
     using UI;
     
-    [AutoCompoAttribute(75484)]
+    [AutoCompoAttribute(20812)]
     public partial class ServantCardFace : UIObject
     {
         public void init()
         {
             this._image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
-            this._nameText = this.transform.findByPath("./NameText").GetComponent<Text>();
-            this._subNameText = this.transform.findByPath("./SubNameText").GetComponent<Text>();
+            this._attackPropNumber = this.transform.findByPath("./AttackPropNumber").GetComponent<PropNumber>();
+            this._lifePropNumber = this.transform.findByPath("./LifePropNumber").GetComponent<PropNumber>();
+            this._costPropNumber = this.transform.findByPath("./CostPropNumber").GetComponent<PropNumber>();
+            this._nameText = this.transform.findByPath("./Name").GetComponent<Text>();
+            this._subNameText = this.transform.findByPath("./SubName").GetComponent<Text>();
             this._descText = this.transform.findByPath("./DescText").GetComponent<Text>();
-            this._lifePropNum = this.transform.findByPath("./LifePropNum").GetComponent<PropNum>();
-            this._attackPropNum = this.transform.findByPath("./AttackPropNum").GetComponent<PropNum>();
-            this._costPropNum = this.transform.findByPath("./CostPropNum").GetComponent<PropNum>();
         }
         [SerializeField()]
-        [AutoCompoAttribute(75512, "./Mask/Image")]
+        [AutoCompoAttribute(21206, "./Mask/Image")]
         private Image _image;
         public Image image
         {
@@ -41,7 +41,37 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(75538, "./NameText")]
+        [AutoCompoAttribute(21178, "./AttackPropNumber")]
+        private PropNumber _attackPropNumber;
+        public PropNumber attackPropNumber
+        {
+            get
+            {
+                return this._attackPropNumber;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(21140, "./LifePropNumber")]
+        private PropNumber _lifePropNumber;
+        public PropNumber lifePropNumber
+        {
+            get
+            {
+                return this._lifePropNumber;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(21160, "./CostPropNumber")]
+        private PropNumber _costPropNumber;
+        public PropNumber costPropNumber
+        {
+            get
+            {
+                return this._costPropNumber;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(21152, "./Name")]
         private Text _nameText;
         public Text nameText
         {
@@ -51,7 +81,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(75546, "./SubNameText")]
+        [AutoCompoAttribute(21166, "./SubName")]
         private Text _subNameText;
         public Text subNameText
         {
@@ -61,43 +91,13 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(75554, "./DescText")]
+        [AutoCompoAttribute(21194, "./DescText")]
         private Text _descText;
         public Text descText
         {
             get
             {
                 return this._descText;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(76114, "./LifePropNum")]
-        private PropNum _lifePropNum;
-        public PropNum lifePropNum
-        {
-            get
-            {
-                return this._lifePropNum;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(76116, "./AttackPropNum")]
-        private PropNum _attackPropNum;
-        public PropNum attackPropNum
-        {
-            get
-            {
-                return this._attackPropNum;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(76112, "./CostPropNum")]
-        private PropNum _costPropNum;
-        public PropNum costPropNum
-        {
-            get
-            {
-                return this._costPropNum;
             }
         }
     }
