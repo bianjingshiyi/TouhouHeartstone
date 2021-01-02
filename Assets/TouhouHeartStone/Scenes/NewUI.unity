@@ -1216,9 +1216,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   folderPath: i18n/ui
   langs:
-  - zh-CN
+  - zh-Hans
   - en-US
-  defaultLang: zh-CN
+  defaultLang: zh-Hans
 --- !u!1 &185128150
 GameObject:
   m_ObjectHideFlags: 0
