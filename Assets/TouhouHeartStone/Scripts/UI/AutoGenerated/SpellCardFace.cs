@@ -17,54 +17,70 @@ namespace UI
     using UnityEngine.UI;
     using UI;
     
-    [AutoCompoAttribute(20820)]
+    [AutoCompoAttribute(22796)]
     public partial class SpellCardFace : UIObject
     {
         public void init()
         {
             this._image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
-            this._costPropNumber = this.transform.findByPath("./CostPropNumber").GetComponent<PropNumber>();
             this._nameText = this.transform.findByPath("./Name").GetComponent<Text>();
             this._descText = this.transform.findByPath("./DescText").GetComponent<Text>();
+            this._costPropNumber = this.transform.findByPath("./CostPropNumber").GetComponent<PropNumber>();
         }
         [SerializeField()]
-        [AutoCompoAttribute(21068, "./Mask/Image")]
+        [AutoCompoAttribute(33362, "./Mask/Image")]
         private Image _image;
         public Image image
         {
             get
             {
+                if ((this._image == null))
+                {
+                    this._image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
+                }
                 return this._image;
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(21038, "./CostPropNumber")]
-        private PropNumber _costPropNumber;
-        public PropNumber costPropNumber
-        {
-            get
-            {
-                return this._costPropNumber;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(21044, "./Name")]
+        [AutoCompoAttribute(33082, "./Name")]
         private Text _nameText;
         public Text nameText
         {
             get
             {
+                if ((this._nameText == null))
+                {
+                    this._nameText = this.transform.findByPath("./Name").GetComponent<Text>();
+                }
                 return this._nameText;
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(21052, "./DescText")]
+        [AutoCompoAttribute(33186, "./DescText")]
         private Text _descText;
         public Text descText
         {
             get
             {
+                if ((this._descText == null))
+                {
+                    this._descText = this.transform.findByPath("./DescText").GetComponent<Text>();
+                }
                 return this._descText;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(33294, "./CostPropNumber")]
+        private PropNumber _costPropNumber;
+        public PropNumber costPropNumber
+        {
+            get
+            {
+                if ((this._costPropNumber == null))
+                {
+                    this._costPropNumber = this.transform.findByPath("./CostPropNumber").GetComponent<PropNumber>();
+                }
+                return this._costPropNumber;
             }
         }
     }

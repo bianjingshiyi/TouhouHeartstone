@@ -17,17 +17,17 @@ namespace UI
     using UnityEngine.UI;
     using UI;
     
-    [AutoCompoAttribute(20826)]
+    [AutoCompoAttribute(20376)]
     public partial class ItemCardFace : UIObject
     {
         public void init()
         {
             this._image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
+            this._attackPropNumber = this.transform.findByPath("./AttackPropNumber").GetComponent<PropNumber>();
+            this._lifePropNumber = this.transform.findByPath("./LifePropNumber").GetComponent<PropNumber>();
+            this._costPropNumber = this.transform.findByPath("./CostPropNumber").GetComponent<PropNumber>();
             this._nameText = this.transform.findByPath("./Name").GetComponent<Text>();
             this._descText = this.transform.findByPath("./DescText").GetComponent<Text>();
-            this._costPropNumber = this.transform.findByPath("./CostPropNumber").GetComponent<PropNumber>();
-            this._lifePropNumber = this.transform.findByPath("./LifePropNumber").GetComponent<PropNumber>();
-            this._attackPropNumber = this.transform.findByPath("./AttackPropNumber").GetComponent<PropNumber>();
         }
         [SerializeField()]
         [AutoCompoAttribute(20970, "./Mask/Image")]
@@ -36,7 +36,53 @@ namespace UI
         {
             get
             {
+                if ((this._image == null))
+                {
+                    this._image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
+                }
                 return this._image;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(20922, "./AttackPropNumber")]
+        private PropNumber _attackPropNumber;
+        public PropNumber attackPropNumber
+        {
+            get
+            {
+                if ((this._attackPropNumber == null))
+                {
+                    this._attackPropNumber = this.transform.findByPath("./AttackPropNumber").GetComponent<PropNumber>();
+                }
+                return this._attackPropNumber;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(20904, "./LifePropNumber")]
+        private PropNumber _lifePropNumber;
+        public PropNumber lifePropNumber
+        {
+            get
+            {
+                if ((this._lifePropNumber == null))
+                {
+                    this._lifePropNumber = this.transform.findByPath("./LifePropNumber").GetComponent<PropNumber>();
+                }
+                return this._lifePropNumber;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(20936, "./CostPropNumber")]
+        private PropNumber _costPropNumber;
+        public PropNumber costPropNumber
+        {
+            get
+            {
+                if ((this._costPropNumber == null))
+                {
+                    this._costPropNumber = this.transform.findByPath("./CostPropNumber").GetComponent<PropNumber>();
+                }
+                return this._costPropNumber;
             }
         }
         [SerializeField()]
@@ -46,6 +92,10 @@ namespace UI
         {
             get
             {
+                if ((this._nameText == null))
+                {
+                    this._nameText = this.transform.findByPath("./Name").GetComponent<Text>();
+                }
                 return this._nameText;
             }
         }
@@ -56,37 +106,11 @@ namespace UI
         {
             get
             {
+                if ((this._descText == null))
+                {
+                    this._descText = this.transform.findByPath("./DescText").GetComponent<Text>();
+                }
                 return this._descText;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(20936, "./CostPropNumber")]
-        private PropNumber _costPropNumber;
-        public PropNumber costPropNumber
-        {
-            get
-            {
-                return this._costPropNumber;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(20904, "./LifePropNumber")]
-        private PropNumber _lifePropNumber;
-        public PropNumber lifePropNumber
-        {
-            get
-            {
-                return this._lifePropNumber;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(20922, "./AttackPropNumber")]
-        private PropNumber _attackPropNumber;
-        public PropNumber attackPropNumber
-        {
-            get
-            {
-                return this._attackPropNumber;
             }
         }
     }

@@ -17,7 +17,7 @@ namespace UI
     using UnityEngine.UI;
     using UI;
     
-    [AutoCompoAttribute(20026)]
+    [AutoCompoAttribute(27066)]
     public partial class Card : UIObject
     {
         public void init()
@@ -27,8 +27,8 @@ namespace UI
             this._itemCardFace = this.transform.findByPath("./CardFace/ItemCardFace").GetComponent<ItemCardFace>();
             this._spellCardFace = this.transform.findByPath("./CardFace/SpellCardFace").GetComponent<SpellCardFace>();
             this._servantCardFace = this.transform.findByPath("./CardFace/ServantCardFace").GetComponent<ServantCardFace>();
-            this._crossImage = this.transform.findByPath("./Cross").GetComponent<Image>();
             this._cardFaceEffectImage = this.transform.findByPath("./CardFace/CardFaceEffect").GetComponent<Image>();
+            this._crossImage = this.transform.findByPath("./Cross").GetComponent<Image>();
         }
         [SerializeField()]
         [AutoCompoAttribute(20140, "./")]
@@ -37,6 +37,10 @@ namespace UI
         {
             get
             {
+                if ((this._asAnimator == null))
+                {
+                    this._asAnimator = this.transform.findByPath("./").GetComponent<Animator>();
+                }
                 return this._asAnimator;
             }
         }
@@ -57,6 +61,10 @@ namespace UI
         {
             get
             {
+                if ((this._cardBackEffectImage == null))
+                {
+                    this._cardBackEffectImage = this.transform.findByPath("./CardBack/CardBackEffect").GetComponent<Image>();
+                }
                 return this._cardBackEffectImage;
             }
         }
@@ -67,6 +75,10 @@ namespace UI
         {
             get
             {
+                if ((this._itemCardFace == null))
+                {
+                    this._itemCardFace = this.transform.findByPath("./CardFace/ItemCardFace").GetComponent<ItemCardFace>();
+                }
                 return this._itemCardFace;
             }
         }
@@ -77,6 +89,10 @@ namespace UI
         {
             get
             {
+                if ((this._spellCardFace == null))
+                {
+                    this._spellCardFace = this.transform.findByPath("./CardFace/SpellCardFace").GetComponent<SpellCardFace>();
+                }
                 return this._spellCardFace;
             }
         }
@@ -87,17 +103,11 @@ namespace UI
         {
             get
             {
+                if ((this._servantCardFace == null))
+                {
+                    this._servantCardFace = this.transform.findByPath("./CardFace/ServantCardFace").GetComponent<ServantCardFace>();
+                }
                 return this._servantCardFace;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(20272, "./Cross")]
-        private Image _crossImage;
-        public Image crossImage
-        {
-            get
-            {
-                return this._crossImage;
             }
         }
         [SerializeField()]
@@ -107,7 +117,25 @@ namespace UI
         {
             get
             {
+                if ((this._cardFaceEffectImage == null))
+                {
+                    this._cardFaceEffectImage = this.transform.findByPath("./CardFace/CardFaceEffect").GetComponent<Image>();
+                }
                 return this._cardFaceEffectImage;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(20272, "./Cross")]
+        private Image _crossImage;
+        public Image crossImage
+        {
+            get
+            {
+                if ((this._crossImage == null))
+                {
+                    this._crossImage = this.transform.findByPath("./Cross").GetComponent<Image>();
+                }
+                return this._crossImage;
             }
         }
     }

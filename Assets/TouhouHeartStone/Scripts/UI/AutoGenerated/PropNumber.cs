@@ -16,14 +16,14 @@ namespace UI
     using System;
     using UnityEngine.UI;
     
-    [AutoCompoAttribute(24304)]
+    [AutoCompoAttribute(29854)]
     public partial class PropNumber : UIObject
     {
         public void init()
         {
             this._asAnimator = this.transform.findByPath("./").GetComponent<Animator>();
-            this._text = this.transform.findByPath("./Text").GetComponent<Text>();
             this._icon = this.transform.findByPath("./Icon").GetComponent<Image>();
+            this._text = this.transform.findByPath("./Text").GetComponent<Text>();
         }
         [SerializeField()]
         [AutoCompoAttribute(24818, "./")]
@@ -32,17 +32,11 @@ namespace UI
         {
             get
             {
+                if ((this._asAnimator == null))
+                {
+                    this._asAnimator = this.transform.findByPath("./").GetComponent<Animator>();
+                }
                 return this._asAnimator;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(84460, "./Text")]
-        private Text _text;
-        public Text text
-        {
-            get
-            {
-                return this._text;
             }
         }
         [SerializeField()]
@@ -52,7 +46,25 @@ namespace UI
         {
             get
             {
+                if ((this._icon == null))
+                {
+                    this._icon = this.transform.findByPath("./Icon").GetComponent<Image>();
+                }
                 return this._icon;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(84460, "./Text")]
+        private Text _text;
+        public Text text
+        {
+            get
+            {
+                if ((this._text == null))
+                {
+                    this._text = this.transform.findByPath("./Text").GetComponent<Text>();
+                }
+                return this._text;
             }
         }
     }
