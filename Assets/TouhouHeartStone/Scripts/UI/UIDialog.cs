@@ -32,12 +32,6 @@ namespace UI
 
             gameObject.SetActive(true);
         }
-        [TranslateMsg]
-        private const String DIALOG_QUESTION = "提示";
-        public void ShowQuestion(string content, Action onConfirm, Action onCancle = null)
-        {
-            ShowQuestion(I18n._(DIALOG_QUESTION), content, onConfirm, onCancle);
-        }
 
         /// <summary>
         /// 显示一个只有一个选项的提示对话框
@@ -59,11 +53,6 @@ namespace UI
             CancleButtonBlack.gameObject.SetActive(false);
 
             gameObject.SetActive(true);
-        }
-
-        public void ShowConfirm(string content, Action onConfirm)
-        {
-            ShowConfirm(I18n._(DIALOG_QUESTION), content, onConfirm);
         }
     }
 }
