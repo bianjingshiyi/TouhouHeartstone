@@ -229,6 +229,80 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &2473406492112053025
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4068298650651136548}
+  - component: {fileID: 5825611398599027042}
+  - component: {fileID: 619042526824085217}
+  m_Layer: 5
+  m_Name: CardFaceEffect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &4068298650651136548
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2473406492112053025}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3639996476798694622}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: -14, y: -15}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5825611398599027042
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2473406492112053025}
+  m_CullTransparentMesh: 0
+--- !u!114 &619042526824085217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2473406492112053025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 6a7b3b704064ed4418f27e6eb3f9aec8, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &3994837325509303611
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,6 +410,7 @@ RectTransform:
   - {fileID: 846240457675460857}
   - {fileID: 745932211680973304}
   - {fileID: 5555779818075195402}
+  - {fileID: 4068298650651136548}
   m_Father: {fileID: 5953344439004416454}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -441,25 +516,13 @@ MonoBehaviour:
   _initStates:
   - IsFaceup/IsFaceup_True
   - Type/Type_Servant
-  _CardBackImage: {fileID: 525013306416142025}
-  _CardBackEffectImage: {fileID: 5476528343448222198}
-  _ShadowImage: {fileID: 0}
-  _BackgroundImage: {fileID: 0}
-  _Mask: {fileID: 0}
-  _Image: {fileID: 0}
-  _CardFaceEffectImage: {fileID: 0}
-  _NameShadowImage: {fileID: 0}
-  _NameText: {fileID: 0}
-  _DescShadowImage: {fileID: 0}
-  _SubNameText: {fileID: 0}
-  _DescText: {fileID: 0}
-  _RaceText: {fileID: 0}
-  _BorderImage: {fileID: 0}
-  _CardFace_Image: {fileID: 0}
-  _CostPropNumber: {fileID: 0}
-  _AttackPropNumber: {fileID: 0}
-  _LifePropNumber: {fileID: 0}
-  _CrossImage: {fileID: 3125290120513002367}
+  _highlight: {fileID: 0}
+  _asAnimator: {fileID: 0}
+  _cardBackEffectImage: {fileID: 0}
+  _itemCardFace: {fileID: 0}
+  _spellCardFace: {fileID: 0}
+  _servantCardFace: {fileID: 0}
+  _crossImage: {fileID: 0}
   _useCurve:
     serializedVersion: 2
     m_Curve:

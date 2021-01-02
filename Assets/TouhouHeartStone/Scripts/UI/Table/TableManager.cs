@@ -879,14 +879,9 @@ namespace Game
         /// <param name="isFaceup"></param>
         public void setCard(UI.Card ui, Card card, bool isFaceup)
         {
-            ui.CostPropNumber.text.text = card.getCost(game).ToString();
-
+            CardSkinData skin = getSkin(card);
             if (isFaceup)//因为isFaceup控制了很多GameObject的Active，所以它必须放在最上面。
             {
-                CardSkinData skin = getSkin(card);
-                ui.Image.sprite = skin.image;
-                ui.NameText.text = skin.name;
-                ui.DescText.text = CardDescHelper.replace(skin.desc, game, player, card);
                 ui.isFaceup = true;
             }
             else
@@ -894,20 +889,33 @@ namespace Game
                 ui.isFaceup = false;
                 return;
             }
-
             if (card.define.type == DEFINE.SERVANT)
             {
                 ui.type = CATEGORY.SERVANT;
-                ui.AttackPropNumber.text.text = card.getAttack(game).ToString();
-                ui.LifePropNumber.text.text = card.getLife(game).ToString();
+                ui.servantCardFace.image.sprite = skin.image;
+                ui.servantCardFace.nameText.text = skin.name;
+                ui.servantCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
+                ui.servantCardFace.costPropNumber.text.text = card.getCost(game).ToString();
+                ui.servantCardFace.attackPropNumber.text.text = card.getAttack(game).ToString();
+                ui.servantCardFace.lifePropNumber.text.text = card.getLife(game).ToString();
             }
             else if (card.define.type == DEFINE.SPELL)
+            {
                 ui.type = CATEGORY.SPELL;
+                ui.spellCardFace.image.sprite = skin.image;
+                ui.spellCardFace.nameText.text = skin.name;
+                ui.spellCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
+                ui.spellCardFace.costPropNumber.text.text = card.getCost(game).ToString();
+            }
             else if (card.define.type == DEFINE.ITEM)
             {
                 ui.type = CATEGORY.ITEM;
-                ui.AttackPropNumber.text.text = card.getAttack(game).ToString();
-                ui.LifePropNumber.text.text = card.getLife(game).ToString();
+                ui.itemCardFace.image.sprite = skin.image;
+                ui.itemCardFace.nameText.text = skin.name;
+                ui.itemCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
+                ui.itemCardFace.costPropNumber.text.text = card.getCost(game).ToString();
+                ui.itemCardFace.attackPropNumber.text.text = card.getAttack(game).ToString();
+                ui.itemCardFace.lifePropNumber.text.text = card.getLife(game).ToString();
             }
             else
                 throw new NotImplementedException();
@@ -1280,59 +1288,59 @@ namespace Game
             return null;
         }
 
-        /// <summary>
-        /// 获取一张卡上的数字
-        /// </summary>
-        public bool tryGetAllPropNumber(Card card, out PropNumber[] numbers)
-        {
-            if (tryGetMaster(card, out var master))
-            {
-                PropNumber[] props = { master.LifePropNumber, master.AttackPropNumber };
-                numbers = props;
-                return true;
-            }
-            if (tryGetHand(card, out var hand))
-            {
-                if (card.define is ServantCardDefine)
-                {
-                    PropNumber[] props = { hand.Card.CostPropNumber, hand.Card.LifePropNumber, hand.Card.AttackPropNumber };
-                    numbers = props;
-                    return true;
-                }
-                if (card.define is SpellCardDefine)
-                {
-                    PropNumber[] props = { hand.Card.CostPropNumber };
-                    numbers = props;
-                    return true;
-                }
-                if (card.define is ItemCardDefine)
-                {
-                    PropNumber[] props = { hand.Card.CostPropNumber, hand.Card.LifePropNumber, hand.Card.AttackPropNumber };
-                    numbers = props;
-                    return true;
-                }
-            }
-            if (tryGetItem(card, out var item))
-            {
-                PropNumber[] props = { item.DurabilityPropNumber, item.AttackPropNumber };
-                numbers = props;
-                return true;
-            }
-            if (tryGetSkill(card, out var skill))
-            {
-                PropNumber[] props = { skill.CostPropNumber };
-                numbers = props;
-                return true;
-            }
-            if (tryGetServant(card, out var servant))
-            {
-                PropNumber[] props = { servant.HpTextPropNumber, servant.AttackTextPropNumber };
-                numbers = props;
-                return true;
-            }
-            numbers = null;
-            return false;
-        }
+        ///// <summary>
+        ///// 获取一张卡上的数字
+        ///// </summary>
+        //public bool tryGetAllPropNumber(Card card, out PropNumber[] numbers)
+        //{
+        //    if (tryGetMaster(card, out var master))
+        //    {
+        //        PropNumber[] props = { master.LifePropNumber, master.AttackPropNumber };
+        //        numbers = props;
+        //        return true;
+        //    }
+        //    if (tryGetHand(card, out var hand))
+        //    {
+        //        if (card.define is ServantCardDefine)
+        //        {
+        //            PropNumber[] props = { hand.Card.CostPropNumber, hand.Card.LifePropNumber, hand.Card.AttackPropNumber };
+        //            numbers = props;
+        //            return true;
+        //        }
+        //        if (card.define is SpellCardDefine)
+        //        {
+        //            PropNumber[] props = { hand.Card.CostPropNumber };
+        //            numbers = props;
+        //            return true;
+        //        }
+        //        if (card.define is ItemCardDefine)
+        //        {
+        //            PropNumber[] props = { hand.Card.CostPropNumber, hand.Card.LifePropNumber, hand.Card.AttackPropNumber };
+        //            numbers = props;
+        //            return true;
+        //        }
+        //    }
+        //    if (tryGetItem(card, out var item))
+        //    {
+        //        PropNumber[] props = { item.DurabilityPropNumber, item.AttackPropNumber };
+        //        numbers = props;
+        //        return true;
+        //    }
+        //    if (tryGetSkill(card, out var skill))
+        //    {
+        //        PropNumber[] props = { skill.CostPropNumber };
+        //        numbers = props;
+        //        return true;
+        //    }
+        //    if (tryGetServant(card, out var servant))
+        //    {
+        //        PropNumber[] props = { servant.HpTextPropNumber, servant.AttackTextPropNumber };
+        //        numbers = props;
+        //        return true;
+        //    }
+        //    numbers = null;
+        //    return false;
+        //}
 
         /// <summary>
         /// 隐藏随从的占位符

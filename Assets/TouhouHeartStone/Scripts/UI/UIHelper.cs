@@ -3,18 +3,27 @@ using TouhouHeartstone;
 using TouhouCardEngine;
 using System;
 using UnityEngine;
-
+using UICard = UI.Card;
+using Card = TouhouCardEngine.Card;
 namespace Game
 {
     static class UIHelper
     {
-        public static void setCard(this UI.Card ui, CardDefine card, CardSkinData skin)
+        public static void setCard(this UICard ui, CardDefine card, CardSkinData skin)
         {
-            ui.CostPropNumber.text.text = card.getCost().ToString();
+            ui.servantCardFace.costPropNumber.text.text = card.getCost().ToString();
+            ui.spellCardFace.costPropNumber.text.text = card.getCost().ToString();
+            ui.itemCardFace.costPropNumber.text.text = card.getCost().ToString();
 
-            ui.Image.sprite = skin.image;
-            ui.NameText.text = skin.name;
-            ui.DescText.text = skin.desc;
+            ui.servantCardFace.image.sprite = skin.image;
+            ui.spellCardFace.image.sprite = skin.image;
+            ui.itemCardFace.image.sprite = skin.image;
+            ui.servantCardFace.nameText.text = skin.name;
+            ui.spellCardFace.nameText.text = skin.name;
+            ui.itemCardFace.nameText.text = skin.name;
+            ui.servantCardFace.descText.text = skin.desc;
+            ui.spellCardFace.descText.text = skin.desc;
+            ui.itemCardFace.descText.text = skin.desc;
             ui.isFaceup = true;
 
             if (card.type == DEFINE.MASTER)
@@ -24,8 +33,8 @@ namespace Game
             else if (card.type == DEFINE.SERVANT)
             {
                 ui.type = CATEGORY.SERVANT;
-                ui.AttackPropNumber.text.text = card.getAttack().ToString();
-                ui.LifePropNumber.text.text = card.getLife().ToString();
+                ui.servantCardFace.attackPropNumber.text.text = card.getAttack().ToString();
+                ui.servantCardFace.lifePropNumber.text.text = card.getLife().ToString();
             }
             else if (card.type == DEFINE.SPELL)
                 ui.type = CATEGORY.SPELL;
@@ -34,11 +43,49 @@ namespace Game
             else if (card.type == DEFINE.ITEM)
             {
                 ui.type = CATEGORY.ITEM;
-                ui.AttackPropNumber.text.text = card.getAttack().ToString();
-                ui.LifePropNumber.text.text = card.getLife().ToString();
+                ui.itemCardFace.attackPropNumber.text.text = card.getAttack().ToString();
+                ui.itemCardFace.lifePropNumber.text.text = card.getLife().ToString();
             }
             else
                 throw new NotImplementedException();
+        }
+        public static PropNumber getCostPropNum(this UICard ui, Card card)
+        {
+            switch (card.define.type)
+            {
+                case DEFINE.SERVANT:
+                    return ui.servantCardFace.costPropNumber;
+                case DEFINE.SPELL:
+                    return ui.spellCardFace.costPropNumber;
+                case DEFINE.ITEM:
+                    return ui.itemCardFace.costPropNumber;
+                default:
+                    return null;
+            }
+        }
+        public static PropNumber getAttackPropNum(this UICard ui, Card card)
+        {
+            switch (card.define.type)
+            {
+                case DEFINE.SERVANT:
+                    return ui.servantCardFace.attackPropNumber;
+                case DEFINE.ITEM:
+                    return ui.itemCardFace.attackPropNumber;
+                default:
+                    return null;
+            }
+        }
+        public static PropNumber getLifePropNum(this UICard ui, Card card)
+        {
+            switch (card.define.type)
+            {
+                case DEFINE.SERVANT:
+                    return ui.servantCardFace.lifePropNumber;
+                case DEFINE.ITEM:
+                    return ui.itemCardFace.lifePropNumber;
+                default:
+                    return null;
+            }
         }
         public static RectTransform getRoot(this Servant servant)
         {

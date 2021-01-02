@@ -12,13 +12,13 @@ namespace Game
             {
                 if (eventArg.value)
                 {
-                    hand.Card.CardBackEffectImage.display();
-                    hand.Card.CardFaceEffectImage.display();
+                    hand.Card.cardBackEffectImage.display();
+                    hand.Card.cardFaceEffectImage.display();
                 }
                 else
                 {
-                    hand.Card.CardBackEffectImage.hide();
-                    hand.Card.CardFaceEffectImage.hide();
+                    hand.Card.cardBackEffectImage.hide();
+                    hand.Card.cardFaceEffectImage.hide();
                 }
             }
             return true;

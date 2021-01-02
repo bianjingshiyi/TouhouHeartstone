@@ -9,54 +9,54 @@ namespace UI
     {
         [Obsolete("Use table.getCard instead")]
         public TouhouCardEngine.Card card { get; set; }
-        [Obsolete]
-        public void update(TouhouCardEngine.Card card, CardSkinData skin)
-        {
-            this.card = card;
+        //[Obsolete]
+        //public void update(TouhouCardEngine.Card card, CardSkinData skin)
+        //{
+        //    this.card = card;
 
-            CostPropNumber.text.text = card.getCost(null).ToString();
-            if (card.define.type == DEFINE.SERVANT)
-            {
-                type = CATEGORY.SERVANT;
-                // TypeController = Type.Servant;
-                //onTypeControllerServant?.Invoke();
-                AttackPropNumber.text.text = card.getAttack(null).ToString();
-                LifePropNumber.text.text = card.getLife(null).ToString();
-            }
-            else if (card.define.type == DEFINE.SPELL)
-            {
-                // TypeController = Type.Spell;
-                type = CATEGORY.SPELL;
-            }
+        //    CostPropNumber.text.text = card.getCost(null).ToString();
+        //    if (card.define.type == DEFINE.SERVANT)
+        //    {
+        //        type = CATEGORY.SERVANT;
+        //        // TypeController = Type.Servant;
+        //        //onTypeControllerServant?.Invoke();
+        //        AttackPropNumber.text.text = card.getAttack(null).ToString();
+        //        LifePropNumber.text.text = card.getLife(null).ToString();
+        //    }
+        //    else if (card.define.type == DEFINE.SPELL)
+        //    {
+        //        // TypeController = Type.Spell;
+        //        type = CATEGORY.SPELL;
+        //    }
 
-            if (skin != null)
-            {
-                Image.sprite = skin.image;
-                NameText.text = skin.name;
-                //{card:damage}
-                DescText.text = skin.desc;
-                // IsFaceupController = IsFaceup.True;
-                isFaceup = true;
-            }
-            else
-            {
-                // IsFaceupController = IsFaceup.False;
-                isFaceup = false;
-            }
-        }
-        [Obsolete]
-        public void update(CardDefine card, CardSkinData skin)
-        {
-            CostPropNumber.text.text = card.getCost().ToString();
-            AttackPropNumber.text.text = card.getAttack().ToString();
-            LifePropNumber.text.text = card.getLife().ToString();
+        //    if (skin != null)
+        //    {
+        //        Image.sprite = skin.image;
+        //        NameText.text = skin.name;
+        //        //{card:damage}
+        //        DescText.text = skin.desc;
+        //        // IsFaceupController = IsFaceup.True;
+        //        isFaceup = true;
+        //    }
+        //    else
+        //    {
+        //        // IsFaceupController = IsFaceup.False;
+        //        isFaceup = false;
+        //    }
+        //}
+        //[Obsolete]
+        //public void update(CardDefine card, CardSkinData skin)
+        //{
+        //    CostPropNumber.text.text = card.getCost().ToString();
+        //    AttackPropNumber.text.text = card.getAttack().ToString();
+        //    LifePropNumber.text.text = card.getLife().ToString();
 
-            Image.sprite = skin.image;
-            NameText.text = skin.name;
-            DescText.text = skin.desc;
-            // IsFaceupController = IsFaceup.True;
-            isFaceup = true;
-        }
+        //    Image.sprite = skin.image;
+        //    NameText.text = skin.name;
+        //    DescText.text = skin.desc;
+        //    // IsFaceupController = IsFaceup.True;
+        //    isFaceup = true;
+        //}
         public void resetPosition()
         {
             rectTransform.anchoredPosition = Vector2.zero;
@@ -80,14 +80,10 @@ namespace UI
                 if (value)
                 {
                     _onFaceupControllerTrue.Invoke();
-                    AttackPropNumber.display();
-                    LifePropNumber.display();
                 }
                 else
                 {
                     _onFaceupControllerFalse.Invoke();
-                    AttackPropNumber.hide();
-                    LifePropNumber.hide();
                 }
             }
         }

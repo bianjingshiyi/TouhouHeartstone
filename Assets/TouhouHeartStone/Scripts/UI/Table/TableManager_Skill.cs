@@ -33,8 +33,8 @@ namespace Game
         public void setSkill(Skill skill, Card card)
         {
             CardSkinData skin = getSkin(card);
-            skill.Image.sprite = skin.image;
-            skill.CostPropNumber.text.text = card.getCost(game).ToString();
+            skill.image.sprite = skin.image;
+            skill.costPropNumber.text.text = card.getCost(game).ToString();
             if (card.isUsed(game))
             {
                 // skill.IsUsedController = Skill.IsUsed.True;

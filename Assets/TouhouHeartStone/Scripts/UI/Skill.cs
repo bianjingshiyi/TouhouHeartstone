@@ -9,6 +9,11 @@ namespace UI
 {
     partial class Skill : IBeginDragHandler, IDragHandler, IEndDragHandler
     {
+        protected override void Awake()
+        {
+            base.Awake();
+            init();
+        }
         [Obsolete]
         public TouhouCardEngine.Card card { get; private set; } = null;
         [Obsolete]
@@ -16,8 +21,8 @@ namespace UI
         {
             this.card = card;
 
-            Image.sprite = skin.image;
-            CostPropNumber.text.text = card.getCost(null).ToString();
+            image.sprite = skin.image;
+            costPropNumber.text.text = card.getCost(null).ToString();
             if (card.isUsed(null))
             {
                 // IsUsedController = IsUsed.True;

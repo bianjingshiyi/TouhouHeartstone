@@ -10,324 +10,104 @@
 
 namespace UI
 {
-    using System;
     using UnityEngine;
-    using UnityEngine.UI;
     using BJSYGameCore.UI;
+    using BJSYGameCore.AutoCompo;
+    using System;
+    using UnityEngine.UI;
+    using UI;
     
+    [AutoCompoAttribute(20026)]
     public partial class Card : UIObject
     {
-        protected override void Awake()
+        public void init()
         {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
-        }
-        public void autoBind()
-        {
-            this._CardBackImage = this.transform.Find("CardBack").GetComponent<Image>();
-            this._CardBackEffectImage = this.transform.Find("CardBack").Find("CardBackEffect").GetComponent<Image>();
-            this._ShadowImage = this.transform.Find("CardFace").Find("Shadow").GetComponent<Image>();
-            this._BackgroundImage = this.transform.Find("CardFace").Find("Background").GetComponent<Image>();
-            this._Mask = this.transform.Find("CardFace").Find("Mask").GetComponent<Mask>();
-            this._Image = this.transform.Find("CardFace").Find("Mask").Find("Image").GetComponent<Image>();
-            this._CardFaceEffectImage = this.transform.Find("CardFace").Find("Mask").Find("CardFaceEffect").GetComponent<Image>();
-            this._NameShadowImage = this.transform.Find("CardFace").Find("NameShadow").GetComponent<Image>();
-            this._NameText = this.transform.Find("CardFace").Find("NameText").GetComponent<Text>();
-            this._DescShadowImage = this.transform.Find("CardFace").Find("DescShadow").GetComponent<Image>();
-            this._SubNameText = this.transform.Find("CardFace").Find("SubNameText").GetComponent<Text>();
-            this._DescText = this.transform.Find("CardFace").Find("DescText").GetComponent<Text>();
-            this._RaceText = this.transform.Find("CardFace").Find("RaceText").GetComponent<Text>();
-            this._BorderImage = this.transform.Find("CardFace").Find("Border").GetComponent<Image>();
-            this._CardFace_Image = this.transform.Find("CardFace").Find("Image").GetComponent<Image>();
-            this._CostPropNumber = this.transform.Find("CardFace").Find("Cost").GetComponent<PropNumber>();
-            this._AttackPropNumber = this.transform.Find("CardFace").Find("Attack").GetComponent<PropNumber>();
-            this._LifePropNumber = this.transform.Find("CardFace").Find("Life").GetComponent<PropNumber>();
-            this._CrossImage = this.transform.Find("Cross").GetComponent<Image>();
+            this._asAnimator = this.transform.findByPath("./").GetComponent<Animator>();
+            this._cardBackEffectImage = this.transform.findByPath("./CardBack/CardBackEffect").GetComponent<Image>();
+            this._itemCardFace = this.transform.findByPath("./CardFace/ItemCardFace").GetComponent<ItemCardFace>();
+            this._spellCardFace = this.transform.findByPath("./CardFace/SpellCardFace").GetComponent<SpellCardFace>();
+            this._servantCardFace = this.transform.findByPath("./CardFace/ServantCardFace").GetComponent<ServantCardFace>();
+            this._crossImage = this.transform.findByPath("./Cross").GetComponent<Image>();
+            this._cardFaceEffectImage = this.transform.findByPath("./CardFace/CardFaceEffect").GetComponent<Image>();
         }
         [SerializeField()]
-        private Image _CardBackImage;
-        public Image CardBackImage
+        [AutoCompoAttribute(20140, "./")]
+        private Animator _asAnimator;
+        public Animator asAnimator
         {
             get
             {
-                if ((this._CardBackImage == null))
-                {
-                    this._CardBackImage = this.transform.Find("CardBack").GetComponent<Image>();
-                }
-                return this._CardBackImage;
+                return this._asAnimator;
             }
         }
         [SerializeField()]
-        private Image _CardBackEffectImage;
-        public Image CardBackEffectImage
+        [AutoCompoAttribute(20142, "./Highlight")]
+        private GameObject _highlight;
+        public GameObject highlight
         {
             get
             {
-                if ((this._CardBackEffectImage == null))
-                {
-                    this._CardBackEffectImage = this.transform.Find("CardBack").Find("CardBackEffect").GetComponent<Image>();
-                }
-                return this._CardBackEffectImage;
+                return this._highlight;
             }
         }
         [SerializeField()]
-        private Image _ShadowImage;
-        public Image ShadowImage
+        [AutoCompoAttribute(20174, "./CardBack/CardBackEffect")]
+        private Image _cardBackEffectImage;
+        public Image cardBackEffectImage
         {
             get
             {
-                if ((this._ShadowImage == null))
-                {
-                    this._ShadowImage = this.transform.Find("CardFace").Find("Shadow").GetComponent<Image>();
-                }
-                return this._ShadowImage;
+                return this._cardBackEffectImage;
             }
         }
         [SerializeField()]
-        private Image _BackgroundImage;
-        public Image BackgroundImage
+        [AutoCompoAttribute(96340, "./CardFace/ItemCardFace")]
+        private ItemCardFace _itemCardFace;
+        public ItemCardFace itemCardFace
         {
             get
             {
-                if ((this._BackgroundImage == null))
-                {
-                    this._BackgroundImage = this.transform.Find("CardFace").Find("Background").GetComponent<Image>();
-                }
-                return this._BackgroundImage;
+                return this._itemCardFace;
             }
         }
         [SerializeField()]
-        private Mask _Mask;
-        public Mask Mask
+        [AutoCompoAttribute(99832, "./CardFace/SpellCardFace")]
+        private SpellCardFace _spellCardFace;
+        public SpellCardFace spellCardFace
         {
             get
             {
-                if ((this._Mask == null))
-                {
-                    this._Mask = this.transform.Find("CardFace").Find("Mask").GetComponent<Mask>();
-                }
-                return this._Mask;
+                return this._spellCardFace;
             }
         }
         [SerializeField()]
-        private Image _Image;
-        public Image Image
+        [AutoCompoAttribute(98096, "./CardFace/ServantCardFace")]
+        private ServantCardFace _servantCardFace;
+        public ServantCardFace servantCardFace
         {
             get
             {
-                if ((this._Image == null))
-                {
-                    this._Image = this.transform.Find("CardFace").Find("Mask").Find("Image").GetComponent<Image>();
-                }
-                return this._Image;
+                return this._servantCardFace;
             }
         }
         [SerializeField()]
-        private Image _CardFaceEffectImage;
-        public Image CardFaceEffectImage
+        [AutoCompoAttribute(20272, "./Cross")]
+        private Image _crossImage;
+        public Image crossImage
         {
             get
             {
-                if ((this._CardFaceEffectImage == null))
-                {
-                    this._CardFaceEffectImage = this.transform.Find("CardFace").Find("Mask").Find("CardFaceEffect").GetComponent<Image>();
-                }
-                return this._CardFaceEffectImage;
+                return this._crossImage;
             }
         }
         [SerializeField()]
-        private Image _NameShadowImage;
-        public Image NameShadowImage
+        [AutoCompoAttribute(101476, "./CardFace/CardFaceEffect")]
+        private Image _cardFaceEffectImage;
+        public Image cardFaceEffectImage
         {
             get
             {
-                if ((this._NameShadowImage == null))
-                {
-                    this._NameShadowImage = this.transform.Find("CardFace").Find("NameShadow").GetComponent<Image>();
-                }
-                return this._NameShadowImage;
-            }
-        }
-        [SerializeField()]
-        private Text _NameText;
-        public Text NameText
-        {
-            get
-            {
-                if ((this._NameText == null))
-                {
-                    this._NameText = this.transform.Find("CardFace").Find("NameText").GetComponent<Text>();
-                }
-                return this._NameText;
-            }
-        }
-        [SerializeField()]
-        private Image _DescShadowImage;
-        public Image DescShadowImage
-        {
-            get
-            {
-                if ((this._DescShadowImage == null))
-                {
-                    this._DescShadowImage = this.transform.Find("CardFace").Find("DescShadow").GetComponent<Image>();
-                }
-                return this._DescShadowImage;
-            }
-        }
-        [SerializeField()]
-        private Text _SubNameText;
-        public Text SubNameText
-        {
-            get
-            {
-                if ((this._SubNameText == null))
-                {
-                    this._SubNameText = this.transform.Find("CardFace").Find("SubNameText").GetComponent<Text>();
-                }
-                return this._SubNameText;
-            }
-        }
-        [SerializeField()]
-        private Text _DescText;
-        public Text DescText
-        {
-            get
-            {
-                if ((this._DescText == null))
-                {
-                    this._DescText = this.transform.Find("CardFace").Find("DescText").GetComponent<Text>();
-                }
-                return this._DescText;
-            }
-        }
-        [SerializeField()]
-        private Text _RaceText;
-        public Text RaceText
-        {
-            get
-            {
-                if ((this._RaceText == null))
-                {
-                    this._RaceText = this.transform.Find("CardFace").Find("RaceText").GetComponent<Text>();
-                }
-                return this._RaceText;
-            }
-        }
-        [SerializeField()]
-        private Image _BorderImage;
-        public Image BorderImage
-        {
-            get
-            {
-                if ((this._BorderImage == null))
-                {
-                    this._BorderImage = this.transform.Find("CardFace").Find("Border").GetComponent<Image>();
-                }
-                return this._BorderImage;
-            }
-        }
-        [SerializeField()]
-        private Image _CardFace_Image;
-        public Image CardFace_Image
-        {
-            get
-            {
-                if ((this._CardFace_Image == null))
-                {
-                    this._CardFace_Image = this.transform.Find("CardFace").Find("Image").GetComponent<Image>();
-                }
-                return this._CardFace_Image;
-            }
-        }
-        [SerializeField()]
-        private PropNumber _CostPropNumber;
-        public PropNumber CostPropNumber
-        {
-            get
-            {
-                if ((this._CostPropNumber == null))
-                {
-                    this._CostPropNumber = this.transform.Find("CardFace").Find("Cost").GetComponent<PropNumber>();
-                }
-                return this._CostPropNumber;
-            }
-        }
-        [SerializeField()]
-        private PropNumber _AttackPropNumber;
-        public PropNumber AttackPropNumber
-        {
-            get
-            {
-                if ((this._AttackPropNumber == null))
-                {
-                    this._AttackPropNumber = this.transform.Find("CardFace").Find("Attack").GetComponent<PropNumber>();
-                }
-                return this._AttackPropNumber;
-            }
-        }
-        [SerializeField()]
-        private PropNumber _LifePropNumber;
-        public PropNumber LifePropNumber
-        {
-            get
-            {
-                if ((this._LifePropNumber == null))
-                {
-                    this._LifePropNumber = this.transform.Find("CardFace").Find("Life").GetComponent<PropNumber>();
-                }
-                return this._LifePropNumber;
-            }
-        }
-        [SerializeField()]
-        private Image _CrossImage;
-        public Image CrossImage
-        {
-            get
-            {
-                if ((this._CrossImage == null))
-                {
-                    this._CrossImage = this.transform.Find("Cross").GetComponent<Image>();
-                }
-                return this._CrossImage;
-            }
-        }
-        partial void onAwake();
-        public enum Type
-        {
-            Type_Servant,
-            Type_Spell,
-            Type_Item,
-            Type_Skill,
-            Type_Master,
-        }
-        public Type TypeController
-        {
-            get
-            {
-                return ((Type)(Enum.Parse(typeof(Type), this.getController("Type", Enum.GetNames(typeof(Type))))));
-            }
-            set
-            {
-                this.setController("Type", Enum.GetName(typeof(Type), value));
-            }
-        }
-        public enum IsFaceup
-        {
-            IsFaceup_False,
-            IsFaceup_True,
-            Card_FlipToBack,
-            Card_FlipToFace,
-        }
-        public IsFaceup IsFaceupController
-        {
-            get
-            {
-                return ((IsFaceup)(Enum.Parse(typeof(IsFaceup), this.getController("IsFaceup", Enum.GetNames(typeof(IsFaceup))))));
-            }
-            set
-            {
-                this.setController("IsFaceup", Enum.GetName(typeof(IsFaceup), value));
+                return this._cardFaceEffectImage;
             }
         }
     }

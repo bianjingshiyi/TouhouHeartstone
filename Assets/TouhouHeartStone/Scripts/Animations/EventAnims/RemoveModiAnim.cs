@@ -37,42 +37,45 @@ namespace Game
                 animator = hand.animator;
                 if (eventArg.modifier is AttackModifier atkMod)
                 {
-                    hand.Card.AttackPropNumber.text.text = eventArg.card.getAttack(table.game).ToString();
+                    PropNumber propNumber = hand.Card.getAttackPropNum(eventArg.card);
+                    propNumber.text.text = eventArg.card.getAttack(table.game).ToString();
                     if (eventArg.card.getAttack(table.game) > eventArg.card.define.getAttack())
                     {
-                        simpleAnim = hand.Card.AttackPropNumber.GreenText;
+                        simpleAnim = propNumber.GreenText;
                     }
                     else
                     {
-                        simpleAnim = hand.Card.AttackPropNumber.WhiteText;
+                        simpleAnim = propNumber.WhiteText;
                     }
                 }
                 else if (eventArg.modifier is LifeModifier lifMod)
                 {
-                    hand.Card.LifePropNumber.text.text = eventArg.card.getLife(table.game).ToString();
+                    PropNumber propNumber = hand.Card.getLifePropNum(eventArg.card);
+                    propNumber.text.text = eventArg.card.getLife(table.game).ToString();
                     if (eventArg.card.getLife(table.game) > eventArg.card.define.getLife())
                     {
-                        simpleAnim = hand.Card.LifePropNumber.GreenText;
+                        simpleAnim = propNumber.GreenText;
                     }
                     else
                     {
-                        simpleAnim = hand.Card.LifePropNumber.WhiteText;
+                        simpleAnim = propNumber.WhiteText;
                     }
                 }
                 else if (eventArg.modifier is CostModifier costMod)
                 {
-                    hand.Card.CostPropNumber.text.text = eventArg.card.getCost(table.game).ToString();
+                    PropNumber propNumber = hand.Card.getCostPropNum(eventArg.card);
+                    propNumber.text.text = eventArg.card.getCost(table.game).ToString();
                     if (eventArg.card.getCost(table.game) < eventArg.card.define.getCost())
                     {
-                        simpleAnim = hand.Card.CostPropNumber.GreenText;
+                        simpleAnim = propNumber.GreenText;
                     }
                     else if (eventArg.card.getCost(table.game) > eventArg.card.define.getCost())
                     {
-                        simpleAnim = hand.Card.CostPropNumber.RedText;
+                        simpleAnim = propNumber.RedText;
                     }
                     else
                     {
-                        simpleAnim = hand.Card.CostPropNumber.WhiteText;
+                        simpleAnim = propNumber.WhiteText;
                     }
                 }
             }
