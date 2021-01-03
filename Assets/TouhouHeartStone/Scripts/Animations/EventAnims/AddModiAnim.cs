@@ -17,14 +17,14 @@ namespace Game
                 if (eventArg.modifier is AttackModifier atkMod)
                 {
 
-                    servant.AttackTextPropNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
+                    servant.attackPropNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                     if (eventArg.card.getAttack(table.game) > eventArg.card.define.getAttack())
                     {
-                        simpleAnim = servant.AttackTextPropNumber.GreenText;
+                        simpleAnim = servant.attackPropNumber.GreenText;
                     }
                     else
                     {
-                        simpleAnim = servant.AttackTextPropNumber.WhiteText;
+                        simpleAnim = servant.attackPropNumber.WhiteText;
                     }
                 }
                 else if (eventArg.modifier is LifeModifier lifMod)
@@ -33,7 +33,7 @@ namespace Game
                     //    simpleAnim = servant.onLifeUp;
                     //else
                     //    simpleAnim = servant.onLifeDown;
-                    servant.HpTextPropNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
+                    servant.lifePropNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
                 }
             }
             else if (table.tryGetHand(eventArg.card, out var hand))

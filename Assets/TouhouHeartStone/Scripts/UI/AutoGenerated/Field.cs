@@ -26,13 +26,13 @@ namespace UI
         public void autoBind()
         {
             this.m_as_ListLayoutGroup = this.GetComponent<ListLayoutGroup>();
-            this._Servant = this.transform.Find("Servant").GetComponent<Servant>();
-            this._Servant_1 = this.transform.Find("Servant (1)").GetComponent<Servant>();
-            this._Servant_2 = this.transform.Find("Servant (2)").GetComponent<Servant>();
-            this._Servant_3 = this.transform.Find("Servant (3)").GetComponent<Servant>();
-            this._Servant_4 = this.transform.Find("Servant (4)").GetComponent<Servant>();
-            this._Servant_5 = this.transform.Find("Servant (5)").GetComponent<Servant>();
-            this._Servant_6 = this.transform.Find("Servant (6)").GetComponent<Servant>();
+            this._Servant = this.transform.Find("Servant").GetComponent<ServantItem>();
+            this._Servant_1 = this.transform.Find("Servant (1)").GetComponent<ServantItem>();
+            this._Servant_2 = this.transform.Find("Servant (2)").GetComponent<ServantItem>();
+            this._Servant_3 = this.transform.Find("Servant (3)").GetComponent<ServantItem>();
+            this._Servant_4 = this.transform.Find("Servant (4)").GetComponent<ServantItem>();
+            this._Servant_5 = this.transform.Find("Servant (5)").GetComponent<ServantItem>();
+            this._Servant_6 = this.transform.Find("Servant (6)").GetComponent<ServantItem>();
         }
         [SerializeField()]
         private ListLayoutGroup m_as_ListLayoutGroup;
@@ -48,92 +48,92 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Servant _Servant;
-        public Servant Servant
+        private ServantItem _Servant;
+        public ServantItem Servant
         {
             get
             {
                 if ((this._Servant == null))
                 {
-                    this._Servant = this.transform.Find("Servant").GetComponent<Servant>();
+                    this._Servant = this.transform.Find("Servant").GetComponent<ServantItem>();
                 }
                 return this._Servant;
             }
         }
         [SerializeField()]
-        private Servant _Servant_1;
-        public Servant Servant_1
+        private ServantItem _Servant_1;
+        public ServantItem Servant_1
         {
             get
             {
                 if ((this._Servant_1 == null))
                 {
-                    this._Servant_1 = this.transform.Find("Servant (1)").GetComponent<Servant>();
+                    this._Servant_1 = this.transform.Find("Servant (1)").GetComponent<ServantItem>();
                 }
                 return this._Servant_1;
             }
         }
         [SerializeField()]
-        private Servant _Servant_2;
-        public Servant Servant_2
+        private ServantItem _Servant_2;
+        public ServantItem Servant_2
         {
             get
             {
                 if ((this._Servant_2 == null))
                 {
-                    this._Servant_2 = this.transform.Find("Servant (2)").GetComponent<Servant>();
+                    this._Servant_2 = this.transform.Find("Servant (2)").GetComponent<ServantItem>();
                 }
                 return this._Servant_2;
             }
         }
         [SerializeField()]
-        private Servant _Servant_3;
-        public Servant Servant_3
+        private ServantItem _Servant_3;
+        public ServantItem Servant_3
         {
             get
             {
                 if ((this._Servant_3 == null))
                 {
-                    this._Servant_3 = this.transform.Find("Servant (3)").GetComponent<Servant>();
+                    this._Servant_3 = this.transform.Find("Servant (3)").GetComponent<ServantItem>();
                 }
                 return this._Servant_3;
             }
         }
         [SerializeField()]
-        private Servant _Servant_4;
-        public Servant Servant_4
+        private ServantItem _Servant_4;
+        public ServantItem Servant_4
         {
             get
             {
                 if ((this._Servant_4 == null))
                 {
-                    this._Servant_4 = this.transform.Find("Servant (4)").GetComponent<Servant>();
+                    this._Servant_4 = this.transform.Find("Servant (4)").GetComponent<ServantItem>();
                 }
                 return this._Servant_4;
             }
         }
         [SerializeField()]
-        private Servant _Servant_5;
-        public Servant Servant_5
+        private ServantItem _Servant_5;
+        public ServantItem Servant_5
         {
             get
             {
                 if ((this._Servant_5 == null))
                 {
-                    this._Servant_5 = this.transform.Find("Servant (5)").GetComponent<Servant>();
+                    this._Servant_5 = this.transform.Find("Servant (5)").GetComponent<ServantItem>();
                 }
                 return this._Servant_5;
             }
         }
         [SerializeField()]
-        private Servant _Servant_6;
-        public Servant Servant_6
+        private ServantItem _Servant_6;
+        public ServantItem Servant_6
         {
             get
             {
                 if ((this._Servant_6 == null))
                 {
-                    this._Servant_6 = this.transform.Find("Servant (6)").GetComponent<Servant>();
+                    this._Servant_6 = this.transform.Find("Servant (6)").GetComponent<ServantItem>();
                 }
                 return this._Servant_6;
             }

@@ -87,7 +87,7 @@ namespace Game
                     return null;
             }
         }
-        public static RectTransform getRoot(this Servant servant)
+        public static RectTransform getRoot(this ServantItem servant)
         {
             return servant.getChild("Root");
         }

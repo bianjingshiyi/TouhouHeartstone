@@ -19,32 +19,32 @@ namespace Game
                 animator = servant.animator;
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.value is int attack)
                 {
-                    servant.AttackTextPropNumber.text.text = attack.ToString();
+                    servant.attackPropNumber.text.text = attack.ToString();
                     if (eventArg.card.getAttack(table.game) > eventArg.card.define.getAttack())
                     {
-                        simpleAnim = servant.AttackTextPropNumber.GreenText;
+                        simpleAnim = servant.attackPropNumber.GreenText;
                     }
                     else
                     {
-                        simpleAnim = servant.AttackTextPropNumber.WhiteText;
+                        simpleAnim = servant.attackPropNumber.WhiteText;
                     }
                 }
                 else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.value is int currentLife)
                 {
-                    servant.HpTextPropNumber.text.text = currentLife.ToString();
+                    servant.lifePropNumber.text.text = currentLife.ToString();
 
                     //判断是否是红字
                     if (eventArg.card.getCurrentLife(table.game) < eventArg.card.getLife(table.game))
                     {
-                        simpleAnim = servant.HpTextPropNumber.RedText;
+                        simpleAnim = servant.lifePropNumber.RedText;
                     }
                     else if (eventArg.card.getLife(table.game) > eventArg.card.define.getLife())
                     {
-                        simpleAnim = servant.HpTextPropNumber.GreenText;
+                        simpleAnim = servant.lifePropNumber.GreenText;
                     }
                     else
                     {
-                        simpleAnim = servant.HpTextPropNumber.WhiteText;
+                        simpleAnim = servant.lifePropNumber.WhiteText;
                     }
                 }
                 else if (eventArg.propName == PROPERTY.KEYWORDS)
@@ -56,13 +56,13 @@ namespace Game
 
                         }
                         if (keywords.Contains(KEYWORD.FREEZE))
-                            servant.FreezeImage.display();
+                            servant.freezeImage.display();
                         else
-                            servant.FreezeImage.hide();
+                            servant.freezeImage.hide();
                     }
                     else
                     {
-                        servant.FreezeImage.hide();
+                        servant.freezeImage.hide();
                     }
                 }
                 else if (eventArg.propName == PROPERTY.SILENCE && eventArg.beforeValue is bool beforeSilence && eventArg.value is bool silence)

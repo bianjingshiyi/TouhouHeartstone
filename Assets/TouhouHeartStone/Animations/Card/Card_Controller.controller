@@ -702,10 +702,10 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -5724814633689227961}
-    m_Position: {x: 490, y: 190, z: 0}
+    m_Position: {x: 480, y: 200, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -9044819197086353974}
-    m_Position: {x: 490, y: 120, z: 0}
+    m_Position: {x: 480, y: 120, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2148177839711604606}
     m_Position: {x: 480, y: 40, z: 0}

@@ -125,7 +125,7 @@ namespace UI
             ServantPlaceHolder.hide();
         }
         #endregion
-        public Servant getServant(TouhouCardEngine.Card card)
+        public ServantItem getServant(TouhouCardEngine.Card card)
         {
             foreach (var item in SelfFieldList)
             {
@@ -161,7 +161,7 @@ namespace UI
             {
                 if (getMaster(target) is Master master)
                     return master as UIObject;
-                else if (getServant(target) is Servant servant)
+                else if (getServant(target) is ServantItem servant)
                     return servant as UIObject;
                 throw new ActorNotFoundException(target);
             }).ToArray();

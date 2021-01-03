@@ -32,7 +32,7 @@ namespace Game
                 }
                 table.setMaster(attackMaster, eventArg.card);
             }
-            else if (table.getServant(eventArg.card) is Servant attackServant)
+            else if (table.getServant(eventArg.card) is ServantItem attackServant)
             {
                 if (table.tryGetMaster(eventArg.target, out var targetMaster))
                 {

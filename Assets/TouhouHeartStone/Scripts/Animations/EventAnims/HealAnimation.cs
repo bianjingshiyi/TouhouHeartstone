@@ -13,10 +13,10 @@ namespace Game
             {
                 foreach (var card in eventArg.cards)
                 {
-                    if (table.tryGetServant(card,out Servant servant))
+                    if (table.tryGetServant(card,out ServantItem servant))
                     {
-                        servant.HealImage.display();
-                        servant.HealText.text = "+" + eventArg.infoDic[card].healedValue.ToString();
+                        servant.healImage.display();
+                        servant.healText.text = "+" + eventArg.infoDic[card].healedValue.ToString();
                         table.setServant(table.getServant(card), card);
                     }
                 }
@@ -24,19 +24,19 @@ namespace Game
             }
             foreach (var card in eventArg.cards)
             {
-                if (table.tryGetServant(card, out Servant servant))
+                if (table.tryGetServant(card, out ServantItem servant))
                 {
-                    servant.HealImage.setAlpha(_timer.progress);
-                    servant.HealText.setAlpha(_timer.progress);
+                    servant.healImage.setAlpha(_timer.progress);
+                    servant.healText.setAlpha(_timer.progress);
                 }
             }
             if (!_timer.isExpired())
                 return false;
             foreach (var card in eventArg.cards)
             {
-                if (table.tryGetServant(card, out Servant servant))
+                if (table.tryGetServant(card, out ServantItem servant))
                 {
-                    servant.HealImage.hide();
+                    servant.healImage.hide();
                 }
             }
             return true;

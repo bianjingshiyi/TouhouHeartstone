@@ -734,7 +734,7 @@ namespace Game
         /// </summary>
         /// <param name="servant"></param>
         /// <param name="pointer"></param>
-        void onClickServant(Servant servant, PointerEventData pointer)
+        void onClickServant(ServantItem servant, PointerEventData pointer)
         {
             // （目标选择模式）
             if (isSelectingTarget)
@@ -920,16 +920,16 @@ namespace Game
             else
                 throw new NotImplementedException();
         }
-        Dictionary<Card, Servant> cardServantDic { get; } = new Dictionary<Card, Servant>();
+        Dictionary<Card, ServantItem> cardServantDic { get; } = new Dictionary<Card, ServantItem>();
         /// <summary>
         /// 创建一个随从
         /// </summary>
         /// <param name="card"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        public Servant createServant(Card card, int position, int attack = -1, int life = -1)
+        public ServantItem createServant(Card card, int position, int attack = -1, int life = -1)
         {
-            Servant servant;
+            ServantItem servant;
             if (card.getOwner() == player)
             {
                 servant = ui.SelfFieldList.addItem();
@@ -957,7 +957,7 @@ namespace Game
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public Servant getServant(Card card)
+        public ServantItem getServant(Card card)
         {
             if (cardServantDic.ContainsKey(card))
                 return cardServantDic[card];
@@ -969,7 +969,7 @@ namespace Game
         /// <param name="card"></param>
         /// <param name="servant"></param>
         /// <returns></returns>
-        public bool tryGetServant(Card card, out Servant servant)
+        public bool tryGetServant(Card card, out ServantItem servant)
         {
             if (cardServantDic.ContainsKey(card))
             {
@@ -997,15 +997,15 @@ namespace Game
         /// <param name="servant"></param>
         /// <param name="card"></param>
         /// <param name="isSelectable"></param>
-        public void setServant(Servant servant, Card card, bool isSelectable = false, int attack = -1, int life = -1)
+        public void setServant(ServantItem servant, Card card, bool isSelectable = false, int attack = -1, int life = -1)
         {
             CardSkinData skin = getSkin(card);
             if (skin != null)
             {
-                servant.Image.sprite = skin.image;
+                servant.image.sprite = skin.image;
             }
-            servant.AttackTextPropNumber.text.text = attack < 0 ? card.getAttack(game).ToString() : attack.ToString();
-            servant.HpTextPropNumber.text.text = life < 0 ? card.getCurrentLife(game).ToString() : life.ToString();
+            servant.attackPropNumber.text.text = attack < 0 ? card.getAttack(game).ToString() : attack.ToString();
+            servant.lifePropNumber.text.text = life < 0 ? card.getCurrentLife(game).ToString() : life.ToString();
 
             servant.onDrag.remove(onDragServant);
             if (isSelectable)
@@ -1043,24 +1043,24 @@ namespace Game
                 servant.onTauntFalse.invokeAfterAnim();
             }
             if (card.hasKeyword(game, KEYWORD.STEALTH))
-                servant.StealthImage.display();
+                servant.stealthImage.display();
             else
-                servant.StealthImage.hide();
+                servant.stealthImage.hide();
             if (card.hasKeyword(game, KEYWORD.FREEZE))
-                servant.FreezeImage.display();
+                servant.freezeImage.display();
             else
-                servant.FreezeImage.hide();
+                servant.freezeImage.hide();
             if (card.hasKeyword(game, KEYWORD.SHIELD))
-                servant.ShieldImage.display();
+                servant.shieldImage.display();
             else
-                servant.ShieldImage.hide();
+                servant.shieldImage.hide();
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
         }
-        void onEnterServant(Servant servant, PointerEventData pointer)
+        void onEnterServant(ServantItem servant, PointerEventData pointer)
         {
             displayLargeCard(pointer.position.x < Screen.width / 2, getCard(servant));
         }
-        void onExitServant(Servant servant, PointerEventData pointer)
+        void onExitServant(ServantItem servant, PointerEventData pointer)
         {
             hideLargeCard();
         }
@@ -1069,7 +1069,7 @@ namespace Game
         /// </summary>
         /// <param name="servant"></param>
         /// <param name="pointer"></param>
-        void onDragServant(Servant servant, PointerEventData pointer)
+        void onDragServant(ServantItem servant, PointerEventData pointer)
         {
             if (!canControl)//不是你的回合
                 return;
@@ -1140,7 +1140,7 @@ namespace Game
         /// </summary>
         /// <param name="servant"></param>
         /// <param name="pointer"></param>
-        void onDragEndServant(Servant servant, PointerEventData pointer)
+        void onDragEndServant(ServantItem servant, PointerEventData pointer)
         {
             if (!canControl)//不是你的回合
                 return;
@@ -1224,7 +1224,7 @@ namespace Game
         {
             if (pointer.pointerCurrentRaycast.gameObject != null)
             {
-                if (pointer.pointerCurrentRaycast.gameObject.GetComponentInParent<Servant>() is Servant targetServant)
+                if (pointer.pointerCurrentRaycast.gameObject.GetComponentInParent<ServantItem>() is ServantItem targetServant)
                 {
                     card = getCard(targetServant);
                     return card != null;
@@ -1253,15 +1253,15 @@ namespace Game
         /// </summary>
         /// <param name="servant"></param>
         /// <param name="card"></param>
-        public void setServant(Servant servant, CardDefine card)
+        public void setServant(ServantItem servant, CardDefine card)
         {
             CardSkinData skin = getSkin(card);
             if (skin != null)
             {
-                servant.Image.sprite = skin.image;
+                servant.image.sprite = skin.image;
             }
-            servant.AttackTextPropNumber.text.text = card.getAttack().ToString();
-            servant.HpTextPropNumber.text.text = card.getLife().ToString();
+            servant.attackPropNumber.text.text = card.getAttack().ToString();
+            servant.lifePropNumber.text.text = card.getLife().ToString();
             if (card.hasKeyword(KEYWORD.TAUNT))
             {
                 servant.onTauntTrue.invokeBeforeAnim();
@@ -1278,7 +1278,7 @@ namespace Game
         /// </summary>
         /// <param name="servant"></param>
         /// <returns></returns>
-        public Card getCard(Servant servant)
+        public Card getCard(ServantItem servant)
         {
             foreach (var pair in cardServantDic)
             {

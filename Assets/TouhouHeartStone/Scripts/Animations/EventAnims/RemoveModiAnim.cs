@@ -17,19 +17,19 @@ namespace Game
                 animator = servant.animator;
                 if (eventArg.modifier is AttackModifier atkMod)
                 {
-                    servant.AttackTextPropNumber.text.text = eventArg.card.getAttack(table.game).ToString();
+                    servant.attackPropNumber.text.text = eventArg.card.getAttack(table.game).ToString();
                     if (eventArg.card.getAttack(table.game) > eventArg.card.define.getAttack())
                     {
-                        simpleAnim = servant.AttackTextPropNumber.GreenText;
+                        simpleAnim = servant.attackPropNumber.GreenText;
                     }
                     else
                     {
-                        simpleAnim = servant.AttackTextPropNumber.WhiteText;
+                        simpleAnim = servant.attackPropNumber.WhiteText;
                     }
                 }
                 else if (eventArg.modifier is LifeModifier lifMod)
                 {
-                    servant.HpTextPropNumber.text.text = eventArg.card.getCurrentLife(table.game).ToString();
+                    servant.lifePropNumber.text.text = eventArg.card.getCurrentLife(table.game).ToString();
                 }
             }
             else if (table.tryGetHand(eventArg.card, out var hand))

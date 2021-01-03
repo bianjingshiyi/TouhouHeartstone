@@ -22,7 +22,7 @@ namespace UI
         public void init()
         {
             this.ListLayoutGroup = this.transform.findByPath("./").GetComponent<ListLayoutGroup>();
-            this._defaultItem = this.transform.findByPath("./Servant").GetComponent<Servant>();
+            this._defaultItem = this.transform.findByPath("./Servant").GetComponent<ServantItem>();
         }
         [SerializeField()]
         [AutoCompoAttribute(-20070, "./")]
@@ -36,8 +36,8 @@ namespace UI
         }
         [SerializeField()]
         [AutoCompoAttribute(-20064, "./Servant")]
-        private Servant _defaultItem;
-        public Servant defaultItem
+        private ServantItem _defaultItem;
+        public ServantItem defaultItem
         {
             get
             {

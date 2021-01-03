@@ -18,8 +18,8 @@ namespace Game
                 {
                     if (table.tryGetServant(card, out var servant))
                     {
-                        servant.DamageText.text = "-" + eventArg.infoDic[card].damagedValue;
-                        servant.HpTextPropNumber.text.text = eventArg.infoDic[card].currentLife.ToString();
+                        servant.damageText.text = "-" + eventArg.infoDic[card].damagedValue;
+                        servant.lifePropNumber.text.text = eventArg.infoDic[card].currentLife.ToString();
                         servant.onDamage.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(servant.animator, servant.onDamage.animName));
                     }
