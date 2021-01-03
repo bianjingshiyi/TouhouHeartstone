@@ -48,7 +48,7 @@ namespace Tests
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<BestMagic>().cost);
             you.cmdUse(game, you.hand.getCard<BestMagic>());//使用秘藏魔法
             Assert.True(you.hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 0));//火球术费用-5
-            you.cmdUse(game, you.hand.getCard<FireBall>(), 0, oppo.master);
+            you.cmdUse(game, you.hand.getCard<FireBall>(),0,you.master);
             Assert.True(you.hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));
             you.cmdTurnEnd(game);
             //Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//回合结束，效果消失
@@ -64,7 +64,7 @@ namespace Tests
             );
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<FireBall>().cost);
             Assert.True(game.players[0].hand.Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 7));
-            you.cmdUse(game, you.hand.getCard<FireBall>());//使用法术牌
+            you.cmdUse(game, you.hand.getCard<FireBall>(),0,you.master);//使用法术牌
             Assert.True(game.players[0].hand.Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 5));//费用-2
             you.cmdTurnEnd(game);
             Assert.True(game.players[0].hand.Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 7));//只能在当前回合生效
