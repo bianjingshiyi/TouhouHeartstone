@@ -12,6 +12,7 @@ using System;
 using BJSYGameCore.UI;
 using System.IO.Compression;
 using System.IO;
+using MukioI18n;
 
 namespace UI
 {
@@ -19,6 +20,8 @@ namespace UI
     {
         CardManager cm => ui.getManager<CardManager>();
         DeckManager dm => ui.getManager<DeckManager>();
+
+        LangManager lang => ui.getManager<LangManager>();
 
         const string exportStringHeader = "# 醉梦传说卡组";
 
@@ -42,13 +45,19 @@ namespace UI
         /// </summary>
         bool deckChanged { get; set; } = false;
 
+        [TranslateMsg]
+        const string HINT_TITLE = "提示";
+
+        [TranslateMsg]
+        const string PILE_NOT_SAVE = "卡组尚未保存，退出后现有变更将丢失。\n是否退出？";
+
         void onBackBtnClick()
         {
             Main main = GetComponentInParent<Main>();
 
             if (deckChanged)
             {
-                UIDialog.ShowQuestion("卡组尚未保存，退出后现有变更将丢失。\n是否退出？", () =>
+                UIDialog.ShowQuestion(lang.i18n._(HINT_TITLE), lang.i18n._(PILE_NOT_SAVE), () =>
                 {
                     main.display(main.MainMenu);
                 });
@@ -59,6 +68,9 @@ namespace UI
             }
         }
 
+        [TranslateMsg]
+        const string PILE_NOT_COMPLETE = "当前卡组不完整，无法在游戏中使用。\n是否要保存？";
+
         /// <summary>
         /// 保存卡组按下
         /// </summary>
@@ -67,7 +79,7 @@ namespace UI
             // 卡组保存
             if (BuildDeckList.Select(i => i.count).Sum() < 30)
             {
-                UIDialog.ShowQuestion("当前卡组不完整，无法在游戏中使用。\n是否要保存？", () =>
+                UIDialog.ShowQuestion(lang.i18n._(HINT_TITLE), lang.i18n._(PILE_NOT_COMPLETE), () =>
                 {
                     saveToDeck(currentDeckID);
                     uiModeSwitch(true);
@@ -79,6 +91,9 @@ namespace UI
                 uiModeSwitch(true);
             }
         }
+
+        [TranslateMsg]
+        const string PILE_EXPORTED = "卡组已导出到剪贴板";
 
         /// <summary>
         /// 导出卡组
@@ -103,8 +118,26 @@ namespace UI
             outputString += Convert.ToBase64String(gzipCompress(dataBytes));
             GUIUtility.systemCopyBuffer = outputString;
 
-            UIDialog.ShowConfirm("提示", "卡组已导出到剪贴板", null);
+            UIDialog.ShowConfirm(lang.i18n._(HINT_TITLE), lang.i18n._(PILE_EXPORTED), null);
         }
+
+        [TranslateMsg]
+        const string NO_PILE_AVALIABLE = "剪贴板中没有可导入的卡组";
+
+        [TranslateMsg]
+        const string ERROR_TITLE = "错误";
+
+        [TranslateMsg]
+        const string CARD_NOT_EXISTS = "ID为%s的卡不存在";
+
+        [TranslateMsg]
+        const string PILE_CODE_INCOMPLETE = "卡组代码不完整";
+
+        [TranslateMsg]
+        const string PILE_CODE_CORRUPTED = "卡组数据已损坏";
+
+        [TranslateMsg]
+        const string PILE_IMPORT_ERROR = "导入错误\n%s";
 
         void tryImportDeck()
         {
@@ -112,7 +145,7 @@ namespace UI
             string clipboardString = GUIUtility.systemCopyBuffer.Trim();
             if (!clipboardString.StartsWith(exportStringHeader))
             {
-                UIDialog.ShowConfirm("错误", "剪贴板中没有可导入的卡组", null);
+                UIDialog.ShowConfirm(lang.i18n._(ERROR_TITLE), lang.i18n._(NO_PILE_AVALIABLE), null);
                 return;
             }
 
@@ -132,7 +165,7 @@ namespace UI
 
                     if (cm.GetCardDefine(card) == null)
                     {
-                        UIDialog.ShowConfirm("错误", $"ID为{card}的卡不存在", null);
+                        UIDialog.ShowConfirm(lang.i18n._(ERROR_TITLE), lang.i18n._(CARD_NOT_EXISTS, card), null);
                         return;
                     }
 
@@ -155,15 +188,15 @@ namespace UI
             }
             catch (FormatException e)
             {
-                UIDialog.ShowConfirm("错误", "卡组代码不完整", null);
+                UIDialog.ShowConfirm(lang.i18n._(ERROR_TITLE), lang.i18n._(PILE_CODE_INCOMPLETE), null);
             }
             catch (IOException e)
             {
-                UIDialog.ShowConfirm("错误", "卡组数据已损坏", null);
+                UIDialog.ShowConfirm(lang.i18n._(ERROR_TITLE), lang.i18n._(PILE_CODE_CORRUPTED), null);
             }
             catch (Exception e)
             {
-                UIDialog.ShowConfirm("错误", "导入错误\n" + e.Message, null);
+                UIDialog.ShowConfirm(lang.i18n._(ERROR_TITLE), lang.i18n._(PILE_IMPORT_ERROR, e.Message), null);
                 Debug.LogWarning(e);
             }
         }
@@ -205,6 +238,9 @@ namespace UI
             }
         }
 
+        [TranslateMsg]
+        const string PILE_NOT_COMPLETE_EXPORT = "当前卡组不完整，无法在游戏中使用。\n是否要导出？";
+
         /// <summary>
         /// 导出当前卡组
         /// </summary>
@@ -213,7 +249,7 @@ namespace UI
             // 卡组保存
             if (currentDeckCards.Count < 30)
             {
-                UIDialog.ShowQuestion("当前卡组不完整，无法在游戏中使用。\n是否要导出？", () =>
+                UIDialog.ShowQuestion(lang.i18n._(HINT_TITLE), lang.i18n._(PILE_NOT_COMPLETE_EXPORT), () =>
                 {
                     exportDeck();
                 });
@@ -648,6 +684,18 @@ namespace UI
             HintMessageText.gameObject.SetActive(true);
         }
 
+        [TranslateMsg]
+        const string PILE_FULL = "牌组已满";
+
+        [TranslateMsg]
+        const string PILE_MAX_CARD = "最多携带两张相同的卡片";
+
+        [TranslateMsg]
+        const string PILE_UNIQUE_CARD = "唯一的卡片只能携带一张";
+
+        [TranslateMsg]
+        const string PILE_WRONG_GROUP = "只能选择角色对应的卡或中立卡";
+
         private void onReleaseItem()
         {
             var card = DragCard.BuildDeckListItem.card;
@@ -656,26 +704,26 @@ namespace UI
             // 最多30张牌
             if (currentDeckCards.Count >= 30)
             {
-                showMessage("牌组已满");
+                showMessage(lang.i18n._(PILE_FULL));
                 return;
             }
             // 每类牌最多两张
             if (cardCount >= 2)
             {
-                showMessage("最多携带两张相同的卡片");
+                showMessage(lang.i18n._(PILE_MAX_CARD));
                 return;
             }
             // 唯一
             if (card.hasKeyword(KEYWORD.UNIQUE) && cardCount >= 1)
             {
-                showMessage("唯一的卡片只能携带一张");
+                showMessage(lang.i18n._(PILE_UNIQUE_CARD));
                 return;
             }
             // 中立卡或自己的卡
             if (card.getCharacterID() != CATEGORY.CHARACTER_NEUTRAL
                 && card.getCharacterID() != currentEditingDeckMasterID)
             {
-                showMessage("只能选择角色对应的卡或中立卡");
+                showMessage(lang.i18n._(PILE_WRONG_GROUP));
                 return;
             }
 

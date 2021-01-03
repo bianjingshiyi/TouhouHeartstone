@@ -38,6 +38,8 @@ namespace Game
         public THHGame game { get; private set; } = null;
         public THHPlayer localPlayer { get; private set; } = null;
         Task gameTask { get; set; } = null;
+        LangManager lang => getManager<LangManager>();
+
         protected override void onAwake()
         {
             base.onAwake();
@@ -364,31 +366,31 @@ namespace Game
                     break;
                 case THHPlayer.DrawEventArg draw:
                     item.IconImage.sprite = item.drawIcon;
-                    item.Text.text = I18n._(GAME_MANAGER_DRAW);
+                    item.Text.text = lang.i18n._(GAME_MANAGER_DRAW);
                     item.Image.sprite = getManager<TableManager>().getSkin(draw.player == localPlayer ? draw.card : draw.player.master).image;
                     item.BorderImage.color = draw.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.BurnEventArg burn:
                     item.IconImage.sprite = item.burnIcon;
-                    item.Text.text = I18n._(GAME_MANAGER_BURN);
+                    item.Text.text = lang.i18n._(GAME_MANAGER_BURN);
                     item.Image.sprite = getManager<TableManager>().getSkin(burn.card).image;
                     item.BorderImage.color = burn.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.FatigueEventArg fatigue:
                     item.IconImage.sprite = item.fatigueIcon;
-                    item.Text.text = I18n._(GAME_MANAGER_FATIGUE);
+                    item.Text.text = lang.i18n._(GAME_MANAGER_FATIGUE);
                     item.Image.sprite = getManager<TableManager>().getSkin(fatigue.player.master).image;
                     item.BorderImage.color = fatigue.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.DiscardEventArg discard:
                     item.IconImage.sprite = item.discardIcon;
-                    item.Text.text = I18n._(GAME_MANAGER_DISCARD);
+                    item.Text.text = lang.i18n._(GAME_MANAGER_DISCARD);
                     item.Image.sprite = getManager<TableManager>().getSkin(discard.cards[0]).image;
                     item.BorderImage.color = discard.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.UseEventArg use:
                     item.IconImage.sprite = item.useIcon;
-                    item.Text.text = I18n._(GAME_MANAGER_USE);
+                    item.Text.text = lang.i18n._(GAME_MANAGER_USE);
                     item.Image.sprite = use.card.hasKeyword(game, KEYWORD.SECRET) ?
                         getManager<TableManager>().getSkin(use.card.getOwner().master).image :
                         getManager<TableManager>().getSkin(use.card).image;
@@ -396,19 +398,19 @@ namespace Game
                     break;
                 case THHPlayer.CreateTokenEventArg token:
                     item.IconImage.sprite = item.rebornIcon;
-                    item.Text.text = I18n._(GAME_MANAGER_TOKEN);
+                    item.Text.text = lang.i18n._(GAME_MANAGER_TOKEN);
                     item.Image.sprite = getManager<TableManager>().getSkin(token.card).image;
                     item.BorderImage.color = token.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHPlayer.RebornEventArg reborn:
                     item.IconImage.sprite = item.rebornIcon;
-                    item.Text.text = I18n._(GAME_MANAGER_REBORN);
+                    item.Text.text = lang.i18n._(GAME_MANAGER_REBORN);
                     item.Image.sprite = getManager<TableManager>().getSkin(reborn.card).image;
                     item.BorderImage.color = reborn.player == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHCard.AttackEventArg attack:
                     item.IconImage.sprite = item.attackIcon;
-                    item.Text.text = I18n._(GAME_MANAGER_ATTACK);
+                    item.Text.text = lang.i18n._(GAME_MANAGER_ATTACK);
                     item.Image.sprite = getManager<TableManager>().getSkin(attack.card).image;
                     item.BorderImage.color = attack.card.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                     break;
@@ -432,19 +434,19 @@ namespace Game
                     break;
                 case THHCard.SilenceEventArg silence:
                     item.IconImage.sprite = item.healIcon;
-                    item.Text.text = I18n._(GAME_MANAGER_SILENCE);
+                    item.Text.text = lang.i18n._(GAME_MANAGER_SILENCE);
                     item.Image.sprite = getManager<TableManager>().getSkin(silence.cards[0]).image;
                     item.BorderImage.color = silence.cards[0].getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHCard.SecretTriggerEventArg secret:
                     item.IconImage.sprite = item.secretIcon;
-                    item.Text.text = I18n._(GAME_MANAGER_SECRET);
+                    item.Text.text = lang.i18n._(GAME_MANAGER_SECRET);
                     item.Image.sprite = getManager<TableManager>().getSkin(secret.card).image;
                     item.BorderImage.color = secret.card.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHCard.DeathEventArg death:
                     item.IconImage.sprite = item.deathIcon;
-                    item.Text.text = I18n._(GAME_MANAGER_DEATH);
+                    item.Text.text = lang.i18n._(GAME_MANAGER_DEATH);
                     item.Image.sprite = getManager<TableManager>().getSkin(death.infoDic.First().Key).image;
                     item.BorderImage.color = death.infoDic.First().Key.getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                     break;

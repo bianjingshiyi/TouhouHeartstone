@@ -68,6 +68,8 @@ namespace Game
             get { return getManager<UIManager>().getObject<NetworkingPage>(); }
         }
 
+        LangManager lang => getManager<LangManager>();
+
         RoomPanel roomPanel => ui.parent.RoomPanel;
 
         [SerializeField]
@@ -239,7 +241,7 @@ namespace Game
                 host.start(_port);
                 currentPlayer = new RoomPlayerInfo
                 {
-                    name = I18n._(NETMANAGER_HOMEMASTER) // todo: 替换为真实的玩家名称
+                    name = lang.i18n._(NETMANAGER_HOMEMASTER) // todo: 替换为真实的玩家名称
                 };
                 roomPanel.SetSelfID(currentPlayer.PlayerID);
 
@@ -335,7 +337,7 @@ namespace Game
             {
                 //局域网
                 currentPlayer = new RoomPlayerInfo();
-                currentPlayer.name = I18n._(NETMANAGER_PLAYER2); // todo: 替换为真实的玩家名称
+                currentPlayer.name = lang.i18n._(NETMANAGER_PLAYER2); // todo: 替换为真实的玩家名称
                 roomPanel.SetSelfID(currentPlayer.PlayerID);
 
                 await client.joinRoom(roomInfo, currentPlayer);
@@ -505,11 +507,11 @@ namespace Game
         }
         [TranslateMsg]
         private const String NETMANAGER_DESCRIBE = "描述";
-        [TranslateMsg]
-        private const String NETMANAGER_HOME = "的房间";
+        [TranslateMsg("参数的玩家名称")]
+        private const String NETMANAGER_HOME = "%s的房间";
         private void refreshRoomListItem(RoomListItem item, RoomInfo obj)
         {
-            item.RoomNameText.text = obj.playerList.Find(p => p.PlayerID == obj.OwnerID)?.name + I18n._(NETMANAGER_HOME);
+            item.RoomNameText.text = lang.i18n._(NETMANAGER_HOME, obj.playerList.Find(p => p.PlayerID == obj.OwnerID)?.name);
             item.asButton.onClick.set(() =>
             {
                 LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
@@ -523,7 +525,7 @@ namespace Game
                 {
                     lanPanel.NameText.text = obj.id.ToString();
                     lanPanel.IPText.text = obj.ip;
-                    lanPanel.DescText.text = I18n._(NETMANAGER_DESCRIBE);
+                    lanPanel.DescText.text = lang.i18n._(NETMANAGER_DESCRIBE);
                 }
             });
             item.ButtonButtonBlack.asButton.onClick.set(() =>
@@ -689,30 +691,30 @@ namespace Game
 
             if (string.IsNullOrEmpty(userName))
             {
-                ui.ShowMessage(I18n._(NETMANAGER_USERNAME_NULL));
+                ui.ShowMessage(lang.i18n._(NETMANAGER_USERNAME_NULL));
                 return;
             }
 
             if (string.IsNullOrEmpty(email))
             {
-                ui.ShowMessage(I18n._(NETMANAGER_EMAIL_NULL));
+                ui.ShowMessage(lang.i18n._(NETMANAGER_EMAIL_NULL));
                 return;
             }
             if (string.IsNullOrEmpty(captcha))
             {
-                ui.ShowMessage(I18n._(NETMANAGER_CHECK_CODE_NULL));
+                ui.ShowMessage(lang.i18n._(NETMANAGER_CHECK_CODE_NULL));
                 return;
             }
 
             if (string.IsNullOrEmpty(nickName))
             {
-                ui.ShowMessage(I18n._(NETMANAGER_NICKNAME_NULL));
+                ui.ShowMessage(lang.i18n._(NETMANAGER_NICKNAME_NULL));
                 return;
             }
 
             if (password != repeatPassword)
             {
-                ui.ShowMessage(I18n._(NETMANAGER_PASSWORD_ERROR));
+                ui.ShowMessage(lang.i18n._(NETMANAGER_PASSWORD_ERROR));
                 return;
             }
 
@@ -735,12 +737,12 @@ namespace Game
             panel.HideMessage();
             if (string.IsNullOrEmpty(panel.UserName))
             {
-                panel.ShowMessage(I18n._(NETMANAGER_USERNAME_NULL));
+                panel.ShowMessage(lang.i18n._(NETMANAGER_USERNAME_NULL));
                 return;
             }
             if (string.IsNullOrEmpty(panel.Password))
             {
-                panel.ShowMessage(I18n._(NETMANAGER_CHECK_CODE_NULL));
+                panel.ShowMessage(lang.i18n._(NETMANAGER_CHECK_CODE_NULL));
                 return;
             }
             try
