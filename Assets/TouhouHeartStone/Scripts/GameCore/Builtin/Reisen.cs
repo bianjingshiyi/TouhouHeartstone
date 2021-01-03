@@ -442,14 +442,14 @@ namespace TouhouHeartstone.Builtin
         {
             Card topCard = card.getOwner().deck.top;
 
-            while (true)
+            while (topCard!=null)
             {
                 if (topCard.hasKeyword(game, KEYWORD.SECRET) &&
                 topCard.define is SpellCardDefine &&
                 card.getOwner().head.count < card.getOwner().head.maxCount &&
                 card.getOwner().head.All(c => c.define != topCard.define))
                 {
-                    await card.getOwner().hand.moveTo(game, topCard, card.getOwner().head);
+                    await card.getOwner().deck.moveTo(game, topCard, card.getOwner().head);
                     topCard = card.getOwner().deck.top;
                 }
                 else

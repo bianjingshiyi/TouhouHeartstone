@@ -276,8 +276,10 @@ namespace Tests
 
             game.skipUntilCanUse<TewiInaba>(you);
             Assert.AreEqual(0, you.head.count);
+            int handCount = you.hand.count; 
             you.cmdUse(game, you.hand.getCard<TewiInaba>());
             Assert.AreEqual(1, you.head.count);
+            Assert.AreEqual(handCount,you.hand.count);
             game.Dispose();
         }
 
