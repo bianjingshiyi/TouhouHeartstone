@@ -48,9 +48,13 @@ namespace Game
                     cultures.Add(culture);
                     i18n.Load(Path.Combine(Application.streamingAssetsPath, folderPath), culture);
                 }
-                catch (FileNotFoundException)
+                catch (FileNotFoundException e)
                 {
-                    UberDebug.LogError($"无法载入语言{lang}的翻译文件");
+                    UberDebug.LogError($"无法载入语言{lang}的翻译文件, {e.Message}");
+
+                    // 为没有翻译文件的加载一个默认空翻译
+                    if (lang == defaultLang)
+                        i18n.AddEmpty(new CultureInfo(defaultLang));
                 }
             }
             i18n.SetDefaultLang(new CultureInfo(defaultLang));
