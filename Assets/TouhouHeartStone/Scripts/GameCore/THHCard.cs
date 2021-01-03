@@ -462,14 +462,14 @@ namespace TouhouHeartstone
             if (oldKeywords == null)
                 oldKeywords = keywords;
             else
-                foreach(string key in keywords)
+                foreach (string key in keywords)
                 {
                     if (!card.hasKeyword(game, key))
                     {
                         oldKeywords = oldKeywords.Append(key).Distinct().ToArray();
                     }
                 }
-    
+
             return card.setKeywords(game, oldKeywords);
         }
         public static Task<ISetPropEventArg> removeKeywords(this Card card, IGame game, params string[] keywords)
@@ -755,7 +755,7 @@ namespace TouhouHeartstone
         public static async Task resetCard(this Card card, THHGame game)
         {
             await card.removeBuff(game, card.getBuffs());
-      
+
             if (card.define is ServantCardDefine servant)
             {
                 await card.setDead(game, false);
@@ -899,10 +899,17 @@ namespace TouhouHeartstone
         }
         public static Task<DamageEventArg> damage(this Card card, THHGame game, Card source, int value)
         {
-            return damage(game, new Dictionary<Card, DamageEventArg.Info>()
+            try
             {
-                { card, new DamageEventArg.Info(value,source) }
-            });
+                return damage(game, new Dictionary<Card, DamageEventArg.Info>()
+                {
+                    { card, new DamageEventArg.Info(value,source) }
+                });
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
         public static Task<DamageEventArg> damage(this IEnumerable<Card> cards, THHGame game, Card source, int value)
         {
@@ -1361,6 +1368,6 @@ namespace TouhouHeartstone
             }
         }
 
-        
+
     }
 }

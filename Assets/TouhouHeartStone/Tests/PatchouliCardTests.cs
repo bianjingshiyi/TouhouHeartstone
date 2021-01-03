@@ -48,7 +48,7 @@ namespace Tests
             game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<BestMagic>().cost);
             you.cmdUse(game, you.hand.getCard<BestMagic>());//使用秘藏魔法
             Assert.True(you.hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 0));//火球术费用-5
-            you.cmdUse(game, you.hand.getCard<FireBall>());
+            you.cmdUse(game, you.hand.getCard<FireBall>(), 0, oppo.master);
             Assert.True(you.hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));
             you.cmdTurnEnd(game);
             //Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//回合结束，效果消失
