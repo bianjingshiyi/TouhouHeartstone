@@ -315,8 +315,21 @@ namespace Tests
             game.skipUntilCanUse<MoriyaSuwako>(you);
             you.cmdUse(game, you.hand.getCard<MoriyaSuwako>());
             game.skipTurnUntil(() => { return you.hand.count == 10;});
+            // 这里偷了个懒，得把suwako亡语设成回手,因为目前诹访子的写法不允许选亡语触发
             you.field[0].backToHand(game);
             Assert.AreEqual(10,you.hand.count);
+        }
+
+        [Test]
+        public void SuwakoReduceCostTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo, 
+                new KeyValuePair<int, int>(MoriyaSuwako.ID,1),
+                new KeyValuePair<int, int>(StarRitual.ID,1));
+            game.skipUntilCanUse<MoriyaSuwako>(you);
+            game.skipUntilCanUse<StarRitual>(you);
+            you.cmdUse<StarRitual>(game);
+            Assert.AreEqual(9,you.hand.getCard<MoriyaSuwako>().getCost(game));
         }
     }
 }
