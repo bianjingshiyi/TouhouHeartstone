@@ -9,7 +9,7 @@ using BJSYGameCore;
 using BJSYGameCore.UI;
 namespace UI
 {
-    partial class Servant : IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
+    partial class ServantItem : IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
     {
         [Obsolete]
         public TouhouCardEngine.Card card { get; private set; }
@@ -19,15 +19,15 @@ namespace UI
         {
             get { return _attackAnimationCurve; }
         }
-        public void update(CardDefine card, CardSkinData skin)
-        {
-            if (skin != null)
-            {
-                Image.sprite = skin.image;
-            }
-            AttackTextPropNumber.text.text = card.getAttack().ToString();
-            HpTextPropNumber.text.text = card.getLife().ToString();
-        }
+        //public void update(CardDefine card, CardSkinData skin)
+        //{
+        //    if (skin != null)
+        //    {
+        //        Image.sprite = skin.image;
+        //    }
+        //    AttackTextPropNumber.text.text = card.getAttack().ToString();
+        //    HpTextPropNumber.text.text = card.getLife().ToString();
+        //}
         [SerializeField]
         float _attackThreshold = 70;
         public float attackThreshold
@@ -36,8 +36,8 @@ namespace UI
         }
         [SerializeField]
         bool _isHovered = false;
-        public ActionEvent<Servant, PointerEventData> onPointerEnter { get; set; } = new ActionEvent<Servant, PointerEventData>();
-        public ActionEvent<Servant, PointerEventData> onPointerExit { get; set; } = new ActionEvent<Servant, PointerEventData>();
+        public ActionEvent<ServantItem, PointerEventData> onPointerEnter { get; set; } = new ActionEvent<ServantItem, PointerEventData>();
+        public ActionEvent<ServantItem, PointerEventData> onPointerExit { get; set; } = new ActionEvent<ServantItem, PointerEventData>();
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
         }
@@ -74,7 +74,7 @@ namespace UI
             //}
             onDrag.invoke(this, eventData);
         }
-        public ActionEvent<Servant, PointerEventData> onDrag { get; } = new ActionEvent<Servant, PointerEventData>();
+        public ActionEvent<ServantItem, PointerEventData> onDrag { get; } = new ActionEvent<ServantItem, PointerEventData>();
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
             //Table table = GetComponentInParent<Table>();
@@ -110,7 +110,7 @@ namespace UI
             //cancelAttack(table);
             onDragEnd.invoke(this, eventData);
         }
-        public ActionEvent<Servant, PointerEventData> onDragEnd { get; } = new ActionEvent<Servant, PointerEventData>();
+        public ActionEvent<ServantItem, PointerEventData> onDragEnd { get; } = new ActionEvent<ServantItem, PointerEventData>();
         private void cancelAttack(Table table)
         {
             rectTransform.localScale = Vector3.one;
@@ -151,7 +151,7 @@ namespace UI
         {
             onClick.invoke(this, eventData);
         }
-        public ActionEvent<Servant, PointerEventData> onClick { get; } = new ActionEvent<Servant, PointerEventData>();
+        public ActionEvent<ServantItem, PointerEventData> onClick { get; } = new ActionEvent<ServantItem, PointerEventData>();
         public SimpleAnim onAttackUp;
         public SimpleAnim onAttackDown;
         public SimpleAnim onLifeUp;

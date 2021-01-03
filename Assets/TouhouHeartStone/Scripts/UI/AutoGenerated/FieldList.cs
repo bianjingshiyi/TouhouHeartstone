@@ -15,7 +15,7 @@ namespace UI
     using UnityEngine.UI;
     using BJSYGameCore.UI;
     
-    public partial class FieldList : UIList<Servant>
+    public partial class FieldList : UIList<ServantItem>
     {
         protected override void Awake()
         {
@@ -27,7 +27,7 @@ namespace UI
         public void autoBind()
         {
             this.m_as_ListLayoutGroup = this.GetComponent<ListLayoutGroup>();
-            this.defaultItem = this.transform.Find("Servant").GetComponent<Servant>();
+            this.defaultItem = this.transform.Find("Servant").GetComponent<ServantItem>();
         }
         [SerializeField()]
         private ListLayoutGroup m_as_ListLayoutGroup;
@@ -42,9 +42,9 @@ namespace UI
                 return this.m_as_ListLayoutGroup;
             }
         }
-        protected override Servant getDefaultItem()
+        protected override ServantItem getDefaultItem()
         {
-            return this.transform.Find("Servant").GetComponent<Servant>();
+            return this.transform.Find("Servant").GetComponent<ServantItem>();
         }
         partial void onAwake();
     }

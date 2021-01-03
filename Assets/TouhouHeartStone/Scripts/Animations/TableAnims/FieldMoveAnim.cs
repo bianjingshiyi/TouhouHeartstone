@@ -9,12 +9,12 @@ namespace Game
     class FieldMoveAnim : TableAnimation
     {
         [SerializeField]
-        Servant _servant;
+        ServantItem _servant;
         [SerializeField]
         Vector3 _startPosition;
         [SerializeField]
         Timer _timer;
-        public FieldMoveAnim(TableManager table, Servant servant, FieldList field, int index)
+        public FieldMoveAnim(TableManager table, ServantItem servant, FieldList field, int index)
         {
             _servant = servant;
             _startPosition = servant.getRoot().position;
