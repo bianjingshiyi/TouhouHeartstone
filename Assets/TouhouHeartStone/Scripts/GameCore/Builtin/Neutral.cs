@@ -549,49 +549,7 @@ namespace TouhouHeartstone.Builtin
             //})
         };
 
-        /// <summary>
-        /// 扳机触发被动特效
-        /// 达到一定条件开启/关闭特效
-        /// 这东西根本不能写在这里吧！！！！！！
-        /// </summary>
-        public class ConditionalPassiveEffect : PassiveEffect
-        {
-            Func<THHGame, Card, Buff, bool> condition { get; }
-            PassiveEffect effect { get; }
-            public ConditionalPassiveEffect(PassiveEffect effect, Func<THHGame, Card, Buff, bool> condition)
-            {
-                this.condition = condition;
-                this.effect = effect;
-            }
-            public override string[] piles => effect.piles;
-            public override async Task onEnable(THHGame game, Card card, Buff buff)
-            {
-                Trigger<THHGame.TurnStartEventArg> enableTrig = new Trigger<THHGame.TurnStartEventArg>(arg =>
-                {
-                    if (condition == null || condition(game, card, buff))
-                        effect.onEnable(game, card, buff);
-                    return Task.CompletedTask;
-                });
-                await card.setProp(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig", enableTrig);
-                game.triggers.registerAfter(enableTrig);
-                Trigger<THHPlayer.UseEventArg> disableTrig = new Trigger<THHPlayer.UseEventArg>(arg =>
-                {
-                    if (condition != null && !condition(game, card, buff))
-                        effect.onDisable(game, card, buff);
-                    return Task.CompletedTask;
-                });
-                await card.setProp(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "disableTrig", disableTrig);
-                game.triggers.registerAfter(disableTrig);
-                if (condition == null || condition(game, card, buff))
-                    await effect.onEnable(game, card, buff);
-            }
-            public override Task onDisable(THHGame game, Card card, Buff buff)
-            {
-                game.triggers.removeAfter(card.getProp<Trigger<THHGame.TurnStartEventArg>>(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig"));
-                game.triggers.removeAfter(card.getProp<Trigger<THHPlayer.UseEventArg>>(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "disableTrig"));
-                return effect.onDisable(game, card, buff);
-            }
-        }
+        
     }
     /// <summary>
     /// 212 橙 战吼：获得+2攻击力和突袭
