@@ -1325,13 +1325,15 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="targets">登场效果目标，可以为null</param>
         /// <returns></returns>
-        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, IGame game, Card[] targets)
+        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, THHGame game,THHPlayer player, Card[] targets)
         {
+
             IActiveEffect activeEffect = card.define.getActiveEffect();
             if (activeEffect != null)
             {
-                var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card, targets = targets }, async arg =>
+                var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card,player = player, targets = targets }, async arg =>
                 {
+                    await card.activeEffect(game, player, targets);//执行随从效果
                     if (targets != null &&
                       targets.Length > 0)
                     {
@@ -1349,6 +1351,7 @@ namespace TouhouHeartstone
         public class ComeOnStageArg : EventArg, IDescribableEventArg
         {
             public Card card;
+            public THHPlayer player;
             public Card[] targets;
 
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)

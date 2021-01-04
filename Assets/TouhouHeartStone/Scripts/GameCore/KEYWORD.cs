@@ -62,5 +62,9 @@
         /// 奥秘
         /// </summary>
         public const string SECRET = "secret";
+        /// <summary>
+        /// 内部关键词：使用后回到手牌。
+        /// </summary>
+        public const string _RETURNHEAD = "_returnHead";
     }
 }

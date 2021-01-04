@@ -333,7 +333,7 @@ namespace TouhouHeartstone
                 await card.setUsed(game, true);
             }
             await setGem(game, gem - card.getCost(game));//消耗法力值
-            await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, targets = targets }, async arg =>
+            await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position,cost = card.getCost(game), targets = targets }, async arg =>
             {
                 THHPlayer player = arg.player;
                 card = arg.card;
@@ -342,8 +342,8 @@ namespace TouhouHeartstone
                 if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
                 {
                     await tryEnterField(game, arg.player.hand, arg.card, arg.position);//随从卡，将卡置入战场
-                    await card.ComeOnStage(game, targets);//触发战吼事件
-                    await card.activeEffect(game, player, targets);//执行随从效果
+                    await card.ComeOnStage(game,player, targets);//触发战吼事件
+                    //await card.activeEffect(game, player, targets);//执行随从效果
                 }
                 else if (card.define is SkillCardDefine)
                 {
@@ -358,6 +358,10 @@ namespace TouhouHeartstone
                     else
                     {
                         await card.activeEffect(game, player, targets);
+                        if (card.hasKeyword(game, KEYWORD._RETURNHEAD))
+                        {
+                            await player.warp.moveTo(game, card, player.hand);
+                        }
                         await player.warp.moveTo(game, card, player.grave);//如果是普通法术，则送入墓地
                     }
                 }
@@ -413,6 +417,7 @@ namespace TouhouHeartstone
             public THHPlayer player;
             public Card card;
             public int position;
+            public int cost;
             public Card[] targets;
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
