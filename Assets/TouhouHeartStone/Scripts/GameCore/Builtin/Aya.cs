@@ -286,5 +286,116 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
+    /// <summary>
+    /// 09 果
+    /// 抽牌，数量等同于这张卡的原始灵力值消耗与你使用这张卡时实际灵力值消耗之差。
+    /// </summary>
+    public class HimekaidouHatate : ServantCardDefine
+    {
+        public const int ID = Aya.ID | CATEGORY.SERVANT | 0x009;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;//随从的攻击力
+        public override int life { get; set; } = 3;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        //public override string[] tags { get; set; } = new string[] { TAG.BEAST };//种族标签
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            int CurrentCost = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
+                                OfType<THHPlayer.UseEventArg>().Last(u => u.player == card.getOwner()).cost;
+            int baseCost = card.define.getCost();
+
+            for(int i=0; i<Math.Abs(CurrentCost - baseCost); i++)
+            {
+                await card.getOwner().draw(game);
+            }
+        }
+
+
+    }
+
+    /// <summary>
+    /// 10 文花帖
+    /// 每当你攻击时，使随机一张手牌灵力值消耗减少1点
+    /// </summary>
+    public class Bunkachou : ItemCardDefine
+    {
+        public const int ID = Aya.ID | CATEGORY.ITEM | 0x010;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHCard.AttackEventArg>(PILE.MASTER,(g,c,a)=>
+            {
+                return a.card == c.getOwner().master;
+            },null,async(g,c,a)=>
+            {
+                await c.getOwner().hand.random(g).addBuff(g ,new GeneratedBuff(ID,new CostModifier(-1)));
+            })
+        };
+    }
+
+    /// <summary>
+    /// 11 风神少女
+    /// 抽一张牌，你本回合每使用一张牌，它的灵力值消耗就减少一点。
+    /// </summary>
+    public class WindGodGirl : SpellCardDefine
+    {
+        public const int ID = Aya.ID | CATEGORY.SPELL | 0x011;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            int cost = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
+                        OfType<THHPlayer.UseEventArg>().
+                        Where(e2 => e2.player == card.getOwner() && !e2.card.isSkill()).Count() + 1;
+
+            await card.getOwner().draw(game, out var draw);
+            Card drawCard = draw.card;
+
+            await card.addBuff(game, new GeneratedBuff(ID, new CostModifier(-cost)));
+        }
+    }
+
+    /// <summary>
+    /// 12
+    /// </summary>
+    public class LeafHiding : SpellCardDefine
+    {
+        public const int ID = Aya.ID | CATEGORY.SPELL | 0x011;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().discover(game, game.getAllServants());
+
+            bool x = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
+                        OfType<THHPlayer.UseEventArg>().
+                        Any(e2 => e2.player == card.getOwner() && !e2.card.isSkill());
+            if (x)
+            {
+                await card.getOwner().discover(game, game.getAllServants());
+            }
+        }
+    }
+
 
 }

@@ -214,10 +214,10 @@ namespace Tests
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Aya>(),
                 Enumerable.Repeat(game.getDefine<WindGodFan>() as CardDefine, 10));
 
-            game.skipUntilHasGem(you,10);
+            game.skipUntilHasGem(you, 10);
 
             you.cmdUse(game, you.skill);
-            you.cmdUse(game, you.hand.getCard<WindGodFan>(),targets: oppo.master);
+            you.cmdUse(game, you.hand.getCard<WindGodFan>(), targets: oppo.master);
             you.cmdUse(game, you.hand.getCard<WindGodFan>(), targets: oppo.master);
 
             game.Dispose();
@@ -242,6 +242,27 @@ namespace Tests
             oppo.draw(game);
 
             Assert.True(you.hand.Any(e => e.define == game.getDefine<DefaultServant>()));
+            game.Dispose();
+        }
+
+        [Test]
+        public void HimekaidouHatateTest()
+        {
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            {
+                shuffle = false
+            });
+            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 10));
+            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Aya>(),
+                Enumerable.Repeat(game.getDefine<HimekaidouHatate>() as CardDefine, 20));
+
+            game.skipUntilCanUse<HimekaidouHatate>(you);
+            you.cmdUse(game, you.hand.getCard<HimekaidouHatate>());
+            game.skipUntilCanUse<HimekaidouHatate>(you);
+            you.cmdUse(game, you.skill);
+            you.cmdUse(game, you.hand.getCard<HimekaidouHatate>());
+
             game.Dispose();
         }
     }
