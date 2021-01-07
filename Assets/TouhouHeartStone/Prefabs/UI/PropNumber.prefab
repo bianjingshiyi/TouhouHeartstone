@@ -129,15 +129,15 @@ MonoBehaviour:
   _useController: 0
   _initStates: []
   _asAnimator: {fileID: 0}
-  _text: {fileID: 0}
   _icon: {fileID: 0}
+  _text: {fileID: 0}
   RedText:
     beforeAnim:
       m_PersistentCalls:
         m_Calls: []
     setColor:
       enable: 1
-      target: {fileID: 0}
+      target: {fileID: 2115446307860501590}
       color: {r: 0.9019608, g: 0.0901961, b: 0.0901961, a: 1}
     animName: 
     afterAnim:
@@ -149,7 +149,7 @@ MonoBehaviour:
         m_Calls: []
     setColor:
       enable: 1
-      target: {fileID: 0}
+      target: {fileID: 2115446307860501590}
       color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
     afterAnim:
@@ -161,7 +161,7 @@ MonoBehaviour:
         m_Calls: []
     setColor:
       enable: 1
-      target: {fileID: 0}
+      target: {fileID: 2115446307860501590}
       color: {r: 0.09000002, g: 0.9, b: 0.09000002, a: 1}
     animName: 
     afterAnim:
