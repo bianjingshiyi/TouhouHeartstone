@@ -516,12 +516,13 @@ MonoBehaviour:
   _initStates:
   - IsFaceup/IsFaceup_True
   - Type/Type_Servant
-  _highlight: {fileID: 0}
   _asAnimator: {fileID: 0}
+  _highlight: {fileID: 0}
   _cardBackEffectImage: {fileID: 0}
   _itemCardFace: {fileID: 0}
   _spellCardFace: {fileID: 0}
   _servantCardFace: {fileID: 0}
+  _cardFaceEffectImage: {fileID: 0}
   _crossImage: {fileID: 0}
   _useCurve:
     serializedVersion: 2
