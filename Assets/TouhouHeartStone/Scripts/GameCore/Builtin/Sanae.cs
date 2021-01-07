@@ -876,6 +876,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x030;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
+        public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async(g, c, t) =>
@@ -890,6 +891,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x031;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
+        public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async(g, c, t) =>
@@ -905,6 +907,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x032;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
+        public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -921,6 +924,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x033;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
+        public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)

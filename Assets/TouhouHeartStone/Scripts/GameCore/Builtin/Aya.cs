@@ -392,7 +392,7 @@ namespace TouhouHeartstone.Builtin
                         Any(e2 => e2.player == card.getOwner() && !e2.card.isSkill());
             if (x)
             {
-                await card.getOwner().discover(game, game.getAllServants());
+                await card.getOwner().discover(game);
             }
         }
     }
