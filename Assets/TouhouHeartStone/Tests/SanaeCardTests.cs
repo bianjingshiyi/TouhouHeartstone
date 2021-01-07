@@ -200,22 +200,22 @@ namespace Tests
 
         }
 
-        [Test]
-        public void GodSummon_ThrustTest()
-        {
-            TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(GodSummon_Thrust.ID, 2),
-                new KeyValuePair<int, int>(YasakaKanako.ID, 2),
-                new KeyValuePair<int, int>(DefaultServant.ID, 2)
+        //[Test]
+        //public void GodSummon_ThrustTest()
+        //{
+        //    TestGameflow.createGame(out var game, out var you, out var oppo,
+        //        new KeyValuePair<int, int>(GodSummon_Thrust.ID, 2),
+        //        new KeyValuePair<int, int>(YasakaKanako.ID, 2),
+        //        new KeyValuePair<int, int>(DefaultServant.ID, 2)
                 
-            );
+        //    );
          
-            game.skipUntilCanUse<GodSummon_Thrust>(you);
-            you.cmdUse(game, you.hand.getCard<GodSummon_Thrust>());
+        //    game.skipUntilCanUse<GodSummon_Thrust>(you);
+        //    you.cmdUse(game, you.hand.getCard<GodSummon_Thrust>());
 
-            game.Dispose();
+        //    game.Dispose();
 
-        }
+        //}
 
         [Test]
         public void ManipulatedGaintFrogTest()

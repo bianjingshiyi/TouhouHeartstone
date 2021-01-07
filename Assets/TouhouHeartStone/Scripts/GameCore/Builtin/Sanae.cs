@@ -114,6 +114,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x001;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -144,25 +145,43 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 灰色秘术
-    /// 治愈2点生命值。本回合你每揭示过一次，重复一遍。
+    /// 信仰对决
+    /// 治愈8点生命值。
+    /// 本回合中,如果你打出一张信仰对决牌，再为它治愈4点生命值。
     /// </summary>
     public class GrayThaumaturgy : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x002;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
+        public override int cost { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
-                int count = game.triggers.getRecordedEvents().skipUntilLast(e=> e is THHGame.TurnStartEventArg turnStart)
-                    .OfType<Sanae.RevealDuelArg>().Count();
-
-                await target.heal(game,card,2);
-                for(int i=0; i < count; i++)
-                {
-                    await target.heal(game,card,2);
-                }
+                await target.heal(game,card,8);
+                await target.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,(g,c,a)=>
+                      {
+                          return a.player == c.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
+                      },null,async(g,c,a)=>
+                      {
+                            await target.heal(game,card,4);
+                      }),
+                      new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.FIELD,(g,c,a)=>
+                      {
+                          return a.player == c.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
+                      },ID),
+                      new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.MASTER,(g,c,a)=>
+                      {
+                          return a.player == c.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
+                      },ID),
+                      new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.FIELD,(g,c,a)=>
+                      {
+                          return a.player == c.getOwner();
+                      },ID),
+                      new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER,(g,c,a)=>
+                      {
+                          return a.player == c.getOwner();
+                      },ID)));
             })
         };
        
@@ -177,6 +196,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x003;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
@@ -195,13 +215,13 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 五谷丰穰
-    /// 治愈10点生命值，分配到所有友方角色身上。
+    /// 治愈5点生命值，分配到所有友方角色身上。
     /// </summary>
     public class BumperCrop : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x004;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 3;
+        public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -209,7 +229,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            for(int i=0; i<10; i++)
+            for(int i=0; i<5; i++)
             {
                 await game.getAllAllys(card.getOwner()).Where(e => e.isDamage(game)).random(game).heal(game, card, 1);
             }
@@ -225,6 +245,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x005;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -252,6 +273,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x006;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
@@ -274,47 +296,39 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 虔诚的参拜客
-    /// 每当一个友方角色获得治疗后，攻击力+1。
+    /// 飞蛇
+    /// 突袭， 每当该随从受到治疗时，获得+1攻击力。
     /// </summary>
-    public class DevoutPilgrim : ServantCardDefine
+    public class FlyingSnake : ServantCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x007;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 6;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectAfter<THHCard.HealEventArg>(PILE.FIELD, (game, card, arg) =>
             {
-                return arg != null;
+                return arg != null && arg.cards.Any(e => e == card);
             },null,async(game,card,arg)=>
             {
-                //game:game
-                //card:参拜客
-                //arg:事件
-                foreach(Card c in arg.cards)
-                {
-                    if (c.getOwner() == card.getOwner())
-                    {
-                        await card.addBuff(game,new GeneratedBuff(ID,new AttackModifier(1)));
-                    }
-                }
+                await card.addBuff(game,new GeneratedBuff(ID,new AttackModifier(1)));
             })
         };
     }
 
 
     /// <summary>
-    /// 神明招来 突
-    /// 召唤手牌中的一张随机神明随从牌的复制，并使其获得突袭。
+    /// 神明招来
+    /// 从牌库中随机召唤一张神明牌，并使其获得突袭.回合结束时，他会返回牌库。
     /// </summary>
-    public class GodSummon_Thrust : SpellCardDefine
+    public class GodSummon : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x008;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 6;
+        public override int cost { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -323,43 +337,50 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             THHPlayer you = card.getOwner();
-            Card god = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
-            if(god != null)
-            { 
-                var servant = await you.createToken(game, god.define);
-                await servant.card.addKeywords(game, KEYWORD.RUSH);
-                //await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
-            }
-        }
-    }
-
-    /// <summary>
-    /// 神明招来 盾
-    /// 召唤手牌中的一张随机神明随从牌的复制，并使其获得圣盾和嘲讽。
-    /// </summary>
-    public class GodSummon_Shield : SpellCardDefine
-    {
-        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x009;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 6;
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            new NoTargetEffect(effect)
-        };
-
-        static async Task effect(THHGame game, Card card)
-        {
-            THHPlayer you = card.getOwner();
-            Card god = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
+            Card god = you.deck.Where(c => c.hasTag(game, TAG.GOD)).random(game);
             if(god != null)
             {
-                var servant = await you.createToken(game, god.define);
-                await servant.card.addKeywords(game, KEYWORD.SHIELD,KEYWORD.TAUNT);
-                //await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.SHIELD), new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.TAUNT)));
+                await you.tryEnterField(game, you.deck, god,you.field.count);
             }
-            
+            await god.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD, (g, c, a) =>
+               {
+                   return a.player == c.getOwner();
+               }, null, async (g, c, a) =>
+               {
+                   int index = game.randomInt(0, c.getOwner().deck.count);
+                   await god.resetCard(game);
+                   await c.getOwner().field.moveTo(game, god, c.getOwner().deck, index);
+               })));
         }
     }
+
+    ///// <summary>
+    ///// 神明招来 盾
+    ///// 召唤手牌中的一张随机神明随从牌的复制，并使其获得圣盾和嘲讽。
+    ///// </summary>
+    //public class GodSummon_Shield : SpellCardDefine
+    //{
+    //    public const int ID = Sanae.ID | CATEGORY.SPELL | 0x009;
+    //    public override int id { get; set; } = ID;
+    //    public override int cost { get; set; } = 6;
+    //    public override IEffect[] effects { get; set; } = new IEffect[]
+    //    {
+    //        new NoTargetEffect(effect)
+    //    };
+
+    //    static async Task effect(THHGame game, Card card)
+    //    {
+    //        THHPlayer you = card.getOwner();
+    //        Card god = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
+    //        if(god != null)
+    //        {
+    //            var servant = await you.createToken(game, god.define);
+    //            await servant.card.addKeywords(game, KEYWORD.SHIELD,KEYWORD.TAUNT);
+    //            //await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.SHIELD), new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.TAUNT)));
+    //        }
+            
+    //    }
+    //}
 
     /// <summary>
     /// 被操纵的巨蛙
@@ -399,35 +420,35 @@ namespace TouhouHeartstone.Builtin
     /// 信仰对决(法术牌) 获胜时抽一张牌
     /// </summary>
 
-    public class YoukaiBelievers : ServantCardDefine
-    {
-        public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x011;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 5;
-        public override int attack { get; set; } = 4;
-        public override int life { get; set; } = 6;
-        //public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
-        //public override string[] tags { get; set; } = { TAG.BEAST };
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            new NoTargetEffect(effect)
-        };
+    //public class YoukaiBelievers : ServantCardDefine
+    //{
+    //    public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x011;
+    //    public override int id { get; set; } = ID;
+    //    public override int cost { get; set; } = 5;
+    //    public override int attack { get; set; } = 4;
+    //    public override int life { get; set; } = 6;
+    //    //public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+    //    //public override string[] tags { get; set; } = { TAG.BEAST };
+    //    public override IEffect[] effects { get; set; } = new IEffect[]
+    //    {
+    //        new NoTargetEffect(effect)
+    //    };
 
-        static async Task effect(THHGame game, Card card)
-        {
-            THHPlayer you = card.getOwner();
-            var duel = await Sanae.revealDuel(you, game,1);
-            if (duel.result)
-            {
-                await you.draw(game);
-            }
+    //    static async Task effect(THHGame game, Card card)
+    //    {
+    //        THHPlayer you = card.getOwner();
+    //        var duel = await Sanae.revealDuel(you, game,1);
+    //        if (duel.result)
+    //        {
+    //            await you.draw(game);
+    //        }
             
-        }
-    }
+    //    }
+    //}
 
     /// <summary>
     /// 神代大蛇
-    /// 战吼：若你本回合揭示过，则随机消灭一个攻击力小于等于3的敌方随从。
+    /// 
     /// </summary>
 
     public class OrochiOfAncientTimes : ServantCardDefine
@@ -441,20 +462,22 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = { TAG.BEAST };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-             new NoTargetEffect(effect)
+             new THHEffectAfter<Sanae.RevealDuelArg>(PILE.HAND,(g,c,a)=>
+                                                                {
+                                                                    return a.player == c.getOwner();
+                                                                },null,async(g,c,a)=>
+                                                                {
+                                                                    await c.addBuff(g,new GeneratedBuff(ID,new CostModifier(-4),
+                                                                                      new RemoveBuffBefore<THHGame.TurnEndEventArg>(PILE.HAND, ID)));
+                                                                }),
+             new LambdaSingleTargetEffect(async(g,c,t)=>
+                                         {
+                                             await t.setDead(g,true);
+                                             await g.updateDeath(g);
+                                         })
+
         };
-        static async Task effect(THHGame game, Card card)
-        {
-            bool isRevealed = (game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).OfType<Sanae.RevealDuelArg>().Count() != 0);
-            if (isRevealed)
-            {
-                if(game.getOpponent(card.getOwner()).field.Where(c => c.getAttack(game) <= 3).Count() > 0)
-                {
-                    await game.getOpponent(card.getOwner()).field.Where(c => c.getAttack(game) <= 3).random(game).setDead(game, true);
-                    await game.updateDeath(game);
-                }             
-            }
-        }
+        
 
     }
 
@@ -482,23 +505,35 @@ namespace TouhouHeartstone.Builtin
         {
             List<Card> options = new List<Card> { game.createCard<GodMiracleOfRain>(), game.createCard<GodMiracleOfOnbashira>(), game.createCard<GodMiracleOfWar>(), game.createCard<GodMiracleOfRevolution>() };
             Card choice = await card.getOwner().discover(game,options, 4, "见证神迹！");
+            int count = game.triggers.getRecordedEvents().
+                skipUntilLast(e => e is THHGame.StartEventArg GameStart).
+                OfType<Sanae.RevealDuelArg>().
+                Where(e2 => e2.player == card.getOwner()).Count();
 
-            if(choice.define == game.getDefine<GodMiracleOfRain>())
+            if (choice.define == game.getDefine<GodMiracleOfRain>())
             {
-                await game.getOpponent(card.getOwner()).field.damage(game, card, 3);
+                await game.getOpponent(card.getOwner()).field.damage(game, card, 3+count);
             }else if (choice.define == game.getDefine<GodMiracleOfOnbashira>())
-            {
-                await card.getOwner().createToken(game, game.getDefine<Onbashira>());
-                await card.getOwner().createToken(game, game.getDefine<Onbashira>());
+            {               
+                for(int i = 0; i< count+1; i++)
+                {
+                    await card.getOwner().createToken(game, game.getDefine<Onbashira>());
+                }
             }
             else if (choice.define == game.getDefine<GodMiracleOfWar>())
             {
-                await game.getOpponent(card.getOwner()).master.damage(game, card, 6);
+                await game.getOpponent(card.getOwner()).master.damage(game, card, 6+count);
             }
             else
             {
-                await card.getOwner().draw(game);
-                await card.getOwner().draw(game);
+                for (int i = 0; i < count + 2; i++)
+                {
+                    await card.getOwner().draw(game);
+                    if (card.getOwner().hand.isFull)
+                    {
+                        break;
+                    }
+                }
             }
         }
     }
@@ -575,9 +610,9 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x018;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 3;
-        public override int attack { get; set; } = 3;
-        public override int life { get; set; } = 3;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 4;
         public override bool isToken { get; set; } = true;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
     }
@@ -757,6 +792,143 @@ namespace TouhouHeartstone.Builtin
                 await oppo.field.moveTo(game, oppo.field[0], oppo.deck,index);
             }
         
+        }
+    }
+
+    public class YoukaiPowerSpoiler : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x026;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        //public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async(g,c,t)=>
+            {
+                await t.silence(g);
+                await c.getOwner().master.heal(g,c,t.define.getCost());
+            },PileFlag.both | PileFlag.field)
+        };
+    }
+
+    //27
+    public class LittleShrine : ServantCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x027;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 0;
+        public override int life { get; set; } = 2;
+       
+        //public override string[] tags { get; set; } = { TAG.BEAST };
+       // public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD, (g, c, a) =>
+                                                                    {
+                                                                       return a.player == c.getOwner();
+                                                                    }, null, 
+                                                                    async (g, c, a) =>
+                                                                    {
+                                                                        var duel = await Sanae.revealDuel(c.getOwner(),g,1);
+                                                                        if (duel.result)
+                                                                        {
+                                                                            await c.getOwner().draw(g);
+                                                                        }
+                                                                    })
+        };
+    }
+
+    public class ForgottenRecrption : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x028;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(async(game,card)=>
+            {
+                Card c = card.getOwner().grave.Where(e => e.define.hasTag(TAG.GOD)).random(game);
+                await card.getOwner().grave.moveTo(game,c,card.getOwner().hand);
+            })
+        };
+    }
+
+
+    public class OmikujiBomb : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x029;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().addRandomCardToHand(game, game.getDefines(new int[] { Bomb1.ID, Bomb2.ID, Bomb3.ID, Bomb4.ID }));
+        }
+    }
+
+    public class Bomb1 : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x030;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async(g, c, t) =>
+            {
+                await t.damage(g,c,c.getOwner().getSpellDamage(g,6));
+            },PileFlag.both | PileFlag.field)
+        };
+    }
+
+    public class Bomb2 : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x031;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async(g, c, t) =>
+            {
+                await t.damage(g,c,c.getOwner().getSpellDamage(g,4));
+            },PileFlag.both | PileFlag.field)
+        };
+
+    }
+
+    public class Bomb3 : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x032;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            await game.getOpponent(card.getOwner()).field.random(game).damage(game, card, card.getOwner().getSpellDamage(game, 4));
+        }
+    }
+
+    public class Bomb4 : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x033;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            await game.getAllServants().damageByRandomCount(game, card, 6, 1);
         }
     }
 }

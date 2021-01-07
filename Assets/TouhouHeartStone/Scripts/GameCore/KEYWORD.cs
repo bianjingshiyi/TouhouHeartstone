@@ -66,5 +66,9 @@
         /// 内部关键词：使用后回到手牌。
         /// </summary>
         public const string _RETURNHEAD = "_returnHead";
+        /// <summary>
+        /// 信仰对决
+        /// </summary>
+        public const string _RevealDuel = "_revealDuel";
     }
 }
