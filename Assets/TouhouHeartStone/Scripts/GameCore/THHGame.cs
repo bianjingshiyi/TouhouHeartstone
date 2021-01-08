@@ -194,6 +194,8 @@ namespace TouhouHeartstone
             return player.field.Concat(new Card[] { player.master }).ToArray();
         }
 
+        
+
         #endregion
         #region Gameflow
         public bool isRunning { get; private set; } = false;

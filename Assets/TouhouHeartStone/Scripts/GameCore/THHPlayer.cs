@@ -855,10 +855,8 @@ namespace TouhouHeartstone
 
         }
 
-
         
-
-
+        
         #region Command
         public Task cmdInitReplace(THHGame game, params Card[] cards)
         {

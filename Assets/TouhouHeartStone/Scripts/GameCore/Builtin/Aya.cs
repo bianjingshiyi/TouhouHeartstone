@@ -384,16 +384,18 @@ namespace TouhouHeartstone.Builtin
         };
 
         static async Task effect(THHGame game, Card card)
-        {
-            await card.getOwner().discover(game, game.getAllServants());
+        { 
+            IEnumerable<Card> cards = game.createCards(game.getDefines().Where(e => (e.id >> 5) == (Aya.ID >> 5)).ToArray()).Where(q => q.isSpell());
+            
+            await card.getOwner().discover(game, cards);
 
             bool x = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
                         OfType<THHPlayer.UseEventArg>().
                         Any(e2 => e2.player == card.getOwner() && !e2.card.isSkill());
             if (x)
             {
-                 
-                //await card.getOwner().discover(game);
+                cards = game.createCards(game.getDefines().Where(e => (e.id >> 5) == (Aya.ID >> 5)).ToArray()).Where(q => q.isSpell());
+                await card.getOwner().discover(game, cards);
             }
         }
     }
