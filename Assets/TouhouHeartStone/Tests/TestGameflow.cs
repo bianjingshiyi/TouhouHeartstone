@@ -45,16 +45,21 @@ namespace Tests
 
         private static IEnumerable<CardDefine> createDeck(THHGame game, KeyValuePair<int, int>[] yourDeck)
         {
+            return createDeck<DefaultServant>(game, yourDeck);
+        }
+        
+        private static IEnumerable<CardDefine> createDeck<T>(THHGame game, KeyValuePair<int, int>[] yourDeck) where T : CardDefine
+        {
             IEnumerable<CardDefine> yourTrueDeck = yourDeck.Length > 0 ?
-            Enumerable.Repeat(game.getDefine(yourDeck[0].Key), yourDeck[0].Value) :
-            Enumerable.Repeat(game.getDefine(DefaultServant.ID), 30);
+                Enumerable.Repeat(game.getDefine(yourDeck[0].Key), yourDeck[0].Value) :
+                Enumerable.Repeat(game.getDefine<T>(), 30);
             for (int i = 1; i < yourDeck.Length; i++)
             {
                 yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getDefine(yourDeck[i].Key), yourDeck[i].Value));
             }
             int count = yourTrueDeck.Count();
             if (count < 30)
-                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getDefine<DefaultServant>(), 30 - count));
+                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getDefine<T>(), 30 - count));
             yourTrueDeck = yourTrueDeck.Reverse();
             return yourTrueDeck;
         }
