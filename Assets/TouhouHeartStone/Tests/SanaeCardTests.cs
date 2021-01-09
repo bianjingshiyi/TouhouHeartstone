@@ -61,46 +61,46 @@ namespace Tests
         /// 召请神明 如果神明回应了你，抽一张法力值消耗最高的牌；否则将一张全新的“星之仪式”置入手牌
         /// </summary>
         [Test]
-        public void StarCeremonyTest()
+        public void StarRitualTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<TestFreezeBrain>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<StarRitual>(), 1)));
-
+            TestGameflow.createGame<FireBall, DefaultServant>(out var game, out var you, out var oppo,
+                new GameOption() {shuffle = false},
+                Sanae.ID, new []{new KeyValuePair<int, int>(StarRitual.ID,2)},
+                Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<StarRitual>(you);
-            you.cmdUse(game, you.hand.getCard<StarRitual>());
-
+            int count = you.hand.count;
+            you.cmdUse<StarRitual>(game);
+            Assert.AreEqual(count, you.hand.count);
+            Assert.AreEqual(4, you.hand[count-1].getCost(game));
+            game.skipTurnWhen(() => you.deck.count == 0);
+            you.cmdUse<StarRitual>(game);
+            count = you.hand.count;
+            Assert.AreEqual(1, you.hand[count-1].getCost(game));
             game.Dispose();
         }
 
         [Test]
         public void GrayThaumaturgyTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<TestFreezeBrain>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getDefine<GrayThaumaturgy>(), 2)));
-
-            game.skipUntilHasGem(you, 2);
-            you.master.damage(game, null, 10);
-
+            TestGameflow.createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo,
+                Sanae.ID,
+                new KeyValuePair<int, int>(GrayThaumaturgy.ID,2), new KeyValuePair<int, int>(StarRitual.ID,4));
+            game.skipUntilHasGem(you,5);
+            you.master.damage(game, null, 20);
+            Assert.AreEqual(10,you.master.getCurrentLife(game));
             you.cmdUse(game, you.hand.getCard<GrayThaumaturgy>(), targets: you.master);
-            Sanae.revealDuel(you,game);
-            Sanae.revealDuel(you, game);
-            Sanae.revealDuel(you, game);
-
-            
-            you.cmdUse(game, you.hand.getCard<GrayThaumaturgy>(),targets: you.master);
-
+            Assert.AreEqual(18,you.master.getCurrentLife(game));
+            game.turnEnd(you);
+            game.skipUntilYourTurn(you);
+            you.cmdUse<StarRitual>(game);
+            Assert.AreEqual(18,you.master.getCurrentLife(game));
+            you.cmdUse(game, you.hand.getCard<GrayThaumaturgy>(), targets: you.master);
+            Assert.AreEqual(26,you.master.getCurrentLife(game));
+            you.cmdUse<StarRitual>(game);
+            Assert.AreEqual(30,you.master.getCurrentLife(game));
+            you.master.damage(game, null, 20);
+            you.cmdUse<StarRitual>(game);
+            Assert.AreEqual(10,you.master.getCurrentLife(game));
             game.Dispose();
         }
 

@@ -42,24 +42,54 @@ namespace Tests
             you = game.createPlayer(1, "玩家1", game.getDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
             oppo = game.createPlayer(2, "玩家2", game.getDefine<MasterCardDefine>(oppoMaster), oppoTrueDeck);
         }
-
+        
+        /// <summary>
+        /// 使用模板分别填充你和对手的牌库
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="you"></param>
+        /// <param name="oppo"></param>
+        /// <param name="option"></param>
+        /// <param name="yourMaster"></param>
+        /// <param name="yourDeck"></param>
+        /// <param name="oppoMaster"></param>
+        /// <param name="oppoDeck"></param>
+        /// <typeparam name="T"></typeparam>
+        public static void createGame<YourDeck,OppoDeck>(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option,
+            int yourMaster, KeyValuePair<int, int>[] yourDeck,
+            int oppoMaster, KeyValuePair<int, int>[] oppoDeck) where YourDeck : CardDefine where OppoDeck : CardDefine
+        {
+            game = initGameWithoutPlayers(null, option);
+            IEnumerable<CardDefine> yourTrueDeck = createDeck<YourDeck>(game, yourDeck);
+            IEnumerable<CardDefine> oppoTrueDeck = createDeck<OppoDeck>(game, oppoDeck);
+            you = game.createPlayer(1, "玩家1", game.getDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
+            oppo = game.createPlayer(2, "玩家2", game.getDefine<MasterCardDefine>(oppoMaster), oppoTrueDeck);
+        }
+        
         private static IEnumerable<CardDefine> createDeck(THHGame game, KeyValuePair<int, int>[] yourDeck)
         {
             return createDeck<DefaultServant>(game, yourDeck);
         }
         
-        private static IEnumerable<CardDefine> createDeck<T>(THHGame game, KeyValuePair<int, int>[] yourDeck) where T : CardDefine
+        /// <summary>
+        /// 使用模板填充牌库
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="yourDeck"></param>
+        /// <typeparam name="_default"></typeparam>
+        /// <returns></returns>
+        private static IEnumerable<CardDefine> createDeck<_default>(THHGame game, KeyValuePair<int, int>[] yourDeck) where _default : CardDefine
         {
             IEnumerable<CardDefine> yourTrueDeck = yourDeck.Length > 0 ?
                 Enumerable.Repeat(game.getDefine(yourDeck[0].Key), yourDeck[0].Value) :
-                Enumerable.Repeat(game.getDefine<T>(), 30);
+                Enumerable.Repeat(game.getDefine<_default>(), 30);
             for (int i = 1; i < yourDeck.Length; i++)
             {
                 yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getDefine(yourDeck[i].Key), yourDeck[i].Value));
             }
             int count = yourTrueDeck.Count();
             if (count < 30)
-                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getDefine<T>(), 30 - count));
+                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getDefine<_default>(), 30 - count));
             yourTrueDeck = yourTrueDeck.Reverse();
             return yourTrueDeck;
         }
