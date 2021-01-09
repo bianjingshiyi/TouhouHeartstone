@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouHeartstone;
+using MukioI18n;
 
 namespace UI
 {
@@ -14,15 +15,32 @@ namespace UI
     {
         CardManager cardManager => ui.getManager<CardManager>();
 
+        LangManager langManager => ui.getManager<LangManager>();
+
         public event Action onFilterConditionChange;
         public event Action onSortChange;
 
+        [TranslateMsg]
+        const string FILTER_TYPE_ALL = "所有";
+
+        [TranslateMsg]
+        const string FILTER_TYPE_MASTER = "英雄";
+
+        [TranslateMsg]
+        const string FILTER_TYPE_SERVANT = "随从";
+
+        [TranslateMsg]
+        const string FILTER_TYPE_SPELL = "法术";
+
+        [TranslateMsg]
+        const string FILTER_TYPE_ITEM = "武器";
+
         KeyValuePair<string, string>[] typeName = {
-            new KeyValuePair<string, string>("", "所有"),
-            new KeyValuePair<string, string>("Master", "英雄"),
-            new KeyValuePair<string, string>("Servant", "随从"),
-            new KeyValuePair<string, string>("Spell", "法术"),
-            new KeyValuePair<string, string>("Item", "武器")
+            new KeyValuePair<string, string>("", FILTER_TYPE_ALL),
+            new KeyValuePair<string, string>("Master", FILTER_TYPE_MASTER),
+            new KeyValuePair<string, string>("Servant", FILTER_TYPE_SERVANT),
+            new KeyValuePair<string, string>("Spell", FILTER_TYPE_SPELL),
+            new KeyValuePair<string, string>("Item", FILTER_TYPE_ITEM)
         };
         enum SortMethod
         {
@@ -32,7 +50,16 @@ namespace UI
             Attack_R
         };
 
-        string[] sortMethodsName = { "费用升序", "费用降序", "攻击升序", "攻击降序" };
+        [TranslateMsg]
+        const string SORT_BY_COST = "费用升序";
+        [TranslateMsg]
+        const string SORT_BY_COST_REVERSE = "费用降序";
+        [TranslateMsg]
+        const string SORT_BY_ATTACK = "攻击升序";
+        [TranslateMsg]
+        const string SORT_BY_ATTACK_REVERSE = "攻击降序";
+
+        string[] sortMethodsName = { SORT_BY_COST, SORT_BY_COST_REVERSE, SORT_BY_ATTACK, SORT_BY_ATTACK_REVERSE };
 
         string filterKeyword = "";
         string filterType = "";
@@ -43,6 +70,9 @@ namespace UI
         int[] allCharacters = { };
 
         SortMethod sortMethod = 0;
+
+        [TranslateMsg]
+        const string CHARACTER_NEUTRAL = "中立";
 
         partial void onAwake()
         {
@@ -58,14 +88,14 @@ namespace UI
             DropdownTypeDropdownLight.asDropdown.options.Clear();
             for (int i = 0; i < typeName.Length; i++)
             {
-                DropdownTypeDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(typeName[i].Value));
+                DropdownTypeDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(langManager.i18n._(typeName[i].Value)));
             }
 
             // 填充排序方式
             DropdownSortDropdownLight.asDropdown.options.Clear();
             for (int i = 0; i < sortMethodsName.Length; i++)
             {
-                DropdownSortDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(sortMethodsName[i]));
+                DropdownSortDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(langManager.i18n._(sortMethodsName[i])));
             }
 
             // 填充角色列表
@@ -77,11 +107,11 @@ namespace UI
             allCharacters = allCharacters.Append(CATEGORY.CHARACTER_NEUTRAL).ToArray();
 
             DropdownCharacterDropdownLight.asDropdown.options.Clear();
-            DropdownCharacterDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData("所有"));
+            DropdownCharacterDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(langManager.i18n._(FILTER_TYPE_ALL)));
             for (int i = 0; i < allCharacters.Length; i++)
             {
                 var id = allCharacters[i];
-                var name = id == CATEGORY.CHARACTER_NEUTRAL ? "中立" : cardManager.getSkin(id)?.name;
+                var name = id == CATEGORY.CHARACTER_NEUTRAL ? langManager.i18n._(CHARACTER_NEUTRAL) : cardManager.getSkin(id)?.name;
                 DropdownCharacterDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(name));
             }
         }

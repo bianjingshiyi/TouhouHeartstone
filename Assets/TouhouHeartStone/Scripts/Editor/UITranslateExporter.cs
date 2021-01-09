@@ -39,7 +39,19 @@ namespace TouhouHeartstone {
         {
             var cp = tr.GetComponent<ITranslateComponent>();
             if (cp != null)
-                pot.AddString(cp.Key, cp.Path);
+            {
+                if (cp.Key != null)
+                {
+                    pot.AddString(cp.Key, cp.Path);
+                }
+                if (cp.Keys != null)
+                {
+                    foreach (var key in cp.Keys)
+                    {
+                        pot.AddString(key, cp.Path);
+                    }
+                }
+            }
 
             for (int i = 0; i < tr.childCount; i++)
             {
