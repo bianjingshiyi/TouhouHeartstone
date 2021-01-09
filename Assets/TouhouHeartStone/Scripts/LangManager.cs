@@ -4,6 +4,7 @@ using MukioI18n;
 using System.IO;
 using System.Globalization;
 using System.Collections.Generic;
+using System;
 
 namespace Game
 {
@@ -30,9 +31,37 @@ namespace Game
         [SerializeField]
         string defaultLang = "zh-CN";
 
+        /// <summary>
+        /// 不要加载默认语言
+        /// </summary>
+        [SerializeField]
+        bool dontLoadDefaultLang = true;
+
         List<CultureInfo> cultures = new List<CultureInfo>();
 
+        /// <summary>
+        /// 可用的语言
+        /// </summary>
         public IEnumerable<CultureInfo> Cultures => cultures;
+
+        CultureInfo currentCulture;
+
+        public event Action<CultureInfo> OnCultureChange;
+
+        /// <summary>
+        /// 当前语言
+        /// </summary>
+        public CultureInfo CurrentCulture 
+        {
+            get => currentCulture;
+            set
+            {
+                currentCulture = value;
+                i18n.SetDefaultLang(currentCulture);
+
+                OnCultureChange?.Invoke(CurrentCulture);
+            }
+        }
 
         public I18n i18n { get; } = new I18n();
 
@@ -40,8 +69,18 @@ namespace Game
         {
             base.onAwake();
 
+            var defaultCulture = new CultureInfo(defaultLang);
+
             foreach (var lang in langs)
             {
+                // 在部分情况下，可能想要使用程序内的源文本作为翻译文本
+                if (lang == defaultLang && dontLoadDefaultLang)
+                {
+                    cultures.Add(defaultCulture);
+                    i18n.AddEmpty(defaultCulture);
+                    continue;
+                }
+
                 try
                 {
                     var culture = new CultureInfo(lang);
@@ -54,10 +93,11 @@ namespace Game
 
                     // 为没有翻译文件的加载一个默认空翻译
                     if (lang == defaultLang)
-                        i18n.AddEmpty(new CultureInfo(defaultLang));
+                        i18n.AddEmpty(defaultCulture);
                 }
             }
-            i18n.SetDefaultLang(new CultureInfo(defaultLang));
+            // 设置当前的默认语言
+            CurrentCulture = defaultCulture;
         }
     }
 }

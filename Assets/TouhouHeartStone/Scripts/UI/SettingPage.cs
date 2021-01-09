@@ -1,11 +1,18 @@
 ﻿using BJSYGameCore;
 using Game;
+using System.Collections.Generic;
 
 namespace UI
 {
     partial class SettingPage
     {
         ConfigManager config => this.findInstance<ConfigManager>();
+
+        LangManager lang => this.findInstance<LangManager>();
+
+        List<string> langItemList = new List<string>();
+
+        UnityEngine.UI.Dropdown langDropdown => LanguageGameOptionItemDropdown.DropdownLight.asDropdown;
 
         partial void onAwake()
         {
@@ -30,7 +37,21 @@ namespace UI
                 var parent = GetComponentInParent<Main>();
                 parent.display(parent.MainMenu);
             });
-            Toggle.onValueChanged.AddListener(onFullScreenToggleValueChange);
+            FullScreenGameOptionItemToggle.Toggle.onValueChanged.AddListener(onFullScreenToggleValueChange);
+
+            langDropdown.onValueChanged.AddListener((val) =>
+            {
+                config.Config.Language = langItemList[val];
+                config.MarkChange();
+            });
+
+            langDropdown.ClearOptions();
+            langItemList.Clear();
+            foreach (var culture in lang.Cultures)
+            {
+                langItemList.Add(culture.Name);
+                langDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(culture.NativeName));
+            }
         }
 
         private void OnEnable()
@@ -39,7 +60,17 @@ namespace UI
             VolumeGameOptionItemSlider.Slider.value = config.Config.Volume;
             BGMGameOptionItemSlider.Slider.value = config.Config.BGM;
             SEGameOptionItemSlider.Slider.value = config.Config.SE;
-            Toggle.isOn = config.Config.FullScreen;
+            FullScreenGameOptionItemToggle.Toggle.isOn = config.Config.FullScreen;
+
+            for (int i = 0; i < langItemList.Count; i++)
+            {
+                if (config.Config.Language == langItemList[i])
+                {
+                    langDropdown.value = i;
+                    break;
+                }
+            }
+
             _isUpdating = false;
         }
         private void onFullScreenToggleValueChange(bool value)

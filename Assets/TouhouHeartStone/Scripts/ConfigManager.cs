@@ -7,11 +7,14 @@ namespace Game
 {
     public class ConfigManager : Manager
     {
+        LangManager lang => getManager<LangManager>();
+
         #region config
         const string keyVolume = "Volume";
         const string keyBGM = "BGM";
         const string keySE = "SE";
         const string keyFullScreen = "FullScreen";
+        const string keyLanguage = "Language";
 
         public class PlayerConfig
         {
@@ -19,6 +22,7 @@ namespace Game
             public float BGM;
             public float SE;
             public bool FullScreen;
+            public string Language;
         }
 
         public PlayerConfig Config { get; } = new PlayerConfig();
@@ -34,6 +38,7 @@ namespace Game
             Config.BGM = PlayerPrefs.HasKey(keyBGM) ? PlayerPrefs.GetFloat(keyBGM) : 1;
             Config.SE = PlayerPrefs.HasKey(keySE) ? PlayerPrefs.GetFloat(keySE) : 1;
             Config.FullScreen = (PlayerPrefs.HasKey(keyFullScreen) ? PlayerPrefs.GetInt(keyFullScreen, 0) : 0) == 1;
+            Config.Language = PlayerPrefs.HasKey(keyLanguage) ? PlayerPrefs.GetString(keyLanguage) : lang.CurrentCulture.Name;
             MarkChange();
         }
 
@@ -43,11 +48,13 @@ namespace Game
             PlayerPrefs.SetFloat(keyBGM, Config.BGM);
             PlayerPrefs.SetFloat(keySE, Config.SE);
             PlayerPrefs.SetInt(keyFullScreen, Config.FullScreen ? 1 : 0);
+            PlayerPrefs.SetString(keyLanguage, Config.Language);
         }
 
         public void MarkChange()
         {
             updateVolumeMixer();
+            lang.CurrentCulture = new System.Globalization.CultureInfo(Config.Language);
             Screen.fullScreen = Config.FullScreen;
             OnConfigChange?.Invoke(Config);
         }
