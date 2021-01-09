@@ -108,8 +108,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 94, y: 453.4}
-  m_SizeDelta: {x: 464, y: 55.71643}
+  m_AnchoredPosition: {x: 90, y: 453}
+  m_SizeDelta: {x: 464, y: 83.18671}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8643689484077059196
 CanvasRenderer:
@@ -132,19 +132,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 0.27450982, g: 0.27450982, b: 0.19607843, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 0811d11d855d67144a4dc8107652e329, type: 3}
     m_FontSize: 45
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 0
-    m_MaxSize: 100
+    m_BestFit: 1
+    m_MinSize: 40
+    m_MaxSize: 60
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -260,8 +260,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 94, y: 374.5}
-  m_SizeDelta: {x: 464, y: 58.48419}
+  m_AnchoredPosition: {x: 80, y: 374.5}
+  m_SizeDelta: {x: 449, y: 58.48419}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5799459545745771293
 CanvasRenderer:
@@ -284,19 +284,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 0.27450982, g: 0.27450982, b: 0.19607843, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 40
+    m_Font: {fileID: 12800000, guid: 0811d11d855d67144a4dc8107652e329, type: 3}
+    m_FontSize: 30
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 0
-    m_MaxSize: 100
+    m_BestFit: 1
+    m_MinSize: 20
+    m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -675,19 +675,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 2c3a2d5fe7fee4344a22cd42f4292a1d, type: 3}
     m_FontSize: 40
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 2
-    m_MaxSize: 48
+    m_BestFit: 1
+    m_MinSize: 40
+    m_MaxSize: 50
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57"
+  m_Text: "\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57"
 --- !u!1 &8439515916943417362
 GameObject:
   m_ObjectHideFlags: 0
@@ -769,6 +769,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4574603629638151253}
     m_Modifications:
+    - target: {fileID: 2115446307860501590, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_Text
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2872538149249012041, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: m_Name
@@ -900,6 +905,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 8383792400324555996, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8383792400324555996, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 26e94d6f26f17604e8a1fa704b48f146, type: 3}
 --- !u!224 &8505658911242519221 stripped
@@ -1025,6 +1040,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4793812825312622034, guid: 8b1cf5e01a0113d43a3cd0aba6125375,
+        type: 3}
+      propertyPath: m_Text
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8647428410972926157, guid: 8b1cf5e01a0113d43a3cd0aba6125375,
         type: 3}
       propertyPath: m_Name
@@ -1045,6 +1065,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4574603629638151253}
     m_Modifications:
+    - target: {fileID: 719371249638313039, guid: 7bc85545909269a40925d78b5c830bca,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1767864255990906328, guid: 7bc85545909269a40925d78b5c830bca,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1159,6 +1184,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LifePropNumber
+      objectReference: {fileID: 0}
+    - target: {fileID: 6987648898844798149, guid: 7bc85545909269a40925d78b5c830bca,
+        type: 3}
+      propertyPath: m_Text
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7bc85545909269a40925d78b5c830bca, type: 3}

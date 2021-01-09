@@ -139,12 +139,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 2c3a2d5fe7fee4344a22cd42f4292a1d, type: 3}
     m_FontSize: 40
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 2
-    m_MaxSize: 48
+    m_BestFit: 1
+    m_MinSize: 40
+    m_MaxSize: 60
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -214,11 +214,11 @@ MonoBehaviour:
   _useController: 0
   _initStates: []
   _image: {fileID: 0}
+  _attackPropNumber: {fileID: 0}
+  _lifePropNumber: {fileID: 0}
+  _costPropNumber: {fileID: 0}
   _nameText: {fileID: 0}
   _descText: {fileID: 0}
-  _costPropNumber: {fileID: 0}
-  _lifePropNumber: {fileID: 0}
-  _attackPropNumber: {fileID: 0}
 --- !u!1 &5441298050474219041
 GameObject:
   m_ObjectHideFlags: 0
@@ -342,7 +342,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 100, y: 431.25}
+  m_AnchoredPosition: {x: 100, y: 425}
   m_SizeDelta: {x: 464, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5202592174891001730
@@ -366,19 +366,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 0.27450982, g: 0.27450982, b: 0.27450982, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 0811d11d855d67144a4dc8107652e329, type: 3}
     m_FontSize: 45
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 0
-    m_MaxSize: 100
+    m_BestFit: 1
+    m_MinSize: 45
+    m_MaxSize: 65
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -809,6 +809,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 70
       objectReference: {fileID: 0}
+    - target: {fileID: 4793812825312622034, guid: 8b1cf5e01a0113d43a3cd0aba6125375,
+        type: 3}
+      propertyPath: m_Text
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8647428410972926157, guid: 8b1cf5e01a0113d43a3cd0aba6125375,
         type: 3}
       propertyPath: m_Name
@@ -832,6 +837,11 @@ PrefabInstance:
     - target: {fileID: 429617491729193910, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2115446307860501590, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_Text
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2872538149249012041, guid: 26e94d6f26f17604e8a1fa704b48f146,
@@ -964,6 +974,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8383792400324555996, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 26e94d6f26f17604e8a1fa704b48f146, type: 3}
@@ -1106,6 +1121,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: LifePropNumber
       objectReference: {fileID: 0}
+    - target: {fileID: 6987648898844798149, guid: 7bc85545909269a40925d78b5c830bca,
+        type: 3}
+      propertyPath: m_Text
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8670766593106830117, guid: 7bc85545909269a40925d78b5c830bca,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -1119,7 +1139,7 @@ PrefabInstance:
     - target: {fileID: 8670766593106830117, guid: 7bc85545909269a40925d78b5c830bca,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7bc85545909269a40925d78b5c830bca, type: 3}
