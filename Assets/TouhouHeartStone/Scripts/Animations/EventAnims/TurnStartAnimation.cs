@@ -16,12 +16,12 @@ namespace Game
                 table.ui.TurnTipImage.display();
                 if (eventArg.player == table.player)
                 {
-                    table.ui.TurnTipText.text = "你的回合";
+                    table.ui.SetTurnTipText(true);
                     table.canControl = true;
                 }
                 else
                 {
-                    table.ui.TurnTipText.text = "对手的回合";
+                    table.ui.SetTurnTipText(false);
                     table.canControl = false;
                 }
                 table.ui.TurnTipImage.GetComponent<Animator>().Play("Display");

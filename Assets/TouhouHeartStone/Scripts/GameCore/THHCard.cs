@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using System;
+using MukioI18n;
 namespace TouhouHeartstone
 {
     public static class THHCard
@@ -228,6 +229,22 @@ namespace TouhouHeartstone
                 return false;
             return true;
         }
+
+        [TranslateMsg]
+        const string INFO_CANNOT_ATTACK_SELF = "你不能攻击友方角色";
+
+        [TranslateMsg]
+        const string INFO_GUARD_SERVANT = "你必须先攻击具有嘲讽的随从";
+
+        [TranslateMsg]
+        const string INFO_HASTE_NOT_PREPARED = "具有突袭的随从在没有准备好的情况下不能攻击敌方英雄";
+
+        [TranslateMsg]
+        const string INFO_TARGET_IS_STEALTH = "无法攻击潜行的目标";
+
+        [TranslateMsg]
+        const string INFO_INVALID_TARGET = "无法攻击目标";
+
         /// <summary>
         /// 这个角色能否对目标进行攻击？
         /// </summary>
@@ -240,27 +257,27 @@ namespace TouhouHeartstone
         {
             if (target == player.master || player.field.Contains(target))
             {
-                tip = "你不能攻击友方角色";
+                tip = INFO_CANNOT_ATTACK_SELF;
                 return false;
             }
             if (game.getOpponent(player).field.Any(c => c.isTaunt(game)) && !target.isTaunt(game))
             {
-                tip = "你必须先攻击具有嘲讽的随从";
+                tip = INFO_GUARD_SERVANT;
                 return false;
             }
             if (card.isRush(game) && !card.isReady(game) && game.players.Any(p => p.master == target) && !card.isCharge(game))
             {
-                tip = "具有突袭的随从在没有准备好的情况下不能攻击敌方英雄";//除非你具有冲锋
+                tip = INFO_HASTE_NOT_PREPARED;//除非你具有冲锋
                 return false;
             }
             if (target.isStealth(game))
             {
-                tip = "无法攻击潜行的目标";
+                tip = INFO_TARGET_IS_STEALTH;
                 return false;
             }
             if (!card.isForceAttackable(game, player, target))
             {
-                tip = "无法攻击目标";
+                tip = INFO_INVALID_TARGET;
                 return false;
             }
             tip = null;
@@ -574,33 +591,58 @@ namespace TouhouHeartstone
         {
             return card.setProp(game, nameof(ServantCardDefine.tags), tags);
         }
+
+        [TranslateMsg]
+        const string NOT_YOUR_TURN = "这不是你的回合";
+
+        [TranslateMsg]
+        const string NOT_YOUR_CARD = "你不能使用不属于你的卡牌";
+        [TranslateMsg]
+        const string ONLY_SKILL_OR_HAND = "你只能使用技能或手牌";
+        [TranslateMsg]
+        const string NOT_ENOUGH_SPIRIT = "你没有足够的法力值";
+        [TranslateMsg]
+        const string SERVANT_FIELD_FULL = "你无法将更多的随从置入战场";
+        [TranslateMsg]
+        const string NO_SPACE_FOR_TRAP = "你没有多余的位置挂载奥秘";
+        [TranslateMsg]
+        const string DUPLICATED_TRAP = "你已挂载了相同的奥秘";
+        [TranslateMsg]
+        const string SKILL_USED = "你已经使用过技能了";
+        [TranslateMsg]
+        const string SKILL_UNUSABLE = "技能不可用";
+        [TranslateMsg]
+        const string SKILL_INVALID = "技能无效";
+        [TranslateMsg]
+        const string UNKNOWN_CARD = "这是一张未知的卡牌";
+
         public static bool isUsable(this Card card, THHGame game, THHPlayer player, out string info)
         {
             if (game.currentPlayer != player)//不是你的回合
             {
-                info = "这不是你的回合";
+                info = NOT_YOUR_TURN;
                 return false;
             }
             if (card.getOwner() != player)
             {
-                info = "你不能使用不属于你的卡牌";
+                info = NOT_YOUR_CARD;
                 return false;
             }
             if (card.pile.name != PILE.HAND && card.pile.name != PILE.SKILL)
             {
-                info = "你只能使用技能或手牌";
+                info = ONLY_SKILL_OR_HAND;
                 return false;
             }
             if (card.define is ServantCardDefine servant)
             {
                 if (player.gem < card.getCost(game))//费用不够
                 {
-                    info = "你没有足够的法力值";
+                    info = NOT_ENOUGH_SPIRIT;
                     return false;
                 }
                 if (player.field.count >= player.field.maxCount)
                 {
-                    info = "你无法将更多的随从置入战场";
+                    info = SERVANT_FIELD_FULL;
                     return false;
                 }
                 info = null;
@@ -610,7 +652,7 @@ namespace TouhouHeartstone
             {
                 if (player.gem < card.getCost(game))//费用不够
                 {
-                    info = "你没有足够的法力值";
+                    info = NOT_ENOUGH_SPIRIT;
                     return false;
                 }
                 info = null;
@@ -620,21 +662,21 @@ namespace TouhouHeartstone
             {
                 if (player.gem < card.getCost(game))
                 {
-                    info = "你没有足够的法力值";
+                    info = NOT_ENOUGH_SPIRIT;
                     return false;
                 }
                 if (spell.hasKeyword(KEYWORD.SECRET))
                 {
                     if (card.getOwner().head.count >= card.getOwner().head.maxCount)
                     {
-                        game.logger.log("你没有多余的位置挂载奥秘");
-                        info = "你没有多余的位置挂载奥秘";
+                        game.logger.log(NO_SPACE_FOR_TRAP);
+                        info = NO_SPACE_FOR_TRAP;
                         return false;
                     }
                     if (card.getOwner().head.Any(c => c.define == spell))
                     {
-                        game.logger.log("你已挂载了相同的奥秘");
-                        info = "你已挂载了相同的奥秘";
+                        game.logger.log(DUPLICATED_TRAP);
+                        info = DUPLICATED_TRAP;
                         return false;
                     }
                 }
@@ -645,12 +687,12 @@ namespace TouhouHeartstone
             {
                 if (card.isUsed(game))//已经用过了
                 {
-                    info = "你已经使用过技能了";
+                    info = SKILL_USED;
                     return false;
                 }
                 if (player.gem < card.getCost(game))//费用不够
                 {
-                    info = "你没有足够的法力值";
+                    info = NOT_ENOUGH_SPIRIT;
                     return false;
                 }
                 if (skill.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is ITriggerEffect effect)
@@ -660,7 +702,7 @@ namespace TouhouHeartstone
                         new THHPlayer.ActiveEventArg(player,card,new object[0])
                     }))
                     {
-                        info = "技能不可用";
+                        info = SKILL_UNUSABLE;
                         return false;
                     }
                     info = null;
@@ -670,18 +712,18 @@ namespace TouhouHeartstone
                 {
                     if (!activeEffect.checkCondition(game, card, null))
                     {
-                        info = "技能不可用";
+                        info = SKILL_UNUSABLE;
                         return false;
                     }
                     info = null;
                     return true;
                 }
-                info = "技能无效";
+                info = SKILL_INVALID;
                 return false;
             }
             else
             {
-                info = "这是一张未知的卡牌";
+                info = UNKNOWN_CARD;
                 return false;//不知道是什么卡
             }
         }

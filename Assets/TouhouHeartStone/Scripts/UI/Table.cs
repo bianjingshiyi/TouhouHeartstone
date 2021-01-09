@@ -15,6 +15,8 @@ using BJSYGameCore.UI;
 using TouhouCardEngine;
 using TouhouHeartstone.Builtin;
 using Game;
+using MukioI18n;
+
 namespace UI
 {
     partial class Table
@@ -172,6 +174,19 @@ namespace UI
         {
             get { return _selectableTargets; }
             set { _selectableTargets = value; }
+        }
+
+        LangManager lang => ui.getManager<LangManager>();
+
+        [TranslateMsg]
+        const string TIP_TOUR_TURN = "你的回合";
+
+        [TranslateMsg]
+        const string TIP_OPPO_TURN = "对手的回合";
+
+        public void SetTurnTipText(bool self)
+        {
+            TurnTipText.text = lang.i18n._(self ? TIP_TOUR_TURN : TIP_OPPO_TURN);
         }
     }
 }

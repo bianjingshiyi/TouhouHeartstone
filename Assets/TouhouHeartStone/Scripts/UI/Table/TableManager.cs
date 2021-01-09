@@ -724,7 +724,7 @@ namespace Game
                 }
                 else
                 {
-                    showTip(lang.i18n._(TAB_THIS_INVALIDATION));
+                    showTip(TAB_THIS_INVALIDATION);
                     resetUse(true, true);
                 }
             }
@@ -749,7 +749,7 @@ namespace Game
                 }
                 else
                 {
-                    showTip(lang.i18n._(TAB_THIS_INVALIDATION));
+                    showTip(TAB_THIS_INVALIDATION);
                     resetUse(true, true);
                 }
             }
@@ -1475,11 +1475,11 @@ namespace Game
         /// <summary>
         /// 显示文本提示
         /// </summary>
-        /// <param name="tip"></param>
+        /// <param name="tip">翻译的**源文本**</param>
         public void showTip(string tip)
         {
             ui.TipText.gameObject.SetActive(true);
-            ui.TipText.text = tip;
+            ui.TipText.text = lang.i18n._(tip);
             _tipTimer.start();
         }
         public void displayLargeCard(bool isRight, Card card)
