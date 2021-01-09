@@ -375,7 +375,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class LeafHiding : SpellCardDefine
     {
-        public const int ID = Aya.ID | CATEGORY.SPELL | 0x011;
+        public const int ID = Aya.ID | CATEGORY.SPELL | 0x012;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
