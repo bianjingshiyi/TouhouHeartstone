@@ -33,8 +33,10 @@ namespace TouhouHeartstone.Builtin
             Card oppoCard = await game.getOpponent(player).Reveal(game, game.getOpponent(player).deck, define);
             bool result = false;
 
-
-            if (youCard != null && youCard.getCost(game) > oppoCard.getCost(game))
+            if(youCard != null && oppoCard == null)
+            {
+                result = true;
+            }else if(youCard != null && youCard.getCost(game) > oppoCard.getCost(game))
             {
                 result = true;
             }

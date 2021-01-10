@@ -58,7 +58,7 @@ namespace Tests
 
         /// <summary>
         /// 星之仪式测试
-        /// 召请神明 如果神明回应了你，抽一张法力值消耗最高的牌；否则将一张全新的“星之仪式”置入手牌
+        /// 信仰对决 将一张全新的“星之仪式”置入手牌；获胜时改为抽一张法力值消耗最高的牌
         /// </summary>
         [Test]
         public void StarRitualTest()
@@ -72,7 +72,7 @@ namespace Tests
             you.cmdUse<StarRitual>(game);
             Assert.AreEqual(count, you.hand.count);
             Assert.AreEqual(4, you.hand[count-1].getCost(game));
-            game.skipTurnWhen(() => you.deck.count == 0);
+            game.skipTurnUntil(() => you.deck.count == 0);
             you.cmdUse<StarRitual>(game);
             count = you.hand.count;
             Assert.AreEqual(1, you.hand[count-1].getCost(game));
