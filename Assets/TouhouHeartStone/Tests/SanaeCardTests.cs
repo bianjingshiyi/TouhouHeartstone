@@ -105,73 +105,69 @@ namespace Tests
         }
 
         [Test]
-        public void BumperCropRiceShowerTest()
-        {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<BumperCrop>(), 1)));
-
-            for(int i = 0; i < 3; i = i + 1)
-            {
-                game.skipUntilCanUse<DefaultServant>(you);
-                you.cmdUse(game, you.hand.getCard<DefaultServant>());
-                you.field[0].damage(game, null, 3);
-            }
-            you.master.damage(game,null,3);
-            game.skipUntilCanUse<BumperCrop>(you);
-            you.cmdUse(game, you.hand.getCard<BumperCrop>());
-
-            game.Dispose();
-        }
-
-        [Test]
         public void CharmOfGoodCommerceTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefectedAgent>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<CharmOfGoodCommerce>(), 1)));
-
+            TestGameflow.createGame<FlyingSnake, DefaultServant>(out var game, out var you, out var oppo,
+                new GameOption() {shuffle = false},
+                Sanae.ID, new []{new KeyValuePair<int, int>(CharmOfGoodCommerce.ID,2)},
+                Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
 
             game.skipUntilCanUse<CharmOfGoodCommerce>(you);
-            you.master.damage(game, null,4);
+            you.master.damage(game, null,5);
+            int targetLife = oppo.field[0].getCurrentLife(game);
+            int masterLife = you.master.getCurrentLife(game);
             you.cmdUse(game, you.hand.getCard<CharmOfGoodCommerce>(), targets: oppo.field[0]);
+            Assert.AreEqual(targetLife-3,oppo.field[0].getCurrentLife(game));
+            Assert.AreEqual(masterLife+4, you.master.getCurrentLife(game));
+            game.Dispose();
+        }
 
+        [Test]
+        public void BumperCropTest()
+        {
+            TestGameflow.createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo,
+                Sanae.ID,
+                new KeyValuePair<int, int>(BumperCrop.ID,1));
+            for(int i = 0; i < 3; i++)
+            {
+                game.skipUntilCanUse<DefaultServant>(you);
+                you.cmdUse(game, you.hand.getCard<DefaultServant>());
+                you.field[0].damage(game, null, 1);
+            }
+            you.master.damage(game,null,2);
+            game.skipUntilCanUse<BumperCrop>(you);
+            you.cmdUse(game, you.hand.getCard<BumperCrop>());
+            for (int i = 0; i < 3; i++)
+            {
+                Assert.AreEqual(you.field[i].getLife(game),you.field[i].getCurrentLife(game));
+            }
+            Assert.AreEqual(30,you.master.getCurrentLife(game));
             game.Dispose();
         }
 
         [Test]
         public void GuestStarsMiracleTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefectedAgent>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<GuestStarsMiracle>(), 1)));
-
-            for (int i = 0; i < 3; i = i + 1)
+            TestGameflow.createGame<FlyingSnake, DefaultServant>(out var game, out var you, out var oppo,
+                new GameOption() {shuffle = false},
+                Sanae.ID, new []{new KeyValuePair<int, int>(GuestStarsMiracle.ID,1)},
+                Sanae.ID, new KeyValuePair<int, int>[0]);
+            for (int i = 0; i < 3; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
                 oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-                oppo.field[0].damage(game, null, 3);
             }
+            Pile oppoField = oppo.field;
+            int defaultServantLife = oppoField[0].getCurrentLife(game);
             game.skipUntilCanUse<GuestStarsMiracle>(you);
-            you.cmdUse(game, you.hand.getCard<GuestStarsMiracle>());
-
+            int count = you.hand.count;
+            you.cmdUse<GuestStarsMiracle>(game, targets:oppoField[1]);
+            Assert.AreEqual(defaultServantLife-2,oppoField[0].getCurrentLife(game));
+            Assert.AreEqual(defaultServantLife-2,oppoField[1].getCurrentLife(game));
+            Assert.AreEqual(defaultServantLife-2,oppoField[2].getCurrentLife(game));
+            Assert.AreEqual(count, you.hand.count);
             game.Dispose();
             
         }
@@ -179,25 +175,45 @@ namespace Tests
         [Test]
         public void OpenSeaMiracleTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefectedAgent>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<OpenSeaMiracle>(), 1)));
-
-            for (int i = 0; i < 3; i = i + 1)
+            TestGameflow.createGame<FlyingSnake, DefaultServant>(out var game, out var you, out var oppo,
+                new GameOption {shuffle = false},
+                Sanae.ID, new []{new KeyValuePair<int, int>(OpenSeaMiracle.ID,2)},
+                Sanae.ID, new KeyValuePair<int, int>[0]);
+            for (int i = 0; i < 3; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
                 oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
             }
+            Pile oppoField = oppo.field;
+            int defaultServantLife = oppoField[0].getCurrentLife(game);
             game.skipUntilCanUse<OpenSeaMiracle>(you);
-            you.cmdUse(game, you.hand.getCard<OpenSeaMiracle>(),targets: oppo.field[1]);
-
+            you.cmdUse<OpenSeaMiracle>(game, targets:oppoField[1]);
+            Assert.AreEqual(defaultServantLife-4,oppoField[0].getCurrentLife(game));
+            Assert.AreEqual(defaultServantLife-2,oppoField[1].getCurrentLife(game));
+            Assert.AreEqual(defaultServantLife-4,oppoField[2].getCurrentLife(game));
+            game.skipTurnUntil(() => you.deck.count == 0);
+            you.cmdUse<OpenSeaMiracle>(game, targets:oppo.field[1]);
+            Assert.AreEqual(defaultServantLife-2,oppoField[0].getCurrentLife(game));
             game.Dispose();
-
+        }
+        
+        [Test]
+        public void FlyingSnakeTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                Sanae.ID, new KeyValuePair<int, int>(FlyingSnake.ID,1));
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            game.skipUntilCanUse<FlyingSnake>(you);
+            Card snake = you.hand.getCard<FlyingSnake>();
+            you.cmdUse(game,snake);
+            Assert.True(snake.isAttackable(game,you,oppo.field[0], out _));
+            you.cmdAttack(game, snake, oppo.field[0]);
+            int attack = snake.getAttack(game);
+            game.skipUntilHasGem(you,2);
+            you.cmdUse(game, you.skill, 0, snake);
+            Assert.AreEqual(attack+1,snake.getAttack(game));
+            game.Dispose();
         }
 
         //[Test]
