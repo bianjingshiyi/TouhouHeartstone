@@ -10,14 +10,14 @@
 
 namespace UI
 {
-    using UnityEngine;
     using BJSYGameCore.UI;
+    using UnityEngine;
     using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
     using UI;
     
-    [AutoCompoAttribute(20812)]
+    [AutoCompoAttribute(21648)]
     public partial class ServantCardFace : UIObject
     {
         public void init()
@@ -37,6 +37,10 @@ namespace UI
         {
             get
             {
+                if ((this._image == null))
+                {
+                    this._image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
+                }
                 return this._image;
             }
         }
@@ -47,6 +51,10 @@ namespace UI
         {
             get
             {
+                if ((this._attackPropNumber == null))
+                {
+                    this._attackPropNumber = this.transform.findByPath("./AttackPropNumber").GetComponent<PropNumber>();
+                }
                 return this._attackPropNumber;
             }
         }
@@ -57,6 +65,10 @@ namespace UI
         {
             get
             {
+                if ((this._lifePropNumber == null))
+                {
+                    this._lifePropNumber = this.transform.findByPath("./LifePropNumber").GetComponent<PropNumber>();
+                }
                 return this._lifePropNumber;
             }
         }
@@ -67,6 +79,10 @@ namespace UI
         {
             get
             {
+                if ((this._costPropNumber == null))
+                {
+                    this._costPropNumber = this.transform.findByPath("./CostPropNumber").GetComponent<PropNumber>();
+                }
                 return this._costPropNumber;
             }
         }
@@ -77,6 +93,10 @@ namespace UI
         {
             get
             {
+                if ((this._nameText == null))
+                {
+                    this._nameText = this.transform.findByPath("./Name").GetComponent<Text>();
+                }
                 return this._nameText;
             }
         }
@@ -87,6 +107,10 @@ namespace UI
         {
             get
             {
+                if ((this._subNameText == null))
+                {
+                    this._subNameText = this.transform.findByPath("./SubName").GetComponent<Text>();
+                }
                 return this._subNameText;
             }
         }
@@ -97,6 +121,10 @@ namespace UI
         {
             get
             {
+                if ((this._descText == null))
+                {
+                    this._descText = this.transform.findByPath("./DescText").GetComponent<Text>();
+                }
                 return this._descText;
             }
         }
