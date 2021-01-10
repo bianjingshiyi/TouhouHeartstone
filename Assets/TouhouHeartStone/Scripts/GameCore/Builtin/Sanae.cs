@@ -305,10 +305,10 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x007;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 4;
+        public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
-        public override int life { get; set; } = 6;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
+        public override int life { get; set; } = 3;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel,KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectAfter<THHCard.HealEventArg>(PILE.FIELD, (game, card, arg) =>
@@ -797,6 +797,9 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class YoukaiPowerSpoiler : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x026;
@@ -814,6 +817,9 @@ namespace TouhouHeartstone.Builtin
     }
 
     //27
+    /// <summary>
+    /// 
+    /// </summary>
     public class LittleShrine : ServantCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x027;
