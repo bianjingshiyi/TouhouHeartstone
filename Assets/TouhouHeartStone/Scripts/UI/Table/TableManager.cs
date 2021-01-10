@@ -897,6 +897,7 @@ namespace Game
                 ui.type = CATEGORY.SERVANT;
                 ui.servantCardFace.image.sprite = skin.image;
                 ui.servantCardFace.nameText.text = skin.name;
+                ui.servantCardFace.subNameText.text = skin.subname;
                 ui.servantCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
                 ui.servantCardFace.costPropNumber.text.text = card.getCost(game).ToString();
                 ui.servantCardFace.attackPropNumber.text.text = card.getAttack(game).ToString();

@@ -19,6 +19,7 @@ namespace Game
             ui.spellCardFace.image.sprite = skin.image;
             ui.itemCardFace.image.sprite = skin.image;
             ui.servantCardFace.nameText.text = skin.name;
+            ui.servantCardFace.subNameText.text = skin.subname;
             ui.spellCardFace.nameText.text = skin.name;
             ui.itemCardFace.nameText.text = skin.name;
             ui.servantCardFace.descText.text = skin.desc;
