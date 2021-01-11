@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3922328301712809766}
-  - component: {fileID: 4221220119282205974}
   - component: {fileID: 301865424650061357}
   - component: {fileID: 1593629135382265370}
+  - component: {fileID: 4140730883481212737}
   m_Layer: 5
   m_Name: Gem
   m_TagString: Untagged
@@ -39,23 +39,6 @@ RectTransform:
   m_AnchoredPosition: {x: -60, y: 60}
   m_SizeDelta: {x: 207, y: 191}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &4221220119282205974
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3922328301712809761}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2cc188446899ee44c86db4f7959568c9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ui: {fileID: 0}
-  _useController: 0
-  _initStates: []
-  m_as_Image: {fileID: 1593629135382265370}
-  _Text: {fileID: 3922328302987306335}
 --- !u!222 &301865424650061357
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -93,6 +76,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4140730883481212737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3922328301712809761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 912ddaa6729dfd449ba50f50fafa7fd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ui: {fileID: 0}
+  _useController: 0
+  _initStates: []
+  _asImage: {fileID: 0}
+  _text: {fileID: 0}
 --- !u!1 &3922328302987306329
 GameObject:
   m_ObjectHideFlags: 0

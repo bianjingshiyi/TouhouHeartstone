@@ -10,43 +10,42 @@
 
 namespace UI
 {
-    using System;
-    using UnityEngine;
-    using UnityEngine.UI;
     using BJSYGameCore.UI;
+    using UnityEngine;
+    using BJSYGameCore.AutoCompo;
+    using System;
+    using UnityEngine.UI;
+    using UI;
     
+    [AutoCompoAttribute(20384)]
     public partial class Item : UIObject
     {
-        protected override void Awake()
+        public void init()
         {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
-        }
-        public void autoBind()
-        {
-            this._Mask = this.transform.Find("Mask").GetComponent<Mask>();
-            this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
-            this._FrameImage = this.transform.Find("Frame").GetComponent<Image>();
-            this._AttackImage = this.transform.Find("Attack").GetComponent<Image>();
-            this._AttackPropNumber = this.transform.Find("Attack").Find("Attack").GetComponent<PropNumber>();
-            this._DurabilityImage = this.transform.Find("Durability").GetComponent<Image>();
-            this._DurabilityPropNumber = this.transform.Find("Durability").Find("Durability").GetComponent<PropNumber>();
+            this._Mask = this.transform.findByPath("./Mask").GetComponent<Mask>();
+            this._Image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
+            this._FrameImage = this.transform.findByPath("./Frame").GetComponent<Image>();
+            this._AttackImage = this.transform.findByPath("./Attack").GetComponent<Image>();
+            this._AttackPropNumber = this.transform.findByPath("./Attack/Attack").GetComponent<PropNumber>();
+            this._DurabilityImage = this.transform.findByPath("./Durability").GetComponent<Image>();
+            this._DurabilityPropNumber = this.transform.findByPath("./Durability/Durability").GetComponent<PropNumber>();
         }
         [SerializeField()]
+        [AutoCompoAttribute(50760, "./Mask")]
         private Mask _Mask;
-        public Mask Mask
+        public Mask mask
         {
             get
             {
                 if ((this._Mask == null))
                 {
-                    this._Mask = this.transform.Find("Mask").GetComponent<Mask>();
+                    this._Mask = this.transform.findByPath("./Mask").GetComponent<Mask>();
                 }
                 return this._Mask;
             }
         }
         [SerializeField()]
+        [AutoCompoAttribute(51076, "./Mask/Image")]
         private Image _Image;
         public Image Image
         {
@@ -54,25 +53,27 @@ namespace UI
             {
                 if ((this._Image == null))
                 {
-                    this._Image = this.transform.Find("Mask").Find("Image").GetComponent<Image>();
+                    this._Image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
                 }
                 return this._Image;
             }
         }
         [SerializeField()]
+        [AutoCompoAttribute(50752, "./Frame")]
         private Image _FrameImage;
-        public Image FrameImage
+        public Image frameImage
         {
             get
             {
                 if ((this._FrameImage == null))
                 {
-                    this._FrameImage = this.transform.Find("Frame").GetComponent<Image>();
+                    this._FrameImage = this.transform.findByPath("./Frame").GetComponent<Image>();
                 }
                 return this._FrameImage;
             }
         }
         [SerializeField()]
+        [AutoCompoAttribute(50756, "./Attack")]
         private Image _AttackImage;
         public Image AttackImage
         {
@@ -80,12 +81,13 @@ namespace UI
             {
                 if ((this._AttackImage == null))
                 {
-                    this._AttackImage = this.transform.Find("Attack").GetComponent<Image>();
+                    this._AttackImage = this.transform.findByPath("./Attack").GetComponent<Image>();
                 }
                 return this._AttackImage;
             }
         }
         [SerializeField()]
+        [AutoCompoAttribute(51482, "./Attack/Attack")]
         private PropNumber _AttackPropNumber;
         public PropNumber AttackPropNumber
         {
@@ -93,12 +95,13 @@ namespace UI
             {
                 if ((this._AttackPropNumber == null))
                 {
-                    this._AttackPropNumber = this.transform.Find("Attack").Find("Attack").GetComponent<PropNumber>();
+                    this._AttackPropNumber = this.transform.findByPath("./Attack/Attack").GetComponent<PropNumber>();
                 }
                 return this._AttackPropNumber;
             }
         }
         [SerializeField()]
+        [AutoCompoAttribute(50766, "./Durability")]
         private Image _DurabilityImage;
         public Image DurabilityImage
         {
@@ -106,12 +109,13 @@ namespace UI
             {
                 if ((this._DurabilityImage == null))
                 {
-                    this._DurabilityImage = this.transform.Find("Durability").GetComponent<Image>();
+                    this._DurabilityImage = this.transform.findByPath("./Durability").GetComponent<Image>();
                 }
                 return this._DurabilityImage;
             }
         }
         [SerializeField()]
+        [AutoCompoAttribute(51308, "./Durability/Durability")]
         private PropNumber _DurabilityPropNumber;
         public PropNumber DurabilityPropNumber
         {
@@ -119,11 +123,10 @@ namespace UI
             {
                 if ((this._DurabilityPropNumber == null))
                 {
-                    this._DurabilityPropNumber = this.transform.Find("Durability").Find("Durability").GetComponent<PropNumber>();
+                    this._DurabilityPropNumber = this.transform.findByPath("./Durability/Durability").GetComponent<PropNumber>();
                 }
                 return this._DurabilityPropNumber;
             }
         }
-        partial void onAwake();
     }
 }

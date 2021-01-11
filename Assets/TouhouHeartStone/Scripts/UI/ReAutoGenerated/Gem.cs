@@ -10,50 +10,47 @@
 
 namespace UI
 {
-    using System;
-    using UnityEngine;
-    using UnityEngine.UI;
     using BJSYGameCore.UI;
+    using UnityEngine;
+    using BJSYGameCore.AutoCompo;
+    using System;
+    using UnityEngine.UI;
     
+    [AutoCompoAttribute(20404)]
     public partial class Gem : UIObject
     {
-        protected override void Awake()
+        public void init()
         {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
-        }
-        public void autoBind()
-        {
-            this.m_as_Image = this.GetComponent<Image>();
-            this._Text = this.transform.Find("Text").GetComponent<Text>();
+            this._asImage = this.transform.findByPath("./").GetComponent<Image>();
+            this._text = this.transform.findByPath("./Text").GetComponent<Text>();
         }
         [SerializeField()]
-        private Image m_as_Image;
+        [AutoCompoAttribute(50736, "./")]
+        private Image _asImage;
         public Image asImage
         {
             get
             {
-                if ((this.m_as_Image == null))
+                if ((this._asImage == null))
                 {
-                    this.m_as_Image = this.GetComponent<Image>();
+                    this._asImage = this.transform.findByPath("./").GetComponent<Image>();
                 }
-                return this.m_as_Image;
+                return this._asImage;
             }
         }
         [SerializeField()]
-        private Text _Text;
+        [AutoCompoAttribute(50968, "./Text")]
+        private Text _text;
         public Text Text
         {
             get
             {
-                if ((this._Text == null))
+                if ((this._text == null))
                 {
-                    this._Text = this.transform.Find("Text").GetComponent<Text>();
+                    this._text = this.transform.findByPath("./Text").GetComponent<Text>();
                 }
-                return this._Text;
+                return this._text;
             }
         }
-        partial void onAwake();
     }
 }

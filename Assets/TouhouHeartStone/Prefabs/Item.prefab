@@ -173,8 +173,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7368762269589627877}
-  - component: {fileID: 6067519653968145655}
   - component: {fileID: 4373856212135851989}
+  - component: {fileID: 7125633493144257744}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -205,7 +205,26 @@ RectTransform:
   m_AnchoredPosition: {x: -215, y: -102}
   m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6067519653968145655
+--- !u!95 &4373856212135851989
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7368762269589627898}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d08d9840067d78242960bf033055c0a7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &7125633493144257744
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -214,19 +233,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7368762269589627898}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a38f96a6d7d9c07499cf874ab208853c, type: 3}
+  m_Script: {fileID: 11500000, guid: 69c9fef6e4a1b1a43a7ab547c65e5d17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  _Mask: {fileID: 7368762269459263455}
-  _Image: {fileID: 7368762269767551752}
-  _FrameImage: {fileID: 7368762270740186328}
-  _AttackImage: {fileID: 7368762270283885302}
-  _AttackPropNumber: {fileID: 1308756727635758379}
-  _DurabilityImage: {fileID: 7368762269333698099}
-  _DurabilityPropNumber: {fileID: 2568782012202939510}
   onEquip:
     beforeAnim:
       m_PersistentCalls:
@@ -235,7 +247,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: Item_Equip
+    animName: 
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -259,29 +271,29 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: Item_Destroy
+    animName: 
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
---- !u!95 &4373856212135851989
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7368762269589627898}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d08d9840067d78242960bf033055c0a7, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  onSetDefine:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  _Mask: {fileID: 0}
+  _Image: {fileID: 0}
+  _FrameImage: {fileID: 0}
+  _AttackImage: {fileID: 0}
+  _AttackPropNumber: {fileID: 0}
+  _DurabilityImage: {fileID: 0}
+  _DurabilityPropNumber: {fileID: 0}
 --- !u!1 &7368762269767551758
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,18 +657,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 5200035052645327940}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1308756727635758379 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
-    type: 3}
-  m_PrefabInstance: {fileID: 5200035052645327940}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce39e50f19c7e154983cdf45d620c0aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &8765617559155514649
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -797,15 +797,3 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8765617559155514649}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2568782012202939510 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
-    type: 3}
-  m_PrefabInstance: {fileID: 8765617559155514649}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce39e50f19c7e154983cdf45d620c0aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
