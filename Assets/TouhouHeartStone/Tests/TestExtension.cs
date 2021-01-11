@@ -73,6 +73,11 @@ namespace Tests
         {
             player.cmdUse(game, player.hand.getCard<T>(), position, targets);
         }
+        public static void cmdUse<T>(this THHPlayer player, THHGame game, out Card servant,int position = 0, params Card[] targets) where T : ServantCardDefine
+        {
+            servant = player.hand.getCard<T>();
+            player.cmdUse(game, servant, position, targets);
+        }
         public static void cmdAttack<T>(this THHPlayer player, THHGame game, Card target) where T : CardDefine
         {
             player.cmdAttack(game, player.field.getCard<T>(), target);
