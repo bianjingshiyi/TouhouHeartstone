@@ -232,7 +232,37 @@ namespace Tests
         //    game.Dispose();
 
         //}
-
+        
+        [Test]
+        public void GodSummonTest()
+        {
+            TestGameflow.createGame<YasakaKanako, DefaultServant>(out var game, out var you, out var oppo,
+                new GameOption {shuffle = false},
+                Sanae.ID, new []{new KeyValuePair<int, int>(GodSummon.ID,2)},
+                Sanae.ID, new KeyValuePair<int, int>[0]);
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse<DefaultServant>(game,out Card enemy);
+            game.skipUntilCanUse<GodSummon>(you);
+            you.cmdUse<GodSummon>(game);
+            Card kanako = you.field[0];
+            Assert.IsInstanceOf<YasakaKanako>(kanako.define);
+            Assert.True(kanako.isAttackable(game,you,enemy,out _)); //我人傻了为什么这里可以过
+            you.cmdTurnEnd(game);
+            Assert.AreEqual(0,you.field.count);
+            Assert.True(you.deck.Contains(kanako));
+            game.skipUntilYourTurn(you);
+            you.cmdUse<GodSummon>(game);
+            kanako = you.field[0];
+            Assert.True(kanako.isAttackable(game,you,enemy,out _));
+            you.cmdAttack(game,kanako,enemy);
+            Assert.AreEqual(0,oppo.field.count);
+            kanako.die(game);
+            you.cmdTurnEnd(game);
+            Assert.True(you.deck.Contains(kanako));
+            Assert.AreEqual(0,you.field.count);
+            game.Dispose();
+        }
+        
         [Test]
         public void ManipulatedGaintFrogTest()
         {
@@ -272,65 +302,34 @@ namespace Tests
         [Test]
         public void OrochiOfAncientTimesTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getDefine<OrochiOfAncientTimes>(), 2)));
-            for (int i = 0; i < 3; i = i + 1)
-            {
-                game.skipUntilCanUse<DefaultServant>(oppo);
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-            }
-            for (int i = 0; i < 3; i = i + 1)
-            {
-                game.skipUntilCanUse<DefaultServant>(you);
-                you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            }
-            game.skipUntilCanUse<OrochiOfAncientTimes>(you);
-            you.cmdUse(game, you.hand.getCard<OrochiOfAncientTimes>());
-            game.skipUntilCanUse<OrochiOfAncientTimes>(you);
-            Sanae.revealDuel(you, game);
-            you.cmdUse(game, you.hand.getCard<OrochiOfAncientTimes>());
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                Sanae.ID, new KeyValuePair<int, int>(OrochiOfAncientTimes.ID,1));
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            
             game.Dispose();
         }
 
         [Test]
         public void YasakaKanakoTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
-            {
-                shuffle = false
-            });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 26).Concat(Enumerable.Repeat(game.getDefine<YasakaKanako>(), 4)));
-
-            for (int i = 0; i < 3; i = i + 1)
-            {
-                game.skipUntilCanUse<DefaultServant>(oppo);
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-            }
             
-            game.skipUntilCanUse<OrochiOfAncientTimes>(you);
-            you.cmdUse(game, you.hand.getCard<OrochiOfAncientTimes>());
-            game.skipUntilCanUse<OrochiOfAncientTimes>(you);
-            Sanae.revealDuel(you, game);
-            you.cmdUse(game, you.hand.getCard<OrochiOfAncientTimes>());
-            game.Dispose();
+        }
+        
+        [Test]
+        public void MoriyaSuwakoTest()
+        {
+            
         }
         
         [Test]
         public void SuwakoBackToFullHandTest()
         {
-            TestGameflow.createGame(out var game, out var you, out var oppo, new KeyValuePair<int, int>(MoriyaSuwako.ID,1));
+            TestGameflow.createGame(out var game, out var you, out var oppo, 
+                new KeyValuePair<int, int>(MoriyaSuwako.ID,1));
             game.skipUntilCanUse<MoriyaSuwako>(you);
             you.cmdUse(game, you.hand.getCard<MoriyaSuwako>());
-            game.skipTurnUntil(() => { return you.hand.count == 10;});
+            game.skipTurnUntil(() => you.hand.count == 10);
             // 这里偷了个懒，得把suwako亡语设成回手,因为目前诹访子的写法不允许选亡语触发
             you.field[0].backToHand(game);
             Assert.AreEqual(10,you.hand.count);
