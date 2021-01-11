@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5047199574337955245}
   - component: {fileID: 5047199574337955243}
-  - component: {fileID: 483359600387629421}
+  - component: {fileID: 8359287678672353232}
   m_Layer: 5
   m_Name: Weather
   m_TagString: Untagged
@@ -47,7 +47,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5047199574337955246}
   m_CullTransparentMesh: 0
---- !u!114 &483359600387629421
+--- !u!114 &8359287678672353232
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -56,15 +56,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 5047199574337955246}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dd4a155c2c878542a19803d2367a446, type: 3}
+  m_Script: {fileID: 11500000, guid: f1f2c6f55c3326349b3a85c8aa654d6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  _Mask: {fileID: 5047199575780364244}
-  _IconImage: {fileID: 5047199576162528185}
-  _FrameImage: {fileID: 5047199574684460569}
+  ListLayoutGroup: {fileID: 0}
+  _defaultItem: {fileID: 0}
 --- !u!1 &5047199574684460571
 GameObject:
   m_ObjectHideFlags: 0
