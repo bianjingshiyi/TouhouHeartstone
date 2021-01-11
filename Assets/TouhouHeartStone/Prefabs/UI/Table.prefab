@@ -92,7 +92,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
   _useController: 0
-  _initStates: []
+  _initStates:
+  - Highlight/Highlight_Green
   __ShieldImage: {fileID: 0}
   __Head: {fileID: 0}
   __HealImage: {fileID: 0}
@@ -5477,7 +5478,7 @@ PrefabInstance:
     - target: {fileID: 434557654737351543, guid: 7583531f85baf3340b4ee592873c34f5,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 210
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 434557654737351543, guid: 7583531f85baf3340b4ee592873c34f5,
         type: 3}
@@ -6811,7 +6812,7 @@ PrefabInstance:
     - target: {fileID: 434557654737351543, guid: 7583531f85baf3340b4ee592873c34f5,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 210
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 434557654737351543, guid: 7583531f85baf3340b4ee592873c34f5,
         type: 3}
@@ -8007,7 +8008,7 @@ PrefabInstance:
     - target: {fileID: 7368762269589627877, guid: faa617821013e8b4ebf639c9e368a2dc,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -210
+      value: -180
       objectReference: {fileID: 0}
     - target: {fileID: 7368762269589627877, guid: faa617821013e8b4ebf639c9e368a2dc,
         type: 3}
@@ -8549,7 +8550,7 @@ PrefabInstance:
     - target: {fileID: 7368762269589627877, guid: faa617821013e8b4ebf639c9e368a2dc,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -210
+      value: -180
       objectReference: {fileID: 0}
     - target: {fileID: 7368762269589627877, guid: faa617821013e8b4ebf639c9e368a2dc,
         type: 3}

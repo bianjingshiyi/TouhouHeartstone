@@ -4490,7 +4490,7 @@ MonoBehaviour:
       count: 0
     - id: 8196
       count: 0
-  _useTestDeck: 1
+  _useTestDeck: 0
   _testDeck:
     name: 
     master: 3145728
