@@ -126,11 +126,13 @@ namespace Game
             client.onJoinRoom += Client_onJoinRoom;
             client.onRoomInfoUpdate += Client_onRoomInfoUpdate;
 
+            var gameVersion = "1.0";
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             // 测试服务器
-            client.InitServerClient(_testAccountServerBaseUri);
+            client.InitServerClient(gameVersion);
 #else
-            client.InitServerClient(_accountServerBaseUri);
+            client.InitServerClient(gameVersion);
 #endif
 
             _LANUpdateTimer.start();
