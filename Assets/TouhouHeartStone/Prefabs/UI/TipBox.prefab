@@ -126,15 +126,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 2247579576201646841}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e5f3ffbdb7826640b3fd96a508822e1, type: 3}
+  m_Script: {fileID: 11500000, guid: 70bf9f5aa3c28bb47a18e3ed0b78b9e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  m_as_Image: {fileID: 2149286491977502056}
-  m_as_VerticalLayoutGroup: {fileID: 6239161301041676198}
-  _Text: {fileID: 3851297255301057185}
+  m_as_Image: {fileID: 0}
+  m_as_VerticalLayoutGroup: {fileID: 0}
+  _Text: {fileID: 0}
+  _Image: {fileID: 0}
+  _VerticalLayoutGroup: {fileID: 0}
+  __Text: {fileID: 0}
 --- !u!1 &6234595610289266709
 GameObject:
   m_ObjectHideFlags: 0
