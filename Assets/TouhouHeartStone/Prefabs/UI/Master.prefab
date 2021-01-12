@@ -700,7 +700,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: Master_Attack1
+    animName: Master_Attack
     afterAnim:
       m_PersistentCalls:
         m_Calls:
