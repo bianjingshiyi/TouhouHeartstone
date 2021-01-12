@@ -14,6 +14,7 @@ namespace UI
             {
                 //AttackText.text = card.getAttack(null).ToString();
                 AttackImage.gameObject.SetActive(true);
+
             }
             else
             {

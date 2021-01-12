@@ -17,7 +17,7 @@ namespace UI
     using UnityEngine.UI;
     using UI;
     
-    [AutoCompoAttribute(20384)]
+    [AutoCompoAttribute(20526)]
     public partial class Item : UIObject
     {
         public void init()
@@ -25,15 +25,15 @@ namespace UI
             this._Mask = this.transform.findByPath("./Mask").GetComponent<Mask>();
             this._Image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
             this._FrameImage = this.transform.findByPath("./Frame").GetComponent<Image>();
-            this._AttackImage = this.transform.findByPath("./Attack").GetComponent<Image>();
-            this._AttackPropNumber = this.transform.findByPath("./Attack/Attack").GetComponent<PropNumber>();
-            this._DurabilityImage = this.transform.findByPath("./Durability").GetComponent<Image>();
-            this._DurabilityPropNumber = this.transform.findByPath("./Durability/Durability").GetComponent<PropNumber>();
+            this._AttackPropNumber = this.transform.findByPath("./AttackPropNumber").GetComponent<PropNumber>();
+            this._DurabilityPropNumber = this.transform.findByPath("./LifePropNumber").GetComponent<PropNumber>();
+            this._DurabilityImage = this.transform.findByPath("./LifePropNumber/Icon").GetComponent<Image>();
+            this._AttackImage = this.transform.findByPath("./AttackPropNumber/Icon").GetComponent<Image>();
         }
         [SerializeField()]
         [AutoCompoAttribute(50760, "./Mask")]
         private Mask _Mask;
-        public Mask mask
+        public Mask Mask
         {
             get
             {
@@ -61,7 +61,7 @@ namespace UI
         [SerializeField()]
         [AutoCompoAttribute(50752, "./Frame")]
         private Image _FrameImage;
-        public Image frameImage
+        public Image FrameImage
         {
             get
             {
@@ -73,21 +73,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(50756, "./Attack")]
-        private Image _AttackImage;
-        public Image AttackImage
-        {
-            get
-            {
-                if ((this._AttackImage == null))
-                {
-                    this._AttackImage = this.transform.findByPath("./Attack").GetComponent<Image>();
-                }
-                return this._AttackImage;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(51482, "./Attack/Attack")]
+        [AutoCompoAttribute(52482, "./AttackPropNumber")]
         private PropNumber _AttackPropNumber;
         public PropNumber AttackPropNumber
         {
@@ -95,27 +81,13 @@ namespace UI
             {
                 if ((this._AttackPropNumber == null))
                 {
-                    this._AttackPropNumber = this.transform.findByPath("./Attack/Attack").GetComponent<PropNumber>();
+                    this._AttackPropNumber = this.transform.findByPath("./AttackPropNumber").GetComponent<PropNumber>();
                 }
                 return this._AttackPropNumber;
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(50766, "./Durability")]
-        private Image _DurabilityImage;
-        public Image DurabilityImage
-        {
-            get
-            {
-                if ((this._DurabilityImage == null))
-                {
-                    this._DurabilityImage = this.transform.findByPath("./Durability").GetComponent<Image>();
-                }
-                return this._DurabilityImage;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(51308, "./Durability/Durability")]
+        [AutoCompoAttribute(52674, "./LifePropNumber")]
         private PropNumber _DurabilityPropNumber;
         public PropNumber DurabilityPropNumber
         {
@@ -123,9 +95,37 @@ namespace UI
             {
                 if ((this._DurabilityPropNumber == null))
                 {
-                    this._DurabilityPropNumber = this.transform.findByPath("./Durability/Durability").GetComponent<PropNumber>();
+                    this._DurabilityPropNumber = this.transform.findByPath("./LifePropNumber").GetComponent<PropNumber>();
                 }
                 return this._DurabilityPropNumber;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(53044, "./LifePropNumber/Icon")]
+        private Image _DurabilityImage;
+        public Image DurabilityImage
+        {
+            get
+            {
+                if ((this._DurabilityImage == null))
+                {
+                    this._DurabilityImage = this.transform.findByPath("./LifePropNumber/Icon").GetComponent<Image>();
+                }
+                return this._DurabilityImage;
+            }
+        }
+        [SerializeField()]
+        [AutoCompoAttribute(52786, "./AttackPropNumber/Icon")]
+        private Image _AttackImage;
+        public Image AttackImage
+        {
+            get
+            {
+                if ((this._AttackImage == null))
+                {
+                    this._AttackImage = this.transform.findByPath("./AttackPropNumber/Icon").GetComponent<Image>();
+                }
+                return this._AttackImage;
             }
         }
     }

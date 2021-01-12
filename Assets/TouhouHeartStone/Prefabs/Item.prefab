@@ -99,8 +99,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7368762269589627877}
   - component: {fileID: 4373856212135851989}
-  - component: {fileID: 7125633493144257744}
   - component: {fileID: 2714470747576789071}
+  - component: {fileID: 1901704307841639713}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -150,7 +150,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &7125633493144257744
+--- !u!225 &2714470747576789071
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7368762269589627898}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &1901704307841639713
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -159,7 +171,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7368762269589627898}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69c9fef6e4a1b1a43a7ab547c65e5d17, type: 3}
+  m_Script: {fileID: 11500000, guid: dc5a9965de9a10d4ba7b00d3afa8c748, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
@@ -216,22 +228,10 @@ MonoBehaviour:
   _Mask: {fileID: 0}
   _Image: {fileID: 0}
   _FrameImage: {fileID: 0}
-  _AttackImage: {fileID: 0}
   _AttackPropNumber: {fileID: 0}
-  _DurabilityImage: {fileID: 0}
   _DurabilityPropNumber: {fileID: 0}
---- !u!225 &2714470747576789071
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7368762269589627898}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
+  _DurabilityImage: {fileID: 0}
+  _AttackImage: {fileID: 0}
 --- !u!1 &7368762269767551758
 GameObject:
   m_ObjectHideFlags: 0
@@ -517,6 +517,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LifePropNumber
+      objectReference: {fileID: 0}
+    - target: {fileID: 8903921240249818169, guid: 8b1cf5e01a0113d43a3cd0aba6125375,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8b1cf5e01a0113d43a3cd0aba6125375, type: 3}
