@@ -11,6 +11,7 @@ using TouhouHeartstone;
 
 namespace TouhouHeartstone.Builtin
 {
+    [IgnoreCardDefine]
     public class Aya : MasterCardDefine
     {
         public const int ID = 0x00700000 | CATEGORY.MASTER | 0x000;
@@ -20,6 +21,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 技能：备用胶卷
     /// 下一张牌灵力值消耗减少1点
@@ -47,6 +49,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 乌鸦仆从
     /// 1/2/1,亡语：随机一张手牌灵力值消耗减少(1)点
@@ -71,6 +74,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 报纸派送
     /// 1费，造成2点伤害，本回合能使用多次，但不能对同一目标使用。
@@ -117,6 +121,7 @@ namespace TouhouHeartstone.Builtin
 
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 独家新闻
     /// 下一张牌灵力值消耗减少2点
@@ -145,6 +150,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
+    [IgnoreCardDefine]
     public class LittleAya : ServantCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SERVANT | 0x004;
@@ -173,6 +179,7 @@ namespace TouhouHeartstone.Builtin
  
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 文文。新闻
     /// 抽一张牌，如果你在本回合使用这张牌，重复此效果。
@@ -208,6 +215,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 枫扇风
     /// 对三个随机敌方随从造成伤害，数值等同于本回合使用过的牌数量。
@@ -232,6 +240,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 风神一扇
     /// 造成2点伤害，如果你本回合使用过灵力值与其原始灵力值消耗不同的牌，改为造成4点伤害。
@@ -261,6 +270,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 相机
     /// 3/0/4,每当对手抽一张牌，你获得这张牌的原始复制
@@ -286,6 +296,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 09 果
     /// 抽牌，数量等同于这张卡的原始灵力值消耗与你使用这张卡时实际灵力值消耗之差。
@@ -319,6 +330,7 @@ namespace TouhouHeartstone.Builtin
 
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 10 文花帖
     /// 每当你攻击时，使随机一张手牌灵力值消耗减少1点
@@ -343,6 +355,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 11 风神少女
     /// 抽一张牌，你本回合每使用一张牌，它的灵力值消耗就减少一点。
@@ -370,6 +383,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 12
     /// </summary>
