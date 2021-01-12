@@ -45,9 +45,9 @@ namespace Game
                 else if (table.tryGetServant(eventArg.target, out var targetServant))
                 {
                     attackServant.GetComponentInChildren<PositionLerp>().setTarget(targetServant.rectTransform, targetServant.rectTransform.sizeDelta.x / 2);
-                    if (!SimpleAnimHelper.update(table, ref _attackAnim, attackServant.onAttack, attackServant.animator, time))
+                    if (!SimpleAnimHelper.update(table, ref _attackAnim, attackServant.onAttack, attackServant.servantAnimator, time))
                         return false;
-                    if (!SimpleAnimHelper.update(table, ref _attackedAnim, targetServant.onAttacked, targetServant.animator, time))
+                    if (!SimpleAnimHelper.update(table, ref _attackedAnim, targetServant.onAttacked, targetServant.servantAnimator, time))
                         return false;
                 }
                 table.setServant(attackServant, eventArg.card);

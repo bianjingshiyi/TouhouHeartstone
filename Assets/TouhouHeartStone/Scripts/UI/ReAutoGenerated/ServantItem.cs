@@ -10,14 +10,14 @@
 
 namespace UI
 {
-    using UnityEngine;
     using BJSYGameCore.UI;
+    using UnityEngine;
     using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
     using UI;
     
-    [AutoCompoAttribute(21300)]
+    [AutoCompoAttribute(21326)]
     public partial class ServantItem : UIObject
     {
         public void init()
@@ -31,10 +31,11 @@ namespace UI
             this._shieldImage = this.transform.findByPath("./Servant/Shield").GetComponent<Image>();
             this._attackPropNumber = this.transform.findByPath("./Servant/AttackPropNumber").GetComponent<PropNumber>();
             this._lifePropNumber = this.transform.findByPath("./Servant/LifePropNumber").GetComponent<PropNumber>();
-            this._damageText = this.transform.findByPath("./Servant/DamageImage/DamageText").GetComponent<Text>();
-            this._healText = this.transform.findByPath("./Servant/HealImage/HealText").GetComponent<Text>();
-            this._healImage = this.transform.findByPath("./Servant/HealImage").GetComponent<Image>();
             this._damageImage = this.transform.findByPath("./Servant/DamageImage").GetComponent<Image>();
+            this._damageText = this.transform.findByPath("./Servant/DamageImage/DamageText").GetComponent<Text>();
+            this._healImage = this.transform.findByPath("./Servant/HealImage").GetComponent<Image>();
+            this._healText = this.transform.findByPath("./Servant/HealImage/HealText").GetComponent<Text>();
+            this._servantAnimator = this.transform.findByPath("./Servant").GetComponent<Animator>();
         }
         [SerializeField()]
         [AutoCompoAttribute(69878, "./")]
@@ -166,6 +167,20 @@ namespace UI
             }
         }
         [SerializeField()]
+        [AutoCompoAttribute(70410, "./Servant/DamageImage")]
+        private Image _damageImage;
+        public Image damageImage
+        {
+            get
+            {
+                if ((this._damageImage == null))
+                {
+                    this._damageImage = this.transform.findByPath("./Servant/DamageImage").GetComponent<Image>();
+                }
+                return this._damageImage;
+            }
+        }
+        [SerializeField()]
         [AutoCompoAttribute(70480, "./Servant/DamageImage/DamageText")]
         private Text _damageText;
         public Text damageText
@@ -177,20 +192,6 @@ namespace UI
                     this._damageText = this.transform.findByPath("./Servant/DamageImage/DamageText").GetComponent<Text>();
                 }
                 return this._damageText;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(70638, "./Servant/HealImage/HealText")]
-        private Text _healText;
-        public Text healText
-        {
-            get
-            {
-                if ((this._healText == null))
-                {
-                    this._healText = this.transform.findByPath("./Servant/HealImage/HealText").GetComponent<Text>();
-                }
-                return this._healText;
             }
         }
         [SerializeField()]
@@ -208,18 +209,41 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(70410, "./Servant/DamageImage")]
-        private Image _damageImage;
-        public Image damageImage
+        [AutoCompoAttribute(70638, "./Servant/HealImage/HealText")]
+        private Text _healText;
+        public Text healText
         {
             get
             {
-                if ((this._damageImage == null))
+                if ((this._healText == null))
                 {
-                    this._damageImage = this.transform.findByPath("./Servant/DamageImage").GetComponent<Image>();
+                    this._healText = this.transform.findByPath("./Servant/HealImage/HealText").GetComponent<Text>();
                 }
-                return this._damageImage;
+                return this._healText;
             }
         }
+        [SerializeField()]
+        [AutoCompoAttribute(53060, "./Servant")]
+        private Animator _servantAnimator;
+        public Animator servantAnimator
+        {
+            get
+            {
+                if ((this._servantAnimator == null))
+                {
+                    this._servantAnimator = this.transform.findByPath("./Servant").GetComponent<Animator>();
+                }
+                return this._servantAnimator;
+            }
+        }
+        private const string ANIM_PARAM_RVANTANIMATOR_ISDEAD = "isDead";
+        private const string ANIM_PARAM_RVANTANIMATOR_HIGHLIGHT = "HighLight";
+        private const string ANIM_PARAM_RVANTANIMATOR_ATTACK = "Attack";
+        private const string ANIM_PARAM_RVANTANIMATOR_DAMAGED = "Damaged";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISTAUNT = "isTaunt";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISTAUNTRESISTED = "isTauntResisted";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISSHIELD = "isShield";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISSTEALTH = "isStealth";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISDYINGWISH = "isDyingWish";
     }
 }
