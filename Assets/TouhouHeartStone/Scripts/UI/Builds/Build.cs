@@ -128,7 +128,7 @@ namespace UI
         const string ERROR_TITLE = "错误";
 
         [TranslateMsg]
-        const string CARD_NOT_EXISTS = "ID为%s的卡不存在";
+        const string CARD_NOT_EXISTS = "ID为{0}的卡不存在";
 
         [TranslateMsg]
         const string PILE_CODE_INCOMPLETE = "卡组代码不完整";
@@ -137,7 +137,7 @@ namespace UI
         const string PILE_CODE_CORRUPTED = "卡组数据已损坏";
 
         [TranslateMsg]
-        const string PILE_IMPORT_ERROR = "导入错误\n%s";
+        const string PILE_IMPORT_ERROR = "导入错误\n{0}";
 
         void tryImportDeck()
         {

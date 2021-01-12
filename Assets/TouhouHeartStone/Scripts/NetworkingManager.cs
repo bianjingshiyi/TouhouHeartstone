@@ -508,7 +508,7 @@ namespace Game
         [TranslateMsg]
         private const String NETMANAGER_DESCRIBE = "描述";
         [TranslateMsg("参数的玩家名称")]
-        private const String NETMANAGER_HOME = "%s的房间";
+        private const String NETMANAGER_HOME = "{0}的房间";
         private void refreshRoomListItem(RoomListItem item, RoomInfo obj)
         {
             item.RoomNameText.text = lang.i18n._(NETMANAGER_HOME, obj.playerList.Find(p => p.PlayerID == obj.OwnerID)?.name);
