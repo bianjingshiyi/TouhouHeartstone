@@ -176,10 +176,14 @@ namespace Game
             ui.SelfGraveDeck.onPointerExit.set(onGravePointerExit);
             ui.SelfGraveDeck.onPointerMove.set(onDeckPointerMove);
             ui.TurnEndButton.onClick.set(onTurnEndButtonClick);
+            ui.SelfMaster.ArmorPropNumber.text.text = "0";
+            ui.SelfMaster.setBoolFalse("hasArmor");
             ui.LargeCard.hide();
             ui.TipText.hide();
             initMaster(ui.EnemyMaster);
             ui.EnemyGem.Text.text = "0";
+            ui.EnemyMaster.ArmorPropNumber.text.text = "0";
+            ui.EnemyMaster.setBoolFalse("hasArmor");
             ui.EnemyItem.hide();
             ui.EnemyFieldList.clearItems();
             ui.EnemyHandList.clearItems();
