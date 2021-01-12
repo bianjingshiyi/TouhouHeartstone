@@ -343,16 +343,18 @@ namespace TouhouHeartstone.Builtin
             if(god != null)
             {
                 await you.tryEnterField(game, you.deck, god,you.field.count);
+                await god.addKeywords(game, KEYWORD.RUSH);
+                await god.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD, (g, c, a) =>
+                {
+                    return a.player == c.getOwner();
+                }, null, async (g, c, a) =>
+                {
+                    int index = game.randomInt(0, c.getOwner().deck.count);
+                    await god.resetCard(game);
+                    await c.getOwner().field.moveTo(game, god, c.getOwner().deck, index);
+                })));
             }
-            await god.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD, (g, c, a) =>
-               {
-                   return a.player == c.getOwner();
-               }, null, async (g, c, a) =>
-               {
-                   int index = game.randomInt(0, c.getOwner().deck.count);
-                   await god.resetCard(game);
-                   await c.getOwner().field.moveTo(game, god, c.getOwner().deck, index);
-               })));
+           
         }
     }
 

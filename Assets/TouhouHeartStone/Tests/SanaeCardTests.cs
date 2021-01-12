@@ -258,7 +258,7 @@ namespace Tests
             Assert.AreEqual(0,oppo.field.count);
             kanako.die(game);
             you.cmdTurnEnd(game);
-            Assert.True(you.deck.Contains(kanako));
+            Assert.False(you.deck.Contains(kanako));
             Assert.AreEqual(0,you.field.count);
             game.Dispose();
         }
