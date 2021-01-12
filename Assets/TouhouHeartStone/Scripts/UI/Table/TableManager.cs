@@ -350,14 +350,14 @@ namespace Game
             if (card.getAttack(game) > 0)
             {
                 master.AttackPropNumber.text.text = card.getAttack(game).ToString();
-                master.AtkImage.display();
+                master.asAnimator.SetBool("ShowAttack", true);
                 master.AttackPropNumber.text.display();
 
             }
             else
             {
                 master.AttackPropNumber.text.hide();
-                master.AtkImage.hide();
+                master.asAnimator.SetBool("ShowAttack", false);
             }
             if (card.getArmor(game) > 0)
             {
