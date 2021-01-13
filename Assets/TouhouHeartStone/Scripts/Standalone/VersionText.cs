@@ -15,17 +15,10 @@ namespace IGensoukyo.Utilities
 
         private void Awake()
         {
-            if (BuildInformation.Instance != null)
-            {
-                GetComponent<Text>().text = versionPrefix + BuildInformation.Instance.Version.Substring(BuildInformation.Instance.Version.Length - 7);
+            GetComponent<Text>().text = versionPrefix + BuildInformation.Instance.Version;
 
-                if (includeBuildDate)
-                    GetComponent<Text>().text += " - " + BuildInformation.Instance.BuildDate;
-            }
-            else
-            {
-                GetComponent<Text>().text = versionPrefix + Application.version;
-            }
+            if (includeBuildDate)
+                GetComponent<Text>().text += " - " + BuildInformation.Instance.BuildDate;
         }
     }
 }
