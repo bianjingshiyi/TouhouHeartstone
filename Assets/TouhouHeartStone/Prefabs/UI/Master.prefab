@@ -916,8 +916,8 @@ MonoBehaviour:
   _StealthImage: {fileID: 0}
   _FrameImage: {fileID: 0}
   _FreezeImage: {fileID: 0}
-  _LifePropNumber: {fileID: 0}
   _AttackPropNumber: {fileID: 0}
+  _LifePropNumber: {fileID: 0}
   _ArmorPropNumber: {fileID: 0}
   _DamageImage: {fileID: 0}
   _DamageText: {fileID: 0}
@@ -925,6 +925,7 @@ MonoBehaviour:
   _HealText: {fileID: 0}
   _Head: {fileID: 0}
   _ShieldImage: {fileID: 0}
+  _asAnimator: {fileID: 0}
 --- !u!1 &7552501258534462123
 GameObject:
   m_ObjectHideFlags: 0
@@ -1855,7 +1856,7 @@ PrefabInstance:
     - target: {fileID: 5914075087159207619, guid: bbee5000f9226714fb2c464d15d7aadf,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 100
+      value: 76
       objectReference: {fileID: 0}
     - target: {fileID: 5914075087159207619, guid: bbee5000f9226714fb2c464d15d7aadf,
         type: 3}
