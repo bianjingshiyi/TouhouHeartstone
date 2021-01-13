@@ -69,14 +69,14 @@ namespace Game
                 {
 
                 }
-                table.setServant(servant, eventArg.card);    
+                table.setServant(servant, eventArg.card);
             }
             else if (table.tryGetMaster(eventArg.card, out var master))
             {
                 animator = master.animator;
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
                 {
-                    
+
                     master.AttackPropNumber.text.text = attack.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
@@ -117,7 +117,7 @@ namespace Game
                 }
                 else
                 {
-                    simpleAnim = master.LifePropNumber.WhiteText;                  
+                    simpleAnim = master.LifePropNumber.WhiteText;
                 }
                 table.setMaster(master, eventArg.card);
             }
@@ -130,7 +130,7 @@ namespace Game
                 }
                 else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
                 {
-                   
+
                     item.DurabilityPropNumber.text.text = currentLife.ToString();
                 }
 
@@ -150,7 +150,7 @@ namespace Game
                 table.setItem(item, eventArg.card);
             }
 
-            
+
             if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator, time))
                 return false;
             return true;

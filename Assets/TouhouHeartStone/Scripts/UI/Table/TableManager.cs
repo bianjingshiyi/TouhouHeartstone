@@ -441,9 +441,6 @@ namespace Game
             item.display();
             CardSkinData skin = getSkin(card);
             item.Image.sprite = skin.image;
-
-            item.AttackPropNumber.text.text = card.getAttack(game).ToString();
-            item.DurabilityPropNumber.text.text = card.getCurrentLife(game).ToString();
         }
         void displayArrow(RectTransform source, Vector2 from, Vector2 to)
         {
