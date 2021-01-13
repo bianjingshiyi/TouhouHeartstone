@@ -67,10 +67,11 @@ MonoBehaviour:
   _shieldImage: {fileID: 0}
   _attackPropNumber: {fileID: 0}
   _lifePropNumber: {fileID: 0}
-  _damageText: {fileID: 0}
-  _healText: {fileID: 0}
-  _healImage: {fileID: 0}
   _damageImage: {fileID: 0}
+  _damageText: {fileID: 0}
+  _healImage: {fileID: 0}
+  _healText: {fileID: 0}
+  _servantAnimator: {fileID: 0}
   _attackAnimationCurve:
     serializedVersion: 2
     m_Curve:
@@ -165,7 +166,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: Servant_Attack1
+    animName: Attack
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -663,7 +664,7 @@ PrefabInstance:
     - target: {fileID: 9131285848673300314, guid: 0bd8730dcc8a6824da51d94b28d874e4,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0bd8730dcc8a6824da51d94b28d874e4, type: 3}

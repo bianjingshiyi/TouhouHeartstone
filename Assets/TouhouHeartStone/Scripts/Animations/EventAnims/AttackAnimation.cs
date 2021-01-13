@@ -37,7 +37,7 @@ namespace Game
                 if (table.tryGetMaster(eventArg.target, out var targetMaster))
                 {
                     attackServant.GetComponentInChildren<PositionLerp>().setTarget(targetMaster.rectTransform, targetMaster.rectTransform.sizeDelta.x / 2);
-                    if (!SimpleAnimHelper.update(table, ref _attackAnim, attackServant.onAttack, attackServant.animator, time))
+                    if (!SimpleAnimHelper.update(table, ref _attackAnim, attackServant.onAttack, attackServant.servantAnimator, time))
                         return false;
                     if (!SimpleAnimHelper.update(table, ref _attackedAnim, targetMaster.onAttacked, targetMaster.animator, time))
                         return false;

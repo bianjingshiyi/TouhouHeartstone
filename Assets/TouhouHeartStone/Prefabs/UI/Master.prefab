@@ -798,7 +798,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
+    animName: Highlight_Yellow
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -810,7 +810,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
+    animName: Master_Attack
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -834,7 +834,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
+    animName: Master_Damage
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -858,7 +858,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
+    animName: IsAttackable_True
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -870,7 +870,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
+    animName: IsAttackable_False
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -882,7 +882,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
+    animName: Highlight_Green
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -894,7 +894,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
+    animName: Highlight_None
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -906,7 +906,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
+    animName: Master_Default
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
