@@ -246,16 +246,14 @@ namespace Tests
             you.cmdUse<GodSummon>(game);
             Card kanako = you.field[0];
             Assert.IsInstanceOf<YasakaKanako>(kanako.define);
-            Assert.True(kanako.isAttackable(game,you,enemy,out _)); //我人傻了为什么这里可以过
+            Assert.True(kanako.canAttack(game));
             you.cmdTurnEnd(game);
             Assert.AreEqual(0,you.field.count);
             Assert.True(you.deck.Contains(kanako));
             game.skipUntilYourTurn(you);
             you.cmdUse<GodSummon>(game);
             kanako = you.field[0];
-            Assert.True(kanako.isAttackable(game,you,enemy,out _));
-            you.cmdAttack(game,kanako,enemy);
-            Assert.AreEqual(0,oppo.field.count);
+            Assert.True(kanako.canAttack(game));
             kanako.die(game);
             you.cmdTurnEnd(game);
             Assert.False(you.deck.Contains(kanako));
@@ -278,35 +276,45 @@ namespace Tests
             for (int i = 0; i < 3; i = i + 1)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+                oppo.cmdUse<DefaultServant>(game, out Card servant);
+                servant.setCurrentLife(game, 3);
             }
             for (int i = 0; i < 3; i = i + 1)
             {
                 game.skipUntilCanUse<DefaultServant>(you);
-                you.cmdUse(game, you.hand.getCard<DefaultServant>());
+                you.cmdUse<DefaultServant>(game, out Card servant);
+                servant.setCurrentLife(game, 3);
             }
 
             game.skipUntilCanUse<ManipulatedGaintFrog>(you);
             Sanae.revealDuel(you, game);
             Sanae.revealDuel(you, game);
+            you.cmdUse(game, you.hand.getCard<ManipulatedGaintFrog>());
             Sanae.revealDuel(you, game);
 
-
-            you.cmdUse(game, you.hand.getCard<ManipulatedGaintFrog>());
             you.field[0].setDead(game, true);
             game.updateDeath(game);
-
+            Assert.AreEqual(0,you.field.count+oppo.field.count);
             game.Dispose();
         }
 
         [Test]
         public void OrochiOfAncientTimesTest()
         {
-            TestGameflow.createGame(out var game, out var you, out var oppo,
-                Sanae.ID, new KeyValuePair<int, int>(OrochiOfAncientTimes.ID,1));
+            TestGameflow.createGame<OrochiOfAncientTimes, DefaultServant>(out var game, out var you, out var oppo,
+                new GameOption {shuffle = false},
+                Sanae.ID, new []{new KeyValuePair<int, int>(StarRitual.ID,1)},
+                Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-            
+            oppo.cmdUse<DefaultServant>(game,out Card enemServant);
+            game.skipUntilCanUse<OrochiOfAncientTimes>(you);
+            Assert.AreEqual(9,you.hand.getCard<OrochiOfAncientTimes>().getCost(game));
+            you.cmdUse<StarRitual>(game);
+            Assert.AreEqual(5,you.hand.getCard<OrochiOfAncientTimes>().getCost(game));
+            Assert.AreEqual(5,you.hand.Last().getCost(game));
+            you.cmdTurnEnd(game);
+            game.skipUntilYourTurn(you);
+            Assert.AreEqual(9,you.hand.getCard<OrochiOfAncientTimes>().getCost(game));
             game.Dispose();
         }
 

@@ -459,7 +459,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x012;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 7;
+        public override int cost { get; set; } = 9;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 7;
         //public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
@@ -478,7 +478,7 @@ namespace TouhouHeartstone.Builtin
                                          {
                                              await t.setDead(g,true);
                                              await g.updateDeath(g);
-                                         },PileFlag.both | PileFlag.field)
+                                         },PileFlag.oppo | PileFlag.field)
 
         };
         
