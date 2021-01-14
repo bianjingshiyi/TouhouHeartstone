@@ -37,7 +37,7 @@ namespace Game
                 if (table.tryGetMaster(eventArg.target, out var targetMaster))
                 {
                     attackServant.GetComponentInChildren<PositionLerp>().setTarget(targetMaster.rectTransform, targetMaster.rectTransform.sizeDelta.x / 2);
-                    if (!SimpleAnimHelper.update(table, ref _attackAnim, attackServant.onAttack, attackServant.servantAnimator, time))
+                    if (!SimpleAnimHelper.update(table, ref _attackAnim, attackServant.onAttack, attackServant.asAnimator, time))
                         return false;
                     if (!SimpleAnimHelper.update(table, ref _attackedAnim, targetMaster.onAttacked, targetMaster.animator, time))
                         return false;
@@ -45,9 +45,9 @@ namespace Game
                 else if (table.tryGetServant(eventArg.target, out var targetServant))
                 {
                     attackServant.GetComponentInChildren<PositionLerp>().setTarget(targetServant.rectTransform, targetServant.rectTransform.sizeDelta.x / 2);
-                    if (!SimpleAnimHelper.update(table, ref _attackAnim, attackServant.onAttack, attackServant.servantAnimator, time))
+                    if (!SimpleAnimHelper.update(table, ref _attackAnim, attackServant.onAttack, attackServant.asAnimator, time))
                         return false;
-                    if (!SimpleAnimHelper.update(table, ref _attackedAnim, targetServant.onAttacked, targetServant.servantAnimator, time))
+                    if (!SimpleAnimHelper.update(table, ref _attackedAnim, targetServant.onAttacked, targetServant.asAnimator, time))
                         return false;
                 }
                 table.setServant(attackServant, eventArg.card);
