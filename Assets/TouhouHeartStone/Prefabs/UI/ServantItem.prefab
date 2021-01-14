@@ -155,7 +155,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: HightLight_Yellow
+    animName: 
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -337,7 +337,18 @@ MonoBehaviour:
   onSelectableTrue:
     beforeAnim:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolTrue
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: HightLight_Y
+            m_BoolArgument: 0
+          m_CallState: 2
     setColor:
       enable: 0
       target: {fileID: 0}
@@ -349,7 +360,18 @@ MonoBehaviour:
   onSelectableFalse:
     beforeAnim:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolFalse
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: HightLight_Y
+            m_BoolArgument: 0
+          m_CallState: 2
     setColor:
       enable: 0
       target: {fileID: 0}
