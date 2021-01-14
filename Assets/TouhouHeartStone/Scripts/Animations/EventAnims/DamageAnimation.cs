@@ -21,7 +21,7 @@ namespace Game
                         servant.damageText.text = "-" + eventArg.infoDic[card].damagedValue;
                         servant.lifePropNumber.text.text = eventArg.infoDic[card].currentLife.ToString();
                         servant.onDamage.invokeBeforeAnim();
-                        _animList.Add(new AnimAnim(servant.animator, servant.onDamage.animName));
+                        _animList.Add(new AnimAnim(servant.servantAnimator, servant.onDamage.animName));
                     }
                     else if (table.tryGetMaster(card, out Master master))
                     {

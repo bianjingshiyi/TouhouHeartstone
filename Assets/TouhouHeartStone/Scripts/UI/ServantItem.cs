@@ -151,6 +151,17 @@ namespace UI
         {
             onClick.invoke(this, eventData);
         }
+
+        public new void setBoolTrue(string name)
+        {
+            servantAnimator.SetBool(name, true);
+        }
+
+        public new void setBoolFalse(string name)
+        {
+            servantAnimator.SetBool(name, false);
+        }
+
         public ActionEvent<ServantItem, PointerEventData> onClick { get; } = new ActionEvent<ServantItem, PointerEventData>();
         public SimpleAnim onAttackUp;
         public SimpleAnim onAttackDown;
