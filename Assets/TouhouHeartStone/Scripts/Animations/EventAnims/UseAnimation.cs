@@ -203,7 +203,7 @@ namespace Game
                         else if (table.tryGetServant(targetCard, out var targetServant))
                         {
                             simpleAnim = targetServant.onTargeted;
-                            animator = targetServant.animator;
+                            animator = targetServant.servantAnimator;
                         }
                         else
                             throw new ActorNotFoundException(targetCard);
