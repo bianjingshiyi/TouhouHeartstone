@@ -18,7 +18,7 @@ namespace Game
             }
             if (!table.tryGetServant(eventArg.card, out var servant))
                 servant = table.createServant(eventArg.card, eventArg.position, eventArg.attack, eventArg.life);
-            if (!SimpleAnimHelper.update(table, ref _anim, servant.onSummon, servant.animator, time))
+            if (!SimpleAnimHelper.update(table, ref _anim, servant.onSummon, servant.servantAnimator, time))
                 return false;
             return true;
         }
