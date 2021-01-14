@@ -12,7 +12,7 @@ namespace Game
             Card card = eventArg.card;
             if (table.tryGetServant(card, out var servant))
             {
-                if (!SimpleAnimHelper.update(table, ref _anim, servant.onSetDefine, servant.animator, time))
+                if (!SimpleAnimHelper.update(table, ref _anim, servant.onSetDefine, servant.servantAnimator, time))
                     return false;
                 table.setServant(servant, card);
             }

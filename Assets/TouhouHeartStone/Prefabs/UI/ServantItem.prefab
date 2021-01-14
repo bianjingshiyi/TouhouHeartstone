@@ -226,7 +226,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: Servant_Summon
+    animName: Summon
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -388,7 +388,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
+    animName: Normal
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -550,7 +550,7 @@ PrefabInstance:
     - target: {fileID: 3545342944535199815, guid: 0bd8730dcc8a6824da51d94b28d874e4,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4332720647846049059, guid: 0bd8730dcc8a6824da51d94b28d874e4,
         type: 3}
