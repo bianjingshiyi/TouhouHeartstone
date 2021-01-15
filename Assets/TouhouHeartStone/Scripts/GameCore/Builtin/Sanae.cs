@@ -669,7 +669,7 @@ namespace TouhouHeartstone.Builtin
                         }
                         break;
                     default:
-                        await card.backToHand(game);
+                        await card.fieldBackToHand(game);
                         await card.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
                         break;
                 }

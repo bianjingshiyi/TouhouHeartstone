@@ -1283,11 +1283,11 @@ namespace TouhouHeartstone
                 return new Card[] { card.pile[card.pile.count - 2] };
             return new Card[] { card.pile[index - 1], card.pile[index + 1] };
         }
-        public static Task backToHand(this Card card, THHGame game)
+        public static Task fieldBackToHand(this Card card, THHGame game)
         {
-            return backToHand(new Card[] { card }, game);
+            return fieldBackToHand(new Card[] { card }, game);
         }
-        public static async Task backToHand(this IEnumerable<Card> cards, THHGame game)
+        public static async Task fieldBackToHand(this IEnumerable<Card> cards, THHGame game)
         {
             foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
             {

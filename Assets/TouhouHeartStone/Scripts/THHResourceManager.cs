@@ -9,6 +9,8 @@ using System.Data;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using ExcelDataReader;
+using UnityEngine.Experimental.Rendering;
+
 namespace BJSYGameCore
 {
     public class THHResourceManager : ResourceManager
@@ -193,7 +195,12 @@ namespace BJSYGameCore
                     }
                     return;
                 }
-                tcs.SetResult(DownloadHandlerTexture.GetContent(uwr));
+                Texture2D texture = new Texture2D(512, 512, TextureFormat.RGB24, false);
+                if (uwr.downloadHandler.data != null)
+                    texture.LoadImage(uwr.downloadHandler.data);
+                else
+                    texture = null;
+                tcs.SetResult(texture);
                 uwr.Dispose();
             };
             return tcs.Task;
@@ -212,7 +219,7 @@ namespace BJSYGameCore
         }
         public async Task<Texture2D> loadTextureBySystemIO(string path, string curDir)
         {
-            Texture2D texture = new Texture2D(512, 512);
+            Texture2D texture = new Texture2D(512, 512, TextureFormat.RGB24, false);
             texture.LoadImage(await loadBytesBySystemIO(path, curDir));
             return texture;
         }

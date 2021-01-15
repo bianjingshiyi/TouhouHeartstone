@@ -535,7 +535,7 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<RushServant>());
             Assert.True(you.field.getCard<RushServant>().isRush(game));
             Assert.True(you.field.getCard<RushServant>().canAttack(game));
-            _ = you.field.getCard<RushServant>().backToHand(game);
+            _ = you.field.getCard<RushServant>().fieldBackToHand(game);
             Assert.True(you.hand.getCard<RushServant>().isRush(game));
             you.cmdUse(game, you.hand.getCard<RushServant>());
             Assert.True(you.field.getCard<RushServant>().isRush(game));
@@ -561,24 +561,83 @@ namespace Tests
 
             game.skipUntilCanUse<DefaultServant>(you);
             you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(),targets: you.field[0]);
+            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(), targets: you.field[0]);
             you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(), targets: you.master);
             you.cmdTurnEnd(game);
 
-            
+
         }
         [Test]
         public void RevealTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(DefaultServant.ID, 30)
-            );  
+            );
             var reveal = you.Reveal(game, you.deck);
             Assert.True(reveal.IsCompleted);
-            
+
             game.Dispose();
         }
-
-        
+        /// <summary>
+        /// 恐惧战马测试
+        /// </summary>
+        [Test]
+        public void dreadsteedTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>[]
+                {
+                    new KeyValuePair<int, int>(Dreadsteed.ID, 30)
+                },
+                new KeyValuePair<int, int>[]
+                {
+                    new KeyValuePair<int, int>(Dreadsteed.ID, 30)
+                });
+            game.skipUntilCanUse<Dreadsteed>(you);
+            you.cmdUse<Dreadsteed>(game);
+            game.skipUntilCanUse<Dreadsteed>(oppo);
+            oppo.cmdUse<Dreadsteed>(game);
+            game.skipUntilYourTurn(you);
+            you.cmdAttack(game, you.field.getCard<Dreadsteed>(), oppo.field.getCard<Dreadsteed>());
+            //马都还在场上
+            Assert.AreEqual(1, you.field.count);
+            Assert.AreEqual(1, oppo.field.count);
+            Assert.AreEqual(1, you.field.getCard<Dreadsteed>().getCurrentLife(game));
+            Assert.AreEqual(1, oppo.field.getCard<Dreadsteed>().getCurrentLife(game));
+        }
+        /// <summary>
+        /// 阿努巴拉克测试
+        /// </summary>
+        [Test]
+        public void anubarakTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>[]
+                {
+                    new KeyValuePair<int, int>(Anubarak.ID, 30)
+                },
+                new KeyValuePair<int, int>[]
+                {
+                    new KeyValuePair<int, int>(Anubarak.ID, 30)
+                });
+            game.skipUntilCanUse<Anubarak>(you);
+            you.cmdUse(game, you.hand.getCard<Anubarak>());
+            Card firstAnubrak = you.field.getCard<Anubarak>();
+            game.skipUntilCanUse<Anubarak>(oppo);
+            oppo.cmdUse(game, oppo.hand.getCard<Anubarak>());
+            game.skipUntilYourTurn(you);
+            you.cmdUse(game, you.hand.getCard<Anubarak>());//腾一下手牌
+            Assert.AreEqual(9, you.hand.count);
+            you.cmdAttack(game, firstAnubrak, oppo.field.getCard<Anubarak>());//对撞，都死，生俩小蜘蛛，回手，当然对面的手牌已经满了
+            Assert.True(you.field.Any(c => c.define is Nerubian));
+            Assert.AreEqual(2, you.field.count);
+            Assert.True(oppo.field.Any(c => c.define is Nerubian));
+            Assert.AreEqual(1, oppo.field.count);
+            Assert.False(you.grave.Any(c => c.define is Anubarak));
+            Assert.AreEqual(10, you.hand.count);
+            Assert.True(you.hand.Contains(firstAnubrak));
+            Assert.AreEqual(10, oppo.hand.count);
+            Assert.True(oppo.grave.Any(c => c.define is Anubarak));
+        }
     }
 }

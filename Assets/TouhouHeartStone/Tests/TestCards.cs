@@ -306,7 +306,7 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
-    
+
     public class MountainGaint : ServantCardDefine
     {
         public const int ID = 0x00110010;
@@ -680,7 +680,7 @@ namespace Tests
                 return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
             },async(g,c,a)=>
             {
-                 await a.card.backToHand(g);
+                 await a.card.fieldBackToHand(g);
                  await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
             })
         };
@@ -767,5 +767,49 @@ namespace Tests
                 return t.damage(g,c,1);
             }, PileFlag.oppo | PileFlag.character)
         };
+    }
+    /// <summary>
+    /// 恐惧战马 411 亡语：将这张牌从墓地置入战场。
+    /// </summary>
+    public class Dreadsteed : ServantCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x025;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new DeathRattle(ID,(g,c,b,p)=>
+            {
+                THHPlayer player = c.getOwner();
+                return player.reborn(g,c,player.field,p);
+            })
+        };
+    }
+    public class Anubarak : ServantCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x026;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 9;
+        public override int attack { get; set; } = 8;
+        public override int life { get; set; } = 4;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new DeathRattle(ID,(g,c,b,p)=>
+            {
+                THHPlayer player = c.getOwner();
+                player.createToken(g,g.getDefine<Nerubian>(),p);
+                return c.fieldBackToHand(g);
+            })
+        };
+    }
+    public class Nerubian : ServantCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x027;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 4;
     }
 }

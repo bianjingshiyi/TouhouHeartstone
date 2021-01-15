@@ -333,45 +333,45 @@ namespace TouhouHeartstone
                 await card.setUsed(game, true);
             }
             await setGem(game, gem - card.getCost(game));//消耗法力值
-            await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position,cost = card.getCost(game), targets = targets }, async arg =>
-            {
-                THHPlayer player = arg.player;
-                card = arg.card;
-                targets = arg.targets;
-                game.logger.log(arg.player + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
-                if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
-                {
-                    await tryEnterField(game, arg.player.hand, arg.card, arg.position);//随从卡，将卡置入战场
-                    await card.ComeOnStage(game,player, targets);//触发战吼事件
-                    //await card.activeEffect(game, player, targets);//执行随从效果
+            await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, cost = card.getCost(game), targets = targets }, async arg =>
+             {
+                 THHPlayer player = arg.player;
+                 card = arg.card;
+                 targets = arg.targets;
+                 game.logger.log(arg.player + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
+                 if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
+                 {
+                     await tryEnterField(game, arg.player.hand, arg.card, arg.position);//随从卡，将卡置入战场
+                    await card.ComeOnStage(game, player, targets);//触发战吼事件
+                                                                  //await card.activeEffect(game, player, targets);//执行随从效果
                 }
-                else if (card.define is SkillCardDefine)
-                {
-                    await card.activeEffect(game, player, targets);
-                }
-                else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SPELL))
-                {
+                 else if (card.define is SkillCardDefine)
+                 {
+                     await card.activeEffect(game, player, targets);
+                 }
+                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SPELL))
+                 {
                     //法术卡,释放效果
                     await player.hand.moveTo(game, card, player.warp);
-                    if (card.hasKeyword(game, KEYWORD.SECRET))
-                        await tryEnterHead(game, warp, card);
-                    else
-                    {
-                        await card.activeEffect(game, player, targets);
-                        if (card.hasKeyword(game, KEYWORD._RETURNHEAD))
-                        {
-                            await player.warp.moveTo(game, card, player.hand);
-                        }
-                        await player.warp.moveTo(game, card, player.grave);//如果是普通法术，则送入墓地
+                     if (card.hasKeyword(game, KEYWORD.SECRET))
+                         await tryEnterHead(game, warp, card);
+                     else
+                     {
+                         await card.activeEffect(game, player, targets);
+                         if (card.hasKeyword(game, KEYWORD._RETURNHEAD))
+                         {
+                             await player.warp.moveTo(game, card, player.hand);
+                         }
+                         await player.warp.moveTo(game, card, player.grave);//如果是普通法术，则送入墓地
                     }
-                }
-                else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == DEFINE.ITEM))
-                {
+                 }
+                 else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == DEFINE.ITEM))
+                 {
                     //物品卡，置入物品栏
                     await player.equip(game, card);
-                    await card.activeEffect(game, player, targets);
-                }
-            });
+                     await card.activeEffect(game, player, targets);
+                 }
+             });
             await game.updateDeath(game);
             return true;
         }
@@ -526,7 +526,7 @@ namespace TouhouHeartstone
                 return player.name + "将" + card.getFormatString() + "置入战场，位于" + position;
             }
         }
-        public async Task<CreateTokenEventArg> createToken(THHGame game, CardDefine define, int position = -1)
+        public Task<CreateTokenEventArg> createToken(THHGame game, CardDefine define, int position = -1)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));
@@ -537,7 +537,7 @@ namespace TouhouHeartstone
             if (position < 0)
                 position = field.count;
             CreateTokenEventArg eventArg = new CreateTokenEventArg() { player = this, define = define, position = position };
-            await game.triggers.doEvent(eventArg, async arg =>
+            return game.triggers.doEvent(eventArg, async arg =>
             {
                 THHPlayer player = arg.player;
                 define = arg.define;
@@ -548,7 +548,6 @@ namespace TouhouHeartstone
                 arg.card = game.createCard(define);
                 await tryEnterField(game, null, arg.card, position);
             });
-            return eventArg;
         }
         public async Task<CreateTokenEventArg[]> createToken(THHGame game, int count, CardDefine define, int position = -1)
         {
@@ -749,7 +748,7 @@ namespace TouhouHeartstone
             switch (define)
             {
                 case 0:
-                    if(cards.count > 0)
+                    if (cards.count > 0)
                     {
                         show = cards.random(game);
                         await game.triggers.doEvent(new RevealArg() { player = this, card = show }, async arg =>
@@ -757,7 +756,7 @@ namespace TouhouHeartstone
                             game.logger.log("揭示了{card:" + show.define.id + "}");
                         });
                         return show;
-                        
+
                     }
                     else
                     {
@@ -767,8 +766,8 @@ namespace TouhouHeartstone
                         });
                         return show;
                     }
-                    
-                case 1:                   
+
+                case 1:
                     if (cards.Count(c => c.isSpell()) > 0)
                     {
                         show = cards.Where(c => c.isSpell()).random(game);
@@ -829,7 +828,7 @@ namespace TouhouHeartstone
                     game.logger.log("揭示失败：类别不对");
                     return null;
 
-                    
+
 
             }
         }
@@ -856,8 +855,8 @@ namespace TouhouHeartstone
 
         }
 
-        
-        
+
+
         #region Command
         public Task cmdInitReplace(THHGame game, params Card[] cards)
         {

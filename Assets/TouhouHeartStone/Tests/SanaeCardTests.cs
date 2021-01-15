@@ -338,9 +338,14 @@ namespace Tests
             game.skipUntilCanUse<MoriyaSuwako>(you);
             you.cmdUse(game, you.hand.getCard<MoriyaSuwako>());
             game.skipTurnUntil(() => you.hand.count == 10);
+            game.setNextRandomInt(4);
             // 这里偷了个懒，得把suwako亡语设成回手,因为目前诹访子的写法不允许选亡语触发
-            you.field[0].backToHand(game);
-            Assert.AreEqual(10,you.hand.count);
+            // ——不许偷懒
+            you.hand.getCard<MoriyaSuwako>().setDead(game, true);
+            game.updateDeath(game);
+            //这检查结果也太几把偷懒了，起码要改成检查诹访子没有回手吧？
+            //Assert.AreEqual(10,you.hand.count);
+            Assert.False(you.hand.Any(c => c.define is MoriyaSuwako));
         }
 
         [Test]

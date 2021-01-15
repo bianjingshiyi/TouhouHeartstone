@@ -200,7 +200,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect((game,card,target)=>
             {
-                return target.backToHand(game);
+                return target.fieldBackToHand(game);
             }, PileFlag.self | PileFlag.field)
         };
     }
@@ -805,7 +805,7 @@ namespace TouhouHeartstone.Builtin
         {
             foreach (var player in game.players)
             {
-                await player.field.Where(c => c != card).backToHand(game);
+                await player.field.Where(c => c != card).fieldBackToHand(game);
             }
         }
     }

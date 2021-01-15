@@ -597,7 +597,7 @@ namespace Tests
             Assert.True(you.field.getCard<Chen_N>().isRush(game));
             Assert.True(you.field.getCard<Chen_N>().canAttack(game));
             you.cmdAttack(game, you.field.getCard<Chen_N>(), oppo.field[0]);
-            you.field.getCard<Chen_N>().backToHand(game);
+            you.field.getCard<Chen_N>().fieldBackToHand(game);
             Assert.False(you.hand.getCard<Chen_N>().isRush(game));
             you.cmdUse(game, you.hand.getCard<Chen_N>());
             Assert.True(you.field.getCard<Chen_N>().isRush(game));
