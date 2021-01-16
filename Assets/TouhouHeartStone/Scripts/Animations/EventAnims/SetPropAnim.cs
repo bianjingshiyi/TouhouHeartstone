@@ -16,7 +16,7 @@ namespace Game
             Animator animator = null;
             if (table.tryGetServant(eventArg.card, out var servant))
             {
-                animator = servant.animator;
+                animator = servant.attackPropNumber.asAnimator;
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.value is int attack)
                 {
                     servant.attackPropNumber.text.text = attack.ToString();
@@ -31,6 +31,7 @@ namespace Game
                 }
                 else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.value is int currentLife)
                 {
+                    animator = servant.lifePropNumber.asAnimator;
                     servant.lifePropNumber.text.text = currentLife.ToString();
 
                     //判断是否是红字
@@ -73,14 +74,15 @@ namespace Game
             }
             else if (table.tryGetMaster(eventArg.card, out var master))
             {
-                animator = master.animator;
+                animator = master.LifePropNumber.animator;
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
                 {
-
+                    animator = master.AttackPropNumber.animator;
                     master.AttackPropNumber.text.text = attack.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
                 {
+
                     master.LifePropNumber.text.text = currentLife.ToString();
                 }
                 else if (eventArg.propName == PROPERTY.KEYWORDS)
@@ -123,7 +125,7 @@ namespace Game
             }
             else if (table.tryGetItem(eventArg.card, out var item))
             {
-                animator = item.animator;
+                animator = item.DurabilityPropNumber.animator;
                 if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
                 {
                     item.AttackPropNumber.text.text = attack.ToString();

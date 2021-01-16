@@ -23,7 +23,7 @@ namespace Game
                     //发现，印卡
                     if (!table.tryGetHand(eventArg.card, out var hand))
                         hand = table.createHand(eventArg.card);
-                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onCreate, hand.animator, time))
+                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onCreate, hand.CardAnimator, time))
                         return false;
                 }
                 else if (eventArg.to.name == PILE.HEAD)

@@ -51,7 +51,7 @@ PrefabInstance:
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: RedText.afterAnim.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
@@ -61,7 +61,12 @@ PrefabInstance:
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: GreenText.afterAnim.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
@@ -156,7 +161,7 @@ PrefabInstance:
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: GreenText.afterAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
@@ -167,21 +172,96 @@ PrefabInstance:
         type: 3}
       propertyPath: GreenText.afterAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 2855582918217306620}
+      objectReference: {fileID: 0}
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: GreenText.afterAnim.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: setBoolFalse
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: GreenText.afterAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: GreenText.afterAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2855582918217306620}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: setBoolFalse
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
       value: isGreen
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 2855582918217306620}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: setBoolFalse
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_StringArgument
+      value: isGreen
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: RedText.animName
+      value: PropNumber_Red
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: GreenText.animName
+      value: Prop_Green
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: WhiteText.animName
+      value: Prop_White
       objectReference: {fileID: 0}
     - target: {fileID: 7176695291515966001, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
