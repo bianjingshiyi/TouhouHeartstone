@@ -66,7 +66,7 @@ namespace Game
                             }
                             if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator, time))
                                 return false;
-                            if (!SimpleAnimHelper.update(table, ref _anim2, hand.onDiscard, hand.animator, time))
+                            if (!SimpleAnimHelper.update(table, ref _anim2, hand.onDiscard, hand.CardAnimator, time))
                                 return false;
                             table.ui.SelfHandList.removeItem(hand);
                             table.ui.EnemyHandList.removeItem(hand);
@@ -93,7 +93,7 @@ namespace Game
                             else if (eventArg.to.name == PILE.GRAVE)
                             {
                                 //弃牌
-                                if (!SimpleAnimHelper.update(table, ref _anim, hand.onDiscard, hand.animator, time, next =>
+                                if (!SimpleAnimHelper.update(table, ref _anim, hand.onDiscard, hand.CardAnimator, time, next =>
                                 {
                                     if (next is MoveCardAnim moveCard && moveCard.tEventArg.card != eventArg.card)
                                         return true;
