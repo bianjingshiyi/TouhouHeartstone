@@ -840,7 +840,7 @@ namespace TouhouHeartstone.Builtin
                                                                     }, null, 
                                                                     async (g, c, a) =>
                                                                     {
-                                                                        var duel = await Sanae.revealDuel(c.getOwner(),g,1);
+                                                                        var duel = await Sanae.revealDuel(c.getOwner(),g);
                                                                         if (duel.result)
                                                                         {
                                                                             await c.getOwner().draw(g);
