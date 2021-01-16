@@ -340,7 +340,7 @@ namespace Tests
                 game.skipUntilCanUse<DefaultServant>(oppo);
                 oppo.cmdUse<DefaultServant>(game);
             }
-
+            game.skipUntilCanUse<StarRitual>(you);
             int revealCount = 3;
             for (int i = 0; i < revealCount; i++)
             {
@@ -356,22 +356,25 @@ namespace Tests
                 int id = discoverRequest.cardIdArray[i];
                 int handCount = you.hand.count;
                 you.cmdDiscover(game, id);
-                switch (id)
+                Card card = game.getCard(id);
+                switch (card.define)
                 {
-                    case GodMiracleOfRain.ID:
-                        Assert.True(oppo.field.All(c => c.getCurrentLife(game) == 4 - revealCount));
+                    case GodMiracleOfRain _:
+                        foreach (var servant in oppo.field)
+                        {
+                            Assert.AreEqual(4 - revealCount, servant.getCurrentLife(game));
+                        }
+
                         break;
-                    case GodMiracleOfOnbashira.ID:
+                    case GodMiracleOfOnbashira _:
                         Assert.AreEqual((2 + revealCount <= 7) ? 2 + revealCount : 7, you.field.count);
                         break;
-                    case GodMiracleOfWar.ID:
+                    case GodMiracleOfWar _:
                         Assert.AreEqual(30 - 6 - revealCount, oppo.master.getCurrentLife(game));
                         break;
-                    case GodMiracleOfRevolution.ID:
+                    case GodMiracleOfRevolution _:
                         Assert.AreEqual(handCount + 2 + revealCount <= 10 ? 2 + handCount + 2 + revealCount : 10,
                             you.hand.count);
-                        break;
-                    default:
                         break;
                 }
 
