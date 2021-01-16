@@ -37,6 +37,7 @@ namespace UI
             this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
             this._RegisterPanel = this.transform.Find("RegisterPanel").GetComponent<RegisterPanel>();
             this._LoginPanel = this.transform.Find("LoginPanel").GetComponent<LoginPanel>();
+            this._RecoverPanel = this.transform.Find("RecoverPanel").GetComponent<RecoverPanel>();
             this._PlayerInfoPanel = this.transform.Find("PlayerInfoPanel").GetComponent<PlayerInfoPanel>();
         }
         [SerializeField()]
@@ -193,6 +194,19 @@ namespace UI
                     this._LoginPanel = this.transform.Find("LoginPanel").GetComponent<LoginPanel>();
                 }
                 return this._LoginPanel;
+            }
+        }
+        [SerializeField()]
+        private RecoverPanel _RecoverPanel;
+        public RecoverPanel RecoverPanel
+        {
+            get
+            {
+                if ((this._RecoverPanel == null))
+                {
+                    this._RecoverPanel = this.transform.Find("RecoverPanel").GetComponent<RecoverPanel>();
+                }
+                return this._RecoverPanel;
             }
         }
         [SerializeField()]

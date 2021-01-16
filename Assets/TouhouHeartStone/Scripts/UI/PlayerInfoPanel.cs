@@ -118,4 +118,55 @@ namespace UI
             CaptchaImageButton.image.sprite = sprite;
         }
     }
+    partial class RecoverPanel
+    {
+        string mail = "";
+        public void hide()
+        {
+            gameObject.SetActive(false);
+        }
+
+        bool currentStage = false;
+
+        public bool CurrentStage => currentStage;
+        public void Show()
+        {
+            SwitchStage(false);
+            gameObject.SetActive(true);
+        }
+
+        public void SwitchStage(bool stage)
+        {
+            currentStage = stage;
+            container1RectTransform.gameObject.SetActive(!stage);
+            container2RectTransform.gameObject.SetActive(stage);
+            HideMessage();
+        }
+        
+        private void Awake()
+        {
+            init();
+            onCloseButtonClick += hide;
+        }
+        public void ShowMessage(string msg)
+        {
+            hintText.text = msg;
+            hintText.transform.parent.gameObject.SetActive(true);
+        }
+        public void HideMessage()
+        {
+            hintText.transform.parent.gameObject.SetActive(false);
+        }
+        public void setCaptcha(Sprite sprite)
+        {
+            if (currentStage)
+            {
+                captchaImage2.sprite = sprite;
+            }
+            else
+            {
+                captchaImage1.sprite = sprite;
+            }
+        }
+    }
 }

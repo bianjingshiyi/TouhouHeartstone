@@ -103,6 +103,12 @@ namespace Game
                 mainUI.LoginPanel.setCaptcha(await getCaptchaImage());
             });
             mainUI.LoginPanel.LoginButtonBlack.asButton.onClick.set(onLoginClick);
+            mainUI.LoginPanel.TextButton.onClick.AddListener(async () =>
+            {
+                mainUI.LoginPanel.hide();
+                mainUI.RecoverPanel.Show();
+                mainUI.RecoverPanel.captchaImage1.sprite = await getCaptchaImage();
+            });
             mainUI.LoginPanel.hide();
             mainUI.PlayerInfoPanel.OnLoginClick += async () =>
             {
@@ -116,6 +122,26 @@ namespace Game
                 _ = client.logout();
             };
             mainUI.PlayerInfoPanel.SetPlayerInfo(null);
+            mainUI.RecoverPanel.onCommitButtonClick += onRecoverCommit;
+            mainUI.RecoverPanel.onCloseButtonClick += () =>
+            {
+                mainUI.RecoverPanel.gameObject.SetActive(false);
+            };
+            mainUI.RecoverPanel.onBackButtonClick += () =>
+            {
+                if (mainUI.RecoverPanel.CurrentStage)
+                    mainUI.RecoverPanel.SwitchStage(false);
+                else
+                    mainUI.RecoverPanel.gameObject.SetActive(false);
+            };
+            mainUI.RecoverPanel.onCaptchaButton1Click += async () =>
+            {
+                mainUI.RecoverPanel.captchaImage1.sprite = await getCaptchaImage();
+            };
+            mainUI.RecoverPanel.onCaptchaButton2Click += async () =>
+            {
+                mainUI.RecoverPanel.captchaImage2.sprite = await getCaptchaImage();
+            };
 
             host.logger = new ULogger("Host");
             client.logger = new ULogger("Client");
@@ -156,6 +182,7 @@ namespace Game
                 ui.parent.display(ui.parent.MainMenu);
             });
         }
+
         protected void Start()
         {
             client.start();
@@ -677,6 +704,8 @@ namespace Game
         private const String NETMANAGER_NICKNAME_NULL = "昵称不能为空";
         [TranslateMsg]
         private const String NETMANAGER_PASSWORD_ERROR = "两次输入的密码不匹配";
+        [TranslateMsg]
+        const string NETMANAGER_RECOVER_CODE_NULL = "密码找回代码不能为空";
         async void onRegisterClick()
         {
             var ui = getManager<UIManager>().getObject<RegisterPanel>();
@@ -762,7 +791,79 @@ namespace Game
                 panel.setCaptcha(await getCaptchaImage());
             }
         }
-#endregion
+
+        private async void onRecoverCommit()
+        {
+            var panel = getManager<UIManager>().getObject<MainMenu>().RecoverPanel;
+            panel.HideMessage();
+            if (!panel.CurrentStage)
+            {
+                var mail = panel.mailInput.text;
+                var captcha = panel.captchaInput1.text;
+
+                if (string.IsNullOrEmpty(mail))
+                {
+                    panel.ShowMessage(lang.i18n._(NETMANAGER_EMAIL_NULL));
+                    return;
+                }
+                if (string.IsNullOrEmpty(captcha))
+                {
+                    panel.ShowMessage(lang.i18n._(NETMANAGER_CHECK_CODE_NULL));
+                    return;
+                }
+                try
+                {
+                    await client.ServerClient.RecoverRequestAsync(mail, captcha);
+                    panel.SwitchStage(true);
+                }
+                catch (NetClientException e)
+                {
+                    panel.ShowMessage(e.Message);
+                }
+                panel.setCaptcha(await getCaptchaImage());
+            }
+            else
+            {
+                var mail = panel.mailInput.text;
+                var captcha = panel.captchaInput2.text;
+                var password = panel.passwordInput.text;
+                var repeatPassword = panel.repeatPasswordInput.text;
+                var code = panel.codeInput.text.Trim();
+
+                if (string.IsNullOrEmpty(mail))
+                {
+                    panel.ShowMessage(lang.i18n._(NETMANAGER_EMAIL_NULL));
+                    return;
+                }
+                if (string.IsNullOrEmpty(code))
+                {
+                    panel.ShowMessage(lang.i18n._(NETMANAGER_RECOVER_CODE_NULL));
+                    return;
+                }
+                if (string.IsNullOrEmpty(captcha))
+                {
+                    panel.ShowMessage(lang.i18n._(NETMANAGER_CHECK_CODE_NULL));
+                    return;
+                }
+                if (password != repeatPassword)
+                {
+                    panel.ShowMessage(lang.i18n._(NETMANAGER_PASSWORD_ERROR));
+                    return;
+                }
+                try
+                {
+                    await client.ServerClient.RecoverPasswordAsync(mail, code, password, captcha);
+                    panel.gameObject.SetActive(false);
+                    getManager<UIManager>().getObject<LoginPanel>().display();
+                }
+                catch (NetClientException e)
+                {
+                    panel.ShowMessage(e.Message);
+                    panel.setCaptcha(await getCaptchaImage());
+                }
+            }
+        }
+        #endregion
     }
     public static class RoomInfoName
     {

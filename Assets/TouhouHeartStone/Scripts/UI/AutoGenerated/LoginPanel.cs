@@ -45,7 +45,7 @@ namespace UI
             this._OptionsHorizontalLayoutGroup = this.transform.Find("Container").Find("Options").GetComponent<HorizontalLayoutGroup>();
             this._RememberAccountUIToggle = this.transform.Find("Container").Find("Options").Find("RememberAccount").GetComponent<UIToggle>();
             this._RememberPasswordUIToggle = this.transform.Find("Container").Find("Options").Find("RememberPassword").GetComponent<UIToggle>();
-            this._Options_Text = this.transform.Find("Container").Find("Options").Find("Text").GetComponent<Text>();
+            this._TextButton = this.transform.Find("Container").Find("Options").Find("Text").GetComponent<Button>();
             this._RegisterButtonBlack = this.transform.Find("Register").GetComponent<ButtonBlack>();
             this._LoginButtonBlack = this.transform.Find("Login").GetComponent<ButtonBlack>();
         }
@@ -310,16 +310,16 @@ namespace UI
             }
         }
         [SerializeField()]
-        private Text _Options_Text;
-        public Text Options_Text
+        private Button _TextButton;
+        public Button TextButton
         {
             get
             {
-                if ((this._Options_Text == null))
+                if ((this._TextButton == null))
                 {
-                    this._Options_Text = this.transform.Find("Container").Find("Options").Find("Text").GetComponent<Text>();
+                    this._TextButton = this.transform.Find("Container").Find("Options").Find("Text").GetComponent<Button>();
                 }
-                return this._Options_Text;
+                return this._TextButton;
             }
         }
         [SerializeField()]
