@@ -9,6 +9,8 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using System;
 using System.Threading.Tasks;
+using UI;
+using Card = TouhouCardEngine.Card;
 
 namespace Tests
 {
@@ -322,7 +324,30 @@ namespace Tests
         [Test]
         public void YasakaKanakoTest()
         {
-            
+            TestGameflow.createGame<StarRitual, DefaultServant>(out var game, out var you, out var oppo,
+                new GameOption {shuffle = false},
+                Sanae.ID, new []{new KeyValuePair<int, int>(YasakaKanako.ID,4)},
+                Sanae.ID, new KeyValuePair<int, int>[0]);
+            game.skipUntilHasGem(you,10);
+            for (int i = 0; i < 5; i++)
+            {
+                you.cmdUse<StarRitual>(game);
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                
+                switch (i)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
         
         [Test]
@@ -365,8 +390,8 @@ namespace Tests
                         Assert.True(oppo.field.All(c=> c.getAttack(game) == 1));
                         break;
                     default:
-                        Assert.AreEqual(you.hand,suwako.pile);
-                        Assert.AreNotEqual(null,suwako.getModifiers());
+                        Assert.True(you.hand.Contains(suwako));
+                        Assert.NotNull(suwako.getModifiers());
                         break;
                 }
             }
@@ -388,6 +413,78 @@ namespace Tests
             //这检查结果也太几把偷懒了，起码要改成检查诹访子没有回手吧？
             //Assert.AreEqual(10,you.hand.count);
             Assert.False(you.hand.Any(c => c.define is MoriyaSuwako));
+        }
+        
+        [Test]
+        public void SuwakoEmptyOppoFieldTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo, 
+                new KeyValuePair<int, int>(MoriyaSuwako.ID,1));
+            game.skipUntilCanUse<MoriyaSuwako>(you);
+            you.cmdUse<MoriyaSuwako>(game, out Card suwako);
+            game.setNextRandomInt(1);
+            suwako.setDead(game, true);
+            game.updateDeath(game);
+        }
+
+        [Test]
+        public void GodWindTest()
+        {
+            TestGameflow.createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo,
+                new KeyValuePair<int, int>(GodWind.ID,1));
+            for (int i = 0; i < 3; i++)
+            {
+                game.skipUntilCanUse<DefaultServant>(oppo);
+                oppo.cmdUse<DefaultServant>(game);
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                game.skipUntilCanUse<DefaultServant>(you);
+                you.cmdUse<DefaultServant>(game);
+            }
+            List<Card> allServants = new List<Card>();
+            allServants.AddRange(you.field.ToArray());
+            allServants.AddRange(oppo.field.ToArray());
+            game.skipUntilCanUse<GodWind>(you);
+            you.cmdUse<GodWind>(game);
+            for (int i = 0; i < 6; i++)
+            {
+                Assert.True(oppo.deck.Contains(allServants[i]));
+            }
+        }
+        [Test]
+        public void LittleShrineTest()
+        {
+            TestGameflow.createGame<FireBall, DefaultServant>(out var game, out var you, out var oppo,
+                new GameOption {shuffle = false},
+                Sanae.ID, new []{new KeyValuePair<int, int>(LittleShrine.ID,1)},
+                Sanae.ID, new KeyValuePair<int, int>[0]);
+            game.skipUntilCanUse<LittleShrine>(you);
+            int i = you.hand.count;
+            you.cmdUse<LittleShrine>(game);
+            you.cmdTurnEnd(game);
+            Assert.AreEqual(i,you.hand.count);
+        }
+        [Test]
+        public void ForgottenRecrptionTest()
+        {
+            TestGameflow.createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo,
+                new KeyValuePair<int, int>(ForgottenRecrption.ID,1),
+                new KeyValuePair<int,int>(MoriyaSuwako.ID,1));
+            game.skipUntilCanUse<MoriyaSuwako>(you);
+            you.cmdUse<MoriyaSuwako>(game, out Card suwako);
+            Assert.NotNull(suwako);
+            game.setNextRandomInt(2);
+            suwako.setDead(game,true);
+            game.updateDeath(game);
+            game.skipUntilCanUse<ForgottenRecrption>(you);
+            you.cmdUse<ForgottenRecrption>(game);
+            Assert.True(you.hand.Contains(suwako));
+        }
+        [Test]
+        public void OmikujiBombTest()
+        {
+            throw new NotImplementedException();
         }
     }
 }
