@@ -311,6 +311,7 @@ namespace Tests
             Assert.AreEqual(9,you.hand.getCard<OrochiOfAncientTimes>().getCost(game));
             you.cmdUse<StarRitual>(game);
             Assert.AreEqual(5,you.hand.getCard<OrochiOfAncientTimes>().getCost(game));
+            Assert.True(you.hand.Last().define is OrochiOfAncientTimes);
             Assert.AreEqual(5,you.hand.Last().getCost(game));
             you.cmdTurnEnd(game);
             game.skipUntilYourTurn(you);
@@ -327,7 +328,48 @@ namespace Tests
         [Test]
         public void MoriyaSuwakoTest()
         {
-            
+            TestGameflow.createGame<StarRitual, SorcererApprentice>(out var game, out var you, out var oppo,
+                new GameOption {shuffle = false},
+                Sanae.ID, new []{new KeyValuePair<int, int>(MoriyaSuwako.ID,4)},
+                Sanae.ID, new KeyValuePair<int, int>[0]);
+            game.skipUntilHasGem(you,10);
+            int cost = you.hand.getCard<MoriyaSuwako>().getCost(game);
+            for (int i = 0; i < 5; i++)
+            {
+                you.cmdUse<StarRitual>(game);
+            }
+
+            int oppoFieldCount = 3;
+            for (int i = 0; i < oppoFieldCount; i++)
+            {
+                game.skipUntilCanUse<SorcererApprentice>(oppo);
+                oppo.cmdUse<SorcererApprentice>(game);
+            }
+            Assert.AreEqual(cost-5,you.hand.getCard<MoriyaSuwako>().getCost(game));
+            for (int i = 0; i < 4; i++)
+            {
+                game.skipUntilCanUse<MoriyaSuwako>(you);
+                you.cmdUse<MoriyaSuwako>(game, out Card suwako);
+                game.setNextRandomInt(i+1);
+                suwako.setDead(game,true);
+                game.updateDeath(game);
+                switch (i)
+                {
+                    case 0:
+                        Assert.AreEqual(oppoFieldCount-1,oppo.field.count);
+                        break;
+                    case 1:
+                        Assert.True(you.field.All(c => c.define is Frog));
+                        break;
+                    case 2:
+                        Assert.True(oppo.field.All(c=> c.getAttack(game) == 1));
+                        break;
+                    default:
+                        Assert.AreEqual(you.hand,suwako.pile);
+                        Assert.AreNotEqual(null,suwako.getModifiers());
+                        break;
+                }
+            }
         }
         
         [Test]
@@ -336,28 +378,16 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo, 
                 new KeyValuePair<int, int>(MoriyaSuwako.ID,1));
             game.skipUntilCanUse<MoriyaSuwako>(you);
-            you.cmdUse(game, you.hand.getCard<MoriyaSuwako>());
+            you.cmdUse<MoriyaSuwako>(game, out Card suwako);
             game.skipTurnUntil(() => you.hand.count == 10);
             game.setNextRandomInt(4);
             // 这里偷了个懒，得把suwako亡语设成回手,因为目前诹访子的写法不允许选亡语触发
             // ——不许偷懒
-            you.hand.getCard<MoriyaSuwako>().setDead(game, true);
+            suwako.setDead(game, true);
             game.updateDeath(game);
             //这检查结果也太几把偷懒了，起码要改成检查诹访子没有回手吧？
             //Assert.AreEqual(10,you.hand.count);
             Assert.False(you.hand.Any(c => c.define is MoriyaSuwako));
-        }
-
-        [Test]
-        public void SuwakoReduceCostTest()
-        {
-            TestGameflow.createGame(out var game, out var you, out var oppo, 
-                new KeyValuePair<int, int>(MoriyaSuwako.ID,1),
-                new KeyValuePair<int, int>(StarRitual.ID,1));
-            game.skipUntilCanUse<MoriyaSuwako>(you);
-            game.skipUntilCanUse<StarRitual>(you);
-            you.cmdUse<StarRitual>(game);
-            Assert.AreEqual(9,you.hand.getCard<MoriyaSuwako>().getCost(game));
         }
     }
 }
