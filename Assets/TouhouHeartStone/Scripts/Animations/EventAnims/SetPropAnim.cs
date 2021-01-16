@@ -157,5 +157,10 @@ namespace Game
                 return false;
             return true;
         }
+
+        public override bool blockAnim(UIAnimation nextAnim)
+        {
+                return false;
+        }
     }
 }
