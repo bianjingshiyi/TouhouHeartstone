@@ -1308,6 +1308,34 @@ namespace TouhouHeartstone
             }
             await game.updateDeath(game);
         }
+
+        public static Task graveBackToHand(this Card card, THHGame game)
+        {
+            return graveBackToHand(new Card[] { card }, game);
+        }
+
+        public static async Task graveBackToHand(this IEnumerable<Card> cards, THHGame game)
+        {
+            foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
+            {
+                int restCount = g.Key.hand.maxCount - g.Key.hand.count;
+                if (restCount > 0)
+                {
+                    var toHand = g.Take(restCount);
+                    game.logger.log("将" + string.Join("，", toHand) + "置入" + g.Key + "的手牌");
+                    await cards.resetCard(game);
+                    await g.Key.grave.moveTo(game, toHand, g.Key.hand);
+                }
+                if (restCount < g.Count())
+                {
+                    var toGrave = g.Skip(restCount);
+                    game.logger.log(g.Key + "的手牌已满，无法将" + string.Join(",", toGrave) + "置入手牌");
+                    //await toGrave.setDead(game, true);
+                }
+            }
+            //await game.updateDeath(game);
+        }
+
         public static async Task removeBuff(this IEnumerable<Card> cards, IGame game, int buffId)
         {
             foreach (var card in cards)
