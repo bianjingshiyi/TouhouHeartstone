@@ -71,5 +71,22 @@ namespace TouhouHeartstone
             else
                 UberDebug.LogErrorChannel(channel, (string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
         }
+
+        public void logTrace(string msg)
+        {
+            logTrace(null, msg);
+        }
+
+        public void logTrace(string channel, string msg)
+        {
+            if (!enable)
+                return;
+            if (blackList.Contains(channel))
+                return;
+            if (string.IsNullOrEmpty(channel))
+                UberDebug.LogTrace((string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+            else
+                UberDebug.LogTraceChannel(channel, (string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+        }
     }
 }
