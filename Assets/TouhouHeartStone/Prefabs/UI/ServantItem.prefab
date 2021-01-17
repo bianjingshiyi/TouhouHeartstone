@@ -60,6 +60,7 @@ MonoBehaviour:
   - IsAttackable/False
   - Highlight/Highlight_None
   _asAnimator: {fileID: 0}
+  _servantAnimator: {fileID: 0}
   _tauntImage: {fileID: 0}
   _highlightImage: {fileID: 0}
   _image: {fileID: 0}
@@ -72,7 +73,7 @@ MonoBehaviour:
   _damageText: {fileID: 0}
   _healImage: {fileID: 0}
   _healText: {fileID: 0}
-  _servantAnimator: {fileID: 0}
+  _poisionImage: {fileID: 0}
   _attackAnimationCurve:
     serializedVersion: 2
     m_Curve:
@@ -441,7 +442,18 @@ MonoBehaviour:
   onDyingWishTrue:
     beforeAnim:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolTrue
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: isDyingWish
+            m_BoolArgument: 0
+          m_CallState: 2
     setColor:
       enable: 0
       target: {fileID: 0}
@@ -453,7 +465,18 @@ MonoBehaviour:
   onDyingWishFalse:
     beforeAnim:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolFalse
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: isDyingWish
+            m_BoolArgument: 0
+          m_CallState: 2
     setColor:
       enable: 0
       target: {fileID: 0}
@@ -683,6 +706,11 @@ PrefabInstance:
     m_TransformParent: {fileID: 2470481776497400553}
     m_Modifications:
     - target: {fileID: 1294236017285449946, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1968236122541245709, guid: 0bd8730dcc8a6824da51d94b28d874e4,
         type: 3}
       propertyPath: m_IsActive
       value: 0

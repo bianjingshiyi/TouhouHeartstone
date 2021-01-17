@@ -1068,20 +1068,37 @@ namespace Game
                 servant.onStealthFalse.invokeBeforeAnim();
                 servant.onStealthFalse.invokeAfterAnim();
             }
-
-
-            if (card.hasKeyword(game, KEYWORD.STEALTH))
-                servant.stealthImage.display();
+            if(card.define.effects[0] is DeathRattle)
+            {
+                servant.onDyingWishTrue.invokeBeforeAnim();
+                servant.onDyingWishTrue.invokeAfterAnim();
+            }
             else
-                servant.stealthImage.hide();
+            {
+                servant.onDyingWishFalse.invokeBeforeAnim();
+                servant.onDyingWishFalse.invokeAfterAnim();
+            }
+            if (card.hasKeyword(game, KEYWORD.DRAIN))
+            {
+                servant.poisionImage.display();
+            }
+            else
+            {
+                servant.poisionImage.hide();
+            }
+
+            //if (card.hasKeyword(game, KEYWORD.STEALTH))
+            //    servant.stealthImage.display();
+            //else
+            //    servant.stealthImage.hide();
             if (card.hasKeyword(game, KEYWORD.FREEZE))
                 servant.freezeImage.display();
             else
                 servant.freezeImage.hide();
-            if (card.hasKeyword(game, KEYWORD.SHIELD))
-                servant.shieldImage.display();
-            else
-                servant.shieldImage.hide();
+            //if (card.hasKeyword(game, KEYWORD.SHIELD))
+            //    servant.shieldImage.display();
+            //else
+            //    servant.shieldImage.hide();
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
         }
         void onEnterServant(ServantItem servant, PointerEventData pointer)

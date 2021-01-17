@@ -17,12 +17,13 @@ namespace UI
     using UnityEngine.UI;
     using UI;
     
-    [AutoCompoAttribute(21326)]
+    [AutoCompoAttribute(21336)]
     public partial class ServantItem : UIObject
     {
         public void init()
         {
             this._asAnimator = this.transform.findByPath("./").GetComponent<Animator>();
+            this._servantAnimator = this.transform.findByPath("./Servant").GetComponent<Animator>();
             this._tauntImage = this.transform.findByPath("./Servant/Taunt").GetComponent<Image>();
             this._highlightImage = this.transform.findByPath("./Servant/Highlight").GetComponent<Image>();
             this._image = this.transform.findByPath("./Servant/ImageMask/Image").GetComponent<Image>();
@@ -35,7 +36,7 @@ namespace UI
             this._damageText = this.transform.findByPath("./Servant/DamageImage/DamageText").GetComponent<Text>();
             this._healImage = this.transform.findByPath("./Servant/HealImage").GetComponent<Image>();
             this._healText = this.transform.findByPath("./Servant/HealImage/HealText").GetComponent<Text>();
-            this._servantAnimator = this.transform.findByPath("./Servant").GetComponent<Animator>();
+            this._poisionImage = this.transform.findByPath("./Servant/Poision").GetComponent<Image>();
         }
         [SerializeField()]
         [AutoCompoAttribute(69878, "./")]
@@ -51,9 +52,30 @@ namespace UI
                 return this._asAnimator;
             }
         }
-        private const string ANIM_PARAM_CANATTACK = "CanAttack";
-        private const string ANIM_PARAM_SELECTABLE = "Selectable";
-        private const string ANIM_PARAM_TAUNT = "Taunt";
+        private const string ANIM_PARAM_ATTACK = "Attack";
+        [SerializeField()]
+        [AutoCompoAttribute(53060, "./Servant")]
+        private Animator _servantAnimator;
+        public Animator servantAnimator
+        {
+            get
+            {
+                if ((this._servantAnimator == null))
+                {
+                    this._servantAnimator = this.transform.findByPath("./Servant").GetComponent<Animator>();
+                }
+                return this._servantAnimator;
+            }
+        }
+        private const string ANIM_PARAM_RVANTANIMATOR_ISDEAD = "isDead";
+        private const string ANIM_PARAM_RVANTANIMATOR_HIGHTLIGHT_G = "HightLight_G";
+        private const string ANIM_PARAM_RVANTANIMATOR_HIGHTLIGHT_Y = "HightLight_Y";
+        private const string ANIM_PARAM_RVANTANIMATOR_DAMAGED = "Damaged";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISTAUNT = "isTaunt";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISTAUNTRESISTED = "isTauntResisted";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISSHIELD = "isShield";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISSTEALTH = "isStealth";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISDYINGWISH = "isDyingWish";
         [SerializeField()]
         [AutoCompoAttribute(70488, "./Servant/Taunt")]
         private Image _tauntImage;
@@ -223,27 +245,18 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(53060, "./Servant")]
-        private Animator _servantAnimator;
-        public Animator servantAnimator
+        [AutoCompoAttribute(54220, "./Servant/Poision")]
+        private Image _poisionImage;
+        public Image poisionImage
         {
             get
             {
-                if ((this._servantAnimator == null))
+                if ((this._poisionImage == null))
                 {
-                    this._servantAnimator = this.transform.findByPath("./Servant").GetComponent<Animator>();
+                    this._poisionImage = this.transform.findByPath("./Servant/Poision").GetComponent<Image>();
                 }
-                return this._servantAnimator;
+                return this._poisionImage;
             }
         }
-        private const string ANIM_PARAM_RVANTANIMATOR_ISDEAD = "isDead";
-        private const string ANIM_PARAM_RVANTANIMATOR_HIGHLIGHT = "HighLight";
-        private const string ANIM_PARAM_RVANTANIMATOR_ATTACK = "Attack";
-        private const string ANIM_PARAM_RVANTANIMATOR_DAMAGED = "Damaged";
-        private const string ANIM_PARAM_RVANTANIMATOR_ISTAUNT = "isTaunt";
-        private const string ANIM_PARAM_RVANTANIMATOR_ISTAUNTRESISTED = "isTauntResisted";
-        private const string ANIM_PARAM_RVANTANIMATOR_ISSHIELD = "isShield";
-        private const string ANIM_PARAM_RVANTANIMATOR_ISSTEALTH = "isStealth";
-        private const string ANIM_PARAM_RVANTANIMATOR_ISDYINGWISH = "isDyingWish";
     }
 }
