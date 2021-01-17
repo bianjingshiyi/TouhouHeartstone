@@ -1048,6 +1048,28 @@ namespace Game
                 servant.onTauntFalse.invokeBeforeAnim();
                 servant.onTauntFalse.invokeAfterAnim();
             }
+            if (card.isShield(game))
+            {
+                servant.onShieldTrue.invokeBeforeAnim();
+                servant.onShieldTrue.invokeAfterAnim();
+            }
+            else
+            {
+                servant.onShieldFalse.invokeBeforeAnim();
+                servant.onShieldFalse.invokeAfterAnim();
+            }
+            if (card.isStealth(game))
+            {
+                servant.onStealthTrue.invokeBeforeAnim();
+                servant.onStealthTrue.invokeAfterAnim();
+            }
+            else
+            {
+                servant.onStealthFalse.invokeBeforeAnim();
+                servant.onStealthFalse.invokeAfterAnim();
+            }
+
+
             if (card.hasKeyword(game, KEYWORD.STEALTH))
                 servant.stealthImage.display();
             else

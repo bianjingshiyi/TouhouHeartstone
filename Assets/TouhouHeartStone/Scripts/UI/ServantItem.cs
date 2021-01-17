@@ -181,5 +181,13 @@ namespace UI
         public SimpleAnim onSelectableTrue;
         public SimpleAnim onSelectableFalse;
         public SimpleAnim onSetDefine;
+        public SimpleAnim onShieldTrue;//圣盾
+        public SimpleAnim onShieldFalse;//圣盾
+        public SimpleAnim onDyingWishTrue;//亡语
+        public SimpleAnim onDyingWishFalse;//亡语
+        public SimpleAnim onStealthTrue;//吸血
+        public SimpleAnim onStealthFalse;//吸血
+        public SimpleAnim onPoisonousTrue;//剧毒
+        public SimpleAnim onPoisonousFalse;//剧毒
     }
 }
