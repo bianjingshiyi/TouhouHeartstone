@@ -1068,7 +1068,16 @@ namespace Game
                 servant.onStealthFalse.invokeBeforeAnim();
                 servant.onStealthFalse.invokeAfterAnim();
             }
-            if(card.define.effects[0] is DeathRattle)
+            bool flag = false;
+            foreach (var eff in card.define.effects)
+            {
+                if (eff is DeathRattle)
+                {
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag)
             {
                 servant.onDyingWishTrue.invokeBeforeAnim();
                 servant.onDyingWishTrue.invokeAfterAnim();
@@ -1078,6 +1087,7 @@ namespace Game
                 servant.onDyingWishFalse.invokeBeforeAnim();
                 servant.onDyingWishFalse.invokeAfterAnim();
             }
+
             if (card.hasKeyword(game, KEYWORD.DRAIN))
             {
                 servant.poisionImage.display();
