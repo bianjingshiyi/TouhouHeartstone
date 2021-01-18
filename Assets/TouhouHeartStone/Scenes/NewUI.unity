@@ -3812,6 +3812,8 @@ MonoBehaviour:
     audio: {fileID: 8300000, guid: a125612ecadf1cb4f9d47857c576027f, type: 3}
   - name: PhlogisticRain
     audio: {fileID: 8300000, guid: 03dc03f369a493443a3330d393a7f220, type: 3}
+  - name: SummonServant
+    audio: {fileID: 8300000, guid: 3a80139cb337ffc4387a50e3b2a3428d, type: 3}
   - name: StElmoPillar
     audio: {fileID: 8300000, guid: 39ba6f8e9e6ece64fb8c4b2ab1ccc035, type: 3}
 --- !u!82 &1159673834
