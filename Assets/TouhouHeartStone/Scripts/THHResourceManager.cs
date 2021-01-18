@@ -195,7 +195,7 @@ namespace BJSYGameCore
                     }
                     return;
                 }
-                Texture2D texture = new Texture2D(512, 512, TextureFormat.RGB24, false);
+                Texture2D texture = new Texture2D(512, 512, TextureFormat.RGB24, true);
                 if (uwr.downloadHandler.data != null)
                     texture.LoadImage(uwr.downloadHandler.data);
                 else
@@ -219,7 +219,7 @@ namespace BJSYGameCore
         }
         public async Task<Texture2D> loadTextureBySystemIO(string path, string curDir)
         {
-            Texture2D texture = new Texture2D(512, 512, TextureFormat.RGB24, false);
+            Texture2D texture = new Texture2D(512, 512, TextureFormat.RGB24, true);
             texture.LoadImage(await loadBytesBySystemIO(path, curDir));
             return texture;
         }
