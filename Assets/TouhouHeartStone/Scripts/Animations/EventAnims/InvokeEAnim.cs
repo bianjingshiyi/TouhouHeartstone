@@ -22,9 +22,11 @@ namespace Game
         {
             //在对应的卡组上创建卡牌实例
             _cardSelf = UObject.Instantiate(table.cardPrefab, table.ui.SelfDeck.transform.position, Quaternion.identity, table.ui.SelfDeck.transform);
-            table.setCard(_cardSelf, eventArg.youCard, true);
+            if (_cardSelf != null)
+                table.setCard(_cardSelf, eventArg.youCard, true);
             _cardOppo = UObject.Instantiate(table.cardPrefab, table.ui.EnemyDeck.transform.position, Quaternion.identity, table.ui.EnemyDeck.transform);
-            table.setCard(_cardOppo, eventArg.oppoCard, true);
+            if (_cardOppo != null)
+                table?.setCard(_cardOppo, eventArg.oppoCard, true);
             //播放位移曲线动画到对应的位置
             if (_moveToSelf == null)
                 _moveToSelf = new CardMoveAnim(_cardSelf, table.ui.LeftDisplayImage.transform, table.cardShowCurve);
