@@ -90,7 +90,7 @@ namespace Game
         }
         public static RectTransform getRoot(this ServantItem servant)
         {
-            return servant.getChild("Root");
+            return servant.getChild("Servant");
         }
     }
 }
