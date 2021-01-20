@@ -485,6 +485,11 @@ namespace Game
             {
                 ui.LogScrollView.LogInfoHorizantal.display();
                 string info = describable.toString(game, localPlayer);
+                if (info == null)
+                {
+                    item.hide();
+                    return;
+                }
                 info = Regex.Replace(info, @"{card:(?<id>\d+)}", m => int.TryParse(m.Groups["id"].Value, out var id) ?
                     getManager<CardManager>().getSkin(id).name : "未知卡牌");
                 ui.LogScrollView.LogInfoHorizantal.Text.text = info;
