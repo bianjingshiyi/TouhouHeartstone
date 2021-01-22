@@ -17,7 +17,7 @@ namespace TouhouHeartstone
         [MenuItem("Custom/Translate/导出卡牌皮肤翻译")]
         public static void exportSkinTranslation()
         {
-            if (!EditorHelper.trySelectFilePath(ref _outputPath, "选择要覆盖的文件", "Cards", "xls"))
+            if (!EditorHelper.trySelectFilePath(ref _outputPath, "选择要覆盖的文件", "Cards", "xls", isOpenFile: true))
             {
                 Debug.LogError("不存在文件" + _outputPath);
                 return;
@@ -44,6 +44,7 @@ namespace TouhouHeartstone
             int cardImageIndex = ExcelHelper.findColIndex(cardsheet, "Image");
             int cardIllustratorIndex = ExcelHelper.findColIndex(cardsheet, "Illustrator");
             int cardDescIndex = ExcelHelper.findColIndex(cardsheet, "Desc");
+            //皮肤表的迁移暂时鸽了。
             //Worksheet skinsheet = workbook.Worksheets.FirstOrDefault(b => b.Name == "Skins");
             //int skinIdIndex;
             //int skinNameIndex;
@@ -147,11 +148,10 @@ namespace TouhouHeartstone
                 potGenerator.AddString(name);
                 potGenerator.AddString(desc);
             }
-            potGenerator.WriteOut(Path.Combine(Application.streamingAssetsPath, "i18n", "skin", Path.GetFileNameWithoutExtension(_outputPath) + ".pot"));
-            //using (FileStream stream = new FileStream(_outputPath, FileMode.Create))
-            //{
-            //    workbook.Save(stream);
-            //}
+
+            string path = Path.Combine(Application.streamingAssetsPath, "i18n", "skin", Path.GetFileNameWithoutExtension(_outputPath) + ".pot");
+            potGenerator.WriteOut(path);
+            Debug.Log("导出皮肤文件" + path + "成功");
         }
         private static string _outputPath;
     }
