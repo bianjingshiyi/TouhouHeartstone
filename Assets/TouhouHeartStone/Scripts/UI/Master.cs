@@ -81,5 +81,6 @@ namespace UI
         public SimpleAnim onSelectableTrue;
         public SimpleAnim onSelectableFalse;
         public SimpleAnim onSetDefine;
+        public SimpleAnim onHeal;
     }
 }

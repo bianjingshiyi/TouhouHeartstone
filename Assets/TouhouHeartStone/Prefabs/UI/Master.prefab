@@ -987,6 +987,18 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
+  onHeal:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: Master_Heal
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
   _HighlightImage: {fileID: 0}
   _Mask: {fileID: 0}
   _Image: {fileID: 0}

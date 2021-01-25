@@ -204,7 +204,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
+    animName: ServantHeal
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -705,6 +705,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2470481776497400553}
     m_Modifications:
+    - target: {fileID: 468739659311144139, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1294236017285449946, guid: 0bd8730dcc8a6824da51d94b28d874e4,
         type: 3}
       propertyPath: m_IsActive

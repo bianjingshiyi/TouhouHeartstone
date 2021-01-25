@@ -2,44 +2,83 @@
 using BJSYGameCore;
 using UI;
 using BJSYGameCore.UI;
+using System.Collections.Generic;
+using UnityEngine;
 namespace Game
 {
     class HealAnimation : EventAnimation<THHCard.HealEventArg>
     {
-        Timer _timer = new Timer() { duration = .2f };
+        List<AnimAnim> _animList = null;
         public override bool update(TableManager table, THHCard.HealEventArg eventArg, float time)
         {
-            if (!_timer.isStarted)
+            if (_animList == null)
             {
+                _animList = new List<AnimAnim>();
                 foreach (var card in eventArg.cards)
                 {
-                    if (table.tryGetServant(card,out ServantItem servant))
+                    if (table.tryGetServant(card, out ServantItem servant))
                     {
-                        servant.healImage.display();
                         servant.healText.text = "+" + eventArg.infoDic[card].healedValue.ToString();
-                        table.setServant(table.getServant(card), card);
+                        servant.onHeal.invokeBeforeAnim();
+                        _animList.Add(new AnimAnim(servant.servantAnimator, servant.onHeal.animName));
+                    }
+                    else if (table.tryGetMaster(card, out Master master))
+                    {
+                        master.HealText.text = "+" + eventArg.infoDic[card].healedValue.ToString();
+                        master.onHeal.invokeBeforeAnim();
+                        _animList.Add(new AnimAnim(master.animator, master.onHeal.animName));
                     }
                 }
-                _timer.start();
+                #region 控制透明度
+                //foreach (var card in eventArg.cards)
+                //{
+                //    if (table.tryGetServant(card, out ServantItem servant))
+                //    {
+                //        servant.healImage.setAlpha(_timer.progress);
+                //        servant.healText.setAlpha(_timer.progress);
+                //    }
+                //}
+
+                //foreach (var card in eventArg.cards)
+                //{
+                //    if (table.tryGetServant(card, out ServantItem servant))
+                //    {
+                //        servant.healImage.hide();
+                //    }
+                //}
+                ///
+                #endregion
             }
-            foreach (var card in eventArg.cards)
+            bool isAllAnimDone = true;
+            foreach (var anim in _animList)
             {
-                if (table.tryGetServant(card, out ServantItem servant))
-                {
-                    servant.healImage.setAlpha(_timer.progress);
-                    servant.healText.setAlpha(_timer.progress);
-                }
+                if (!anim.update(table, time))
+                    isAllAnimDone = false;
             }
-            if (!_timer.isExpired())
+            if (!isAllAnimDone)
                 return false;
-            foreach (var card in eventArg.cards)
+            foreach (var card in eventArg.infoDic.Keys)
             {
-                if (table.tryGetServant(card, out ServantItem servant))
+                if (table.tryGetServant(card, out var servant))
                 {
-                    servant.healImage.hide();
+                    servant.onHeal.invokeAfterAnim();
+                }
+                else if (table.tryGetMaster(card, out Master master))
+                {
+                    master.onHeal.invokeAfterAnim();
                 }
             }
             return true;
         }
+
+        public override bool blockAnim(UIAnimation nextAnim)
+        {
+            if (nextAnim is RequestAnimation)
+                return true;
+            if (nextAnim is TurnEndAnimation)
+                return true;
+            return false;
+        }
+
     }
 }
