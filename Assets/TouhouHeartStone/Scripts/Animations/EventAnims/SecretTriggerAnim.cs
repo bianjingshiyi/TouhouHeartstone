@@ -12,7 +12,7 @@ namespace Game
             {
                 if (_anim == null)
                 {
-                    secret.Card.GetComponent<PositionLerp>().setTarget(table.ui.CenterDisplayImage.rectTransform);
+                    secret.getChild("DummyTarget").GetComponent<RectTransform>().position = table.ui.CenterDisplayImage.rectTransform.position;
                 }
                 if (!SimpleAnimHelper.update(table, ref _anim, secret.onTrigger, secret.animator, time))
                 {
