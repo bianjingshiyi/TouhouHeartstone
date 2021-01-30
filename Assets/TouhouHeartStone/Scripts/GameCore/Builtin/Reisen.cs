@@ -115,17 +115,29 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
-            {
-                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g) && a.card.isServant() && a.card.getAttack(g) <= 2;
-            },async(g,c,a)=>
-            {
-                 a.isCanceled = true;   //取消攻击
-                 await a.card.getOwner().field.moveTo(g,a.card,c.getOwner().field);//交换控制权
-                 
-            })
+            new SecretTriggerBefore<THHCard.AttackEventArg>(
+                (g, c, a) =>
+                {
+                    return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g) && a.card.isServant() &&
+                           a.card.getAttack(g) <= 2;
+                }, async (g, c, a) =>
+                {
+                    a.isCanceled = true; //取消攻击
+                    THHPlayer you = c.getOwner();
+                    THHPlayer oppo = a.card.getOwner();
+                    if (oppo.field.count < 7)
+                    {
+                        await oppo.field.moveTo(g, a.card, you.field); //交换控制权
+                    }
+                    else
+                    {
+                        await a.card.setDead(g, true);
+                        await g.updateDeath(g);
+                    }
+                })
         };
     }
 
