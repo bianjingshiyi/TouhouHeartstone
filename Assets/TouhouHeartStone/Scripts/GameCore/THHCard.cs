@@ -40,7 +40,7 @@ namespace TouhouHeartstone
                 return 0;
             return result;
         }
-        public static Task<ISetPropEventArg> setCost(this Card card, IGame game, int value)
+        public static Task<IPropChangeEventArg> setCost(this Card card, IGame game, int value)
         {
             return card.setProp(game, nameof(ServantCardDefine.cost), value);
         }
@@ -72,7 +72,7 @@ namespace TouhouHeartstone
             return result;
 
         }
-        public static Task<ISetPropEventArg> setAttack(this Card card, IGame game, int value)
+        public static Task<IPropChangeEventArg> setAttack(this Card card, IGame game, int value)
         {
             return card.setProp(game, PROPERTY.ATTACK, value);
         }
@@ -84,7 +84,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(nameof(ServantCardDefine.life));
         }
-        public static Task<ISetPropEventArg> setLife(this Card card, IGame game, int value)
+        public static Task<IPropChangeEventArg> setLife(this Card card, IGame game, int value)
         {
             return card.setProp(game, nameof(ServantCardDefine.life), value);
         }
@@ -108,13 +108,13 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <param name="value"></param>
-        public static Task<ISetPropEventArg> setDead(this Card card, IGame game, bool value)
+        public static Task<IPropChangeEventArg> setDead(this Card card, IGame game, bool value)
         {
             return card.setProp(game, nameof(THHCard.isDead), value);
         }
-        public static async Task<ISetPropEventArg[]> setDead(this IEnumerable<Card> cards, IGame game, bool value)
+        public static async Task<IPropChangeEventArg[]> setDead(this IEnumerable<Card> cards, IGame game, bool value)
         {
-            List<ISetPropEventArg> argList = new List<ISetPropEventArg>();
+            List<IPropChangeEventArg> argList = new List<IPropChangeEventArg>();
             foreach (var card in cards)
             {
                 argList.Add(await card.setProp(game, nameof(THHCard.isDead), value));
@@ -167,7 +167,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(game, PROPERTY.CURRENT_LIFE);
         }
-        public static Task<ISetPropEventArg> setCurrentLife(this Card card, IGame game, int value)
+        public static Task<IPropChangeEventArg> setCurrentLife(this Card card, IGame game, int value)
         {
             return card.setProp(game, PROPERTY.CURRENT_LIFE, value);
         }
@@ -175,7 +175,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<bool>(game, "isReady");
         }
-        public static Task<ISetPropEventArg> setReady(this Card card, IGame game, bool value)
+        public static Task<IPropChangeEventArg> setReady(this Card card, IGame game, bool value)
         {
             return card.setProp(game, "isReady", value);
         }
@@ -183,7 +183,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(game, "attackTimes");
         }
-        public static Task<ISetPropEventArg> setAttackTimes(this Card card, IGame game, int value)
+        public static Task<IPropChangeEventArg> setAttackTimes(this Card card, IGame game, int value)
         {
             return card.setProp(game, "attackTimes", value);
         }
@@ -305,7 +305,7 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <param name="value"></param>
-        public static Task<ISetPropEventArg> setUsed(this Card card, IGame game, bool value)
+        public static Task<IPropChangeEventArg> setUsed(this Card card, IGame game, bool value)
         {
             return card.setProp(game, "isUsed", value);
         }
@@ -387,7 +387,7 @@ namespace TouhouHeartstone
         {
             return card.hasKeyword(game, KEYWORD.FREEZE);
         }
-        public static Task<ISetPropEventArg> setFreeze(this Card card, IGame game, bool value)
+        public static Task<IPropChangeEventArg> setFreeze(this Card card, IGame game, bool value)
         {
             if (value)
                 return card.addKeywords(game, KEYWORD.FREEZE);
@@ -434,7 +434,7 @@ namespace TouhouHeartstone
             else
                 card.removeKeywords(game, KEYWORD.UNIQUE);
         }
-        public static async Task<ISetPropEventArg> setKeywords(this Card card, IGame game, string[] keywords)
+        public static async Task<IPropChangeEventArg> setKeywords(this Card card, IGame game, string[] keywords)
         {
             if (keywords == null)
                 keywords = new string[0];
@@ -473,7 +473,7 @@ namespace TouhouHeartstone
                 return false;
             return keywords.Contains(keyword);
         }
-        public static Task<ISetPropEventArg> addKeywords(this Card card, IGame game, params string[] keywords)
+        public static Task<IPropChangeEventArg> addKeywords(this Card card, IGame game, params string[] keywords)
         {
             string[] oldKeywords = card.getKeywords(game);
             if (oldKeywords == null)
@@ -489,7 +489,7 @@ namespace TouhouHeartstone
 
             return card.setKeywords(game, oldKeywords);
         }
-        public static Task<ISetPropEventArg> removeKeywords(this Card card, IGame game, params string[] keywords)
+        public static Task<IPropChangeEventArg> removeKeywords(this Card card, IGame game, params string[] keywords)
         {
             List<string> keywordList = new List<string>(card.getKeywords(game));
             foreach (var keyword in keywords)
@@ -505,7 +505,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(game, nameof(ServantCardDefine.spellDamage));
         }
-        public static Task<ISetPropEventArg> setSpellDamage(this Card card, IGame game, int value)
+        public static Task<IPropChangeEventArg> setSpellDamage(this Card card, IGame game, int value)
         {
             return card.setProp(game, nameof(ServantCardDefine.spellDamage), value);
         }
@@ -516,7 +516,7 @@ namespace TouhouHeartstone
                 return 0;
             return result;
         }
-        public static Task<ISetPropEventArg> setDamageReduce(this Card card, IGame game, int value)
+        public static Task<IPropChangeEventArg> setDamageReduce(this Card card, IGame game, int value)
         {
             return card.setProp(game, nameof(ServantCardDefine.damageReduce), value);
         }
@@ -587,7 +587,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<string[]>(game, nameof(ServantCardDefine.tags));
         }
-        public static Task<ISetPropEventArg> setTags(this Card card, IGame game, string[] tags)
+        public static Task<IPropChangeEventArg> setTags(this Card card, IGame game, string[] tags)
         {
             return card.setProp(game, nameof(ServantCardDefine.tags), tags);
         }

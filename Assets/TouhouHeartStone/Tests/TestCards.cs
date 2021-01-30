@@ -812,4 +812,17 @@ namespace Tests
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
     }
+    public class BlessingOfMight : SpellCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x28;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect((g,c,t)=>
+            {
+                return t.addBuff(g,new GeneratedBuff(ID, new AttackModifier(3)));
+            }, PileFlag.field | PileFlag.both)
+        };
+    }
 }

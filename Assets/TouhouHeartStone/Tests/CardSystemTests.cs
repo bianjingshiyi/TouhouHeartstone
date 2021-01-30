@@ -639,5 +639,24 @@ namespace Tests
             Assert.AreEqual(10, oppo.hand.count);
             Assert.True(oppo.grave.Any(c => c.define is Anubarak));
         }
+        [Test]
+        public void blessingOfMightTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out _,
+                new KeyValuePair<int, int>[]
+                {
+                    new KeyValuePair<int, int>(BlessingOfMight.ID, 1),
+                    new KeyValuePair<int, int>(DefaultServant.ID, 29)
+                });
+            game.skipUntilCanUse<DefaultServant>(you);
+            you.cmdUse<DefaultServant>(game);
+            game.skipUntilCanUse<BlessingOfMight>(you);
+            you.cmdUse<BlessingOfMight>(game, 0, you.field.getCard<DefaultServant>());
+            Assert.AreEqual(4, you.field.getCard<DefaultServant>().getAttack(game));
+            Card.PropChangeEventArg propChange = game.triggers.getRecordedEvents().OfType<Card.PropChangeEventArg>().LastOrDefault();
+            Assert.NotNull(propChange);
+            Assert.AreEqual(nameof(ServantCardDefine.attack), propChange.propName);
+            Assert.AreEqual(4, propChange.value);
+        }
     }
 }
