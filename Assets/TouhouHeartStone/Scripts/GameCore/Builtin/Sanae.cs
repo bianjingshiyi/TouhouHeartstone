@@ -410,11 +410,9 @@ namespace TouhouHeartstone.Builtin
                 OfType<Sanae.RevealDuelArg>().
                 Where(e2=>e2.player == card.getOwner()).Count();
 
-                for(int i=0; i<count; i++)
-                {
-                    await game.getAllServants().damage(game,card,1);
-                    await game.updateDeath(game);
-                }
+                await game.getAllServants().damage(game,card,count);
+                await game.updateDeath(game);
+                
             })
         };
     }
@@ -466,14 +464,11 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = { TAG.BEAST };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-             new THHEffectAfter<Sanae.RevealDuelArg>(PILE.HAND,(g,c,a)=>
-                                                                {
-                                                                    return a.player == c.getOwner();
-                                                                },null,async(g,c,a)=>
-                                                                {
-                                                                    await c.addBuff(g,new GeneratedBuff(ID,new CostModifier(-4),
-                                                                                      new RemoveBuffBefore<THHGame.TurnEndEventArg>(PILE.HAND, ID)));
-                                                                }),
+             new AddBuffAfter<Sanae.RevealDuelArg>(PILE.HAND,(g,c,a)=>
+             {
+                return a.player == c.getOwner() && !c.containBuff(ID);
+             },new GeneratedBuff(ID,new CostModifier(-4),
+                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PILE.HAND,ID))),
              new LambdaSingleTargetEffect(async(g,c,t)=>
                                          {
                                              await t.setDead(g,true);
