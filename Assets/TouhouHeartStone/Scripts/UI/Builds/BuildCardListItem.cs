@@ -2,6 +2,8 @@
 using System;
 using UnityEngine.EventSystems;
 using TouhouCardEngine;
+using UnityEngine.UI;
+
 namespace UI
 {
     partial class BuildCardListItem : IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -16,10 +18,12 @@ namespace UI
         {
             _dragStartPosition = eventData.position;
             _isDragging = false;
+            GetComponentInParent<ScrollRect>()?.SendMessage("OnBeginDrag", eventData, SendMessageOptions.DontRequireReceiver);
         }
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
-            if (Vector2.Distance(_dragStartPosition, eventData.position) > _dragThreshold)
+            var delta = _dragStartPosition - eventData.position;
+            if (Math.Abs(delta.x) > _dragThreshold && Math.Abs(delta.x) > Math.Abs(delta.y))
             {
                 _isDragging = true;
             }
@@ -27,6 +31,10 @@ namespace UI
             {
                 Build build = GetComponentInParent<Build>();
                 build.onDragCardItem(this, eventData);
+            } 
+            else
+            {
+                GetComponentInParent<ScrollRect>()?.SendMessage("OnDrag", eventData, SendMessageOptions.DontRequireReceiver);
             }
         }
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
@@ -38,6 +46,7 @@ namespace UI
                 build.onReleaseCardItem(this, eventData);
             }
             _isDragging = false;
+            GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
         }
 
         /// <summary>

@@ -2,6 +2,9 @@
 using UnityEngine.EventSystems;
 using TouhouCardEngine;
 using BJSYGameCore.UI;
+using UnityEngine.UI;
+using System;
+
 namespace UI
 {
     partial class BuildDeckListItem : IBeginDragHandler, IDragHandler, IEndDragHandler, ISelectHandler, IDeselectHandler
@@ -36,6 +39,7 @@ namespace UI
         {
             _dragStartPosition = eventData.position;
             _isDragging = false;
+            GetComponentInParent<ScrollRect>()?.SendMessage("OnBeginDrag", eventData, SendMessageOptions.DontRequireReceiver);
         }
 
         Vector2 savedSizeDelta = Vector2.zero;
@@ -54,7 +58,8 @@ namespace UI
 
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
-            if (Vector2.Distance(_dragStartPosition, eventData.position) > _dragThreshold)
+            var delta = _dragStartPosition - eventData.position;
+            if (Math.Abs(delta.x) > _dragThreshold && Math.Abs(delta.x) > Math.Abs(delta.y))
             {
                 if (!_isDragging)
                 {
@@ -74,6 +79,10 @@ namespace UI
                 Build build = GetComponentInParent<Build>();
                 build.onDragDeckItem(this, eventData);
             }
+            else
+            {
+                GetComponentInParent<ScrollRect>()?.SendMessage("OnDrag", eventData, SendMessageOptions.DontRequireReceiver);
+            }
         }
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
@@ -84,6 +93,7 @@ namespace UI
                 build.onReleaseDeckItem(this, eventData);
             }
             //gameObject.SetActive(true);
+            GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
         }
 
         void ISelectHandler.OnSelect(BaseEventData eventData)
