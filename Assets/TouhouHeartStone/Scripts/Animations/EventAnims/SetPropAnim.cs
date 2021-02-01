@@ -56,14 +56,14 @@ namespace Game
                         {
 
                         }
-                        if (keywords.Contains(KEYWORD.FREEZE))
-                            servant.freezeImage.display();
-                        else
-                            servant.freezeImage.hide();
+                        //if (keywords.Contains(KEYWORD.FREEZE))
+                        //    servant.freezeImage.display();
+                        //else
+                        //    servant.freezeImage.hide();
                     }
                     else
                     {
-                        servant.freezeImage.hide();
+                        //servant.freezeImage.hide();
                     }
                 }
                 else if (eventArg.propName == PROPERTY.SILENCE && eventArg.beforeValue is bool beforeSilence && eventArg.value is bool silence)

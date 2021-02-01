@@ -17,7 +17,7 @@ namespace UI
     using UnityEngine.UI;
     using UI;
     
-    [AutoCompoAttribute(21336)]
+    [AutoCompoAttribute(21906)]
     public partial class ServantItem : UIObject
     {
         public void init()
@@ -28,7 +28,6 @@ namespace UI
             this._highlightImage = this.transform.findByPath("./Servant/Highlight").GetComponent<Image>();
             this._image = this.transform.findByPath("./Servant/ImageMask/Image").GetComponent<Image>();
             this._stealthImage = this.transform.findByPath("./Servant/ImageMask/Stealth").GetComponent<Image>();
-            this._freezeImage = this.transform.findByPath("./Servant/Freeze").GetComponent<Image>();
             this._shieldImage = this.transform.findByPath("./Servant/Shield").GetComponent<Image>();
             this._attackPropNumber = this.transform.findByPath("./Servant/AttackPropNumber").GetComponent<PropNumber>();
             this._lifePropNumber = this.transform.findByPath("./Servant/LifePropNumber").GetComponent<PropNumber>();
@@ -36,10 +35,9 @@ namespace UI
             this._damageText = this.transform.findByPath("./Servant/DamageImage/DamageText").GetComponent<Text>();
             this._healImage = this.transform.findByPath("./Servant/HealImage").GetComponent<Image>();
             this._healText = this.transform.findByPath("./Servant/HealImage/HealText").GetComponent<Text>();
-            this._poisionImage = this.transform.findByPath("./Servant/Poision").GetComponent<Image>();
         }
         [SerializeField()]
-        [AutoCompoAttribute(69878, "./")]
+        [AutoCompo(54004, "./")]
         private Animator _asAnimator;
         public Animator asAnimator
         {
@@ -54,7 +52,7 @@ namespace UI
         }
         private const string ANIM_PARAM_ATTACK = "Attack";
         [SerializeField()]
-        [AutoCompoAttribute(53060, "./Servant")]
+        [AutoCompo(54168, "./Servant")]
         private Animator _servantAnimator;
         public Animator servantAnimator
         {
@@ -76,8 +74,13 @@ namespace UI
         private const string ANIM_PARAM_RVANTANIMATOR_ISSHIELD = "isShield";
         private const string ANIM_PARAM_RVANTANIMATOR_ISSTEALTH = "isStealth";
         private const string ANIM_PARAM_RVANTANIMATOR_ISDYINGWISH = "isDyingWish";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISSEAL = "isSeal";
+        private const string ANIM_PARAM_RVANTANIMATOR_HEALED = "Healed";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISSHACKLE = "isShackle";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISLIFESTEAL = "isLifeSteal";
+        private const string ANIM_PARAM_RVANTANIMATOR_ISLETHAL = "isLethal";
         [SerializeField()]
-        [AutoCompoAttribute(70488, "./Servant/Taunt")]
+        [AutoCompo(54622, "./Servant/Taunt")]
         private Image _tauntImage;
         public Image tauntImage
         {
@@ -91,7 +94,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(70340, "./Servant/Highlight")]
+        [AutoCompo(54550, "./Servant/Highlight")]
         private Image _highlightImage;
         public Image highlightImage
         {
@@ -105,7 +108,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(70374, "./Servant/ImageMask/Image")]
+        [AutoCompo(54854, "./Servant/ImageMask/Image")]
         private Image _image;
         public Image image
         {
@@ -119,7 +122,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(70192, "./Servant/ImageMask/Stealth")]
+        [AutoCompo(54806, "./Servant/ImageMask/Stealth")]
         private Image _stealthImage;
         public Image stealthImage
         {
@@ -133,21 +136,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(70156, "./Servant/Freeze")]
-        private Image _freezeImage;
-        public Image freezeImage
-        {
-            get
-            {
-                if ((this._freezeImage == null))
-                {
-                    this._freezeImage = this.transform.findByPath("./Servant/Freeze").GetComponent<Image>();
-                }
-                return this._freezeImage;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(70618, "./Servant/Shield")]
+        [AutoCompo(54678, "./Servant/Shield")]
         private Image _shieldImage;
         public Image shieldImage
         {
@@ -161,7 +150,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(85610, "./Servant/AttackPropNumber")]
+        [AutoCompo(54728, "./Servant/AttackPropNumber")]
         private PropNumber _attackPropNumber;
         public PropNumber attackPropNumber
         {
@@ -175,7 +164,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(85594, "./Servant/LifePropNumber")]
+        [AutoCompo(54496, "./Servant/LifePropNumber")]
         private PropNumber _lifePropNumber;
         public PropNumber lifePropNumber
         {
@@ -189,7 +178,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(70410, "./Servant/DamageImage")]
+        [AutoCompo(54586, "./Servant/DamageImage")]
         private Image _damageImage;
         public Image damageImage
         {
@@ -203,7 +192,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(70480, "./Servant/DamageImage/DamageText")]
+        [AutoCompo(54878, "./Servant/DamageImage/DamageText")]
         private Text _damageText;
         public Text damageText
         {
@@ -217,7 +206,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(70132, "./Servant/HealImage")]
+        [AutoCompo(54460, "./Servant/HealImage")]
         private Image _healImage;
         public Image healImage
         {
@@ -231,7 +220,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(70638, "./Servant/HealImage/HealText")]
+        [AutoCompo(54932, "./Servant/HealImage/HealText")]
         private Text _healText;
         public Text healText
         {
@@ -242,20 +231,6 @@ namespace UI
                     this._healText = this.transform.findByPath("./Servant/HealImage/HealText").GetComponent<Text>();
                 }
                 return this._healText;
-            }
-        }
-        [SerializeField()]
-        [AutoCompoAttribute(54220, "./Servant/Poision")]
-        private Image _poisionImage;
-        public Image poisionImage
-        {
-            get
-            {
-                if ((this._poisionImage == null))
-                {
-                    this._poisionImage = this.transform.findByPath("./Servant/Poision").GetComponent<Image>();
-                }
-                return this._poisionImage;
             }
         }
     }

@@ -1088,23 +1088,23 @@ namespace Game
                 servant.onDyingWishFalse.invokeAfterAnim();
             }
 
-            if (card.hasKeyword(game, KEYWORD.DRAIN))
-            {
-                servant.poisionImage.display();
-            }
-            else
-            {
-                servant.poisionImage.hide();
-            }
+            //if (card.hasKeyword(game, KEYWORD.DRAIN))
+            //{
+            //    servant.poisionImage.display();
+            //}
+            //else
+            //{
+            //    servant.poisionImage.hide();
+            //}
 
             //if (card.hasKeyword(game, KEYWORD.STEALTH))
             //    servant.stealthImage.display();
             //else
             //    servant.stealthImage.hide();
-            if (card.hasKeyword(game, KEYWORD.FREEZE))
-                servant.freezeImage.display();
-            else
-                servant.freezeImage.hide();
+            //if (card.hasKeyword(game, KEYWORD.FREEZE))
+            //    servant.freezeImage.display();
+            //else
+            //    servant.freezeImage.hide();
             //if (card.hasKeyword(game, KEYWORD.SHIELD))
             //    servant.shieldImage.display();
             //else
