@@ -693,7 +693,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await target.addBuff(game, new GeneratedBuff(ID,new DeathRattle(ID,async (g,c,b,p)=>
                 {
-                    var createToken = await card.getOwner().createToken(game,c.define,c.getOwner().field.count);
+                    var createToken = await target.getOwner().createToken(game,c.define,c.getOwner().field.count);
                     if (createToken != null)
                         await createToken.card.addBuff(game,new GeneratedBuff(ID+1,new AttackModifier(3),new LifeModifier(3)));
 
