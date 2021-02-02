@@ -10,58 +10,65 @@
 
 namespace UI
 {
-    using System;
-    using UnityEngine;
-    using UnityEngine.UI;
     using BJSYGameCore.UI;
+    using UnityEngine;
+    using BJSYGameCore.AutoCompo;
+    using System;
+    using UnityEngine.UI;
+    using UI;
     
+    [AutoCompoAttribute(24656)]
     public partial class Table : UIObject
     {
-        protected override void Awake()
+        public void init()
         {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
+            this._FieldsImage = this.transform.findByPath("./Fields").GetComponent<Image>();
+            this._TurnEndButton = this.transform.findByPath("./Fields/TurnEnd").GetComponent<Button>();
+            this._TurnEndButton.onClick.AddListener(this.TurnEndButtonClickCallback);
+            this._TimeoutSlider = this.transform.findByPath("./Fields/Timeout").GetComponent<Slider>();
+            this._Weather = this.transform.findByPath("./Fields/Weather").GetComponent<Weather>();
+            this._EnemyFieldList = this.transform.findByPath("./Fields/EnemyField").GetComponent<FieldList>();
+            this._EnemyMaster = this.transform.findByPath("./Fields/EnemyMaster").GetComponent<Master>();
+            this._EnemyGraveDeck = this.transform.findByPath("./Fields/EnemyGrave").GetComponent<Deck>();
+            this._EnemyDeck = this.transform.findByPath("./Fields/EnemyDeck").GetComponent<Deck>();
+            this._EnemyGem = this.transform.findByPath("./Fields/EnemyGem").GetComponent<Gem>();
+            this._EnemyItem = this.transform.findByPath("./Fields/EnemyItem").GetComponent<Item>();
+            this._EnemySkill = this.transform.findByPath("./Fields/EnemySkill").GetComponent<Skill>();
+            this._EnemyHandList = this.transform.findByPath("./Fields/EnemyHand").GetComponent<HandList>();
+            this._AttackArrowImage = this.transform.findByPath("./Fields/AttackArrow").GetComponent<Image>();
+            this._SelfFieldList = this.transform.findByPath("./Fields/SelfField").GetComponent<FieldList>();
+            this._SelfMaster = this.transform.findByPath("./Fields/SelfMaster").GetComponent<Master>();
+            this._SelfGraveDeck = this.transform.findByPath("./Fields/SelfGrave").GetComponent<Deck>();
+            this._SelfDeck = this.transform.findByPath("./Fields/SelfDeck").GetComponent<Deck>();
+            this._SelfDeckRectTransform = this.transform.findByPath("./Fields/SelfDeck").GetComponent<RectTransform>();
+            this._SelfGem = this.transform.findByPath("./Fields/SelfGem").GetComponent<Gem>();
+            this._SelfItem = this.transform.findByPath("./Fields/SelfItem").GetComponent<Item>();
+            this._SelfSkill = this.transform.findByPath("./Fields/SelfSkill").GetComponent<Skill>();
+            this._BlockerButton = this.transform.findByPath("./Fields/Blocker").GetComponent<Button>();
+            this._BlockerButton.onClick.AddListener(this.BlockerButtonClickCallback);
+            this._SelfHandList = this.transform.findByPath("./Fields/SelfHand").GetComponent<HandList>();
+            this._ServantPlaceHolder = this.transform.findByPath("./Fields/ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
+            this._InitReplaceDialog = this.transform.findByPath("./InitReplaceDialog").GetComponent<InitReplaceDialog>();
+            this._LargeCard  = this.transform.findByPath("./LargeCard").GetComponent<Card>();
+            this._LeftDisplayImage = this.transform.findByPath("./LeftDisplay").GetComponent<Image>();
+            this._CenterDisplayImage = this.transform.findByPath("./CenterDisplay").GetComponent<Image>();
+            this._RightDisplayImage = this.transform.findByPath("./RightDisplay").GetComponent<Image>();
+            this._TipText = this.transform.findByPath("./TipText").GetComponent<Text>();
+            this._Fatigue = this.transform.findByPath("./Fatigue").GetComponent<Fatigue>();
+            this._TurnTipImage = this.transform.findByPath("./TurnTipImage").GetComponent<Image>();
+            this._TurnTipText = this.transform.findByPath("./TurnTipImage/TurnTipText").GetComponent<Text>();
+            this._Discover = this.transform.findByPath("./Discover").GetComponent<Discover>();
+            this._PilePanel = this.transform.findByPath("./PilePanel").GetComponent<PilePanel>();
+            this._TipBox = this.transform.findByPath("./TipBox").GetComponent<TipBox>();
+            this._EnemyDeckRectTransform = this.transform.findByPath("./Fields/EnemyDeck").GetComponent<RectTransform>();
         }
-        public void autoBind()
+        public void clear()
         {
-            this._FieldsImage = this.transform.Find("Fields").GetComponent<Image>();
-            this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
-            this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
-            this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
-            this._EnemyFieldList = this.transform.Find("Fields").Find("EnemyField").GetComponent<FieldList>();
-            this._EnemyMaster = this.transform.Find("Fields").Find("EnemyMaster").GetComponent<Master>();
-            this._EnemyGraveDeck = this.transform.Find("Fields").Find("EnemyGrave").GetComponent<Deck>();
-            this._EnemyDeck = this.transform.Find("Fields").Find("EnemyDeck").GetComponent<Deck>();
-            this._EnemyGem = this.transform.Find("Fields").Find("EnemyGem").GetComponent<Gem>();
-            this._EnemyItem = this.transform.Find("Fields").Find("EnemyItem").GetComponent<Item>();
-            this._EnemySkill = this.transform.Find("Fields").Find("EnemySkill").GetComponent<Skill>();
-            this._EnemyHandList = this.transform.Find("Fields").Find("EnemyHand").GetComponent<HandList>();
-            this._AttackArrowImage = this.transform.Find("Fields").Find("AttackArrow").GetComponent<Image>();
-            this._SelfFieldList = this.transform.Find("Fields").Find("SelfField").GetComponent<FieldList>();
-            this._SelfMaster = this.transform.Find("Fields").Find("SelfMaster").GetComponent<Master>();
-            this._SelfGraveDeck = this.transform.Find("Fields").Find("SelfGrave").GetComponent<Deck>();
-            this._SelfDeck = this.transform.Find("Fields").Find("SelfDeck").GetComponent<Deck>();
-            this._SelfGem = this.transform.Find("Fields").Find("SelfGem").GetComponent<Gem>();
-            this._SelfItem = this.transform.Find("Fields").Find("SelfItem").GetComponent<Item>();
-            this._SelfSkill = this.transform.Find("Fields").Find("SelfSkill").GetComponent<Skill>();
-            this._BlockerButton = this.transform.Find("Fields").Find("Blocker").GetComponent<Button>();
-            this._SelfHandList = this.transform.Find("Fields").Find("SelfHand").GetComponent<HandList>();
-            this._ServantPlaceHolder = this.transform.Find("Fields").Find("ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
-            this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
-            this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
-            this._LeftDisplayImage = this.transform.Find("LeftDisplay").GetComponent<Image>();
-            this._CenterDisplayImage = this.transform.Find("CenterDisplay").GetComponent<Image>();
-            this._RightDisplayImage = this.transform.Find("RightDisplay").GetComponent<Image>();
-            this._TipText = this.transform.Find("TipText").GetComponent<Text>();
-            this._Fatigue = this.transform.Find("Fatigue").GetComponent<Fatigue>();
-            this._TurnTipImage = this.transform.Find("TurnTipImage").GetComponent<Image>();
-            this._TurnTipText = this.transform.Find("TurnTipImage").Find("TurnTipText").GetComponent<Text>();
-            this._Discover = this.transform.Find("Discover").GetComponent<Discover>();
-            this._PilePanel = this.transform.Find("PilePanel").GetComponent<PilePanel>();
-            this._TipBox = this.transform.Find("TipBox").GetComponent<TipBox>();
+            this._TurnEndButton.onClick.RemoveListener(this.TurnEndButtonClickCallback);
+            this._BlockerButton.onClick.RemoveListener(this.BlockerButtonClickCallback);
         }
         [SerializeField()]
+        [AutoCompo(41342, "./Fields")]
         private Image _FieldsImage;
         public Image FieldsImage
         {
@@ -69,12 +76,13 @@ namespace UI
             {
                 if ((this._FieldsImage == null))
                 {
-                    this._FieldsImage = this.transform.Find("Fields").GetComponent<Image>();
+                    this._FieldsImage = this.transform.findByPath("./Fields").GetComponent<Image>();
                 }
                 return this._FieldsImage;
             }
         }
         [SerializeField()]
+        [AutoCompo(41298, "./Fields/TurnEnd")]
         private Button _TurnEndButton;
         public Button TurnEndButton
         {
@@ -82,12 +90,21 @@ namespace UI
             {
                 if ((this._TurnEndButton == null))
                 {
-                    this._TurnEndButton = this.transform.Find("Fields").Find("TurnEnd").GetComponent<Button>();
+                    this._TurnEndButton = this.transform.findByPath("./Fields/TurnEnd").GetComponent<Button>();
                 }
                 return this._TurnEndButton;
             }
         }
+        public event Action onTurnEndButtonClick;
+        private void TurnEndButtonClickCallback()
+        {
+            if ((this.onTurnEndButtonClick != null))
+            {
+                this.onTurnEndButtonClick();
+            }
+        }
         [SerializeField()]
+        [AutoCompo(41332, "./Fields/Timeout")]
         private Slider _TimeoutSlider;
         public Slider TimeoutSlider
         {
@@ -95,12 +112,13 @@ namespace UI
             {
                 if ((this._TimeoutSlider == null))
                 {
-                    this._TimeoutSlider = this.transform.Find("Fields").Find("Timeout").GetComponent<Slider>();
+                    this._TimeoutSlider = this.transform.findByPath("./Fields/Timeout").GetComponent<Slider>();
                 }
                 return this._TimeoutSlider;
             }
         }
         [SerializeField()]
+        [AutoCompo(41894, "./Fields/Weather")]
         private Weather _Weather;
         public Weather Weather
         {
@@ -108,12 +126,13 @@ namespace UI
             {
                 if ((this._Weather == null))
                 {
-                    this._Weather = this.transform.Find("Fields").Find("Weather").GetComponent<Weather>();
+                    this._Weather = this.transform.findByPath("./Fields/Weather").GetComponent<Weather>();
                 }
                 return this._Weather;
             }
         }
         [SerializeField()]
+        [AutoCompo(41416, "./Fields/EnemyField")]
         private FieldList _EnemyFieldList;
         public FieldList EnemyFieldList
         {
@@ -121,12 +140,13 @@ namespace UI
             {
                 if ((this._EnemyFieldList == null))
                 {
-                    this._EnemyFieldList = this.transform.Find("Fields").Find("EnemyField").GetComponent<FieldList>();
+                    this._EnemyFieldList = this.transform.findByPath("./Fields/EnemyField").GetComponent<FieldList>();
                 }
                 return this._EnemyFieldList;
             }
         }
         [SerializeField()]
+        [AutoCompo(42098, "./Fields/EnemyMaster")]
         private Master _EnemyMaster;
         public Master EnemyMaster
         {
@@ -134,12 +154,13 @@ namespace UI
             {
                 if ((this._EnemyMaster == null))
                 {
-                    this._EnemyMaster = this.transform.Find("Fields").Find("EnemyMaster").GetComponent<Master>();
+                    this._EnemyMaster = this.transform.findByPath("./Fields/EnemyMaster").GetComponent<Master>();
                 }
                 return this._EnemyMaster;
             }
         }
         [SerializeField()]
+        [AutoCompo(40726, "./Fields/EnemyGrave")]
         private Deck _EnemyGraveDeck;
         public Deck EnemyGraveDeck
         {
@@ -147,12 +168,13 @@ namespace UI
             {
                 if ((this._EnemyGraveDeck == null))
                 {
-                    this._EnemyGraveDeck = this.transform.Find("Fields").Find("EnemyGrave").GetComponent<Deck>();
+                    this._EnemyGraveDeck = this.transform.findByPath("./Fields/EnemyGrave").GetComponent<Deck>();
                 }
                 return this._EnemyGraveDeck;
             }
         }
         [SerializeField()]
+        [AutoCompo(40722, "./Fields/EnemyDeck")]
         private Deck _EnemyDeck;
         public Deck EnemyDeck
         {
@@ -160,12 +182,13 @@ namespace UI
             {
                 if ((this._EnemyDeck == null))
                 {
-                    this._EnemyDeck = this.transform.Find("Fields").Find("EnemyDeck").GetComponent<Deck>();
+                    this._EnemyDeck = this.transform.findByPath("./Fields/EnemyDeck").GetComponent<Deck>();
                 }
                 return this._EnemyDeck;
             }
         }
         [SerializeField()]
+        [AutoCompo(42488, "./Fields/EnemyGem")]
         private Gem _EnemyGem;
         public Gem EnemyGem
         {
@@ -173,12 +196,13 @@ namespace UI
             {
                 if ((this._EnemyGem == null))
                 {
-                    this._EnemyGem = this.transform.Find("Fields").Find("EnemyGem").GetComponent<Gem>();
+                    this._EnemyGem = this.transform.findByPath("./Fields/EnemyGem").GetComponent<Gem>();
                 }
                 return this._EnemyGem;
             }
         }
         [SerializeField()]
+        [AutoCompo(42908, "./Fields/EnemyItem")]
         private Item _EnemyItem;
         public Item EnemyItem
         {
@@ -186,12 +210,13 @@ namespace UI
             {
                 if ((this._EnemyItem == null))
                 {
-                    this._EnemyItem = this.transform.Find("Fields").Find("EnemyItem").GetComponent<Item>();
+                    this._EnemyItem = this.transform.findByPath("./Fields/EnemyItem").GetComponent<Item>();
                 }
                 return this._EnemyItem;
             }
         }
         [SerializeField()]
+        [AutoCompo(41574, "./Fields/EnemySkill")]
         private Skill _EnemySkill;
         public Skill EnemySkill
         {
@@ -199,12 +224,13 @@ namespace UI
             {
                 if ((this._EnemySkill == null))
                 {
-                    this._EnemySkill = this.transform.Find("Fields").Find("EnemySkill").GetComponent<Skill>();
+                    this._EnemySkill = this.transform.findByPath("./Fields/EnemySkill").GetComponent<Skill>();
                 }
                 return this._EnemySkill;
             }
         }
         [SerializeField()]
+        [AutoCompo(40918, "./Fields/EnemyHand")]
         private HandList _EnemyHandList;
         public HandList EnemyHandList
         {
@@ -212,12 +238,13 @@ namespace UI
             {
                 if ((this._EnemyHandList == null))
                 {
-                    this._EnemyHandList = this.transform.Find("Fields").Find("EnemyHand").GetComponent<HandList>();
+                    this._EnemyHandList = this.transform.findByPath("./Fields/EnemyHand").GetComponent<HandList>();
                 }
                 return this._EnemyHandList;
             }
         }
         [SerializeField()]
+        [AutoCompo(41250, "./Fields/AttackArrow")]
         private Image _AttackArrowImage;
         public Image AttackArrowImage
         {
@@ -225,12 +252,13 @@ namespace UI
             {
                 if ((this._AttackArrowImage == null))
                 {
-                    this._AttackArrowImage = this.transform.Find("Fields").Find("AttackArrow").GetComponent<Image>();
+                    this._AttackArrowImage = this.transform.findByPath("./Fields/AttackArrow").GetComponent<Image>();
                 }
                 return this._AttackArrowImage;
             }
         }
         [SerializeField()]
+        [AutoCompo(41186, "./Fields/SelfField")]
         private FieldList _SelfFieldList;
         public FieldList SelfFieldList
         {
@@ -238,12 +266,13 @@ namespace UI
             {
                 if ((this._SelfFieldList == null))
                 {
-                    this._SelfFieldList = this.transform.Find("Fields").Find("SelfField").GetComponent<FieldList>();
+                    this._SelfFieldList = this.transform.findByPath("./Fields/SelfField").GetComponent<FieldList>();
                 }
                 return this._SelfFieldList;
             }
         }
         [SerializeField()]
+        [AutoCompo(42100, "./Fields/SelfMaster")]
         private Master _SelfMaster;
         public Master SelfMaster
         {
@@ -251,12 +280,13 @@ namespace UI
             {
                 if ((this._SelfMaster == null))
                 {
-                    this._SelfMaster = this.transform.Find("Fields").Find("SelfMaster").GetComponent<Master>();
+                    this._SelfMaster = this.transform.findByPath("./Fields/SelfMaster").GetComponent<Master>();
                 }
                 return this._SelfMaster;
             }
         }
         [SerializeField()]
+        [AutoCompo(40718, "./Fields/SelfGrave")]
         private Deck _SelfGraveDeck;
         public Deck SelfGraveDeck
         {
@@ -264,12 +294,13 @@ namespace UI
             {
                 if ((this._SelfGraveDeck == null))
                 {
-                    this._SelfGraveDeck = this.transform.Find("Fields").Find("SelfGrave").GetComponent<Deck>();
+                    this._SelfGraveDeck = this.transform.findByPath("./Fields/SelfGrave").GetComponent<Deck>();
                 }
                 return this._SelfGraveDeck;
             }
         }
         [SerializeField()]
+        [AutoCompo(40892, "./Fields/SelfDeck")]
         private Deck _SelfDeck;
         public Deck SelfDeck
         {
@@ -277,12 +308,27 @@ namespace UI
             {
                 if ((this._SelfDeck == null))
                 {
-                    this._SelfDeck = this.transform.Find("Fields").Find("SelfDeck").GetComponent<Deck>();
+                    this._SelfDeck = this.transform.findByPath("./Fields/SelfDeck").GetComponent<Deck>();
                 }
                 return this._SelfDeck;
             }
         }
         [SerializeField()]
+        [AutoCompo(40422, "./Fields/SelfDeck")]
+        private RectTransform _SelfDeckRectTransform;
+        public RectTransform SelfDeckRectTransform
+        {
+            get
+            {
+                if ((this._SelfDeckRectTransform == null))
+                {
+                    this._SelfDeckRectTransform = this.transform.findByPath("./Fields/SelfDeck").GetComponent<RectTransform>();
+                }
+                return this._SelfDeckRectTransform;
+            }
+        }
+        [SerializeField()]
+        [AutoCompo(42486, "./Fields/SelfGem")]
         private Gem _SelfGem;
         public Gem SelfGem
         {
@@ -290,12 +336,13 @@ namespace UI
             {
                 if ((this._SelfGem == null))
                 {
-                    this._SelfGem = this.transform.Find("Fields").Find("SelfGem").GetComponent<Gem>();
+                    this._SelfGem = this.transform.findByPath("./Fields/SelfGem").GetComponent<Gem>();
                 }
                 return this._SelfGem;
             }
         }
         [SerializeField()]
+        [AutoCompo(42906, "./Fields/SelfItem")]
         private Item _SelfItem;
         public Item SelfItem
         {
@@ -303,12 +350,13 @@ namespace UI
             {
                 if ((this._SelfItem == null))
                 {
-                    this._SelfItem = this.transform.Find("Fields").Find("SelfItem").GetComponent<Item>();
+                    this._SelfItem = this.transform.findByPath("./Fields/SelfItem").GetComponent<Item>();
                 }
                 return this._SelfItem;
             }
         }
         [SerializeField()]
+        [AutoCompo(41576, "./Fields/SelfSkill")]
         private Skill _SelfSkill;
         public Skill SelfSkill
         {
@@ -316,12 +364,13 @@ namespace UI
             {
                 if ((this._SelfSkill == null))
                 {
-                    this._SelfSkill = this.transform.Find("Fields").Find("SelfSkill").GetComponent<Skill>();
+                    this._SelfSkill = this.transform.findByPath("./Fields/SelfSkill").GetComponent<Skill>();
                 }
                 return this._SelfSkill;
             }
         }
         [SerializeField()]
+        [AutoCompo(41324, "./Fields/Blocker")]
         private Button _BlockerButton;
         public Button BlockerButton
         {
@@ -329,12 +378,21 @@ namespace UI
             {
                 if ((this._BlockerButton == null))
                 {
-                    this._BlockerButton = this.transform.Find("Fields").Find("Blocker").GetComponent<Button>();
+                    this._BlockerButton = this.transform.findByPath("./Fields/Blocker").GetComponent<Button>();
                 }
                 return this._BlockerButton;
             }
         }
+        public event Action onBlockerButtonClick;
+        private void BlockerButtonClickCallback()
+        {
+            if ((this.onBlockerButtonClick != null))
+            {
+                this.onBlockerButtonClick();
+            }
+        }
         [SerializeField()]
+        [AutoCompo(40702, "./Fields/SelfHand")]
         private HandList _SelfHandList;
         public HandList SelfHandList
         {
@@ -342,12 +400,13 @@ namespace UI
             {
                 if ((this._SelfHandList == null))
                 {
-                    this._SelfHandList = this.transform.Find("Fields").Find("SelfHand").GetComponent<HandList>();
+                    this._SelfHandList = this.transform.findByPath("./Fields/SelfHand").GetComponent<HandList>();
                 }
                 return this._SelfHandList;
             }
         }
         [SerializeField()]
+        [AutoCompo(41202, "./Fields/ServantPlaceHolder")]
         private ServantPlaceHolder _ServantPlaceHolder;
         public ServantPlaceHolder ServantPlaceHolder
         {
@@ -355,12 +414,13 @@ namespace UI
             {
                 if ((this._ServantPlaceHolder == null))
                 {
-                    this._ServantPlaceHolder = this.transform.Find("Fields").Find("ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
+                    this._ServantPlaceHolder = this.transform.findByPath("./Fields/ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
                 }
                 return this._ServantPlaceHolder;
             }
         }
         [SerializeField()]
+        [AutoCompo(41256, "./InitReplaceDialog")]
         private InitReplaceDialog _InitReplaceDialog;
         public InitReplaceDialog InitReplaceDialog
         {
@@ -368,25 +428,27 @@ namespace UI
             {
                 if ((this._InitReplaceDialog == null))
                 {
-                    this._InitReplaceDialog = this.transform.Find("InitReplaceDialog").GetComponent<InitReplaceDialog>();
+                    this._InitReplaceDialog = this.transform.findByPath("./InitReplaceDialog").GetComponent<InitReplaceDialog>();
                 }
                 return this._InitReplaceDialog;
             }
         }
         [SerializeField()]
-        private Card _LargeCard;
-        public Card LargeCard
+        [AutoCompo(41554, "./LargeCard")]
+        private Card _LargeCard ;
+        public Card LargeCard 
         {
             get
             {
-                if ((this._LargeCard == null))
+                if ((this._LargeCard  == null))
                 {
-                    this._LargeCard = this.transform.Find("LargeCard").GetComponent<Card>();
+                    this._LargeCard  = this.transform.findByPath("./LargeCard").GetComponent<Card>();
                 }
-                return this._LargeCard;
+                return this._LargeCard ;
             }
         }
         [SerializeField()]
+        [AutoCompo(41006, "./LeftDisplay")]
         private Image _LeftDisplayImage;
         public Image LeftDisplayImage
         {
@@ -394,12 +456,13 @@ namespace UI
             {
                 if ((this._LeftDisplayImage == null))
                 {
-                    this._LeftDisplayImage = this.transform.Find("LeftDisplay").GetComponent<Image>();
+                    this._LeftDisplayImage = this.transform.findByPath("./LeftDisplay").GetComponent<Image>();
                 }
                 return this._LeftDisplayImage;
             }
         }
         [SerializeField()]
+        [AutoCompo(41046, "./CenterDisplay")]
         private Image _CenterDisplayImage;
         public Image CenterDisplayImage
         {
@@ -407,12 +470,13 @@ namespace UI
             {
                 if ((this._CenterDisplayImage == null))
                 {
-                    this._CenterDisplayImage = this.transform.Find("CenterDisplay").GetComponent<Image>();
+                    this._CenterDisplayImage = this.transform.findByPath("./CenterDisplay").GetComponent<Image>();
                 }
                 return this._CenterDisplayImage;
             }
         }
         [SerializeField()]
+        [AutoCompo(41008, "./RightDisplay")]
         private Image _RightDisplayImage;
         public Image RightDisplayImage
         {
@@ -420,12 +484,13 @@ namespace UI
             {
                 if ((this._RightDisplayImage == null))
                 {
-                    this._RightDisplayImage = this.transform.Find("RightDisplay").GetComponent<Image>();
+                    this._RightDisplayImage = this.transform.findByPath("./RightDisplay").GetComponent<Image>();
                 }
                 return this._RightDisplayImage;
             }
         }
         [SerializeField()]
+        [AutoCompo(41312, "./TipText")]
         private Text _TipText;
         public Text TipText
         {
@@ -433,12 +498,13 @@ namespace UI
             {
                 if ((this._TipText == null))
                 {
-                    this._TipText = this.transform.Find("TipText").GetComponent<Text>();
+                    this._TipText = this.transform.findByPath("./TipText").GetComponent<Text>();
                 }
                 return this._TipText;
             }
         }
         [SerializeField()]
+        [AutoCompo(41268, "./Fatigue")]
         private Fatigue _Fatigue;
         public Fatigue Fatigue
         {
@@ -446,12 +512,13 @@ namespace UI
             {
                 if ((this._Fatigue == null))
                 {
-                    this._Fatigue = this.transform.Find("Fatigue").GetComponent<Fatigue>();
+                    this._Fatigue = this.transform.findByPath("./Fatigue").GetComponent<Fatigue>();
                 }
                 return this._Fatigue;
             }
         }
         [SerializeField()]
+        [AutoCompo(41242, "./TurnTipImage")]
         private Image _TurnTipImage;
         public Image TurnTipImage
         {
@@ -459,12 +526,13 @@ namespace UI
             {
                 if ((this._TurnTipImage == null))
                 {
-                    this._TurnTipImage = this.transform.Find("TurnTipImage").GetComponent<Image>();
+                    this._TurnTipImage = this.transform.findByPath("./TurnTipImage").GetComponent<Image>();
                 }
                 return this._TurnTipImage;
             }
         }
         [SerializeField()]
+        [AutoCompo(41310, "./TurnTipImage/TurnTipText")]
         private Text _TurnTipText;
         public Text TurnTipText
         {
@@ -472,12 +540,13 @@ namespace UI
             {
                 if ((this._TurnTipText == null))
                 {
-                    this._TurnTipText = this.transform.Find("TurnTipImage").Find("TurnTipText").GetComponent<Text>();
+                    this._TurnTipText = this.transform.findByPath("./TurnTipImage/TurnTipText").GetComponent<Text>();
                 }
                 return this._TurnTipText;
             }
         }
         [SerializeField()]
+        [AutoCompo(41568, "./Discover")]
         private Discover _Discover;
         public Discover Discover
         {
@@ -485,12 +554,13 @@ namespace UI
             {
                 if ((this._Discover == null))
                 {
-                    this._Discover = this.transform.Find("Discover").GetComponent<Discover>();
+                    this._Discover = this.transform.findByPath("./Discover").GetComponent<Discover>();
                 }
                 return this._Discover;
             }
         }
         [SerializeField()]
+        [AutoCompo(41478, "./PilePanel")]
         private PilePanel _PilePanel;
         public PilePanel PilePanel
         {
@@ -498,12 +568,13 @@ namespace UI
             {
                 if ((this._PilePanel == null))
                 {
-                    this._PilePanel = this.transform.Find("PilePanel").GetComponent<PilePanel>();
+                    this._PilePanel = this.transform.findByPath("./PilePanel").GetComponent<PilePanel>();
                 }
                 return this._PilePanel;
             }
         }
         [SerializeField()]
+        [AutoCompo(41014, "./TipBox")]
         private TipBox _TipBox;
         public TipBox TipBox
         {
@@ -511,11 +582,24 @@ namespace UI
             {
                 if ((this._TipBox == null))
                 {
-                    this._TipBox = this.transform.Find("TipBox").GetComponent<TipBox>();
+                    this._TipBox = this.transform.findByPath("./TipBox").GetComponent<TipBox>();
                 }
                 return this._TipBox;
             }
         }
-        partial void onAwake();
+        [SerializeField()]
+        [AutoCompo(40318, "./Fields/EnemyDeck")]
+        private RectTransform _EnemyDeckRectTransform;
+        public RectTransform EnemyDeckRectTransform
+        {
+            get
+            {
+                if ((this._EnemyDeckRectTransform == null))
+                {
+                    this._EnemyDeckRectTransform = this.transform.findByPath("./Fields/EnemyDeck").GetComponent<RectTransform>();
+                }
+                return this._EnemyDeckRectTransform;
+            }
+        }
     }
 }

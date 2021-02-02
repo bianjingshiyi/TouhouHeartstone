@@ -33,12 +33,15 @@ namespace Game
                 _cardOppo.asAnimator.SetBool("isFaceUp", false);
             }
             table.setCard(_cardOppo, eventArg.oppoCard, _cardOppo.asAnimator.GetBool("isFaceUp"));
+
             //播放位移曲线动画到对应的位置
             if (_moveToSelf == null)
                 _moveToSelf = new CardMoveAnim(_cardSelf, table.ui.LeftDisplayImage.transform, table.cardShowCurve);
             if (_moveToOppo == null)
                 _moveToOppo = new CardMoveAnim(_cardOppo, table.ui.RightDisplayImage.transform, table.cardShowCurve);
-            if (!_moveToSelf.update(table, time) || !_moveToOppo.update(table, time))
+            bool MoveToDisPlay1 = !_moveToSelf.update(table, time);
+            bool MoveToDisPlay2 = !_moveToOppo.update(table, time);
+            if (MoveToDisPlay1 || MoveToDisPlay2)
             {
                 return false;
             }
@@ -47,13 +50,17 @@ namespace Game
             {
                 _flipFaceSelf = new AnimAnim(_cardSelf.animator, _cardSelf._flipToFaceAnimName);
                 _cardSelf.asAnimator.SetBool("isFaceUp", true);
+                table.setCard(_cardOppo, eventArg.oppoCard, _cardOppo.asAnimator.GetBool("isFaceUp"));
             }
             if (_flipFaceOppo == null)
             {
                 _flipFaceOppo = new AnimAnim(_cardOppo.animator, _cardOppo._flipToBackAnimName);
                 _cardOppo.asAnimator.SetBool("isFaceUp", true);
+                table.setCard(_cardOppo, eventArg.oppoCard, _cardOppo.asAnimator.GetBool("isFaceUp"));
             }
-            if (!_flipFaceSelf.update(table, time) || !_flipFaceOppo.update(table, time))
+            bool FlipFace1 = !_flipFaceSelf.update(table, time);
+            bool FlipFace2 = !_flipFaceOppo.update(table, time);
+            if (FlipFace1||FlipFace2)
             {
                 return false;
             }
@@ -62,6 +69,8 @@ namespace Game
             //如果胜利应该有一个胜利动画
             if (eventArg.result == true && _winAnim == null)
                 _winAnim = new AnimAnim(_cardSelf.animator, _cardSelf._notifyAnimName);
+            if (eventArg.result == false && _winAnim == null)
+                _winAnim = new AnimAnim(_cardOppo.animator, _cardOppo._notifyAnimName);
             if (_winAnim != null && !_winAnim.update(table, time))
             {
                 return false;
@@ -77,24 +86,36 @@ namespace Game
                 _cardOppo.asAnimator.SetBool("isFaceUp", false);
                 _flipBackOppo = new AnimAnim(_cardOppo.animator, _cardOppo._flipToBackAnimName);
             }
-
-            if (!_flipBackSelf.update(table, time) || !_flipBackOppo.update(table, time))
+            bool FlipBack1 = !_flipBackSelf.update(table, time);
+            bool Flipback2 = !_flipBackOppo.update(table, time);
+            if (FlipBack1||Flipback2)
             {
                 return false;
             }
 
             //放回牌库
             if (_moveBackSelf == null)
-                _moveBackSelf = new CardMoveAnim(_cardSelf, table.ui.LeftDisplayImage.transform, table.cardShowCurve);
+                _moveBackSelf = new CardMoveAnim(_cardSelf, table.ui.SelfDeck.transform, table.cardShowCurve);
             if (_moveBackOppo == null)
-                _moveBackOppo = new CardMoveAnim(_cardOppo, table.ui.RightDisplayImage.transform, table.cardShowCurve);
-            if (!_moveBackSelf.update(table, time) || !_moveBackOppo.update(table, time))
+                _moveBackOppo = new CardMoveAnim(_cardOppo, table.ui.EnemyDeck.transform, table.cardShowCurve);
+            bool MoveBack1 = !_moveBackSelf.update(table, time);
+            bool MoveBack2 = !_moveBackOppo.update(table, time);
+            if (MoveBack2||MoveBack1)
             {
                 return false;
             }
             //销毁实例
             UObject.Destroy(_cardSelf.gameObject);
             UObject.Destroy(_cardOppo.gameObject);
+            //_moveToSelf = null;
+            //_moveToOppo = null;
+            //_flipFaceSelf = null;
+            //_flipFaceOppo = null;
+            //_winAnim = null;
+            //_flipBackSelf = null;
+            //_flipBackOppo = null;
+            //_moveBackSelf =null;
+            //_moveBackOppo = null;
             return true;
         }
     }

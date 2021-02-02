@@ -31,9 +31,9 @@ namespace UI
         {
             get { return ui.getManager<TableManager>().player; }
         }
-        partial void onAwake()
-        {
-        }
+        //partial void onAwake()
+        //{
+        //}
         public void setGame(THHGame game, THHPlayer player)
         {
             InitReplaceDialog.hide();
