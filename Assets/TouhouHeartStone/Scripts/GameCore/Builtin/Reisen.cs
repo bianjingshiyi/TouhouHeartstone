@@ -128,7 +128,7 @@ namespace TouhouHeartstone.Builtin
                     a.isCanceled = true; //取消攻击
                     THHPlayer you = c.getOwner();
                     THHPlayer oppo = a.card.getOwner();
-                    if (oppo.field.count < 7)
+                    if (you.field.count < 7)
                     {
                         await oppo.field.moveTo(g, a.card, you.field); //交换控制权
                     }

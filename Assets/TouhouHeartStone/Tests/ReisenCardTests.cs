@@ -135,12 +135,20 @@ namespace Tests
                 shuffle = false
             });
             THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 10));
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MindShaker>(), 1)));
+                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 7).Concat(Enumerable.Repeat(game.getDefine<MindShaker>(), 1)));
+
+            game.skipUntilHasGem(oppo, 10);
 
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+
+            while (you.field.count < 7)
+            {
+                game.skipUntilCanUse<DefaultServant>(you);
+                you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            }
 
             game.skipUntilCanUse<MindShaker>(you);
             you.cmdUse(game, you.hand.getCard<MindShaker>());
