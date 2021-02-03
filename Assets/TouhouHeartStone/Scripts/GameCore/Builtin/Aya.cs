@@ -414,5 +414,36 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
-
+    /// <summary>
+    /// 白木
+    /// 使用技能后，使手牌随机三张牌灵力消耗减一
+    /// 就真想印大帝？
+    /// </summary>
+    public class Aya13 : ServantCardDefine
+    {
+        public const int ID = Aya.ID | CATEGORY.SERVANT | 0x013;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 4;//随从的攻击力
+        public override int life { get; set; } = 4;//随从的血量上限
+        public override bool isToken { get; set; } = false;//是衍生物吗？
+        //public override string[] tags { get; set; } = new string[] { TAG.BEAST };//种族标签
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+             new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+              (g,c,a)=>{
+                            return a.player == c.getOwner() && a.card.isSkill();
+                       }, null, async(g, c, a) =>
+                       {
+                           var cards = c.getOwner().hand.randomTake(g,3);
+                           foreach(var ca in cards)
+                           {
+                               await ca.addBuff(g,new GeneratedBuff(g,new CostModifier(-1)));
+                           }
+                       }
+                       )
+        };
+        
+    }
 }
