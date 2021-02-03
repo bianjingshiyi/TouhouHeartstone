@@ -529,10 +529,21 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
-  onPoisonousTrue:
+  onLethalTrue:
     beforeAnim:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolTrue
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: isLethal
+            m_BoolArgument: 0
+          m_CallState: 2
     setColor:
       enable: 0
       target: {fileID: 0}
@@ -541,10 +552,113 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
-  onPoisonousFalse:
+  onLethalFalse:
     beforeAnim:
       m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolFalse
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: isLethal
+            m_BoolArgument: 0
+          m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
         m_Calls: []
+  onLifeStealTrue:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolTrue
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: isLifeSteal
+            m_BoolArgument: 0
+          m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onLifeStealFalse:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolFalse
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: isLifeSteal
+            m_BoolArgument: 0
+          m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onShackleTrue:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolTrue
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: isShackle
+            m_BoolArgument: 0
+          m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onShackleFalse:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4225699940084520048}
+          m_MethodName: setBoolFalse
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: isShackle
+            m_BoolArgument: 0
+          m_CallState: 2
     setColor:
       enable: 0
       target: {fileID: 0}
@@ -714,6 +828,11 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1968236122541245709, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1991424972555250695, guid: 0bd8730dcc8a6824da51d94b28d874e4,
         type: 3}
       propertyPath: m_IsActive
       value: 0

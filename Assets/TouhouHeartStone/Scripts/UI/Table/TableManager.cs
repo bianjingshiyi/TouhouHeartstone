@@ -1087,16 +1087,36 @@ namespace Game
                 servant.onDyingWishFalse.invokeBeforeAnim();
                 servant.onDyingWishFalse.invokeAfterAnim();
             }
-
-            //if (card.hasKeyword(game, KEYWORD.DRAIN))
-            //{
-            //    servant.poisionImage.display();
-            //}
-            //else
-            //{
-            //    servant.poisionImage.hide();
-            //}
-
+            if (card.hasKeyword(game, KEYWORD.POISONOUS))
+            {
+                servant.onLethalTrue.invokeBeforeAnim();
+                servant.onLethalTrue.invokeAfterAnim();
+            }
+            else
+            {
+                servant.onLethalFalse.invokeBeforeAnim();
+                servant.onLethalFalse.invokeAfterAnim();
+            }
+            if (card.hasKeyword(game, KEYWORD.DRAIN))
+            {
+                servant.onLifeStealTrue.invokeBeforeAnim();
+                servant.onLifeStealTrue.invokeAfterAnim();
+            }
+            else
+            {
+                servant.onLifeStealFalse.invokeBeforeAnim();
+                servant.onLifeStealFalse.invokeAfterAnim();
+            }
+            if (card.hasKeyword(game, KEYWORD.FREEZE))
+            {
+                servant.onShackleTrue.invokeBeforeAnim();
+                servant.onShackleTrue.invokeAfterAnim();
+            }
+            else
+            {
+                servant.onShackleFalse.invokeBeforeAnim();
+                servant.onShackleFalse.invokeAfterAnim();
+            }
             //if (card.hasKeyword(game, KEYWORD.STEALTH))
             //    servant.stealthImage.display();
             //else

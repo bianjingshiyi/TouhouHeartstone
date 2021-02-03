@@ -185,9 +185,13 @@ namespace UI
         public SimpleAnim onShieldFalse;//圣盾
         public SimpleAnim onDyingWishTrue;//亡语
         public SimpleAnim onDyingWishFalse;//亡语
-        public SimpleAnim onStealthTrue;//吸血
-        public SimpleAnim onStealthFalse;//吸血
-        public SimpleAnim onPoisonousTrue;//剧毒
-        public SimpleAnim onPoisonousFalse;//剧毒
+        public SimpleAnim onStealthTrue;//潜行
+        public SimpleAnim onStealthFalse;//潜行
+        public SimpleAnim onLethalTrue;//剧毒
+        public SimpleAnim onLethalFalse;//剧毒
+        public SimpleAnim onLifeStealTrue;//吸血
+        public SimpleAnim onLifeStealFalse;//吸血
+        public SimpleAnim onShackleTrue;//锁
+        public SimpleAnim onShackleFalse;//锁
     }
 }
