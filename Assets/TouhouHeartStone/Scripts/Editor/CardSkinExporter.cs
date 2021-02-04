@@ -44,6 +44,7 @@ namespace TouhouHeartstone
             int cardImageIndex = ExcelHelper.findColIndex(cardsheet, "Image");
             int cardIllustratorIndex = ExcelHelper.findColIndex(cardsheet, "Illustrator");
             int cardDescIndex = ExcelHelper.findColIndex(cardsheet, "Desc");
+            int cardIgnoreIndex = ExcelHelper.findColIndex(cardsheet, "Ignore");
             //皮肤表的迁移暂时鸽了。
             //Worksheet skinsheet = workbook.Worksheets.FirstOrDefault(b => b.Name == "Skins");
             //int skinIdIndex;
@@ -141,6 +142,8 @@ namespace TouhouHeartstone
                 if (pair.Key == 0 || pair.Key == 1)
                     continue;
                 Row row = pair.Value;
+                if (row.GetCell(cardIgnoreIndex).Value is bool ignore && ignore)
+                    continue;
                 string name = row.GetCell(cardNameIndex).StringValue;
                 //string image = row.GetCell(cardImageIndex).StringValue;
                 //string illu = row.GetCell(cardIllustratorIndex).StringValue;
