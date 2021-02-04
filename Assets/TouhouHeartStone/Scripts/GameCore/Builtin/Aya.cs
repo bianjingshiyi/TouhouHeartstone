@@ -439,7 +439,7 @@ namespace TouhouHeartstone.Builtin
                            var cards = c.getOwner().hand.randomTake(g,3);
                            foreach(var ca in cards)
                            {
-                               await ca.addBuff(g,new GeneratedBuff(g,new CostModifier(-1)));
+                               await ca.addBuff(g,new GeneratedBuff(ID,new CostModifier(-1)));
                            }
                        }
                        )
