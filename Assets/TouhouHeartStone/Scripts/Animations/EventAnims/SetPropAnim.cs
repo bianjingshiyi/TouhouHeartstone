@@ -93,14 +93,14 @@ namespace Game
                         {
 
                         }
-                        if (keywords.Contains(KEYWORD.FREEZE))
-                            master.FreezeImage.display();
-                        else
-                            master.FreezeImage.hide();
+                        //if (keywords.Contains(KEYWORD.FREEZE))
+                        //    master.FreezeImage.display();
+                        //else
+                        //    master.FreezeImage.hide();
                     }
                     else
                     {
-                        master.FreezeImage.hide();
+                        //master.FreezeImage.hide();
                     }
                 }
                 else if (eventArg.propName == PROPERTY.SILENCE && eventArg.beforeValue is bool beforeSilence && eventArg.value is bool silence)

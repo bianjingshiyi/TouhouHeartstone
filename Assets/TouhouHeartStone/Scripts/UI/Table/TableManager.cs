@@ -404,9 +404,15 @@ namespace Game
             else
                 master.ShieldImage.hide();
             if (card.hasKeyword(game, KEYWORD.FREEZE))
-                master.FreezeImage.display();
+            {
+                master.onShackleTrue.invokeBeforeAnim();
+                master.onShackleTrue.invokeAfterAnim();
+            }
             else
-                master.FreezeImage.hide();
+            {
+                master.onShackleFalse.invokeBeforeAnim();
+                master.onShackleFalse.invokeAfterAnim();
+            }
         }
         public bool tryGetItem(Card card, out Item item)
         {

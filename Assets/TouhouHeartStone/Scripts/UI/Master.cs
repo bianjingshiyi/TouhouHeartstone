@@ -82,5 +82,7 @@ namespace UI
         public SimpleAnim onSelectableFalse;
         public SimpleAnim onSetDefine;
         public SimpleAnim onHeal;
+        public SimpleAnim onShackleTrue;
+        public SimpleAnim onShackleFalse;
     }
 }
