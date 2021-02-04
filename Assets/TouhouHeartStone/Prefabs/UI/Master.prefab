@@ -999,12 +999,58 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
+  onShackleTrue:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5684906880656835152}
+          m_MethodName: setBoolTrue
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: isShackle
+            m_BoolArgument: 0
+          m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onShackleFalse:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5684906880656835152}
+          m_MethodName: setBoolFalse
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: isShackle
+            m_BoolArgument: 0
+          m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  _asAnimator: {fileID: 0}
   _HighlightImage: {fileID: 0}
   _Mask: {fileID: 0}
   _Image: {fileID: 0}
   _StealthImage: {fileID: 0}
   _FrameImage: {fileID: 0}
-  _FreezeImage: {fileID: 0}
   _AttackPropNumber: {fileID: 0}
   _LifePropNumber: {fileID: 0}
   _ArmorPropNumber: {fileID: 0}
@@ -1014,7 +1060,7 @@ MonoBehaviour:
   _HealText: {fileID: 0}
   _Head: {fileID: 0}
   _ShieldImage: {fileID: 0}
-  _asAnimator: {fileID: 0}
+  _ShackleImage: {fileID: 0}
 --- !u!1 &7552501258534462123
 GameObject:
   m_ObjectHideFlags: 0
