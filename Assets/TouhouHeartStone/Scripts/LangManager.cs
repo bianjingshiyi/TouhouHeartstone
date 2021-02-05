@@ -83,6 +83,7 @@ namespace Game
 
                 try
                 {
+                    UberDebug.Log($"加载语言{lang}的翻译");
                     var culture = new CultureInfo(lang);
                     cultures.Add(culture);
                     i18n.Load(Path.Combine(Application.streamingAssetsPath, folderPath), culture);
