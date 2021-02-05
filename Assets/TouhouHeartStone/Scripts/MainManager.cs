@@ -53,12 +53,19 @@ namespace Game
         }
         protected void Start()
         {
+            StageLogger logger = new StageLogger(new int[] { 1, 2, 50 });
+            logger.OnStageChange += (progress, text) =>
+            {
+                mainUI.Loading.LoggerText.text = text;
+                mainUI.Loading.ProgressBarSlider.value = progress;
+            };
+
             _loadCardTask = getManager<CardManager>().load(
                 new System.Reflection.Assembly[] { typeof(THHGame).Assembly },
                 new string[] { "TouhouHeartstone", "TouhouHeartstone.Builtin" },
                 false,
                 null,
-                mainUI.Loading.LoggerText.GetComponent<ScreenLogger>()
+                logger
             );
         }
         protected void Update()

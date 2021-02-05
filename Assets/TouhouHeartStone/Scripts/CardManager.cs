@@ -48,7 +48,7 @@ namespace Game
         /// 加载配置路径中的所有卡片和皮肤。
         /// </summary>
         /// <returns></returns>
-        public Task load(Assembly[] assemblies = default, string[] namespaces = null, bool builtinOnly = false, ILogger logger = null, ILogger screenLogger = null)
+        public Task load(Assembly[] assemblies = default, string[] namespaces = null, bool builtinOnly = false, ILogger logger = null, StageLogger screenLogger = null)
         {
             return load(builtinOnly ? new string[0] : _externalCardPaths, assemblies, namespaces, logger, screenLogger);
         }
@@ -57,10 +57,10 @@ namespace Game
         /// </summary>
         /// <param name="excelPaths"></param>
         /// <returns></returns>
-        public async Task load(string[] excelPaths, Assembly[] assemblies = default, string[] namespaces = null, ILogger logger = null, ILogger screenLogger = null)
+        public async Task load(string[] excelPaths, Assembly[] assemblies = default, string[] namespaces = null, ILogger logger = null, StageLogger screenLogger = null)
         {
             //加载内置卡片
-            screenLogger?.log("加载内置卡片");
+            screenLogger?.NextStage("加载内置卡片");
             if (assemblies == default)
                 assemblies = AppDomain.CurrentDomain.GetAssemblies();
             List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies, namespaces, logger));
@@ -111,11 +111,13 @@ namespace Game
                     }
                 }
             }
+            screenLogger?.NextStage("加载卡片集", pathList.Count);
+            int cardCount = 0;
             foreach (string path in pathList)
             {
                 try
                 {
-                    screenLogger?.log("加载卡片集：" + Path.GetFileNameWithoutExtension(path));
+                    screenLogger?.NextSub("加载卡片集：" + Path.GetFileNameWithoutExtension(path));
 
                     CardDefine[] cards = await loadCards(path);
                     foreach (var card in cards)
@@ -129,6 +131,7 @@ namespace Game
                         else
                             cardList.Add(card);
                     }
+                    cardCount += cards.Length;
                 }
                 catch (Exception e)
                 {
@@ -154,6 +157,7 @@ namespace Game
                 skinDic[skin.id] = skin;
             }
             //加载外置皮肤
+            screenLogger?.NextStage("加载外置皮肤", cardCount);
             foreach (string path in pathList)
             {
                 try
@@ -243,7 +247,7 @@ namespace Game
         /// <param name="platform">当前平台</param>
         /// <param name="logger">提示用Logger</param>
         /// <returns></returns>
-        public async Task<CardSkinData[]> loadSkins(string path, PlatformCompability platform = null, ILogger logger = null)
+        public async Task<CardSkinData[]> loadSkins(string path, PlatformCompability platform = null, StageLogger logger = null)
         {
             platform = platform ?? PlatformCompability.Current;
 
@@ -298,7 +302,7 @@ namespace Game
             return skins.ToArray();
         }
 
-        private async Task<CardSkinData> loadSkinInCardTable(string path, DataRow datarow, ILogger logger = null)
+        private async Task<CardSkinData> loadSkinInCardTable(string path, DataRow datarow, StageLogger logger = null)
         {
             //加载文字信息
             var skin = new CardSkinData()
@@ -307,7 +311,7 @@ namespace Game
                 name = datarow.ReadCol<string>("Name"),
                 desc = datarow.ReadCol("Desc", "")
             };
-            logger?.log("加载卡片资源: " + skin.name);
+            logger?.NextSub("加载卡片资源: " + skin.name);
             //加载图片
             string imagePath = datarow.ReadCol("Image", "");
 
@@ -513,5 +517,54 @@ namespace Game
         protected SkinNotFoundException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
+
+    public class StageLogger
+    {
+        int stage = -1;
+        int subCount = 0;
+        int subStage = 0;
+        int[] factors;
+        int factorCount = 0;
+        int currentFactor = 0;
+
+        public event Action<float, string> OnStageChange;
+
+        public StageLogger(int stages)
+        {
+            factors = new int[stages];
+            factorCount = stages;
+            for (int i = 0; i < stages; i++)
+            {
+                factors[i] = 1;
+            }
+        }
+
+        public StageLogger(int[] factors)
+        {
+            this.factors = factors;
+            factorCount = 0;
+            foreach (var item in factors)
+            {
+                factorCount += item;
+            }
+        }
+
+        float progress => (currentFactor + (float)subStage / subCount * factors[stage]) / factorCount;
+
+        public void NextStage(string name, int count = 1)
+        {
+            if (stage >= 0) currentFactor += factors[stage];
+            subCount = count;
+            subStage = 0;
+            stage++;
+            OnStageChange?.Invoke(progress, name);
+        }
+
+        public void NextSub(string name, int count = 1)
+        {
+            subStage++;
+            OnStageChange?.Invoke(progress, name);
+        }
     }
 }

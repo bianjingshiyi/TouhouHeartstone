@@ -26,17 +26,11 @@ namespace UI
         public void autoBind()
         {
             this.m_as_Image = this.GetComponent<Image>();
+            this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
             this._LoadingText = this.transform.Find("LoadingText").GetComponent<Text>();
             this._Text = this.transform.Find("Text").GetComponent<Text>();
             this._LoggerText = this.transform.Find("Logger").GetComponent<Text>();
-        }
-        private Main _parent;
-        public Main parent
-        {
-            get
-            {
-                return this.transform.parent.GetComponent<Main>();
-            }
+            this._ProgressBarSlider = this.transform.Find("ProgressBar").GetComponent<Slider>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -49,6 +43,19 @@ namespace UI
                     this.m_as_Image = this.GetComponent<Image>();
                 }
                 return this.m_as_Image;
+            }
+        }
+        [SerializeField()]
+        private Image _LogoImage;
+        public Image LogoImage
+        {
+            get
+            {
+                if ((this._LogoImage == null))
+                {
+                    this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
+                }
+                return this._LogoImage;
             }
         }
         [SerializeField()]
@@ -88,6 +95,19 @@ namespace UI
                     this._LoggerText = this.transform.Find("Logger").GetComponent<Text>();
                 }
                 return this._LoggerText;
+            }
+        }
+        [SerializeField()]
+        private Slider _ProgressBarSlider;
+        public Slider ProgressBarSlider
+        {
+            get
+            {
+                if ((this._ProgressBarSlider == null))
+                {
+                    this._ProgressBarSlider = this.transform.Find("ProgressBar").GetComponent<Slider>();
+                }
+                return this._ProgressBarSlider;
             }
         }
         partial void onAwake();
