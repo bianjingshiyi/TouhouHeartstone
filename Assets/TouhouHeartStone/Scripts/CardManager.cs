@@ -256,6 +256,7 @@ namespace Game
             var skinTable = dataset.Tables[1];
             List<CardSkinData> skins = new List<CardSkinData>();
 
+            // Excel的第一行是注释，忽略
             for (int i = 1; i < cardTable.Rows.Count; i++)
             {
                 try
@@ -276,7 +277,7 @@ namespace Game
                     Debug.LogWarning($"Error when loading {path} (row {i}): " + e);
                 }
             }
-            for (int i = 0; i < skinTable.Rows.Count; i++)
+            for (int i = 1; i < skinTable.Rows.Count; i++)
             {
                 try
                 {
@@ -309,6 +310,7 @@ namespace Game
             logger?.log("加载卡片资源: " + skin.name);
             //加载图片
             string imagePath = datarow.ReadCol("Image", "");
+
             try
             {
                 if (imagePath.StartsWith("res:"))
@@ -317,9 +319,16 @@ namespace Game
                 }
                 else
                 {
-                    Texture2D texture = await getManager<THHResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
-                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
-                    skin.image = sprite;
+                    if (string.IsNullOrEmpty(imagePath))
+                    {
+                        skin.image = await getDefaultSprite();
+                    }
+                    else
+                    {
+                        Texture2D texture = await getManager<THHResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
+                        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+                        skin.image = sprite;
+                    }
                 }
             }
             catch (Exception e)

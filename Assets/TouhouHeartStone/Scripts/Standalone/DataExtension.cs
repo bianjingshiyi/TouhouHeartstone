@@ -19,7 +19,7 @@ namespace IGensoukyo.Utilities
         /// <returns></returns>
         public static T ReadCol<T>(this DataRow row, string name)
         {
-            if (row.IsNull(name))
+            if (!row.Table.Columns.Contains(name) || row.IsNull(name))
                 throw new KeyNotFoundException($"列[{name}]为空");
 
             T realVal = (T)Convert.ChangeType(row[name], typeof(T));
@@ -35,7 +35,7 @@ namespace IGensoukyo.Utilities
         /// <returns></returns>
         public static T ReadCol<T>(this DataRow row, string name, T defaultVal)
         {
-            if (row.IsNull(name)) return defaultVal;
+            if (!row.Table.Columns.Contains(name) || row.IsNull(name)) return defaultVal;
             return (T)Convert.ChangeType(row[name], typeof(T));
         }
     }
