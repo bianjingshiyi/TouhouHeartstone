@@ -66,7 +66,7 @@ PrefabInstance:
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.size
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
@@ -216,7 +216,7 @@ PrefabInstance:
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
-      value: isGreen
+      value: isRed
       objectReference: {fileID: 0}
     - target: {fileID: 6486202827136887151, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}

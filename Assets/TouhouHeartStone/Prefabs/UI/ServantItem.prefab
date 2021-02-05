@@ -822,6 +822,71 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 5950683824898062831}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 5950683824898062831}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: setBoolFalse
+      objectReference: {fileID: 0}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: setBoolFalse
+      objectReference: {fileID: 0}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: isRed
+      objectReference: {fileID: 0}
+    - target: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_StringArgument
+      value: isGreen
+      objectReference: {fileID: 0}
     - target: {fileID: 1294236017285449946, guid: 0bd8730dcc8a6824da51d94b28d874e4,
         type: 3}
       propertyPath: m_IsActive
@@ -995,3 +1060,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 6350587116168477821}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5950683824898062831 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 771455003298809234, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+    type: 3}
+  m_PrefabInstance: {fileID: 6350587116168477821}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce39e50f19c7e154983cdf45d620c0aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
