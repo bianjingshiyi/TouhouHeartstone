@@ -25,7 +25,7 @@ PrefabInstance:
     - target: {fileID: 2115446307860501590, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: m_Text
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2872538149249012041, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
@@ -366,6 +366,11 @@ PrefabInstance:
     - target: {fileID: 8383792400324555996, guid: 26e94d6f26f17604e8a1fa704b48f146,
         type: 3}
       propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8383792400324555996, guid: 26e94d6f26f17604e8a1fa704b48f146,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
