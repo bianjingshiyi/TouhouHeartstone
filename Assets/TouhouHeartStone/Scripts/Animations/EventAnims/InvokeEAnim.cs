@@ -70,7 +70,12 @@ namespace Game
             if (eventArg.result == true && _winAnim == null)
                 _winAnim = new AnimAnim(_cardSelf.animator, _cardSelf._notifyAnimName);
             if (eventArg.result == false && _winAnim == null)
-                _winAnim = new AnimAnim(_cardOppo.animator, _cardOppo._notifyAnimName);
+            {
+                if(eventArg.player==eventArg.youCard.owner)
+                    _winAnim = new AnimAnim(_cardOppo.animator, _cardOppo._notifyAnimName);
+                else
+                    _winAnim = new AnimAnim(_cardSelf.animator, _cardSelf._notifyAnimName);
+            }
             if (_winAnim != null && !_winAnim.update(table, time))
             {
                 return false;
