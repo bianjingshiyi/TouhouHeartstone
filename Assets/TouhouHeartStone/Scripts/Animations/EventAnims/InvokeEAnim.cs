@@ -23,22 +23,38 @@ namespace Game
             //在对应的卡组上创建卡牌实例
             if (_cardSelf == null)
             {
-                _cardSelf = UObject.Instantiate(table.cardPrefab, table.ui.SelfDeck.transform.position, Quaternion.identity, table.ui.SelfDeck.transform);
+                if(eventArg.player.name=="自己")
+                    _cardSelf = UObject.Instantiate(table.cardPrefab, table.ui.SelfDeck.transform.position, Quaternion.identity, table.ui.SelfDeck.transform);
+                else
+                    _cardSelf = UObject.Instantiate(table.cardPrefab, table.ui.EnemyDeck.transform.position, Quaternion.identity, table.ui.EnemyDeck.transform);
                 _cardSelf.asAnimator.SetBool("isFaceUp", false);
             }
             table.setCard(_cardSelf, eventArg.youCard, _cardSelf.asAnimator.GetBool("isFaceUp"));
             if (_cardOppo == null)
             {
-                _cardOppo = UObject.Instantiate(table.cardPrefab, table.ui.EnemyDeck.transform.position, Quaternion.identity, table.ui.EnemyDeck.transform);
+                if (eventArg.player.name == "自己")
+                    _cardOppo = UObject.Instantiate(table.cardPrefab, table.ui.EnemyDeck.transform.position, Quaternion.identity, table.ui.EnemyDeck.transform);
+                else
+                    _cardOppo = UObject.Instantiate(table.cardPrefab, table.ui.SelfDeck.transform.position, Quaternion.identity, table.ui.SelfDeck.transform);
                 _cardOppo.asAnimator.SetBool("isFaceUp", false);
             }
             table.setCard(_cardOppo, eventArg.oppoCard, _cardOppo.asAnimator.GetBool("isFaceUp"));
 
             //播放位移曲线动画到对应的位置
             if (_moveToSelf == null)
-                _moveToSelf = new CardMoveAnim(_cardSelf, table.ui.LeftDisplayImage.transform, table.cardShowCurve);
+            {
+                if (eventArg.player.name == "自己")
+                    _moveToSelf = new CardMoveAnim(_cardSelf, table.ui.LeftDisplayImage.transform, table.cardShowCurve);
+                else
+                    _moveToSelf = new CardMoveAnim(_cardSelf, table.ui.RightDisplayImage.transform, table.cardShowCurve);
+            }
             if (_moveToOppo == null)
-                _moveToOppo = new CardMoveAnim(_cardOppo, table.ui.RightDisplayImage.transform, table.cardShowCurve);
+            {
+                if(eventArg.player.name == "自己")
+                    _moveToOppo = new CardMoveAnim(_cardOppo, table.ui.RightDisplayImage.transform, table.cardShowCurve);
+                else
+                    _moveToOppo = new CardMoveAnim(_cardOppo, table.ui.LeftDisplayImage.transform, table.cardShowCurve);
+            }
             bool MoveToDisPlay1 = !_moveToSelf.update(table, time);
             bool MoveToDisPlay2 = !_moveToOppo.update(table, time);
             if (MoveToDisPlay1 || MoveToDisPlay2)
@@ -69,13 +85,8 @@ namespace Game
             //如果胜利应该有一个胜利动画
             if (eventArg.result == true && _winAnim == null)
                 _winAnim = new AnimAnim(_cardSelf.animator, _cardSelf._notifyAnimName);
-            if (eventArg.result == false && _winAnim == null)
-            {
-                if(eventArg.player==eventArg.youCard.owner)
-                    _winAnim = new AnimAnim(_cardOppo.animator, _cardOppo._notifyAnimName);
-                else
-                    _winAnim = new AnimAnim(_cardSelf.animator, _cardSelf._notifyAnimName);
-            }
+            if (eventArg.result == false && _winAnim == null) 
+                _winAnim = new AnimAnim(_cardOppo.animator, _cardOppo._notifyAnimName);
             if (_winAnim != null && !_winAnim.update(table, time))
             {
                 return false;
@@ -100,9 +111,19 @@ namespace Game
 
             //放回牌库
             if (_moveBackSelf == null)
-                _moveBackSelf = new CardMoveAnim(_cardSelf, table.ui.SelfDeck.transform, table.cardShowCurve);
+            {
+                if(eventArg.player.name == "自己")
+                    _moveBackSelf = new CardMoveAnim(_cardSelf, table.ui.SelfDeck.transform, table.cardShowCurve);
+                else
+                    _moveBackSelf = new CardMoveAnim(_cardSelf, table.ui.EnemyDeck.transform, table.cardShowCurve);
+            }
             if (_moveBackOppo == null)
-                _moveBackOppo = new CardMoveAnim(_cardOppo, table.ui.EnemyDeck.transform, table.cardShowCurve);
+            {
+                if(eventArg.player.name == "自己")
+                    _moveBackOppo = new CardMoveAnim(_cardOppo, table.ui.EnemyDeck.transform, table.cardShowCurve);
+                else
+                    _moveBackOppo = new CardMoveAnim(_cardOppo, table.ui.SelfDeck.transform, table.cardShowCurve);
+            }
             bool MoveBack1 = !_moveBackSelf.update(table, time);
             bool MoveBack2 = !_moveBackOppo.update(table, time);
             if (MoveBack2||MoveBack1)
@@ -112,15 +133,6 @@ namespace Game
             //销毁实例
             UObject.Destroy(_cardSelf.gameObject);
             UObject.Destroy(_cardOppo.gameObject);
-            //_moveToSelf = null;
-            //_moveToOppo = null;
-            //_flipFaceSelf = null;
-            //_flipFaceOppo = null;
-            //_winAnim = null;
-            //_flipBackSelf = null;
-            //_flipBackOppo = null;
-            //_moveBackSelf =null;
-            //_moveBackOppo = null;
             return true;
         }
     }
