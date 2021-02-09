@@ -32,6 +32,7 @@ namespace Game
             //    return false;
             //table.ui.Fatigue.hide();
             #endregion
+            table.ui.Fatigue.GetComponent<PositionLerp>().resetPosition();
             table.ui.Fatigue.hide();
             return true;
         }
