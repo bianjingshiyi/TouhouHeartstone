@@ -69,7 +69,7 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID,
                 async(g,c,p)=>
                 {
-                    await c.getOwner().hand.random(g).addBuff(g,new GeneratedBuff(ID, new CostModifier(-1))); 
+                    await c.getOwner().hand.random(g).addBuff(g,new GeneratedBuff(ID, new CostModifier(-1)));
                 })
         };
     }
@@ -170,13 +170,13 @@ namespace TouhouHeartstone.Builtin
                                                                     async(g,c,a)=>
                                                                     {
                                                                         a.action = e1 =>
-                                                                        {                                                                            
-                                                                            return c.getOwner().hand.random(g).addBuff(g,new GeneratedBuff(ID,new CostModifier(-1)));                                                                           
+                                                                        {
+                                                                            return c.getOwner().hand.random(g).addBuff(g,new GeneratedBuff(ID,new CostModifier(-1)));
                                                                         };
                                                                     })
         };
 
- 
+
     }
 
     [IgnoreCardDefine]
@@ -196,22 +196,22 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().draw(game,out var draw);
+            await card.getOwner().draw(game, out var draw);
             Card drawCard = draw.card;
-            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID,new THHEffectAfter<THHPlayer.UseEventArg>(PILE.MASTER,(g,c,a)=> 
-                                                                                                                                  {
-                                                                                                                                      return a.card == drawCard;
-                                                                                                                                   },null,
-                                                                                                                                   async(g,c,a)=> 
+            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHPlayer.UseEventArg>(PILE.MASTER, (g, c, a) =>
+                                                                                                                                    {
+                                                                                                                                        return a.card == drawCard;
+                                                                                                                                    }, null,
+                                                                                                                                   async (g, c, a) =>
                                                                                                                                    {
-                                                                                                                                       await effect(g,c);
+                                                                                                                                       await effect(g, c);
                                                                                                                                    }),
                                                                                                                                    new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.MASTER,
-                                                                                                                                   (g,c,a)=> 
+                                                                                                                                   (g, c, a) =>
                                                                                                                                    {
-                                                                                                                                        return a.card == drawCard;
-                                                                                                                                   },ID),
-                                                                                                                                   new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER,ID)));
+                                                                                                                                       return a.card == drawCard;
+                                                                                                                                   }, ID),
+                                                                                                                                   new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
         }
     }
 
@@ -234,7 +234,7 @@ namespace TouhouHeartstone.Builtin
         {
             int dam = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
                         OfType<THHPlayer.UseEventArg>().
-                        Where(e2 => e2.player == card.getOwner() && !e2.card.isSkill()).Count()+1;
+                        Where(e2 => e2.player == card.getOwner() && !e2.card.isSkill()).Count() + 1;
 
             await game.getOpponent(card.getOwner()).field.damageByRandomCount(game, card, card.getOwner().getSpellDamage(game, dam), 3);
         }
@@ -321,7 +321,7 @@ namespace TouhouHeartstone.Builtin
                                 OfType<THHPlayer.UseEventArg>().Last(u => u.player == card.getOwner()).cost;
             int baseCost = card.define.getCost();
 
-            for(int i=0; i<Math.Abs(CurrentCost - baseCost); i++)
+            for (int i = 0; i < Math.Abs(CurrentCost - baseCost); i++)
             {
                 await card.getOwner().draw(game);
             }
@@ -398,9 +398,9 @@ namespace TouhouHeartstone.Builtin
         };
 
         static async Task effect(THHGame game, Card card)
-        { 
+        {
             IEnumerable<Card> cards = game.createCards(game.getDefines().Where(e => (e.id >> 5) == (Aya.ID >> 5)).ToArray()).Where(q => q.isSpell());
-            
+
             await card.getOwner().discover(game, cards);
 
             bool x = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
@@ -444,6 +444,96 @@ namespace TouhouHeartstone.Builtin
                        }
                        )
         };
-        
+
+    }
+
+    /// <summary>
+    /// 鸦符【暗夜昼魔】
+    /// </summary>
+    public class Aya14 : SpellCardDefine
+    {
+        public const int ID = Aya.ID | CATEGORY.SPELL | 0x014;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async (game, card, target) =>
+            {
+
+                for(int i = 0; i<3; i++)
+                {
+                    var createToken = await card.getOwner().createToken(game, game.getDefine<Crow>(), card.pile.indexOf(card) + 1);
+                    var c = createToken.card;
+                    if (!target.isDead(game))
+                    {
+                        await c.forceAttack(game,card.getOwner(),target);
+                        await game.updateDeath(game);
+                    }
+
+                }
+
+            })
+        };
+    }
+
+    /// <summary>
+    /// 暴力取材
+    /// </summary>
+    public class Aya15 : SpellCardDefine
+    {
+        public const int ID = Aya.ID | CATEGORY.SPELL | 0x015;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().master.damage(game, card, 4);
+            await game.getOpponent(card.getOwner()).field.random(game).damage(game, card, 4);
+            await card.getOwner().draw(game);
+            await card.getOwner().draw(game);
+            await card.getOwner().draw(game);
+        }
+    }
+
+    /// <summary>
+    /// 椛
+    /// </summary>
+    public class Aya16 : ServantCardDefine
+    {
+        public const int ID = Aya.ID | CATEGORY.SERVANT | 0x016;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD, (g, c, a) =>
+            {
+                return a.player == g.getOpponent(c.getOwner()) && a.card.isServant();
+            },null,async(g,c,a)=>
+            {
+                await c.forceAttack(g,c.getOwner(),a.card);
+                await c.getOwner().createToken(g, g.getDefine<Aya17>(), c.pile.indexOf(c) + 1);
+            })
+        };
+    }
+
+    /// <summary>
+    /// 直属卫兵
+    /// </summary>
+    public class Aya17 : ServantCardDefine
+    {
+        public const int ID = Aya.ID | CATEGORY.SERVANT | 0x017;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;//随从的攻击力
+        public override int life { get; set; } = 2;//随从的血量上限
+        public override bool isToken { get; set; } = true;//是衍生物吗？
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };//关键词标签：
     }
 }
