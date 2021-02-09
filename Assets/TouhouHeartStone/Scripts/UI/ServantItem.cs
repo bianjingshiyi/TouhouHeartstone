@@ -193,5 +193,7 @@ namespace UI
         public SimpleAnim onLifeStealFalse;//吸血
         public SimpleAnim onShackleTrue;//锁
         public SimpleAnim onShackleFalse;//锁
+        public SimpleAnim onSilenceTrue;//沉默
+        public SimpleAnim onSilenceFalse;//沉默
     }
 }

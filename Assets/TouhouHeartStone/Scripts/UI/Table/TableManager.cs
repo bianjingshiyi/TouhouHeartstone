@@ -1123,6 +1123,16 @@ namespace Game
                 servant.onShackleFalse.invokeBeforeAnim();
                 servant.onShackleFalse.invokeAfterAnim();
             }
+            if (card.isSilenced(game))
+            {
+                servant.onSilenceTrue.invokeBeforeAnim();
+                servant.onSilenceTrue.invokeAfterAnim();
+            }
+            else
+            {
+                servant.onSilenceFalse.invokeBeforeAnim();
+                servant.onSilenceFalse.invokeAfterAnim();
+            }
             //if (card.hasKeyword(game, KEYWORD.STEALTH))
             //    servant.stealthImage.display();
             //else
