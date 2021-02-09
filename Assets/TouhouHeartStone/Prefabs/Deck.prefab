@@ -559,7 +559,7 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
+    animName: Fatigue
     afterAnim:
       m_PersistentCalls:
         m_Calls: []

@@ -7,18 +7,21 @@ namespace Game
     class FatigueAnimation : EventAnimation<THHPlayer.FatigueEventArg>
     {
         AnimAnim _anim;
-        Timer _timer = new Timer() { duration = 1.5f };
+
         public override bool update(TableManager table, THHPlayer.FatigueEventArg eventArg, float time)
         {
-            var deck = eventArg.player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck;
-            if (!SimpleAnimHelper.update(table, ref _anim, deck.onFatigue, deck.animator, time))
+            if (_anim == null) 
+            {
+                table.ui.Fatigue.Text.text = "没有牌了，你受到了" + eventArg.player.fatigue + "点伤害！";
+                var deck = eventArg.player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck;
+                table.ui.Fatigue.rectTransform.position = deck.rectTransform.position;
+                table.ui.Fatigue.display();
+                _anim = new AnimAnim(table.ui.Fatigue.animator, deck.onFatigue.animName);
+            }
+
+            if (!_anim.update(table,time))
                 return false;
-            //if (!_timer.isStarted)
-            //{
-            //    table.ui.Fatigue.display();
-            //    table.ui.Fatigue.Text.text = "没有牌了，你受到了" + eventArg.player.fatigue + "点伤害！";
-            //    _timer.start();
-            //}
+            #region 注释代码
             //table.ui.Fatigue.rectTransform.localScale = Vector3.Lerp(Vector3.one * .5f, Vector3.one, table.ui.Fatigue.moveCurve.Evaluate(_timer.getProgress(0, .5f)));
             //if (eventArg.player == table.player)
             //    table.ui.Fatigue.rectTransform.localPosition = Vector3.Lerp(table.ui.SelfDeck.rectTransform.localPosition, Vector3.zero, table.ui.Fatigue.moveCurve.Evaluate(_timer.getProgress(0, .5f)));
@@ -28,6 +31,8 @@ namespace Game
             //if (!_timer.isExpired())
             //    return false;
             //table.ui.Fatigue.hide();
+            #endregion
+            table.ui.Fatigue.hide();
             return true;
         }
     }
