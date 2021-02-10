@@ -634,7 +634,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = { TAG.GOD };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.RevealArg>(PILE.HAND,
+            new THHEffectAfter<Sanae.RevealDuelArg>(PILE.HAND,
                 (game, card, arg) =>
                 {
                     return arg.player == card.getOwner();
@@ -761,7 +761,7 @@ namespace TouhouHeartstone.Builtin
        // public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.RevealArg>(PILE.HAND,
+            new THHEffectAfter<Sanae.RevealDuelArg>(PILE.HAND,
                 (game, card, arg) =>
                 {
                     return arg.player == card.getOwner();
