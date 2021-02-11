@@ -320,7 +320,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &9037425591615100612
 RectTransform:
   m_ObjectHideFlags: 0
@@ -395,7 +395,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3639996476798694622
 RectTransform:
   m_ObjectHideFlags: 0
@@ -866,7 +866,7 @@ PrefabInstance:
     - target: {fileID: 4785167558392883592, guid: 7fb81f92397b95e41a542f45fadb70f3,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5844579313659585809, guid: 7fb81f92397b95e41a542f45fadb70f3,
         type: 3}
@@ -1127,11 +1127,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ServantCardFace
-      objectReference: {fileID: 0}
-    - target: {fileID: 6713078729178785058, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bbd135490d7a22f4fb7b9bc7c3d9902f, type: 3}
