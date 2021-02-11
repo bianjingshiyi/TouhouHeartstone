@@ -42,13 +42,14 @@ namespace TouhouHeartstone {
             {
                 if (cp.Key != null)
                 {
-                    pot.AddString(cp.Key, cp.Path);
+                    pot.AddString(new PotTranslate(cp.Key, cp.Path, cp.Comment));
+
                 }
                 if (cp.Keys != null)
                 {
                     foreach (var key in cp.Keys)
                     {
-                        pot.AddString(key, cp.Path);
+                        pot.AddString(new PotTranslate(key, cp.Path, cp.Comment));
                     }
                 }
             }
