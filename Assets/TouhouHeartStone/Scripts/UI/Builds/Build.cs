@@ -57,7 +57,7 @@ namespace UI
 
             if (deckChanged)
             {
-                UIDialog.ShowQuestion(lang.i18n._(HINT_TITLE), lang.i18n._(PILE_NOT_SAVE), () =>
+                UIDialog.ShowQuestion(lang._(HINT_TITLE), lang._(PILE_NOT_SAVE), () =>
                 {
                     main.display(main.MainMenu);
                 });
@@ -79,7 +79,7 @@ namespace UI
             // 卡组保存
             if (BuildDeckList.Select(i => i.count).Sum() < 30)
             {
-                UIDialog.ShowQuestion(lang.i18n._(HINT_TITLE), lang.i18n._(PILE_NOT_COMPLETE), () =>
+                UIDialog.ShowQuestion(lang._(HINT_TITLE), lang._(PILE_NOT_COMPLETE), () =>
                 {
                     saveToDeck(currentDeckID);
                     uiModeSwitch(true);
@@ -118,7 +118,7 @@ namespace UI
             outputString += Convert.ToBase64String(gzipCompress(dataBytes));
             GUIUtility.systemCopyBuffer = outputString;
 
-            UIDialog.ShowConfirm(lang.i18n._(HINT_TITLE), lang.i18n._(PILE_EXPORTED), null);
+            UIDialog.ShowConfirm(lang._(HINT_TITLE), lang._(PILE_EXPORTED), null);
         }
 
         [TranslateMsg]
@@ -145,7 +145,7 @@ namespace UI
             string clipboardString = GUIUtility.systemCopyBuffer.Trim();
             if (!clipboardString.StartsWith(exportStringHeader))
             {
-                UIDialog.ShowConfirm(lang.i18n._(ERROR_TITLE), lang.i18n._(NO_PILE_AVALIABLE), null);
+                UIDialog.ShowConfirm(lang._(ERROR_TITLE), lang._(NO_PILE_AVALIABLE), null);
                 return;
             }
 
@@ -165,7 +165,7 @@ namespace UI
 
                     if (cm.GetCardDefine(card) == null)
                     {
-                        UIDialog.ShowConfirm(lang.i18n._(ERROR_TITLE), lang.i18n._(CARD_NOT_EXISTS, card), null);
+                        UIDialog.ShowConfirm(lang._(ERROR_TITLE), lang._(CARD_NOT_EXISTS, card), null);
                         return;
                     }
 
@@ -188,15 +188,15 @@ namespace UI
             }
             catch (FormatException e)
             {
-                UIDialog.ShowConfirm(lang.i18n._(ERROR_TITLE), lang.i18n._(PILE_CODE_INCOMPLETE), null);
+                UIDialog.ShowConfirm(lang._(ERROR_TITLE), lang._(PILE_CODE_INCOMPLETE), null);
             }
             catch (IOException e)
             {
-                UIDialog.ShowConfirm(lang.i18n._(ERROR_TITLE), lang.i18n._(PILE_CODE_CORRUPTED), null);
+                UIDialog.ShowConfirm(lang._(ERROR_TITLE), lang._(PILE_CODE_CORRUPTED), null);
             }
             catch (Exception e)
             {
-                UIDialog.ShowConfirm(lang.i18n._(ERROR_TITLE), lang.i18n._(PILE_IMPORT_ERROR, e.Message), null);
+                UIDialog.ShowConfirm(lang._(ERROR_TITLE), lang._(PILE_IMPORT_ERROR, e.Message), null);
                 Debug.LogWarning(e);
             }
         }
@@ -249,7 +249,7 @@ namespace UI
             // 卡组保存
             if (currentDeckCards.Count < 30)
             {
-                UIDialog.ShowQuestion(lang.i18n._(HINT_TITLE), lang.i18n._(PILE_NOT_COMPLETE_EXPORT), () =>
+                UIDialog.ShowQuestion(lang._(HINT_TITLE), lang._(PILE_NOT_COMPLETE_EXPORT), () =>
                 {
                     exportDeck();
                 });
@@ -704,26 +704,26 @@ namespace UI
             // 最多30张牌
             if (currentDeckCards.Count >= 30)
             {
-                showMessage(lang.i18n._(PILE_FULL));
+                showMessage(lang._(PILE_FULL));
                 return;
             }
             // 每类牌最多两张
             if (cardCount >= 2)
             {
-                showMessage(lang.i18n._(PILE_MAX_CARD));
+                showMessage(lang._(PILE_MAX_CARD));
                 return;
             }
             // 唯一
             if (card.hasKeyword(KEYWORD.UNIQUE) && cardCount >= 1)
             {
-                showMessage(lang.i18n._(PILE_UNIQUE_CARD));
+                showMessage(lang._(PILE_UNIQUE_CARD));
                 return;
             }
             // 中立卡或自己的卡
             if (card.getCharacterID() != CATEGORY.CHARACTER_NEUTRAL
                 && card.getCharacterID() != currentEditingDeckMasterID)
             {
-                showMessage(lang.i18n._(PILE_WRONG_GROUP));
+                showMessage(lang._(PILE_WRONG_GROUP));
                 return;
             }
 

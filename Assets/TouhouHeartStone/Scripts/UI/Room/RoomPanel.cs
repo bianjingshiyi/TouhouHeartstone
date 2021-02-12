@@ -50,7 +50,7 @@ namespace UI
 
         private void OnEnable()
         {
-            DeckSelectionDeckListItem.SetContent(0, lang.i18n._(Cards_Name), null);
+            DeckSelectionDeckListItem.SetContent(0, lang._(Cards_Name), null);
         }
 
         void initEvents()
@@ -161,7 +161,7 @@ namespace UI
             IsSortedToggleGameOptionItemToggle.Toggle.setSelectable(isHost);
 
             // 准备按钮
-            StartButtonButtonBlack.Text.text = isHost ? lang.i18n._(STR_START_GAME) : lang.i18n._(STR_PREPARE);
+            StartButtonButtonBlack.Text.text = isHost ? lang._(STR_START_GAME) : lang._(STR_PREPARE);
         }
         [TranslateMsg]
         const string STR_START_GAME = "开始游戏";
@@ -326,7 +326,7 @@ namespace UI
             else
             {
                 // 判断准备状态
-                StartButtonButtonBlack.Text.text = selfPlayer.ready ? lang.i18n._(STR_REQUEST_PREPRAE) : lang.i18n._(STR_REQUEST_PREPRAE);
+                StartButtonButtonBlack.Text.text = selfPlayer.ready ? lang._(STR_REQUEST_PREPRAE) : lang._(STR_REQUEST_PREPRAE);
                 StartButtonButtonBlack.asButton.setSelectable(selfPlayer.tryGetDeck(out var deck) && deck != null && deck.Length == 31);
             }
         }

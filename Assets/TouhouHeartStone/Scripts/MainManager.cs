@@ -83,7 +83,7 @@ namespace Game
             else if (_loadCardTask.IsFaulted || _loadCardTask.IsCanceled)
             {
                 UIManager ui = getManager<UIManager>();
-                ui.getObject<Dialog>().display(lang.i18n._(MMANAGE_GAME_FAIL_LOAD), () => Application.Quit());
+                ui.getObject<Dialog>().display(lang._(MMANAGE_GAME_FAIL_LOAD), () => Application.Quit());
                 _loadCardTask = null;
             }
         }
@@ -98,7 +98,7 @@ namespace Game
             Main main = ui.getObject<Main>();
 
             currentRoomInfo = new RoomInfo();
-            var selfPlayer = new RoomPlayerInfo() { name = lang.i18n._(MMANGGE_MYSELF) };
+            var selfPlayer = new RoomPlayerInfo() { name = lang._(MMANGGE_MYSELF) };
             currentRoomInfo.playerList.Add(selfPlayer);
             GameOption option = new GameOption();
             var rand = new byte[4];

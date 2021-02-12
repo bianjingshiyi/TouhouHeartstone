@@ -270,7 +270,7 @@ namespace Game
                 host.start(_port);
                 currentPlayer = new RoomPlayerInfo
                 {
-                    name = lang.i18n._(NETMANAGER_HOMEMASTER) // todo: 替换为真实的玩家名称
+                    name = lang._(NETMANAGER_HOMEMASTER) // todo: 替换为真实的玩家名称
                 };
                 roomPanel.SetSelfID(currentPlayer.PlayerID);
 
@@ -366,7 +366,7 @@ namespace Game
             {
                 //局域网
                 currentPlayer = new RoomPlayerInfo();
-                currentPlayer.name = lang.i18n._(NETMANAGER_PLAYER2); // todo: 替换为真实的玩家名称
+                currentPlayer.name = lang._(NETMANAGER_PLAYER2); // todo: 替换为真实的玩家名称
                 roomPanel.SetSelfID(currentPlayer.PlayerID);
 
                 await client.joinRoom(roomInfo, currentPlayer);
@@ -540,7 +540,7 @@ namespace Game
         private const String NETMANAGER_HOME = "{0}的房间";
         private void refreshRoomListItem(RoomListItem item, RoomInfo obj)
         {
-            item.RoomNameText.text = lang.i18n._(NETMANAGER_HOME, obj.playerList.Find(p => p.PlayerID == obj.OwnerID)?.name);
+            item.RoomNameText.text = lang._(NETMANAGER_HOME, obj.playerList.Find(p => p.PlayerID == obj.OwnerID)?.name);
             item.asButton.onClick.set(() =>
             {
                 LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
@@ -554,7 +554,7 @@ namespace Game
                 {
                     lanPanel.NameText.text = obj.id.ToString();
                     lanPanel.IPText.text = obj.ip;
-                    lanPanel.DescText.text = lang.i18n._(NETMANAGER_DESCRIBE);
+                    lanPanel.DescText.text = lang._(NETMANAGER_DESCRIBE);
                 }
             });
             item.ButtonButtonBlack.asButton.onClick.set(() =>
@@ -722,30 +722,30 @@ namespace Game
 
             if (string.IsNullOrEmpty(userName))
             {
-                ui.ShowMessage(lang.i18n._(NETMANAGER_USERNAME_NULL));
+                ui.ShowMessage(lang._(NETMANAGER_USERNAME_NULL));
                 return;
             }
 
             if (string.IsNullOrEmpty(email))
             {
-                ui.ShowMessage(lang.i18n._(NETMANAGER_EMAIL_NULL));
+                ui.ShowMessage(lang._(NETMANAGER_EMAIL_NULL));
                 return;
             }
             if (string.IsNullOrEmpty(captcha))
             {
-                ui.ShowMessage(lang.i18n._(NETMANAGER_CHECK_CODE_NULL));
+                ui.ShowMessage(lang._(NETMANAGER_CHECK_CODE_NULL));
                 return;
             }
 
             if (string.IsNullOrEmpty(nickName))
             {
-                ui.ShowMessage(lang.i18n._(NETMANAGER_NICKNAME_NULL));
+                ui.ShowMessage(lang._(NETMANAGER_NICKNAME_NULL));
                 return;
             }
 
             if (password != repeatPassword)
             {
-                ui.ShowMessage(lang.i18n._(NETMANAGER_PASSWORD_ERROR));
+                ui.ShowMessage(lang._(NETMANAGER_PASSWORD_ERROR));
                 return;
             }
 
@@ -768,12 +768,12 @@ namespace Game
             panel.HideMessage();
             if (string.IsNullOrEmpty(panel.UserName))
             {
-                panel.ShowMessage(lang.i18n._(NETMANAGER_USERNAME_NULL));
+                panel.ShowMessage(lang._(NETMANAGER_USERNAME_NULL));
                 return;
             }
             if (string.IsNullOrEmpty(panel.Password))
             {
-                panel.ShowMessage(lang.i18n._(NETMANAGER_CHECK_CODE_NULL));
+                panel.ShowMessage(lang._(NETMANAGER_CHECK_CODE_NULL));
                 return;
             }
             try
@@ -803,12 +803,12 @@ namespace Game
 
                 if (string.IsNullOrEmpty(mail))
                 {
-                    panel.ShowMessage(lang.i18n._(NETMANAGER_EMAIL_NULL));
+                    panel.ShowMessage(lang._(NETMANAGER_EMAIL_NULL));
                     return;
                 }
                 if (string.IsNullOrEmpty(captcha))
                 {
-                    panel.ShowMessage(lang.i18n._(NETMANAGER_CHECK_CODE_NULL));
+                    panel.ShowMessage(lang._(NETMANAGER_CHECK_CODE_NULL));
                     return;
                 }
                 try
@@ -832,22 +832,22 @@ namespace Game
 
                 if (string.IsNullOrEmpty(mail))
                 {
-                    panel.ShowMessage(lang.i18n._(NETMANAGER_EMAIL_NULL));
+                    panel.ShowMessage(lang._(NETMANAGER_EMAIL_NULL));
                     return;
                 }
                 if (string.IsNullOrEmpty(code))
                 {
-                    panel.ShowMessage(lang.i18n._(NETMANAGER_RECOVER_CODE_NULL));
+                    panel.ShowMessage(lang._(NETMANAGER_RECOVER_CODE_NULL));
                     return;
                 }
                 if (string.IsNullOrEmpty(captcha))
                 {
-                    panel.ShowMessage(lang.i18n._(NETMANAGER_CHECK_CODE_NULL));
+                    panel.ShowMessage(lang._(NETMANAGER_CHECK_CODE_NULL));
                     return;
                 }
                 if (password != repeatPassword)
                 {
-                    panel.ShowMessage(lang.i18n._(NETMANAGER_PASSWORD_ERROR));
+                    panel.ShowMessage(lang._(NETMANAGER_PASSWORD_ERROR));
                     return;
                 }
                 try

@@ -186,7 +186,7 @@ namespace UI
 
         public void SetTurnTipText(bool self)
         {
-            TurnTipText.text = lang.i18n._(self ? TIP_TOUR_TURN : TIP_OPPO_TURN);
+            TurnTipText.text = lang._(self ? TIP_TOUR_TURN : TIP_OPPO_TURN);
         }
     }
 }

@@ -88,14 +88,14 @@ namespace UI
             DropdownTypeDropdownLight.asDropdown.options.Clear();
             for (int i = 0; i < typeName.Length; i++)
             {
-                DropdownTypeDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(langManager.i18n._(typeName[i].Value)));
+                DropdownTypeDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(langManager._(typeName[i].Value)));
             }
 
             // 填充排序方式
             DropdownSortDropdownLight.asDropdown.options.Clear();
             for (int i = 0; i < sortMethodsName.Length; i++)
             {
-                DropdownSortDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(langManager.i18n._(sortMethodsName[i])));
+                DropdownSortDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(langManager._(sortMethodsName[i])));
             }
 
             // 填充角色列表
@@ -107,11 +107,11 @@ namespace UI
             allCharacters = allCharacters.Append(CATEGORY.CHARACTER_NEUTRAL).ToArray();
 
             DropdownCharacterDropdownLight.asDropdown.options.Clear();
-            DropdownCharacterDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(langManager.i18n._(FILTER_TYPE_ALL)));
+            DropdownCharacterDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(langManager._(FILTER_TYPE_ALL)));
             for (int i = 0; i < allCharacters.Length; i++)
             {
                 var id = allCharacters[i];
-                var name = id == CATEGORY.CHARACTER_NEUTRAL ? langManager.i18n._(CHARACTER_NEUTRAL) : cardManager.getSkin(id)?.name;
+                var name = id == CATEGORY.CHARACTER_NEUTRAL ? langManager._(CHARACTER_NEUTRAL) : cardManager.getSkin(id)?.name;
                 DropdownCharacterDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(name));
             }
         }

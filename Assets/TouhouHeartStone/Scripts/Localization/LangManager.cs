@@ -22,8 +22,9 @@ namespace Game
         /// <returns></returns>
         public Task initLanguage(CultureInfo cultureInfo)
         {
-            throw new NotImplementedException();
+            return switchLanguage(cultureInfo);
         }
+
         /// <summary>
         /// 切换语言
         /// </summary>
@@ -31,14 +32,21 @@ namespace Game
         /// <returns></returns>
         public async Task switchLanguage(CultureInfo cultureInfo)
         {
-            //加载语言资源
-            //触发事件来通知UI进行更改。
+            var lastCulture = i18n.CurrentLang;
+            if (lastCulture == cultureInfo) return;
+
+            // 加载语言资源
+            await i18n.LoadFileAsync(Path.Combine(Application.streamingAssetsPath, folderPath), cultureInfo);
+
+            // 触发事件来通知UI进行更改。
             Task changeCultureTask = OnCultureChange?.Invoke(cultureInfo);
             if (changeCultureTask != null)
                 await changeCultureTask;
-            //卸载已经加载的资源
-            throw new NotImplementedException();
+
+            // 卸载已经加载的资源
+            i18n.Unload(lastCulture);
         }
+
         /// <summary>
         /// 获取当前语言对应字符串
         /// </summary>
@@ -46,8 +54,9 @@ namespace Game
         /// <returns></returns>
         public string getString(string sourceString)
         {
-            throw new NotImplementedException();
+            return _(sourceString);
         }
+
         /// <summary>
         /// 当语言切换
         /// </summary>
@@ -95,7 +104,7 @@ namespace Game
             set
             {
                 currentCulture = value;
-                i18n.SetDefaultLang(currentCulture);
+                i18n.SetLang(currentCulture);
 
                 OnCultureChange?.Invoke(CurrentCulture);
             }
@@ -106,7 +115,11 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
+            loadAll();
+        }
 
+        private void loadAll()
+        {
             var defaultCulture = new CultureInfo(defaultLang);
 
             foreach (var lang in langs)
@@ -119,24 +132,82 @@ namespace Game
                     continue;
                 }
 
-                try
-                {
-                    UberDebug.Log($"加载语言{lang}的翻译");
-                    var culture = new CultureInfo(lang);
-                    cultures.Add(culture);
-                    i18n.Load(Path.Combine(Application.streamingAssetsPath, folderPath), culture);
-                }
-                catch (FileNotFoundException e)
-                {
-                    UberDebug.LogError($"无法载入语言{lang}的翻译文件, {e.Message}");
-
-                    // 为没有翻译文件的加载一个默认空翻译
-                    if (lang == defaultLang)
-                        i18n.AddEmpty(defaultCulture);
-                }
+                loadLang(lang);
             }
             // 设置当前的默认语言
             CurrentCulture = defaultCulture;
         }
+
+        private void loadLang(string lang)
+        {
+            try
+            {
+                UberDebug.Log($"加载语言{lang}的翻译");
+                var culture = new CultureInfo(lang);
+                cultures.Add(culture);
+                i18n.Load(Path.Combine(Application.streamingAssetsPath, folderPath), culture);
+            }
+            catch (FileNotFoundException e)
+            {
+                UberDebug.LogError($"无法载入语言{lang}的翻译文件, {e.Message}");
+
+                // 为没有翻译文件的加载一个默认空翻译
+                if (lang == defaultLang)
+                    i18n.AddEmpty(new CultureInfo(defaultLang));
+            }
+        }
+        #region TranslationProxy
+        public string _(string text)
+        {
+            return i18n._(text);
+        }
+
+        public string _(string text, params object[] args)
+        {
+            return i18n._(text, args);
+        }
+
+        public string _n(string text, string pluralText, long n)
+        {
+            return i18n._n(text, pluralText, n);
+        }
+
+        public string _n(string text, string pluralText, long n, params object[] args)
+        {
+            return i18n._n(text, pluralText, n, args);
+        }
+
+        public string _p(string context, string text)
+        {
+            return i18n._p(context, text);
+        }
+
+        public string _p(string context, string text, params object[] args)
+        {
+            return i18n._p(context, text, args);
+        }
+
+        public string _pn(string context, string text, string pluralText, long n)
+        {
+            return i18n._pn(context, text, pluralText, n);
+        }
+
+        public string _pn(string context, string text, string pluralText, long n, params object[] args)
+        {
+            return i18n._pn(context, text, pluralText, n, args);
+        }
+
+        public event Action OnLanguageChange
+        {
+            add
+            {
+                i18n.OnLanguageChange += value;
+            }
+            remove
+            {
+                i18n.OnLanguageChange -= value;
+            }
+        }
+        #endregion
     }
 }

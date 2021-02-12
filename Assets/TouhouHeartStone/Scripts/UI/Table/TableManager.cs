@@ -837,7 +837,7 @@ namespace Game
             if (!ui.SelfHandList.isExpanded &&
                 player.hand.count > 0)
             {
-                ui.TipBox.display(lang.i18n._(TAB_CARD_NUMBER, getCard(handList).getOwner().hand.count), pointer.position + _tipBoxOffset);
+                ui.TipBox.display(lang._(TAB_CARD_NUMBER, getCard(handList).getOwner().hand.count), pointer.position + _tipBoxOffset);
             }
         }
         void onHandPointerMove(HandListItem handList, Vector2 pointer)
@@ -1473,12 +1473,12 @@ namespace Game
         {
             if (ui.Discover.PanelImage.gameObject.activeSelf)
             {
-                ui.Discover.ButtonButtonBlack.asButton.setText(lang.i18n._(TAB_SHOW));
+                ui.Discover.ButtonButtonBlack.asButton.setText(lang._(TAB_SHOW));
                 ui.Discover.PanelImage.hide();
             }
             else
             {
-                ui.Discover.ButtonButtonBlack.asButton.setText(lang.i18n._(TAB_HIDE));
+                ui.Discover.ButtonButtonBlack.asButton.setText(lang._(TAB_HIDE));
                 ui.Discover.PanelImage.display();
                 displayDiscoverDialog(game.answers.getRequest<DiscoverRequest>(player.id).cardIdArray, ui.Discover.Text.text);
             }
@@ -1496,7 +1496,7 @@ namespace Game
         private const String TAB_YOUR_NO_HAVE_CARD = "你已经没有卡牌了";
         void onDeckClick()
         {
-            ui.PilePanel.display(lang.i18n._(TAB_YOUR_BOX));
+            ui.PilePanel.display(lang._(TAB_YOUR_BOX));
             ui.PilePanel.VerticalOverflowCardList.clearItems();
             foreach (var card in player.deck.OrderBy(c => c.define.getCost()))
             {
@@ -1507,9 +1507,9 @@ namespace Game
         void onDeckPointerEnter(UI.Deck deck, PointerEventData pointer)
         {
             if (player.deck.count > 0)
-                ui.TipBox.display(lang.i18n._(TAB_BOX_HAS, player.deck.count), pointer.position + _tipBoxOffset);
+                ui.TipBox.display(lang._(TAB_BOX_HAS, player.deck.count), pointer.position + _tipBoxOffset);
             else
-                ui.TipBox.display(lang.i18n._(TAB_YOUR_NO_HAVE_CARD), pointer.position + _tipBoxOffset);
+                ui.TipBox.display(lang._(TAB_YOUR_NO_HAVE_CARD), pointer.position + _tipBoxOffset);
         }
         void onDeckPointerExit(UI.Deck deck, PointerEventData pointer)
         {
@@ -1520,7 +1520,7 @@ namespace Game
 
         void onGraveClick()
         {
-            ui.PilePanel.display(lang.i18n._(TAB_YOUR_GRAVEYARD));
+            ui.PilePanel.display(lang._(TAB_YOUR_GRAVEYARD));
             ui.PilePanel.VerticalOverflowCardList.clearItems();
             foreach (var card in player.grave)
             {
@@ -1535,9 +1535,9 @@ namespace Game
         void onGravePointerEnter(UI.Deck deck, PointerEventData pointer)
         {
             if (player.grave.count > 0)
-                ui.TipBox.display(lang.i18n._(TAB_GRAVEYARD_HAS, player.grave.count), pointer.position + _tipBoxOffset);
+                ui.TipBox.display(lang._(TAB_GRAVEYARD_HAS, player.grave.count), pointer.position + _tipBoxOffset);
             else
-                ui.TipBox.display(lang.i18n._(TAB_GRAVEYARD_NULL), pointer.position + _tipBoxOffset);
+                ui.TipBox.display(lang._(TAB_GRAVEYARD_NULL), pointer.position + _tipBoxOffset);
         }
 
         private void onDeckPointerMove(UI.Deck arg1, Vector2 arg2)
@@ -1567,7 +1567,7 @@ namespace Game
         public void showTip(string tip)
         {
             ui.TipText.gameObject.SetActive(true);
-            ui.TipText.text = lang.i18n._(tip);
+            ui.TipText.text = lang._(tip);
             _tipTimer.start();
         }
         public void displayLargeCard(bool isRight, Card card)
