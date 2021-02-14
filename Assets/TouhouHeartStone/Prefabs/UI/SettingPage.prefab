@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5149948732198273139}
   - component: {fileID: 6052083891758420992}
   - component: {fileID: 8266938819407995506}
+  - component: {fileID: 9195082777110719107}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -60,6 +61,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -77,6 +79,19 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\xB7 \u8BBE\u7F6E \xB7"
+--- !u!114 &9195082777110719107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894461898449140366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comment: "\u8BBE\u7F6E\u754C\u9762_\u6807\u9898"
 --- !u!1 &1906780655584524294
 GameObject:
   m_ObjectHideFlags: 0
@@ -138,6 +153,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -285,6 +301,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -371,6 +388,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4787963100720115558}
     m_Modifications:
+    - target: {fileID: 223872248146437387, guid: 8f87f95af032014448691606aece594a,
+        type: 3}
+      propertyPath: comment
+      value: "\u8BBE\u7F6E\u754C\u9762"
+      objectReference: {fileID: 0}
     - target: {fileID: 490584239171898832, guid: 8f87f95af032014448691606aece594a,
         type: 3}
       propertyPath: m_Name
@@ -618,6 +640,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 3576741792274770213, guid: 1089f64c6a549a847826c6dbb32f1dfc,
+        type: 3}
+      propertyPath: comment
+      value: "\u8BBE\u7F6E\u754C\u9762"
+      objectReference: {fileID: 0}
     - target: {fileID: 5480733266524144351, guid: 1089f64c6a549a847826c6dbb32f1dfc,
         type: 3}
       propertyPath: m_Name
@@ -768,6 +795,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Language
       objectReference: {fileID: 0}
+    - target: {fileID: 3739628319930475799, guid: 56ffa55d46216ee4cbeb0f152085f8ae,
+        type: 3}
+      propertyPath: comment
+      value: "\u8BBE\u7F6E\u754C\u9762"
+      objectReference: {fileID: 0}
     - target: {fileID: 4956638357725382557, guid: 56ffa55d46216ee4cbeb0f152085f8ae,
         type: 3}
       propertyPath: m_Text
@@ -818,6 +850,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5494592311644253584}
     m_Modifications:
+    - target: {fileID: 972656162160364852, guid: 3a94d76ae07395244be51d28261e8154,
+        type: 3}
+      propertyPath: comment
+      value: "\u8BBE\u7F6E\u754C\u9762"
+      objectReference: {fileID: 0}
     - target: {fileID: 4068266483077817727, guid: 3a94d76ae07395244be51d28261e8154,
         type: 3}
       propertyPath: m_Text
@@ -986,6 +1023,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5494592311644253584}
     m_Modifications:
+    - target: {fileID: 972656162160364852, guid: 3a94d76ae07395244be51d28261e8154,
+        type: 3}
+      propertyPath: comment
+      value: "\u8BBE\u7F6E\u754C\u9762"
+      objectReference: {fileID: 0}
     - target: {fileID: 4068266483077817727, guid: 3a94d76ae07395244be51d28261e8154,
         type: 3}
       propertyPath: m_Text
@@ -1154,6 +1196,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5494592311644253584}
     m_Modifications:
+    - target: {fileID: 972656162160364852, guid: 3a94d76ae07395244be51d28261e8154,
+        type: 3}
+      propertyPath: comment
+      value: "\u8BBE\u7F6E\u754C\u9762"
+      objectReference: {fileID: 0}
     - target: {fileID: 4068266483077817727, guid: 3a94d76ae07395244be51d28261e8154,
         type: 3}
       propertyPath: m_Text

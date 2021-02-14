@@ -314,6 +314,7 @@ GameObject:
   - component: {fileID: 3523085470527789811}
   - component: {fileID: 855897094631516152}
   - component: {fileID: 7286853177731802510}
+  - component: {fileID: 3459451989981457967}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -381,6 +382,19 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\u6DFB\u52A0AI"
+--- !u!114 &3459451989981457967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2088261643239629098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comment: "\u623F\u95F4\u754C\u9762_\u6DFB\u52A0AI\u73A9\u5BB6"
 --- !u!1 &3493318502690500408
 GameObject:
   m_ObjectHideFlags: 0
@@ -617,6 +631,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8836096453615106847}
     m_Modifications:
+    - target: {fileID: 223872248146437387, guid: 8f87f95af032014448691606aece594a,
+        type: 3}
+      propertyPath: comment
+      value: "\u623F\u95F4\u754C\u9762_\u67E5\u770B\u73A9\u5BB6\u5957\u724C\u6309\u94AE"
+      objectReference: {fileID: 0}
     - target: {fileID: 490584239171898832, guid: 8f87f95af032014448691606aece594a,
         type: 3}
       propertyPath: m_Name
@@ -769,6 +788,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8836096453615106847}
     m_Modifications:
+    - target: {fileID: 223872248146437387, guid: 8f87f95af032014448691606aece594a,
+        type: 3}
+      propertyPath: comment
+      value: "\u623F\u95F4\u754C\u9762_\u79FB\u9664\u73A9\u5BB6\u6309\u94AE"
+      objectReference: {fileID: 0}
     - target: {fileID: 490584239171898832, guid: 8f87f95af032014448691606aece594a,
         type: 3}
       propertyPath: m_Name
@@ -921,6 +945,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8836096453615106847}
     m_Modifications:
+    - target: {fileID: 223872248146437387, guid: 8f87f95af032014448691606aece594a,
+        type: 3}
+      propertyPath: comment
+      value: "\u623F\u95F4\u754C\u9762_\u4E3AAI\u8BBE\u7F6E\u5957\u724C"
+      objectReference: {fileID: 0}
     - target: {fileID: 490584239171898832, guid: 8f87f95af032014448691606aece594a,
         type: 3}
       propertyPath: m_Name

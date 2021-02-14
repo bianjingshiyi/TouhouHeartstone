@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7246395697796906025}
   - component: {fileID: 817600223123957571}
   - component: {fileID: 3358600511262158165}
+  - component: {fileID: 3591418149616024229}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -61,6 +62,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -121,6 +123,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3591418149616024229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899494516300224477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comment: "\u767B\u9646\u754C\u9762"
 --- !u!1 &1084881215393272754
 GameObject:
   m_ObjectHideFlags: 0
@@ -181,6 +196,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -209,6 +225,7 @@ GameObject:
   - component: {fileID: 2375028317691796443}
   - component: {fileID: 7580755480520258378}
   - component: {fileID: 1027691252289522504}
+  - component: {fileID: 7735443887603411552}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -258,6 +275,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -275,6 +293,19 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\u7528\u6237\u540D"
+--- !u!114 &7735443887603411552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1242643122965270835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comment: "\u767B\u9646\u754C\u9762"
 --- !u!1 &2117506991185616321
 GameObject:
   m_ObjectHideFlags: 0
@@ -337,6 +368,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -425,6 +457,7 @@ GameObject:
   - component: {fileID: 5994621233389939156}
   - component: {fileID: 3924180126453723517}
   - component: {fileID: 1443078298783659563}
+  - component: {fileID: 4228612311789664818}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -474,6 +507,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -491,6 +525,19 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\u5BC6\u7801"
+--- !u!114 &4228612311789664818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3182088468513857435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comment: "\u767B\u9646\u754C\u9762"
 --- !u!1 &4241165855089857743
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,6 +549,7 @@ GameObject:
   - component: {fileID: 2569102359999115378}
   - component: {fileID: 1849740186036692887}
   - component: {fileID: 7775023102405758680}
+  - component: {fileID: 8812509926440850552}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -551,6 +599,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -568,6 +617,19 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\xB7 \u767B\u5F55 \xB7"
+--- !u!114 &8812509926440850552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4241165855089857743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comment: "\u767B\u9646\u754C\u9762_\u6807\u9898"
 --- !u!1 &4313792475221572764
 GameObject:
   m_ObjectHideFlags: 0
@@ -634,6 +696,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -682,7 +745,7 @@ MonoBehaviour:
   _OptionsHorizontalLayoutGroup: {fileID: 307135688905895598}
   _RememberAccountUIToggle: {fileID: 2015313031365718944}
   _RememberPasswordUIToggle: {fileID: 3115548393526637719}
-  _Options_Text: {fileID: 817600223123957571}
+  _TextButton: {fileID: 0}
   _RegisterButtonBlack: {fileID: 9148867782009329180}
   _LoginButtonBlack: {fileID: 8177435844673071530}
 --- !u!1 &5166495444802347271
@@ -746,6 +809,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -864,6 +928,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -940,6 +1005,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1089,6 +1155,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1113,6 +1180,7 @@ GameObject:
   - component: {fileID: 6846072803401192086}
   - component: {fileID: 9075452456879903985}
   - component: {fileID: 6591641339246704675}
+  - component: {fileID: 3867493107098024254}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -1162,6 +1230,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1179,6 +1248,19 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\u9A8C\u8BC1\u7801"
+--- !u!114 &3867493107098024254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8445967439967278224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comment: "\u767B\u9646\u754C\u9762"
 --- !u!1 &8616585658566072029
 GameObject:
   m_ObjectHideFlags: 0
@@ -1240,6 +1322,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1665,6 +1748,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 6941087936473319904, guid: 6ffcc0e020fff034abf291b3e64818cf,
+        type: 3}
+      propertyPath: comment
+      value: "\u767B\u9646\u754C\u9762"
+      objectReference: {fileID: 0}
     - target: {fileID: 7352199848930429589, guid: 6ffcc0e020fff034abf291b3e64818cf,
         type: 3}
       propertyPath: m_Name
@@ -1984,6 +2072,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7891661277437630806}
     m_Modifications:
+    - target: {fileID: 223872248146437387, guid: 8f87f95af032014448691606aece594a,
+        type: 3}
+      propertyPath: comment
+      value: "\u767B\u9646\u754C\u9762_\u6CE8\u518C\u6309\u94AE"
+      objectReference: {fileID: 0}
     - target: {fileID: 490584239171898832, guid: 8f87f95af032014448691606aece594a,
         type: 3}
       propertyPath: m_Name
@@ -2126,6 +2219,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7891661277437630806}
     m_Modifications:
+    - target: {fileID: 223872248146437387, guid: 8f87f95af032014448691606aece594a,
+        type: 3}
+      propertyPath: comment
+      value: "\u767B\u9646\u754C\u9762_\u767B\u9646\u6309\u94AE"
+      objectReference: {fileID: 0}
     - target: {fileID: 490584239171898832, guid: 8f87f95af032014448691606aece594a,
         type: 3}
       propertyPath: m_Name
@@ -2387,6 +2485,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6941087936473319904, guid: 6ffcc0e020fff034abf291b3e64818cf,
+        type: 3}
+      propertyPath: comment
+      value: "\u767B\u9646\u754C\u9762"
       objectReference: {fileID: 0}
     - target: {fileID: 7352199848930429589, guid: 6ffcc0e020fff034abf291b3e64818cf,
         type: 3}
