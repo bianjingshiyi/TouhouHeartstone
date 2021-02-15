@@ -9,12 +9,12 @@ using UnityEngine.Events;
 using NitoriNetwork.Common;
 using System;
 using MukioI18n;
+using CustomBuilder;
 
 namespace Game
 {
     public class MainManager : Manager
     {
-        Task _loadCardTask;
         public UIManager ui => getManager<UIManager>();
         public NetworkingManager network => getManager<NetworkingManager>();
         public GameManager game => getManager<GameManager>();
@@ -59,7 +59,7 @@ namespace Game
                 mainUI.Loading.LoggerText.text = text;
                 mainUI.Loading.ProgressBarSlider.value = progress;
             };
-
+            //加载卡片资源
             _loadCardTask = getManager<CardManager>().load(
                 new System.Reflection.Assembly[] { typeof(THHGame).Assembly },
                 new string[] { "TouhouHeartstone", "TouhouHeartstone.Builtin" },
@@ -70,28 +70,65 @@ namespace Game
         }
         protected void Update()
         {
-            if (_loadCardTask == null)
-                return;
-            if (_loadCardTask.IsCompleted)
+            if (_loadCardTask != null)
             {
-                UIManager ui = getManager<UIManager>();
-                Main main = ui.getObject<Main>();
-                main.display(main.MainMenu);
-                onLoadingFinish?.Invoke();
-                _loadCardTask = null;
+                if (_loadCardTask.IsCompleted)
+                {
+                    //加载卡片资源成功
+                    _loadCardTask.Dispose();
+                    _loadCardTask = null;
+                    UIManager ui = getManager<UIManager>();
+                    Main main = ui.getObject<Main>();
+                    main.display(main.MainMenu);
+                    onLoadingFinish?.Invoke();
+                    //开始检查新版本
+                    _getNewVersionTask = network.getNewVersionUrl(getCurrentVersion());
+                }
+                else if (_loadCardTask.IsFaulted || _loadCardTask.IsCanceled)
+                {
+                    _loadCardTask.Dispose();
+                    _loadCardTask = null;
+                    UIManager ui = getManager<UIManager>();
+                    ui.getObject<Dialog>().display(lang._(MMANAGE_GAME_FAIL_LOAD), () => Application.Quit());
+                }
             }
-            else if (_loadCardTask.IsFaulted || _loadCardTask.IsCanceled)
+            if (_getNewVersionTask != null)
             {
-                UIManager ui = getManager<UIManager>();
-                ui.getObject<Dialog>().display(lang._(MMANAGE_GAME_FAIL_LOAD), () => Application.Quit());
-                _loadCardTask = null;
+                if (_getNewVersionTask.IsCompleted)
+                {
+                    string newVersionUrl = null;
+                    try
+                    {
+                        newVersionUrl = _getNewVersionTask.Result;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("获取新版本游戏失败");
+                        throw e;
+                    }
+                    finally
+                    {
+                        _getNewVersionTask.Dispose();
+                        _getNewVersionTask = null;
+                    }
+                    if (!string.IsNullOrEmpty(newVersionUrl))
+                    {
+                        //如果有新版本，询问玩家要不要下载
+                        getManager<UIManager>().getObject<Dialog>().display(STRING_WANNA_DOWNLOAD_NEW_VERSION, () => Application.OpenURL(newVersionUrl));
+                    }
+                }
+                else if (_getNewVersionTask.IsFaulted || _getNewVersionTask.IsCanceled)
+                {
+                    _getNewVersionTask.Dispose();
+                    _getNewVersionTask = null;
+                }
             }
         }
 
         [TranslateMsg]
-        private const String MMANAGE_GAME_FAIL_LOAD = "游戏资源加载失败！请重新启动游戏";
+        private const string MMANAGE_GAME_FAIL_LOAD = "游戏资源加载失败！请重新启动游戏";
         [TranslateMsg]
-        private const String MMANGGE_MYSELF = "自己";
+        private const string MMANGGE_MYSELF = "自己";
 
         private void showLocalRoom()
         {
@@ -173,5 +210,17 @@ namespace Game
             else
                 Debug.LogError(e);
         }
+        #region 私有成员
+        string getCurrentVersion()
+        {
+            return BuildInformation.Instance.Version;
+        }
+        Task _loadCardTask = null;
+        [SerializeField]
+        string _version;
+        Task<string> _getNewVersionTask = null;
+        [TranslateMsg("发现了新版本的游戏，询问玩家是否要打开一个外部链接进行下载")]
+        const string STRING_WANNA_DOWNLOAD_NEW_VERSION = "发现了更新版本的游戏，是否下载？";
+        #endregion
     }
 }

@@ -18,6 +18,12 @@ namespace Game
 {
     public class NetworkingManager : Manager
     {
+        #region 公共成员
+        public Task<string> getNewVersionUrl(string currentVersion)
+        {
+            return client.getNewVersionUrl(currentVersion);
+        }
+        #endregion
         [Header("配置")]
         [Tooltip("正式服务器地址")]
         [SerializeField]
@@ -205,7 +211,7 @@ namespace Game
                 host.stop();
             }
         }
-#region Logic
+        #region Logic
         public async Task<Sprite> getCaptchaImage()
         {
             Texture2D texture = new Texture2D(512, 512);
@@ -401,8 +407,8 @@ namespace Game
             ui.RoomButton.image.color = Color.gray;
             updateAllRooms();
         }
-#endregion
-#region UI
+        #endregion
+        #region UI
         async Task updateAccountPanel()
         {
             var playerInfoPanel = getManager<UIManager>().getObject<PlayerInfoPanel>();
@@ -635,8 +641,8 @@ namespace Game
             roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
             roomPanel.SetMode(isHost ? RoomPanel.Mode.NetworkingHost : RoomPanel.Mode.NetworkingClient);
         }
-#endregion
-#region 网络事件处理
+        #endregion
+        #region 网络事件处理
         private void Client_onRoomFound(RoomInfo obj)
         {
             if (obj is RoomInfo tHHRoom)
