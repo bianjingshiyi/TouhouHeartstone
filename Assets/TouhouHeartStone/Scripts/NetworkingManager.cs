@@ -706,6 +706,8 @@ namespace Game
         private const String NETMANAGER_PASSWORD_ERROR = "两次输入的密码不匹配";
         [TranslateMsg]
         const string NETMANAGER_RECOVER_CODE_NULL = "密码找回代码不能为空";
+        [TranslateMsg]
+        const string INVALID_USERNAME_OR_PASSWORD = "用户名或密码不正确";
         async void onRegisterClick()
         {
             var ui = getManager<UIManager>().getObject<RegisterPanel>();
@@ -778,12 +780,20 @@ namespace Game
             }
             try
             {
-                await client.login(panel.UserName, panel.Password, panel.Captcha);
-                saveRemeberAccount(
-                    panel.RememberAccountUIToggle.asToggle.isOn, panel.UserName,
-                    panel.RememberPasswordUIToggle.asToggle.isOn, panel.Password);
-                panel.hide();
-                await updateAccountPanel();
+                bool success = await client.login(panel.UserName, panel.Password, panel.Captcha);
+                if (success)
+                {
+                    saveRemeberAccount(
+                        panel.RememberAccountUIToggle.asToggle.isOn, panel.UserName,
+                        panel.RememberPasswordUIToggle.asToggle.isOn, panel.Password);
+                    panel.hide();
+                    await updateAccountPanel();
+                }
+                else
+                {
+                    panel.ShowMessage(lang._(INVALID_USERNAME_OR_PASSWORD));
+                    panel.setCaptcha(await getCaptchaImage());
+                }
             }
             catch (NetClientException e)
             {
