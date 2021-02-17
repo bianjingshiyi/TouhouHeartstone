@@ -176,10 +176,10 @@ namespace Game
             client.onQuitRoom += Client_onQuitRoom;
             gameManager.onGameEnd += onGameEnd;
             //局域网界面回调注册
-            //ui.LANButton.onClick.set(() =>
-            //{
-            //    _ = displayPanelForLAN();
-            //});
+            ui.LANButton.onClick.set(() =>
+            {
+                _ = displayPanelForLAN();
+            });
             //房间界面初始化和回调注册
             ui.RoomButton.interactable = false;
             ui.RoomButton.image.color = Color.gray;
