@@ -731,7 +731,7 @@ namespace TouhouHeartstone
         {
             return onEnable(game as THHGame, card as Card, buff as Buff);
         }
-        public virtual async Task onEnable(THHGame game, Card card, Buff buff)
+        public async Task onEnable(THHGame game, Card card, Buff buff)
         {
             string triggerName;
             if (buff == null)
@@ -739,31 +739,30 @@ namespace TouhouHeartstone
             else
                 triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
             Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
-            //if (trigger != null)
-            //    return;
             game.logger.log("Effect", card + "注册亡语" + triggerName);
-            trigger = new Trigger<THHCard.DeathEventArg>(arg =>
-            {
-                if (!arg.infoDic.ContainsKey(card))
-                    return Task.CompletedTask;
-                if (onCheckConditionBuffed != null && !onCheckConditionBuffed(game, card, buff))
-                    return Task.CompletedTask;
-                else if (onCheckCondition != null && !onCheckCondition(game, card))
-                    return Task.CompletedTask;
-                if (onExecuteBuffed != null)
-                    return onExecuteBuffed(game, card, buff, arg.infoDic[card].position);
-                else if (onExecute != null)
-                    return onExecute(game, card, arg.infoDic[card].position);
-                return Task.CompletedTask;
-            });
+            trigger = new Trigger<THHCard.DeathEventArg>(arg => execute(game, card, buff, arg));
             await card.setProp(game, triggerName, trigger);
             game.triggers.registerAfter(trigger);
+        }
+        public Task execute(THHGame game, Card card, Buff buff, THHCard.DeathEventArg deathEvent)
+        {
+            if (!deathEvent.infoDic.ContainsKey(card))
+                return Task.CompletedTask;
+            if (onCheckConditionBuffed != null && !onCheckConditionBuffed(game, card, buff))
+                return Task.CompletedTask;
+            else if (onCheckCondition != null && !onCheckCondition(game, card))
+                return Task.CompletedTask;
+            if (onExecuteBuffed != null)
+                return onExecuteBuffed(game, card, buff, deathEvent.infoDic[card].position);
+            else if (onExecute != null)
+                return onExecute(game, card, deathEvent.infoDic[card].position);
+            return Task.CompletedTask;
         }
         public Task onDisable(IGame game, ICard card, IBuff buff)
         {
             return onDisable(game as THHGame, card as Card, buff as Buff);
         }
-        public virtual Task onDisable(THHGame game, Card card, Buff buff)
+        public Task onDisable(THHGame game, Card card, Buff buff)
         {
             string triggerName;
             if (buff == null)

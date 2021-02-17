@@ -11,6 +11,11 @@ namespace UI
     /// </summary>
     class GenericDialog : UIObject
     {
+        protected override void Awake()
+        {
+            base.Awake();
+            _buttonTemplate.gameObject.SetActive(false);
+        }
         public void display(string title, string info, string[] options, Action<int> onSelectOption)
         {
             display();
@@ -39,6 +44,7 @@ namespace UI
                     _buttonList.Add(button);
                 }
                 button.gameObject.SetActive(true);
+                button.GetComponentInChildren<Text>().text = options[i];
                 button.onClick.RemoveAllListeners();
                 int localI = i;
                 button.onClick.AddListener(() =>

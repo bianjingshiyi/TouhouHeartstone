@@ -13,6 +13,19 @@ using CustomBuilder;
 
 namespace Game
 {
+    class StringTable
+    {
+        [TranslateMsg("所有按钮上通用的确认")]
+        public const string CONFIRM = "确认";
+        [TranslateMsg("所有按钮通用的是")]
+        public const string YES = "是";
+        [TranslateMsg("所有按钮通用的否")]
+        public const string NO = "否";
+        [TranslateMsg("所有提示通用的错误")]
+        public const string ERROR = "错误";
+        [TranslateMsg("发现了新版本的游戏，询问玩家是否要打开一个外部链接进行下载")]
+        public const string WANNA_DOWNLOAD_NEW_VERSION = "发现了更新版本的游戏，是否下载？";
+    }
     public class MainManager : Manager
     {
         public UIManager ui => getManager<UIManager>();
@@ -82,24 +95,24 @@ namespace Game
                     main.display(main.MainMenu);
                     onLoadingFinish?.Invoke();
                     //开始检查新版本
-                    _getNewVersionTask = network.getNewVersionUrl(getCurrentVersion());
+                    _getNewVersionTask = network.getLatestVersion();
                 }
                 else if (_loadCardTask.IsFaulted || _loadCardTask.IsCanceled)
                 {
                     _loadCardTask.Dispose();
                     _loadCardTask = null;
                     UIManager ui = getManager<UIManager>();
-                    ui.getObject<Dialog>().display(lang._(MMANAGE_GAME_FAIL_LOAD), () => Application.Quit());
+                    ui.getObject<GenericDialog>().display(lang._(StringTable.ERROR), lang._(MMANAGE_GAME_FAIL_LOAD), new string[] { lang._(StringTable.CONFIRM) }, _ => Application.Quit());
                 }
             }
             if (_getNewVersionTask != null)
             {
                 if (_getNewVersionTask.IsCompleted)
                 {
-                    string newVersionUrl = null;
+                    ClientUpdateInfo latestVersion;
                     try
                     {
-                        newVersionUrl = _getNewVersionTask.Result;
+                        latestVersion = _getNewVersionTask.Result;
                     }
                     catch (Exception e)
                     {
@@ -111,10 +124,24 @@ namespace Game
                         _getNewVersionTask.Dispose();
                         _getNewVersionTask = null;
                     }
-                    if (!string.IsNullOrEmpty(newVersionUrl))
+                    if (getCurrentVersion() != latestVersion.Version && !string.IsNullOrEmpty(latestVersion.FullPackageUrl))
                     {
                         //如果有新版本，询问玩家要不要下载
-                        getManager<UIManager>().getObject<Dialog>().display(STRING_WANNA_DOWNLOAD_NEW_VERSION, () => Application.OpenURL(newVersionUrl));
+                        getManager<UIManager>().getObject<GenericDialog>().display(null, lang._(StringTable.WANNA_DOWNLOAD_NEW_VERSION), new string[]
+                        {
+                            lang._(StringTable.YES),
+                            lang._(StringTable.NO)
+                        }, optionIndex =>
+                        {
+                            switch (optionIndex)
+                            {
+                                case 0:
+                                    Application.OpenURL(latestVersion.FullPackageUrl);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        });
                     }
                 }
                 else if (_getNewVersionTask.IsFaulted || _getNewVersionTask.IsCanceled)
@@ -216,11 +243,7 @@ namespace Game
             return BuildInformation.Instance.Version;
         }
         Task _loadCardTask = null;
-        [SerializeField]
-        string _version;
-        Task<string> _getNewVersionTask = null;
-        [TranslateMsg("发现了新版本的游戏，询问玩家是否要打开一个外部链接进行下载")]
-        const string STRING_WANNA_DOWNLOAD_NEW_VERSION = "发现了更新版本的游戏，是否下载？";
+        Task<ClientUpdateInfo> _getNewVersionTask = null;
         #endregion
     }
 }

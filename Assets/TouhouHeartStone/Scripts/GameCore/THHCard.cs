@@ -855,6 +855,34 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
+        public static async Task triggerDeathRattles(this Card card, THHGame game)
+        {
+            //首先触发本体亡语
+            foreach (var deathRattle in card.define.effects.OfType<DeathRattle>())
+            {
+                await deathRattle.execute(game, card, null, new DeathEventArg()
+                {
+                    infoDic = new Dictionary<Card, DeathEventArg.Info>()
+                    {
+                        { card, new DeathEventArg.Info(){ player = card.getOwner(), position = card.getOwner().field.indexOf(card) } }
+                    }
+                });
+            }
+            //然后触发buff亡语
+            foreach (var buff in card.getBuffs())
+            {
+                foreach (var deathRattle in buff.effects.OfType<DeathRattle>())
+                {
+                    await deathRattle.execute(game, card, buff, new DeathEventArg()
+                    {
+                        infoDic = new Dictionary<Card, DeathEventArg.Info>()
+                        {
+                            { card, new DeathEventArg.Info(){ player = card.getOwner(), position = card.getOwner().field.indexOf(card) } }
+                        }
+                    });
+                }
+            }
+        }
         public static async Task<AttackEventArg> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
         {
             if (!card.canAttack(game))
@@ -1395,25 +1423,25 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="targets">登场效果目标，可以为null</param>
         /// <returns></returns>
-        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, THHGame game,THHPlayer player, Card[] targets)
+        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, THHGame game, THHPlayer player, Card[] targets)
         {
 
             IActiveEffect activeEffect = card.define.getActiveEffect();
             if (activeEffect != null)
             {
-                var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card,player = player, targets = targets }, async arg =>
-                {
-                    await card.activeEffect(game, player, targets);//执行随从效果
-                    if (targets != null &&
-                      targets.Length > 0)
-                    {
-                        game.logger.log("触发战吼" + card + ",目标是" + targets[0]);
-                    }
-                    else
-                    {
-                        game.logger.log("触发战吼" + card);
-                    }
-                });
+                var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card, player = player, targets = targets }, async arg =>
+                 {
+                     await card.activeEffect(game, player, targets);//执行随从效果
+                     if (targets != null &&
+                        targets.Length > 0)
+                     {
+                         game.logger.log("触发战吼" + card + ",目标是" + targets[0]);
+                     }
+                     else
+                     {
+                         game.logger.log("触发战吼" + card);
+                     }
+                 });
                 return eventArg;
             }
             return null;
