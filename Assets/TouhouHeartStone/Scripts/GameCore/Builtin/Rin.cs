@@ -286,7 +286,9 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             Card choice = await card.getOwner().discover(game, card.getOwner().grave.Where(c=>c.isServant() && c.hasKeyword(game,KEYWORD._DeathRattle)), 3);
-            
+            if (!card.getOwner().hand.isFull)
+                await card.getOwner().grave.moveTo(game, choice, card.getOwner().hand);
+            await choice.triggerDeathRattles(game);
         }
     }
 
@@ -386,6 +388,25 @@ namespace TouhouHeartstone.Builtin
             await card.getOwner().master.addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(3),
                     new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+        }
+    }
+
+    public class Rin16 : SpellCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SPELL | 0x016;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            for(int i=0; i<3; i++)
+            {
+                await game.getOpponent(card.getOwner()).grave.moveTo(game, game.getOpponent(card.getOwner()).grave.top, card.getOwner().grave);
+            }
+            
         }
     }
 }

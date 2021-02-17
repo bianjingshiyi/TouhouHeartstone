@@ -1469,47 +1469,5 @@ namespace TouhouHeartstone
             }
         }
 
-        public static DeathRattle[] GetDeathRattles(this Card card)
-        {
-            return card.define.effects.OfType<DeathRattle>().ToArray();
-        }
-        public static async Task<DeathRattleArg> ExecuteDeathRattles(this Card card, THHGame game,THHPlayer curPlayer , int position)
-        {
-            IEnumerable<DeathRattle> deathRattles = card.GetDeathRattles();
-            List<DeathRattleArg> args = new List<DeathRattleArg>();
-            foreach (DeathRattle d in deathRattles)
-            {
-                if (d != null)
-                {
-                    var eventArg = await game.triggers.doEvent(new DeathRattleArg() { card = card, game=game, curPlayer = curPlayer ,position = position }, async arg =>
-                    {
-                        await d.onExecute(game, card, position);
-                        game.logger.log(card + "触发遗言");
-                    });
-                    args.Concat
-                }
-            }
-            
-        }
-        public class DeathRattleArg : EventArg, IDescribableEventArg
-        {
-            public Card card;           
-            public THHPlayer curPlayer;
-            public int position;
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                throw new NotImplementedException();
-            }
-
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                throw new NotImplementedException();
-            }
-
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                throw new NotImplementedException();
-            }
-        }
     }
 }
