@@ -193,6 +193,7 @@ namespace TouhouHeartstone.Builtin
     /// 商业繁荣祈愿
     /// 信仰对决（随从牌） 对目标随从造成3点伤害；获胜时再治愈你的英雄4点生命值。
     /// </summary>
+    [IgnoreCardDefine]
     public class CharmOfGoodCommerce : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x003;
@@ -399,7 +400,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 5;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT , KEYWORD._DeathRattle };
         public override string[] tags { get; set; } = { TAG.BEAST };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
@@ -630,7 +631,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 10;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE,KEYWORD.RUSH };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE,KEYWORD.RUSH, KEYWORD._DeathRattle };
         public override string[] tags { get; set; } = { TAG.GOD };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {

@@ -188,7 +188,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[0];
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new DeathRattle(ID,(g1,c1,p)=>

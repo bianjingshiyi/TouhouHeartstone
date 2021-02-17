@@ -1,0 +1,391 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
+
+namespace TouhouHeartstone.Builtin
+{
+    public class Rin : MasterCardDefine
+    {
+        public const int ID = 0x00700000 | CATEGORY.MASTER | 0x000;
+        public override int id { get; set; } = ID;
+        public override int life { get; set; } = 30;
+        public override int skillID { get; set; } = Rin00.ID;
+    }
+
+    /// <summary>
+    /// 技能_猫又形态
+    /// </summary>
+    public class Rin00 : SkillCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SKILL | 0x000;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().master.gainArmor(game, 1);
+            await card.getOwner().master.addBuff(game,
+                    new GeneratedBuff(ID, new AttackModifier(1),
+                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+        }
+    }
+
+    /// <summary>
+    /// 丧尸妖精
+    /// </summary>
+    public class Rin01 : ServantCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SERVANT | 0x001;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new DeathRattle(ID,async(g1,c1,p)=>
+            {
+                await c1.getOwner().createToken(g1,g1.getDefine<Rin02>());
+            })
+        };
+    }
+
+    /// <summary>
+    /// 怨灵,衍生物
+    /// </summary>
+    public class Rin02 : ServantCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SERVANT | 0x002;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[0];
+        public override bool isToken { get; set; } = true;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+   
+        };
+    }
+
+    /// <summary>
+    /// 烈焰车轮
+    /// </summary>
+    public class Rin03 : ServantCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SERVANT | 0x003;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new Halo(new GeneratedBuff(ID, new KeywordsModifier(0,KEYWORD.CHARGE)), 
+                 PileFlag.self | PileFlag.field, 
+                 PileFlag.self | PileFlag.field, 
+                 (g1, c1) =>
+                 {
+                     return true;
+                 })
+        };
+    }
+
+    /// <summary>
+    /// 磷火
+    /// </summary>
+    public class Rin04 : ServantCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SERVANT | 0x004;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new DeathRattle(ID,async(g1,c1,p)=>
+            {
+                await g1.getOpponent(c1.getOwner()).master.damage(g1,c1,3);
+            })
+        };
+    }
+
+    /// <summary>
+    /// 旧地狱的针山
+    /// </summary>
+    public class Rin05 : SpellCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SPELL | 0x005;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            foreach(Card c1 in card.getOwner().field)
+            {
+                await c1.addBuff(game, new GeneratedBuff(ID, new DeathRattle(ID, async (g, c, b, p) =>
+                {
+                    await g.getOpponent(c.getOwner()).master.damage(g, c, 1);
+                })));
+            }
+        }
+    }
+
+    /// <summary>
+    /// 死灰复燃
+    /// </summary>
+    public class Rin06 : SpellCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SPELL | 0x006;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            foreach(Card c in card.getOwner().field)
+            {
+                await c.setDead(game, true);
+                await game.updateDeath(game);
+                await c.getOwner().reborn(game, c, c.getOwner().field);
+            }           
+        }
+    }
+
+    /// <summary>
+    /// 尸体旅行
+    /// </summary>
+    public class Rin07 : SpellCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SPELL | 0x007;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            for(int i=0; i<3; i++)
+            {
+                await card.getOwner().reborn(game, card.getOwner().grave.Where(c => c.getCost(game) <= 3 && c.isServant()).random(game), card.getOwner().field);
+                //card.getOwner().grave.Where(c => c.getCost(game) <= 3 && c.isServant()).random(game);
+            };
+        }
+    }
+
+    /// <summary>
+    /// （不太会）恰人的怨灵
+    /// </summary>
+    public class Rin08 : ServantCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SERVANT | 0x008;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new DeathRattle(ID,async(g1,c1,p)=>
+            {
+                await c1.getOwner().createToken(g1,g1.getDefine<Rin02>());
+                await c1.getOwner().createToken(g1,g1.getDefine<Rin02>());
+            }),
+            new LambdaSingleTargetEffect(async (game, card, target) =>
+            {
+                await target.setDead(game,true);
+                await game.updateDeath(game);
+            })
+        };
+    }
+
+    /// <summary>
+    /// 抬棺者
+    /// </summary>
+    public class Rin09 : ServantCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SERVANT | 0x009;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new DeathRattle(ID,async(g1,c1,p)=>
+            {
+                await c1.getOwner().draw(g1,c1.getOwner().deck.Where(c => c.hasKeyword(g1,KEYWORD._DeathRattle)).random(g1));
+            }),
+        };
+    }
+
+    /// <summary>
+    /// 猫舞步
+    /// </summary>
+    public class Rin10 : SpellCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SPELL | 0x010;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().master.addBuff(game,
+                    new GeneratedBuff(ID, new AttackModifier(3),
+                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+
+            await card.getOwner().master.addBuff(game,
+                    new GeneratedBuff(ID, new THHEffectAfter<THHCard.AttackEventArg>(PILE.MASTER, (g, c, a) =>
+                    {
+                         return a.card == c.getOwner().master;
+                    }, null, async (g, c, a) =>
+                    {
+                         if (a.target.isDead(g))
+                         {
+                             await c.getOwner().master.setAttackTimes(game, c.getOwner().master.getAttackTimes(g) - 1);
+                         }
+                    }), 
+                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID),
+                    new RemoveBuffAfter<THHCard.AttackEventArg>(PILE.MASTER, (g, c, a) =>
+                    {
+                        return a.card == c.getOwner().master;
+                    },ID)));
+        }
+    }
+
+    /// <summary>
+    /// 鬼灵小镇==
+    /// </summary>
+    public class Rin11 : SpellCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SPELL | 0x011;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            Card choice = await card.getOwner().discover(game, card.getOwner().grave.Where(c=>c.isServant() && c.hasKeyword(game,KEYWORD._DeathRattle)), 3);
+            
+        }
+    }
+
+    /// <summary>
+    /// 不死族的攻城单位
+    /// </summary>
+    public class Rin12 : ServantCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SERVANT | 0x012;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHCard.AttackEventArg>(PILE.MASTER, (g, c, a) =>
+                    {
+                         return a.card == c.getOwner().master;
+                    }, null, async (g, c, a) =>
+                    {
+                         await c.getOwner().draw(g,c.getOwner().deck.Where(c1=>c1.isServant()).random(g));
+                    })
+        };
+    }
+
+    /// <summary>
+    /// 脾脏蛀食者
+    /// </summary>
+    public class Rin13 : ServantCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SERVANT | 0x013;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 4;
+        public override string[] keywords { get; set; } = new string[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHCard.AttackEventArg>(PILE.FIELD,(g,c,a)=>
+            {
+                return a.card.getOwner() == c.getOwner() && a.card != c;
+            }, null, async (g, c, a) =>
+            {
+                await c.getOwner().addCardToHand<Rin01>(g);
+            })
+        };
+    }
+
+    /// <summary>
+    /// 尸体繁华街
+    /// </summary>
+    public class Rin14 : SpellCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SPELL | 0x014;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                var reborn = await card.getOwner().reborn(game, card.getOwner().grave.Where(c => c.hasKeyword(game,KEYWORD._DeathRattle) && c.isServant()).random(game), card.getOwner().field);
+                await reborn.card.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g, c, a) =>
+                {
+                    return a.player == c.getOwner();
+                }, null, async (g, c, a) =>
+                {
+                    await c.setDead(g, true);
+                    await g.updateDeath(g);
+                })));
+            };
+        }
+    }
+
+    /// <summary>
+    /// 醉猫乱步
+    /// </summary>
+    public class Rin15 : SpellCardDefine
+    {
+        public const int ID = Rin.ID | CATEGORY.SPELL | 0x015;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+        static async Task effect(THHGame game, Card card)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                await card.getOwner().deck.moveTo(game, card.getOwner().deck.Where(c => c.isServant()).random(game), card.getOwner().grave);
+            };
+            await card.getOwner().master.addBuff(game,
+                    new GeneratedBuff(ID, new AttackModifier(3),
+                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+        }
+    }
+}

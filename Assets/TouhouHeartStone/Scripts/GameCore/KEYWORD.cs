@@ -62,6 +62,7 @@
         /// 奥秘
         /// </summary>
         public const string SECRET = "secret";
+
         /// <summary>
         /// 内部关键词：使用后回到手牌。
         /// </summary>
@@ -70,5 +71,11 @@
         /// 信仰对决
         /// </summary>
         public const string _RevealDuel = "_revealDuel";
+        /// <summary>
+        /// 遗言
+        /// </summary>
+        public const string _DeathRattle = "_deathRattle";
+
+
     }
 }

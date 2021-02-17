@@ -775,6 +775,7 @@ namespace TouhouHeartstone
             return card.setProp<Trigger<THHCard.DamageEventArg>>(game, triggerName, null);
         }
     }
+
     public class BeforeYourTurnEnd : THHEffectBefore<THHGame.TurnEndEventArg>
     {
         public BeforeYourTurnEnd(ExecuteDelegate onExecute) : base(PILE.FIELD, (game, card, arg) =>
