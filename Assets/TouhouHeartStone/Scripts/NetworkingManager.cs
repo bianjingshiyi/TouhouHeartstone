@@ -176,6 +176,7 @@ namespace Game
             client.onQuitRoom += Client_onQuitRoom;
             gameManager.onGameEnd += onGameEnd;
             //局域网界面回调注册
+            /**
             ui.LANButton.onClick.set(() =>
             {
                 _ = displayPanelForLAN();
@@ -190,7 +191,8 @@ namespace Game
             ui.ReturnButton.onClick.AddListener(() =>
             {
                 ui.parent.display(ui.parent.MainMenu);
-            });
+            }); 
+            **/
         }
 
         protected void Start()
@@ -294,8 +296,8 @@ namespace Game
                 await client.joinRoom(room, currentPlayer);
             }
 
-            ui.RoomButton.interactable = true;
-            ui.RoomButton.image.color = Color.white;
+            // ui.RoomButton.interactable = true;
+            // ui.RoomButton.image.color = Color.white;
         }
 
         [TranslateMsg]
@@ -382,8 +384,8 @@ namespace Game
                 await client.joinRoom(roomInfo, currentPlayer);
             }
 
-            ui.RoomButton.interactable = true;
-            ui.RoomButton.image.color = Color.white;
+            // ui.RoomButton.interactable = true;
+            // ui.RoomButton.image.color = Color.white;
         }
 
         [TranslateMsg]
@@ -407,8 +409,8 @@ namespace Game
                 client.quitRoom();
             currentPlayer = null;
 
-            ui.RoomButton.interactable = false;
-            ui.RoomButton.image.color = Color.gray;
+            // ui.RoomButton.interactable = false;
+            // ui.RoomButton.image.color = Color.gray;
             updateAllRooms();
         }
         #endregion

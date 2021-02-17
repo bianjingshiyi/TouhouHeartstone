@@ -76,3 +76,6 @@ Assets/StreamingAssets/Save.meta
 /Assets/InitTestScene*.unity*
 *.ini
 *.ini.meta
+
+/Assets/Resources/BuildInfo.asset
+/Assets/Resources/BuildInfo.asset.meta
