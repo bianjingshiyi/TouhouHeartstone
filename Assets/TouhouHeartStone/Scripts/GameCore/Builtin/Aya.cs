@@ -14,7 +14,7 @@ namespace TouhouHeartstone.Builtin
     [IgnoreCardDefine]
     public class Aya : MasterCardDefine
     {
-        public const int ID = 0x00700000 | CATEGORY.MASTER | 0x000;
+        public const int ID = 0x00a00000 | CATEGORY.MASTER | 0x000;
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = SpareFilm.ID;//英雄技能的ID
