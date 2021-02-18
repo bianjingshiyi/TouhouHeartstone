@@ -41,7 +41,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 丧尸妖精
     /// </summary>
-    public class ZoombieFairy: ServantCardDefine
+    public class ZombieFairy: ServantCardDefine
     {
         public const int ID = Rin.ID | CATEGORY.SERVANT | 0x001;
         public override int id { get; set; } = ID;
@@ -79,7 +79,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 烈焰车轮
     /// </summary>
-    public class HellFireWheels : ServantCardDefine
+    public class BlazingWheel : ServantCardDefine
     {
         public const int ID = Rin.ID | CATEGORY.SERVANT | 0x003;
         public override int id { get; set; } = ID;
@@ -122,7 +122,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 旧地狱的针山
     /// </summary>
-    public class HellRain : SpellCardDefine
+    public class NeedleMountainOfFormerHell : SpellCardDefine
     {
         public const int ID = Rin.ID | CATEGORY.SPELL | 0x005;
         public override int id { get; set; } = ID;
@@ -146,7 +146,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 死灰复燃
     /// </summary>
-    public class Rebirth : SpellCardDefine
+    public class RekindlingOfDeadAshes : SpellCardDefine
     {
         public const int ID = Rin.ID | CATEGORY.SPELL | 0x006;
         public override int id { get; set; } = ID;
@@ -191,7 +191,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// （不太会）恰人的怨灵
     /// </summary>
-    public class HungryGhost : ServantCardDefine
+    public class VengefulCannibalSpirit : ServantCardDefine
     {
         public const int ID = Rin.ID | CATEGORY.SERVANT | 0x008;
         public override int id { get; set; } = ID;
@@ -224,7 +224,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle, KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new DeathRattle(ID,async(g1,c1,p)=>
@@ -237,7 +237,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 猫舞步
     /// </summary>
-    public class RinDance : SpellCardDefine
+    public class CatWalk : SpellCardDefine
     {
         public const int ID = Rin.ID | CATEGORY.SPELL | 0x010;
         public override int id { get; set; } = ID;
@@ -318,7 +318,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 脾脏蛀食者
     /// </summary>
-    public class Rin13 : ServantCardDefine
+    public class SpleenEater : ServantCardDefine
     {
         public const int ID = Rin.ID | CATEGORY.SERVANT | 0x013;
         public override int id { get; set; } = ID;
@@ -341,7 +341,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 尸体繁华街
     /// </summary>
-    public class MarketOfTheDead : SpellCardDefine
+    public class CorpseShoppingDistrict : SpellCardDefine
     {
         public const int ID = Rin.ID | CATEGORY.SPELL | 0x014;
         public override int id { get; set; } = ID;
@@ -370,7 +370,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 醉猫乱步
     /// </summary>
-    public class HellDance : SpellCardDefine
+    public class CatRandomWalk : SpellCardDefine
     {
         public const int ID = Rin.ID | CATEGORY.SPELL | 0x015;
         public override int id { get; set; } = ID;
@@ -391,7 +391,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
-    public class HellStorm : SpellCardDefine
+    public class HellTrafficAccident : SpellCardDefine
     {
         public const int ID = Rin.ID | CATEGORY.SPELL | 0x016;
         public override int id { get; set; } = ID;
