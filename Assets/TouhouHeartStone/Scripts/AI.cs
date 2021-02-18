@@ -6,6 +6,7 @@ using System.Linq;
 using Card = TouhouCardEngine.Card;
 using TouhouHeartstone.Builtin;
 using System;
+using TouhouCardEngine;
 
 namespace Game
 {
@@ -111,7 +112,7 @@ namespace Game
             {
                 if (!card.isUsable(game, player, out _))
                     continue;
-                if (card.define is ServantCardDefine && card.define.getActiveEffect()==null)
+                if (card.define is ServantCardDefine && card.define.getActiveEffect() == null)
                 {
                     for (int i = 0; i < player.field.count + 1; i++)
                     {
@@ -223,6 +224,8 @@ namespace Game
                 if (calcReisenValue(game, player, card, opponent, target, out value))
                     return value;
                 if (calcBattlecryValue(game, player, card, opponent, target, out value))
+                    return value;
+                if (calcSanaeValue(game, player, card, opponent, target, out value))
                     return value;
                 else
                     value = card.getCost(game);
@@ -562,6 +565,61 @@ namespace Game
             }
         }
 
+        bool calcSanaeValue(THHGame game, THHPlayer player, Card card, THHPlayer opponent, Card target,
+            out float value)
+        {
+            switch (card.define)
+            {
+                case WindStopMiracle _:
+                    value = calcHealingValue(game, player, opponent, target);
+                    return true;
+                case StarRitual _:
+                    value = 2;
+                    return true;
+                case GrayThaumaturgy _:
+                    value = calcHealingValue(game, player, opponent, target);
+                    return true;
+                case BumperCrop _:
+                    value = calcHealingValue(game,player,opponent,player.master);
+                    return true;
+                case GuestStarsMiracle _:
+                    value = calcAOEDamageValue(game, player, opponent, opponent.field ,2);
+                    return true;
+                case OpenSeaMiracle _:
+                    value = calcDamageValue(game, player, opponent, target,2);
+                    return true;
+                case GodWind _:
+                    value = calcServantsValue(game, player, opponent, opponent.field) -
+                            calcServantsValue(game, player, opponent, player.field);
+                    return true;
+                case ForgottenRecrption _:
+                    value = 1;
+                    return true;
+                case OmikujiBomb _:
+                    value = 1;
+                    return true;
+                case Bomb1 _:
+                    value = calcDamageValue(game, player, opponent, target, 6);
+                    return true;
+                case Bomb2 _:
+                    value = calcDamageValue(game, player, opponent, target, 4);
+                    return true;
+                case Bomb3 _:
+                    value = calcRandomDamageValue(game, player, opponent, opponent.field, 4);
+                    return true;
+                case Bomb4 _:
+                    value = calcRandomDamageValue(game, player, opponent, opponent.field.Concat(player.field), 4);
+                    return true;
+                case GodSummon _:
+                    value = 1;
+                    return true;
+                default:
+                    value = 0;
+                    return true;
+            }
+                
+        }
+
         /// <summary>
         /// 待补充
         /// </summary>
@@ -711,6 +769,13 @@ namespace Game
                     return true;
                 case Koakuma _:
                     value += calcDrawCardsValue(game, player, opponent, 1);
+                    return true;
+                case OrochiOfAncientTimes _:
+                    value += calcServantValue(game, player, opponent, target.getAttack(game),
+                        target.getCurrentLife(game));
+                    return true;
+                case YasakaKanako _:
+                    value += 10;
                     return true;
                 default:
                     value = 0;
