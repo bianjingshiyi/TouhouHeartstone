@@ -335,6 +335,7 @@ namespace Game
         {
             master.onClick.add(onClickMaster);
             master.Head.clearSecret();
+            master.LifePropNumber.WhiteText.invokeBeforeAnim();
         }
         /// <summary>
         /// 设置Master的UI
