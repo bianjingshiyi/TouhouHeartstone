@@ -588,6 +588,8 @@ namespace TouhouHeartstone
                 return null;
             if (position < 0)
                 position = pile.count;
+            if (card == null)
+                return null;
             RebornEventArg eventArg = new RebornEventArg() { player = this, card = card, pile = pile, position = position };
             await game.triggers.doEvent(eventArg, async arg =>
             {

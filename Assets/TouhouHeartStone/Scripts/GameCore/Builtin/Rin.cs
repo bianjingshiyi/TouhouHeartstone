@@ -157,12 +157,15 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            foreach(Card c in card.getOwner().field)
+            int count = card.getOwner().field.count;
+            for (int i=0; i< count; i++)
             {
+                Card c = card.getOwner().field[0];
                 await c.setDead(game, true);
                 await game.updateDeath(game);
-                await c.getOwner().reborn(game, c, c.getOwner().field);
-            }           
+                await c.getOwner().reborn(game, c, c.getOwner().field,count);
+            }
+                     
         }
     }
 
@@ -361,14 +364,17 @@ namespace TouhouHeartstone.Builtin
             for (int i = 0; i < 3; i++)
             {
                 var reborn = await card.getOwner().reborn(game, card.getOwner().grave.Where(c => c.hasKeyword(game,KEYWORD._DeathRattle) && c.isServant()).random(game), card.getOwner().field);
-                await reborn.card.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g, c, a) =>
+                if(reborn != null)
                 {
-                    return a.player == c.getOwner();
-                }, null, async (g, c, a) =>
-                {
-                    await c.setDead(g, true);
-                    await g.updateDeath(g);
-                })));
+                    await reborn.card.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g, c, a) =>
+                    {
+                        return a.player == c.getOwner();
+                    }, null, async (g, c, a) =>
+                    {
+                        await c.setDead(g, true);
+                        await g.updateDeath(g);
+                    })));
+                }
             };
         }
     }
