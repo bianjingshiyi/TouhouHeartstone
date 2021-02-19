@@ -237,6 +237,9 @@ namespace Tests
             you.cmdUse<DefaultServant>(game);
             handCount = you.hand.count;
             Assert.AreEqual(2,you.field.Count(c=>c.define is CorpseTruck));
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+            you.cmdUse<DefaultServant>(game);
             you.cmdUse(game, you.skill);
             you.cmdAttack(game, you.master, oppo.master);
             Assert.AreEqual(handCount+2, you.hand.count);
@@ -256,13 +259,15 @@ namespace Tests
             card.setDead(game, true);
             game.updateDeath(game);
             Assert.AreEqual(handCount, you.hand.count);
-            Assert.True(you.hand[handCount].define is GhostOfHatred);
+            Assert.True(you.hand[handCount-1].define is GhostOfHatred);
+
             you.field[0].setDead(game, true);
             game.updateDeath(game);
             you.cmdUse<DefaultServant>(game, out card);
             card.setDead(game, true);
             game.updateDeath(game);
-            Assert.AreEqual(handCount, you.hand.count);
+            Assert.AreEqual(handCount-1, you.hand.count);
+
             game.Dispose();
         }
 
@@ -302,7 +307,8 @@ namespace Tests
             game.skipUntilYourTurn(you);
             //丧失妖精死亡，召唤一只怨灵
             Assert.AreEqual(2, you.field.count);
-            Assert.AreEqual(2,you.field.Count(c=>c.define is GhostOfHatred)); 
+            Assert.AreEqual(2,you.field.Count(c=>c.define is GhostOfHatred));
+            Debug.Log("测试完成");
             game.Dispose();
         }
         

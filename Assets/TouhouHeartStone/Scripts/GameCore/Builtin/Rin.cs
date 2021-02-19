@@ -260,14 +260,14 @@ namespace TouhouHeartstone.Builtin
                     {
                          if (a.target.isDead(g))
                          {
-                             await c.getOwner().master.setAttackTimes(game, c.getOwner().master.getAttackTimes(g) - 1);
+                             await c.getOwner().master.setAttackTimes(g, c.getOwner().master.getAttackTimes(g) - 1);
                          }
                     }), 
                     new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID),
                     new RemoveBuffAfter<THHCard.AttackEventArg>(PILE.MASTER, (g, c, a) =>
                     {
                         return a.card == c.getOwner().master;
-                    },ID)));
+                    }, ID)));
         }
     }
 
@@ -305,7 +305,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.AttackEventArg>(PILE.MASTER, (g, c, a) =>
+            new THHEffectAfter<THHCard.AttackEventArg>(PILE.FIELD, (g, c, a) =>
                     {
                          return a.card == c.getOwner().master;
                     }, null, async (g, c, a) =>
@@ -328,12 +328,18 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.AttackEventArg>(PILE.FIELD,(g,c,a)=>
+            new THHEffectAfter<THHCard.DeathEventArg>(PILE.FIELD,(g,c,a)=>
             {
-                return a.card.getOwner() == c.getOwner() && a.card != c;
+                return a.infoDic.Any(c1 => c1.Key.getOwner() == c.getOwner()) && !a.infoDic.Any(c1 => c1.Key == c);
             }, null, async (g, c, a) =>
-            {
-                await c.getOwner().addCardToHand<GhostOfHatred>(g);
+            {            
+                foreach(var death in a.infoDic)
+                {
+                    if(death.Key.getOwner() == c.getOwner() && c.getOwner().hand.count<c.getOwner().hand.maxCount)
+                    {
+                        await c.getOwner().addCardToHand<GhostOfHatred>(g);
+                    }
+                }
             })
         };
     }
@@ -391,6 +397,9 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
+    /// <summary>
+    /// 地狱祸轮
+    /// </summary>
     public class HellTrafficAccident : SpellCardDefine
     {
         public const int ID = Rin.ID | CATEGORY.SPELL | 0x016;
