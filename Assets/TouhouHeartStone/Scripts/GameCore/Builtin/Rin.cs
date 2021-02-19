@@ -41,7 +41,7 @@ namespace TouhouHeartstone.Builtin
     /// <summary>
     /// 丧尸妖精
     /// </summary>
-    public class ZombieFairy: ServantCardDefine
+    public class ZombieFairy : ServantCardDefine
     {
         public const int ID = Rin.ID | CATEGORY.SERVANT | 0x001;
         public override int id { get; set; } = ID;
@@ -72,7 +72,7 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-   
+
         };
     }
 
@@ -89,9 +89,9 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new Halo(new GeneratedBuff(ID, new KeywordsModifier(0,KEYWORD.CHARGE)), 
-                 PileFlag.self | PileFlag.field, 
-                 PileFlag.self | PileFlag.field, 
+            new Halo(new GeneratedBuff(ID, new KeywordsModifier(0,KEYWORD.CHARGE)),
+                 PileFlag.self | PileFlag.field,
+                 PileFlag.self | PileFlag.field,
                  (g1, c1) =>
                  {
                      return true;
@@ -133,7 +133,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            foreach(Card c1 in card.getOwner().field)
+            foreach (Card c1 in card.getOwner().field)
             {
                 await c1.addBuff(game, new GeneratedBuff(ID, new DeathRattle(ID, async (g, c, b, p) =>
                 {
@@ -158,14 +158,14 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             int count = card.getOwner().field.count;
-            for (int i=0; i< count; i++)
+            for (int i = 0; i < count; i++)
             {
                 Card c = card.getOwner().field[0];
                 await c.setDead(game, true);
                 await game.updateDeath(game);
-                await c.getOwner().reborn(game, c, c.getOwner().field,count);
+                await c.getOwner().reborn(game, c, c.getOwner().field, count);
             }
-                     
+
         }
     }
 
@@ -183,7 +183,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            for(int i=0; i<3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 await card.getOwner().reborn(game, card.getOwner().grave.Where(c => c.getCost(game) <= 3 && c.isServant()).random(game), card.getOwner().field);
                 //card.getOwner().grave.Where(c => c.getCost(game) <= 3 && c.isServant()).random(game);
@@ -238,7 +238,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 猫舞步
+    /// 猫步
     /// </summary>
     public class CatWalk : SpellCardDefine
     {
@@ -247,31 +247,27 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect(effect)
-        };
-        static async Task effect(THHGame game, Card card)
-        {
-            await card.getOwner().master.addBuff(game,
+            new NoTargetEffect((g1,c1)=>
+            {
+                return c1.getOwner().master.addBuff(g1,
                     new GeneratedBuff(ID, new AttackModifier(3),
-                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
-
-            await card.getOwner().master.addBuff(game,
-                    new GeneratedBuff(ID+1, new THHEffectAfter<THHCard.AttackEventArg>(PILE.MASTER, (g, c, a) =>
-                    {
-                         return a.card == c.getOwner().master;
-                    }, null, async (g, c, a) =>
-                    {
-                         if (a.target.isDead(g))
-                         {
-                             await c.getOwner().master.setAttackTimes(g, c.getOwner().master.getAttackTimes(g) - 1);
-                         }
-                    }), 
-                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID + 1),
-                    new RemoveBuffAfter<THHCard.AttackEventArg>(PILE.MASTER, (g, c, a) =>
-                    {
-                        return a.card == c.getOwner().master;
-                    }, ID + 1)));
-        }
+                        new THHEffectAfter<THHCard.AttackEventArg>(PileFlag.master | PileFlag.self,(g2,c2,b1,a1)=>
+                        {
+                            return a1.card == c2.getOwner().master;
+                        },(g2,c2,b1,a1)=>
+                        {
+                            string propName = nameof(CatWalk)+b1.instanceID+"Effected";
+                            Card master = c2.getOwner().master;
+                            if(a1.target.isDead(g2) && !master.getProp<bool>(g2,propName))
+                            {
+                                master.setProp(g2,propName,true);
+                                return master.setAttackTimes(g2,master.getAttackTimes(g2)-1);
+                            }
+                            return Task.CompletedTask;
+                        }),
+                        new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+            })
+        };
     }
 
     /// <summary>
@@ -335,7 +331,7 @@ namespace TouhouHeartstone.Builtin
             {
                 return !a.infoDic.Any(c1 => c1.Key == c);
             }, null, async (g, c, a) =>
-            {            
+            {
                 foreach(var death in a.infoDic)
                 {
                     if(c.getOwner().hand.count<c.getOwner().hand.maxCount)
@@ -363,8 +359,8 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 3; i++)
             {
-                var reborn = await card.getOwner().reborn(game, card.getOwner().grave.Where(c => c.hasKeyword(game,KEYWORD._DeathRattle) && c.isServant()).random(game), card.getOwner().field);
-                if(reborn != null)
+                var reborn = await card.getOwner().reborn(game, card.getOwner().grave.Where(c => c.hasKeyword(game, KEYWORD._DeathRattle) && c.isServant()).random(game), card.getOwner().field);
+                if (reborn != null)
                 {
                     await reborn.card.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g, c, a) =>
                     {
@@ -417,11 +413,11 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            for(int i=0; i<3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 await game.getOpponent(card.getOwner()).grave.moveTo(game, game.getOpponent(card.getOwner()).grave.top, card.getOwner().grave);
             }
-            
+
         }
     }
 }

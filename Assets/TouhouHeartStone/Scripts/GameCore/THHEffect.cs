@@ -195,7 +195,9 @@ namespace TouhouHeartstone
     public class THHEffectAfter<T> : THHEffect where T : IEventArg
     {
         public new delegate bool CheckConditionDelegate(THHGame game, Card card, T eventArg);
+        public delegate bool CheckConditionBuffedDelegate(THHGame game, Card card, Buff buff, T eventArg);
         public new delegate Task ExecuteDelegate(THHGame game, Card card, T eventArg);
+        public delegate Task ExecuteBuffedDelegate(THHGame game, Card card, Buff buff, T eventArg);
         public THHEffectAfter(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute, string name = null) :
         base(new After<T>(), pile, (game, card, vars) =>
         {
@@ -228,6 +230,23 @@ namespace TouhouHeartstone
         })
         {
         }
+        public THHEffectAfter(PileFlag pile, CheckConditionBuffedDelegate onCheckCondition, ExecuteBuffedDelegate onExecute) :
+        base(new TriggerTime[] { new After<T>() }, pile.getPiles(), (game, card, vars) =>
+        {
+            if (onCheckCondition != null && vars != null && vars.Length > 1 && vars[0] is Buff buff && vars[1] is T t)
+                return onCheckCondition(game, card, buff, t);
+            else
+                return true;
+        }, (game, card, vars) => true,
+        (game, card, vars, targets) =>
+        {
+            if (onExecute != null && vars != null && vars.Length > 1 && vars[0] is Buff buff && vars[1] is T t)
+                return onExecute(game, card, buff, t);
+            else
+                return Task.CompletedTask;
+        })
+        {
+        }
         public override async Task onEnable(IGame game, ICard card, IBuff buff)
         {
             foreach (TriggerTime time in triggers)
@@ -235,8 +254,8 @@ namespace TouhouHeartstone
                 string effectName = getEffectName(game, card, buff, time);
                 Trigger<T> trigger = new Trigger<T>(arg =>
                 {
-                    if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
-                        return (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
+                    if ((this as ITriggerEffect).checkCondition(game, card, new object[] { buff, arg }))
+                        return (this as ITriggerEffect).execute(game, card, new object[] { buff, arg, }, new object[0]);
                     else
                         return Task.CompletedTask;
                 }, name: effectName);
