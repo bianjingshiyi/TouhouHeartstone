@@ -191,6 +191,7 @@ namespace Tests
             you.cmdAttack(game, you.master, servant);
             Assert.AreEqual(0, oppo.field.count);
             //这里没过
+            Debug.Log(you.master.getAttack(game));
             Assert.True(you.master.canAttack(game));
             you.cmdAttack(game, you.master, oppo.master);
             Assert.False(you.master.canAttack(game));

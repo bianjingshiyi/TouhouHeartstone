@@ -256,7 +256,7 @@ namespace TouhouHeartstone.Builtin
                     new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
 
             await card.getOwner().master.addBuff(game,
-                    new GeneratedBuff(ID, new THHEffectAfter<THHCard.AttackEventArg>(PILE.MASTER, (g, c, a) =>
+                    new GeneratedBuff(ID+1, new THHEffectAfter<THHCard.AttackEventArg>(PILE.MASTER, (g, c, a) =>
                     {
                          return a.card == c.getOwner().master;
                     }, null, async (g, c, a) =>
@@ -266,11 +266,11 @@ namespace TouhouHeartstone.Builtin
                              await c.getOwner().master.setAttackTimes(g, c.getOwner().master.getAttackTimes(g) - 1);
                          }
                     }), 
-                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID),
+                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID + 1),
                     new RemoveBuffAfter<THHCard.AttackEventArg>(PILE.MASTER, (g, c, a) =>
                     {
                         return a.card == c.getOwner().master;
-                    }, ID)));
+                    }, ID + 1)));
         }
     }
 
