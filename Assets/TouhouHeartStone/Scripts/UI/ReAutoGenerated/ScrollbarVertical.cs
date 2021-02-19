@@ -10,52 +10,51 @@
 
 namespace UI
 {
-    using System;
-    using UnityEngine;
-    using UnityEngine.UI;
     using BJSYGameCore.UI;
+    using UnityEngine;
+    using BJSYGameCore.AutoCompo;
+    using System;
+    using UnityEngine.UI;
     
-    public partial class ScrollbarHorizontal : UIObject
+    [AutoCompoAttribute(23084)]
+    public partial class ScrollbarVertical : UIObject
     {
-        protected override void Awake()
+        public void init()
         {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
-        }
-        public void autoBind()
-        {
-            this.m_as_Image = this.GetComponent<Image>();
-            this.m_as_Scrollbar = this.GetComponent<Scrollbar>();
-            this._HandleImage = this.transform.Find("Sliding Area").Find("Handle").GetComponent<Image>();
+            this.as_Image = this.transform.findByPath("./").GetComponent<Image>();
+            this.as_Scrollbar = this.transform.findByPath("./").GetComponent<Scrollbar>();
+            this._HandleImage = this.transform.findByPath("./Sliding Area/Handle").GetComponent<Image>();
         }
         [SerializeField()]
-        private Image m_as_Image;
-        public Image asImage
+        [AutoCompo(34470, "./")]
+        private Image as_Image;
+        public Image m_as_Image
         {
             get
             {
                 if ((this.m_as_Image == null))
                 {
-                    this.m_as_Image = this.GetComponent<Image>();
+                    this.as_Image = this.transform.findByPath("./").GetComponent<Image>();
                 }
-                return this.m_as_Image;
+                return this.as_Image;
             }
         }
         [SerializeField()]
-        private Scrollbar m_as_Scrollbar;
-        public Scrollbar asScrollbar
+        [AutoCompo(32128, "./")]
+        private Scrollbar as_Scrollbar;
+        public Scrollbar m_as_Scrollbar
         {
             get
             {
                 if ((this.m_as_Scrollbar == null))
                 {
-                    this.m_as_Scrollbar = this.GetComponent<Scrollbar>();
+                    this.as_Scrollbar = this.transform.findByPath("./").GetComponent<Scrollbar>();
                 }
-                return this.m_as_Scrollbar;
+                return this.as_Scrollbar;
             }
         }
         [SerializeField()]
+        [AutoCompo(34478, "./Sliding Area/Handle")]
         private Image _HandleImage;
         public Image HandleImage
         {
@@ -63,11 +62,10 @@ namespace UI
             {
                 if ((this._HandleImage == null))
                 {
-                    this._HandleImage = this.transform.Find("Sliding Area").Find("Handle").GetComponent<Image>();
+                    this._HandleImage = this.transform.findByPath("./Sliding Area/Handle").GetComponent<Image>();
                 }
                 return this._HandleImage;
             }
         }
-        partial void onAwake();
     }
 }

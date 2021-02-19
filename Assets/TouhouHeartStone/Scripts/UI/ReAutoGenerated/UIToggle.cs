@@ -10,40 +10,38 @@
 
 namespace UI
 {
-    using System;
-    using UnityEngine;
-    using UnityEngine.UI;
     using BJSYGameCore.UI;
+    using UnityEngine;
+    using BJSYGameCore.AutoCompo;
+    using System;
+    using UnityEngine.UI;
     
+    [AutoCompoAttribute(19258)]
     public partial class UIToggle : UIObject
     {
-        protected override void Awake()
+        public void init()
         {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
-        }
-        public void autoBind()
-        {
-            this.m_as_Toggle = this.GetComponent<Toggle>();
-            this._BackgroundImage = this.transform.Find("Background").GetComponent<Image>();
-            this._CheckmarkImage = this.transform.Find("Background").Find("Checkmark").GetComponent<Image>();
-            this._LabelText = this.transform.Find("Label").GetComponent<Text>();
+            this._as_Toggle = this.transform.findByPath("./").GetComponent<Toggle>();
+            this._BackgroundImage = this.transform.findByPath("./Background").GetComponent<Image>();
+            this._CheckmarkImage = this.transform.findByPath("./Background/Checkmark").GetComponent<Image>();
+            this._LabelText = this.transform.findByPath("./Label").GetComponent<Text>();
         }
         [SerializeField()]
-        private Toggle m_as_Toggle;
+        [AutoCompo(39640, "./")]
+        private Toggle _as_Toggle;
         public Toggle asToggle
         {
             get
             {
-                if ((this.m_as_Toggle == null))
+                if ((this._as_Toggle == null))
                 {
-                    this.m_as_Toggle = this.GetComponent<Toggle>();
+                    this._as_Toggle = this.transform.findByPath("./").GetComponent<Toggle>();
                 }
-                return this.m_as_Toggle;
+                return this._as_Toggle;
             }
         }
         [SerializeField()]
+        [AutoCompo(39646, "./Background")]
         private Image _BackgroundImage;
         public Image BackgroundImage
         {
@@ -51,12 +49,13 @@ namespace UI
             {
                 if ((this._BackgroundImage == null))
                 {
-                    this._BackgroundImage = this.transform.Find("Background").GetComponent<Image>();
+                    this._BackgroundImage = this.transform.findByPath("./Background").GetComponent<Image>();
                 }
                 return this._BackgroundImage;
             }
         }
         [SerializeField()]
+        [AutoCompo(39648, "./Background/Checkmark")]
         private Image _CheckmarkImage;
         public Image CheckmarkImage
         {
@@ -64,12 +63,13 @@ namespace UI
             {
                 if ((this._CheckmarkImage == null))
                 {
-                    this._CheckmarkImage = this.transform.Find("Background").Find("Checkmark").GetComponent<Image>();
+                    this._CheckmarkImage = this.transform.findByPath("./Background/Checkmark").GetComponent<Image>();
                 }
                 return this._CheckmarkImage;
             }
         }
         [SerializeField()]
+        [AutoCompo(39660, "./Label")]
         private Text _LabelText;
         public Text LabelText
         {
@@ -77,11 +77,10 @@ namespace UI
             {
                 if ((this._LabelText == null))
                 {
-                    this._LabelText = this.transform.Find("Label").GetComponent<Text>();
+                    this._LabelText = this.transform.findByPath("./Label").GetComponent<Text>();
                 }
                 return this._LabelText;
             }
         }
-        partial void onAwake();
     }
 }

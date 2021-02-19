@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -90,6 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  comment: 
 --- !u!1 &4783794010954918118
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,6 +152,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -224,6 +227,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -332,13 +336,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7352199848930429589}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f869b1b1b36d6740b8612bb6d6afc37, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b872b0a57dd0a3458bbf27ad61d802e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  m_as_Toggle: {fileID: 6427973559208554292}
-  _BackgroundImage: {fileID: 6324897708208857870}
-  _CheckmarkImage: {fileID: 6294026878706365035}
-  _LabelText: {fileID: 5374012522724491368}
+  _as_Toggle: {fileID: 0}
+  _BackgroundImage: {fileID: 0}
+  _CheckmarkImage: {fileID: 0}
+  _LabelText: {fileID: 0}

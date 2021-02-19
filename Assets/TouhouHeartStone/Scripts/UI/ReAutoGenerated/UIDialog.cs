@@ -10,43 +10,42 @@
 
 namespace UI
 {
-    using System;
-    using UnityEngine;
-    using UnityEngine.UI;
     using BJSYGameCore.UI;
+    using UnityEngine;
+    using BJSYGameCore.AutoCompo;
+    using System;
+    using UnityEngine.UI;
+    using UI;
     
+    [AutoCompoAttribute(19638)]
     public partial class UIDialog : UIObject
     {
-        protected override void Awake()
+        public void init()
         {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
-        }
-        public void autoBind()
-        {
-            this.m_as_Image = this.GetComponent<Image>();
-            this._DialogImage = this.transform.Find("Dialog").GetComponent<Image>();
-            this._TitleText = this.transform.Find("Dialog").Find("Title").GetComponent<Text>();
-            this._ContentText = this.transform.Find("Dialog").Find("Content").GetComponent<Text>();
-            this._ButtonsHorizontalLayoutGroup = this.transform.Find("Dialog").Find("Buttons").GetComponent<HorizontalLayoutGroup>();
-            this._ConfirmButtonBlack = this.transform.Find("Dialog").Find("Buttons").Find("Confirm").GetComponent<ButtonBlack>();
-            this._CancleButtonBlack = this.transform.Find("Dialog").Find("Buttons").Find("Cancle").GetComponent<ButtonBlack>();
+            this.as_Image = this.transform.findByPath("./").GetComponent<Image>();
+            this._DialogImage = this.transform.findByPath("./Dialog").GetComponent<Image>();
+            this._TitleText = this.transform.findByPath("./Dialog/Title").GetComponent<Text>();
+            this._ContentText = this.transform.findByPath("./Dialog/Content").GetComponent<Text>();
+            this._ButtonsHorizontalLayoutGroup = this.transform.findByPath("./Dialog/Buttons").GetComponent<HorizontalLayoutGroup>();
+            this._ConfirmButtonBlack = this.transform.findByPath("./Dialog/Buttons/Confirm").GetComponent<ButtonBlack>();
+            this._CancleButtonBlack = this.transform.findByPath("./Dialog/Buttons/Cancle").GetComponent<ButtonBlack>();
         }
         [SerializeField()]
-        private Image m_as_Image;
-        public Image asImage
+        [AutoCompo(57970, "./")]
+        private Image as_Image;
+        public Image m_as_Image
         {
             get
             {
                 if ((this.m_as_Image == null))
                 {
-                    this.m_as_Image = this.GetComponent<Image>();
+                    this.as_Image = this.transform.findByPath("./").GetComponent<Image>();
                 }
                 return this.m_as_Image;
             }
         }
         [SerializeField()]
+        [AutoCompo(58410, "./Dialog")]
         private Image _DialogImage;
         public Image DialogImage
         {
@@ -54,12 +53,13 @@ namespace UI
             {
                 if ((this._DialogImage == null))
                 {
-                    this._DialogImage = this.transform.Find("Dialog").GetComponent<Image>();
+                    this._DialogImage = this.transform.findByPath("./Dialog").GetComponent<Image>();
                 }
                 return this._DialogImage;
             }
         }
         [SerializeField()]
+        [AutoCompo(58368, "./Dialog/Title")]
         private Text _TitleText;
         public Text TitleText
         {
@@ -67,12 +67,13 @@ namespace UI
             {
                 if ((this._TitleText == null))
                 {
-                    this._TitleText = this.transform.Find("Dialog").Find("Title").GetComponent<Text>();
+                    this._TitleText = this.transform.findByPath("./Dialog/Title").GetComponent<Text>();
                 }
                 return this._TitleText;
             }
         }
         [SerializeField()]
+        [AutoCompo(58622, "./Dialog/Content")]
         private Text _ContentText;
         public Text ContentText
         {
@@ -80,12 +81,13 @@ namespace UI
             {
                 if ((this._ContentText == null))
                 {
-                    this._ContentText = this.transform.Find("Dialog").Find("Content").GetComponent<Text>();
+                    this._ContentText = this.transform.findByPath("./Dialog/Content").GetComponent<Text>();
                 }
                 return this._ContentText;
             }
         }
         [SerializeField()]
+        [AutoCompo(58586, "./Dialog/Buttons")]
         private HorizontalLayoutGroup _ButtonsHorizontalLayoutGroup;
         public HorizontalLayoutGroup ButtonsHorizontalLayoutGroup
         {
@@ -93,12 +95,13 @@ namespace UI
             {
                 if ((this._ButtonsHorizontalLayoutGroup == null))
                 {
-                    this._ButtonsHorizontalLayoutGroup = this.transform.Find("Dialog").Find("Buttons").GetComponent<HorizontalLayoutGroup>();
+                    this._ButtonsHorizontalLayoutGroup = this.transform.findByPath("./Dialog/Buttons").GetComponent<HorizontalLayoutGroup>();
                 }
                 return this._ButtonsHorizontalLayoutGroup;
             }
         }
         [SerializeField()]
+        [AutoCompo(58548, "./Dialog/Buttons/Confirm")]
         private ButtonBlack _ConfirmButtonBlack;
         public ButtonBlack ConfirmButtonBlack
         {
@@ -106,12 +109,13 @@ namespace UI
             {
                 if ((this._ConfirmButtonBlack == null))
                 {
-                    this._ConfirmButtonBlack = this.transform.Find("Dialog").Find("Buttons").Find("Confirm").GetComponent<ButtonBlack>();
+                    this._ConfirmButtonBlack = this.transform.findByPath("./Dialog/Buttons/Confirm").GetComponent<ButtonBlack>();
                 }
                 return this._ConfirmButtonBlack;
             }
         }
         [SerializeField()]
+        [AutoCompo(58084, "./Dialog/Buttons/Cancle")]
         private ButtonBlack _CancleButtonBlack;
         public ButtonBlack CancleButtonBlack
         {
@@ -119,11 +123,10 @@ namespace UI
             {
                 if ((this._CancleButtonBlack == null))
                 {
-                    this._CancleButtonBlack = this.transform.Find("Dialog").Find("Buttons").Find("Cancle").GetComponent<ButtonBlack>();
+                    this._CancleButtonBlack = this.transform.findByPath("./Dialog/Buttons/Cancle").GetComponent<ButtonBlack>();
                 }
                 return this._CancleButtonBlack;
             }
         }
-        partial void onAwake();
     }
 }

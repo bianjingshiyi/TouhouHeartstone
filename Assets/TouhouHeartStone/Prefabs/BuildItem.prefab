@@ -230,6 +230,7 @@ GameObject:
   - component: {fileID: 4463782856574593951}
   - component: {fileID: 2594877593721268571}
   - component: {fileID: 5250384632909673774}
+  - component: {fileID: -2682324548078088855}
   m_Layer: 5
   m_Name: BuildItem
   m_TagString: Untagged
@@ -363,6 +364,50 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 2594877593721268571}
+--- !u!114 &-2682324548078088855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 25190989478303462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b09a8f95af01db41aeae45c4549a590, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ui: {fileID: 0}
+  _useController: 0
+  _initStates: []
+  m_as_Button: {fileID: 0}
+  _Card_1: {fileID: 0}
+  _Card_2: {fileID: 0}
+  _Card_3: {fileID: 0}
+  _Card_4: {fileID: 0}
+  _Card_5: {fileID: 0}
+  onFatigue:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  _isHovered: 0
+  M_as_Image: {fileID: 0}
+  _RootMask: {fileID: 0}
+  _NumText: {fileID: 0}
+  _MaskImage: {fileID: 0}
+  _Mask: {fileID: 0}
+  _Image: {fileID: 0}
+  _FadeImage: {fileID: 0}
+  _Text: {fileID: 0}
+  _Root_Image: {fileID: 0}
+  _Image_Image: {fileID: 0}
 --- !u!1 &25190989714330578
 GameObject:
   m_ObjectHideFlags: 0

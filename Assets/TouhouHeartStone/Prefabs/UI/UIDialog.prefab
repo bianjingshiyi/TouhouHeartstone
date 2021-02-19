@@ -381,13 +381,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7699858036256088834}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7dec39de2cd184b43bfab3c86a351fd4, type: 3}
+  m_Script: {fileID: 11500000, guid: b6b4864835c24254293d5d810154e2dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  m_as_Image: {fileID: 4218215607666084739}
+  as_Image: {fileID: 0}
   _DialogImage: {fileID: 1436135214444625130}
   _TitleText: {fileID: 7935779080222365966}
   _ContentText: {fileID: 2818716983633407219}
