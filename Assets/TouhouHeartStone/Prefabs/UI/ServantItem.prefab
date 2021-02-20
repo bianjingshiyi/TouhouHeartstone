@@ -933,6 +933,21 @@ PrefabInstance:
       propertyPath: WhiteText.beforeAnim.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_StringArgument
       value: isGreen
       objectReference: {fileID: 0}
+    - target: {fileID: 1137285152866149335, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1137285152866149335, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1137285152866149335, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1294236017285449946, guid: 0bd8730dcc8a6824da51d94b28d874e4,
         type: 3}
       propertyPath: m_IsActive
@@ -956,6 +971,21 @@ PrefabInstance:
     - target: {fileID: 3545342944535199815, guid: 0bd8730dcc8a6824da51d94b28d874e4,
         type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3893702282449622853, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: m_EffectColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3893702282449622853, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: m_EffectColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3893702282449622853, guid: 0bd8730dcc8a6824da51d94b28d874e4,
+        type: 3}
+      propertyPath: m_EffectColor.b
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4332720647846049059, guid: 0bd8730dcc8a6824da51d94b28d874e4,
