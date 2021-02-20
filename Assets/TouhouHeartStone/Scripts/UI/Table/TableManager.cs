@@ -107,14 +107,29 @@ namespace Game
 
             if (game == null)
                 return;
-            if (game.turnTimer != null && game.turnTimer.remainedTime <= 15)
+
+            // patch: 我不知道怎么改AutoCompo所以先Patch一个
+            var clock = ui.TurnEndButton.GetComponent<TurnEndClock>();
+
+            if (game.turnTimer != null)
             {
-                ui.TimeoutSlider.display();
-                ui.TimeoutSlider.value = game.turnTimer.remainedTime / 15;
-                ui.TimeoutSlider.fillRect.GetComponent<Image>().color = timeoutGradient.Evaluate(1 - ui.TimeoutSlider.value);
+                clock?.SetCountdown(game.turnTimer.remainedTime);
+
+                if (game.turnTimer.remainedTime <= 15)
+                {
+                    ui.TimeoutSlider.display();
+                    ui.TimeoutSlider.value = game.turnTimer.remainedTime / 15;
+                    ui.TimeoutSlider.fillRect.GetComponent<Image>().color = timeoutGradient.Evaluate(1 - ui.TimeoutSlider.value);
+                }
             }
             else
+            {
+                clock?.SetCountdown(0);
                 ui.TimeoutSlider.hide();
+            }
+
+            clock?.SetTurnState(canControl);
+
             //随从牌使用预览
             if (_handToFieldAnim != null)
             {
