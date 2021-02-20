@@ -333,12 +333,12 @@ namespace TouhouHeartstone.Builtin
         {
             new THHEffectAfter<THHCard.DeathEventArg>(PILE.FIELD,(g,c,a)=>
             {
-                return a.infoDic.Any(c1 => c1.Key.getOwner() == c.getOwner()) && !a.infoDic.Any(c1 => c1.Key == c);
+                return !a.infoDic.Any(c1 => c1.Key == c);
             }, null, async (g, c, a) =>
             {            
                 foreach(var death in a.infoDic)
                 {
-                    if(death.Key.getOwner() == c.getOwner() && c.getOwner().hand.count<c.getOwner().hand.maxCount)
+                    if(c.getOwner().hand.count<c.getOwner().hand.maxCount)
                     {
                         await c.getOwner().addCardToHand<GhostOfHatred>(g);
                     }
