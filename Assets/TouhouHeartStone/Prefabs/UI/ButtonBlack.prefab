@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1286695113556157963}
   - component: {fileID: 1815665823035459475}
   - component: {fileID: 5128283422621156761}
+  - component: {fileID: 1148716369699083904}
   m_Layer: 5
   m_Name: ButtonBlack
   m_TagString: Untagged
@@ -120,18 +121,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7585412073753697559}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5128283422621156761}
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1815665823035459475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,6 +153,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   se_name: Button
+--- !u!114 &1148716369699083904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 490584239171898832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c13fe0d66de7674c9436e3d00937ab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onPointerDown:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5128283422621156761}
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onPointerUp:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2041035203158414731
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,3 +272,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  comment: 
