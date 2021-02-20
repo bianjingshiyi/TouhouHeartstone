@@ -244,7 +244,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Rin.ID | CATEGORY.SPELL | 0x010;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 4;
+        public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)

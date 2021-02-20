@@ -199,6 +199,33 @@ namespace Tests
         }
 
         [Test]
+        public void DoubleCatWalkTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo, Rin.ID,
+                new KeyValuePair<int, int>(CatWalk.ID, 2));
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse<DefaultServant>(game, out var servant);
+            servant.setCurrentLife(game, 3);
+            game.skipTurnUntil((() => you.hand.Count(c => c.define is CatWalk) == 2 && you.gem > 4));
+            for (int i = 0; i < 2; i++)
+            {
+                you.cmdUse<CatWalk>(game);
+            }
+            Assert.AreEqual(1, oppo.field.count);
+            Assert.AreEqual(6, you.master.getAttack(game));
+            Assert.True(you.master.canAttack(game));
+            you.cmdAttack(game, you.master, oppo.field[0]);
+            Assert.AreEqual(0, oppo.field.count);
+            Assert.True(you.master.canAttack(game));
+            you.cmdAttack(game, you.master, oppo.master);
+            Assert.True(you.master.canAttack(game));
+            you.cmdAttack(game, you.master, oppo.master);
+            Assert.False(you.master.canAttack(game));
+            game.Dispose();
+        }
+
+
+        [Test]
         public void GhostTownTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo, Rin.ID,
@@ -216,7 +243,7 @@ namespace Tests
             int id = discoverRequest.cardIdArray[0];
             you.cmdDiscover(game, id);
             Assert.AreEqual(handCount, you.hand.count);
-            Assert.True(you.hand[handCount-1].define is ZombieFairy);
+            Assert.True(you.hand[handCount - 1].define is ZombieFairy);
             Assert.AreEqual(2, you.field.count);
             Assert.AreEqual(2, you.field.Count(c => c.define is GhostOfHatred));
             game.Dispose();
@@ -228,22 +255,22 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo, Rin.ID,
                 new KeyValuePair<int, int>(CorpseTruck.ID, 2));
             game.skipUntilCanUse<CorpseTruck>(you);
-            game.skipUntilHasGem(you,10);
+            game.skipUntilHasGem(you, 10);
             you.cmdUse<CorpseTruck>(game, out var card);
             int handCount = you.hand.count;
             you.cmdUse(game, you.skill);
             you.cmdAttack(game, you.master, oppo.master);
-            Assert.AreEqual(handCount+1, you.hand.count);
+            Assert.AreEqual(handCount + 1, you.hand.count);
             you.cmdUse<CorpseTruck>(game);
             you.cmdUse<DefaultServant>(game);
             handCount = you.hand.count;
-            Assert.AreEqual(2,you.field.Count(c=>c.define is CorpseTruck));
+            Assert.AreEqual(2, you.field.Count(c => c.define is CorpseTruck));
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
             you.cmdUse<DefaultServant>(game);
             you.cmdUse(game, you.skill);
             you.cmdAttack(game, you.master, oppo.master);
-            Assert.AreEqual(handCount+2, you.hand.count);
+            Assert.AreEqual(handCount + 2, you.hand.count);
             game.Dispose();
         }
 
@@ -260,14 +287,14 @@ namespace Tests
             card.setDead(game, true);
             game.updateDeath(game);
             Assert.AreEqual(handCount, you.hand.count);
-            Assert.True(you.hand[handCount-1].define is GhostOfHatred);
+            Assert.True(you.hand[handCount - 1].define is GhostOfHatred);
 
             you.field[0].setDead(game, true);
             game.updateDeath(game);
             you.cmdUse<DefaultServant>(game, out card);
             card.setDead(game, true);
             game.updateDeath(game);
-            Assert.AreEqual(handCount-1, you.hand.count);
+            Assert.AreEqual(handCount - 1, you.hand.count);
 
             game.Dispose();
         }
@@ -277,7 +304,7 @@ namespace Tests
         {
             TestGameflow.createGame(out var game, out var you, out var oppo, Rin.ID,
                 new KeyValuePair<int, int>(CorpseShoppingDistrict.ID, 2),
-                new KeyValuePair<int, int>(ZombieFairy.ID,1));
+                new KeyValuePair<int, int>(ZombieFairy.ID, 1));
             game.skipUntilCanUse<DefaultServant>(you);
             you.cmdUse<DefaultServant>(game, out var s);
             s.setDead(game, true);
@@ -295,35 +322,36 @@ namespace Tests
             s.setDead(game, true);
             game.updateDeath(game);
             //此时场上有一个由丧失妖精召唤的怨灵
-            Assert.AreEqual(1,you.field.count);
+            Assert.AreEqual(1, you.field.count);
             game.skipUntilCanUse<CorpseShoppingDistrict>(you);
             you.cmdUse<CorpseShoppingDistrict>(game);
             //丧失妖精复活，场上只有一个怨灵
             Assert.AreEqual(2, you.field.count);
-            Assert.AreEqual(1,you.field.Count(c=>c.define is GhostOfHatred));
+            Assert.AreEqual(1, you.field.Count(c => c.define is GhostOfHatred));
             //白板仍未被复活，且墓地中无亡语随从
             Assert.AreEqual(1, you.grave.Count(c => c.define is ServantCardDefine));
-            Assert.AreEqual(0, you.grave.Count(c => c.define is ServantCardDefine && c.hasKeyword(game, KEYWORD._DeathRattle)));
+            Assert.AreEqual(0,
+                you.grave.Count(c => c.define is ServantCardDefine && c.hasKeyword(game, KEYWORD._DeathRattle)));
             you.cmdTurnEnd(game);
             game.skipUntilYourTurn(you);
             //丧失妖精死亡，召唤一只怨灵
             Assert.AreEqual(2, you.field.count);
-            Assert.AreEqual(2,you.field.Count(c=>c.define is GhostOfHatred));
+            Assert.AreEqual(2, you.field.Count(c => c.define is GhostOfHatred));
             Debug.Log("测试完成");
             game.Dispose();
         }
-        
+
         [Test]
         public void CatRandomWalkTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo, Rin.ID,
                 new KeyValuePair<int, int>(CatRandomWalk.ID, 2),
-                new KeyValuePair<int, int>(FireBall.ID,20));
+                new KeyValuePair<int, int>(FireBall.ID, 20));
             game.skipUntilCanUse<CatRandomWalk>(you);
             you.cmdUse<CatRandomWalk>(game);
-            Assert.AreEqual(4,you.grave.count);
-            Assert.AreEqual(3,you.grave.Count(c=>c.define is DefaultServant));
-            Assert.AreEqual(3,you.master.getAttack(game));
+            Assert.AreEqual(4, you.grave.count);
+            Assert.AreEqual(3, you.grave.Count(c => c.define is DefaultServant));
+            Assert.AreEqual(3, you.master.getAttack(game));
             game.Dispose();
         }
 
@@ -333,22 +361,22 @@ namespace Tests
                 new KeyValuePair<int, int>(HellTrafficAccident.ID, 2));
             game.skipUntilCanUse<HellTrafficAccident>(you);
             you.cmdUse<HellTrafficAccident>(game);
-            Assert.AreEqual(0,oppo.grave.count);
-            Assert.AreEqual(0,you.grave.count);
+            Assert.AreEqual(0, oppo.grave.count);
+            Assert.AreEqual(0, you.grave.count);
             for (int i = 0; i < 3; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
                 oppo.cmdUse<DefaultServant>(game, out var s);
-                s.setDead(game,true);
+                s.setDead(game, true);
             }
+
             game.updateDeath(game);
-            Assert.AreEqual(3,oppo.grave.count);
+            Assert.AreEqual(3, oppo.grave.count);
             game.skipUntilCanUse<HellTrafficAccident>(you);
             you.cmdUse<HellTrafficAccident>(game);
-            Assert.AreEqual(3,you.grave.count);
-            Assert.AreEqual(you,you.grave[0].getOwner());
+            Assert.AreEqual(3, you.grave.count);
+            Assert.AreEqual(you, you.grave[0].getOwner());
             game.Dispose();
         }
-        
     }
 }
