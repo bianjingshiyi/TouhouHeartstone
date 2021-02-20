@@ -213,7 +213,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await target.setDead(game,true);
                 await game.updateDeath(game);
-            })
+            },PileFlag.self | PileFlag.field)
         };
     }
 
