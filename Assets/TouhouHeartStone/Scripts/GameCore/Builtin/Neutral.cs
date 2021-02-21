@@ -1413,7 +1413,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 键山雏
-    /// 部署:沉默一个友方随从
+    /// 部署:沉默相邻的友方随从
     /// </summary>
     public class KagiyamaHina_N : ServantCardDefine
     {

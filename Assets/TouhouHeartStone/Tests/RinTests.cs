@@ -204,7 +204,7 @@ namespace Tests
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse<DefaultServant>(game, out var servant);
             servant.setCurrentLife(game, 3);
-            game.skipTurnUntil((() => you.hand.Count(c => c.define is CatWalk) == 2 && you.gem > 4));
+            game.skipTurnUntil(() => you.hand.Count(c => c.define is CatWalk) == 2 && you.gem > 4);
             for (int i = 0; i < 2; i++)
             {
                 you.cmdUse<CatWalk>(game);
