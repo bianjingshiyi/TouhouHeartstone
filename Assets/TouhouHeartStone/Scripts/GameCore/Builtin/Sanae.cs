@@ -109,7 +109,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 星之仪式
-    /// 信仰对决 将一张全新的“星之仪式”置入手牌；获胜时改为抽一张法力值消耗最高的牌
+    /// 
     /// </summary>
     public class StarRitual : SpellCardDefine
     {
@@ -127,16 +127,34 @@ namespace TouhouHeartstone.Builtin
             var duel = await Sanae.revealDuel(you,game);
             if (duel.result)
             {
-                //遍历牌库寻找法力消耗最高的牌
-                Card _card = card.getOwner().deck.top;
-                foreach (Card c in card.getOwner().deck)
+                Card _card = duel.youCard;
+                bool x = true;
+                foreach(Card c in you.deck)
                 {
                     if (c.getCost(game) > _card.getCost(game))
                     {
-                        _card = c;
+                        x = false;
+                        break;
                     }
                 }
-                await card.getOwner().draw(game, _card);
+                if (x)
+                {
+                    await card.getOwner().draw(game, _card);
+                }
+                else
+                {
+                    await you.addCardToHand<StarRitual>(game);
+                }
+                ////遍历牌库寻找法力消耗最高的牌
+                //Card _card = card.getOwner().deck.top;
+                //foreach (Card c in card.getOwner().deck)
+                //{
+                //    if (c.getCost(game) > _card.getCost(game))
+                //    {
+                //        _card = c;
+                //    }
+                //}
+                //await card.getOwner().draw(game, _card);
             }
             else
             {
@@ -635,14 +653,14 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = { TAG.GOD };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<Sanae.RevealDuelArg>(PILE.HAND,
-                (game, card, arg) =>
-                {
-                    return arg.player == card.getOwner();
-                },null,async(game,card,arg)=>
-                {
-                    await card.addBuff(game,new GeneratedBuff(ID,new CostModifier(-1)));
-                }),
+            //new THHEffectAfter<Sanae.RevealDuelArg>(PILE.HAND,
+            //    (game, card, arg) =>
+            //    {
+            //        return arg.player == card.getOwner();
+            //    },null,async(game,card,arg)=>
+            //    {
+            //        await card.addBuff(game,new GeneratedBuff(ID,new CostModifier(-1)));
+            //    }),
             new DeathRattle(ID, async (game, card, p) =>
             {
                 int index = game.randomInt(1,4);
@@ -669,7 +687,17 @@ namespace TouhouHeartstone.Builtin
                         await card.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
                         break;
                 }
-            })
+            }),
+            new IntPropFixer<Sanae.RevealDuelArg>(PileFlag.hand,new IntPropFixer<Sanae.RevealDuelArg>.ModifierFixer(new CostModifier(0),(g,c,b,a)=>
+            {
+                int v = g.triggers.getRecordedEvents().
+                        skipUntilLast(e=> e is THHGame.StartEventArg GameStart).
+                        OfType<Sanae.RevealDuelArg>().
+                        Where(e2=>e2.player == c.getOwner()).Count();
+                g.logger.log(c+"的花费=>"+v);
+                return -v;
+            }))
+
         };
         
         
@@ -762,15 +790,24 @@ namespace TouhouHeartstone.Builtin
        // public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<Sanae.RevealDuelArg>(PILE.HAND,
-                (game, card, arg) =>
-                {
-                    return arg.player == card.getOwner();
-                },null,async(game,card,arg)=>
-                {
-                    await card.addBuff(game,new GeneratedBuff(ID,new CostModifier(-1)));
-                }),
-            new NoTargetEffect(effect)
+            //new THHEffectAfter<Sanae.RevealDuelArg>(PILE.HAND,
+            //    (game, card, arg) =>
+            //    {
+            //        return arg.player == card.getOwner();
+            //    },null,async(game,card,arg)=>
+            //    {
+            //        await card.addBuff(game,new GeneratedBuff(ID,new CostModifier(-1)));
+            //    }),
+            new NoTargetEffect(effect),
+            new IntPropFixer<Sanae.RevealDuelArg>(PileFlag.hand,new IntPropFixer<Sanae.RevealDuelArg>.ModifierFixer(new CostModifier(0),(g,c,b,a)=>
+            {
+                int v = g.triggers.getRecordedEvents().
+                        skipUntilLast(e=> e is THHGame.StartEventArg GameStart).
+                        OfType<Sanae.RevealDuelArg>().
+                        Where(e2=>e2.player == c.getOwner()).Count();
+                g.logger.log(c+"的花费=>"+v);
+                return -v;
+            }))
         };
         static async Task effect(THHGame game, Card card)
         {
