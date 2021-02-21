@@ -975,7 +975,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            await game.getAllServants().damageByRandomCount(game, card, 6, 1);
+            await game.getAllServants().damageByRandom(game, card, 6);
         }
     }
 }
