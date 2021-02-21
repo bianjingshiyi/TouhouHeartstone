@@ -342,17 +342,17 @@ namespace TouhouHeartstone
                  if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
                  {
                      await tryEnterField(game, arg.player.hand, arg.card, arg.position);//随从卡，将卡置入战场
-                    await card.ComeOnStage(game, player, targets);//触发战吼事件
-                                                                  //await card.activeEffect(game, player, targets);//执行随从效果
-                }
+                     await card.ComeOnStage(game, player, targets);//触发战吼事件
+                                                                   //await card.activeEffect(game, player, targets);//执行随从效果
+                 }
                  else if (card.define is SkillCardDefine)
                  {
                      await card.activeEffect(game, player, targets);
                  }
                  else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SPELL))
                  {
-                    //法术卡,释放效果
-                    await player.hand.moveTo(game, card, player.warp);
+                     //法术卡,释放效果
+                     await player.hand.moveTo(game, card, player.warp);
                      if (card.hasKeyword(game, KEYWORD.SECRET))
                          await tryEnterHead(game, warp, card);
                      else
@@ -363,12 +363,12 @@ namespace TouhouHeartstone
                              await player.warp.moveTo(game, card, player.hand);
                          }
                          await player.warp.moveTo(game, card, player.grave);//如果是普通法术，则送入墓地
-                    }
+                     }
                  }
                  else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == DEFINE.ITEM))
                  {
-                    //物品卡，置入物品栏
-                    await player.equip(game, card);
+                     //物品卡，置入物品栏
+                     await player.equip(game, card);
                      await card.activeEffect(game, player, targets);
                  }
              });
@@ -758,7 +758,6 @@ namespace TouhouHeartstone
                             game.logger.log("揭示了{card:" + show.define.id + "}");
                         });
                         return show;
-
                     }
                     else
                     {
@@ -768,7 +767,6 @@ namespace TouhouHeartstone
                         });
                         return show;
                     }
-
                 case 1:
                     if (cards.Count(c => c.isSpell()) > 0)
                     {

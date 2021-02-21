@@ -201,13 +201,13 @@ namespace TouhouHeartstone
         public THHEffectAfter(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute, string name = null) :
         base(new After<T>(), pile, (game, card, vars) =>
         {
-            if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
+            if (onCheckCondition != null && vars != null && vars.Length > 0 && vars.OfType<T>().FirstOrDefault() is T t)
                 return onCheckCondition.Invoke(game, card, t);
             else
                 return true;
         }, onCheckTarget, (game, card, vars, targets) =>
         {
-            if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
+            if (onExecute != null && vars != null && vars.Length > 0 && vars.OfType<T>().FirstOrDefault() is T t)
                 return onExecute.Invoke(game, card, t);
             else
                 return Task.CompletedTask;
@@ -217,13 +217,13 @@ namespace TouhouHeartstone
         public THHEffectAfter(PileFlag pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
         base(new TriggerTime[] { new After<T>() }, pile.getPiles(), (game, card, vars) =>
         {
-            if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
+            if (onCheckCondition != null && vars != null && vars.Length > 0 && vars.OfType<T>().FirstOrDefault() is T t)
                 return onCheckCondition.Invoke(game, card, t);
             else
                 return true;
         }, onCheckTarget, (game, card, vars, targets) =>
         {
-            if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
+            if (onExecute != null && vars != null && vars.Length > 0 && vars.OfType<T>().FirstOrDefault() is T t)
                 return onExecute.Invoke(game, card, t);
             else
                 return Task.CompletedTask;
@@ -233,14 +233,18 @@ namespace TouhouHeartstone
         public THHEffectAfter(PileFlag pile, CheckConditionBuffedDelegate onCheckCondition, ExecuteBuffedDelegate onExecute) :
         base(new TriggerTime[] { new After<T>() }, pile.getPiles(), (game, card, vars) =>
         {
-            if (onCheckCondition != null && vars != null && vars.Length > 1 && vars[0] is Buff buff && vars[1] is T t)
+            if (onCheckCondition != null && vars != null && vars.Length > 1 &&
+                vars.OfType<Buff>().FirstOrDefault() is Buff buff &&
+                vars.OfType<T>().FirstOrDefault() is T t)
                 return onCheckCondition(game, card, buff, t);
             else
                 return true;
         }, (game, card, vars) => true,
         (game, card, vars, targets) =>
         {
-            if (onExecute != null && vars != null && vars.Length > 1 && vars[0] is Buff buff && vars[1] is T t)
+            if (onExecute != null && vars != null && vars.Length > 1 &&
+                vars.OfType<Buff>().FirstOrDefault() is Buff buff &&
+                vars.OfType<T>().FirstOrDefault() is T t)
                 return onExecute(game, card, buff, t);
             else
                 return Task.CompletedTask;

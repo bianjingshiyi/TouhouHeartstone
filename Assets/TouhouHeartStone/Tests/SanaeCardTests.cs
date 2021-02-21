@@ -19,7 +19,7 @@ namespace Tests
         [Test]
         public void sanaeSkillTest()
         {
-            THHGame game = TestGameflow.initStandardGame(null, new int[] {0, 1},
+            THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
                 Enumerable.Repeat(new Sanae(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
                 new GameOption() { });
@@ -67,8 +67,8 @@ namespace Tests
         public void StarRitualTest()
         {
             TestGameflow.createGame<FireBall, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption() {shuffle = false},
-                Sanae.ID, new[] {new KeyValuePair<int, int>(StarRitual.ID, 2)},
+                new GameOption() { shuffle = false },
+                Sanae.ID, new[] { new KeyValuePair<int, int>(StarRitual.ID, 2) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<StarRitual>(you);
             int count = you.hand.count;
@@ -111,8 +111,8 @@ namespace Tests
         public void CharmOfGoodCommerceTest()
         {
             TestGameflow.createGame<FlyingSnake, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption() {shuffle = false},
-                Sanae.ID, new[] {new KeyValuePair<int, int>(CharmOfGoodCommerce.ID, 2)},
+                new GameOption() { shuffle = false },
+                Sanae.ID, new[] { new KeyValuePair<int, int>(CharmOfGoodCommerce.ID, 2) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
@@ -156,8 +156,8 @@ namespace Tests
         public void GuestStarsMiracleTest()
         {
             TestGameflow.createGame<FlyingSnake, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption() {shuffle = false},
-                Sanae.ID, new[] {new KeyValuePair<int, int>(GuestStarsMiracle.ID, 1)},
+                new GameOption() { shuffle = false },
+                Sanae.ID, new[] { new KeyValuePair<int, int>(GuestStarsMiracle.ID, 1) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             for (int i = 0; i < 3; i++)
             {
@@ -181,8 +181,8 @@ namespace Tests
         public void OpenSeaMiracleTest()
         {
             TestGameflow.createGame<FlyingSnake, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption {shuffle = false},
-                Sanae.ID, new[] {new KeyValuePair<int, int>(OpenSeaMiracle.ID, 2)},
+                new GameOption { shuffle = false },
+                Sanae.ID, new[] { new KeyValuePair<int, int>(OpenSeaMiracle.ID, 2) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             for (int i = 0; i < 3; i++)
             {
@@ -243,8 +243,8 @@ namespace Tests
         public void GodSummonTest()
         {
             TestGameflow.createGame<YasakaKanako, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption {shuffle = false},
-                Sanae.ID, new[] {new KeyValuePair<int, int>(GodSummon.ID, 2)},
+                new GameOption { shuffle = false },
+                Sanae.ID, new[] { new KeyValuePair<int, int>(GodSummon.ID, 2) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse<DefaultServant>(game, out Card enemy);
@@ -310,8 +310,8 @@ namespace Tests
         public void OrochiOfAncientTimesTest()
         {
             TestGameflow.createGame<OrochiOfAncientTimes, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption {shuffle = false},
-                Sanae.ID, new[] {new KeyValuePair<int, int>(StarRitual.ID, 1)},
+                new GameOption { shuffle = false },
+                Sanae.ID, new[] { new KeyValuePair<int, int>(StarRitual.ID, 1) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse<DefaultServant>(game, out Card enemServant);
@@ -331,8 +331,8 @@ namespace Tests
         public void YasakaKanakoTest()
         {
             TestGameflow.createGame<StarRitual, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption {shuffle = false},
-                Sanae.ID, new[] {new KeyValuePair<int, int>(YasakaKanako.ID, 4)},
+                new GameOption { shuffle = false },
+                Sanae.ID, new[] { new KeyValuePair<int, int>(YasakaKanako.ID, 4) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilHasGem(you, 10);
             for (int i = 0; i < 5; i++)
@@ -387,8 +387,8 @@ namespace Tests
         public void MoriyaSuwakoTest()
         {
             TestGameflow.createGame<StarRitual, SorcererApprentice>(out var game, out var you, out var oppo,
-                new GameOption {shuffle = false},
-                Sanae.ID, new[] {new KeyValuePair<int, int>(MoriyaSuwako.ID, 4)},
+                new GameOption { shuffle = false },
+                Sanae.ID, new[] { new KeyValuePair<int, int>(MoriyaSuwako.ID, 4) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilHasGem(you, 10);
             int cost = you.hand.getCard<MoriyaSuwako>().getCost(game);
@@ -430,7 +430,38 @@ namespace Tests
                 }
             }
         }
-
+        [Test]
+        public void suwakoReduceCostTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out _,
+                new KeyValuePair<int, int>(InvokeCard.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 5),
+                new KeyValuePair<int, int>(MoriyaSuwako.ID, 1));
+            //打一张祈求牌
+            game.skipUntilCanUse<InvokeCard>(you);
+            you.cmdUse<InvokeCard>(game);
+            //预期诹访子保持原费用
+            Assert.AreEqual(you.deck.getCard<MoriyaSuwako>().define.getCost(), you.deck.getCard<MoriyaSuwako>().getCost(game));
+            game.skipTurnUntil(() => you.hand.getCard<MoriyaSuwako>() != null);
+            Card suwako = you.hand.getCard<MoriyaSuwako>();
+            Assert.AreEqual(suwako.define.getCost() - 1, suwako.getCost(game));
+        }
+        [Test]
+        public void kamikazeReduceCostTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out _,
+                new KeyValuePair<int, int>(InvokeCard.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 5),
+                new KeyValuePair<int, int>(GodWind.ID, 1));
+            //打一张祈求牌
+            game.skipUntilCanUse<InvokeCard>(you);
+            you.cmdUse<InvokeCard>(game);
+            //预期诹访子保持原费用
+            Assert.AreEqual(you.deck.getCard<GodWind>().define.getCost(), you.deck.getCard<GodWind>().getCost(game));
+            game.skipTurnUntil(() => you.hand.getCard<GodWind>() != null);
+            Card suwako = you.hand.getCard<GodWind>();
+            Assert.AreEqual(suwako.define.getCost() - 1, suwako.getCost(game));
+        }
         [Test]
         public void SuwakoBackToFullHandTest()
         {
@@ -465,7 +496,12 @@ namespace Tests
         public void GodWindTest()
         {
             TestGameflow.createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo,
+                new KeyValuePair<int, int>(InvokeCard.ID, 1),
+                new KeyValuePair<int, int>(DefaultServant.ID, 5),
                 new KeyValuePair<int, int>(GodWind.ID, 1));
+            game.skipUntilCanUse<InvokeCard>(you);
+            you.cmdUse<InvokeCard>(game);
+            Assert.AreEqual(10, you.deck.getCard<GodWind>().getCost(game));
             for (int i = 0; i < 3; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
@@ -482,6 +518,7 @@ namespace Tests
             allServants.AddRange(you.field.ToArray());
             allServants.AddRange(oppo.field.ToArray());
             game.skipUntilCanUse<GodWind>(you);
+            Assert.AreEqual(9, you.hand.getCard<GodWind>().getCost(game));
             you.cmdUse<GodWind>(game);
             for (int i = 0; i < 6; i++)
             {
@@ -493,8 +530,8 @@ namespace Tests
         public void LittleShrineTest()
         {
             TestGameflow.createGame<FireBall, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption {shuffle = false},
-                Sanae.ID, new[] {new KeyValuePair<int, int>(LittleShrine.ID, 1)},
+                new GameOption { shuffle = false },
+                Sanae.ID, new[] { new KeyValuePair<int, int>(LittleShrine.ID, 1) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<LittleShrine>(you);
             int i = you.hand.count;

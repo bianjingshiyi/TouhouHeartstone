@@ -825,4 +825,20 @@ namespace Tests
             }, PileFlag.field | PileFlag.both)
         };
     }
+    /// <summary>
+    /// 祈求牌，不触发任何效果，只是提供一次祈求。
+    /// </summary>
+    public class InvokeCard : SpellCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x29;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect((g,c)=>
+            {
+                return Sanae.revealDuel(c.getOwner(),g);
+            })
+        };
+    }
 }
