@@ -34,11 +34,12 @@ namespace UI
                 Vector2 position;
                 position = EventSystem.current.currentInputModule.input.mousePosition;
                 onPointerMove?.invoke(this, position);
-                if (!rectTransform.contains(position))
-                {
-                    _isHovered = false;
-                    onPointerExit.invoke(this, null);
-                }
+                // 好像会有BUG，先关掉
+                // if (!rectTransform.contains(position))
+                // {
+                //     _isHovered = false;
+                //     onPointerExit.invoke(this, null);
+                // }
             }
         }
         public void OnBeginDrag(PointerEventData eventData)

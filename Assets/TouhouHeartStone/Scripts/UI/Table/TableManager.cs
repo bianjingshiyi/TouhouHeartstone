@@ -851,8 +851,8 @@ namespace Game
         private const String TAB_CARD_NUMBER = "{0}张手牌";
         void onHandPointerEnter(HandListItem handList, PointerEventData pointer)
         {
-            handList.onHoverCard.invokeAfterAnim();
             handList.onHoverCard.invokeBeforeAnim();
+            handList.onHoverCard.invokeAfterAnim();
             if (!ui.SelfHandList.isExpanded &&
                 player.hand.count > 0)
             {
@@ -865,8 +865,8 @@ namespace Game
         }
         void onHandPointerExit(HandListItem handList, PointerEventData pointer)
         {
-            handList.onexitHoverCard.invokeAfterAnim();
             handList.onexitHoverCard.invokeBeforeAnim();
+            handList.onexitHoverCard.invokeAfterAnim();
             ui.TipBox.hide();
         }
         /// <summary>

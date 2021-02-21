@@ -220,7 +220,12 @@ namespace BJSYGameCore
         public async Task<Texture2D> loadTextureBySystemIO(string path, string curDir)
         {
             Texture2D texture = new Texture2D(512, 512, TextureFormat.RGB24, true);
-            texture.LoadImage(await loadBytesBySystemIO(path, curDir));
+            var bytes = await loadBytesBySystemIO(path, curDir);
+            if (bytes == null)
+            {
+                throw new ArgumentNullException($"Fail to load {path}: data readed is null");
+            }
+            texture.LoadImage(bytes);
             return texture;
         }
 
