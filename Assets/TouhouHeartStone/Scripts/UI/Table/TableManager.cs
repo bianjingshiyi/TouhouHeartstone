@@ -32,7 +32,7 @@ namespace Game
         AnimationCurve _cardShowCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.2f, 1));
         public AnimationCurve cardShowCurve => _cardShowCurve;
         [SerializeField]
-        AnimationCurve _fieldToDeckCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 0.6f));
+        AnimationCurve _fieldToDeckCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.6f, 1));
         public AnimationCurve fieldToDeckCurve => _fieldToDeckCurve;
         [SerializeField]
         Gradient timeoutGradient = new Gradient();
