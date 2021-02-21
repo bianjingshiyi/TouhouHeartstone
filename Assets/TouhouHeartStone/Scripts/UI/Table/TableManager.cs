@@ -11,6 +11,7 @@ using System.Linq;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Card = TouhouCardEngine.Card;
+using UCard = UI.Card;
 using BJSYGameCore.UI;
 using MukioI18n;
 
@@ -895,10 +896,10 @@ namespace Game
             else
                 return game.getOpponent(player).master;
         }
-        public UI.Card createCard(Card card, Vector3 position, float height = -1)
+        public UI.Card createCard(Card card, Vector3 position, float height = -1, bool isFaceUp = true)
         {
             var ui = Instantiate(cardPrefab, position, Quaternion.identity, this.ui.FieldsImage.rectTransform);
-            setCard(ui, card, true);
+            setCard(ui, card, isFaceUp);
             if (height < 0)
                 return ui;
             ui.transform.localScale = Vector3.one * height / ui.rectTransform.rect.height;
@@ -910,18 +911,10 @@ namespace Game
         /// <param name="ui"></param>
         /// <param name="card"></param>
         /// <param name="isFaceup"></param>
-        public void setCard(UI.Card ui, Card card, bool isFaceup)
+        public void setCard(UCard ui, Card card, bool isFaceup = true)
         {
             CardSkinData skin = getSkin(card);
-            if (isFaceup)//因为isFaceup控制了很多GameObject的Active，所以它必须放在最上面。
-            {
-                ui.isFaceup = true;
-            }
-            else
-            {
-                ui.isFaceup = false;
-                return;
-            }
+            ui.isFaceup = isFaceup;//因为isFaceup控制了很多GameObject的Active，所以它必须放在最上面。
             if (card.define.type == DEFINE.SERVANT)
             {
                 ui.type = CATEGORY.SERVANT;
@@ -953,6 +946,46 @@ namespace Game
             }
             else
                 throw new NotImplementedException();
+        }
+        public void setCard(UCard ui, CardDefine define, int cost, int attack, int life, bool isFaceUp = true)
+        {
+            CardSkinData skin = getSkin(define);
+            ui.isFaceup = isFaceUp;//因为isFaceup控制了很多GameObject的Active，所以它必须放在最上面。
+            if (define.type == DEFINE.SERVANT)
+            {
+                ui.type = CATEGORY.SERVANT;
+                ui.servantCardFace.image.sprite = skin.image;
+                ui.servantCardFace.nameText.text = skin.name;
+                ui.servantCardFace.subNameText.text = skin.subname;
+                ui.servantCardFace.descText.text = skin.desc;
+                ui.servantCardFace.costPropNumber.text.text = cost.ToString();
+                ui.servantCardFace.attackPropNumber.text.text = attack.ToString();
+                ui.servantCardFace.lifePropNumber.text.text = life.ToString();
+            }
+            else if (define.type == DEFINE.SPELL)
+            {
+                ui.type = CATEGORY.SPELL;
+                ui.spellCardFace.image.sprite = skin.image;
+                ui.spellCardFace.nameText.text = skin.name;
+                ui.spellCardFace.descText.text = skin.desc;
+                ui.spellCardFace.costPropNumber.text.text = cost.ToString();
+            }
+            else if (define.type == DEFINE.ITEM)
+            {
+                ui.type = CATEGORY.ITEM;
+                ui.itemCardFace.image.sprite = skin.image;
+                ui.itemCardFace.nameText.text = skin.name;
+                ui.itemCardFace.descText.text = skin.desc;
+                ui.itemCardFace.costPropNumber.text.text = cost.ToString();
+                ui.itemCardFace.attackPropNumber.text.text = attack.ToString();
+                ui.itemCardFace.lifePropNumber.text.text = life.ToString();
+            }
+            else
+                throw new NotImplementedException();
+        }
+        public void setCard(UCard ui, CardSnapshot snapshot, bool isFaceup = true)
+        {
+            setCard(ui, snapshot.define, snapshot.cost, snapshot.attack, snapshot.life, isFaceup);
         }
         Dictionary<Card, ServantItem> cardServantDic { get; } = new Dictionary<Card, ServantItem>();
         /// <summary>

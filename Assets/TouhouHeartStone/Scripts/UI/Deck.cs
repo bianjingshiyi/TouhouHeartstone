@@ -37,6 +37,10 @@ namespace UI
                 }
             }
         }
+        public float getCardHeight()
+        {
+            return bottom.rect.height * bottom.transform.lossyScale.y;
+        }
         public RectTransform bottom
         {
             get { return _bottom; }

@@ -2,96 +2,81 @@
 using UI;
 using UObject = UnityEngine.Object;
 using TouhouHeartstone.Builtin;
-
+using UDeck = UI.Deck;
 namespace Game
 {
     class InvokeEAnim : EventAnimation<Sanae.RevealDuelArg>
     {
         Card _cardSelf;
         Card _cardOppo;
-        CardMoveAnim _moveToSelf;
-        CardMoveAnim _moveToOppo;
+        TableAnimation _moveToSelf;
+        TableAnimation _moveToOppo;
         AnimAnim _flipFaceSelf;
         AnimAnim _flipFaceOppo;
-        AnimAnim _winAnim;
+        TableAnimation _resultAnim;
         AnimAnim _flipBackSelf;
         AnimAnim _flipBackOppo;
-        CardMoveAnim _moveBackSelf;
-        CardMoveAnim _moveBackOppo;
+        TableAnimation _moveBackSelf;
+        TableAnimation _moveBackOppo;
         public override bool update(TableManager table, Sanae.RevealDuelArg eventArg, float time)
         {
+            if (eventArg.youCard == null && eventArg.oppoCard == null)
+                return true;
             //在对应的卡组上创建卡牌实例
+            UDeck targetDeck;
             if (_cardSelf == null && eventArg.youCard != null)
             {
-                if (eventArg.player.name == "自己")
-                    _cardSelf = UObject.Instantiate(table.cardPrefab, table.ui.SelfDeck.transform.position, Quaternion.identity, table.ui.SelfDeck.transform);
-                else
-                    _cardSelf = UObject.Instantiate(table.cardPrefab, table.ui.EnemyDeck.transform.position, Quaternion.identity, table.ui.EnemyDeck.transform);
-                _cardSelf.asAnimator.SetBool("isFaceUp", false);
+                targetDeck = eventArg.player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck;
+                _cardSelf = table.createCard(eventArg.youCard, targetDeck.transform.position, targetDeck.getCardHeight(), false);
             }
-            if(_cardSelf != null)
-                table.setCard(_cardSelf, eventArg.youCard, _cardSelf.asAnimator.GetBool("isFaceUp"));
             if (_cardOppo == null && eventArg.oppoCard != null)
             {
-                if (eventArg.player.name == "自己")
-                    _cardOppo = UObject.Instantiate(table.cardPrefab, table.ui.EnemyDeck.transform.position, Quaternion.identity, table.ui.EnemyDeck.transform);
-                else
-                    _cardOppo = UObject.Instantiate(table.cardPrefab, table.ui.SelfDeck.transform.position, Quaternion.identity, table.ui.SelfDeck.transform);
-                _cardOppo.asAnimator.SetBool("isFaceUp", false);
+                targetDeck = eventArg.player == table.player ? table.ui.EnemyDeck : table.ui.SelfDeck;
+                _cardOppo = table.createCard(eventArg.oppoCard, targetDeck.transform.position, targetDeck.getCardHeight(), false);
             }
-            if (_cardOppo != null)
-                table.setCard(_cardOppo, eventArg.oppoCard, _cardOppo.asAnimator.GetBool("isFaceUp"));
-
             //播放位移曲线动画到对应的位置
+            RectTransform targetRect;
             if (_moveToSelf == null && eventArg.youCard != null)
             {
-                if (eventArg.player.name == "自己")
-                    _moveToSelf = new CardMoveAnim(_cardSelf, table.ui.LeftDisplayImage.transform, table.cardShowCurve);
-                else
-                    _moveToSelf = new CardMoveAnim(_cardSelf, table.ui.RightDisplayImage.transform, table.cardShowCurve);
+                targetRect = eventArg.player == table.player ? table.ui.LeftDisplayImage.rectTransform : table.ui.RightDisplayImage.rectTransform;
+                _moveToSelf = new CardTransAnim(_cardSelf, targetRect, Vector3.one * targetRect.rect.height / _cardSelf.rectTransform.rect.height, table.cardShowCurve);
             }
             if (_moveToOppo == null && eventArg.oppoCard != null)
             {
-                if(eventArg.player.name == "自己")
-                    _moveToOppo = new CardMoveAnim(_cardOppo, table.ui.RightDisplayImage.transform, table.cardShowCurve);
-                else
-                    _moveToOppo = new CardMoveAnim(_cardOppo, table.ui.LeftDisplayImage.transform, table.cardShowCurve);
+                targetRect = eventArg.player == table.player ? table.ui.RightDisplayImage.rectTransform : table.ui.LeftDisplayImage.rectTransform;
+                _moveToOppo = new CardTransAnim(_cardOppo, targetRect, Vector3.one * targetRect.rect.height / _cardOppo.rectTransform.rect.height, table.cardShowCurve);
             }
-            bool MoveToDisPlay1 = _moveToSelf!=null?!_moveToSelf.update(table, time):false;
-            bool MoveToDisPlay2 = _moveToOppo!=null?!_moveToOppo.update(table, time):false;
-            if (MoveToDisPlay1 || MoveToDisPlay2)
-            {
+            if (AnimHelper.isAnyAnimUpdating(table, time, _moveToSelf, _moveToOppo))
                 return false;
-            }
+            //if ((_moveToSelf == null || !_moveToSelf.update(table, time)) && (_moveToOppo == null || !_moveToOppo.update(table, time)))
+            //    return false;
+            //bool MoveToDisPlay1 = _moveToSelf != null ? !_moveToSelf.update(table, time) : false;
+            //bool MoveToDisPlay2 = _moveToOppo != null ? !_moveToOppo.update(table, time) : false;
+            //if (MoveToDisPlay1 || MoveToDisPlay2)
+            //    return false;
             //翻转揭示
             if (_flipFaceSelf == null && eventArg.youCard != null)
             {
                 _flipFaceSelf = new AnimAnim(_cardSelf.animator, _cardSelf._flipToFaceAnimName);
-                _cardSelf.asAnimator.SetBool("isFaceUp", true);
-                table.setCard(_cardSelf, eventArg.youCard, _cardSelf.asAnimator.GetBool("isFaceUp"));
+                table.setCard(_cardSelf, eventArg.yourCardSnapshot);
             }
             if (_flipFaceOppo == null && eventArg.oppoCard != null)
             {
-                _flipFaceOppo = new AnimAnim(_cardOppo.animator, _cardOppo._flipToBackAnimName);
-                _cardOppo.asAnimator.SetBool("isFaceUp", true);
-                table.setCard(_cardOppo, eventArg.oppoCard, _cardOppo.asAnimator.GetBool("isFaceUp"));
+                _flipFaceOppo = new AnimAnim(_cardOppo.animator, _cardOppo._flipToFaceAnimName);
+                table.setCard(_cardOppo, eventArg.oppoCardSnapshot);
             }
-            bool FlipFace1 = _flipFaceSelf!=null?!_flipFaceSelf.update(table, time):false;
-            bool FlipFace2 = _flipFaceOppo!=null?!_flipFaceOppo.update(table, time):false;
-            if (FlipFace1||FlipFace2)
-            {
+            //bool FlipFace1 = _flipFaceSelf != null ? !_flipFaceSelf.update(table, time) : false;
+            //bool FlipFace2 = _flipFaceOppo != null ? !_flipFaceOppo.update(table, time) : false;
+            if (AnimHelper.isAnyAnimUpdating(table, time, _flipFaceSelf, _flipFaceOppo))
                 return false;
-            }
+            //if ((_flipFaceSelf == null || !_flipFaceSelf.update(table, time)) && (_flipFaceOppo == null || !_flipFaceOppo.update(table, time)))
+            //    return false;
 
             //如果胜利应该有一个胜利动画
-            if (eventArg.result == true && _winAnim == null)
-                _winAnim = new AnimAnim(_cardSelf.animator, _cardSelf._notifyAnimName);
-            if (eventArg.result == false && _winAnim == null) 
-                _winAnim = new AnimAnim(_cardOppo.animator, _cardOppo._notifyAnimName);
-            if (_winAnim != null && !_winAnim.update(table, time))
-            {
+            if (_resultAnim == null)
+                _resultAnim = eventArg.result ? new AnimAnim(_cardSelf.animator, _cardSelf._notifyAnimName) : (TableAnimation)new WaitAnim(0.5f);
+            if (_resultAnim != null && !_resultAnim.update(table, time))
                 return false;
-            }
             //重新翻回
             if (_flipBackSelf == null && eventArg.youCard != null)
             {
@@ -103,39 +88,39 @@ namespace Game
                 _cardOppo.asAnimator.SetBool("isFaceUp", false);
                 _flipBackOppo = new AnimAnim(_cardOppo.animator, _cardOppo._flipToBackAnimName);
             }
-            bool FlipBack1 = _flipBackSelf!=null ? !_flipBackSelf.update(table, time):false;
-            bool Flipback2 = _flipBackOppo!=null ? !_flipBackOppo.update(table, time):false;
-            if (FlipBack1||Flipback2)
-            {
+            if (AnimHelper.isAnyAnimUpdating(table, time, _flipBackSelf, _flipBackOppo))
                 return false;
-            }
+            //bool FlipBack1 = _flipBackSelf != null ? !_flipBackSelf.update(table, time) : false;
+            //bool Flipback2 = _flipBackOppo != null ? !_flipBackOppo.update(table, time) : false;
+            //if (FlipBack1 || Flipback2)
+            //{
+            //    return false;
+            //}
 
             //放回牌库
             if (_moveBackSelf == null && eventArg.youCard != null)
             {
-                if(eventArg.player.name == "自己")
-                    _moveBackSelf = new CardMoveAnim(_cardSelf, table.ui.SelfDeck.transform, table.cardShowCurve);
-                else
-                    _moveBackSelf = new CardMoveAnim(_cardSelf, table.ui.EnemyDeck.transform, table.cardShowCurve);
+                targetDeck = eventArg.player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck;
+                _moveBackSelf = new CardTransAnim(_cardSelf, targetDeck.transform, Vector3.one * targetDeck.getCardHeight() / _cardSelf.rectTransform.rect.height, table.cardShowCurve);
             }
             if (_moveBackOppo == null && eventArg.oppoCard != null)
             {
-                if(eventArg.player.name == "自己")
-                    _moveBackOppo = new CardMoveAnim(_cardOppo, table.ui.EnemyDeck.transform, table.cardShowCurve);
-                else
-                    _moveBackOppo = new CardMoveAnim(_cardOppo, table.ui.SelfDeck.transform, table.cardShowCurve);
+                targetDeck = eventArg.player == table.player ? table.ui.EnemyDeck : table.ui.SelfDeck;
+                _moveBackOppo = new CardTransAnim(_cardOppo, targetDeck.transform, Vector3.one * targetDeck.getCardHeight() / _cardOppo.rectTransform.rect.height, table.cardShowCurve);
             }
-            bool MoveBack1 = _moveBackSelf != null ? !_moveBackSelf.update(table, time) : false;
-            bool MoveBack2 = _moveBackOppo != null ? !_moveBackOppo.update(table, time) : false;
-            if (MoveBack2||MoveBack1)
-            {
+            if (AnimHelper.isAnyAnimUpdating(table, time, _moveBackSelf, _moveBackOppo))
                 return false;
-            }
+            //bool MoveBack1 = _moveBackSelf != null ? !_moveBackSelf.update(table, time) : false;
+            //bool MoveBack2 = _moveBackOppo != null ? !_moveBackOppo.update(table, time) : false;
+            //if (MoveBack2 || MoveBack1)
+            //{
+            //    return false;
+            //}
             //销毁实例
-            if(_cardSelf!=null)
-            UObject.Destroy(_cardSelf.gameObject);
-            if(_cardOppo!=null)
-            UObject.Destroy(_cardOppo.gameObject);
+            if (_cardSelf != null)
+                UObject.Destroy(_cardSelf.gameObject);
+            if (_cardOppo != null)
+                UObject.Destroy(_cardOppo.gameObject);
             return true;
         }
     }

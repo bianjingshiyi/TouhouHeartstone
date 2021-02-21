@@ -1,5 +1,6 @@
 ﻿using UI;
 using System;
+
 namespace Game
 {
     class CodeAnim : TableAnimation

@@ -1,4 +1,7 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
+using Game;
+
 namespace UI
 {
     public class AnimHelper
@@ -60,6 +63,22 @@ namespace UI
             }
             isFinished = true;
             return true;
+        }
+        public static bool isAnyAnimUpdating(TableManager table, float time, params TableAnimation[] anims)
+        {
+            return isAnyAnimUpdating(anims as IEnumerable<TableAnimation>, table, time);
+        }
+        public static bool isAnyAnimUpdating(IEnumerable<TableAnimation> anims, TableManager table, float time)
+        {
+            bool isAny = false;
+            foreach (var anim in anims)
+            {
+                if (anim == null)
+                    continue;
+                if (!anim.update(table, time))
+                    isAny = true;
+            }
+            return isAny;
         }
     }
 }

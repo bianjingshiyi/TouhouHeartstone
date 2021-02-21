@@ -60,6 +60,7 @@ namespace UI
     [Serializable]
     public abstract class TableAnimation : UIAnimation
     {
+        [Obsolete("请使用update(table,time)替代")]
         public sealed override bool update(Table table)
         {
             throw new NotImplementedException();
@@ -71,7 +72,7 @@ namespace UI
     }
     public abstract class EventAnimation : TableAnimation
     {
-        public virtual string eventName { get => throw new NotImplementedException();}//ToString();
+        public virtual string eventName { get => throw new NotImplementedException(); }//ToString();
         public abstract IEventArg eventArg { get; set; }
         public virtual EventAnimation clone()
         {

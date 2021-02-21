@@ -576,7 +576,7 @@ namespace TouhouHeartstone
             {
                 foreach (var buff in card.getBuffs())
                 {
-                    if(buff.effects.OfType<DeathRattle>().Count() > 0)
+                    if (buff.effects.OfType<DeathRattle>().Count() > 0)
                     {
                         return true;
                     }

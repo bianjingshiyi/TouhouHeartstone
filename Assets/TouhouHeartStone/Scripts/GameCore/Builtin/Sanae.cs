@@ -27,34 +27,26 @@ namespace TouhouHeartstone.Builtin
         /// <param name="game"></param>
         /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
         /// <returns></returns>
-        public static async Task<RevealDuelArg> revealDuel(THHPlayer player, THHGame game, int define = 0)
+        public static Task<RevealDuelArg> revealDuel(THHPlayer player, THHGame game, int define = 0)
         {
-            Card youCard = await player.Reveal(game, player.deck, define);
-            Card oppoCard = await game.getOpponent(player).Reveal(game, game.getOpponent(player).deck, define);
-            bool result = false;
+            return game.triggers.doEvent(new RevealDuelArg() { player = player }, async arg =>
+            {
+                THHPlayer oppo = game.getOpponent(player);
+                arg.youCard = await player.Reveal(game, player.deck, define);
+                arg.yourCardSnapshot = arg.youCard != null ? new CardSnapshot(game, arg.youCard) : null;
+                arg.oppoCard = await oppo.Reveal(game, oppo.deck, define);
+                arg.oppoCardSnapshot = arg.oppoCard != null ? new CardSnapshot(game, arg.oppoCard) : null;
+                arg.result = false;
 
-            if (youCard != null && oppoCard == null)
-            {
-                result = true;
-            }
-            else if (youCard != null && youCard.getCost(game) > oppoCard.getCost(game))
-            {
-                result = true;
-            }
-
-            var eventArg = await game.triggers.doEvent(new RevealDuelArg() { player = player, youCard = youCard, oppoCard = oppoCard, result = result }, async arg =>
-            {
-                if (youCard != null)
-                {
-                    game.logger.log(player + "发动了对决，她揭示了：" + youCard + "。她的对手揭示了：" + oppoCard + "。结果是" + result);
-                }
+                if (arg.youCard != null && arg.oppoCard == null)
+                    arg.result = true;
+                else if (arg.youCard != null && arg.youCard.getCost(game) > arg.oppoCard.getCost(game))
+                    arg.result = true;
+                if (arg.youCard != null)
+                    game.logger.log(player + "发动了对决，她揭示了：" + arg.youCard + "。她的对手揭示了：" + arg.oppoCard + "。结果是" + arg.result);
                 else
-                {
                     game.logger.log(player + "揭示了个寂寞，输掉了对决。");
-                }
-
             });
-            return eventArg;
         }
 
         public class RevealDuelArg : EventArg, IDescribableEventArg
@@ -68,9 +60,17 @@ namespace TouhouHeartstone.Builtin
             /// </summary>
             public Card youCard;
             /// <summary>
+            /// 你的揭示牌快照
+            /// </summary>
+            public CardSnapshot yourCardSnapshot;
+            /// <summary>
             /// 另一方揭示的牌
             /// </summary>
             public Card oppoCard;
+            /// <summary>
+            /// 对方的揭示牌快照
+            /// </summary>
+            public CardSnapshot oppoCardSnapshot;
             /// <summary>
             /// 是否胜利
             /// </summary>

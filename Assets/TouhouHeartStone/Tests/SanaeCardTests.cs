@@ -455,6 +455,8 @@ namespace Tests
                 new KeyValuePair<int, int>(GodWind.ID, 1));
             //打一张祈求牌
             game.skipUntilCanUse<InvokeCard>(you);
+            //预期诹访子保持原费用
+            Assert.AreEqual(you.deck.getCard<GodWind>().define.getCost(), you.deck.getCard<GodWind>().getCost(game));
             you.cmdUse<InvokeCard>(game);
             //预期诹访子保持原费用
             Assert.AreEqual(you.deck.getCard<GodWind>().define.getCost(), you.deck.getCard<GodWind>().getCost(game));
