@@ -138,6 +138,7 @@ namespace TouhouHeartstone.Builtin
                 await c1.addBuff(game, new GeneratedBuff(ID, new DeathRattle(ID, async (g, c, b, p) =>
                 {
                     await g.getOpponent(c.getOwner()).master.damage(g, c, 1);
+                    await g.updateDeath(game);
                 })));
             }
         }
