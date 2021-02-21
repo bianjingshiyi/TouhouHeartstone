@@ -288,7 +288,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            Card choice = await card.getOwner().discover(game, card.getOwner().grave.Where(c=>c.isServant() && c.hasKeyword(game,KEYWORD._DeathRattle)), 3);
+            Card choice = await card.getOwner().discover(game, card.getOwner().grave.Where(c=>c.isServant() && c.hasDeathRattle(game)), 3);
             if (!card.getOwner().hand.isFull)
                 await card.getOwner().grave.moveTo(game, choice, card.getOwner().hand);
             await choice.triggerDeathRattles(game);

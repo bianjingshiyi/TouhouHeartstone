@@ -565,6 +565,25 @@ namespace TouhouHeartstone
         {
             return card.getProp<bool>(game, PROPERTY.SILENCE);
         }
+
+        public static bool hasDeathRattle(this Card card, IGame game)
+        {
+            if (card.define.effects.OfType<DeathRattle>().Count() > 0)
+            {
+                return true;
+            }
+            else
+            {
+                foreach (var buff in card.getBuffs())
+                {
+                    if(buff.effects.OfType<DeathRattle>().Count() > 0)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
         public static bool hasTag(this Card card, IGame game, string tag)
         {
             string[] tags = card.getProp<string[]>(game, nameof(ServantCardDefine.tags));
