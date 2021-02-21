@@ -5074,7 +5074,7 @@ MonoBehaviour:
     height: 800
   windowID: 1
   maxLine: 300
-  collapse: 0
+  collapse: 1
 --- !u!4 &1729670673
 Transform:
   m_ObjectHideFlags: 0
