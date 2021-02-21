@@ -37,5 +37,11 @@ namespace UI
                 }
             }
         }
+        public RectTransform bottom
+        {
+            get { return _bottom; }
+        }
+        [SerializeField]
+        RectTransform _bottom;
     }
 }

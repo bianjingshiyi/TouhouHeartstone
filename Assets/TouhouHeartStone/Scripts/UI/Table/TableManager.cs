@@ -32,6 +32,9 @@ namespace Game
         AnimationCurve _cardShowCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.2f, 1));
         public AnimationCurve cardShowCurve => _cardShowCurve;
         [SerializeField]
+        AnimationCurve _fieldToDeckCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 0.6f));
+        public AnimationCurve fieldToDeckCurve => _fieldToDeckCurve;
+        [SerializeField]
         Gradient timeoutGradient = new Gradient();
         [SerializeField]
         UI.Card _cardPrefab;
@@ -892,10 +895,13 @@ namespace Game
             else
                 return game.getOpponent(player).master;
         }
-        public UI.Card createCard(Card card)
+        public UI.Card createCard(Card card, Vector3 position, float height = -1)
         {
-            var ui = Instantiate(cardPrefab, this.ui.FieldsImage.rectTransform);
+            var ui = Instantiate(cardPrefab, position, Quaternion.identity, this.ui.FieldsImage.rectTransform);
             setCard(ui, card, true);
+            if (height < 0)
+                return ui;
+            ui.transform.localScale = Vector3.one * height / ui.rectTransform.rect.height;
             return ui;
         }
         /// <summary>

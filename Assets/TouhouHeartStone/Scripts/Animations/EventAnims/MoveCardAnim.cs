@@ -5,6 +5,7 @@ using UnityEngine;
 using BJSYGameCore;
 using Timer = BJSYGameCore.Timer;
 using Card = TouhouCardEngine.Card;
+using UDeck = UI.Deck;
 namespace Game
 {
     class MoveCardAnim : EventAnimation<Pile.MoveCardEventArg>
@@ -180,10 +181,17 @@ namespace Game
                                     }
                                     //创建卡牌
                                     if (_card == null)
-                                        _card = table.createCard(eventArg.card);
+                                        _card = table.createCard(eventArg.card, servant.transform.position, servant.rectTransform.rect.height);
                                     //播放动画
                                     if (_anim == null)
-                                        _anim = new CardMoveAnim(_card, eventArg.to == table.player.deck ? table.ui.SelfDeck.transform : table.ui.EnemyDeck.transform, table.handToFieldCurve);
+                                    {
+                                        UDeck targetDeck = eventArg.to == table.player.deck ? table.ui.SelfDeck : table.ui.EnemyDeck;
+                                        _anim = new CardTransAnim(_card,
+                                            targetDeck.transform,
+                                            targetDeck.bottom.rect.height * targetDeck.bottom.lossyScale / _card.rectTransform.rect.height,
+                                            table.fieldToDeckCurve);
+                                    }
+
                                     if (!_anim.update(table, time))//没放完动画就让它接着放
                                         return false;
                                     //摧毁卡牌

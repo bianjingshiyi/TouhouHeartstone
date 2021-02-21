@@ -40,7 +40,7 @@ namespace Game
         }
         public override bool update(TableManager table, float time)
         {
-            if (!_timer.isExpired()&&_card!=null)
+            if (!_timer.isExpired() && _card != null)
             {
                 _card.rectTransform.position = Vector3.Lerp(_startPosition, _target != null ? _target.position : _targetPosition, _curve.Evaluate(_timer.time));
                 return false;
