@@ -281,7 +281,7 @@ namespace UI
             MasterCardSelection.OnSelect += onMasterSelect;
 
             HintMessageText.gameObject.SetActive(false);
-            UIDialog.gameObject.SetActive(false);
+            // UIDialog.gameObject.SetActive(false);
         }
 
         /// <summary>

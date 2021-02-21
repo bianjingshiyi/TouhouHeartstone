@@ -131,11 +131,12 @@ namespace UI
         {
             if (_isHovered)
             {
-                if (!ui.getManager<InputManager>().isPointerOver(rectTransform))
-                {
-                    _isHovered = false;
-                    onPointerExit.invoke(this, null);
-                }
+                // 这里会有BUG，先注释
+                // if (!ui.getManager<InputManager>().isPointerOver(rectTransform))
+                // {
+                //     _isHovered = false;
+                //     onPointerExit.invoke(this, null);
+                // }
             }
         }
         protected void OnDestroy()
