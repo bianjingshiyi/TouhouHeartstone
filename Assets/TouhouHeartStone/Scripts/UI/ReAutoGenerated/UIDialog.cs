@@ -10,122 +10,132 @@
 
 namespace UI
 {
-    using BJSYGameCore.UI;
-    using UnityEngine;
     using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
-    using UI;
+    using UnityEngine;
     
-    [AutoCompoAttribute(19638)]
-    public partial class UIDialog : UIObject
+    [AutoCompoAttribute(26860)]
+    public partial class UIDialog : BJSYGameCore.UI.UIObject
     {
         public void init()
         {
-            this.as_Image = this.transform.findByPath("./").GetComponent<Image>();
-            this._DialogImage = this.transform.findByPath("./Dialog").GetComponent<Image>();
-            this._TitleText = this.transform.findByPath("./Dialog/Title").GetComponent<Text>();
-            this._ContentText = this.transform.findByPath("./Dialog/Content").GetComponent<Text>();
-            this._ButtonsHorizontalLayoutGroup = this.transform.findByPath("./Dialog/Buttons").GetComponent<HorizontalLayoutGroup>();
-            this._ConfirmButtonBlack = this.transform.findByPath("./Dialog/Buttons/Confirm").GetComponent<ButtonBlack>();
-            this._CancleButtonBlack = this.transform.findByPath("./Dialog/Buttons/Cancle").GetComponent<ButtonBlack>();
+            this._titleText = this.transform.findByPath("./Window/Title").GetComponent<Text>();
+            this._contentText = this.transform.findByPath("./Window/Content").GetComponent<Text>();
+            this._buttonsRectTransform = this.transform.findByPath("./Window/Buttons").GetComponent<RectTransform>();
+            this._cancleButton = this.transform.findByPath("./Window/Buttons/Cancle").GetComponent<Button>();
+            this._cancleButton.onClick.AddListener(this.CancleButtonClickCallback);
+            this._confirmButton = this.transform.findByPath("./Window/Buttons/Confirm").GetComponent<Button>();
+            this._confirmButton.onClick.AddListener(this.ConfirmButtonClickCallback);
+            this._templateButton = this.transform.findByPath("./Window/Buttons/Template").GetComponent<Button>();
+            this._templateButton.onClick.AddListener(this.TemplateButtonClickCallback);
         }
-        [SerializeField()]
-        [AutoCompo(57970, "./")]
-        private Image as_Image;
-        public Image m_as_Image
+        public void clear()
+        {
+            this._cancleButton.onClick.RemoveListener(this.CancleButtonClickCallback);
+            this._confirmButton.onClick.RemoveListener(this.ConfirmButtonClickCallback);
+            this._templateButton.onClick.RemoveListener(this.TemplateButtonClickCallback);
+        }
+        [AutoCompo(35564, "./Window/Title")]
+        private Text _titleText;
+        public Text titleText
         {
             get
             {
-                if ((this.m_as_Image == null))
+                if ((this._titleText == null))
                 {
-                    this.as_Image = this.transform.findByPath("./").GetComponent<Image>();
+                    this._titleText = this.transform.findByPath("./Window/Title").GetComponent<Text>();
                 }
-                return this.m_as_Image;
+                return this._titleText;
             }
         }
-        [SerializeField()]
-        [AutoCompo(58410, "./Dialog")]
-        private Image _DialogImage;
-        public Image DialogImage
+        [AutoCompo(35566, "./Window/Content")]
+        private Text _contentText;
+        public Text contentText
         {
             get
             {
-                if ((this._DialogImage == null))
+                if ((this._contentText == null))
                 {
-                    this._DialogImage = this.transform.findByPath("./Dialog").GetComponent<Image>();
+                    this._contentText = this.transform.findByPath("./Window/Content").GetComponent<Text>();
                 }
-                return this._DialogImage;
+                return this._contentText;
             }
         }
-        [SerializeField()]
-        [AutoCompo(58368, "./Dialog/Title")]
-        private Text _TitleText;
-        public Text TitleText
+        [AutoCompo(32066, "./Window/Buttons")]
+        private RectTransform _buttonsRectTransform;
+        public RectTransform buttonsRectTransform
         {
             get
             {
-                if ((this._TitleText == null))
+                if ((this._buttonsRectTransform == null))
                 {
-                    this._TitleText = this.transform.findByPath("./Dialog/Title").GetComponent<Text>();
+                    this._buttonsRectTransform = this.transform.findByPath("./Window/Buttons").GetComponent<RectTransform>();
                 }
-                return this._TitleText;
+                return this._buttonsRectTransform;
             }
         }
-        [SerializeField()]
-        [AutoCompo(58622, "./Dialog/Content")]
-        private Text _ContentText;
-        public Text ContentText
+        [AutoCompo(57994, "./Window/Buttons/Cancle")]
+        private Button _cancleButton;
+        public Button cancleButton
         {
             get
             {
-                if ((this._ContentText == null))
+                if ((this._cancleButton == null))
                 {
-                    this._ContentText = this.transform.findByPath("./Dialog/Content").GetComponent<Text>();
+                    this._cancleButton = this.transform.findByPath("./Window/Buttons/Cancle").GetComponent<Button>();
                 }
-                return this._ContentText;
+                return this._cancleButton;
             }
         }
-        [SerializeField()]
-        [AutoCompo(58586, "./Dialog/Buttons")]
-        private HorizontalLayoutGroup _ButtonsHorizontalLayoutGroup;
-        public HorizontalLayoutGroup ButtonsHorizontalLayoutGroup
+        public event Action onCancleButtonClick;
+        private void CancleButtonClickCallback()
         {
-            get
+            if ((this.onCancleButtonClick != null))
             {
-                if ((this._ButtonsHorizontalLayoutGroup == null))
-                {
-                    this._ButtonsHorizontalLayoutGroup = this.transform.findByPath("./Dialog/Buttons").GetComponent<HorizontalLayoutGroup>();
-                }
-                return this._ButtonsHorizontalLayoutGroup;
+                this.onCancleButtonClick();
             }
         }
-        [SerializeField()]
-        [AutoCompo(58548, "./Dialog/Buttons/Confirm")]
-        private ButtonBlack _ConfirmButtonBlack;
-        public ButtonBlack ConfirmButtonBlack
+        [AutoCompo(57980, "./Window/Buttons/Confirm")]
+        private Button _confirmButton;
+        public Button confirmButton
         {
             get
             {
-                if ((this._ConfirmButtonBlack == null))
+                if ((this._confirmButton == null))
                 {
-                    this._ConfirmButtonBlack = this.transform.findByPath("./Dialog/Buttons/Confirm").GetComponent<ButtonBlack>();
+                    this._confirmButton = this.transform.findByPath("./Window/Buttons/Confirm").GetComponent<Button>();
                 }
-                return this._ConfirmButtonBlack;
+                return this._confirmButton;
             }
         }
-        [SerializeField()]
-        [AutoCompo(58084, "./Dialog/Buttons/Cancle")]
-        private ButtonBlack _CancleButtonBlack;
-        public ButtonBlack CancleButtonBlack
+        public event Action onConfirmButtonClick;
+        private void ConfirmButtonClickCallback()
+        {
+            if ((this.onConfirmButtonClick != null))
+            {
+                this.onConfirmButtonClick();
+            }
+        }
+        [AutoCompo(35570, "./Window/Buttons/Template")]
+        private Button _templateButton;
+        public Button templateButton
         {
             get
             {
-                if ((this._CancleButtonBlack == null))
+                if ((this._templateButton == null))
                 {
-                    this._CancleButtonBlack = this.transform.findByPath("./Dialog/Buttons/Cancle").GetComponent<ButtonBlack>();
+                    this._templateButton = this.transform.findByPath("./Window/Buttons/Template").GetComponent<Button>();
                 }
-                return this._CancleButtonBlack;
+                return this._templateButton;
+            }
+        }
+        public event Action onTemplateButtonClick;
+        private void TemplateButtonClickCallback()
+        {
+            if ((this.onTemplateButtonClick != null))
+            {
+                this.onTemplateButtonClick();
             }
         }
     }

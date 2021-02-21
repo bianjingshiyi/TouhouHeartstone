@@ -51,7 +51,7 @@ namespace UI
             this._DragCard = this.transform.Find("DragCard").GetComponent<DragCard>();
             this._MasterCardSelection = this.transform.Find("MasterCardSelection").GetComponent<MasterCardSelection>();
             this._HintMessageText = this.transform.Find("HintMessage").GetComponent<Text>();
-            this._UIDialog = this.transform.Find("UIDialog").GetComponent<UIDialog>();
+            this._UIDialog = this.transform.Find("UIDialog")?.GetComponent<UIDialog>();
         }
         [SerializeField()]
         private Image _TitleBarImage;
@@ -399,7 +399,7 @@ namespace UI
             {
                 if ((this._UIDialog == null))
                 {
-                    this._UIDialog = this.transform.Find("UIDialog").GetComponent<UIDialog>();
+                    this._UIDialog = UIDialog.Instance;
                 }
                 return this._UIDialog;
             }

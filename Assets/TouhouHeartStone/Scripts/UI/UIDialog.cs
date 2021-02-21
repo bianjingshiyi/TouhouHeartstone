@@ -1,9 +1,22 @@
 ﻿using MukioI18n;
 using System;
+using System.Collections.Generic;
+using UnityEngine.UI;
+
 namespace UI
 {
     partial class UIDialog
     {
+        static UIDialog instance = null;
+
+        public static UIDialog Instance => instance;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            instance = this;
+        }
+
         /// <summary>
         /// 显示一个只有两个选项的询问对话框
         /// </summary>
@@ -13,19 +26,20 @@ namespace UI
         /// <param name="onCancle"></param>
         public void ShowQuestion(string title, string content, Action onConfirm, Action onCancle = null)
         {
-            TitleText.text = title;
-            ContentText.text = content;
+            titleText.text = title;
+            contentText.text = content;
 
-            ConfirmButtonBlack.asButton.onClick.RemoveAllListeners();
-            ConfirmButtonBlack.asButton.onClick.AddListener(() => {
+            confirmButton.onClick.RemoveAllListeners();
+            confirmButton.onClick.AddListener(() => {
                 onConfirm?.Invoke();
                 gameObject.SetActive(false);
             });
 
-            CancleButtonBlack.gameObject.SetActive(true);
+            confirmButton.gameObject.SetActive(true);
+            cancleButton.gameObject.SetActive(true);
 
-            CancleButtonBlack.asButton.onClick.RemoveAllListeners();
-            CancleButtonBlack.asButton.onClick.AddListener(() => { 
+            cancleButton.onClick.RemoveAllListeners();
+            cancleButton.onClick.AddListener(() => { 
                 onCancle?.Invoke(); 
                 gameObject.SetActive(false);
             });
@@ -41,16 +55,52 @@ namespace UI
         /// <param name="onConfirm"></param>
         public void ShowConfirm(string title, string content, Action onConfirm)
         {
-            TitleText.text = title;
-            ContentText.text = content;
+            titleText.text = title;
+            contentText.text = content;
 
-            ConfirmButtonBlack.asButton.onClick.RemoveAllListeners();
-            ConfirmButtonBlack.asButton.onClick.AddListener(() => {
+            confirmButton.onClick.RemoveAllListeners();
+            confirmButton.onClick.AddListener(() => {
                 onConfirm?.Invoke();
                 gameObject.SetActive(false);
             });
 
-            CancleButtonBlack.gameObject.SetActive(false);
+            cancleButton.gameObject.SetActive(false);
+            confirmButton.gameObject.SetActive(true);
+
+            gameObject.SetActive(true);
+        }
+
+        List<Button> btnList = new List<Button>();
+
+        public void ShowOptions(string title, string content, string[] options, Action<int> onSelectOption)
+        {
+            titleText.text = title;
+            contentText.text = content;
+            cancleButton.gameObject.SetActive(false);
+            confirmButton.gameObject.SetActive(false);
+
+            for (int i = 0; i < options.Length; i++)
+            {
+                if (btnList.Count <= i)
+                {
+                    btnList.Add(Instantiate<Button>(templateButton, buttonsRectTransform));
+                } 
+
+                var btn = btnList[i];
+                int index = i;
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(() => {
+                    onSelectOption?.Invoke(index);
+                    gameObject.SetActive(false);
+                });
+                btn.GetComponentInChildren<Text>().text = options[i];
+                btn.gameObject.SetActive(true);
+            }
+
+            for (int i = options.Length; i < btnList.Count; i++)
+            {
+                btnList[i].gameObject.SetActive(false);
+            }
 
             gameObject.SetActive(true);
         }

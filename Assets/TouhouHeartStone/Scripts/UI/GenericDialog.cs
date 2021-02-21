@@ -9,7 +9,7 @@ namespace UI
     /// <summary>
     /// 具有标题，内容，可生成选项的对话框
     /// </summary>
-    [Obsolete]
+    [Obsolete("Use UIDialog instead")]
     class GenericDialog : UIObject
     {
         protected override void Awake()

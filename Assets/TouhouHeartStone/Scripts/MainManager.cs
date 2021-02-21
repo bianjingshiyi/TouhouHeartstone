@@ -102,7 +102,7 @@ namespace Game
                     _loadCardTask.Dispose();
                     _loadCardTask = null;
                     UIManager ui = getManager<UIManager>();
-                    ui.getObject<GenericDialog>().display(lang._(StringTable.ERROR), lang._(MMANAGE_GAME_FAIL_LOAD), new string[] { lang._(StringTable.CONFIRM) }, _ => Application.Quit());
+                    ui.getObject<UIDialog>().ShowConfirm(lang._(StringTable.ERROR), lang._(MMANAGE_GAME_FAIL_LOAD), () => Application.Quit());
                 }
             }
             if (_getNewVersionTask != null)
@@ -124,24 +124,11 @@ namespace Game
                         _getNewVersionTask.Dispose();
                         _getNewVersionTask = null;
                     }
-                    if (getCurrentVersion() != latestVersion.Version && !string.IsNullOrEmpty(latestVersion.FullPackageUrl))
+                    if (SematicTagVersion.Parse(getCurrentVersion()) < SematicTagVersion.Parse(latestVersion.Version) && !string.IsNullOrEmpty(latestVersion.FullPackageUrl))
                     {
                         //如果有新版本，询问玩家要不要下载
-                        getManager<UIManager>().getObject<GenericDialog>().display(null, lang._(StringTable.WANNA_DOWNLOAD_NEW_VERSION), new string[]
-                        {
-                            lang._(StringTable.YES),
-                            lang._(StringTable.NO)
-                        }, optionIndex =>
-                        {
-                            switch (optionIndex)
-                            {
-                                case 0:
-                                    Application.OpenURL(latestVersion.FullPackageUrl);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        });
+                        getManager<UIManager>().getObject<UIDialog>().ShowQuestion(null, lang._(StringTable.WANNA_DOWNLOAD_NEW_VERSION)
+                        , () => { Application.OpenURL(latestVersion.FullPackageUrl); });
                     }
                 }
                 else if (_getNewVersionTask.IsFaulted || _getNewVersionTask.IsCanceled)
