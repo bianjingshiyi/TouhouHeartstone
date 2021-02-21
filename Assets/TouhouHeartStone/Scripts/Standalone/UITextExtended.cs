@@ -36,7 +36,7 @@ namespace IGensoukyo.Utilities
             {
                 genSetting.fontSize = size;
                 var height = gen.GetPreferredHeight(text, genSetting);
-                if (height < rect.height) break;
+                if (height < rect.height - 2) break;
             }
 
             fontSize = size;
