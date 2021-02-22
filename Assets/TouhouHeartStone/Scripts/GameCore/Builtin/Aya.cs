@@ -414,6 +414,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 白木
     /// 使用技能后，使手牌随机三张牌灵力消耗减一
@@ -447,6 +448,7 @@ namespace TouhouHeartstone.Builtin
 
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 鸦符【暗夜昼魔】
     /// </summary>
@@ -476,6 +478,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 暴力取材
     /// </summary>
@@ -499,6 +502,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 椛
     /// </summary>
@@ -523,6 +527,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
+    [IgnoreCardDefine]
     /// <summary>
     /// 直属卫兵
     /// </summary>
