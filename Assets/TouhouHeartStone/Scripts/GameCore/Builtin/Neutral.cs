@@ -1643,7 +1643,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async(game,card,target)=>
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(2)));
-            })
+            },PileFlag.field|PileFlag.both)
         };
     }
 }
