@@ -225,7 +225,16 @@ namespace BJSYGameCore
             {
                 throw new ArgumentNullException($"Fail to load {path}: data readed is null");
             }
-            texture.LoadImage(bytes);
+            try
+            {
+                texture.LoadImage(bytes);
+            } 
+            catch (ArgumentNullException)
+            {
+                // 不知道为啥会炸，先来个dirtyfix再说
+                texture = new Texture2D(2, 2, TextureFormat.ARGB32, true);
+                texture.LoadImage(bytes);
+            }
             return texture;
         }
 
