@@ -973,7 +973,7 @@ namespace Tests
                 game.skipUntilCanUse<DefaultServant>(oppo);
                 oppo.cmdUse<DefaultServant>(game);
             }
-
+            game.skipUntilCanUse<MoriyaSuwako_N>(you);
             you.cmdUse<MoriyaSuwako_N>(game, out var s);
             Assert.True(s.canAttack(game));
             s.setDead(game, true);

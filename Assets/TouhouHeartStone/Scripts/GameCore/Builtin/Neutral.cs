@@ -1534,7 +1534,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
         public override bool isToken { get; set; } = true;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
     }
 
     /// <summary>
