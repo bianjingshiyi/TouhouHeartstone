@@ -5,6 +5,7 @@ using UI;
 using System;
 namespace Game
 {
+    [Obsolete("使用CardTransAnim作为替代，它提供更多的变换选项。")]
     [Serializable]
     class CardMoveAnim : TableAnimation
     {
@@ -45,6 +46,7 @@ namespace Game
                 _card.rectTransform.position = Vector3.Lerp(_startPosition, _target != null ? _target.position : _targetPosition, _curve.Evaluate(_timer.time));
                 return false;
             }
+            _card.rectTransform.position = _target != null ? _target.position : _targetPosition;
             return true;
         }
     }

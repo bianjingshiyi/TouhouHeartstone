@@ -52,6 +52,8 @@ namespace Game
                 _card.transform.localScale = Vector3.Lerp(_startScale, _scale, _curve.Evaluate(_timer.time));
                 return false;
             }
+            _card.rectTransform.position = _target != null ? _target.position : _targetPosition;
+            _card.transform.localScale = _scale;
             return true;
         }
     }
