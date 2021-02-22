@@ -663,22 +663,16 @@ namespace TouhouHeartstone.Builtin
                 switch (index)
                 {
                     case 1:
-                        await oppo.field.random(game).setDead(game,true);
-                        await game.updateDeath(game);
+                        await card.getOwner().addCardToHand<PlagueOfMishaguchi>(game);
                         break;
                     case 2:
-                        await you.createToken(game,game.getDefine<Frog>());
-                        await you.createToken(game,game.getDefine<Frog>());
+                        await card.getOwner().addCardToHand<PlagueOfFrogs>(game);
                         break;
                     case 3:
-                        foreach(Card c in oppo.field)
-                        {
-                            await c.addBuff(game,new GeneratedBuff(ID,new AttackModifier(1,true)));
-                        }
+                        await card.getOwner().addCardToHand<PlagueOfCrops>(game);
                         break;
                     default:
-                        await card.graveBackToHand(game);
-                        await card.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
+                        await card.getOwner().addCardToHand<PlagueOfHibernation>(game);
                         break;
                 }
             }),
@@ -714,39 +708,50 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 赤口之灾祸
-    /// 假卡，随机消灭一个随从
+    /// 
     /// </summary>
     public class PlagueOfMishaguchi : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x021;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 10;
+        public override int cost { get; set; } = 2;
         public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-
+            new LambdaSingleTargetEffect(async(game,card,target)=>
+            {
+                await target.setDead(game,true);
+                await card.getOwner().master.damage(game,card,card.getOwner().getSpellDamage(game,4));
+                await game.updateDeath(game);
+            })
+            
         };
     }
 
     /// <summary>
     /// 青蛙之灾祸
-    /// 假卡，召唤2个2/2并具有嘲讽的青蛙。
+    /// 
     /// </summary>
     public class PlagueOfFrogs : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x022;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 10;
+        public override int cost { get; set; } = 2;
         public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-
+            //
+            new NoTargetEffect(effect)
         };
+        static async Task effect(THHGame game, Card card)
+        {
+            await card.getOwner().createToken(game, game.getOpponent(card.getOwner()).field.count, game.getDefine<Frog>());
+        }
     }
 
     /// <summary>
     /// 荒芜之灾祸
-    /// 假卡，使所有敌方随从攻击力变为1。
+    /// 
     /// </summary>
     public class PlagueOfCrops : SpellCardDefine
     {
@@ -756,24 +761,42 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-
+            new NoTargetEffect(effect)
         };
+        static async Task effect(THHGame game, Card card)
+        {
+            //game.getOpponent(card.getOwner()).hand
+            foreach(Card c in game.getOpponent(card.getOwner()).hand)
+            {
+                if(c.isServant())
+                    await c.addBuff(game, new GeneratedBuff(ID, new CostModifier(5)));
+            }
+        }
     }
 
     /// <summary>
     /// 休眠之灾祸
-    /// 假卡，返回手牌并获得+2/+2。
+    /// 
     /// </summary>
     public class PlagueOfHibernation : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x024;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 10;
+        public override int cost { get; set; } = 2;
         public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-
+            new NoTargetEffect(effect)
         };
+        static async Task effect(THHGame game, Card card)
+        {
+            if(card.getOwner().grave.Any(c=>c.define == game.getDefine<MoriyaSuwako>()))
+            {
+                Card card1 = card.getOwner().grave.Where(c => c.define == game.getDefine<MoriyaSuwako>()).random(game);
+                await card.getOwner().grave.moveTo(game, card1, card.getOwner().hand);
+                await card1.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new LifeModifier(2)));
+            }
+        }
     }
 
     public class GodWind : SpellCardDefine
