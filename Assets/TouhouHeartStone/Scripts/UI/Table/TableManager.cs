@@ -1390,7 +1390,7 @@ namespace Game
         /// <summary>
         /// 取消攻击
         /// </summary>
-        private void cancelAttack()
+        public void cancelAttack()
         {
             //缩小动画
             //rectTransform.localScale = Vector3.one;

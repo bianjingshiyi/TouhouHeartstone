@@ -8,6 +8,7 @@ namespace Game
         public override bool update(TableManager table, THHGame.TurnEndEventArg eventArg, float time)
         {
             table.canControl = false;
+            table.cancelAttack();
             table.ui.TimeoutSlider.hide();
             table.closeDiscoverDialog();
             table.ui.TurnEndButton.interactable = false;
