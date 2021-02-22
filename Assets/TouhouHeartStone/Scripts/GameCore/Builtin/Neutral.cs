@@ -589,8 +589,8 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer player = card.getOwner();
             if (!player.hand.isFull)
-                //await player.grave.moveTo(game, player.grave.Where(c => c.isSpell()).random(game), player.hand);
-                await card.getOwner().reborn(game, player.grave.Where(c => c.isSpell()).random(game), player.hand);
+                await player.grave.moveTo(game, player.grave.Where(c => c.isSpell()).random(game), player.hand);
+                // await card.getOwner().reborn(game, player.grave.Where(c => c.isSpell()).random(game), player.hand);
         }
     }
     /// <summary>
