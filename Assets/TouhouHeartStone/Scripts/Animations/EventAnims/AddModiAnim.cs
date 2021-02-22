@@ -68,18 +68,26 @@ namespace Game
                 else if (eventArg.modifier is CostModifier costMod)
                 {
                     PropNumber propNumber = hand.Card.getCostPropNum(eventArg.card);
-                    propNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
+                    //propNumber.text.text = eventArg.valueAfter is int i ? i.ToString() : "?";
+                    propNumber.text.text = eventArg.card.getCost(table.game).ToString();
+                    animator = propNumber.asAnimator;
                     if (eventArg.card.getCost(table.game) < eventArg.card.define.getCost())
                     {
-                        simpleAnim = propNumber.GreenText;
+                        animator.SetBool("isGreen", true);
+                        animator.SetBool("isRed", false);
+                        //simpleAnim = propNumber.GreenText;
                     }
                     else if (eventArg.card.getCost(table.game) > eventArg.card.define.getCost())
                     {
-                        simpleAnim = propNumber.RedText;
+                        animator.SetBool("isRed", true);
+                        animator.SetBool("isGreen", false);
+                        //simpleAnim = propNumber.RedText;
                     }
                     else
                     {
-                        simpleAnim = propNumber.WhiteText;
+                        animator.SetBool("isGreen", false);
+                        animator.SetBool("isRed", false);
+                        //simpleAnim = propNumber.WhiteText;
                     }
                 }
             }
