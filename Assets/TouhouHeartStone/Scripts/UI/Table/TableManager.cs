@@ -196,13 +196,11 @@ namespace Game
             ui.SelfGraveDeck.onPointerMove.set(onDeckPointerMove);
             ui.TurnEndButton.onClick.set(onTurnEndButtonClick);
             ui.SelfMaster.ArmorPropNumber.text.text = "0";
-            ui.SelfMaster.setBoolFalse("hasArmor");
             ui.LargeCard.hide();
             ui.TipText.hide();
             initMaster(ui.EnemyMaster);
             ui.EnemyGem.Text.text = "0";
             ui.EnemyMaster.ArmorPropNumber.text.text = "0";
-            ui.EnemyMaster.setBoolFalse("hasArmor");
             ui.EnemyItem.hide();
             ui.EnemyFieldList.clearItems();
             ui.EnemyHandList.clearItems();
@@ -355,6 +353,11 @@ namespace Game
             master.onClick.add(onClickMaster);
             master.Head.clearSecret();
             master.LifePropNumber.WhiteText.invokeBeforeAnim();
+            master.asAnimator.SetBool("isShackle",false);
+            master.onCanAttackFalse.invokeBeforeAnim();
+            master.HighlightImage.hide();
+            master.AttackPropNumber.hide();
+            master.asAnimator.SetBool("hasArmor",false);
         }
         /// <summary>
         /// 设置Master的UI
