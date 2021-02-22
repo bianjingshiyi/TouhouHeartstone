@@ -160,15 +160,15 @@ namespace Game
                 }
                 if (eventArg.card.getCost(table.game) < eventArg.card.define.getCost())
                 {
-                    simpleAnim = hand.Card.getCostPropNum(eventArg.card).GreenText;
+                    hand.Card.getCostPropNum(eventArg.card).GreenText.invokeBeforeAnim();
                 }
                 else if(eventArg.card.getCost(table.game) > eventArg.card.define.getCost())
                 {
-                    simpleAnim = hand.Card.getCostPropNum(eventArg.card).RedText;
+                    hand.Card.getCostPropNum(eventArg.card).RedText.invokeBeforeAnim();
                 }
                 else
                 {
-                    simpleAnim = hand.Card.getCostPropNum(eventArg.card).WhiteText;
+                    hand.Card.getCostPropNum(eventArg.card).WhiteText.invokeBeforeAnim();
                 }
             }
 
