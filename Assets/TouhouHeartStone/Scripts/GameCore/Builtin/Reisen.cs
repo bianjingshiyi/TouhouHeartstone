@@ -122,21 +122,14 @@ namespace TouhouHeartstone.Builtin
                 (g, c, a) =>
                 {
                     return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g) && a.card.isServant() &&
-                           a.card.getAttack(g) <= 2;
+                           a.card.getAttack(g) <= 2 && c.getOwner().field.count < 7;
                 }, async (g, c, a) =>
                 {
                     a.isCanceled = true; //取消攻击
                     THHPlayer you = c.getOwner();
                     THHPlayer oppo = a.card.getOwner();
-                    if (you.field.count < 7)
-                    {
-                        await oppo.field.moveTo(g, a.card, you.field); //交换控制权
-                    }
-                    else
-                    {
-                        await a.card.setDead(g, true);
-                        await g.updateDeath(g);
-                    }
+                    await oppo.field.moveTo(g, a.card, you.field); //交换控制权
+                    
                 })
         };
     }

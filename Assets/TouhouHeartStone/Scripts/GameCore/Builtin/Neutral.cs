@@ -1599,15 +1599,15 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 御柱
-    /// 衍生卡，3/3/3嘲讽
+    /// 
     /// </summary>
     public class Onbashira_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x072;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 3;
-        public override int attack { get; set; } = 3;
-        public override int life { get; set; } = 3;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 4;
         public override bool isToken { get; set; } = true;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
     }
@@ -1643,7 +1643,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async(game,card,target)=>
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(2)));
-            },PileFlag.field|PileFlag.both)
+            },PileFlag.both | PileFlag.field)
         };
     }
 }

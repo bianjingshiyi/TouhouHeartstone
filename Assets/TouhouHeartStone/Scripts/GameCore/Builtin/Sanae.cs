@@ -721,9 +721,9 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async(game,card,target)=>
             {
                 await target.setDead(game,true);
-                await card.getOwner().master.damage(game,card,card.getOwner().getSpellDamage(game,4));
+                await card.getOwner().master.damage(game,card,card.getOwner().getSpellDamage(game,target.getLife(game)));
                 await game.updateDeath(game);
-            })
+            },PileFlag.both | PileFlag.field)
             
         };
     }
@@ -769,7 +769,10 @@ namespace TouhouHeartstone.Builtin
             foreach(Card c in game.getOpponent(card.getOwner()).hand)
             {
                 if(c.isServant())
-                    await c.addBuff(game, new GeneratedBuff(ID, new CostModifier(5)));
+                    await c.addBuff(game, new GeneratedBuff(ID, new CostModifier(5),new RemoveBuffAfter<THHGame.TurnStartEventArg>(PILE.HAND,(g,c1,a)=> 
+                    {
+                        return a.player == c1.getOwner();
+                    },ID)));
             }
         }
     }
@@ -836,7 +839,7 @@ namespace TouhouHeartstone.Builtin
             {
                 index = game.randomInt(0, oppo.deck.count);
                 await you.field[0].resetCard(game);
-                await you.field.moveTo(game, you.field[0], oppo.deck, index);
+                await you.field.moveTo(game, you.field[0], you.deck, index);
             }
 
             while (oppo.field.count != 0)
