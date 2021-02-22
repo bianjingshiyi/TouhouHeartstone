@@ -7,7 +7,7 @@ using BJSYGameCore.UI;
 
 namespace Game
 {
-    class SetPropAnim : EventAnimation<Card.PropChangeEventArg>
+    class PropChangeAnim : EventAnimation<Card.PropChangeEventArg>
     {
         AnimAnim _anim;
         public override bool update(TableManager table, Card.PropChangeEventArg eventArg, float time)
