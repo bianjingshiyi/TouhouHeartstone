@@ -151,7 +151,26 @@ namespace Game
                 }
                 table.setItem(item, eventArg.card);
             }
-
+            else if(table.tryGetHand(eventArg.card,out var hand))
+            {
+                animator = hand.Card.getCostPropNum(eventArg.card).asAnimator;
+                if (eventArg.propName == PROPERTY.COST && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
+                {
+                    hand.Card.getCostPropNum(eventArg.card).text.text = eventArg.card.getCost(table.game).ToString();
+                }
+                if (eventArg.card.getCost(table.game) < eventArg.card.define.getCost())
+                {
+                    simpleAnim = hand.Card.getCostPropNum(eventArg.card).GreenText;
+                }
+                else if(eventArg.card.getCost(table.game) > eventArg.card.define.getCost())
+                {
+                    simpleAnim = hand.Card.getCostPropNum(eventArg.card).RedText;
+                }
+                else
+                {
+                    simpleAnim = hand.Card.getCostPropNum(eventArg.card).WhiteText;
+                }
+            }
 
             if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator, time))
                 return false;
