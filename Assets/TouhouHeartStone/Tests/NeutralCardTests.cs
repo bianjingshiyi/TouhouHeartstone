@@ -973,6 +973,7 @@ namespace Tests
                 game.skipUntilCanUse<DefaultServant>(oppo);
                 oppo.cmdUse<DefaultServant>(game);
             }
+
             game.skipUntilCanUse<MoriyaSuwako_N>(you);
             you.cmdUse<MoriyaSuwako_N>(game, out var s);
             Assert.True(s.canAttack(game));
@@ -1005,9 +1006,9 @@ namespace Tests
             var totalCount = you.hand.count;
             var count = you.hand.Count(c => c.getCost(game) >= 5);
             you.cmdUse<YasakaKanako_N>(game);
-            Assert.AreEqual(totalCount-count,you.hand.count);
+            Assert.AreEqual(totalCount - count, you.hand.count);
             Assert.AreEqual(count, you.field.count);
-            Assert.AreEqual(you.field.count-1, you.field.Count(c => c.define is Onbashira_N));
+            Assert.AreEqual(you.field.count - 1, you.field.Count(c => c.define is Onbashira_N));
             game.Dispose();
         }
     }

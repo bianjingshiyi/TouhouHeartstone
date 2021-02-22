@@ -1574,9 +1574,9 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x071;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 7;
-        public override int attack { get; set; } = 6;
-        public override int life { get; set; } = 6;
+        public override int cost { get; set; } = 10;
+        public override int attack { get; set; } = 8;
+        public override int life { get; set; } = 8;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
         public override string[] tags { get; set; } = { TAG.GOD };
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -1586,10 +1586,12 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            var cards = card.getOwner().hand.Where(c => c.getCost(game) > 5);
-            for(int i=0; i<cards.Count(); i++)
+            var you = card.getOwner();
+            var cards = you.hand.Where(c => c.getCost(game) > 5);
+            var enumerable = cards.ToList();
+            foreach (var t in enumerable)
             {
-                await card.getOwner().hand.moveTo(game, cards.First(), card.getOwner().deck);
+                await card.getOwner().hand.moveTo(game, t, card.getOwner().deck);
                 await card.getOwner().createToken(game, game.getDefine<Onbashira_N>());
             }
         }
@@ -1603,9 +1605,9 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x072;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 4;
-        public override int attack { get; set; } = 4;
-        public override int life { get; set; } = 4;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 3;
+        public override int life { get; set; } = 3;
         public override bool isToken { get; set; } = true;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
     }
