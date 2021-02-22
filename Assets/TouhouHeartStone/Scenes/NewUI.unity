@@ -5050,6 +5050,7 @@ MonoBehaviour:
     height: 800
   windowID: 1
   maxLine: 300
+  collapseDefault: 1
   collapse: 0
 --- !u!4 &1729670673
 Transform:
@@ -9921,6 +9922,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5514441475958588227, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 35.90039
+      objectReference: {fileID: 0}
     - target: {fileID: 5542480681171161687, guid: 83c0b33294cc7ac4295dbe5157864e9d,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -10485,7 +10491,7 @@ PrefabInstance:
     - target: {fileID: 7072975925799150866, guid: 83c0b33294cc7ac4295dbe5157864e9d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 29.899902
+      value: 29.90039
       objectReference: {fileID: 0}
     - target: {fileID: 7072975925799150876, guid: 83c0b33294cc7ac4295dbe5157864e9d,
         type: 3}
