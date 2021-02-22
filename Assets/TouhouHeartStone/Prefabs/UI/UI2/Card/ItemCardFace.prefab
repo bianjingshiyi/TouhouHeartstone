@@ -146,12 +146,12 @@ MonoBehaviour:
     m_MinSize: 4
     m_MaxSize: 40
     m_Alignment: 4
-    m_AlignByGeometry: 0
+    m_AlignByGeometry: 1
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57"
+  m_Text: "\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB\u5341\u4E94\u4E2A\u5B57\u56DB"
   isBestFit: 1
   MinSize: 32
   MaxSize: 50
@@ -1105,6 +1105,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1767864255990906328, guid: 7bc85545909269a40925d78b5c830bca,
         type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 75
+      objectReference: {fileID: 0}
+    - target: {fileID: 1767864255990906328, guid: 7bc85545909269a40925d78b5c830bca,
+        type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
@@ -1117,11 +1122,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1767864255990906328, guid: 7bc85545909269a40925d78b5c830bca,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 75
       objectReference: {fileID: 0}
     - target: {fileID: 3953699943139152980, guid: 7bc85545909269a40925d78b5c830bca,
         type: 3}

@@ -26,7 +26,7 @@ namespace IGensoukyo.Utilities
         {
             if (!isBestFit) return;
 
-            TextGenerator gen = cachedTextGenerator;
+            TextGenerator gen = new TextGenerator();
             Rect rect = rectTransform.rect;
 
             var genSetting = this.GetGenerationSettings(rect.size);
@@ -36,9 +36,9 @@ namespace IGensoukyo.Utilities
             {
                 genSetting.fontSize = size;
                 var height = gen.GetPreferredHeight(text, genSetting);
-                if (height < rect.height - 2) break;
+                if (height < rect.height - 2)
+                    break;
             }
-
             fontSize = size;
         }
     }
