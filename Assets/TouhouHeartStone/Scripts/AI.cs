@@ -574,7 +574,7 @@ namespace Game
                     value = calcHealingValue(game, player, opponent, target);
                     return true;
                 case StarRitual _:
-                    value = 2;
+                    value = 0.5f;
                     return true;
                 case GrayThaumaturgy _:
                     value = calcHealingValue(game, player, opponent, target);
