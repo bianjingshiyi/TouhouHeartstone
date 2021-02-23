@@ -1008,7 +1008,7 @@ namespace Tests
             you.cmdUse<YasakaKanako_N>(game);
             Assert.AreEqual(totalCount - count, you.hand.count);
             Assert.AreEqual(count, you.field.count);
-            Assert.AreEqual(you.field.count - 1, you.field.Count(c => c.define is Onbashira_N));
+            Assert.AreEqual(you.field.count - 1, you.field.Count(c => c.define is Onbashira));
             game.Dispose();
         }
     }
