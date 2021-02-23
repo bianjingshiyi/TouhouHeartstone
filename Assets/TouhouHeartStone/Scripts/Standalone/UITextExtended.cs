@@ -22,21 +22,28 @@ namespace IGensoukyo.Utilities
             set { base.text = value; updateTextSize(); }
         }
 
+        protected override void OnRectTransformDimensionsChange()
+        {
+            base.OnRectTransformDimensionsChange();
+            updateTextSize();
+        }
+
         void updateTextSize()
         {
             if (!isBestFit) return;
 
-            TextGenerator gen = new TextGenerator();
+            TextGenerator gen = cachedTextGenerator;
             Rect rect = rectTransform.rect;
 
-            var genSetting = this.GetGenerationSettings(rect.size);
+            var genSetting = GetGenerationSettings(rect.size);
 
             int size;
             for (size = MaxSize; size > MinSize; size--)
             {
                 genSetting.fontSize = size;
                 var height = gen.GetPreferredHeight(text, genSetting);
-                if (height < rect.height - 2)
+
+                if (height < (rect.height - 1) * pixelsPerUnit)
                     break;
             }
             fontSize = size;
