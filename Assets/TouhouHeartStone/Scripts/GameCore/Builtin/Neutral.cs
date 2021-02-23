@@ -1592,7 +1592,7 @@ namespace TouhouHeartstone.Builtin
             foreach (var t in enumerable)
             {
                 await card.getOwner().hand.moveTo(game, t, card.getOwner().deck);
-                await card.getOwner().createToken(game, game.getDefine<Onbashira_N>());
+                await card.getOwner().createToken(game, game.getDefine<Onbashira>());
             }
         }
     }
@@ -1601,16 +1601,16 @@ namespace TouhouHeartstone.Builtin
     /// 御柱
     /// 
     /// </summary>
-    public class Onbashira_N : ServantCardDefine
-    {
-        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x072;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 4;
-        public override int attack { get; set; } = 4;
-        public override int life { get; set; } = 4;
-        public override bool isToken { get; set; } = true;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
-    }
+    //public class Onbashira_N : ServantCardDefine
+    //{
+    //    public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x072;
+    //    public override int id { get; set; } = ID;
+    //    public override int cost { get; set; } = 4;
+    //    public override int attack { get; set; } = 4;
+    //    public override int life { get; set; } = 4;
+    //    public override bool isToken { get; set; } = true;
+    //    public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+    //}
 
     /// <summary>
     /// 衍生物 枫叶
@@ -1624,8 +1624,11 @@ namespace TouhouHeartstone.Builtin
         //  public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-          
+            new NoTargetEffect(effect)
         };
+        static async Task effect(THHGame game, Card card)
+        {
+        }
     }
 
     /// <summary>
