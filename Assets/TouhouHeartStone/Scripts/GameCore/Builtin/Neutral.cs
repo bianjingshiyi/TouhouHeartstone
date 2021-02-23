@@ -1587,13 +1587,17 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             var you = card.getOwner();
-            var cards = you.hand.Where(c => c.getCost(game) > 5);
+            var cards = you.hand.Where(c => c.getCost(game) >= 5);
             var enumerable = cards.ToList();
             foreach (var t in enumerable)
             {
-                await card.getOwner().hand.moveTo(game, t, card.getOwner().deck);
+                await card.getOwner().hand.moveTo(game, t, card.getOwner().deck);              
+            }
+            for(int i=0; i < enumerable.Count; i++)
+            {
                 await card.getOwner().createToken(game, game.getDefine<Onbashira>());
             }
+            
         }
     }
 
