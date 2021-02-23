@@ -109,6 +109,21 @@ namespace Game
                                 if (!onSecretEnter(table, eventArg.card, time))
                                     return false;
                             }
+                            else if (eventArg.to.name == PILE.DECK)
+                            {
+                                var DeckRectTransform = table.player == eventArg.card.owner ? table.ui.SelfDeck.rectTransform : table.ui.EnemyDeck.rectTransform;
+                                hand.GetComponentInChildren<PositionLerp>().resetPosition();
+                                hand.GetComponentInChildren<PositionLerp>().setTarget(DeckRectTransform);
+                                if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator, time, next =>
+                                {
+                                    if (next is MoveCardAnim moveCard && moveCard.tEventArg.card != eventArg.card)
+                                        return true;
+                                    return false;
+                                }))
+                                    return false;
+                                table.ui.SelfHandList.removeItem(hand);
+                                table.ui.EnemyHandList.removeItem(hand);
+                            }
                         }
                         return true;
                     }
