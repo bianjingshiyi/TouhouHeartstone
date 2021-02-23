@@ -14,7 +14,8 @@ namespace UI
     using UnityEngine;
     using UnityEngine.UI;
     using BJSYGameCore.UI;
-    
+    using BJSYGameCore;
+
     public partial class Build : UIObject
     {
         protected override void Awake()
@@ -399,7 +400,7 @@ namespace UI
             {
                 if ((this._UIDialog == null))
                 {
-                    this._UIDialog = UIDialog.Instance;
+                    this._UIDialog = gameObject.scene.findInstance<UIDialog>();
                 }
                 return this._UIDialog;
             }

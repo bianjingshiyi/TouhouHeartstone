@@ -7,14 +7,9 @@ namespace UI
 {
     partial class UIDialog
     {
-        static UIDialog instance = null;
-
-        public static UIDialog Instance => instance;
-
         protected override void Awake()
         {
             base.Awake();
-            instance = this;
         }
 
         /// <summary>
