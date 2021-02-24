@@ -123,13 +123,13 @@ namespace Game
                                 responseDic.Add(
                                     new UseResponse()
                                         {cardId = card.id, position = i, targetsId = new int[] {target.id}},
-                                    card.getAttack(game) + card.getLife(game));
+                                    calcServantValue(card.getAttack(game), card.getLife(game)));
                             }
                         }
                         else
                         {
                             responseDic.Add(new UseResponse() {cardId = card.id, position = i},
-                                card.getAttack(game) + card.getLife(game));
+                                calcServantValue(card.getAttack(game), card.getLife(game)));
                         }
                     }
                 }
@@ -245,14 +245,12 @@ namespace Game
                     value = 1;
                     return true;
                 case Neutral_74 _:
-                    value = calcHealingValue(game, player, oppo, target);
+                    value = calcBuffValue(game, player, oppo, target, 0, 2);
                     return true;
                 default:
                     value = 0;
                     return false;
             }
-
-            
         }
 
         bool calcYoumuValue(THHGame game, THHPlayer player, Card card, THHPlayer oppo, Card target, out float value)
@@ -337,7 +335,7 @@ namespace Game
                     value = calcBuffValue(game, player, opponent, target, 2, 0);
                     return true;
                 case DoyouSpear _:
-                    value = calcServantValue(game, player, opponent, 1, 1);
+                    value = calcServantValue(1, 1);
                     return true;
                 case MultiCast _:
                     value = player.hand.Where(c => c.isSpell() && c.getCost(game) > 1).Count() > 0 ? 2 : 0;
@@ -367,7 +365,7 @@ namespace Game
                     value = calcDamageValue(game, player, opponent, target, 7);
                     return true;
                 case TrilithonShake _:
-                    value = calcServantValue(game, player, opponent, 3, 9);
+                    value = calcServantValue(3, 9);
                     return true;
                 case RoyalFlare _:
                     value = calcDamageValue(game, player, opponent, opponent.master, 15);
@@ -391,7 +389,7 @@ namespace Game
                     value = calcDamageValue(game, player, opponent, target, 6);
                     return true;
                 case NoachianDeluge _:
-                    value = calcServantValue(game, player, opponent, 2, 2) + 1;
+                    value = calcServantValue(2, 2) + 1;
                     return true;
                 case MercuryPoison _:
                     value = calcAOEDamageValue(game, player, opponent, opponent.field, 3);
@@ -405,11 +403,11 @@ namespace Game
                         6 + target.getLife(game) - target.getCurrentLife(game)) + 1;
                     return true;
                 case LavaCromlech _:
-                    value = (calcServantValue(game, player, opponent, 2, 2) +
+                    value = (calcServantValue(2, 2) +
                              calcRandomDamageValue(game, player, opponent, opponent.field, 2)) * 3;
                     return true;
                 case GingerGust _:
-                    value = (calcServantValue(game, player, opponent, 3, 1) + 1) * opponent.field.count;
+                    value = (calcServantValue(3, 1) + 1) * opponent.field.count;
                     return true;
                 default:
                     value = 0;
@@ -423,16 +421,13 @@ namespace Game
             return targets.Sum(c => calcBuffValue(game, player, opponent, c, attack, life));
         }
 
-        float calcBuffValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int attack, int life)
+        float calcBuffValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int atk, int life)
         {
-            float value = 0;
-            if (target == player.master)
-                value = attack * target.getCurrentLife(game) + life;
-            else if (player.field.Contains(target))
-                value = calcServantValue(game, player, opponent, target.getAttack(game) + attack,
-                            target.getCurrentLife(game) + life)
-                        - calcServantValue(game, player, opponent, target.getAttack(game), target.getLife(game));
-            return value;
+            var atkBfr = target.getAttack(game);
+            var lifeBfr = target.getCurrentLife(game);
+            bool isFriendly = target.getOwner() == player;
+            float _ = calcInstantIntPropChangeValue(isFriendly,target.isMaster(), atkBfr, lifeBfr, atkBfr + atk, lifeBfr - life);
+            return _;
         }
 
         float calcAOEDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
@@ -454,16 +449,13 @@ namespace Game
             return value;
         }
 
-        float calcDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int damage)
+        float calcDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int value)
         {
-            float value = 0;
-            if (target == opponent.master)
-                value = target.getCurrentLife(game) > damage ? damage : float.MaxValue;
-            else if (opponent.field.Contains(target))
-                value = target.getCurrentLife(game) > damage
-                    ? target.getAttack(game) * damage
-                    : target.getAttack(game) * target.getCurrentLife(game) + 1;
-            return value;
+            var atk = target.getAttack(game);
+            var life = target.getCurrentLife(game);
+            bool isFriendly = target.getOwner() == player;
+            float _ = calcInstantIntPropChangeValue(isFriendly,target.isMaster(), atk, life, atk, life - value);
+            return _;
         }
 
         float calcServantsValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> servants)
@@ -473,21 +465,12 @@ namespace Game
 
         float calcServantValue(THHGame game, THHPlayer player, THHPlayer opponent, Card servant)
         {
-            return calcServantValue(game, player, opponent, servant.getAttack(game), servant.getCurrentLife(game));
+            return calcServantValue(servant.getAttack(game), servant.getCurrentLife(game));
         }
 
-        /// <summary>
-        /// 这个得改
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="player"></param>
-        /// <param name="opponent"></param>
-        /// <param name="attack"></param>
-        /// <param name="life"></param>
-        /// <returns></returns>
-        float calcServantValue(THHGame game, THHPlayer player, THHPlayer opponent, int attack, int life)
+        float calcServantValue(int attack, int life)
         {
-            return attack * life + 1;
+            return Math.Max(attack, 0) * Math.Max(life, 0) + life > 0 ? 1 : 0;
         }
 
         float calcRandomServantsValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
@@ -580,22 +563,22 @@ namespace Game
             switch (card.define)
             {
                 case WindStopMiracle _:
-                    value = calcHealingValue(game, player, opponent, target);
+                    value = calcHealingValue(game, player, opponent, target, 2);
                     return true;
                 case StarRitual _:
                     value = 0.5f;
                     return true;
                 case GrayThaumaturgy _:
-                    value = calcHealingValue(game, player, opponent, target);
+                    value = calcHealingValue(game, player, opponent, target, 10);
                     return true;
                 case BumperCrop _:
-                    value = calcHealingValue(game,player,opponent,player.master);
+                    value = 5 * calcRandomHealingValue(game, player, opponent, game.getAllAllys(player), 1);
                     return true;
                 case GuestStarsMiracle _:
-                    value = calcAOEDamageValue(game, player, opponent, opponent.field ,2);
+                    value = calcAOEDamageValue(game, player, opponent, opponent.field, 2);
                     return true;
                 case OpenSeaMiracle _:
-                    value = calcDamageValue(game, player, opponent, target,2);
+                    value = calcDamageValue(game, player, opponent, target, 2);
                     return true;
                 case GodWind _:
                     value = calcServantsValue(game, player, opponent, opponent.field) -
@@ -624,26 +607,66 @@ namespace Game
                     return true;
                 default:
                     value = 0;
-                    return true;
+                    return false;
             }
-                
         }
 
-        /// <summary>
-        /// 待补充
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="player"></param>
-        /// <param name="opponent"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        float calcHealingValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
+        float calcHealingValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int value)
         {
-            if (game.getAllAllys(player).Contains(target))
-                return target.getLife(game) - target.getCurrentLife(game);
-            if (game.getAllEnemies(player).Contains(target))
-                return -1;
-            return 0;
+            var life = target.getLife(game);
+            var lifeBfr = target.getCurrentLife(game);
+            var atk = target.getAttack(game);
+            var lifeAft = Math.Min(life, lifeBfr + value);
+            var isFriendly = target.getOwner() == player;
+            return calcInstantIntPropChangeValue(isFriendly,target.isMaster(), atk, lifeBfr, atk, lifeAft);
+        }
+
+        float calcRandomHealingValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
+            int value)
+        {
+            float _ = 0;
+            foreach (var target in targets)
+            {
+                _ += calcHealingValue(game, player, opponent, target, value);
+            }
+
+            _ /= targets.Count();
+            return _;
+        }
+
+        float calcInstantServantIntPropChangeValue(bool isFriendly, int atkBfr, int lifeBfr, int atkAft, int lifeAft)
+        {
+            var value = calcServantValue(atkAft, lifeAft) - calcServantValue(atkBfr, lifeBfr);
+            if (isFriendly)
+            {
+                return value;
+            }
+
+            return -value;
+        }
+
+        float calcInstantMasterIntPropChangeValue(bool isFriendly, int atkBfr, int lifeBfr, int atkAft, int lifeAft)
+        {
+            var value = calcMasterLifeWeight(lifeAft) - calcMasterLifeWeight(lifeBfr);
+            if (isFriendly)
+            {
+                return value;
+            }
+
+            return -value;
+        }
+
+        float calcInstantIntPropChangeValue(bool isFriendly, bool isMaster, int atkBfr, int lifeBfr, int atkAft,
+            int lifeAft)
+        {
+            return isMaster
+                ? calcInstantMasterIntPropChangeValue(isFriendly, atkBfr, lifeBfr, atkAft, lifeAft)
+                : calcInstantServantIntPropChangeValue(isFriendly, atkBfr, lifeBfr, atkAft, lifeAft);
+        }
+
+        float calcMasterLifeWeight(int life)
+        {
+            return (float) Math.Log(Math.Max(life, 0)) * 100;
         }
 
         float calcStealthValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
@@ -694,7 +717,11 @@ namespace Game
                     value += calcRandomFreezeValue(game, player, opponent, game.getAllCharacters().Append(card));
                     return true;
                 case Cirno_IceFall _:
-                    // value += calcFreezeValue() + calcFreezeValue();
+                    foreach (var neighbor in target.getNearbyCards())
+                    {
+                        value += calcFreezeValue(game, player, opponent, neighbor);
+                    }
+
                     return true;
                 case Clownpiece _:
                     value += calcBuffAllValue(game, player, opponent, game.getAllServants(), 2, 0);
@@ -703,19 +730,22 @@ namespace Game
                     //这？
                     return true;
                 case LilyWhite _:
-                    value += calcHealingValue(game, player, opponent, player.master) +
-                             calcHealingValue(game, player, opponent, opponent.master) +
+                    value += calcHealingValue(game, player, opponent, player.master, 4) +
+                             calcHealingValue(game, player, opponent, opponent.master, 4) +
                              calcDrawCardsValue(game, player, opponent, 2);
                     return true;
                 case Cirno_N_YYM _:
                     value += calcFreezeValue(game, player, opponent, target);
                     return true;
                 case Cirno_N_HMX _:
-                    // 跟ice fall一样
+                    foreach (var neighbor in target.getNearbyCards())
+                    {
+                        value += calcFreezeValue(game, player, opponent, neighbor);
+                    }
+
                     return true;
                 case Chen_N _:
-                    value += calcServantValue(game, player, opponent, 3, 2) -
-                             calcServantValue(game, player, opponent, card);
+                    value += calcBuffValue(game, player, opponent, card, 2, 0);
                     // + calcRushValue
                     return true;
                 case Koakuma_N _:
@@ -733,7 +763,7 @@ namespace Game
                     value += calcDrawCardsValue(game, player, opponent, 1) + 4;
                     return true;
                 case YakumoRan_N _:
-                    value += calcServantValue(game, player, opponent, 4, 3);
+                    value += calcServantValue(4, 3);
                     return true;
                 case SaigyoujiYuyuko_N _:
                     value += calcServantValue(game, player, opponent, target);
@@ -744,16 +774,16 @@ namespace Game
                     // 加个回手value
                     return true;
                 case LunasaPrismriver_N _:
-                    value += calcServantValue(game, player, opponent, 1, 2) +
-                             calcServantValue(game, player, opponent, 2, 1);
+                    value += calcServantValue(1, 2) +
+                             calcServantValue(2, 1);
                     return true;
                 case MerlinPrismriver_N _:
-                    value += calcServantValue(game, player, opponent, 2, 2) +
-                             calcServantValue(game, player, opponent, 2, 1);
+                    value += calcServantValue(2, 2) +
+                             calcServantValue(2, 1);
                     return true;
                 case LyricaPrismriver_N _:
-                    value += calcServantValue(game, player, opponent, 2, 2) +
-                             calcServantValue(game, player, opponent, 1, 2);
+                    value += calcServantValue(2, 2) +
+                             calcServantValue(1, 2);
                     return true;
                 case MystiaLorelei_N _:
                     value += calcBuffValue(game, player, opponent, target, 1 - target.getAttack(game), 0);
@@ -768,7 +798,7 @@ namespace Game
                 case KamishirasawaKeine_Beast_N _:
                     return true;
                 case MedicineSellman _:
-                    value += calcHealingValue(game, player, opponent, target);
+                    value += calcHealingValue(game, player, opponent, target, 4);
                     return true;
                 case TewiInaba _:
                     value += calcDrawCardsValue(game, player, opponent, 1);
@@ -780,8 +810,7 @@ namespace Game
                     value += calcDrawCardsValue(game, player, opponent, 1);
                     return true;
                 case OrochiOfAncientTimes _:
-                    value += calcServantValue(game, player, opponent, target.getAttack(game),
-                        target.getCurrentLife(game));
+                    value += calcServantValue(target.getAttack(game), target.getCurrentLife(game));
                     return true;
                 case YasakaKanako _:
                     value += 10;
