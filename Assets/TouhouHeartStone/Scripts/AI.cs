@@ -236,14 +236,23 @@ namespace Game
 
         bool calcNeutralValue(THHGame game, THHPlayer player, Card card, THHPlayer oppo, Card target, out float value)
         {
-            if (card.define is LuckyCoin)
+            switch (card.define)
             {
-                value = 1;
-                return true;
+                case LuckyCoin _:
+                    value = 1;
+                    return true;
+                case Neutral_73 _:
+                    value = 1;
+                    return true;
+                case Neutral_74 _:
+                    value = calcHealingValue(game, player, oppo, target);
+                    return true;
+                default:
+                    value = 0;
+                    return false;
             }
 
-            value = 0;
-            return false;
+            
         }
 
         bool calcYoumuValue(THHGame game, THHPlayer player, Card card, THHPlayer oppo, Card target, out float value)
