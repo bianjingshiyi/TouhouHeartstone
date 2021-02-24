@@ -1132,16 +1132,7 @@ namespace Game
                 servant.onStealthFalse.invokeBeforeAnim();
                 servant.onStealthFalse.invokeAfterAnim();
             }
-            bool flag = false;
-            foreach (var eff in card.define.effects)
-            {
-                if (eff is DeathRattle)
-                {
-                    flag = true;
-                    break;
-                }
-            }
-            if (flag)
+            if (card.hasDeathRattle(game))
             {
                 servant.onDyingWishTrue.invokeBeforeAnim();
                 servant.onDyingWishTrue.invokeAfterAnim();
