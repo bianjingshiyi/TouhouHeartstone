@@ -106,6 +106,8 @@ namespace Game
                             }
                             else if (eventArg.to.name == PILE.HEAD)
                             {
+                                table.ui.SelfHandList.removeItem(hand);
+                                table.ui.EnemyHandList.removeItem(hand);
                                 if (!onSecretEnter(table, eventArg.card, time))
                                     return false;
                             }
