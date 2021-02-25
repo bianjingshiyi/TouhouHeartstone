@@ -682,6 +682,7 @@ namespace UI
             HintMessageText.text = msg;
             HintMessageText.gameObject.SetActive(false);
             HintMessageText.gameObject.SetActive(true);
+            HintMessageText.gameObject.GetComponent<SEPlayer>()?.Play();
         }
 
         [TranslateMsg]
