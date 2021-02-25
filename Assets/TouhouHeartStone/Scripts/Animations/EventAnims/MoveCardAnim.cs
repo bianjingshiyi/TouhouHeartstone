@@ -196,6 +196,11 @@ namespace Game
                                         table.ui.SelfFieldList.removeItem(servant);
                                         table.ui.EnemyFieldList.removeItem(servant);
                                     }
+                                    //关闭沉默开关
+                                    if (eventArg.card.isSilenced(table.game))
+                                    {
+                                        eventArg.card.setProp(table.game, PROPERTY.SILENCE, false);
+                                    }
                                     //创建卡牌
                                     if (_card == null)
                                         _card = table.createCard(eventArg.card, servant.transform.position, servant.rectTransform.rect.height);
