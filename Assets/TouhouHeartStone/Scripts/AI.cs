@@ -386,7 +386,7 @@ namespace Game
                             6;
                     return true;
                 case StElmoPillar _:
-                    value = calcDamageValue(game, player, opponent, target, 6);
+                    value = calcDamageValue(game, player, opponent, target, 4) + calcDamageValue(game, player, opponent, opponent.master, 4);
                     return true;
                 case NoachianDeluge _:
                     value = calcServantValue(2, 2) + 1;
@@ -399,8 +399,8 @@ namespace Game
                             calcRandomDamageValue(game, player, opponent, opponent.field, 1) * player.field.count;
                     return true;
                 case WaterElf _:
-                    value = calcBuffValue(game, player, opponent, target, 3,
-                        6 + target.getLife(game) - target.getCurrentLife(game)) + 1;
+                    value = calcHealingValue(game, player, opponent, target, target.getLife(game)-target.getCurrentLife(game)) + 
+                            calcBuffValue(target.getOwner()==player, target.isMaster(), target.getAttack(game), target.getLife(game), 3, 6);
                     return true;
                 case LavaCromlech _:
                     value = (calcServantValue(2, 2) +
@@ -426,8 +426,14 @@ namespace Game
             var atkBfr = target.getAttack(game);
             var lifeBfr = target.getCurrentLife(game);
             bool isFriendly = target.getOwner() == player;
-            float _ = calcInstantIntPropChangeValue(isFriendly,target.isMaster(), atkBfr, lifeBfr, atkBfr + atk, lifeBfr - life);
+            float _ = calcBuffValue(isFriendly,target.isMaster(), atkBfr, lifeBfr, atk, life);
             return _;
+        }
+
+        float calcBuffValue(bool isFriendly, bool isMaster ,int atkBfr, int lifeBfr, int atkBuff, int lifeBuff)
+        {
+            return calcInstantIntPropChangeValue(isFriendly, isMaster, atkBfr, lifeBfr, atkBfr + atkBuff,
+                lifeBfr + lifeBuff);
         }
 
         float calcAOEDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
@@ -600,7 +606,7 @@ namespace Game
                     value = calcRandomDamageValue(game, player, opponent, opponent.field, 4);
                     return true;
                 case Bomb4 _:
-                    value = calcRandomDamageValue(game, player, opponent, opponent.field.Concat(player.field), 4);
+                    value = 6*calcRandomDamageValue(game, player, opponent, opponent.field.Concat(player.field), 1);
                     return true;
                 case GodSummon _:
                     value = 1;
