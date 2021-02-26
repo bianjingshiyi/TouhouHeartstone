@@ -212,7 +212,7 @@ namespace Game
             ui.TipBox.hide();
             eventCache.clear();
             _animationQueue.Clear();
-
+            InvokeEAnim.DestoryInvokeCard();
             if (game != null)
             {
                 game.triggers.onEventBefore -= onEventBeforeHandler;
@@ -358,6 +358,8 @@ namespace Game
             master.HighlightImage.hide();
             master.AttackPropNumber.hide();
             master.asAnimator.SetBool("hasArmor",false);
+            master.HealImage.hide();
+            master.Image.color = new Color(1,1,1,1);
         }
         /// <summary>
         /// 设置Master的UI

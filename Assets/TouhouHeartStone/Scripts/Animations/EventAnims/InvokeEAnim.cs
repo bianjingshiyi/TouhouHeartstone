@@ -7,8 +7,8 @@ namespace Game
 {
     class InvokeEAnim : EventAnimation<Sanae.RevealDuelArg>
     {
-        Card _cardSelf;
-        Card _cardOppo;
+        static Card _cardSelf;
+        static Card _cardOppo;
         TableAnimation _moveToSelf;
         TableAnimation _moveToOppo;
         AnimAnim _flipFaceSelf;
@@ -117,11 +117,15 @@ namespace Game
             //    return false;
             //}
             //销毁实例
+            DestoryInvokeCard();
+            return true;
+        }
+        public static void DestoryInvokeCard()
+        {
             if (_cardSelf != null)
                 UObject.Destroy(_cardSelf.gameObject);
             if (_cardOppo != null)
                 UObject.Destroy(_cardOppo.gameObject);
-            return true;
         }
     }
 }
