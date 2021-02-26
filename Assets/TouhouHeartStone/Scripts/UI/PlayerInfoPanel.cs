@@ -46,15 +46,27 @@ namespace UI
     partial class LoginPanel
     {
         public event Action OnRegisterClick;
+        [Obsolete("Use Display + SetContent instead")]
         public void display(bool rememberUserName, string userName, bool rememberPassword, string password, Sprite captcha)
         {
             HideMessage();
-            CaptchaImgButton.image.sprite = captcha;
+            SetContent(rememberUserName, userName, rememberPassword, password, captcha);
+            display();
+        }
+        public void Display()
+        {
+            HideMessage();
+            display();
+        }
+        public void SetContent(bool rememberUserName, string userName, bool rememberPassword, string password, Sprite captcha = null)
+        {
+            if (captcha != null)
+                CaptchaImgButton.image.sprite = captcha;
+
             RememberAccountUIToggle.asToggle.isOn = rememberUserName;
             RememberPasswordUIToggle.asToggle.isOn = rememberPassword;
             UserName = userName;
             Password = password;
-            display();
         }
         public void ShowMessage(string msg)
         {
@@ -87,10 +99,16 @@ namespace UI
     partial class RegisterPanel
     {
         public event Action onRegisterClick;
+        [Obsolete("Use Display instead")]
         public void display(Sprite captcha)
         {
             HideMessage();
             CaptchaImageButton.image.sprite = captcha;
+            display();
+        }
+        public void Display()
+        {
+            HideMessage();
             display();
         }
         public void ShowMessage(string msg)
@@ -113,7 +131,7 @@ namespace UI
                 hide();
             });
         }
-        public void setCaptach(Sprite sprite)
+        public void setCaptcha(Sprite sprite)
         {
             CaptchaImageButton.image.sprite = sprite;
         }
@@ -129,7 +147,7 @@ namespace UI
         bool currentStage = false;
 
         public bool CurrentStage => currentStage;
-        public void Show()
+        public void Display()
         {
             SwitchStage(false);
             gameObject.SetActive(true);

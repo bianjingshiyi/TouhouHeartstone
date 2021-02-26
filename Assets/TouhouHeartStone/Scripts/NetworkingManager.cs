@@ -93,20 +93,20 @@ namespace Game
             //登录与注册界面初始化
             mainUI.RegisterPanel.onRegisterClick += async () =>
             {
-                mainUI.RegisterPanel.hide();
+                // 注册完毕，切换到登录界面
                 loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out var password);
-                mainUI.LoginPanel.display(rememberUserName, userName, rememberPassword, password, await getCaptchaImage());
+                mainUI.LoginPanel.SetContent(rememberUserName, userName, rememberPassword, password);
+                await ShowPanel(mainUI, Panel.Login);
             };
             mainUI.RegisterPanel.CaptchaImageButton.onClick.set(async () =>
             {
-                mainUI.RegisterPanel.setCaptach(await getCaptchaImage());
+                mainUI.RegisterPanel.setCaptcha(await getCaptchaImage());
             });
             mainUI.RegisterPanel.RegisterButtonBlack.asButton.onClick.AddListener(onRegisterClick);
             mainUI.RegisterPanel.hide();
             mainUI.LoginPanel.OnRegisterClick += async () =>
             {
-                mainUI.RegisterPanel.display(await getCaptchaImage());
-                mainUI.LoginPanel.hide();
+                await ShowPanel(mainUI, Panel.Register);
             };
             mainUI.LoginPanel.CaptchaImgButton.onClick.set(async () =>
             {
@@ -115,16 +115,14 @@ namespace Game
             mainUI.LoginPanel.LoginButtonBlack.asButton.onClick.set(onLoginClick);
             mainUI.LoginPanel.TextButton.onClick.AddListener(async () =>
             {
-                mainUI.LoginPanel.hide();
-                mainUI.RecoverPanel.Show();
-                mainUI.RecoverPanel.captchaImage1.sprite = await getCaptchaImage();
+                await ShowPanel(mainUI, Panel.Recover);
             });
             mainUI.LoginPanel.hide();
             mainUI.PlayerInfoPanel.OnLoginClick += async () =>
             {
-                mainUI.RegisterPanel.hide();
                 loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out var password);
-                mainUI.LoginPanel.display(rememberUserName, userName, rememberPassword, password, await getCaptchaImage());
+                mainUI.LoginPanel.SetContent(rememberUserName, userName, rememberPassword, password);
+                await ShowPanel(mainUI, Panel.Login);
             };
             mainUI.PlayerInfoPanel.OnLogoutClick += () =>
             {
@@ -135,14 +133,14 @@ namespace Game
             mainUI.RecoverPanel.onCommitButtonClick += onRecoverCommit;
             mainUI.RecoverPanel.onCloseButtonClick += () =>
             {
-                mainUI.RecoverPanel.gameObject.SetActive(false);
+                mainUI.RecoverPanel.hide();
             };
             mainUI.RecoverPanel.onBackButtonClick += () =>
             {
                 if (mainUI.RecoverPanel.CurrentStage)
                     mainUI.RecoverPanel.SwitchStage(false);
                 else
-                    mainUI.RecoverPanel.gameObject.SetActive(false);
+                    mainUI.RecoverPanel.hide();
             };
             mainUI.RecoverPanel.onCaptchaButton1Click += async () =>
             {
@@ -194,6 +192,41 @@ namespace Game
             }); 
             **/
         }
+        #region UI
+        enum Panel
+        {
+            Login,
+            Register,
+            Recover
+        }
+        async Task ShowPanel(MainMenu mainUI, Panel panel)
+        {
+            if (panel != Panel.Login)
+                mainUI.LoginPanel.hide();
+            if (panel != Panel.Register)
+                mainUI.RegisterPanel.hide();
+            if (panel != Panel.Recover)
+                mainUI.RecoverPanel.hide();
+
+            switch (panel)
+            {
+                case Panel.Login:
+                    mainUI.LoginPanel.Display();
+                    mainUI.LoginPanel.setCaptcha(await getCaptchaImage());
+                    break;
+                case Panel.Register:
+                    mainUI.RegisterPanel.Display();
+                    mainUI.RegisterPanel.setCaptcha(await getCaptchaImage());
+                    break;
+                case Panel.Recover:
+                    mainUI.RecoverPanel.Display();
+                    mainUI.RecoverPanel.setCaptcha(await getCaptchaImage());
+                    break;
+                default:
+                    break;
+            }
+        }
+        #endregion
 
         protected void Start()
         {
@@ -766,14 +799,17 @@ namespace Game
             try
             {
                 await client.register(new AccountInfo(userName, password, email, nickName, invite), captcha);
-                ui.hide();
+                var mainUI = getManager<UIManager>().getObject<MainMenu>();
+
                 loadRememberAccount(out var rememberUserName, out userName, out var rememberPassword, out password);
-                getManager<UIManager>().getObject<LoginPanel>().display(rememberUserName, userName, rememberPassword, password, await getCaptchaImage());
+                mainUI.LoginPanel.SetContent(rememberUserName, userName, rememberPassword, password);
+
+                await ShowPanel(mainUI, Panel.Login);
             }
             catch (NetClientException e)
             {
                 ui.ShowMessage(e.Message);
-                ui.setCaptach(await getCaptchaImage());
+                ui.setCaptcha(await getCaptchaImage());
             }
         }
         async void onLoginClick()
