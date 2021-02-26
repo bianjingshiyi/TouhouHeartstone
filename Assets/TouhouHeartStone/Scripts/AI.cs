@@ -386,7 +386,8 @@ namespace Game
                             6;
                     return true;
                 case StElmoPillar _:
-                    value = calcDamageValue(game, player, opponent, target, 4) + calcDamageValue(game, player, opponent, opponent.master, 4);
+                    value = calcDamageValue(game, player, opponent, target, 4) +
+                            calcDamageValue(game, player, opponent, opponent.master, 4);
                     return true;
                 case NoachianDeluge _:
                     value = calcServantValue(2, 2) + 1;
@@ -399,8 +400,10 @@ namespace Game
                             calcRandomDamageValue(game, player, opponent, opponent.field, 1) * player.field.count;
                     return true;
                 case WaterElf _:
-                    value = calcHealingValue(game, player, opponent, target, target.getLife(game)-target.getCurrentLife(game)) + 
-                            calcBuffValue(target.getOwner()==player, target.isMaster(), target.getAttack(game), target.getLife(game), 3, 6);
+                    value = calcHealingValue(game, player, opponent, target,
+                                target.getLife(game) - target.getCurrentLife(game)) +
+                            calcBuffValue(target.getOwner() == player, target.isMaster(), target.getAttack(game),
+                                target.getLife(game), 3, 6);
                     return true;
                 case LavaCromlech _:
                     value = (calcServantValue(2, 2) +
@@ -426,11 +429,11 @@ namespace Game
             var atkBfr = target.getAttack(game);
             var lifeBfr = target.getCurrentLife(game);
             bool isFriendly = target.getOwner() == player;
-            float _ = calcBuffValue(isFriendly,target.isMaster(), atkBfr, lifeBfr, atk, life);
+            float _ = calcBuffValue(isFriendly, target.isMaster(), atkBfr, lifeBfr, atk, life);
             return _;
         }
 
-        float calcBuffValue(bool isFriendly, bool isMaster ,int atkBfr, int lifeBfr, int atkBuff, int lifeBuff)
+        float calcBuffValue(bool isFriendly, bool isMaster, int atkBfr, int lifeBfr, int atkBuff, int lifeBuff)
         {
             return calcInstantIntPropChangeValue(isFriendly, isMaster, atkBfr, lifeBfr, atkBfr + atkBuff,
                 lifeBfr + lifeBuff);
@@ -460,7 +463,7 @@ namespace Game
             var atk = target.getAttack(game);
             var life = target.getCurrentLife(game);
             bool isFriendly = target.getOwner() == player;
-            float _ = calcInstantIntPropChangeValue(isFriendly,target.isMaster(), atk, life, atk, life - value);
+            float _ = calcInstantIntPropChangeValue(isFriendly, target.isMaster(), atk, life, atk, life - value);
             return _;
         }
 
@@ -606,9 +609,22 @@ namespace Game
                     value = calcRandomDamageValue(game, player, opponent, opponent.field, 4);
                     return true;
                 case Bomb4 _:
-                    value = 6*calcRandomDamageValue(game, player, opponent, opponent.field.Concat(player.field), 1);
+                    value = 6 * calcRandomDamageValue(game, player, opponent, opponent.field.Concat(player.field), 1);
                     return true;
                 case GodSummon _:
+                    value = 1;
+                    return true;
+                case PlagueOfMishaguchi _:
+                    value = calcDamageValue(game, player, opponent, player.master, target.getLife(game)) +
+                            calcServantValue(target.getAttack(game), target.getCurrentLife(game));
+                    return true;
+                case PlagueOfFrogs _:
+                    value = opponent.field.count * calcServantValue(2, 2);
+                    return true;
+                case PlagueOfHibernation _:
+                    value = 1;
+                    return true;
+                case PlagueOfCrops _:
                     value = 1;
                     return true;
                 default:
@@ -624,7 +640,7 @@ namespace Game
             var atk = target.getAttack(game);
             var lifeAft = Math.Min(life, lifeBfr + value);
             var isFriendly = target.getOwner() == player;
-            return calcInstantIntPropChangeValue(isFriendly,target.isMaster(), atk, lifeBfr, atk, lifeAft);
+            return calcInstantIntPropChangeValue(isFriendly, target.isMaster(), atk, lifeBfr, atk, lifeAft);
         }
 
         float calcRandomHealingValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
