@@ -291,7 +291,6 @@ namespace Game
                 case THHPlayer.UseEventArg _:
                 case THHPlayer.SetGemEventArg _:
                 case THHPlayer.SetMaxGemEventArg _:
-                case THHPlayer.DrawEventArg _:
                 case THHPlayer.BurnEventArg _:
                 case THHPlayer.FatigueEventArg _:
                 case THHPlayer.DiscardEventArg _:
@@ -308,6 +307,19 @@ namespace Game
                     item.setProp("event", obj);
                     item.onPointerEnter.set(onLogListItemEnter);
                     item.onPointerExit.set(onLogListItemExit);
+                    break;
+                case THHPlayer.DrawEventArg _:
+                    if (obj is IDescribableEventArg describable)
+                    {
+                        string info = describable.toString(game, localPlayer);
+                        if (info != null)
+                        {
+                            var DrawItem = ui.LogScrollView.LogList.addItem();
+                            DrawItem.setProp("event", obj);
+                            DrawItem.onPointerEnter.set(onLogListItemEnter);
+                            DrawItem.onPointerExit.set(onLogListItemExit);
+                        }
+                    }
                     break;
                 default:
                     break;
@@ -485,11 +497,6 @@ namespace Game
             {
                 ui.LogScrollView.LogInfoHorizantal.display();
                 string info = describable.toString(game, localPlayer);
-                if (info == null)
-                {
-                    item.hide();
-                    return;
-                }
                 info = Regex.Replace(info, @"{card:(?<id>\d+)}", m => int.TryParse(m.Groups["id"].Value, out var id) ?
                     getManager<CardManager>().getSkin(id).name : "未知卡牌");
                 ui.LogScrollView.LogInfoHorizantal.Text.text = info;
