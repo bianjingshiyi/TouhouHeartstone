@@ -796,7 +796,7 @@ namespace TouhouHeartstone
         }
         private static bool isValidTarget(this Card card, THHGame game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect)
         {
-            if (target.isStealth(game))
+            if (target.isStealth(game) && target.getOwner() != card.getOwner())
                 return false;
             if (targetEffect == null && triggerEffect == null)
                 return false;

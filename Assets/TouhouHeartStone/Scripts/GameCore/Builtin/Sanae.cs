@@ -771,7 +771,7 @@ namespace TouhouHeartstone.Builtin
                 if(c.isServant())
                     await c.addBuff(game, new GeneratedBuff(ID, new CostModifier(5),new RemoveBuffAfter<THHGame.TurnStartEventArg>(PILE.HAND,(g,c1,a)=> 
                     {
-                        return a.player == c1.getOwner();
+                        return a.player == card.getOwner();
                     },ID)));
             }
         }
