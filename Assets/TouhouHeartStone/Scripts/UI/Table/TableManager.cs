@@ -708,6 +708,12 @@ namespace Game
                                 hand.Card.display();
                             }
                         }
+                        else
+                        {
+                            cancelAttack();
+                            resetUse(true, true);
+                            hand.Card.display();
+                        }
 
                     }
                     else
