@@ -43,7 +43,9 @@ namespace IGensoukyo.Utilities
                 genSetting.fontSize = size;
                 var height = gen.GetPreferredHeight(text, genSetting);
 
-                if (height < (rect.height - 1) * pixelsPerUnit)
+                // quickfix: 这个保留空间先暴力取这么大吧，我也不知道为啥这里计算出来会和实际的不一样
+                var reserveHeight = size * 0.5;
+                if (height < (rect.height - reserveHeight) * pixelsPerUnit)
                     break;
             }
             fontSize = size;
