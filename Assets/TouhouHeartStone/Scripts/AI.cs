@@ -479,7 +479,7 @@ namespace Game
 
         float calcServantValue(int attack, int life)
         {
-            return Math.Max(attack, 0) * Math.Max(life, 0) + life > 0 ? 1 : 0;
+            return Math.Max(attack, 0) * Math.Max(life, 0) + (life > 0 ? 1 : 0);
         }
 
         float calcRandomServantsValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
