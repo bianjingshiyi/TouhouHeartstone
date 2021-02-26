@@ -428,7 +428,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            var discovered = await card.getOwner().discover(game, card.getOwner().deck.Where(c => c.isSpell()),5);
+            var discovered = await card.getOwner().discover(game, card.getOwner().deck,5);
             await card.getOwner().draw(game, discovered);
            
         }

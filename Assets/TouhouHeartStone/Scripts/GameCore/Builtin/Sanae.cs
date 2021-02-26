@@ -197,11 +197,11 @@ namespace TouhouHeartstone.Builtin
                       },ID),
                       new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.FIELD,(g,c,a)=>
                       {
-                          return a.player == c.getOwner();
+                          return a.player == card.getOwner();
                       },ID),
                       new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER,(g,c,a)=>
                       {
-                          return a.player == c.getOwner();
+                          return a.player == card.getOwner();
                       },ID)));
             })
         };
