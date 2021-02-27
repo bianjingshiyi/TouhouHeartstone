@@ -42,5 +42,9 @@ namespace Game
             table.ui.TurnEndButton.interactable = eventArg.player == table.player;
             return true;
         }
+        public override bool blockAnim(UIAnimation nextAnim)
+        {
+            return false;
+        }
     }
 }
