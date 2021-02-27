@@ -377,9 +377,8 @@ namespace Game
                     value = calcAOEDamageValue(game, player, opponent, opponent.field, 2);
                     return true;
                 case BurgeoningRise _:
-                    value = calcBuffValue(game, player, opponent, target, 3, 3) + (target.getOwner() == player
-                        ? calcServantValue(game, player, opponent, target) - 1
-                        : 0);
+                    value = calcBuffValue(game, player, opponent, target, 3, 3) + 
+                         calcServantValue(game, player, opponent, target) - 1;
                     return true;
                 case PhlogisticRain _:
                     value = calcRandomDamageValue(game, player, opponent, opponent.field.Append(opponent.master), 1) *
@@ -474,7 +473,8 @@ namespace Game
 
         float calcServantValue(THHGame game, THHPlayer player, THHPlayer opponent, Card servant)
         {
-            return calcServantValue(servant.getAttack(game), servant.getCurrentLife(game));
+            var value = calcServantValue(servant.getAttack(game), servant.getCurrentLife(game))
+            return servant.getOwner()==player?value:-value;
         }
 
         float calcServantValue(int attack, int life)
@@ -788,7 +788,7 @@ namespace Game
                     value += calcServantValue(4, 3);
                     return true;
                 case SaigyoujiYuyuko_N _:
-                    value += calcServantValue(game, player, opponent, target);
+                    value -= calcServantValue(game, player, opponent, target);
                     return true;
                 case YakumoYukari_N _:
                     value += calcServantsValue(game, player, opponent, opponent.field) -
