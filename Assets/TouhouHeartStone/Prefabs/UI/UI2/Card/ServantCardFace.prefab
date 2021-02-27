@@ -676,7 +676,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 2c3a2d5fe7fee4344a22cd42f4292a1d, type: 3}
-    m_FontSize: 40
+    m_FontSize: 45
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 4
@@ -691,6 +691,12 @@ MonoBehaviour:
   isBestFit: 1
   MinSize: 32
   MaxSize: 50
+  ReserveSize:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 50
+    height: 50
 --- !u!1 &8439515916943417362
 GameObject:
   m_ObjectHideFlags: 0

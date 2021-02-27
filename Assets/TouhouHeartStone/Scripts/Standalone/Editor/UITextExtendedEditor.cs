@@ -15,6 +15,7 @@ namespace IGensoukyo.Utilities
         SerializedProperty isBestFit;
         SerializedProperty MinSize;
         SerializedProperty MaxSize;
+        SerializedProperty ReserveSize;
 
         protected override void OnEnable()
         {
@@ -24,6 +25,7 @@ namespace IGensoukyo.Utilities
             isBestFit = serializedObject.FindProperty("isBestFit");
             MinSize = serializedObject.FindProperty("MinSize");
             MaxSize = serializedObject.FindProperty("MaxSize");
+            ReserveSize = serializedObject.FindProperty("ReserveSize");
         }
 
         public override void OnInspectorGUI()
@@ -37,6 +39,7 @@ namespace IGensoukyo.Utilities
             {
                 EditorGUILayout.PropertyField(MinSize);
                 EditorGUILayout.PropertyField(MaxSize);
+                EditorGUILayout.PropertyField(ReserveSize);
             }
 
             AppearanceControlsGUI();
