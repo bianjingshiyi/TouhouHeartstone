@@ -6,3 +6,4 @@ Cards/Neutral.xls | Cards/Neutral.xls.dataset
 Cards/Youmu.xls | Cards/Youmu.xls.dataset
 Cards/Reisen.xls | Cards/Reisen.xls.dataset
 Cards/Sanae.xls | Cards/Sanae.xls.dataset
+Cards/Rin.xls | Cards/Rin.xls.dataset
