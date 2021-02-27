@@ -473,7 +473,7 @@ namespace Game
 
         float calcServantValue(THHGame game, THHPlayer player, THHPlayer opponent, Card servant)
         {
-            var value = calcServantValue(servant.getAttack(game), servant.getCurrentLife(game))
+            var value = calcServantValue(servant.getAttack(game), servant.getCurrentLife(game));
             return servant.getOwner()==player?value:-value;
         }
 
