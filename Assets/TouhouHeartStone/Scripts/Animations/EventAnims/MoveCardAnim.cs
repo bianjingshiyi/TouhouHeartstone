@@ -178,6 +178,11 @@ namespace Game
                                         table.ui.SelfFieldList.removeItem(servant);
                                         table.ui.EnemyFieldList.removeItem(servant);
                                     }
+                                    //关闭沉默开关
+                                    if (eventArg.card.isSilenced(table.game))
+                                    {
+                                        eventArg.card.setProp(table.game, PROPERTY.SILENCE, false);
+                                    }
                                     if (!table.tryGetHand(eventArg.card, out var hand))
                                     {
                                         hand = table.createHand(eventArg.card);
