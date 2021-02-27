@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<head>
+<meta charset="utf-8">
+<title>醉梦传说自动构建系统</title>
+</head>
+<body>
+<h1>醉梦传说自动构建结果 - {{buildver}} - {{result}}</h1>
+
+<p>
+    <a href="{{lastbuildnum}}.html">前次构建 ({{lastbuildnum}})</a>
+     - 当前构建 ({{buildnum}}) - 
+     <a href="{{nextbuildnum}}.html">下次构建 ({{nextbuildnum}})</a>
+</p>
+
+<p>构建日期: {{datetime}}</p>
+<p>打包日志: <a href="{{buildnum}}.log">构建日志 ({{buildnum}}) </a></p>
+<p>下载链接: <a href="{{url}}" target="_blank"> {{url}}</a></p>
+
+<h2>自上个版本的变更</h2>
+
+{{#commits}}
+    <h3>{{{messageTitle}}}</h3>
+    <p>
+        <ul>
+            {{#messageBodyItems}}
+            <li> {{.}}</li>
+            {{/messageBodyItems}}
+        </ul>
+        <a href="https://code.lotlab.org/IGensokyo/TouhouHeartstone/commit/{{hash}}">{{hash}}</a> {{authorName}} <i>{{commitTime}}</i>
+    </p>
+{{/commits}}
+</body>
+</html>
