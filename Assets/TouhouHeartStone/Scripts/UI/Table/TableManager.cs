@@ -212,7 +212,7 @@ namespace Game
             ui.TipBox.hide();
             eventCache.clear();
             _animationQueue.Clear();
-            InvokeEAnim.DestoryInvokeCard();
+            DestroyInvokeCard();
             if (game != null)
             {
                 game.triggers.onEventBefore -= onEventBeforeHandler;
@@ -344,11 +344,25 @@ namespace Game
                 return false;
             }
         }
-        /// <summary>
-        /// 初始化Master的事件
-        /// </summary>
-        /// <param name="master"></param>
-        public void initMaster(Master master)
+
+    /// <summary>
+    /// 删除强制退出过程之中产生的揭示动画
+    /// </summary>
+    /// <param name="master"></param>
+    public void DestroyInvokeCard()
+        {
+            Transform[] Cards = this.ui.InvokeDisPlayRectTransform.GetComponentsInChildren<Transform>();
+            for (int i = 1; i < this.ui.InvokeDisPlayRectTransform.GetComponentsInChildren<Transform>().Count(); i++)
+            {
+                Destroy(Cards[i].gameObject);
+            }
+        }
+
+    /// <summary>
+    /// 初始化Master的事件
+    /// </summary>
+    /// <param name="master"></param>
+    public void initMaster(Master master)
         {
             master.onClick.add(onClickMaster);
             master.Head.clearSecret();
@@ -910,6 +924,16 @@ namespace Game
         public UI.Card createCard(Card card, Vector3 position, float height = -1, bool isFaceUp = true)
         {
             var ui = Instantiate(cardPrefab, position, Quaternion.identity, this.ui.FieldsImage.rectTransform);
+            setCard(ui, card, isFaceUp);
+            if (height < 0)
+                return ui;
+            ui.transform.localScale = Vector3.one * height / ui.rectTransform.rect.height;
+            return ui;
+        }
+
+        public UI.Card createInvokeCard(Card card, Vector3 position, float height = -1, bool isFaceUp = true)
+        {
+            var ui = Instantiate(cardPrefab, position, Quaternion.identity,this.ui.InvokeDisPlayRectTransform);
             setCard(ui, card, isFaceUp);
             if (height < 0)
                 return ui;

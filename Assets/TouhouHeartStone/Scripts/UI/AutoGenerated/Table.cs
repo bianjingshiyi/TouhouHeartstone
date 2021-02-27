@@ -17,7 +17,7 @@ namespace UI
     using UnityEngine.UI;
     using UI;
     
-    [AutoCompoAttribute(24656)]
+    [AutoCompoAttribute(24466)]
     public partial class Table : UIObject
     {
         public void init()
@@ -49,7 +49,7 @@ namespace UI
             this._SelfHandList = this.transform.findByPath("./Fields/SelfHand").GetComponent<HandList>();
             this._ServantPlaceHolder = this.transform.findByPath("./Fields/ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
             this._InitReplaceDialog = this.transform.findByPath("./InitReplaceDialog").GetComponent<InitReplaceDialog>();
-            this._LargeCard  = this.transform.findByPath("./LargeCard").GetComponent<Card>();
+            this._LargeCard = this.transform.findByPath("./LargeCard").GetComponent<Card>();
             this._LeftDisplayImage = this.transform.findByPath("./LeftDisplay").GetComponent<Image>();
             this._CenterDisplayImage = this.transform.findByPath("./CenterDisplay").GetComponent<Image>();
             this._RightDisplayImage = this.transform.findByPath("./RightDisplay").GetComponent<Image>();
@@ -61,6 +61,7 @@ namespace UI
             this._PilePanel = this.transform.findByPath("./PilePanel").GetComponent<PilePanel>();
             this._TipBox = this.transform.findByPath("./TipBox").GetComponent<TipBox>();
             this._EnemyDeckRectTransform = this.transform.findByPath("./Fields/EnemyDeck").GetComponent<RectTransform>();
+            this._invokeDisPlayRectTransform = this.transform.findByPath("./Fields/InvokeDisPlay").GetComponent<RectTransform>();
         }
         public void clear()
         {
@@ -68,7 +69,7 @@ namespace UI
             this._BlockerButton.onClick.RemoveListener(this.BlockerButtonClickCallback);
         }
         [SerializeField()]
-        [AutoCompo(41342, "./Fields")]
+        [AutoCompo(41460, "./Fields")]
         private Image _FieldsImage;
         public Image FieldsImage
         {
@@ -82,7 +83,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41298, "./Fields/TurnEnd")]
+        [AutoCompo(41418, "./Fields/TurnEnd")]
         private Button _TurnEndButton;
         public Button TurnEndButton
         {
@@ -104,7 +105,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41332, "./Fields/Timeout")]
+        [AutoCompo(41450, "./Fields/Timeout")]
         private Slider _TimeoutSlider;
         public Slider TimeoutSlider
         {
@@ -118,7 +119,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41894, "./Fields/Weather")]
+        [AutoCompo(42044, "./Fields/Weather")]
         private Weather _Weather;
         public Weather Weather
         {
@@ -132,7 +133,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41416, "./Fields/EnemyField")]
+        [AutoCompo(41538, "./Fields/EnemyField")]
         private FieldList _EnemyFieldList;
         public FieldList EnemyFieldList
         {
@@ -146,7 +147,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(42098, "./Fields/EnemyMaster")]
+        [AutoCompo(42270, "./Fields/EnemyMaster")]
         private Master _EnemyMaster;
         public Master EnemyMaster
         {
@@ -160,7 +161,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(40726, "./Fields/EnemyGrave")]
+        [AutoCompo(40834, "./Fields/EnemyGrave")]
         private Deck _EnemyGraveDeck;
         public Deck EnemyGraveDeck
         {
@@ -174,7 +175,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(40722, "./Fields/EnemyDeck")]
+        [AutoCompo(40830, "./Fields/EnemyDeck")]
         private Deck _EnemyDeck;
         public Deck EnemyDeck
         {
@@ -188,7 +189,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(42488, "./Fields/EnemyGem")]
+        [AutoCompo(42668, "./Fields/EnemyGem")]
         private Gem _EnemyGem;
         public Gem EnemyGem
         {
@@ -202,7 +203,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(42908, "./Fields/EnemyItem")]
+        [AutoCompo(43092, "./Fields/EnemyItem")]
         private Item _EnemyItem;
         public Item EnemyItem
         {
@@ -216,7 +217,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41574, "./Fields/EnemySkill")]
+        [AutoCompo(41708, "./Fields/EnemySkill")]
         private Skill _EnemySkill;
         public Skill EnemySkill
         {
@@ -230,7 +231,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(40918, "./Fields/EnemyHand")]
+        [AutoCompo(41030, "./Fields/EnemyHand")]
         private HandList _EnemyHandList;
         public HandList EnemyHandList
         {
@@ -244,7 +245,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41250, "./Fields/AttackArrow")]
+        [AutoCompo(41368, "./Fields/AttackArrow")]
         private Image _AttackArrowImage;
         public Image AttackArrowImage
         {
@@ -258,7 +259,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41186, "./Fields/SelfField")]
+        [AutoCompo(41304, "./Fields/SelfField")]
         private FieldList _SelfFieldList;
         public FieldList SelfFieldList
         {
@@ -272,7 +273,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(42100, "./Fields/SelfMaster")]
+        [AutoCompo(42272, "./Fields/SelfMaster")]
         private Master _SelfMaster;
         public Master SelfMaster
         {
@@ -286,7 +287,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(40718, "./Fields/SelfGrave")]
+        [AutoCompo(40826, "./Fields/SelfGrave")]
         private Deck _SelfGraveDeck;
         public Deck SelfGraveDeck
         {
@@ -300,7 +301,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(40892, "./Fields/SelfDeck")]
+        [AutoCompo(41004, "./Fields/SelfDeck")]
         private Deck _SelfDeck;
         public Deck SelfDeck
         {
@@ -314,7 +315,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(40422, "./Fields/SelfDeck")]
+        [AutoCompo(40524, "./Fields/SelfDeck")]
         private RectTransform _SelfDeckRectTransform;
         public RectTransform SelfDeckRectTransform
         {
@@ -328,7 +329,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(42486, "./Fields/SelfGem")]
+        [AutoCompo(42666, "./Fields/SelfGem")]
         private Gem _SelfGem;
         public Gem SelfGem
         {
@@ -342,7 +343,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(42906, "./Fields/SelfItem")]
+        [AutoCompo(43090, "./Fields/SelfItem")]
         private Item _SelfItem;
         public Item SelfItem
         {
@@ -356,7 +357,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41576, "./Fields/SelfSkill")]
+        [AutoCompo(41710, "./Fields/SelfSkill")]
         private Skill _SelfSkill;
         public Skill SelfSkill
         {
@@ -370,7 +371,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41324, "./Fields/Blocker")]
+        [AutoCompo(41442, "./Fields/Blocker")]
         private Button _BlockerButton;
         public Button BlockerButton
         {
@@ -392,7 +393,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(40702, "./Fields/SelfHand")]
+        [AutoCompo(40810, "./Fields/SelfHand")]
         private HandList _SelfHandList;
         public HandList SelfHandList
         {
@@ -406,7 +407,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41202, "./Fields/ServantPlaceHolder")]
+        [AutoCompo(41320, "./Fields/ServantPlaceHolder")]
         private ServantPlaceHolder _ServantPlaceHolder;
         public ServantPlaceHolder ServantPlaceHolder
         {
@@ -420,7 +421,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41256, "./InitReplaceDialog")]
+        [AutoCompo(41374, "./InitReplaceDialog")]
         private InitReplaceDialog _InitReplaceDialog;
         public InitReplaceDialog InitReplaceDialog
         {
@@ -434,21 +435,21 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41554, "./LargeCard")]
-        private Card _LargeCard ;
-        public Card LargeCard 
+        [AutoCompo(41678, "./LargeCard")]
+        private Card _LargeCard;
+        public Card LargeCard
         {
             get
             {
-                if ((this._LargeCard  == null))
+                if ((this._LargeCard == null))
                 {
-                    this._LargeCard  = this.transform.findByPath("./LargeCard").GetComponent<Card>();
+                    this._LargeCard = this.transform.findByPath("./LargeCard").GetComponent<Card>();
                 }
-                return this._LargeCard ;
+                return this._LargeCard;
             }
         }
         [SerializeField()]
-        [AutoCompo(41006, "./LeftDisplay")]
+        [AutoCompo(41118, "./LeftDisplay")]
         private Image _LeftDisplayImage;
         public Image LeftDisplayImage
         {
@@ -462,7 +463,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41046, "./CenterDisplay")]
+        [AutoCompo(41158, "./CenterDisplay")]
         private Image _CenterDisplayImage;
         public Image CenterDisplayImage
         {
@@ -476,7 +477,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41008, "./RightDisplay")]
+        [AutoCompo(41120, "./RightDisplay")]
         private Image _RightDisplayImage;
         public Image RightDisplayImage
         {
@@ -490,7 +491,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41312, "./TipText")]
+        [AutoCompo(41432, "./TipText")]
         private Text _TipText;
         public Text TipText
         {
@@ -504,7 +505,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41268, "./Fatigue")]
+        [AutoCompo(41386, "./Fatigue")]
         private Fatigue _Fatigue;
         public Fatigue Fatigue
         {
@@ -518,7 +519,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41242, "./TurnTipImage")]
+        [AutoCompo(41360, "./TurnTipImage")]
         private Image _TurnTipImage;
         public Image TurnTipImage
         {
@@ -532,7 +533,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41310, "./TurnTipImage/TurnTipText")]
+        [AutoCompo(41430, "./TurnTipImage/TurnTipText")]
         private Text _TurnTipText;
         public Text TurnTipText
         {
@@ -546,7 +547,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41568, "./Discover")]
+        [AutoCompo(41702, "./Discover")]
         private Discover _Discover;
         public Discover Discover
         {
@@ -560,7 +561,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41478, "./PilePanel")]
+        [AutoCompo(41600, "./PilePanel")]
         private PilePanel _PilePanel;
         public PilePanel PilePanel
         {
@@ -574,7 +575,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(41014, "./TipBox")]
+        [AutoCompo(41126, "./TipBox")]
         private TipBox _TipBox;
         public TipBox TipBox
         {
@@ -588,7 +589,7 @@ namespace UI
             }
         }
         [SerializeField()]
-        [AutoCompo(40318, "./Fields/EnemyDeck")]
+        [AutoCompo(40416, "./Fields/EnemyDeck")]
         private RectTransform _EnemyDeckRectTransform;
         public RectTransform EnemyDeckRectTransform
         {
@@ -599,6 +600,20 @@ namespace UI
                     this._EnemyDeckRectTransform = this.transform.findByPath("./Fields/EnemyDeck").GetComponent<RectTransform>();
                 }
                 return this._EnemyDeckRectTransform;
+            }
+        }
+        [SerializeField()]
+        [AutoCompo(64460, "./Fields/InvokeDisPlay")]
+        private RectTransform _invokeDisPlayRectTransform;
+        public RectTransform InvokeDisPlayRectTransform
+        {
+            get
+            {
+                if ((this._invokeDisPlayRectTransform == null))
+                {
+                    this._invokeDisPlayRectTransform = this.transform.findByPath("./Fields/InvokeDisPlay").GetComponent<RectTransform>();
+                }
+                return this._invokeDisPlayRectTransform;
             }
         }
     }

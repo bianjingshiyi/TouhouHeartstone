@@ -7,8 +7,8 @@ namespace Game
 {
     class InvokeEAnim : EventAnimation<Sanae.RevealDuelArg>
     {
-        static Card _cardSelf;
-        static Card _cardOppo;
+        Card _cardSelf;
+        Card _cardOppo;
         TableAnimation _moveToSelf;
         TableAnimation _moveToOppo;
         AnimAnim _flipFaceSelf;
@@ -27,12 +27,12 @@ namespace Game
             if (_cardSelf == null && eventArg.youCard != null)
             {
                 targetDeck = eventArg.player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck;
-                _cardSelf = table.createCard(eventArg.youCard, targetDeck.transform.position, targetDeck.getCardHeight(), false);
+                _cardSelf = table.createInvokeCard(eventArg.youCard, targetDeck.transform.position, targetDeck.getCardHeight(), false);
             }
             if (_cardOppo == null && eventArg.oppoCard != null)
             {
                 targetDeck = eventArg.player == table.player ? table.ui.EnemyDeck : table.ui.SelfDeck;
-                _cardOppo = table.createCard(eventArg.oppoCard, targetDeck.transform.position, targetDeck.getCardHeight(), false);
+                _cardOppo = table.createInvokeCard(eventArg.oppoCard, targetDeck.transform.position, targetDeck.getCardHeight(), false);
             }
             //播放位移曲线动画到对应的位置
             RectTransform targetRect;
@@ -117,15 +117,11 @@ namespace Game
             //    return false;
             //}
             //销毁实例
-            DestoryInvokeCard();
-            return true;
-        }
-        public static void DestoryInvokeCard()
-        {
             if (_cardSelf != null)
                 UObject.Destroy(_cardSelf.gameObject);
             if (_cardOppo != null)
                 UObject.Destroy(_cardOppo.gameObject);
+            return true;
         }
     }
 }
