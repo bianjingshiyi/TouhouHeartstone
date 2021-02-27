@@ -721,7 +721,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async(game,card,target)=>
             {
                 await target.setDead(game,true);
-                await card.getOwner().master.damage(game,card,card.getOwner().getSpellDamage(game,target.getLife(game)));
+                await card.getOwner().master.damage(game,card,card.getOwner().getSpellDamage(game,target.getCurrentLife(game)));
                 await game.updateDeath(game);
             },PileFlag.both | PileFlag.field)
             
