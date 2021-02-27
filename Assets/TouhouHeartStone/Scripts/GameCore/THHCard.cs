@@ -568,7 +568,7 @@ namespace TouhouHeartstone
 
         public static bool hasDeathRattle(this Card card, IGame game)
         {
-            if (card.define.effects.OfType<DeathRattle>().Count() > 0)
+            if (card.define.effects.OfType<DeathRattle>().Count() > 0 && !card.getProp<bool>(game, PROPERTY.SILENCE))
             {
                 return true;
             }
