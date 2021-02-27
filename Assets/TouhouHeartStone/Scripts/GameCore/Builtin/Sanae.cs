@@ -189,11 +189,11 @@ namespace TouhouHeartstone.Builtin
                       }),
                       new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.FIELD,(g,c,a)=>
                       {
-                          return a.player == c.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
+                          return a.player == card.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
                       },ID),
                       new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.MASTER,(g,c,a)=>
                       {
-                          return a.player == c.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
+                          return a.player == card.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
                       },ID),
                       new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.FIELD,(g,c,a)=>
                       {
