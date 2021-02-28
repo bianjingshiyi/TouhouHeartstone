@@ -759,6 +759,7 @@ namespace Game
                     }
                 }
             }
+            removeHighlights();
         }
         /// <summary>
         /// 点击Master卡处理
@@ -1110,16 +1111,16 @@ namespace Game
             servant.lifePropNumber.text.text = life < 0 ? card.getCurrentLife(game).ToString() : life.ToString();
 
             servant.onDrag.remove(onDragServant);
-            if (isSelectable)
-            {
-                servant.onSelectableTrue.invokeBeforeAnim();
-                servant.onSelectableTrue.invokeAfterAnim();
-            }
-            else
-            {
-                servant.onSelectableFalse.invokeBeforeAnim();
-                servant.onSelectableFalse.invokeAfterAnim();
-            }
+            //if (isSelectable)
+            //{
+            //    servant.onSelectableTrue.invokeBeforeAnim();
+            //    servant.onSelectableTrue.invokeAfterAnim();
+            //}
+            //else
+            //{
+            //    servant.onSelectableFalse.invokeBeforeAnim();
+            //    servant.onSelectableFalse.invokeAfterAnim();
+            //}
             if (player == card.getOwner() && game.currentPlayer == player && card.canAttack(game))
             {
                 // servant.HighlightController = Servant.Highlight.Green;
