@@ -20,13 +20,13 @@ namespace IGensoukyo.Utilities
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
-            if (btn.isActiveAndEnabled)
+            if (btn.isActiveAndEnabled && btn.interactable)
                 onPointerDown?.Invoke();
         }
 
         void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
         {
-            if (btn.isActiveAndEnabled)
+            if (btn.isActiveAndEnabled && btn.interactable)
                 onPointerUp?.Invoke();
         }
     }

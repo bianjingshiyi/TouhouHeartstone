@@ -162,6 +162,7 @@ namespace UI
 
             // 准备按钮
             StartButtonButtonBlack.Text.text = isHost ? lang._(STR_START_GAME) : lang._(STR_PREPARE);
+            IPText.gameObject.SetActive(currentMode == Mode.NetworkingHost);
         }
         [TranslateMsg]
         const string STR_START_GAME = "开始游戏";
@@ -326,7 +327,7 @@ namespace UI
             else
             {
                 // 判断准备状态
-                StartButtonButtonBlack.Text.text = selfPlayer.ready ? lang._(STR_REQUEST_PREPRAE) : lang._(STR_REQUEST_PREPRAE);
+                StartButtonButtonBlack.Text.text = selfPlayer.ready ? lang._(STR_REQUEST_PREPRAE) : lang._(STR_PREPARE);
                 StartButtonButtonBlack.asButton.setSelectable(selfPlayer.tryGetDeck(out var deck) && deck != null && deck.Length == 31);
             }
         }
