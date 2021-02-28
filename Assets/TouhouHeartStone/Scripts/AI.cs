@@ -69,7 +69,7 @@ namespace Game
             try
             {
                 var actions = calcActions(game, player).Where(p => p.Value > 0);
-                if (actions.Count() > 0)
+                if (actions.Any())
                     return actions.OrderByDescending(p => p.Value).First().Key;
                 else
                     return new TurnEndResponse();
@@ -302,18 +302,6 @@ namespace Game
             }
         }
 
-        float calcWeaponValue(THHGame game, Card card)
-        {
-            int attack = card.getAttack(game);
-            int life = card.getLife(game);
-            return calcWeaponValue(attack, life);
-        }
-
-        float calcWeaponValue(int attack, int life)
-        {
-            return attack * life;
-        }
-
         bool calcPatchouliValue(THHGame game, THHPlayer player, Card card, THHPlayer opponent, Card target,
             out float value)
         {
@@ -371,14 +359,14 @@ namespace Game
                     value = calcDamageValue(game, player, opponent, opponent.master, 15);
                     return true;
                 case SilentSelene _:
-                    value = calcServantsValue(game, player, opponent, opponent.field);
+                    value = -calcServantsValue(game, player, opponent, opponent.field);
                     return true;
                 case ElementalHarvester _:
                     value = calcAOEDamageValue(game, player, opponent, opponent.field, 2);
                     return true;
                 case BurgeoningRise _:
-                    value = calcBuffValue(game, player, opponent, target, 3, 3) + 
-                         calcServantValue(game, player, opponent, target) - 1;
+                    value = calcBuffValue(game, player, opponent, target, 3, 3) +
+                        calcServantValue(game, player, opponent, target) - 1;
                     return true;
                 case PhlogisticRain _:
                     value = calcRandomDamageValue(game, player, opponent, opponent.field.Append(opponent.master), 1) *
@@ -415,104 +403,6 @@ namespace Game
                     value = 0;
                     return false;
             }
-        }
-
-        float calcBuffAllValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
-            int attack, int life)
-        {
-            return targets.Sum(c => calcBuffValue(game, player, opponent, c, attack, life));
-        }
-
-        float calcBuffValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int atk, int life)
-        {
-            var atkBfr = target.getAttack(game);
-            var lifeBfr = target.getCurrentLife(game);
-            bool isFriendly = target.getOwner() == player;
-            float _ = calcBuffValue(isFriendly, target.isMaster(), atkBfr, lifeBfr, atk, life);
-            return _;
-        }
-
-        float calcBuffValue(bool isFriendly, bool isMaster, int atkBfr, int lifeBfr, int atkBuff, int lifeBuff)
-        {
-            return calcInstantIntPropChangeValue(isFriendly, isMaster, atkBfr, lifeBfr, atkBfr + atkBuff,
-                lifeBfr + lifeBuff);
-        }
-
-        float calcAOEDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
-            int damage)
-        {
-            return targets.Sum(c => calcDamageValue(game, player, opponent, c, damage));
-        }
-
-        float calcRandomDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
-            int damage)
-        {
-            float value = 0;
-            foreach (var target in targets)
-            {
-                value += calcDamageValue(game, player, opponent, target, damage);
-            }
-
-            value /= targets.Count();
-            return value;
-        }
-
-        float calcDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int value)
-        {
-            var atk = target.getAttack(game);
-            var life = target.getCurrentLife(game);
-            bool isFriendly = target.getOwner() == player;
-            float _ = calcInstantIntPropChangeValue(isFriendly, target.isMaster(), atk, life, atk, life - value);
-            return _;
-        }
-
-        float calcServantsValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> servants)
-        {
-            return servants.Sum(s => calcServantValue(game, player, opponent, s));
-        }
-
-        float calcServantValue(THHGame game, THHPlayer player, THHPlayer opponent, Card servant)
-        {
-            var value = calcServantValue(servant.getAttack(game), servant.getCurrentLife(game));
-            return servant.getOwner()==player?value:-value;
-        }
-
-        float calcServantValue(int attack, int life)
-        {
-            return Math.Max(attack, 0) * Math.Max(life, 0) + (life > 0 ? 1 : 0);
-        }
-
-        float calcRandomServantsValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
-            int num)
-        {
-            float value = 0;
-            foreach (var target in targets)
-            {
-                value += calcServantValue(game, player, opponent, target);
-            }
-
-            value /= targets.Count();
-            value *= num;
-            return value;
-        }
-
-        float calcRandomFreezeValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets)
-        {
-            float value = 0;
-            foreach (var target in targets)
-            {
-                value += calcFreezeValue(game, player, opponent, target);
-            }
-
-            value /= targets.Count();
-            return value;
-        }
-
-        float calcFreezeValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
-        {
-            if (target == opponent.master || opponent.field.Contains(target))
-                return target.getAttack(game);
-            return -target.getAttack(game);
         }
 
         bool calcReisenValue(THHGame game, THHPlayer player, Card card, THHPlayer opponent, Card target,
@@ -590,7 +480,7 @@ namespace Game
                     value = calcDamageValue(game, player, opponent, target, 2);
                     return true;
                 case GodWind _:
-                    value = calcServantsValue(game, player, opponent, opponent.field) -
+                    value = -calcServantsValue(game, player, opponent, opponent.field) -
                             calcServantsValue(game, player, opponent, player.field);
                     return true;
                 case ForgottenRecrption _:
@@ -631,89 +521,6 @@ namespace Game
                     value = 0;
                     return false;
             }
-        }
-
-        float calcHealingValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int value)
-        {
-            var life = target.getLife(game);
-            var lifeBfr = target.getCurrentLife(game);
-            var atk = target.getAttack(game);
-            var lifeAft = Math.Min(life, lifeBfr + value);
-            var isFriendly = target.getOwner() == player;
-            return calcInstantIntPropChangeValue(isFriendly, target.isMaster(), atk, lifeBfr, atk, lifeAft);
-        }
-
-        float calcRandomHealingValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
-            int value)
-        {
-            float _ = 0;
-            foreach (var target in targets)
-            {
-                _ += calcHealingValue(game, player, opponent, target, value);
-            }
-
-            _ /= targets.Count();
-            return _;
-        }
-
-        float calcInstantServantIntPropChangeValue(bool isFriendly, int atkBfr, int lifeBfr, int atkAft, int lifeAft)
-        {
-            var value = calcServantValue(atkAft, lifeAft) - calcServantValue(atkBfr, lifeBfr);
-            if (isFriendly)
-            {
-                return value;
-            }
-
-            return -value;
-        }
-
-        float calcInstantMasterIntPropChangeValue(bool isFriendly, int atkBfr, int lifeBfr, int atkAft, int lifeAft)
-        {
-            var value = calcMasterLifeWeight(lifeAft) - calcMasterLifeWeight(lifeBfr);
-            if (isFriendly)
-            {
-                return value;
-            }
-
-            return -value;
-        }
-
-        float calcInstantIntPropChangeValue(bool isFriendly, bool isMaster, int atkBfr, int lifeBfr, int atkAft,
-            int lifeAft)
-        {
-            return isMaster
-                ? calcInstantMasterIntPropChangeValue(isFriendly, atkBfr, lifeBfr, atkAft, lifeAft)
-                : calcInstantServantIntPropChangeValue(isFriendly, atkBfr, lifeBfr, atkAft, lifeAft);
-        }
-
-        float calcMasterLifeWeight(int life)
-        {
-            return (float) Math.Log(Math.Max(life, 0)) * 100;
-        }
-
-        float calcStealthValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
-        {
-            if (player.field.Contains(target))
-                return target.getAttack(game) - target.getCurrentLife(game);
-            // 如果有随从：（潜行，战吼：使目标获得潜行）会出问题
-            if (target.hasKeyword(game, KEYWORD.STEALTH))
-                return target.getAttack(game) - target.getLife(game);
-            if (opponent.field.Contains(target) && target.hasKeyword(game, KEYWORD.TAUNT))
-                return target.getCurrentLife(game);
-            return 0;
-        }
-
-        /// <summary>
-        /// 待补充
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="player"></param>
-        /// <param name="opponent"></param>
-        /// <param name="num"></param>
-        /// <returns></returns>
-        float calcDrawCardsValue(THHGame game, THHPlayer player, THHPlayer opponent, int num)
-        {
-            return num;
         }
 
         bool calcBattlecryValue(THHGame game, THHPlayer player, Card card, THHPlayer opponent, Card target,
@@ -791,7 +598,7 @@ namespace Game
                     value -= calcServantValue(game, player, opponent, target);
                     return true;
                 case YakumoYukari_N _:
-                    value += calcServantsValue(game, player, opponent, opponent.field) -
+                    value -= calcServantsValue(game, player, opponent, opponent.field) +
                              calcServantsValue(game, player, opponent, player.field);
                     // 加个回手value
                     return true;
@@ -841,6 +648,261 @@ namespace Game
                     value = 0;
                     return false;
             }
+        }
+
+        /// <summary>
+        /// AI估算随从价值的基础公式
+        /// </summary>
+        /// <param name="attack"></param>
+        /// <param name="life"></param>
+        /// <returns></returns>
+        float calcServantValue(int attack, int life)
+        {
+            return Math.Max(attack, 0) * Math.Max(life, 0) + (life > 0 ? 1 : 0);
+        }
+
+        /// <summary>
+        /// 估算场上某个随从的价值，已区分敌我，召唤使用+，消灭使用-
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="opponent"></param>
+        /// <param name="servant"></param>
+        /// <returns></returns>
+        float calcServantValue(THHGame game, THHPlayer player, THHPlayer opponent, Card servant)
+        {
+            var value = calcServantValue(servant.getAttack(game), servant.getCurrentLife(game));
+            return player == servant.getOwner() ? value : -value;
+        }
+
+        /// <summary>
+        /// 估算场上某些随从的价值，已区分敌我，召唤使用+，消灭使用-
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="opponent"></param>
+        /// <param name="servants"></param>
+        /// <returns></returns>
+        float calcServantsValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> servants)
+        {
+            return servants.Sum(s => calcServantValue(game, player, opponent, s));
+        }
+
+        /// <summary>
+        /// 估算随从即时身材变化价值，已区分敌我
+        /// </summary>
+        /// <param name="isFriendly"></param>
+        /// <param name="atkBfr"></param>
+        /// <param name="lifeBfr"></param>
+        /// <param name="atkAft"></param>
+        /// <param name="lifeAft"></param>
+        /// <returns></returns>
+        float calcInstantServantIntPropChangeValue(bool isFriendly, int atkBfr, int lifeBfr, int atkAft, int lifeAft)
+        {
+            var value = calcServantValue(atkAft, lifeAft) - calcServantValue(atkBfr, lifeBfr);
+            return isFriendly ? value : -value;
+        }
+
+        /// <summary>
+        /// 估算英雄即时身材变化价值，已区分敌我
+        /// </summary>
+        /// <param name="isFriendly"></param>
+        /// <param name="atkBfr"></param>
+        /// <param name="lifeBfr"></param>
+        /// <param name="atkAft"></param>
+        /// <param name="lifeAft"></param>
+        /// <returns></returns>
+        float calcInstantMasterIntPropChangeValue(bool isFriendly, int atkBfr, int lifeBfr, int atkAft, int lifeAft)
+        {
+            var value = calcMasterLifeWeight(lifeAft) - calcMasterLifeWeight(lifeBfr);
+            if (isFriendly)
+            {
+                return value;
+            }
+            return -value;
+        }
+
+        /// <summary>
+        /// 估算角色即时身材变化价值，已区分敌我
+        /// </summary>
+        /// <param name="isFriendly"></param>
+        /// <param name="isMaster"></param>
+        /// <param name="atkBfr"></param>
+        /// <param name="lifeBfr"></param>
+        /// <param name="atkAft"></param>
+        /// <param name="lifeAft"></param>
+        /// <returns></returns>
+        float calcInstantIntPropChangeValue(bool isFriendly, bool isMaster, int atkBfr, int lifeBfr, int atkAft,
+            int lifeAft)
+        {
+            return isMaster
+                ? calcInstantMasterIntPropChangeValue(isFriendly, atkBfr, lifeBfr, atkAft, lifeAft)
+                : calcInstantServantIntPropChangeValue(isFriendly, atkBfr, lifeBfr, atkAft, lifeAft);
+        }
+
+        float calcWeaponValue(THHGame game, Card card)
+        {
+            int attack = card.getAttack(game);
+            int life = card.getLife(game);
+            return calcWeaponValue(attack, life);
+        }
+
+        float calcWeaponValue(int attack, int life)
+        {
+            return attack * life;
+        }
+
+        float calcBuffAllValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
+            int attack, int life)
+        {
+            return targets.Sum(c => calcBuffValue(game, player, opponent, c, attack, life));
+        }
+
+        float calcBuffValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int atk, int life)
+        {
+            var atkBfr = target.getAttack(game);
+            var lifeBfr = target.getCurrentLife(game);
+            bool isFriendly = target.getOwner() == player;
+            float _ = calcBuffValue(isFriendly, target.isMaster(), atkBfr, lifeBfr, atk, life);
+            return _;
+        }
+
+        /// <summary>
+        /// 计算即时buff价值，已区分敌我
+        /// </summary>
+        /// <param name="isFriendly"></param>
+        /// <param name="isMaster"></param>
+        /// <param name="atkBfr"></param>
+        /// <param name="lifeBfr"></param>
+        /// <param name="atkBuff"></param>
+        /// <param name="lifeBuff"></param>
+        /// <returns></returns>
+        float calcBuffValue(bool isFriendly, bool isMaster, int atkBfr, int lifeBfr, int atkBuff, int lifeBuff)
+        {
+            return calcInstantIntPropChangeValue(isFriendly, isMaster, atkBfr, lifeBfr, atkBfr + atkBuff,
+                lifeBfr + lifeBuff);
+        }
+
+        /// <summary>
+        /// 估算即时伤害价值，已区分敌我
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="opponent"></param>
+        /// <param name="target"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        float calcDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int value)
+        {
+            var atk = target.getAttack(game);
+            var life = target.getCurrentLife(game);
+            bool isFriendly = target.getOwner() == player;
+            float _ = calcInstantIntPropChangeValue(isFriendly, target.isMaster(), atk, life, atk, life - value);
+            return _;
+        }
+
+        float calcAOEDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
+            int damage)
+        {
+            return targets.Sum(c => calcDamageValue(game, player, opponent, c, damage));
+        }
+
+        float calcRandomDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
+            int damage)
+        {
+            float value = 0;
+            foreach (var target in targets)
+            {
+                value += calcDamageValue(game, player, opponent, target, damage);
+            }
+
+            value /= targets.Count();
+            return value;
+        }
+
+        float calcRandomServantsValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
+            int num)
+        {
+            float value = 0;
+            foreach (var target in targets)
+            {
+                value += calcServantValue(game, player, opponent, target);
+            }
+            value /= targets.Count();
+            value *= num;
+            return value;
+        }
+
+        float calcRandomFreezeValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets)
+        {
+            float value = 0;
+            foreach (var target in targets)
+            {
+                value += calcFreezeValue(game, player, opponent, target);
+            }
+
+            value /= targets.Count();
+            return value;
+        }
+
+        float calcFreezeValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
+        {
+            if (target == opponent.master || opponent.field.Contains(target))
+                return target.getAttack(game);
+            return -target.getAttack(game);
+        }
+
+        float calcHealingValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int value)
+        {
+            var life = target.getLife(game);
+            var lifeBfr = target.getCurrentLife(game);
+            var atk = target.getAttack(game);
+            var lifeAft = Math.Min(life, lifeBfr + value);
+            var isFriendly = target.getOwner() == player;
+            return calcInstantIntPropChangeValue(isFriendly, target.isMaster(), atk, lifeBfr, atk, lifeAft);
+        }
+
+        float calcRandomHealingValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
+            int value)
+        {
+            float _ = 0;
+            foreach (var target in targets)
+            {
+                _ += calcHealingValue(game, player, opponent, target, value);
+            }
+
+            _ /= targets.Count();
+            return _;
+        }
+
+        float calcMasterLifeWeight(int life)
+        {
+            return (float) Math.Log(Math.Max(life, 0)) * 100;
+        }
+
+        float calcStealthValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
+        {
+            if (player.field.Contains(target))
+                return target.getAttack(game) - target.getCurrentLife(game);
+            // 如果有随从：（潜行，战吼：使目标获得潜行）会出问题
+            if (target.hasKeyword(game, KEYWORD.STEALTH))
+                return target.getAttack(game) - target.getLife(game);
+            if (opponent.field.Contains(target) && target.hasKeyword(game, KEYWORD.TAUNT))
+                return target.getCurrentLife(game);
+            return 0;
+        }
+
+        /// <summary>
+        /// 待补充
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="opponent"></param>
+        /// <param name="num"></param>
+        /// <returns></returns>
+        float calcDrawCardsValue(THHGame game, THHPlayer player, THHPlayer opponent, int num)
+        {
+            return num;
         }
     }
 }
