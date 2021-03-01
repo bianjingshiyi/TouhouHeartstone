@@ -723,7 +723,7 @@ namespace TouhouHeartstone.Builtin
                 await target.setDead(game,true);
                 await card.getOwner().master.damage(game,card,card.getOwner().getSpellDamage(game,target.getCurrentLife(game)));
                 await game.updateDeath(game);
-            },PileFlag.both | PileFlag.field)
+            },PileFlag.oppo | PileFlag.field)
             
         };
     }
