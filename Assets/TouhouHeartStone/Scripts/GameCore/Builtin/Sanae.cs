@@ -514,12 +514,24 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            List<Card> options = new List<Card> { game.createCard<GodMiracleOfRain>(), game.createCard<GodMiracleOfOnbashira>(), game.createCard<GodMiracleOfWar>(), game.createCard<GodMiracleOfRevolution>() };
-            Card choice = await card.getOwner().discover(game, options, 4, "见证神迹！");
             int count = game.triggers.getRecordedEvents().
                 skipUntilLast(e => e is THHGame.StartEventArg GameStart).
                 OfType<Sanae.RevealDuelArg>().
                 Where(e2 => e2.player == card.getOwner()).Count();
+            Card card1 = game.createCard<GodMiracleOfRain>();
+            Card card2 = game.createCard<GodMiracleOfOnbashira>();
+            Card card3 = game.createCard<GodMiracleOfWar>();
+            Card card4 = game.createCard<GodMiracleOfRevolution>();
+            List<Card> options = new List<Card> { card1,card2,card3,card4 };
+
+            await card1.setProp<int>(game,"count1", count + 3);
+            await card2.setProp<int>(game, "count2", count + 1);
+            await card3.setProp<int>(game, "count3", count + 6);
+            await card4.setProp<int>(game, "count4", count + 2);
+
+            
+            Card choice = await card.getOwner().discover(game, options, 4, "见证神迹！");
+            
 
             if (choice.define == game.getDefine<GodMiracleOfRain>())
             {
@@ -568,7 +580,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 御柱之神迹
-    /// 假卡，召唤2个3/3并具有嘲讽的御柱。
+    /// 假卡
     /// </summary>
     public class GodMiracleOfOnbashira : SpellCardDefine
     {
@@ -616,7 +628,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 御柱
-    /// 衍生卡，3/3/3嘲讽
+    /// 衍生卡
     /// </summary>
     public class Onbashira : ServantCardDefine
     {
