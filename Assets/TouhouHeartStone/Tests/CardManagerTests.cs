@@ -13,7 +13,6 @@ using UnityEngine.SceneManagement;
 using TouhouHeartstone;
 
 using System.IO;
-using IGensoukyo;
 using TouhouCardEngine;
 using BJSYGameCore;
 namespace Tests
@@ -238,7 +237,7 @@ namespace Tests
             string dataSetFile = Path.Combine(Application.streamingAssetsPath, dataSetFileName);
 
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
-            ExcelDataSetPacker.PackExcelToDataSet(xlsFile, dataSetFile);
+            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls.dataset", dataSetFile);
 
             var task = cm.loadCards(dataSetFileName, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
@@ -276,7 +275,7 @@ namespace Tests
 
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\TestPicture.jpg", pictureFile);
-            ExcelDataSetPacker.PackExcelToDataSet(xlsFile, dataSetFile);
+            safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls.dataset", dataSetFile);
 
             var task = cm.loadSkins(dataSetFileName, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);

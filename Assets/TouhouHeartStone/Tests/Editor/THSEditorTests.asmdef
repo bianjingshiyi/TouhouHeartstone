@@ -1,0 +1,26 @@
+{
+    "name": "THSEditorTests",
+    "references": [
+        "GUID:281468c2df1e53a438f5e793d0b6dc36",
+        "GUID:b06a5ad1fe4c58b408bdfab24c55a5e0",
+        "GUID:f442f5613a5123d4aac2450609bd288a",
+        "GUID:12e70adf7cb4cc14086a50066ee29497",
+        "GUID:2c739507fed9dc24e913037d070aa4a6",
+        "GUID:e8c1681e1339373419eabe5626d9809b",
+        "GUID:8d127f57985fd644ca5546f1641c002f",
+        "GUID:fad660e7facc0e44095dac4651c0ef9f",
+        "GUID:fbe84483a464da04c9b15f1fa3a68c45",
+        "GUID:6e671b56ae6054b43994468b72b5b7b7"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
