@@ -26,27 +26,58 @@ pipeline {
             }
         }
 
-        stage('Build Windows') {
+        stage('Build Windows Debug') {
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.build('2019.4.8f1-windows', 'CustomBuilder.Editor.Builder.BuildWindows')
+                    unitybuilder.buildPlatform('2019.4.8f1-windows', 'win64-debug')
                 }
             }
         }
-        stage('Build Android') {
+        stage('Build Windows Release') {
+            when {
+                not {
+                    environment name: 'GIT_BRANCH', value: 'main'
+                }
+            }
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.build('2019.4.8f1-android', 'CustomBuilder.Editor.Builder.BuildAndroid')
+                    unitybuilder.buildPlatform('2019.4.8f1-windows', 'win64-release;win32-release')
+                }
+            }
+        }
+        stage('Build Android Debug') {
+            steps {
+                script {
+                    UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
+                    unitybuilder.buildPlatform('2019.4.8f1-android', 'android-debug')
+                }
+            }
+        }
+        stage('Build Android Release') {
+            when {
+                not {
+                    environment name: 'GIT_BRANCH', value: 'main'
+                }
+            }
+            steps {
+                script {
+                    UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
+                    unitybuilder.buildPlatform('2019.4.8f1-android', 'android-release')
                 }
             }
         }
         stage('Build Linux') {
+            when {
+                not {
+                    environment name: 'GIT_BRANCH', value: 'main'
+                }
+            }
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.build('2019.4.8f1-android', 'CustomBuilder.Editor.Builder.BuildLinux')
+                    unitybuilder.buildPlatform('2019.4.8f1-android', 'linux-debug;linux-release')
                 }
             }
         }
