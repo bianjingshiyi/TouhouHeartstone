@@ -26,5 +26,8 @@ namespace UI
         public SimpleAnim onLifeDown;
         public SimpleAnim onDestroy;
         public SimpleAnim onSetDefine;
+        public SimpleAnim onItemOff;
+        public SimpleAnim onItemON;
+        public const string ItemOff = "ItemOff";
     }
 }
