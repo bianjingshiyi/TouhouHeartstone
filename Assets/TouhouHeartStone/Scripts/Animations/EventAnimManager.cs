@@ -4,6 +4,7 @@ using UI;
 using TouhouHeartstone;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine.Interfaces;
 using System.Reflection;
 using TouhouCardEngine;
@@ -55,7 +56,8 @@ namespace Game
         }
         public void update(float time)
         {
-            for (int i = 0; i < animQueue.Count; i++)
+            var queueCount = animQueue.Count;
+            for (int i = 0; i < queueCount; i++)
             {
                 TableAnimation anim = animQueue.Dequeue();
                 if (!anim.update(null, time))
@@ -63,11 +65,18 @@ namespace Game
                     animQueue.Enqueue(anim);
                 }
             }
+
+            if (animQueue.Count == 0)
+            {
+                onAllAnimFinished?.Invoke();
+            }
         }
+
         /// <summary>
         /// 当所有动画播放完毕之后触发。
         /// </summary>
         public event Action onAllAnimFinished;
+        
         #endregion
         #region Builtin
         Dictionary<string, EventAnimation> builtInAnimationList { get; } = new Dictionary<string, EventAnimation>();
