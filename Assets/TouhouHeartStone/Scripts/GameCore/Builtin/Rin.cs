@@ -233,7 +233,7 @@ namespace TouhouHeartstone.Builtin
         {
             new DeathRattle(ID,async(g1,c1,p)=>
             {
-                await c1.getOwner().draw(g1,c1.getOwner().deck.Where(c => c.hasKeyword(g1,KEYWORD._DeathRattle)).random(g1));
+                await c1.getOwner().draw(g1,c1.getOwner().deck.Where(c => c.hasDeathRattle(g1)).random(g1));
             }),
         };
     }
