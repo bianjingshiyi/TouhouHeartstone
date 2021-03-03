@@ -64,6 +64,10 @@ namespace Game
                 }
             }
         }
+        /// <summary>
+        /// 当所有动画播放完毕之后触发。
+        /// </summary>
+        public event Action onAllAnimFinished;
         #endregion
         #region Builtin
         Dictionary<string, EventAnimation> builtInAnimationList { get; } = new Dictionary<string, EventAnimation>();

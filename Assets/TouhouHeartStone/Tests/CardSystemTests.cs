@@ -8,6 +8,7 @@ using TouhouHeartstone.Builtin;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using System.Collections.Generic;
+using BJSYGameCore;
 namespace Tests
 {
     public class CardSystemTests

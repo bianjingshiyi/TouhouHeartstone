@@ -1,8 +1,12 @@
 ﻿using BJSYGameCore;
 using Game;
 using NUnit.Framework;
+using System.Collections;
+using System.Collections.Generic;
 using TouhouCardEngine.Interfaces;
 using UI;
+using UnityEngine.TestTools;
+
 namespace Tests
 {
     public class EventAnimTests
@@ -70,6 +74,25 @@ namespace Tests
             Assert.AreEqual(1, manager.getAnimsInQueue().Length);
             manager.update(.3f);
             Assert.AreEqual(0, manager.getAnimsInQueue().Length);
+        }
+        /// <summary>
+        /// 触发3个原子动画，预期在3个动画播放完毕之后，触发onAllAnimFinished事件。
+        /// </summary>
+        /// <returns></returns>
+        [UnityTest]
+        public IEnumerator onAllAnimFinishedTest()
+        {
+            EventAnimManager manager = createManager();
+            yield return TestHelper.waitUntilEventTrig(manager,
+                (m, a) => m.onAllAnimFinished += a,
+                () =>
+                {
+                    manager.onEvent(ANIM_NAME_ATOM);
+                    manager.onEvent(ANIM_NAME_ATOM);
+                    manager.onEvent(ANIM_NAME_ATOM);
+                    manager.update(1.55f);
+                    return null;
+                });
         }
         class AtomAnim : EventAnimation
         {
