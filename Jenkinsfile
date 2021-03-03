@@ -13,13 +13,13 @@ pipeline {
     }
     stages {
         stage('checkout') {
-            options { retry(3) }
             steps {
                 script {
-                    def scmVars = checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull'], [$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: false, recursiveSubmodules: true, reference: '', trackingSubmodules: false]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'lotlab_bot', url: 'https://code.lotlab.org/IGensokyo/TouhouHeartstone']]])
+                    def scmVars = checkout scm
                     env.GIT_PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_COMMIT
                     env.GIT_COMMIT = scmVars.GIT_COMMIT
                     echo "${GIT_COMMIT} to ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
+
                     def gitTag = sh label: '', returnStdout: true, script: 'git describe --always'
                     env.BUILD_GIT_TAG = gitTag.trim()
                 }
