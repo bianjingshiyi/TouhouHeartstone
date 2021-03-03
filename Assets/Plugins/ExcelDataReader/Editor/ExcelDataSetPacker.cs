@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +23,17 @@ namespace IGensoukyo
         static public void PackExcelToDataSet(string pathIn, string pathOut)
         {
             Debug.Log($"正在将 {pathIn} 转换至 {pathOut}");
-            using (var stream = File.Open(Path.Combine(Application.streamingAssetsPath, pathIn), FileMode.Open, FileAccess.Read))
+            Convert(Path.Combine(Application.streamingAssetsPath, pathIn), Path.Combine(Application.streamingAssetsPath, pathOut));
+        }
+
+        /// <summary>
+        /// 打包一个Excel
+        /// </summary>
+        /// <param name="pathIn">Excel路径</param>
+        /// <param name="pathOut">输出Dataset路径</param>
+        static void Convert(string pathIn, string pathOut)
+        {
+            using (var stream = File.Open(pathIn, FileMode.Open, FileAccess.Read))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
@@ -35,7 +46,7 @@ namespace IGensoukyo
                             UseHeaderRow = true,
                         }
                     });
-                    using (var writeStream = File.Open(Path.Combine(Application.streamingAssetsPath, pathOut), FileMode.OpenOrCreate, FileAccess.Write))
+                    using (var writeStream = File.Open(pathOut, FileMode.OpenOrCreate, FileAccess.Write))
                     {
                         BinaryFormatter bf = new BinaryFormatter();
                         bf.Serialize(writeStream, result);
@@ -54,6 +65,19 @@ namespace IGensoukyo
                 PackExcelToDataSet(item.ExcelFile, item.DataSetFile);
             }
             updateFileList(configs);
+        }
+
+
+        [MenuItem("Custom/Data/Excel转换")]
+        static public void PackFile() {
+            string input = EditorUtility.OpenFilePanelWithFilters("选择Excel文件", Application.streamingAssetsPath, new string[] { "xls", "xlsx,xls" });
+            if (!String.IsNullOrEmpty(input))
+            {
+                string output = EditorUtility.SaveFilePanel("写到指定文件", Path.GetDirectoryName(input), Path.GetFileName(input) + ".dataset", ".dataset");
+                if (!String.IsNullOrEmpty(output)) {
+                    Convert(input, output);
+                }
+            }
         }
 
         static void updateFileList(PackerConfig[] configs)
