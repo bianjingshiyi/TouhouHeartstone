@@ -358,10 +358,11 @@ namespace Game
             }
         }
 
-    /// <summary>
-    /// 初始化Master的事件
-    /// </summary>
-    /// <param name="master"></param>
+        /// <summary>
+        /// 初始化Master的事件
+        /// </summary>
+        /// <param name="master"></param>
+
     public void initMaster(Master master)
         {
             master.onClick.add(onClickMaster);
@@ -374,6 +375,18 @@ namespace Game
             master.asAnimator.SetBool("hasArmor",false);
             master.HealImage.hide();
             master.Image.color = new Color(1,1,1,1);
+            ResetPos(master);
+            master.rectTransform.localScale = new Vector3(1, 1, 1);
+        }
+        /// <summary>
+        /// 用于重置非正常退出后的英雄位置
+        /// </summary>
+        /// <param name="ReMaster"></param>
+    public void ResetPos(Master ReMaster)
+        {
+            ReMaster.GetComponentInChildren<PositionLerp>()._time = 0.0f;
+            ReMaster.GetComponentInChildren<PositionLerp>().enabled = false;
+            ReMaster.rootRectTransform.anchoredPosition = new Vector3(0, 0, 0);
         }
         /// <summary>
         /// 设置Master的UI
@@ -486,6 +499,7 @@ namespace Game
             item.display();
             CardSkinData skin = getSkin(card);
             item.Image.sprite = skin.image;
+            
         }
         void displayArrow(RectTransform source, Vector2 from, Vector2 to)
         {

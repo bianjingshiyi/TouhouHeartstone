@@ -17,30 +17,31 @@ namespace UI
     using UnityEngine.UI;
     using UI;
     
-    [AutoCompoAttribute(27826)]
+    [AutoCompoAttribute(19818)]
     public partial class Master : UIObject
     {
         public void init()
         {
             this._asAnimator = this.transform.findByPath("./").GetComponent<Animator>();
-            this._HighlightImage = this.transform.findByPath("./Root/Highlight").GetComponent<Image>();
-            this._Mask = this.transform.findByPath("./Root/Mask").GetComponent<Mask>();
-            this._Image = this.transform.findByPath("./Root/Mask/Image").GetComponent<Image>();
-            this._StealthImage = this.transform.findByPath("./Root/Mask/Stealth").GetComponent<Image>();
-            this._FrameImage = this.transform.findByPath("./Root/Frame").GetComponent<Image>();
-            this._AttackPropNumber = this.transform.findByPath("./Root/AtkPropNumber ").GetComponent<PropNumber>();
-            this._LifePropNumber = this.transform.findByPath("./Root/LifePropNumber").GetComponent<PropNumber>();
-            this._ArmorPropNumber = this.transform.findByPath("./Root/ArmorPropNumber").GetComponent<PropNumber>();
-            this._DamageImage = this.transform.findByPath("./Root/DamageImage").GetComponent<Image>();
-            this._DamageText = this.transform.findByPath("./Root/DamageImage/DamageText").GetComponent<Text>();
-            this._HealImage = this.transform.findByPath("./Root/HealImage").GetComponent<Image>();
-            this._HealText = this.transform.findByPath("./Root/HealImage/HealText").GetComponent<Text>();
-            this._Head = this.transform.findByPath("./Root/Head").GetComponent<Head>();
-            this._ShieldImage = this.transform.findByPath("./Root/Shield").GetComponent<Image>();
-            this._ShackleImage = this.transform.findByPath("./Root/Shackle").GetComponent<Image>();
+            this._highlightImage = this.transform.findByPath("./Root/Highlight").GetComponent<Image>();
+            this._mask = this.transform.findByPath("./Root/Mask").GetComponent<Mask>();
+            this._image = this.transform.findByPath("./Root/Mask/Image").GetComponent<Image>();
+            this._stealthImage = this.transform.findByPath("./Root/Mask/Stealth").GetComponent<Image>();
+            this._shieldImage = this.transform.findByPath("./Root/Shield").GetComponent<Image>();
+            this._head = this.transform.findByPath("./Root/Head").GetComponent<Head>();
+            this._healText = this.transform.findByPath("./Root/HealImage/HealText").GetComponent<Text>();
+            this._healImage = this.transform.findByPath("./Root/HealImage").GetComponent<Image>();
+            this._damageImage = this.transform.findByPath("./Root/DamageImage").GetComponent<Image>();
+            this._damageText = this.transform.findByPath("./Root/DamageImage/DamageText").GetComponent<Text>();
+            this._armorPropNumber = this.transform.findByPath("./Root/ArmorPropNumber").GetComponent<PropNumber>();
+            this._lifePropNumber = this.transform.findByPath("./Root/LifePropNumber").GetComponent<PropNumber>();
+            this._atkPropNumber  = this.transform.findByPath("./Root/AtkPropNumber ").GetComponent<PropNumber>();
+            this._shackleImage = this.transform.findByPath("./Root/Shackle").GetComponent<Image>();
+            this._frameImage = this.transform.findByPath("./Root/Frame").GetComponent<Image>();
+            this._rootRectTransform = this.transform.findByPath("./Root").GetComponent<RectTransform>();
         }
         [SerializeField()]
-        [AutoCompo(21224, "./")]
+        [AutoCompo(19824, "./")]
         private Animator _asAnimator;
         public Animator asAnimator
         {
@@ -63,213 +64,227 @@ namespace UI
         private const string ANIM_PARAM_HEAL = "Heal";
         private const string ANIM_PARAM_ISSHACKLE = "isShackle";
         [SerializeField()]
-        [AutoCompo(20986, "./Root/Highlight")]
-        private Image _HighlightImage;
+        [AutoCompo(19936, "./Root/Highlight")]
+        private Image _highlightImage;
         public Image HighlightImage
         {
             get
             {
-                if ((this._HighlightImage == null))
+                if ((this._highlightImage == null))
                 {
-                    this._HighlightImage = this.transform.findByPath("./Root/Highlight").GetComponent<Image>();
+                    this._highlightImage = this.transform.findByPath("./Root/Highlight").GetComponent<Image>();
                 }
-                return this._HighlightImage;
+                return this._highlightImage;
             }
         }
         [SerializeField()]
-        [AutoCompo(21274, "./Root/Mask")]
-        private Mask _Mask;
+        [AutoCompo(19980, "./Root/Mask")]
+        private Mask _mask;
         public Mask Mask
         {
             get
             {
-                if ((this._Mask == null))
+                if ((this._mask == null))
                 {
-                    this._Mask = this.transform.findByPath("./Root/Mask").GetComponent<Mask>();
+                    this._mask = this.transform.findByPath("./Root/Mask").GetComponent<Mask>();
                 }
-                return this._Mask;
+                return this._mask;
             }
         }
         [SerializeField()]
-        [AutoCompo(21276, "./Root/Mask/Image")]
-        private Image _Image;
+        [AutoCompo(20066, "./Root/Mask/Image")]
+        private Image _image;
         public Image Image
         {
             get
             {
-                if ((this._Image == null))
+                if ((this._image == null))
                 {
-                    this._Image = this.transform.findByPath("./Root/Mask/Image").GetComponent<Image>();
+                    this._image = this.transform.findByPath("./Root/Mask/Image").GetComponent<Image>();
                 }
-                return this._Image;
+                return this._image;
             }
         }
         [SerializeField()]
-        [AutoCompo(21278, "./Root/Mask/Stealth")]
-        private Image _StealthImage;
+        [AutoCompo(20040, "./Root/Mask/Stealth")]
+        private Image _stealthImage;
         public Image StealthImage
         {
             get
             {
-                if ((this._StealthImage == null))
+                if ((this._stealthImage == null))
                 {
-                    this._StealthImage = this.transform.findByPath("./Root/Mask/Stealth").GetComponent<Image>();
+                    this._stealthImage = this.transform.findByPath("./Root/Mask/Stealth").GetComponent<Image>();
                 }
-                return this._StealthImage;
+                return this._stealthImage;
             }
         }
         [SerializeField()]
-        [AutoCompo(20908, "./Root/Frame")]
-        private Image _FrameImage;
-        public Image FrameImage
-        {
-            get
-            {
-                if ((this._FrameImage == null))
-                {
-                    this._FrameImage = this.transform.findByPath("./Root/Frame").GetComponent<Image>();
-                }
-                return this._FrameImage;
-            }
-        }
-        [SerializeField()]
-        [AutoCompo(21348, "./Root/AtkPropNumber ")]
-        private PropNumber _AttackPropNumber;
-        public PropNumber AttackPropNumber
-        {
-            get
-            {
-                if ((this._AttackPropNumber == null))
-                {
-                    this._AttackPropNumber = this.transform.findByPath("./Root/AtkPropNumber ").GetComponent<PropNumber>();
-                }
-                return this._AttackPropNumber;
-            }
-        }
-        [SerializeField()]
-        [AutoCompo(21366, "./Root/LifePropNumber")]
-        private PropNumber _LifePropNumber;
-        public PropNumber LifePropNumber
-        {
-            get
-            {
-                if ((this._LifePropNumber == null))
-                {
-                    this._LifePropNumber = this.transform.findByPath("./Root/LifePropNumber").GetComponent<PropNumber>();
-                }
-                return this._LifePropNumber;
-            }
-        }
-        [SerializeField()]
-        [AutoCompo(21318, "./Root/ArmorPropNumber")]
-        private PropNumber _ArmorPropNumber;
-        public PropNumber ArmorPropNumber
-        {
-            get
-            {
-                if ((this._ArmorPropNumber == null))
-                {
-                    this._ArmorPropNumber = this.transform.findByPath("./Root/ArmorPropNumber").GetComponent<PropNumber>();
-                }
-                return this._ArmorPropNumber;
-            }
-        }
-        [SerializeField()]
-        [AutoCompo(21282, "./Root/DamageImage")]
-        private Image _DamageImage;
-        public Image DamageImage
-        {
-            get
-            {
-                if ((this._DamageImage == null))
-                {
-                    this._DamageImage = this.transform.findByPath("./Root/DamageImage").GetComponent<Image>();
-                }
-                return this._DamageImage;
-            }
-        }
-        [SerializeField()]
-        [AutoCompo(21284, "./Root/DamageImage/DamageText")]
-        private Text _DamageText;
-        public Text DamageText
-        {
-            get
-            {
-                if ((this._DamageText == null))
-                {
-                    this._DamageText = this.transform.findByPath("./Root/DamageImage/DamageText").GetComponent<Text>();
-                }
-                return this._DamageText;
-            }
-        }
-        [SerializeField()]
-        [AutoCompo(21286, "./Root/HealImage")]
-        private Image _HealImage;
-        public Image HealImage
-        {
-            get
-            {
-                if ((this._HealImage == null))
-                {
-                    this._HealImage = this.transform.findByPath("./Root/HealImage").GetComponent<Image>();
-                }
-                return this._HealImage;
-            }
-        }
-        [SerializeField()]
-        [AutoCompo(21288, "./Root/HealImage/HealText")]
-        private Text _HealText;
-        public Text HealText
-        {
-            get
-            {
-                if ((this._HealText == null))
-                {
-                    this._HealText = this.transform.findByPath("./Root/HealImage/HealText").GetComponent<Text>();
-                }
-                return this._HealText;
-            }
-        }
-        [SerializeField()]
-        [AutoCompo(20896, "./Root/Head")]
-        private Head _Head;
-        public Head Head
-        {
-            get
-            {
-                if ((this._Head == null))
-                {
-                    this._Head = this.transform.findByPath("./Root/Head").GetComponent<Head>();
-                }
-                return this._Head;
-            }
-        }
-        [SerializeField()]
-        [AutoCompo(21290, "./Root/Shield")]
-        private Image _ShieldImage;
+        [AutoCompo(19960, "./Root/Shield")]
+        private Image _shieldImage;
         public Image ShieldImage
         {
             get
             {
-                if ((this._ShieldImage == null))
+                if ((this._shieldImage == null))
                 {
-                    this._ShieldImage = this.transform.findByPath("./Root/Shield").GetComponent<Image>();
+                    this._shieldImage = this.transform.findByPath("./Root/Shield").GetComponent<Image>();
                 }
-                return this._ShieldImage;
+                return this._shieldImage;
             }
         }
         [SerializeField()]
-        [AutoCompo(54194, "./Root/Shackle")]
-        private Image _ShackleImage;
+        [AutoCompo(19944, "./Root/Head")]
+        private Head _head;
+        public Head Head
+        {
+            get
+            {
+                if ((this._head == null))
+                {
+                    this._head = this.transform.findByPath("./Root/Head").GetComponent<Head>();
+                }
+                return this._head;
+            }
+        }
+        [SerializeField()]
+        [AutoCompo(20026, "./Root/HealImage/HealText")]
+        private Text _healText;
+        public Text HealText
+        {
+            get
+            {
+                if ((this._healText == null))
+                {
+                    this._healText = this.transform.findByPath("./Root/HealImage/HealText").GetComponent<Text>();
+                }
+                return this._healText;
+            }
+        }
+        [SerializeField()]
+        [AutoCompo(19992, "./Root/HealImage")]
+        private Image _healImage;
+        public Image HealImage
+        {
+            get
+            {
+                if ((this._healImage == null))
+                {
+                    this._healImage = this.transform.findByPath("./Root/HealImage").GetComponent<Image>();
+                }
+                return this._healImage;
+            }
+        }
+        [SerializeField()]
+        [AutoCompo(19948, "./Root/DamageImage")]
+        private Image _damageImage;
+        public Image DamageImage
+        {
+            get
+            {
+                if ((this._damageImage == null))
+                {
+                    this._damageImage = this.transform.findByPath("./Root/DamageImage").GetComponent<Image>();
+                }
+                return this._damageImage;
+            }
+        }
+        [SerializeField()]
+        [AutoCompo(20052, "./Root/DamageImage/DamageText")]
+        private Text _damageText;
+        public Text DamageText
+        {
+            get
+            {
+                if ((this._damageText == null))
+                {
+                    this._damageText = this.transform.findByPath("./Root/DamageImage/DamageText").GetComponent<Text>();
+                }
+                return this._damageText;
+            }
+        }
+        [SerializeField()]
+        [AutoCompo(19928, "./Root/ArmorPropNumber")]
+        private PropNumber _armorPropNumber;
+        public PropNumber ArmorPropNumber
+        {
+            get
+            {
+                if ((this._armorPropNumber == null))
+                {
+                    this._armorPropNumber = this.transform.findByPath("./Root/ArmorPropNumber").GetComponent<PropNumber>();
+                }
+                return this._armorPropNumber;
+            }
+        }
+        [SerializeField()]
+        [AutoCompo(19994, "./Root/LifePropNumber")]
+        private PropNumber _lifePropNumber;
+        public PropNumber LifePropNumber
+        {
+            get
+            {
+                if ((this._lifePropNumber == null))
+                {
+                    this._lifePropNumber = this.transform.findByPath("./Root/LifePropNumber").GetComponent<PropNumber>();
+                }
+                return this._lifePropNumber;
+            }
+        }
+        [SerializeField()]
+        [AutoCompo(19970, "./Root/AtkPropNumber ")]
+        private PropNumber _atkPropNumber ;
+        public PropNumber AttackPropNumber 
+        {
+            get
+            {
+                if ((this._atkPropNumber  == null))
+                {
+                    this._atkPropNumber  = this.transform.findByPath("./Root/AtkPropNumber ").GetComponent<PropNumber>();
+                }
+                return this._atkPropNumber ;
+            }
+        }
+        [SerializeField()]
+        [AutoCompo(19968, "./Root/Shackle")]
+        private Image _shackleImage;
         public Image ShackleImage
         {
             get
             {
-                if ((this._ShackleImage == null))
+                if ((this._shackleImage == null))
                 {
-                    this._ShackleImage = this.transform.findByPath("./Root/Shackle").GetComponent<Image>();
+                    this._shackleImage = this.transform.findByPath("./Root/Shackle").GetComponent<Image>();
                 }
-                return this._ShackleImage;
+                return this._shackleImage;
+            }
+        }
+        [SerializeField()]
+        [AutoCompo(19984, "./Root/Frame")]
+        private Image _frameImage;
+        public Image FrameImage
+        {
+            get
+            {
+                if ((this._frameImage == null))
+                {
+                    this._frameImage = this.transform.findByPath("./Root/Frame").GetComponent<Image>();
+                }
+                return this._frameImage;
+            }
+        }
+        [SerializeField()]
+        [AutoCompo(19832, "./Root")]
+        private RectTransform _rootRectTransform;
+        public RectTransform rootRectTransform
+        {
+            get
+            {
+                if ((this._rootRectTransform == null))
+                {
+                    this._rootRectTransform = this.transform.findByPath("./Root").GetComponent<RectTransform>();
+                }
+                return this._rootRectTransform;
             }
         }
     }

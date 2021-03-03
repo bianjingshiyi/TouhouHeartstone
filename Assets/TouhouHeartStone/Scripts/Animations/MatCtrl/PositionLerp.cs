@@ -6,7 +6,7 @@ namespace Game
     {
         [Range(0, 1)]
         [SerializeField]
-        float _time;
+        public float _time;
         [SerializeField]
         RectTransform _targetTransform;
         public RectTransform targetTransofrm
