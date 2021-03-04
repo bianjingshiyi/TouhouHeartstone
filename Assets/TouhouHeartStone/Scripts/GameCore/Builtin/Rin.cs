@@ -83,9 +83,9 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Rin.ID | CATEGORY.SERVANT | 0x003;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
-        public override int attack { get; set; } = 1;
-        public override int life { get; set; } = 1;
+        public override int cost { get; set; } = 6;
+        public override int attack { get; set; } = 5;
+        public override int life { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {

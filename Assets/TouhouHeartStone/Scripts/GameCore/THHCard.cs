@@ -1330,6 +1330,7 @@ namespace TouhouHeartstone
                 return new Card[] { card.pile[card.pile.count - 2] };
             return new Card[] { card.pile[index - 1], card.pile[index + 1] };
         }
+
         public static Task fieldBackToHand(this Card card, THHGame game)
         {
             return fieldBackToHand(new Card[] { card }, game);
@@ -1354,6 +1355,26 @@ namespace TouhouHeartstone
                 }
             }
             await game.updateDeath(game);
+        }
+
+        public static Task fieldToDeck(this Card card,THHGame game,bool isYourDeck=true)
+        {
+            return fieldToDeck(new Card[] { card }, game, isYourDeck);
+        }
+        public static async Task fieldToDeck(this IEnumerable<Card> cards,THHGame game,bool isYourDeck=true)
+        {
+            int index = 0;
+            foreach(Card c in cards)
+            {              
+                THHPlayer player = c.getOwner();
+                if (!isYourDeck)
+                {
+                    player = game.getOpponent(c.getOwner());
+                }
+                index = game.randomInt(0, player.deck.count);
+                await c.resetCard(game);
+                await c.getOwner().field.moveTo(game, c, player.deck, index);
+            }
         }
 
         public static Task graveBackToHand(this Card card, THHGame game)

@@ -361,9 +361,10 @@ namespace TouhouHeartstone.Builtin
                     return a.player == c.getOwner();
                 }, null, async (g, c, a) =>
                 {
-                    int index = game.randomInt(0, c.getOwner().deck.count);
-                    await god.resetCard(game);
-                    await c.getOwner().field.moveTo(game, god, c.getOwner().deck, index);
+                    //int index = game.randomInt(0, c.getOwner().deck.count);
+                    //await god.resetCard(game);
+                    //await c.getOwner().field.moveTo(game, god, c.getOwner().deck, index);
+                    await c.fieldToDeck(game);
                 })));
             }
 
@@ -847,19 +848,22 @@ namespace TouhouHeartstone.Builtin
             THHPlayer oppo = game.getOpponent(you);
             int index = 0;
 
-            while (you.field.count != 0)
-            {
-                index = game.randomInt(0, oppo.deck.count);
-                await you.field[0].resetCard(game);
-                await you.field.moveTo(game, you.field[0], you.deck, index);
-            }
+            await you.field.fieldToDeck(game);
+            await oppo.field.fieldToDeck(game);
 
-            while (oppo.field.count != 0)
-            {
-                index = game.randomInt(0, oppo.deck.count);
-                await oppo.field[0].resetCard(game);
-                await oppo.field.moveTo(game, oppo.field[0], oppo.deck, index);
-            }
+            //while (you.field.count != 0)
+            //{
+            //    index = game.randomInt(0, oppo.deck.count);
+            //    await you.field[0].resetCard(game);
+            //    await you.field.moveTo(game, you.field[0], you.deck, index);
+            //}
+
+            //while (oppo.field.count != 0)
+            //{
+            //    index = game.randomInt(0, oppo.deck.count);
+            //    await oppo.field[0].resetCard(game);
+            //    await oppo.field.moveTo(game, oppo.field[0], oppo.deck, index);
+            //}
 
         }
     }
