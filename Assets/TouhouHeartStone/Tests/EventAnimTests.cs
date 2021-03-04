@@ -101,10 +101,12 @@ namespace Tests
             Timer _timer = new Timer() { duration = .5f };
             public override bool update(TableManager table, float time)
             {
-                return _timer.update(time);
-                // if (!_timer.isExpired())
-                //     return false;
-                // return true;
+                if (!_timer.isStarted)
+                {
+                    _timer.start();
+                }
+                _timer.update(time);
+                return _timer.isExpired();
             }
         }
         class CompAnim : EventAnimation
