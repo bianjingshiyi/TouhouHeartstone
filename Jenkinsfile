@@ -28,7 +28,7 @@ pipeline {
                     } catch (err) { // timeout reached or input Aborted
                         def user = err.getCauses()[0].getUser()
                         if ('SYSTEM' == user.toString()) { // SYSTEM means timeout
-                            echo ('Input timeout expired, default branch will be used: ' + BRANCH_TO_BUILD_DEFAULT)
+                            echo ('Input timeout expired, will build debug package.')
                             env.DEPLOY_TO = 'debug'
                         } else {
                             echo "Input aborted by: [${user}]"
