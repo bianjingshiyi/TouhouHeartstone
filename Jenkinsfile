@@ -15,6 +15,27 @@ pipeline {
         stage('checkout') {
             steps {
                 script {
+                    try {
+                        timeout(time:30, unit:'SECONDS') {
+                            env.DEPLOY_TO = input(
+                                message: '打哪个包？',
+                                parameters: [
+                                    [$class: 'TextParameterDefinition',
+                                    defaultValue: 'release',
+                                    description: '包配置', name: 'Debug 还是 Release']
+                            ])
+                        }
+                    } catch (err) { // timeout reached or input Aborted
+                        def user = err.getCauses()[0].getUser()
+                        if ('SYSTEM' == user.toString()) { // SYSTEM means timeout
+                            echo ('Input timeout expired, default branch will be used: ' + BRANCH_TO_BUILD_DEFAULT)
+                            env.DEPLOY_TO = 'debug'
+                        } else {
+                            echo "Input aborted by: [${user}]"
+                            error("Pipeline aborted by: [${user}]")
+                        }
+                    }
+
                     def scmVars = checkout scm
                     env.GIT_PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_COMMIT
                     env.GIT_COMMIT = scmVars.GIT_COMMIT
@@ -36,9 +57,7 @@ pipeline {
         }
         stage('Build Windows Release') {
             when {
-                not {
-                    environment name: 'GIT_BRANCH', value: 'main'
-                }
+                environment name: 'DEPLOY_TO', value: 'release'
             }
             steps {
                 script {
@@ -57,9 +76,7 @@ pipeline {
         }
         stage('Build Android Release') {
             when {
-                not {
-                    environment name: 'GIT_BRANCH', value: 'main'
-                }
+                environment name: 'DEPLOY_TO', value: 'release'
             }
             steps {
                 script {
@@ -70,9 +87,7 @@ pipeline {
         }
         stage('Build Linux') {
             when {
-                not {
-                    environment name: 'GIT_BRANCH', value: 'main'
-                }
+                environment name: 'DEPLOY_TO', value: 'release'
             }
             steps {
                 script {
@@ -120,7 +135,7 @@ pipeline {
                     // Upload ALL package to CowTransfer (or other)
                     withCredentials([string(credentialsId: 'cow_cookie', variable: 'cow_cookie')]) {
                         script {
-                            def result = sh label: '', returnStdout: true, script: "$JENKINS_HOME/transfer cow --cookie=\"${cow_cookie};\" -s $WORKSPACE/Build/_artifact/ | grep 'Download Link' | awk '{print \$3}'"
+                            def result = sh label: '', returnStdout: true, script: "$JENKINS_HOME/transfer cow --cookie=\"\$cow_cookie;\" -s $WORKSPACE/Build/_artifact/ | grep 'Download Link' | awk '{print \$3}'"
                             env.DOWNLOAD_LINK = result
                             echo "${result}"
                         }
