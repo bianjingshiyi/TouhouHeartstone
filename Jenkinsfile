@@ -15,6 +15,7 @@ pipeline {
         stage('checkout') {
             steps {
                 script {
+                    // 询问打包平台
                     try {
                         timeout(time:30, unit:'SECONDS') {
                             env.DEPLOY_TO = input(
@@ -36,13 +37,18 @@ pipeline {
                         }
                     }
 
+                    // 检出
                     def scmVars = checkout scm
                     env.GIT_PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_COMMIT
                     env.GIT_COMMIT = scmVars.GIT_COMMIT
                     echo "${GIT_COMMIT} to ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
-
+                    
+                    // 设置构建版本
                     def gitTag = sh label: '', returnStdout: true, script: 'git describe --always'
                     env.BUILD_GIT_TAG = gitTag.trim()
+
+                    // 清理过期
+                    sh 'rm -r Build/*'
                 }
             }
         }
