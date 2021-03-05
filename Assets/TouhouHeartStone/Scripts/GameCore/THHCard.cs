@@ -1364,17 +1364,31 @@ namespace TouhouHeartstone
         public static async Task fieldToDeck(this IEnumerable<Card> cards,THHGame game,bool isYourDeck=true)
         {
             int index = 0;
-            foreach(Card c in cards)
-            {              
-                THHPlayer player = c.getOwner();
+            //foreach(Card c in cards)
+            //{              
+            //    THHPlayer player = c.getOwner();
+            //    if (!isYourDeck)
+            //    {
+            //        player = game.getOpponent(c.getOwner());
+            //    }
+            //    index = game.randomInt(0, player.deck.count);
+            //    await c.resetCard(game);
+            //    await c.getOwner().field.moveTo(game, c, player.deck, index);
+            //}
+            foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
+            {
+                int restCount = g.Key.field.count;
+                THHPlayer player = g.Key;
                 if (!isYourDeck)
                 {
-                    player = game.getOpponent(c.getOwner());
+                    player = game.getOpponent(g.Key);
                 }
                 index = game.randomInt(0, player.deck.count);
+                var c = g.Take(restCount);
                 await c.resetCard(game);
-                await c.getOwner().field.moveTo(game, c, player.deck, index);
+                await g.Key.field.moveTo(game, c, player.deck, index);
             }
+
         }
 
         public static Task graveBackToHand(this Card card, THHGame game)

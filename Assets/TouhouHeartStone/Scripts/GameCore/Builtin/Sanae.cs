@@ -839,7 +839,7 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer you = card.getOwner();
             THHPlayer oppo = game.getOpponent(you);
-            int index = 0;
+            //int index = 0;
 
             await you.field.fieldToDeck(game);
             await oppo.field.fieldToDeck(game);
