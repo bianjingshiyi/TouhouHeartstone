@@ -87,7 +87,15 @@ namespace Tests
         {
             TestGameflow.createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo,
                 Sanae.ID,
-                new KeyValuePair<int, int>(GrayThaumaturgy.ID, 2), new KeyValuePair<int, int>(StarRitual.ID, 4));
+                new KeyValuePair<int, int>(GrayThaumaturgy.ID, 3), new KeyValuePair<int, int>(StarRitual.ID, 4));
+            game.skipUntilHasGem(you, 5);
+            oppo.master.damage(game, null, 20);
+            Assert.AreEqual(10, oppo.master.getCurrentLife(game));
+            you.cmdUse(game, you.hand.getCard<GrayThaumaturgy>(), targets: oppo.master);
+            Assert.AreEqual(18, oppo.master.getCurrentLife(game));
+            you.cmdUse<StarRitual>(game);
+            Assert.AreEqual(22,oppo.master.getCurrentLife(game));
+            game.turnEnd(you);
             game.skipUntilHasGem(you, 5);
             you.master.damage(game, null, 20);
             Assert.AreEqual(10, you.master.getCurrentLife(game));
