@@ -194,7 +194,7 @@ namespace TouhouHeartstone
             return player.field.Concat(new Card[] { player.master }).ToArray();
         }
 
-        
+
 
         #endregion
         #region Gameflow
@@ -493,8 +493,10 @@ namespace TouhouHeartstone
                 time.cancel(turnTimer);
                 turnTimer = null;
             }
+            onEnd?.Invoke();
         }
         public event Action<int, IResponse> onPlayerResponse;
+        public event Action onEnd;
         public void logPlayerAction(int playerID, IResponse response)
         {
             onPlayerResponse?.Invoke(playerID, response);

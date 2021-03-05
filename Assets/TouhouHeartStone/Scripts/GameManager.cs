@@ -21,7 +21,7 @@ using MukioI18n;
 
 namespace Game
 {
-    public class GameManager : Manager
+    public partial class GameManager : Manager
     {
         [SerializeField]
         bool _useTimeAsRandomSeed = true;
@@ -467,27 +467,27 @@ namespace Game
             }
         }
         [TranslateMsg]
-        private const String GAME_MANAGER_DEATH = "死亡";
+        private const string GAME_MANAGER_DEATH = "死亡";
         [TranslateMsg]
-        private const String GAME_MANAGER_SECRET = "奥秘";
+        private const string GAME_MANAGER_SECRET = "奥秘";
         [TranslateMsg]
-        private const String GAME_MANAGER_SILENCE = "沉默";
+        private const string GAME_MANAGER_SILENCE = "沉默";
         [TranslateMsg]
-        private const String GAME_MANAGER_ATTACK = "攻击";
+        private const string GAME_MANAGER_ATTACK = "攻击";
         [TranslateMsg]
-        private const String GAME_MANAGER_REBORN = "复活";
+        private const string GAME_MANAGER_REBORN = "复活";
         [TranslateMsg]
-        private const String GAME_MANAGER_TOKEN = "召唤";
+        private const string GAME_MANAGER_TOKEN = "召唤";
         [TranslateMsg]
-        private const String GAME_MANAGER_USE = "使用";
+        private const string GAME_MANAGER_USE = "使用";
         [TranslateMsg]
-        private const String GAME_MANAGER_DISCARD = "弃牌";
+        private const string GAME_MANAGER_DISCARD = "弃牌";
         [TranslateMsg]
-        private const String GAME_MANAGER_FATIGUE = "疲劳";
+        private const string GAME_MANAGER_FATIGUE = "疲劳";
         [TranslateMsg]
-        private const String GAME_MANAGER_BURN = "爆牌";
+        private const string GAME_MANAGER_BURN = "爆牌";
         [TranslateMsg]
-        private const String GAME_MANAGER_DRAW = "抽牌";
+        private const string GAME_MANAGER_DRAW = "抽牌";
 
         #region Events
         void onLogListItemEnter(LogListItem item)

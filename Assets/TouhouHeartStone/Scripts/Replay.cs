@@ -6,6 +6,7 @@ using TouhouCardEngine.Interfaces;
 using System.Linq;
 using MongoDB.Bson;
 using NitoriNetwork.Common;
+using TouhouCardEngine;
 
 namespace Game
 {
