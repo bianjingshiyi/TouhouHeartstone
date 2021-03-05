@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Xml;
+using System.Text.RegularExpressions;
 
 namespace IGensoukyo.Utilities
 {
@@ -10,6 +12,33 @@ namespace IGensoukyo.Utilities
             if (comp == null)
                 comp = go.AddComponent<T>();
             return comp;
+        }
+
+        public static string HTMLToUnityText(string original)
+        {
+            Regex headerReg = new Regex("<head>.*</head>");
+            var result = headerReg.Replace(original, "");
+            result = result.Replace("<br>", "\n");
+            result = result.Replace("</br>", "\n");
+            result = result.Replace("<p>", "");
+            result = result.Replace("</p>", "");
+            result = result.Replace("<strong>", "<b>");
+            result = result.Replace("</strong>", "</b>");
+            result = result.Replace("<h1>", "<b>");
+            result = result.Replace("</h1>", "</b>");
+            result = result.Replace("<h2>", "<b>");
+            result = result.Replace("</h2>", "</b>");
+            result = result.Replace("<h3>", "");
+            result = result.Replace("</h3>", "");
+            result = result.Replace("<h4>", "");
+            result = result.Replace("</h4>", "");
+            result = result.Replace("<ul>", "");
+            result = result.Replace("<ol>", "");
+            result = result.Replace("<li>", "· ");
+            result = result.Replace("</li>", "");
+            result = result.Replace("</ul>", "");
+            result = result.Replace("</ol>", "");
+            return result;
         }
     }
 }

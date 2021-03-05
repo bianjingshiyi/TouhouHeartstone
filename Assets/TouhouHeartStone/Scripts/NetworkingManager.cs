@@ -103,6 +103,10 @@ namespace Game
                 mainUI.RegisterPanel.setCaptcha(await getCaptchaImage());
             });
             mainUI.RegisterPanel.RegisterButtonBlack.asButton.onClick.AddListener(onRegisterClick);
+            mainUI.RegisterPanel.OnShowEULAClick += async () => {
+                var content = await client.GetEULAAndPrivacyPolicy();
+                mainUI.EULAPanel.Show(IGensoukyo.Utilities.Utilities.HTMLToUnityText(content));
+            };
             mainUI.RegisterPanel.hide();
             mainUI.LoginPanel.OnRegisterClick += async () =>
             {

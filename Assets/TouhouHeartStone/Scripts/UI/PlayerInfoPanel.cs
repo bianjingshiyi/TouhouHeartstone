@@ -135,6 +135,13 @@ namespace UI
         {
             CaptchaImageButton.image.sprite = sprite;
         }
+
+        public event Action OnShowEULAClick;
+
+        public void onShowEULAClick()
+        {
+            OnShowEULAClick?.Invoke();
+        }
     }
     partial class RecoverPanel
     {

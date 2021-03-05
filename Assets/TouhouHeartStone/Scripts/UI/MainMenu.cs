@@ -5,6 +5,11 @@ namespace UI
 {
     partial class MainMenu
     {
+        [SerializeField]
+        EULAPanel _eulaPanel;
+
+        public EULAPanel EULAPanel => _eulaPanel;
+
         Main main => GetComponentInParent<Main>();
         partial void onAwake()
         {
