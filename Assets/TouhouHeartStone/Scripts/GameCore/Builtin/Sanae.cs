@@ -182,20 +182,13 @@ namespace TouhouHeartstone.Builtin
                 await target.heal(game,card,8);
                 await target.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,(g,c,a)=>
                       {
-                          return a.player == c.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
+                          return a.player == card.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
                       },null,async(g,c,a)=>
                       {
                             await target.heal(game,card,4);
+                            await target.removeBuff(game, ID);
                       }),
-                      new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.FIELD,(g,c,a)=>
-                      {
-                          return a.player == card.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
-                      },ID),
-                      new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.MASTER,(g,c,a)=>
-                      {
-                          return a.player == card.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
-                      },ID),
-                      new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.FIELD,(g,c,a)=>
+                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.FIELD,(g,c,a)=>
                       {
                           return a.player == card.getOwner();
                       },ID),
@@ -320,7 +313,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel, KEYWORD.RUSH };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectAfter<THHCard.HealEventArg>(PILE.FIELD, (game, card, arg) =>
@@ -869,7 +862,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 
+    /// 妖力掠夺
     /// </summary>
     public class YoukaiPowerSpoiler : SpellCardDefine
     {
@@ -886,10 +879,9 @@ namespace TouhouHeartstone.Builtin
             },PileFlag.both | PileFlag.field)
         };
     }
-
-    //27
+    
     /// <summary>
-    /// 
+    /// 守矢分社
     /// </summary>
     public class LittleShrine : ServantCardDefine
     {
@@ -899,8 +891,6 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 2;
 
-        //public override string[] tags { get; set; } = { TAG.BEAST };
-        // public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD, (g, c, a) =>
@@ -918,6 +908,9 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
+    /// <summary>
+    /// 忘却之祭仪
+    /// </summary>
     public class ForgottenRecrption : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x028;
@@ -933,7 +926,9 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
-
+    /// <summary>
+    /// 御神签炸弹
+    /// </summary>
     public class OmikujiBomb : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x029;
