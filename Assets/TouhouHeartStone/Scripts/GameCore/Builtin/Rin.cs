@@ -360,7 +360,7 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 3; i++)
             {
-                var reborn = await card.getOwner().reborn(game, card.getOwner().grave.Where(c => c.hasKeyword(game, KEYWORD._DeathRattle) && c.isServant()).random(game), card.getOwner().field);
+                var reborn = await card.getOwner().reborn(game, card.getOwner().grave.Where(c => c.hasDeathRattle(game) && c.isServant()).random(game), card.getOwner().field);
                 if (reborn != null)
                 {
                     await reborn.card.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g, c, a) =>
