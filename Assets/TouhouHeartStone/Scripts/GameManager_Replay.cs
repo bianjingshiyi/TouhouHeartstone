@@ -13,7 +13,7 @@ namespace Game
             THHGame game = createGame(replay.option, replay.players.Select(p =>
             {
                 RoomPlayerInfo player = new RoomPlayerInfo();
-                player.setDeck();
+                //player.setDeck();
                 return player;
             }));
             localPlayer = game.players.First();
