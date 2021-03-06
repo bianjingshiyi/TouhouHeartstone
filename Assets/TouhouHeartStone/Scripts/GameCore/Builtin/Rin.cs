@@ -416,7 +416,10 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 3; i++)
             {
-                await game.getOpponent(card.getOwner()).grave.moveTo(game, game.getOpponent(card.getOwner()).grave.top, card.getOwner().grave);
+                if(game.getOpponent(card.getOwner()).grave.Any(c => c.isServant()))
+                {
+                    await game.getOpponent(card.getOwner()).grave.moveTo(game, game.getOpponent(card.getOwner()).grave.Where(c => c.isServant()).Last(), card.getOwner().grave);
+                }
             }
 
         }
