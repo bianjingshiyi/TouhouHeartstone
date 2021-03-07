@@ -10,218 +10,198 @@
 
 namespace UI
 {
+    using BJSYGameCore.AutoCompo;
     using System;
-    using UnityEngine;
     using UnityEngine.UI;
-    using BJSYGameCore.UI;
+    using UI;
     
-    public partial class MainMenu : UIObject
+    [AutoCompoAttribute(18786)]
+    public partial class MainMenu
     {
-        protected override void Awake()
+        public void autoInit()
         {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
+            this._ButtonsVerticalLayoutGroup = this.transform.Find(PATH_BUTTONSVERTICALLAYOUTGROUP).GetComponent<VerticalLayoutGroup>();
+            this._ManMachineButtonButtonBlack = this.transform.Find(PATH_MANMACHINEBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
+            this._NetworkButtonButtonBlack = this.transform.Find(PATH_NETWORKBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
+            this._LobbyButtonButtonBlack = this.transform.Find(PATH_LOBBYBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
+            this._BuildButtonButtonBlack = this.transform.Find(PATH_BUILDBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
+            this._SettingButtonButtonBlack = this.transform.Find(PATH_SETTINGBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
+            this._AboutButtonButtonBlack = this.transform.Find(PATH_ABOUTBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
+            this._QuitButtonButtonBlack = this.transform.Find(PATH_QUITBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
+            this._LogoImage = this.transform.Find(PATH_LOGOIMAGE).GetComponent<Image>();
+            this._RegisterPanel = this.transform.Find(PATH_REGISTERPANEL).GetComponent<RegisterPanel>();
+            this._LoginPanel = this.transform.Find(PATH_LOGINPANEL).GetComponent<LoginPanel>();
+            this._RecoverPanel = this.transform.Find(PATH_RECOVERPANEL).GetComponent<RecoverPanel>();
+            this._PlayerInfoPanel = this.transform.Find(PATH_PLAYERINFOPANEL).GetComponent<PlayerInfoPanel>();
         }
-        public void autoBind()
-        {
-            this._ButtonPanelImage = this.transform.Find("ButtonPanel").GetComponent<Image>();
-            this._ButtonsVerticalLayoutGroup = this.transform.Find("ButtonPanel").Find("Buttons").GetComponent<VerticalLayoutGroup>();
-            this._ManMachineButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("ManMachineButton").GetComponent<ButtonBlack>();
-            this._NetworkButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("NetworkButton").GetComponent<ButtonBlack>();
-            this._LobbyButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("LobbyButton").GetComponent<ButtonBlack>();
-            this._BuildButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<ButtonBlack>();
-            this._SettingButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("SettingButton").GetComponent<ButtonBlack>();
-            this._AboutButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<ButtonBlack>();
-            this._QuitButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<ButtonBlack>();
-            this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
-            this._RegisterPanel = this.transform.Find("RegisterPanel").GetComponent<RegisterPanel>();
-            this._LoginPanel = this.transform.Find("LoginPanel").GetComponent<LoginPanel>();
-            this._RecoverPanel = this.transform.Find("RecoverPanel").GetComponent<RecoverPanel>();
-            this._PlayerInfoPanel = this.transform.Find("PlayerInfoPanel").GetComponent<PlayerInfoPanel>();
-        }
-        [SerializeField()]
-        private Image _ButtonPanelImage;
-        public Image ButtonPanelImage
-        {
-            get
-            {
-                if ((this._ButtonPanelImage == null))
-                {
-                    this._ButtonPanelImage = this.transform.Find("ButtonPanel").GetComponent<Image>();
-                }
-                return this._ButtonPanelImage;
-            }
-        }
-        [SerializeField()]
-        private VerticalLayoutGroup _ButtonsVerticalLayoutGroup;
-        public VerticalLayoutGroup ButtonsVerticalLayoutGroup
+        public VerticalLayoutGroup _ButtonsVerticalLayoutGroup;
+        public const string PATH_BUTTONSVERTICALLAYOUTGROUP = "ButtonPanel/Buttons";
+        public VerticalLayoutGroup buttonsVerticalLayoutGroup
         {
             get
             {
                 if ((this._ButtonsVerticalLayoutGroup == null))
                 {
-                    this._ButtonsVerticalLayoutGroup = this.transform.Find("ButtonPanel").Find("Buttons").GetComponent<VerticalLayoutGroup>();
+                    this._ButtonsVerticalLayoutGroup = this.transform.Find(PATH_BUTTONSVERTICALLAYOUTGROUP).GetComponent<VerticalLayoutGroup>();
                 }
                 return this._ButtonsVerticalLayoutGroup;
             }
         }
-        [SerializeField()]
-        private ButtonBlack _ManMachineButtonButtonBlack;
-        public ButtonBlack ManMachineButtonButtonBlack
+        public ButtonBlack _ManMachineButtonButtonBlack;
+        public const string PATH_MANMACHINEBUTTONBUTTONBLACK = "ButtonPanel/Buttons/ManMachineButton";
+        public ButtonBlack manMachineButtonButtonBlack
         {
             get
             {
                 if ((this._ManMachineButtonButtonBlack == null))
                 {
-                    this._ManMachineButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("ManMachineButton").GetComponent<ButtonBlack>();
+                    this._ManMachineButtonButtonBlack = this.transform.Find(PATH_MANMACHINEBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
                 }
                 return this._ManMachineButtonButtonBlack;
             }
         }
-        [SerializeField()]
-        private ButtonBlack _NetworkButtonButtonBlack;
-        public ButtonBlack NetworkButtonButtonBlack
+        public ButtonBlack _NetworkButtonButtonBlack;
+        public const string PATH_NETWORKBUTTONBUTTONBLACK = "ButtonPanel/Buttons/NetworkButton";
+        public ButtonBlack networkButtonButtonBlack
         {
             get
             {
                 if ((this._NetworkButtonButtonBlack == null))
                 {
-                    this._NetworkButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("NetworkButton").GetComponent<ButtonBlack>();
+                    this._NetworkButtonButtonBlack = this.transform.Find(PATH_NETWORKBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
                 }
                 return this._NetworkButtonButtonBlack;
             }
         }
-        [SerializeField()]
-        private ButtonBlack _LobbyButtonButtonBlack;
-        public ButtonBlack LobbyButtonButtonBlack
+        public ButtonBlack _LobbyButtonButtonBlack;
+        public const string PATH_LOBBYBUTTONBUTTONBLACK = "ButtonPanel/Buttons/LobbyButton";
+        public ButtonBlack lobbyButtonButtonBlack
         {
             get
             {
                 if ((this._LobbyButtonButtonBlack == null))
                 {
-                    this._LobbyButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("LobbyButton").GetComponent<ButtonBlack>();
+                    this._LobbyButtonButtonBlack = this.transform.Find(PATH_LOBBYBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
                 }
                 return this._LobbyButtonButtonBlack;
             }
         }
-        [SerializeField()]
-        private ButtonBlack _BuildButtonButtonBlack;
-        public ButtonBlack BuildButtonButtonBlack
+        public ButtonBlack _BuildButtonButtonBlack;
+        public const string PATH_BUILDBUTTONBUTTONBLACK = "ButtonPanel/Buttons/BuildButton";
+        public ButtonBlack buildButtonButtonBlack
         {
             get
             {
                 if ((this._BuildButtonButtonBlack == null))
                 {
-                    this._BuildButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("BuildButton").GetComponent<ButtonBlack>();
+                    this._BuildButtonButtonBlack = this.transform.Find(PATH_BUILDBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
                 }
                 return this._BuildButtonButtonBlack;
             }
         }
-        [SerializeField()]
-        private ButtonBlack _SettingButtonButtonBlack;
-        public ButtonBlack SettingButtonButtonBlack
+        public ButtonBlack _SettingButtonButtonBlack;
+        public const string PATH_SETTINGBUTTONBUTTONBLACK = "ButtonPanel/Buttons/SettingButton";
+        public ButtonBlack settingButtonButtonBlack
         {
             get
             {
                 if ((this._SettingButtonButtonBlack == null))
                 {
-                    this._SettingButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("SettingButton").GetComponent<ButtonBlack>();
+                    this._SettingButtonButtonBlack = this.transform.Find(PATH_SETTINGBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
                 }
                 return this._SettingButtonButtonBlack;
             }
         }
-        [SerializeField()]
-        private ButtonBlack _AboutButtonButtonBlack;
-        public ButtonBlack AboutButtonButtonBlack
+        public ButtonBlack _AboutButtonButtonBlack;
+        public const string PATH_ABOUTBUTTONBUTTONBLACK = "ButtonPanel/Buttons/AboutButton";
+        public ButtonBlack aboutButtonButtonBlack
         {
             get
             {
                 if ((this._AboutButtonButtonBlack == null))
                 {
-                    this._AboutButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("AboutButton").GetComponent<ButtonBlack>();
+                    this._AboutButtonButtonBlack = this.transform.Find(PATH_ABOUTBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
                 }
                 return this._AboutButtonButtonBlack;
             }
         }
-        [SerializeField()]
-        private ButtonBlack _QuitButtonButtonBlack;
-        public ButtonBlack QuitButtonButtonBlack
+        public ButtonBlack _QuitButtonButtonBlack;
+        public const string PATH_QUITBUTTONBUTTONBLACK = "ButtonPanel/Buttons/QuitButton";
+        public ButtonBlack quitButtonButtonBlack
         {
             get
             {
                 if ((this._QuitButtonButtonBlack == null))
                 {
-                    this._QuitButtonButtonBlack = this.transform.Find("ButtonPanel").Find("Buttons").Find("QuitButton").GetComponent<ButtonBlack>();
+                    this._QuitButtonButtonBlack = this.transform.Find(PATH_QUITBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
                 }
                 return this._QuitButtonButtonBlack;
             }
         }
-        [SerializeField()]
-        private Image _LogoImage;
-        public Image LogoImage
+        public Image _LogoImage;
+        public const string PATH_LOGOIMAGE = "Logo";
+        public Image logoImage
         {
             get
             {
                 if ((this._LogoImage == null))
                 {
-                    this._LogoImage = this.transform.Find("Logo").GetComponent<Image>();
+                    this._LogoImage = this.transform.Find(PATH_LOGOIMAGE).GetComponent<Image>();
                 }
                 return this._LogoImage;
             }
         }
-        [SerializeField()]
-        private RegisterPanel _RegisterPanel;
-        public RegisterPanel RegisterPanel
+        public RegisterPanel _RegisterPanel;
+        public const string PATH_REGISTERPANEL = "RegisterPanel";
+        public RegisterPanel registerPanel
         {
             get
             {
                 if ((this._RegisterPanel == null))
                 {
-                    this._RegisterPanel = this.transform.Find("RegisterPanel").GetComponent<RegisterPanel>();
+                    this._RegisterPanel = this.transform.Find(PATH_REGISTERPANEL).GetComponent<RegisterPanel>();
                 }
                 return this._RegisterPanel;
             }
         }
-        [SerializeField()]
-        private LoginPanel _LoginPanel;
-        public LoginPanel LoginPanel
+        public LoginPanel _LoginPanel;
+        public const string PATH_LOGINPANEL = "LoginPanel";
+        public LoginPanel loginPanel
         {
             get
             {
                 if ((this._LoginPanel == null))
                 {
-                    this._LoginPanel = this.transform.Find("LoginPanel").GetComponent<LoginPanel>();
+                    this._LoginPanel = this.transform.Find(PATH_LOGINPANEL).GetComponent<LoginPanel>();
                 }
                 return this._LoginPanel;
             }
         }
-        [SerializeField()]
-        private RecoverPanel _RecoverPanel;
-        public RecoverPanel RecoverPanel
+        public RecoverPanel _RecoverPanel;
+        public const string PATH_RECOVERPANEL = "RecoverPanel";
+        public RecoverPanel recoverPanel
         {
             get
             {
                 if ((this._RecoverPanel == null))
                 {
-                    this._RecoverPanel = this.transform.Find("RecoverPanel").GetComponent<RecoverPanel>();
+                    this._RecoverPanel = this.transform.Find(PATH_RECOVERPANEL).GetComponent<RecoverPanel>();
                 }
                 return this._RecoverPanel;
             }
         }
-        [SerializeField()]
-        private PlayerInfoPanel _PlayerInfoPanel;
-        public PlayerInfoPanel PlayerInfoPanel
+        public PlayerInfoPanel _PlayerInfoPanel;
+        public const string PATH_PLAYERINFOPANEL = "PlayerInfoPanel";
+        public PlayerInfoPanel playerInfoPanel
         {
             get
             {
                 if ((this._PlayerInfoPanel == null))
                 {
-                    this._PlayerInfoPanel = this.transform.Find("PlayerInfoPanel").GetComponent<PlayerInfoPanel>();
+                    this._PlayerInfoPanel = this.transform.Find(PATH_PLAYERINFOPANEL).GetComponent<PlayerInfoPanel>();
                 }
                 return this._PlayerInfoPanel;
             }
         }
-        partial void onAwake();
     }
 }

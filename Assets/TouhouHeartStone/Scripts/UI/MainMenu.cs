@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UI
 {
-    partial class MainMenu
+    partial class MainMenu : UIObject
     {
         [SerializeField]
         EULAPanel _eulaPanel;
@@ -11,24 +11,26 @@ namespace UI
         public EULAPanel EULAPanel => _eulaPanel;
 
         Main main => GetComponentInParent<Main>();
-        partial void onAwake()
+        protected override void Awake()
         {
-            BuildButtonButtonBlack.asButton.onClick.AddListener(() =>
+            base.Awake();
+            autoInit();
+            buildButtonButtonBlack.asButton.onClick.AddListener(() =>
             {
                 main.display(main.Build);
             });
-            QuitButtonButtonBlack.asButton.onClick.AddListener(() =>
+            quitButtonButtonBlack.asButton.onClick.AddListener(() =>
             {
                 Application.Quit();
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
 #endif
             });
-            AboutButtonButtonBlack.asButton.onClick.AddListener(() =>
+            aboutButtonButtonBlack.asButton.onClick.AddListener(() =>
             {
                 main.display(main.AboutPage);
             });
-            SettingButtonButtonBlack.asButton.onClick.AddListener(() =>
+            settingButtonButtonBlack.asButton.onClick.AddListener(() =>
             {
                 main.display(main.SettingPage);
             });

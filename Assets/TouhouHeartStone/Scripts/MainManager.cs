@@ -47,13 +47,13 @@ namespace Game
             base.onAwake();
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             Main main = ui.getObject<Main>();
-            main.MainMenu.ManMachineButtonButtonBlack.asButton.onClick.set(showLocalRoom);
-            main.MainMenu.NetworkButtonButtonBlack.asButton.onClick.set(() =>
+            main.MainMenu.manMachineButtonButtonBlack.asButton.onClick.set(showLocalRoom);
+            main.MainMenu.networkButtonButtonBlack.asButton.onClick.set(() =>
             {
                 main.display(main.NetworkingPage);
                 _ = network.displayPanelForLAN();
             });
-            main.MainMenu.LobbyButtonButtonBlack.asButton.onClick.set(() =>
+            main.MainMenu.lobbyButtonButtonBlack.asButton.onClick.set(() =>
             {
                 if (network.client.account != null)
                 {
@@ -62,8 +62,8 @@ namespace Game
                 }
                 else
                 {
-                    main.MainMenu.RegisterPanel.hide();
-                    main.MainMenu.LoginPanel.display();
+                    main.MainMenu.registerPanel.hide();
+                    main.MainMenu.loginPanel.display();
                 }
             });
             main.display(main.Loading);
