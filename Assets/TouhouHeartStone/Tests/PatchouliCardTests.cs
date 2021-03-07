@@ -37,6 +37,15 @@ namespace Tests
         //    Assert.AreEqual(-2, game.sortedPlayers[1].master.getCurrentLife(game) - preLife);
 
         //}
+        [Test]
+        public void SummerFireTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo, Patchouli.ID);
+            game.skipUntilCanUse<SummerFire>(you);
+            you.cmdUse(game, you.skill, 0, oppo.master);
+            Assert.AreEqual(oppo.master.getLife(game)-1, oppo.master.getCurrentLife(game));
+            game.Dispose();
+        }
 
         [Test]
         public void BestMagicTest()
