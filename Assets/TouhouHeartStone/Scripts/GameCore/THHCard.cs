@@ -535,6 +535,7 @@ namespace TouhouHeartstone
                         await effect.onDisable(game, card, null);
                     }
                     await card.setKeywords(game, new string[0]);
+                    
                 }
             });
         }
@@ -827,6 +828,18 @@ namespace TouhouHeartstone
                 await card.setTags(game, servant.tags);
                 await card.setReady(game, false);
                 await card.setAttackTimes(game, 0);
+
+                if(card.getProp<bool>(game, PROPERTY.SILENCE))
+                {
+                    await card.setProp<bool>(game, PROPERTY.SILENCE, false);
+                }
+
+                foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
+                {
+                    await effect.onEnable(game, card, null);
+                }
+
+
             }
             else if (card.define is SpellCardDefine spell)
             {
