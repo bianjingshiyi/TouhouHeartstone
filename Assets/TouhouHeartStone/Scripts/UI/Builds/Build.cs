@@ -46,9 +46,6 @@ namespace UI
         bool deckChanged { get; set; } = false;
 
         [TranslateMsg]
-        const string HINT_TITLE = "提示";
-
-        [TranslateMsg]
         const string PILE_NOT_SAVE = "卡组尚未保存，退出后现有变更将丢失。\n是否退出？";
 
         void onBackBtnClick()
@@ -57,7 +54,7 @@ namespace UI
 
             if (deckChanged)
             {
-                UIDialog.ShowQuestion(lang._(HINT_TITLE), lang._(PILE_NOT_SAVE), () =>
+                UIDialog.ShowQuestion(lang._(StringTable.HINT_TITLE), lang._(PILE_NOT_SAVE), () =>
                 {
                     main.display(main.MainMenu);
                 });
@@ -79,7 +76,7 @@ namespace UI
             // 卡组保存
             if (BuildDeckList.Select(i => i.count).Sum() < 30)
             {
-                UIDialog.ShowQuestion(lang._(HINT_TITLE), lang._(PILE_NOT_COMPLETE), () =>
+                UIDialog.ShowQuestion(lang._(StringTable.HINT_TITLE), lang._(PILE_NOT_COMPLETE), () =>
                 {
                     saveToDeck(currentDeckID);
                     uiModeSwitch(true);
@@ -118,7 +115,7 @@ namespace UI
             outputString += Convert.ToBase64String(gzipCompress(dataBytes));
             GUIUtility.systemCopyBuffer = outputString;
 
-            UIDialog.ShowConfirm(lang._(HINT_TITLE), lang._(PILE_EXPORTED), null);
+            UIDialog.ShowConfirm(lang._(StringTable.HINT_TITLE), lang._(PILE_EXPORTED), null);
         }
 
         [TranslateMsg]
@@ -249,7 +246,7 @@ namespace UI
             // 卡组保存
             if (currentDeckCards.Count < 30)
             {
-                UIDialog.ShowQuestion(lang._(HINT_TITLE), lang._(PILE_NOT_COMPLETE_EXPORT), () =>
+                UIDialog.ShowQuestion(lang._(StringTable.HINT_TITLE), lang._(PILE_NOT_COMPLETE_EXPORT), () =>
                 {
                     exportDeck();
                 });
