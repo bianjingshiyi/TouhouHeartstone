@@ -23,8 +23,9 @@ namespace UI
         }
         public void SetPlayerInfo(PublicBasicUserInfo info)
         {
-            if (info == null)
+            if (info == null || info.UID >= 1000000000)
             {
+                // 未登录或是游客状态
                 toggleLoginStatus(false);
             }
             else

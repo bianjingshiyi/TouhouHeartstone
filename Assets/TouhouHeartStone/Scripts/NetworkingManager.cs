@@ -484,7 +484,15 @@ namespace Game
             lanPanel.CreateRoomButtonButtonBlack.asButton.onClick.set(async () =>
             {
                 lanPanel.LoadingPanelImage.gameObject.SetActive(true);
-                await createRoom();
+                try
+                {
+                    await createRoom();
+                } 
+                catch (NetClientException e)
+                {
+                    lanPanel.LoadingPanelImage.gameObject.SetActive(false);
+                    getManager<UIManager>().getObject<UIDialog>().ShowConfirm("错误", e.Message, null);
+                }
             });
             lanPanel.ReturnBtnButtonBlack.asButton.onClick.AddListener(() =>
             {
