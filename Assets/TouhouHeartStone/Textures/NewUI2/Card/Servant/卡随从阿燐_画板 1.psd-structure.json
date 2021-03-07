@@ -1,0 +1,13 @@
+{"type":"root","options":{
+
+},"size":{"width":900,"height":1263},"children":[{"name":"图层 33_复制","type":"group","options":{
+
+},"offset":{"left":37,"top":39},"size":{"width":589,"height":1108},"relativePath":"图层 33_复制","children":[{"name":"RinDecroTop","type":"png","options":{
+
+},"offset":{"left":89,"top":106},"size":{"width":242,"height":548},"relativePath":"图层 33_复制/RinDecroTop","children":[
+
+]},{"name":"RinDecroButton","type":"png","options":{
+
+},"offset":{"left":37,"top":39},"size":{"width":589,"height":1108},"relativePath":"图层 33_复制/RinDecroButton","children":[
+
+]}]}]}

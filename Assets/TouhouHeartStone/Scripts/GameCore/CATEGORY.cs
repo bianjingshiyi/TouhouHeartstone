@@ -19,6 +19,11 @@ namespace TouhouHeartstone
         public const int SPELL = 0x00003000;
         public const int ITEM = 0x00004000;
         public const int CHARACTER_NEUTRAL = 0x00000000;
+        public const int CHARACTER_RIN = 0x00700000;
+        public const int CHARACTER_YOUMU = 0x00500000;
+        public const int CHARACTER_SANAE = 0x00300000;
+        public const int CHARACTER_PATCHOULI = 0x00400000;
+        public const int CHARACTER_REISEN = 0x00600000;
 
         public const int TOKEN = 0x00000800;
 

@@ -1,0 +1,13 @@
+{"type":"root","options":{
+
+},"size":{"width":900,"height":1263},"children":[{"name":"图层 33_复制","type":"group","options":{
+
+},"offset":{"left":11,"top":32},"size":{"width":666,"height":1116},"relativePath":"图层 33_复制","children":[{"name":"ReisenDecroButtom","type":"png","options":{
+
+},"offset":{"left":62,"top":106},"size":{"width":250,"height":672},"relativePath":"图层 33_复制/ReisenDecroButtom","children":[
+
+]},{"name":"ReisenDecroTop","type":"png","options":{
+
+},"offset":{"left":11,"top":32},"size":{"width":666,"height":1116},"relativePath":"图层 33_复制/ReisenDecroTop","children":[
+
+]}]}]}

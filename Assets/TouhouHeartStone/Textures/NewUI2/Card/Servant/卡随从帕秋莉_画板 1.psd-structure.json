@@ -1,0 +1,13 @@
+{"type":"root","options":{
+
+},"size":{"width":900,"height":1263},"children":[{"name":"图层 33_复制","type":"group","options":{
+
+},"offset":{"left":23,"top":34},"size":{"width":623,"height":1113},"relativePath":"图层 33_复制","children":[{"name":"PatchouliDecroButtom","type":"png","options":{
+
+},"offset":{"left":83,"top":106},"size":{"width":249,"height":485},"relativePath":"图层 33_复制/PatchouliDecroButtom","children":[
+
+]},{"name":"PatchouliDecroTop","type":"png","options":{
+
+},"offset":{"left":23,"top":34},"size":{"width":623,"height":1113},"relativePath":"图层 33_复制/PatchouliDecroTop","children":[
+
+]}]}]}
