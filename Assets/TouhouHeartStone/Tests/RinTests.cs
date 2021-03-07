@@ -353,6 +353,7 @@ namespace Tests
             game.Dispose();
         }
 
+        [Test]
         public void HellTrafficAccidentTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo, Rin.ID,
@@ -360,7 +361,7 @@ namespace Tests
             game.skipUntilCanUse<HellTrafficAccident>(you);
             you.cmdUse<HellTrafficAccident>(game);
             Assert.AreEqual(0, oppo.grave.count);
-            Assert.AreEqual(0, you.grave.count);
+            Assert.AreEqual(1, you.grave.count);
             for (int i = 0; i < 3; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
@@ -372,7 +373,7 @@ namespace Tests
             Assert.AreEqual(3, oppo.grave.count);
             game.skipUntilCanUse<HellTrafficAccident>(you);
             you.cmdUse<HellTrafficAccident>(game);
-            Assert.AreEqual(3, you.grave.count);
+            Assert.AreEqual(5, you.grave.count);
             Assert.AreEqual(you, you.grave[0].getOwner());
             game.Dispose();
         }
