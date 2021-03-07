@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace IGensoukyo.Utilities
 {
     [ExecuteInEditMode]
-    class UITextExtended : Text
+    public class UITextExtended : Text
     {
         [Header("Extended")]
         [SerializeField]

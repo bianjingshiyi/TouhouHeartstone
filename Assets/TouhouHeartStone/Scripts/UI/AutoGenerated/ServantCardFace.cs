@@ -16,116 +16,138 @@ namespace UI
     using System;
     using UnityEngine.UI;
     using UI;
+    using IGensoukyo.Utilities;
     
-    [AutoCompoAttribute(21648)]
+    [AutoCompoAttribute(23164)]
     public partial class ServantCardFace : UIObject
     {
-        public void init()
+        public void autoInit()
         {
-            this._image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
-            this._attackPropNumber = this.transform.findByPath("./AttackPropNumber").GetComponent<PropNumber>();
-            this._lifePropNumber = this.transform.findByPath("./LifePropNumber").GetComponent<PropNumber>();
-            this._costPropNumber = this.transform.findByPath("./CostPropNumber").GetComponent<PropNumber>();
-            this._nameText = this.transform.findByPath("./Name").GetComponent<Text>();
-            this._subNameText = this.transform.findByPath("./SubName").GetComponent<Text>();
-            this._descText = this.transform.findByPath("./DescText").GetComponent<Text>();
+            this._image = this.transform.Find(PATH_IMAGE).GetComponent<Image>();
+            this._attackPropNumber = this.transform.Find(PATH_ATTACKPROPNUMBER).GetComponent<PropNumber>();
+            this._lifePropNumber = this.transform.Find(PATH_LIFEPROPNUMBER).GetComponent<PropNumber>();
+            this._costPropNumber = this.transform.Find(PATH_COSTPROPNUMBER).GetComponent<PropNumber>();
+            this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<Text>();
+            this._subNameText = this.transform.Find(PATH_SUBNAMETEXT).GetComponent<Text>();
+            this._asAnimator = this.transform.Find(PATH_ASANIMATOR).GetComponent<Animator>();
+            this._descTextUI = this.transform.Find(PATH_DESCTEXTUI).GetComponent<UITextExtended>();
         }
         [SerializeField()]
-        [AutoCompoAttribute(21206, "./Mask/Image")]
-        private Image _image;
+        public Image _image;
+        public const string PATH_IMAGE = "Mask/Image";
         public Image image
         {
             get
             {
                 if ((this._image == null))
                 {
-                    this._image = this.transform.findByPath("./Mask/Image").GetComponent<Image>();
+                    this._image = this.transform.Find(PATH_IMAGE).GetComponent<Image>();
                 }
                 return this._image;
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(21178, "./AttackPropNumber")]
-        private PropNumber _attackPropNumber;
+        public PropNumber _attackPropNumber;
+        public const string PATH_ATTACKPROPNUMBER = "AttackPropNumber";
         public PropNumber attackPropNumber
         {
             get
             {
                 if ((this._attackPropNumber == null))
                 {
-                    this._attackPropNumber = this.transform.findByPath("./AttackPropNumber").GetComponent<PropNumber>();
+                    this._attackPropNumber = this.transform.Find(PATH_ATTACKPROPNUMBER).GetComponent<PropNumber>();
                 }
                 return this._attackPropNumber;
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(21140, "./LifePropNumber")]
-        private PropNumber _lifePropNumber;
+        public PropNumber _lifePropNumber;
+        public const string PATH_LIFEPROPNUMBER = "LifePropNumber";
         public PropNumber lifePropNumber
         {
             get
             {
                 if ((this._lifePropNumber == null))
                 {
-                    this._lifePropNumber = this.transform.findByPath("./LifePropNumber").GetComponent<PropNumber>();
+                    this._lifePropNumber = this.transform.Find(PATH_LIFEPROPNUMBER).GetComponent<PropNumber>();
                 }
                 return this._lifePropNumber;
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(21160, "./CostPropNumber")]
-        private PropNumber _costPropNumber;
+        public PropNumber _costPropNumber;
+        public const string PATH_COSTPROPNUMBER = "CostPropNumber";
         public PropNumber costPropNumber
         {
             get
             {
                 if ((this._costPropNumber == null))
                 {
-                    this._costPropNumber = this.transform.findByPath("./CostPropNumber").GetComponent<PropNumber>();
+                    this._costPropNumber = this.transform.Find(PATH_COSTPROPNUMBER).GetComponent<PropNumber>();
                 }
                 return this._costPropNumber;
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(21152, "./Name")]
-        private Text _nameText;
+        public Text _nameText;
+        public const string PATH_NAMETEXT = "Name";
         public Text nameText
         {
             get
             {
                 if ((this._nameText == null))
                 {
-                    this._nameText = this.transform.findByPath("./Name").GetComponent<Text>();
+                    this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<Text>();
                 }
                 return this._nameText;
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(21166, "./SubName")]
-        private Text _subNameText;
+        public Text _subNameText;
+        public const string PATH_SUBNAMETEXT = "SubName";
         public Text subNameText
         {
             get
             {
                 if ((this._subNameText == null))
                 {
-                    this._subNameText = this.transform.findByPath("./SubName").GetComponent<Text>();
+                    this._subNameText = this.transform.Find(PATH_SUBNAMETEXT).GetComponent<Text>();
                 }
                 return this._subNameText;
             }
         }
         [SerializeField()]
-        [AutoCompoAttribute(21194, "./DescText")]
-        private Text _descText;
-        public Text descText
+        public Animator _asAnimator;
+        public const string PATH_ASANIMATOR = "";
+        public Animator asAnimator
         {
             get
             {
-                if ((this._descText == null))
+                if ((this._asAnimator == null))
                 {
-                    this._descText = this.transform.findByPath("./DescText").GetComponent<Text>();
+                    this._asAnimator = this.transform.Find(PATH_ASANIMATOR).GetComponent<Animator>();
                 }
-                return this._descText;
+                return this._asAnimator;
+            }
+        }
+        public const string ANIM_PARAM_ISDEFINE = "isDefine";
+        public const string ANIM_PARAM_ISSANAE = "isSanae";
+        public const string ANIM_PARAM_ISYOUMU = "isYoumu";
+        public const string ANIM_PARAM_ISRIN = "isRin";
+        public const string ANIM_PARAM_ISPATCHOULI = "isPatchouli";
+        public const string ANIM_PARAM_ISREISEN = "isReisen";
+        [SerializeField()]
+        private UITextExtended _descTextUI;
+        public const string PATH_DESCTEXTUI = "DescText";
+        public UITextExtended descText
+        {
+            get
+            {
+                if ((this._descTextUI == null))
+                {
+                    this._descTextUI = this.transform.Find(PATH_DESCTEXTUI).GetComponent<UITextExtended>();
+                }
+                return this._descTextUI;
             }
         }
     }

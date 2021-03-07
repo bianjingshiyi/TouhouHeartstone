@@ -968,6 +968,7 @@ namespace Game
             if (card.define.type == DEFINE.SERVANT)
             {
                 ui.type = CATEGORY.SERVANT;
+                ui.servantCardFace.Charactertype = card.define.getCharacterID();
                 ui.servantCardFace.image.sprite = skin.image;
                 ui.servantCardFace.nameText.text = skin.name;
                 ui.servantCardFace.raceNameText.text = ""; // todo: 设置种族
