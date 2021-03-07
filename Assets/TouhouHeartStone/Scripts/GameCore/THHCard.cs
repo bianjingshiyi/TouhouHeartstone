@@ -834,10 +834,10 @@ namespace TouhouHeartstone
                     await card.setProp<bool>(game, PROPERTY.SILENCE, false);
                 }
 
-                foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
-                {
-                    await effect.onEnable(game, card, null);
-                }
+                // foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
+                // {
+                //     await effect.onEnable(game, card, null);
+                // }
 
 
             }
