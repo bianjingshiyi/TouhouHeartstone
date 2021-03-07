@@ -20,6 +20,7 @@ namespace Game
             ui.itemCardFace.image.sprite = skin.image;
             ui.servantCardFace.nameText.text = skin.name;
             ui.servantCardFace.subNameText.text = skin.subname;
+            ui.servantCardFace.raceNameText.text = ""; // todo: 设置种族
             ui.spellCardFace.nameText.text = skin.name;
             ui.itemCardFace.nameText.text = skin.name;
             ui.servantCardFace.descText.text = skin.desc;

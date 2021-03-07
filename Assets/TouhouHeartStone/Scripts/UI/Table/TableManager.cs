@@ -970,6 +970,7 @@ namespace Game
                 ui.type = CATEGORY.SERVANT;
                 ui.servantCardFace.image.sprite = skin.image;
                 ui.servantCardFace.nameText.text = skin.name;
+                ui.servantCardFace.raceNameText.text = ""; // todo: 设置种族
                 ui.servantCardFace.subNameText.text = skin.subname;
                 ui.servantCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
                 ui.servantCardFace.costPropNumber.text.text = card.getCost(game).ToString();
@@ -1006,6 +1007,7 @@ namespace Game
                 ui.type = CATEGORY.SERVANT;
                 ui.servantCardFace.image.sprite = skin.image;
                 ui.servantCardFace.nameText.text = skin.name;
+                ui.servantCardFace.raceNameText.text = ""; // todo: 设置种族
                 ui.servantCardFace.subNameText.text = skin.subname;
                 ui.servantCardFace.descText.text = skin.desc;
                 ui.servantCardFace.costPropNumber.text.text = cost.ToString();
