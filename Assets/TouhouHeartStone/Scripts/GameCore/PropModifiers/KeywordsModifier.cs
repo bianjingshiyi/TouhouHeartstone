@@ -30,7 +30,7 @@ namespace TouhouHeartstone
                 case ModifyType.remove:
                     return value != null ? value.Except(keywords).ToArray() : new string[0];
                 default:
-                    return value != null ? value.Where(v => !card.hasKeyword(game, v)).Union(keywords).ToArray() : keywords;
+                    return value != null ? value.Union(keywords).ToArray() : keywords;
             }
         }
         public override PropModifier clone()
