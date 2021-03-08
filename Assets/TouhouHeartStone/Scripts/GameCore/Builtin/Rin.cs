@@ -115,6 +115,7 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID,async(g1,c1,p)=>
             {
                 await g1.getOpponent(c1.getOwner()).master.damage(g1,c1,3);
+                await g1.updateDeath(g1);
             })
         };
     }
