@@ -159,14 +159,21 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            int count = card.getOwner().field.count;
-            for (int i = 0; i < count; i++)
+            Card[] field = card.getOwner().field.ToArray();
+            await field.setDead(game, true);
+            await game.updateDeath(game);
+            foreach (var c in field)
             {
-                Card c = card.getOwner().field[0];
-                await c.setDead(game, true);
-                await game.updateDeath(game);
-                await c.getOwner().reborn(game, c, c.getOwner().field, count);
+                await card.getOwner().reborn(game, c, c.getOwner().field);
             }
+            // int count = card.getOwner().field.count;
+            // for (int i = 0; i < count; i++)
+            // {
+            //     Card c = card.getOwner().field[0];
+            //     await c.setDead(game, true);
+            //     await game.updateDeath(game);
+            //     await c.getOwner().reborn(game, c, c.getOwner().field, count);
+            // }
 
         }
     }
