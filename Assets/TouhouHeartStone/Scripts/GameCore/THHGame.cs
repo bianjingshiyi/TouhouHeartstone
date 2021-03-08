@@ -100,7 +100,9 @@ namespace TouhouHeartstone
                 card.setCost(this, servant.cost);
                 card.setAttack(this, servant.attack);
                 card.setLife(this, servant.life);
+                card.setCurrentLife(this, servant.life);
                 card.setSpellDamage(this, servant.spellDamage);
+                
                 foreach (string keyword in servant.keywords)
                 {
                     if (string.IsNullOrEmpty(keyword))
