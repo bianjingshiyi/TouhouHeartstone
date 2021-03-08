@@ -195,7 +195,7 @@ namespace TouhouHeartstone.Builtin
         {
             new SecretTriggerBefore<THHPlayer.UseEventArg>((g,c,a)=>
             {
-                return a.card.getOwner() != c.getOwner()  && a.card.isSpell() && a.card.define.getActiveEffect() is ITargetEffect ;
+                return a.card.getOwner() != c.getOwner()  && a.card.isSpell() && a.card.define.getActiveEffect() is ITargetEffect &&  a.card.getAvaliableTargets(g).Where(target => !target.Equals(a.targets)) != null;
             },(g,c,a)=>
             {
                 Card[] range = a.card.getAvaliableTargets(g);
