@@ -599,7 +599,11 @@ namespace TouhouHeartstone
                     return;
                 game.logger.log(player + "复活" + arg.card.define.GetType().Name + "位于" + position);
                 await arg.player.grave.moveTo(game, arg.card, arg.pile, position);
-                await arg.card.resetCard(game);
+                foreach (IPassiveEffect effect in arg.card.define.effects.OfType<IPassiveEffect>())
+                {
+                    if (effect.piles.Contains(pile.name))
+                        await effect.onEnable(game, card, null);
+                }
             });
             return eventArg;
         }
