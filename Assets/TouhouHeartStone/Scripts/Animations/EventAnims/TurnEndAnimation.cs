@@ -12,11 +12,6 @@ namespace Game
             table.ui.TimeoutSlider.hide();
             table.closeDiscoverDialog();
             table.ui.TurnEndButton.interactable = false;
-            //设置武器关闭状态
-            table.ui.SelfItem?.onItemOff.invokeBeforeAnim();
-            table.ui.SelfItem?.onItemOff.invokeAfterAnim();
-            table.ui.EnemyItem?.onItemON.invokeBeforeAnim();
-            table.ui.EnemyItem?.onItemON.invokeAfterAnim();
 
             if (table.tryGetMaster(eventArg.player.master, out var master))
             {

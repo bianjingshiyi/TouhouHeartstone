@@ -41,11 +41,6 @@ namespace Game
                 return false;
             table.ui.TurnTipImage.hide();
             table.ui.TurnEndButton.interactable = eventArg.player == table.player;
-            //设置武器关闭状态
-            table.ui.EnemyItem?.onItemOff.invokeBeforeAnim();
-            table.ui.EnemyItem?.onItemOff.invokeAfterAnim();
-            table.ui.SelfItem?.onItemON.invokeBeforeAnim();
-            table.ui.SelfItem?.onItemON.invokeAfterAnim();
 
             return true;
         }

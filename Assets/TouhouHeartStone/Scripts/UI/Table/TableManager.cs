@@ -435,6 +435,8 @@ namespace Game
             if (card.getOwner() == player && game.currentPlayer == player && card.canAttack(game))
             {
                 // master.HighlightController = Master.Highlight.Green;
+                GetRelatedItem(card).onItemON.invokeBeforeAnim();
+                GetRelatedItem(card).onItemON.invokeAfterAnim();
                 master.onCanAttackTrue.invokeBeforeAnim();
                 master.onCanAttackTrue.invokeAfterAnim();
                 master.onClick.add(onClickMaster);
@@ -444,6 +446,8 @@ namespace Game
             else
             {
                 // master.HighlightController = Master.Highlight.None;
+                GetRelatedItem(card).onItemOff.invokeBeforeAnim();
+                GetRelatedItem(card).onItemOff.invokeAfterAnim();
                 master.onCanAttackFalse.invokeBeforeAnim();
                 master.onCanAttackFalse.invokeAfterAnim();
             }
@@ -466,6 +470,10 @@ namespace Game
                 master.onShackleFalse.invokeAfterAnim();
             }
         }
+
+        public Item GetRelatedItem(Card card) => card.owner == game.currentPlayer ? ui.SelfItem : ui.EnemyItem;
+        
+
         public bool tryGetItem(Card card, out Item item)
         {
             if (card == null)
