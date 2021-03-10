@@ -90,12 +90,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new Halo(new GeneratedBuff(ID, new KeywordsModifier(0,KEYWORD.CHARGE)),
-                 PileFlag.self | PileFlag.field,
-                 PileFlag.self | PileFlag.field,
-                 (g1, c1) =>
-                 {
-                     return true;
-                 })
+                 PileFlag.self | PileFlag.field)
         };
     }
 

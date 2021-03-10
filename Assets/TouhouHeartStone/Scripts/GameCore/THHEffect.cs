@@ -563,7 +563,11 @@ namespace TouhouHeartstone
                     else if (ranges.Contains(arg.from) && (filter == null || filter(game, arg.card)))
                     {
                         if (getBuffDic(game, card, buff).ContainsKey(arg.card))
+                        {
                             await arg.card.removeBuff(game, getBuffDic(game, card, buff)[arg.card]);
+                            getBuffDic(game, card, buff).Remove(arg.card);
+                        }
+                            
                     }
                     return;
                 }));

@@ -377,5 +377,29 @@ namespace Tests
             Assert.AreEqual(you, you.grave[0].getOwner());
             game.Dispose();
         }
+        
+        [Test]
+        public void GhostTownCoffinCarrierBlazingWheelTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo, Rin.ID,
+                new KeyValuePair<int, int>(BlazingWheel.ID, 1), new KeyValuePair<int, int>(GhostTown.ID,1), new KeyValuePair<int, int>(CoffinCarrier.ID,1));
+            game.skipUntilCanUse<BlazingWheel>(you);
+            you.cmdUse<BlazingWheel>(game);
+            game.skipUntilCanUse<CoffinCarrier>(you);
+            you.cmdUse<CoffinCarrier>(game, out var carrier);
+            carrier.setDead(game, true);
+            game.updateDeath(game);
+            game.skipUntilCanUse<GhostTown>(you);
+            you.cmdUse<GhostTown>(game);
+            DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
+            Assert.NotNull(discoverRequest);
+            int id = discoverRequest.cardIdArray[0];
+            you.cmdDiscover(game, id);
+            Assert.True(you.hand.Contains(carrier));
+            game.skipUntilCanUse<CoffinCarrier>(you);
+            you.cmdUse(game,carrier);
+            Assert.True(carrier.hasKeyword(game,KEYWORD.CHARGE));
+            game.Dispose();
+        }
     }
 }
