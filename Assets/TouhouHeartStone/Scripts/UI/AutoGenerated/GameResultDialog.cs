@@ -11,133 +11,139 @@
 namespace UI
 {
     using System;
-    using UnityEngine;
     using UnityEngine.UI;
-    using BJSYGameCore.UI;
+    using BJSYGameCore.AutoCompo;
+    using UI;
     
-    public partial class GameResultDialog : UIObject
+    public partial class GameResultDialog
     {
-        protected override void Awake()
+        public void autoInit()
         {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
+            this._Image = this.transform.Find(PATH_IMAGE).GetComponent<Image>();
+            this._WinImage = this.transform.Find(PATH_WINIMAGE).GetComponent<Image>();
+            this._Text = this.transform.Find(PATH_TEXT).GetComponent<Text>();
+            this._FailImage = this.transform.Find(PATH_FAILIMAGE).GetComponent<Image>();
+            this._Fail_Text = this.transform.Find(PATH_FAIL_TEXT).GetComponent<Text>();
+            this._ButtonGlassButtonBlack = this.transform.Find(PATH_BUTTONGLASSBUTTONBLACK).GetComponent<ButtonBlack>();
+            this._Image_Text = this.transform.Find(PATH_IMAGE_TEXT).GetComponent<Text>();
+            this._saveReplayButton = this.transform.Find(PATH_SAVEREPLAYBUTTON).GetComponent<Button>();
+            this._saveReplayButton.onClick.AddListener(this.SaveReplayButtonClickCallback);
         }
-        public void autoBind()
+        public void autoClear()
         {
-            this.m_as_Image = this.GetComponent<Image>();
-            this._Image = this.transform.Find("Image").GetComponent<Image>();
-            this._WinImage = this.transform.Find("Image").Find("Win").GetComponent<Image>();
-            this._Text = this.transform.Find("Image").Find("Win").Find("Text").GetComponent<Text>();
-            this._FailImage = this.transform.Find("Image").Find("Fail").GetComponent<Image>();
-            this._Fail_Text = this.transform.Find("Image").Find("Fail").Find("Text").GetComponent<Text>();
-            this._ButtonGlassButtonBlack = this.transform.Find("Image").Find("ButtonGlass").GetComponent<ButtonBlack>();
-            this._Image_Text = this.transform.Find("Image").Find("Text").GetComponent<Text>();
+            this._saveReplayButton.onClick.RemoveListener(this.SaveReplayButtonClickCallback);
         }
-        [SerializeField()]
-        private Image m_as_Image;
-        public Image asImage
-        {
-            get
-            {
-                if ((this.m_as_Image == null))
-                {
-                    this.m_as_Image = this.GetComponent<Image>();
-                }
-                return this.m_as_Image;
-            }
-        }
-        [SerializeField()]
-        private Image _Image;
-        public Image Image
+        public Image _Image;
+        public const string PATH_IMAGE = "Image";
+        public Image image
         {
             get
             {
                 if ((this._Image == null))
                 {
-                    this._Image = this.transform.Find("Image").GetComponent<Image>();
+                    this._Image = this.transform.Find(PATH_IMAGE).GetComponent<Image>();
                 }
                 return this._Image;
             }
         }
-        [SerializeField()]
-        private Image _WinImage;
-        public Image WinImage
+        public Image _WinImage;
+        public const string PATH_WINIMAGE = "Image/Win";
+        public Image winImage
         {
             get
             {
                 if ((this._WinImage == null))
                 {
-                    this._WinImage = this.transform.Find("Image").Find("Win").GetComponent<Image>();
+                    this._WinImage = this.transform.Find(PATH_WINIMAGE).GetComponent<Image>();
                 }
                 return this._WinImage;
             }
         }
-        [SerializeField()]
-        private Text _Text;
-        public Text Text
+        public Text _Text;
+        public const string PATH_TEXT = "Image/Win/Text";
+        public Text text
         {
             get
             {
                 if ((this._Text == null))
                 {
-                    this._Text = this.transform.Find("Image").Find("Win").Find("Text").GetComponent<Text>();
+                    this._Text = this.transform.Find(PATH_TEXT).GetComponent<Text>();
                 }
                 return this._Text;
             }
         }
-        [SerializeField()]
-        private Image _FailImage;
-        public Image FailImage
+        public Image _FailImage;
+        public const string PATH_FAILIMAGE = "Image/Fail";
+        public Image failImage
         {
             get
             {
                 if ((this._FailImage == null))
                 {
-                    this._FailImage = this.transform.Find("Image").Find("Fail").GetComponent<Image>();
+                    this._FailImage = this.transform.Find(PATH_FAILIMAGE).GetComponent<Image>();
                 }
                 return this._FailImage;
             }
         }
-        [SerializeField()]
-        private Text _Fail_Text;
-        public Text Fail_Text
+        public Text _Fail_Text;
+        public const string PATH_FAIL_TEXT = "Image/Fail/Text";
+        public Text fail_Text
         {
             get
             {
                 if ((this._Fail_Text == null))
                 {
-                    this._Fail_Text = this.transform.Find("Image").Find("Fail").Find("Text").GetComponent<Text>();
+                    this._Fail_Text = this.transform.Find(PATH_FAIL_TEXT).GetComponent<Text>();
                 }
                 return this._Fail_Text;
             }
         }
-        [SerializeField()]
-        private ButtonBlack _ButtonGlassButtonBlack;
-        public ButtonBlack ButtonGlassButtonBlack
+        public ButtonBlack _ButtonGlassButtonBlack;
+        public const string PATH_BUTTONGLASSBUTTONBLACK = "Image/ButtonGroup/Confirm";
+        public ButtonBlack buttonGlassButtonBlack
         {
             get
             {
                 if ((this._ButtonGlassButtonBlack == null))
                 {
-                    this._ButtonGlassButtonBlack = this.transform.Find("Image").Find("ButtonGlass").GetComponent<ButtonBlack>();
+                    this._ButtonGlassButtonBlack = this.transform.Find(PATH_BUTTONGLASSBUTTONBLACK).GetComponent<ButtonBlack>();
                 }
                 return this._ButtonGlassButtonBlack;
             }
         }
-        [SerializeField()]
-        private Text _Image_Text;
-        public Text Image_Text
+        public Text _Image_Text;
+        public const string PATH_IMAGE_TEXT = "Image/Text";
+        public Text image_Text
         {
             get
             {
                 if ((this._Image_Text == null))
                 {
-                    this._Image_Text = this.transform.Find("Image").Find("Text").GetComponent<Text>();
+                    this._Image_Text = this.transform.Find(PATH_IMAGE_TEXT).GetComponent<Text>();
                 }
                 return this._Image_Text;
             }
         }
-        partial void onAwake();
+        public Button _saveReplayButton;
+        public const string PATH_SAVEREPLAYBUTTON = "Image/ButtonGroup/SaveReplay";
+        public Button saveReplayButton
+        {
+            get
+            {
+                if ((this._saveReplayButton == null))
+                {
+                    this._saveReplayButton = this.transform.Find(PATH_SAVEREPLAYBUTTON).GetComponent<Button>();
+                }
+                return this._saveReplayButton;
+            }
+        }
+        public event Action onSaveReplayButtonClick;
+        private void SaveReplayButtonClickCallback()
+        {
+            if ((this.onSaveReplayButtonClick != null))
+            {
+                this.onSaveReplayButtonClick();
+            }
+        }
     }
 }

@@ -16,7 +16,9 @@ namespace Game.Replays
     {
         public void startRecord(THHGame game, RoomPlayerData[] players)
         {
-            this.game = game ?? throw new ArgumentNullException(nameof(game));
+            if (game == null)
+                throw new ArgumentNullException(nameof(game));
+            this.game = game;
             replay = new ReplayData()
             {
                 option = game.option,
@@ -31,6 +33,10 @@ namespace Game.Replays
             game.onPlayerResponse -= onPlayerResponse;
             game.onEnd -= onEnd;
             game = null;
+        }
+        public bool isRecording
+        {
+            get { return game != null; }
         }
         #region 私有成员
         static ReplaySystem()
@@ -50,7 +56,7 @@ namespace Game.Replays
             stopRecord();
         }
         THHGame game { get; set; } = null;
-        ReplayData replay { get; set; } = null;
+        public ReplayData replay { get; private set; } = null;
         #endregion
     }
 }

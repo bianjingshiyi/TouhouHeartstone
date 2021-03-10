@@ -12,11 +12,15 @@ using BJSYGameCore;
 
 namespace UI
 {
-    public partial class GameResultDialog
+    public partial class GameResultDialog : UIObject
     {
+        protected override void Awake()
+        {
+            base.Awake();
+            autoInit();
+        }
         public UnityEvent onGameSuccess;
         public UnityEvent onGameFail;
-
         public void ShowGameResult(bool success)
         {
             gameObject.SetActive(true);

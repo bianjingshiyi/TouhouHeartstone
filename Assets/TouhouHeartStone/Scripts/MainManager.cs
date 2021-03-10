@@ -35,7 +35,7 @@ namespace Game
         public UIManager ui => getManager<UIManager>();
         public NetworkingManager network => getManager<NetworkingManager>();
         public GameManager game => getManager<GameManager>();
-
+        public FileManager fileManager => new FileManager();
         LangManager lang => getManager<LangManager>();
 
         [SerializeField]
@@ -152,10 +152,11 @@ namespace Game
                         var dialog = getManager<UIManager>().getObject<UIDialog>();
                         if (downloadURL != null)
                         {
-                            dialog.ShowQuestion(StringTable.HINT_TITLE, lang._(StringTable.WANNA_DOWNLOAD_NEW_VERSION) , () => {
-                                Application.OpenURL(downloadURL); 
+                            dialog.ShowQuestion(StringTable.HINT_TITLE, lang._(StringTable.WANNA_DOWNLOAD_NEW_VERSION), () =>
+                            {
+                                Application.OpenURL(downloadURL);
                             });
-                        } 
+                        }
                         else
                         {
                             dialog.ShowConfirm(StringTable.HINT_TITLE, lang._(StringTable.INVALID_DOWNLOAD_URL), null);

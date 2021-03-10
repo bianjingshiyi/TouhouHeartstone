@@ -18,6 +18,7 @@ using Card = TouhouCardEngine.Card;
 using System.Text.RegularExpressions;
 using NitoriNetwork.Common;
 using MukioI18n;
+using MongoDB.Bson;
 
 namespace Game
 {
@@ -48,9 +49,10 @@ namespace Game
             if (_mainUI != null)
             {
                 _mainUI.game = this;
-                _mainUI.Game.GameResultDialog.ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
+                _mainUI.Game.GameResultDialog._ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
                 _ui = _mainUI.Game;
             }
+            ui.GameResultDialog.onSaveReplayButtonClick += onSaveReplayButtonClick;
         }
         [SerializeField]
         bool _useDefaultDeck = false;
@@ -203,9 +205,16 @@ namespace Game
             }
             return game;
         }
-        Task runGame(THHGame game)
+        Task runGame(THHGame game, bool recordReplay = true)
         {
             this.game = game;
+            if (recordReplay)
+                _replaySystem.startRecord(game, game.players.Select(p =>
+                {
+                    RoomPlayerData playerData = new RoomPlayerData(p.name, RoomPlayerType.human);
+                    playerData.setDeck(p.deck.Select(c => c.define.id).ToArray());
+                    return playerData;
+                }).ToArray());
             onGameStart?.Invoke();
             gameTask = game.run();
             return gameTask;
@@ -215,13 +224,14 @@ namespace Game
         /// </summary>
         public void endGame()
         {
+            if (_replaySystem.isRecording)
+                _replaySystem.stopRecord();
             if (game != null)
             {
                 game.Dispose();
                 game = null;
                 gameTask = null;
                 mode = GameMode.none;
-
                 onGameEnd?.Invoke();
             }
         }
@@ -237,7 +247,7 @@ namespace Game
                 _mainUI.display(_mainUI.MainMenu);
             }
         }
-        
+
         /// <summary>
         /// 关闭游戏和UI
         /// </summary>
@@ -488,7 +498,12 @@ namespace Game
         private const string GAME_MANAGER_BURN = "爆牌";
         [TranslateMsg]
         private const string GAME_MANAGER_DRAW = "抽牌";
-
+        private void onSaveReplayButtonClick()
+        {
+            getManager<MainManager>().fileManager.saveFile("Replays/" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".zmrep",
+                _replaySystem.replay.players.Select(p => p.getDeck()[0]).ToArray().ToJson() + "\r\n" +
+                _replaySystem.replay.ToJson());
+        }
         #region Events
         void onLogListItemEnter(LogListItem item)
         {

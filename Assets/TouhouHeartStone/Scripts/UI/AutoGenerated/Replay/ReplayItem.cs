@@ -13,9 +13,8 @@ namespace UI
     using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
-    
-    [AutoCompoAttribute(70650)]
-    public partial class ReplayItem
+
+    partial class ReplayItem
     {
         public void autoInit()
         {
