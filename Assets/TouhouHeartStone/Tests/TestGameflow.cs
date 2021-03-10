@@ -65,6 +65,12 @@ namespace Tests
             you = game.createPlayer(1, "玩家1", game.getDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
             oppo = game.createPlayer(2, "玩家2", game.getDefine<MasterCardDefine>(oppoMaster), oppoTrueDeck);
         }
+
+        public static void createGame<YourDeck, OppoDeck>(out THHGame game, out THHPlayer you, out THHPlayer oppo,
+            params KeyValuePair<int, int>[] yourDeck) where YourDeck : CardDefine where OppoDeck : CardDefine
+        {
+            createGame<YourDeck, OppoDeck>(out game, out you, out oppo, new GameOption() { shuffle = false }, TestMaster.ID, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
+        }
         
         private static IEnumerable<CardDefine> createDeck(THHGame game, KeyValuePair<int, int>[] yourDeck)
         {

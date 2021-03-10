@@ -8,6 +8,8 @@ using TouhouHeartstone.Builtin;
 using UnityEngine;
 using UnityEngine.TestTools;
 using System;
+using UI;
+using Card = TouhouCardEngine.Card;
 
 namespace Tests
 {
@@ -394,16 +396,21 @@ namespace Tests
         [Test]
         public void ReisenDisbeliefAspectTest()
         {
-            TestGameflow.createGame(out var game, out var you, out var oppo,
+            TestGameflow.createGame<FireBall,DefaultServant>(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(DisbeliefAspect.ID, 3)
             );
 
-            game.skipUntilHasGem(you, 2);
-            you.cmdUse(game, you.skill);
-
-            game.skipUntilHasGem(you, 3);
-            you.cmdUse(game, you.hand.getCard<DisbeliefAspect>());
-            you.cmdUse(game, you.skill);
+            game.skipUntilCanUse<DisbeliefAspect>(you);
+            var count = you.hand.count;
+            you.cmdUse<DisbeliefAspect>(game);
+            Assert.AreEqual(count-1,you.hand.count);
+            game.skipUntilCanUse<FireBall>(you);
+            var fireBall = you.hand.getCard<FireBall>();
+            you.cmdUse(game,fireBall,0,oppo.master);
+            count = you.hand.count;
+            you.cmdUse<DisbeliefAspect>(game);
+            Assert.AreEqual(count,you.hand.count);
+            Assert.True(you.hand[count-1].define is FireBall);
 
             game.Dispose();
         }

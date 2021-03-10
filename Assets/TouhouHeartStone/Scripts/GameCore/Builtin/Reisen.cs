@@ -531,17 +531,14 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect((g,c)=>
             {
-                int count = g.triggers.getRecordedEvents().skipUntilLast(e=> e is THHGame.TurnStartEventArg turnStart)
-                    .OfType<THHPlayer.UseEventArg>().Where(u=> u.player==c.getOwner()&&u.card.isSpell()).Count();
-                var lastSpellUse = g.triggers.getRecordedEvents()
-                    .skipUntilLast(e=> e is THHGame.TurnStartEventArg turnStart)
-                    .OfType<THHPlayer.UseEventArg>()
-                    .Where(u=> u.player==c.getOwner()&&u.card.isSpell()).ToArray()[count-2];
+                var spellsUsedInTurn = g.triggers.getRecordedEvents()
+                    .skipUntilLast(e => e is THHGame.TurnStartEventArg _).OfType<THHPlayer.UseEventArg>().Select(e=>e.card).ToArray();
 
-                if (lastSpellUse != null)
-                    return c.getOwner().hand.add(g,g.createCard(lastSpellUse.card.define));
-                else
-                    return Task.CompletedTask;
+                if (spellsUsedInTurn.Length>1)
+                {
+                    return c.getOwner().hand.add(g, g.createCard(spellsUsedInTurn[spellsUsedInTurn.Length - 2].define));
+                }
+                return Task.CompletedTask;
             })
         };
     }
