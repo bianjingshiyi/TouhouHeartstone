@@ -246,15 +246,12 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
-                if(!target.getBuffs().Any(b => b.id == ID))
+                if(!target.containBuff(ID))
                 {
                     await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3),new LifeModifier(3)));
                     await target.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<THHGame.TurnStartEventArg>(
                     PILE.FIELD,
-                    (g1, c1, a1) =>
-                    {
-                        return a1.player == card.getOwner();
-                    },
+                    (g1, c1, a1) => a1.player == card.getOwner(),
                     null,
                     async (g1,c1,a1) =>
                     {
@@ -267,7 +264,9 @@ namespace TouhouHeartstone.Builtin
                 }
                 else
                 {
+                    await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3),new LifeModifier(3)));
                     await target.setDead(game, true);
+                    await game.getAllServants().damage(game, target, target.getAttack(game));
                 }
             },PileFlag.self | PileFlag.field)
 
