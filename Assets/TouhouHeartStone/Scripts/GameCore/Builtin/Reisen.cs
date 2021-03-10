@@ -532,7 +532,8 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect((g,c)=>
             {
                 var spellsUsedInTurn = g.triggers.getRecordedEvents()
-                    .skipUntilLast(e => e is THHGame.TurnStartEventArg _).OfType<THHPlayer.UseEventArg>().Select(e=>e.card).ToArray();
+                    .skipUntilLast(e => e is THHGame.TurnStartEventArg _).OfType<THHPlayer.UseEventArg>()
+                    .Select(e=>e.card).Where(c1=>c1.define is SpellCardDefine).ToArray();
 
                 if (spellsUsedInTurn.Length>1)
                 {
