@@ -907,7 +907,6 @@ namespace TouhouHeartstone
                 {
                     modifier = pair.modifier.clone() as IntPropModifier;
                     await card.setProp(game, getModifierName(pair.modifier, buff), modifier);
-                    await card.addModifier(game, modifier);
                 }
                 if (!card.getModifiers().Contains(modifier))
                 {
@@ -931,6 +930,9 @@ namespace TouhouHeartstone
                         {
                             m = pair.modifier.clone() as IntPropModifier;
                             await card.setProp(game, getModifierName(pair.modifier, buff), m);
+                        }
+                        if (!card.getModifiers().Contains(m))
+                        {
                             await card.addModifier(game, m);
                         }
                         await m.setValue(game, card, pair.fixer(game, card, buff, arg));

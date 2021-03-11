@@ -238,15 +238,18 @@ namespace Tests
                 new KeyValuePair<int, int>(HalfPhantom.ID, 1),new KeyValuePair<int, int>(BurgeoningRise.ID,1));
             you.master.setArmor(game,2);
             game.skipUntilCanUse<HalfPhantom>(you);
-            you.cmdUse<HalfPhantom>(game);
-            Assert.AreEqual(you.master.getArmor(game),you.field.getCard<HalfPhantom>().getAttack(game));
+            you.cmdUse<HalfPhantom>(game, out var s);
+            Assert.AreEqual(you.master.getArmor(game),s.getAttack(game));
             game.skipUntilCanUse<BurgeoningRise>(you);
-            you.cmdUse(game, you.hand.getCard<BurgeoningRise>(), targets: you.field[0]);
-            you.field[0].die(game);
+            you.cmdUse(game, you.hand.getCard<BurgeoningRise>(), targets: s);
+            s.setDead(game,true);
+            game.updateDeath(game);
             Assert.AreEqual(1,you.field.count);
-            Assert.AreEqual(3+you.master.getArmor(game), you.field.getCard<HalfPhantom>().getAttack(game));
+            s = you.field[0];
+            Assert.True(s.define is HalfPhantom);
+            Assert.AreEqual(3+you.master.getArmor(game), s.getAttack(game));
             you.master.gainArmor(game, 2);
-            Assert.AreEqual(3+you.master.getArmor(game), you.field.getCard<HalfPhantom>().getAttack(game));
+            Assert.AreEqual(3+you.master.getArmor(game), s.getAttack(game));
         }
 
         [Test]
