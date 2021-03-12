@@ -16,7 +16,8 @@ namespace UI
     using System;
     using UnityEngine.UI;
     using UI;
-    
+    using BJSYGameCore;
+
     [AutoCompoAttribute(-9266)]
     public partial class EnemyItem : UIObject
     {

@@ -10,17 +10,23 @@
 
 namespace UI
 {
-    using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
-
-    partial class ReplayItem
+    using BJSYGameCore;
+    
+    public partial class ReplayItem
     {
         public void autoInit()
         {
             this._playerAImage = this.transform.Find(PATH_PLAYERAIMAGE).GetComponent<Image>();
             this._playerBImage = this.transform.Find(PATH_PLAYERBIMAGE).GetComponent<Image>();
             this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<Text>();
+            this._asButton = this.transform.Find(PATH_ASBUTTON).GetComponent<Button>();
+            this._asButton.onClick.AddListener(this.AsButtonClickCallback);
+        }
+        public void autoClear()
+        {
+            this._asButton.onClick.RemoveListener(this.AsButtonClickCallback);
         }
         public Image _playerAImage;
         public const string PATH_PLAYERAIMAGE = "PlayerA/Image";
@@ -59,6 +65,27 @@ namespace UI
                     this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<Text>();
                 }
                 return this._nameText;
+            }
+        }
+        public Button _asButton;
+        public const string PATH_ASBUTTON = "";
+        public Button asButton
+        {
+            get
+            {
+                if ((this._asButton == null))
+                {
+                    this._asButton = this.transform.Find(PATH_ASBUTTON).GetComponent<Button>();
+                }
+                return this._asButton;
+            }
+        }
+        public event Action onAsButtonClick;
+        private void AsButtonClickCallback()
+        {
+            if ((this.onAsButtonClick != null))
+            {
+                this.onAsButtonClick();
             }
         }
     }

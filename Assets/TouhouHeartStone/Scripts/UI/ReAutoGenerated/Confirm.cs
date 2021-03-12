@@ -15,7 +15,8 @@ namespace UI
     using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
-    
+    using BJSYGameCore;
+
     [AutoCompoAttribute(-8252)]
     public partial class Confirm : UIObject
     {

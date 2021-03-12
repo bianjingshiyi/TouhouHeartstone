@@ -6,14 +6,14 @@ namespace UI
 {
     partial class ReplayItem : UIObject
     {
-        public void update(ReplayItemViewData viewData)
+        public void updateView(ReplayItemViewData viewData)
         {
             _playerAImage.sprite = ui.getManager<CardManager>().getSkin(viewData.playerAMasterId).image;
             _playerBImage.sprite = ui.getManager<CardManager>().getSkin(viewData.playerBMasterId).image;
             _nameText.text = viewData.name;
         }
     }
-    class ReplayItemViewData
+    public class ReplayItemViewData
     {
         public int playerAMasterId;
         public int playerBMasterId;

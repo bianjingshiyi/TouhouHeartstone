@@ -10,19 +10,17 @@
 
 namespace UI
 {
-    using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
     using UnityEngine;
-    
-    [AutoCompoAttribute(69688)]
+
     public partial class ReplaySelectPanel
     {
         public void autoInit()
         {
             this._playButton = this.transform.Find(PATH_PLAYBUTTON).GetComponent<Button>();
             this._playButton.onClick.AddListener(this.PlayButtonClickCallback);
-            this._replayItemRoot = this.transform.Find(PATH_REPLAYITEMROOT).GetComponent<RectTransform>();
+            this._replayListRoot = this.transform.Find(PATH_REPLAYITEMROOT).GetComponent<RectTransform>();
         }
         public void autoClear()
         {
@@ -49,17 +47,17 @@ namespace UI
                 this.onPlayButtonClick();
             }
         }
-        public RectTransform _replayItemRoot;
+        public RectTransform _replayListRoot;
         public const string PATH_REPLAYITEMROOT = "Scroll View/Viewport/Content";
         public RectTransform replayItemRoot
         {
             get
             {
-                if ((this._replayItemRoot == null))
+                if ((this._replayListRoot == null))
                 {
-                    this._replayItemRoot = this.transform.Find(PATH_REPLAYITEMROOT).GetComponent<RectTransform>();
+                    this._replayListRoot = this.transform.Find(PATH_REPLAYITEMROOT).GetComponent<RectTransform>();
                 }
-                return this._replayItemRoot;
+                return this._replayListRoot;
             }
         }
     }

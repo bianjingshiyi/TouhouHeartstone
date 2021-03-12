@@ -14,7 +14,8 @@ namespace UI
     using System;
     using UnityEngine.UI;
     using UnityEngine;
-    
+    using BJSYGameCore;
+
     [AutoCompoAttribute(22434)]
     public partial class RecoverPanel : UnityEngine.MonoBehaviour
     {

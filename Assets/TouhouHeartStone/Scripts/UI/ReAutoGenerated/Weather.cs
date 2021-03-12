@@ -15,7 +15,8 @@ namespace UI
     using BJSYGameCore.AutoCompo;
     using System;
     using UI;
-    
+    using BJSYGameCore;
+
     [AutoCompoAttribute(-20058)]
     public partial class Weather : UIObject
     {

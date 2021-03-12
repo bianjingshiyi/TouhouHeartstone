@@ -16,7 +16,7 @@ namespace UI
     using System;
     using UnityEngine.UI;
     using UI;
-    
+    using BJSYGameCore;
     [AutoCompoAttribute(27066)]
     public partial class Card : UIObject
     {

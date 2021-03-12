@@ -13,9 +13,9 @@ namespace UI
     using BJSYGameCore.UI;
     using UnityEngine;
     using BJSYGameCore.AutoCompo;
-    using System;
+    using BJSYGameCore;
     using UnityEngine.UI;
-    
+
     [AutoCompoAttribute(20868)]
     public partial class Deck : UIObject
     {

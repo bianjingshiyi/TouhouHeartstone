@@ -16,7 +16,7 @@ namespace UI
     using System;
     using UnityEngine.UI;
     using UI;
-    
+    using BJSYGameCore;
     [AutoCompoAttribute(-9008)]
     public partial class EnemyHand : UIObject
     {

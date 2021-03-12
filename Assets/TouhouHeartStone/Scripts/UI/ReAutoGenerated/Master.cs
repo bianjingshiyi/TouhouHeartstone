@@ -13,10 +13,10 @@ namespace UI
     using BJSYGameCore.UI;
     using UnityEngine;
     using BJSYGameCore.AutoCompo;
-    using System;
+    using BJSYGameCore;
     using UnityEngine.UI;
     using UI;
-    
+
     [AutoCompoAttribute(19818)]
     public partial class Master : UIObject
     {
@@ -35,7 +35,7 @@ namespace UI
             this._damageText = this.transform.findByPath("./Root/DamageImage/DamageText").GetComponent<Text>();
             this._armorPropNumber = this.transform.findByPath("./Root/ArmorPropNumber").GetComponent<PropNumber>();
             this._lifePropNumber = this.transform.findByPath("./Root/LifePropNumber").GetComponent<PropNumber>();
-            this._atkPropNumber  = this.transform.findByPath("./Root/AtkPropNumber ").GetComponent<PropNumber>();
+            this._atkPropNumber = this.transform.findByPath("./Root/AtkPropNumber ").GetComponent<PropNumber>();
             this._shackleImage = this.transform.findByPath("./Root/Shackle").GetComponent<Image>();
             this._frameImage = this.transform.findByPath("./Root/Frame").GetComponent<Image>();
             this._rootRectTransform = this.transform.findByPath("./Root").GetComponent<RectTransform>();
@@ -233,16 +233,16 @@ namespace UI
         }
         [SerializeField()]
         [AutoCompo(19970, "./Root/AtkPropNumber ")]
-        private PropNumber _atkPropNumber ;
-        public PropNumber AttackPropNumber 
+        private PropNumber _atkPropNumber;
+        public PropNumber AttackPropNumber
         {
             get
             {
-                if ((this._atkPropNumber  == null))
+                if ((this._atkPropNumber == null))
                 {
-                    this._atkPropNumber  = this.transform.findByPath("./Root/AtkPropNumber ").GetComponent<PropNumber>();
+                    this._atkPropNumber = this.transform.findByPath("./Root/AtkPropNumber ").GetComponent<PropNumber>();
                 }
-                return this._atkPropNumber ;
+                return this._atkPropNumber;
             }
         }
         [SerializeField()]

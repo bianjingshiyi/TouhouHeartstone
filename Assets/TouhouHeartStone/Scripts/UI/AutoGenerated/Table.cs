@@ -15,8 +15,8 @@ namespace UI
     using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
-    using UI;
-    
+    using BJSYGameCore;
+
     [AutoCompoAttribute(24466)]
     public partial class Table : UIObject
     {

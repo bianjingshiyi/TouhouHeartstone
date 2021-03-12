@@ -66,6 +66,7 @@ namespace Game
                     main.MainMenu.loginPanel.display();
                 }
             });
+            main.MainMenu.replayButton.onClick.set(onReplayButtonClick);
             main.display(main.Loading);
         }
         protected void Start()
@@ -260,6 +261,10 @@ namespace Game
         string getCurrentVersion()
         {
             return BuildInformation.Instance.Version;
+        }
+        void onReplayButtonClick()
+        {
+            throw new NotImplementedException();
         }
         Task _loadCardTask = null;
         Task<ClientUpdateInfo> _getNewVersionTask = null;

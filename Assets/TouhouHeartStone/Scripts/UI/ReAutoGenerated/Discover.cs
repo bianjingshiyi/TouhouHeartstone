@@ -16,7 +16,8 @@ namespace UI
     using System;
     using UnityEngine.UI;
     using UI;
-    
+    using BJSYGameCore;
+
     [AutoCompoAttribute(-1654)]
     public partial class Discover : UIObject
     {

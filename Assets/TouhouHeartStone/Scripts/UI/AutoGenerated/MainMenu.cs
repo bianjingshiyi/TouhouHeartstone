@@ -10,12 +10,11 @@
 
 namespace UI
 {
-    using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
+    using BJSYGameCore.AutoCompo;
     using UI;
     
-    [AutoCompoAttribute(18786)]
     public partial class MainMenu
     {
         public void autoInit()
@@ -33,6 +32,12 @@ namespace UI
             this._LoginPanel = this.transform.Find(PATH_LOGINPANEL).GetComponent<LoginPanel>();
             this._RecoverPanel = this.transform.Find(PATH_RECOVERPANEL).GetComponent<RecoverPanel>();
             this._PlayerInfoPanel = this.transform.Find(PATH_PLAYERINFOPANEL).GetComponent<PlayerInfoPanel>();
+            this._replayButton = this.transform.Find(PATH_REPLAYBUTTON).GetComponent<Button>();
+            this._replayButton.onClick.AddListener(this.ReplayButtonClickCallback);
+        }
+        public void autoClear()
+        {
+            this._replayButton.onClick.RemoveListener(this.ReplayButtonClickCallback);
         }
         public VerticalLayoutGroup _ButtonsVerticalLayoutGroup;
         public const string PATH_BUTTONSVERTICALLAYOUTGROUP = "ButtonPanel/Buttons";
@@ -201,6 +206,27 @@ namespace UI
                     this._PlayerInfoPanel = this.transform.Find(PATH_PLAYERINFOPANEL).GetComponent<PlayerInfoPanel>();
                 }
                 return this._PlayerInfoPanel;
+            }
+        }
+        public Button _replayButton;
+        public const string PATH_REPLAYBUTTON = "ButtonPanel/Buttons/ReplayButton";
+        public Button replayButton
+        {
+            get
+            {
+                if ((this._replayButton == null))
+                {
+                    this._replayButton = this.transform.Find(PATH_REPLAYBUTTON).GetComponent<Button>();
+                }
+                return this._replayButton;
+            }
+        }
+        public event Action onReplayButtonClick;
+        private void ReplayButtonClickCallback()
+        {
+            if ((this.onReplayButtonClick != null))
+            {
+                this.onReplayButtonClick();
             }
         }
     }

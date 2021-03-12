@@ -14,7 +14,8 @@ namespace UI
     using System;
     using UnityEngine.UI;
     using UnityEngine;
-    
+    using BJSYGameCore;
+
     [AutoCompoAttribute(26860)]
     public partial class UIDialog : BJSYGameCore.UI.UIObject
     {

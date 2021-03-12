@@ -15,7 +15,8 @@ namespace UI
     using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
-    
+    using BJSYGameCore;
+
     [AutoCompoAttribute(29854)]
     public partial class PropNumber : UIObject
     {

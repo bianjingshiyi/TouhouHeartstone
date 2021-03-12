@@ -15,7 +15,8 @@ namespace UI
     using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
-    
+    using BJSYGameCore;
+
     [AutoCompoAttribute(23084)]
     public partial class ScrollbarVertical : UIObject
     {
