@@ -8,7 +8,7 @@ namespace UI
         Vector2 _minSize;
         partial void onAwake()
         {
-            _minSize = rectTransform.rect.size;
+
         }
         [SerializeField]
         bool _isExpanded = false;
