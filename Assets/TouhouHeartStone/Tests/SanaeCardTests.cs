@@ -439,7 +439,7 @@ namespace Tests
             }
         }
         [Test]
-        public void suwakoReduceCostTest()
+        public void SuwakoReduceCostTest()
         {
             TestGameflow.createGame(out var game, out var you, out _,
                 new KeyValuePair<int, int>(InvokeCard.ID, 1),
@@ -455,22 +455,25 @@ namespace Tests
             Assert.AreEqual(suwako.define.getCost() - 1, suwako.getCost(game));
         }
         [Test]
-        public void kamikazeReduceCostTest()
+        public void GodWindReduceCostTest()
         {
             TestGameflow.createGame(out var game, out var you, out _,
-                new KeyValuePair<int, int>(InvokeCard.ID, 1),
+                new KeyValuePair<int, int>(InvokeCard.ID, 2),
                 new KeyValuePair<int, int>(DefaultServant.ID, 5),
                 new KeyValuePair<int, int>(GodWind.ID, 1));
-            //打一张祈求牌
+            //打一张祈求牌，预期牌库中的神风保持原费用
             game.skipUntilCanUse<InvokeCard>(you);
-            //预期诹访子保持原费用
             Assert.AreEqual(you.deck.getCard<GodWind>().define.getCost(), you.deck.getCard<GodWind>().getCost(game));
             you.cmdUse<InvokeCard>(game);
-            //预期诹访子保持原费用
             Assert.AreEqual(you.deck.getCard<GodWind>().define.getCost(), you.deck.getCard<GodWind>().getCost(game));
+            //抽上来后，预期神风费用-1
             game.skipTurnUntil(() => you.hand.getCard<GodWind>() != null);
-            Card suwako = you.hand.getCard<GodWind>();
-            Assert.AreEqual(suwako.define.getCost() - 1, suwako.getCost(game));
+            Card godwind = you.hand.getCard<GodWind>();
+            Assert.AreEqual(godwind.define.getCost() - 1, godwind.getCost(game));
+            //再打一张祈求牌，费用再-1
+            game.skipUntilCanUse<InvokeCard>(you);
+            you.cmdUse<InvokeCard>(game);
+            Assert.AreEqual(godwind.define.getCost() - 2, godwind.getCost(game));
         }
         [Test]
         public void SuwakoBackToFullHandTest()
@@ -506,34 +509,34 @@ namespace Tests
         public void GodWindTest()
         {
             TestGameflow.createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo,
-                new KeyValuePair<int, int>(InvokeCard.ID, 1),
+                new KeyValuePair<int, int>(InvokeCard.ID, 2),
                 new KeyValuePair<int, int>(DefaultServant.ID, 5),
                 new KeyValuePair<int, int>(GodWind.ID, 1));
-            game.skipUntilCanUse<InvokeCard>(you);
-            you.cmdUse<InvokeCard>(game);
-            Assert.AreEqual(10, you.deck.getCard<GodWind>().getCost(game));
             for (int i = 0; i < 3; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
                 oppo.cmdUse<DefaultServant>(game);
             }
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(you);
                 you.cmdUse<DefaultServant>(game);
             }
 
-            List<Card> allServants = new List<Card>();
-            allServants.AddRange(you.field.ToArray());
-            allServants.AddRange(oppo.field.ToArray());
+            List<Card> yourServants = new List<Card>();
+            List<Card> opposServants = new List<Card>();
+            yourServants.AddRange(you.field.ToArray());
+            opposServants.AddRange(oppo.field.ToArray());
+
             game.skipUntilCanUse<GodWind>(you);
-            Assert.AreEqual(9, you.hand.getCard<GodWind>().getCost(game));
             you.cmdUse<GodWind>(game);
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 3; i++)
             {
-                Assert.True(oppo.deck.Contains(allServants[i]));
+                Assert.True(you.deck.Contains(yourServants[i]));
+                Assert.True(oppo.deck.Contains(opposServants[i]));
             }
+            Assert.True(you.deck.Contains(yourServants[3]));
         }
 
         [Test]
