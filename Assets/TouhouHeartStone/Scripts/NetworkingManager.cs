@@ -105,7 +105,7 @@ namespace Game
             mainUI.registerPanel.RegisterButtonBlack.asButton.onClick.AddListener(onRegisterClick);
             mainUI.registerPanel.OnShowEULAClick += async () => {
                 var content = await client.GetEULAAndPrivacyPolicy();
-                mainUI.EULAPanel.Show(IGensoukyo.Utilities.Utilities.HTMLToUnityText(content));
+                mainUI.EULAPanel.Show(content);
             };
             mainUI.registerPanel.hide();
             mainUI.loginPanel.OnRegisterClick += async () =>
