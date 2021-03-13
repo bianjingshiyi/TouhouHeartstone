@@ -10,16 +10,14 @@
 
 namespace UI
 {
-    using BJSYGameCore.UI;
-    using UnityEngine;
-    using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
+    using BJSYGameCore;
     using UI;
-    using IGensoukyo.Utilities;
+    using UnityEngine;
+    using TMPro;
     
-    [AutoCompoAttribute(23164)]
-    public partial class ServantCardFace : UIObject
+    public partial class ServantCardFace
     {
         public void autoInit()
         {
@@ -27,12 +25,12 @@ namespace UI
             this._attackPropNumber = this.transform.Find(PATH_ATTACKPROPNUMBER).GetComponent<PropNumber>();
             this._lifePropNumber = this.transform.Find(PATH_LIFEPROPNUMBER).GetComponent<PropNumber>();
             this._costPropNumber = this.transform.Find(PATH_COSTPROPNUMBER).GetComponent<PropNumber>();
-            this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<Text>();
-            this._subNameText = this.transform.Find(PATH_SUBNAMETEXT).GetComponent<Text>();
             this._asAnimator = this.transform.Find(PATH_ASANIMATOR).GetComponent<Animator>();
-            this._descTextUI = this.transform.Find(PATH_DESCTEXTUI).GetComponent<UITextExtended>();
+            this._descText = this.transform.Find(PATH_DESCTEXT).GetComponent<TextMeshProUGUI>();
+            this._raceNameText = this.transform.Find(PATH_RACENAMETEXT).GetComponent<TextMeshProUGUI>();
+            this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<TextMeshProUGUI>();
+            this._subNameText = this.transform.Find(PATH_SUBNAMETEXT).GetComponent<TextMeshProUGUI>();
         }
-        [SerializeField()]
         public Image _image;
         public const string PATH_IMAGE = "Mask/Image";
         public Image image
@@ -46,7 +44,6 @@ namespace UI
                 return this._image;
             }
         }
-        [SerializeField()]
         public PropNumber _attackPropNumber;
         public const string PATH_ATTACKPROPNUMBER = "AttackPropNumber";
         public PropNumber attackPropNumber
@@ -60,7 +57,6 @@ namespace UI
                 return this._attackPropNumber;
             }
         }
-        [SerializeField()]
         public PropNumber _lifePropNumber;
         public const string PATH_LIFEPROPNUMBER = "LifePropNumber";
         public PropNumber lifePropNumber
@@ -74,7 +70,6 @@ namespace UI
                 return this._lifePropNumber;
             }
         }
-        [SerializeField()]
         public PropNumber _costPropNumber;
         public const string PATH_COSTPROPNUMBER = "CostPropNumber";
         public PropNumber costPropNumber
@@ -88,35 +83,6 @@ namespace UI
                 return this._costPropNumber;
             }
         }
-        [SerializeField()]
-        public Text _nameText;
-        public const string PATH_NAMETEXT = "Name";
-        public Text nameText
-        {
-            get
-            {
-                if ((this._nameText == null))
-                {
-                    this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<Text>();
-                }
-                return this._nameText;
-            }
-        }
-        [SerializeField()]
-        public Text _subNameText;
-        public const string PATH_SUBNAMETEXT = "SubName";
-        public Text subNameText
-        {
-            get
-            {
-                if ((this._subNameText == null))
-                {
-                    this._subNameText = this.transform.Find(PATH_SUBNAMETEXT).GetComponent<Text>();
-                }
-                return this._subNameText;
-            }
-        }
-        [SerializeField()]
         public Animator _asAnimator;
         public const string PATH_ASANIMATOR = "";
         public Animator asAnimator
@@ -136,18 +102,56 @@ namespace UI
         public const string ANIM_PARAM_ISRIN = "isRin";
         public const string ANIM_PARAM_ISPATCHOULI = "isPatchouli";
         public const string ANIM_PARAM_ISREISEN = "isReisen";
-        [SerializeField()]
-        private UITextExtended _descTextUI;
-        public const string PATH_DESCTEXTUI = "DescText";
-        public UITextExtended descText
+        public TextMeshProUGUI _descText;
+        public const string PATH_DESCTEXT = "DescText";
+        public TextMeshProUGUI descText
         {
             get
             {
-                if ((this._descTextUI == null))
+                if ((this._descText == null))
                 {
-                    this._descTextUI = this.transform.Find(PATH_DESCTEXTUI).GetComponent<UITextExtended>();
+                    this._descText = this.transform.Find(PATH_DESCTEXT).GetComponent<TextMeshProUGUI>();
                 }
-                return this._descTextUI;
+                return this._descText;
+            }
+        }
+        public TextMeshProUGUI _raceNameText;
+        public const string PATH_RACENAMETEXT = "Race";
+        public TextMeshProUGUI raceNameText
+        {
+            get
+            {
+                if ((this._raceNameText == null))
+                {
+                    this._raceNameText = this.transform.Find(PATH_RACENAMETEXT).GetComponent<TextMeshProUGUI>();
+                }
+                return this._raceNameText;
+            }
+        }
+        public TextMeshProUGUI _nameText;
+        public const string PATH_NAMETEXT = "Name";
+        public TextMeshProUGUI nameText
+        {
+            get
+            {
+                if ((this._nameText == null))
+                {
+                    this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<TextMeshProUGUI>();
+                }
+                return this._nameText;
+            }
+        }
+        public TextMeshProUGUI _subNameText;
+        public const string PATH_SUBNAMETEXT = "SubName";
+        public TextMeshProUGUI subNameText
+        {
+            get
+            {
+                if ((this._subNameText == null))
+                {
+                    this._subNameText = this.transform.Find(PATH_SUBNAMETEXT).GetComponent<TextMeshProUGUI>();
+                }
+                return this._subNameText;
             }
         }
     }

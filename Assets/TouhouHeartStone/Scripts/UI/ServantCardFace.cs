@@ -6,12 +6,8 @@ using UnityEngine;
 
 namespace UI
 {
-    partial class ServantCardFace
+    partial class ServantCardFace : MonoBehaviour
     {
-        [SerializeField]
-        private Text _raceNameText;
-        public Text raceNameText => _raceNameText;
-
         public int Charactertype
         {
             set
@@ -90,9 +86,9 @@ namespace UI
         private UnityEvent _onCharaterControllerREISEN;
 
 
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
+            autoInit();
         }
     }
 }

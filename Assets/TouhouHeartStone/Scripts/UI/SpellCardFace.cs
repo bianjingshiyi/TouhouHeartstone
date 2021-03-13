@@ -1,11 +1,10 @@
 ﻿namespace UI
 {
-    partial class SpellCardFace
+    partial class SpellCardFace : UnityEngine.MonoBehaviour
     {
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
-            init();
+            autoInit();
         }
     }
 }

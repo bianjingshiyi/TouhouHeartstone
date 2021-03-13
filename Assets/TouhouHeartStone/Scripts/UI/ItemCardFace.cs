@@ -1,11 +1,12 @@
-﻿namespace UI
+﻿using UnityEngine;
+
+namespace UI
 {
-    partial class ItemCardFace
+    partial class ItemCardFace : MonoBehaviour
     {
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
-            init();
+            autoInit();
         }
     }
 }
