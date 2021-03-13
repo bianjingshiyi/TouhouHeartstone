@@ -1011,5 +1011,35 @@ namespace Tests
             Assert.AreEqual(you.field.count - 1, you.field.Count(c => c.define is Onbashira));
             game.Dispose();
         }
+
+        [Test]
+        public void KisumeTest()
+        {
+            TestGameflow.createGame<DefaultServant, Onbashira>(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(Kisume.ID, 2));
+            game.skipTurnUntil((() => you.hand.Any(card => card.define is Kisume)));
+            game.skipUntilCanUse<Onbashira>(oppo);
+            int count = you.hand.Count(card => card.define is Kisume);
+            oppo.cmdUse<Onbashira>(game);
+            Assert.AreEqual(count, you.field.count);
+            game.Dispose();
+        }
+
+        [Test]
+        public void KurodaniYamameTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(KurodaniYamame.ID, 2));
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse<DefaultServant>(game,out var ds);
+            game.skipUntilCanUse<KurodaniYamame>(you);
+            you.cmdUse<KurodaniYamame>(game, out var s);
+            you.cmdTurnEnd(game);
+            game.skipUntilYourTurn(you);
+            you.cmdAttack(game, s, ds);
+            Assert.False(ds.isDead(game));
+            Assert.AreEqual(1,ds.getCurrentLife(game));
+            game.Dispose();
+        }
     }
 }

@@ -4,6 +4,7 @@ using TouhouCardEngine;
 using System.Threading.Tasks;
 using TouhouCardEngine.Interfaces;
 using System.Collections.Generic;
+
 namespace TouhouHeartstone.Builtin
 {
     /// <summary>
@@ -16,10 +17,11 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.CHARGE };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.CHARGE};
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
+
     /// <summary>
     /// 人类村落守卫，325，嘲讽
     /// </summary>
@@ -30,9 +32,10 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.TAUNT};
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
+
     /// <summary>
     /// 铁炮猎人 中立普通卡 322 战吼：造成2点伤害
     /// </summary>
@@ -44,14 +47,14 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[0];
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((game,card,target)=>
-            {
-                return target.damage(game,card,2);
-            },PileFlag.both | PileFlag.character)
+            new LambdaSingleTargetEffect((game, card, target) => { return target.damage(game, card, 2); },
+                PileFlag.both | PileFlag.character)
         };
     }
+
     /// <summary>
     /// 迷失亡灵 中立普通卡 541 亡语：召唤一个4/3的亡灵
     /// </summary>
@@ -62,15 +65,15 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD._DeathRattle};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new DeathRattle(ID,(g1,c1,p)=>
-            {
-                return c1.getOwner().createToken(g1,g1.getDefine<LostSpecter>(),p);
-            })
+            new DeathRattle(ID,
+                (g1, c1, p) => { return c1.getOwner().createToken(g1, g1.getDefine<LostSpecter>(), p); })
         };
     }
+
     /// <summary>
     /// 失落亡灵 中立衍生物 543
     /// </summary>
@@ -85,6 +88,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
+
     /// <summary>
     /// 梅雨元凶 法强+1
     /// </summary>
@@ -96,24 +100,24 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
         public override int spellDamage { get; set; } = 1;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
+
     public class LuckyCoin : SpellCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x007;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect((game,card)=>
-            {
-                return card.getOwner().setGem(game,card.getOwner().gem + 1);
-            })
+            new NoTargetEffect((game, card) => { return card.getOwner().setGem(game, card.getOwner().gem + 1); })
         };
     }
+
     /// <summary>
     /// 炎之妖精 战吼：对一个随机敌方随从造成1点伤害
     /// </summary>
@@ -124,18 +128,20 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
         static async Task effect(THHGame game, Card card)
         {
             THHPlayer oppo = game.getOpponent(card.getOwner());
             await oppo.field.random(game).damage(game, card, 1);
         }
-
     }
+
     /// <summary>
     /// 桑尼·缪尔可 潜行
     /// </summary>
@@ -146,10 +152,11 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.STEALTH };
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.STEALTH};
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
+
     /// <summary>
     /// 露娜·查尔德 战吼：使一个随从获得潜行
     /// </summary>
@@ -160,15 +167,15 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect(async (g, c, t) =>
-            {
-                await t.addKeywords(g,KEYWORD.STEALTH);
-            },PileFlag.both|PileFlag.field)
+            new LambdaSingleTargetEffect(async (g, c, t) => { await t.addKeywords(g, KEYWORD.STEALTH); },
+                PileFlag.both | PileFlag.field)
         };
     }
+
     /// <summary>
     /// 斯塔·萨菲亚 如果你的战场上同时存在桑尼·缪尔可和露娜·查尔德，则你的所有随从获得潜行
     /// </summary>
@@ -179,12 +186,14 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 4;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             //TODO:潜行光环
         };
     }
+
     /// <summary>
     /// 酒之妖精 战吼：将一个友方随从置入你的手牌
     /// </summary>
@@ -195,15 +204,15 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((game,card,target)=>
-            {
-                return target.fieldBackToHand(game);
-            }, PileFlag.self | PileFlag.field)
+            new LambdaSingleTargetEffect((game, card, target) => { return target.fieldBackToHand(game); },
+                PileFlag.self | PileFlag.field)
         };
     }
+
     /// <summary>
     /// 太阳花领军 你的其他妖精的攻击力+2
     /// </summary>
@@ -214,7 +223,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             //new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
@@ -235,6 +245,7 @@ namespace TouhouHeartstone.Builtin
             //})
         };
     }
+
     /// <summary>
     /// 琪露诺 战吼：随机冰冻3个角色（包括自己！）
     /// </summary>
@@ -245,24 +256,21 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 5;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return false;
-            },async (game,card,arg,targets)=>
-            {
-                foreach (var character in game.getAllCharacters().randomTake(game,3))
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD, (game, card, arg) => { return true; },
+                (game, card, targets) => { return false; }, async (game, card, arg, targets) =>
                 {
-                    character.setFreeze(game,true);
-                }
-            })
+                    foreach (var character in game.getAllCharacters().randomTake(game, 3))
+                    {
+                        character.setFreeze(game, true);
+                    }
+                })
         };
     }
+
     /// <summary>
     /// 大妖精 冲锋，亡语：你的对手获得一个法力水晶
     /// </summary>
@@ -273,24 +281,21 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.CHARGE };
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.CHARGE};
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.DeathEventArg>(PILE.GRAVE,(game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return false;
-            },async (game,card,arg)=>
-            {
-                THHPlayer opponent = game.getOpponent(card.owner as THHPlayer);
-                await opponent.setMaxGem(game, opponent.maxGem + 1);
-                await opponent.setGem(game, opponent.gem + 1);
-            })
+            new THHEffectAfter<THHCard.DeathEventArg>(PILE.GRAVE, (game, card, arg) => { return true; },
+                (game, card, targets) => { return false; }, async (game, card, arg) =>
+                {
+                    THHPlayer opponent = game.getOpponent(card.owner as THHPlayer);
+                    await opponent.setMaxGem(game, opponent.maxGem + 1);
+                    await opponent.setGem(game, opponent.gem + 1);
+                })
         };
     }
+
     /// <summary>
     /// 琪露诺（冰瀑） 战吼：冰冻目标随从两侧的随从
     /// </summary>
@@ -301,18 +306,20 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 5;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect(async(game,card,target)=>
+            new LambdaSingleTargetEffect(async (game, card, target) =>
             {
-                foreach( Card t in target.getNearbyCards())
+                foreach (Card t in target.getNearbyCards())
                 {
-                    await t.setFreeze(game,true);
+                    await t.setFreeze(game, true);
                 }
             }, PileFlag.both | PileFlag.field)
         };
     }
+
     /// <summary>
     /// 克劳恩皮丝 战吼：所有随从的攻击力+2
     /// </summary>
@@ -323,34 +330,38 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return false;
-            },async (game,card,arg,targets)=>
-            {
-                foreach (var servant in game.getAllServants())
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD, (game, card, arg) => { return true; },
+                (game, card, targets) => { return false; }, async (game, card, arg, targets) =>
                 {
-                   await servant.addBuff(game, new ClownpieceBuff());
-                }
-            })
+                    foreach (var servant in game.getAllServants())
+                    {
+                        await servant.addBuff(game, new ClownpieceBuff());
+                    }
+                })
         };
     }
+
     public class ClownpieceBuff : Buff
     {
         public const int ID = Clownpiece.ID;
         public override int id { get; } = ID;
+
         public override PropModifier[] modifiers { get; } = new PropModifier[]
         {
             new AttackModifier(2)
         };
+
         public override IPassiveEffect[] effects { get; }
-        public override int instanceID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public override int instanceID
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
 
         public override Buff clone()
@@ -358,6 +369,7 @@ namespace TouhouHeartstone.Builtin
             return new ClownpieceBuff();
         }
     }
+
     /// <summary>
     /// 森之妖精 每当一个妖精阵亡后，花费-1
     /// </summary>
@@ -368,7 +380,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 8;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             //new THHEffect<THHPlayer.ActiveEventArg>(PileName.FIELD,(game,player,card,arg)=>
@@ -386,6 +399,7 @@ namespace TouhouHeartstone.Builtin
             //})
         };
     }
+
     /// <summary>
     /// 爱塔尼媞·拉尔瓦 战吼：使一个妖精获得剧毒
     /// </summary>
@@ -396,27 +410,28 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                if(targets[0] is Card target && target.pile.name == PILE.FIELD && target.hasTag(game,TAG.FAIRY))
-                    return true;
-                return false;
-            }, (game,card,arg,targets)=>
-            {
-                if(targets[0] is Card target)
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD, (game, card, arg) => { return true; },
+                (game, card, targets) =>
                 {
-                    target.setPoisonous(game, true);
-                }
-                return Task.CompletedTask;
-            })
+                    if (targets[0] is Card target && target.pile.name == PILE.FIELD && target.hasTag(game, TAG.FAIRY))
+                        return true;
+                    return false;
+                }, (game, card, arg, targets) =>
+                {
+                    if (targets[0] is Card target)
+                    {
+                        target.setPoisonous(game, true);
+                    }
+
+                    return Task.CompletedTask;
+                })
         };
     }
+
     /// <summary>
     /// 莉莉·怀特 战吼：你和你的对手的英雄恢复4点生命值，抽2张牌
     /// </summary>
@@ -427,26 +442,22 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD,(game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return false;
-            },async (game,card,arg,targets)=>
-            {
-                await game.players.Select(p=>p.master).heal(game,card,4);
-                foreach (var p in game.players)
+            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD, (game, card, arg) => { return true; },
+                (game, card, targets) => { return false; }, async (game, card, arg, targets) =>
                 {
-                    for (int i = 0; i < 2; i++)
+                    await game.players.Select(p => p.master).heal(game, card, 4);
+                    foreach (var p in game.players)
                     {
-                        await p.draw(game);
+                        for (int i = 0; i < 2; i++)
+                        {
+                            await p.draw(game);
+                        }
                     }
-                }
-            })
+                })
         };
     }
 
@@ -460,16 +471,15 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH , KEYWORD._DeathRattle };
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.RUSH, KEYWORD._DeathRattle};
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new DeathRattle(ID,(g1,c1,p)=>
-            {
-                return c1.getOwner().setGem(g1, c1.getOwner().gem + 1);
-            })
+            new DeathRattle(ID, (g1, c1, p) => { return c1.getOwner().setGem(g1, c1.getOwner().gem + 1); })
         };
     }
+
     /// <summary>
     /// 121 琪露诺 战吼：冻结一个敌方角色。
     /// </summary>
@@ -480,16 +490,15 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect(async(game,card,target)=>
-            {
-                await target.setFreeze(game,true);
-
-            },PileFlag.oppo | PileFlag.character)
+            new LambdaSingleTargetEffect(async (game, card, target) => { await target.setFreeze(game, true); },
+                PileFlag.oppo | PileFlag.character)
         };
     }
+
     /// <summary>
     /// 222 琪露诺 战吼：冻结目标随从相邻的随从。
     /// </summary>
@@ -500,18 +509,20 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
-        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect(async(game,card,target)=>
+            new LambdaSingleTargetEffect(async (game, card, target) =>
             {
-                foreach( Card t in target.getNearbyCards())
+                foreach (Card t in target.getNearbyCards())
                 {
-                    await t.setFreeze(game,true);
+                    await t.setFreeze(game, true);
                 }
             }, PileFlag.both | PileFlag.field)
         };
     }
+
     /// <summary>
     /// 213 蕾蒂 双方使用的第一张牌法力值消耗增加1点。
     /// </summary>
@@ -522,13 +533,15 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new ConditionalPassiveEffect(new Halo(new GeneratedBuff(ID,new CostModifier(1)), PileFlag.both | PileFlag.hand),
-                (g,c,b)=>g.triggers.getRecordedEvents()
-                .skipUntilLast(e=>e is THHGame.TurnStartEventArg)
-                .OfType<THHPlayer.UseEventArg>()
-                .Where(u=>u.card.pile.name!=PILE.SKILL).Count()<1)
+            new ConditionalPassiveEffect(
+                new Halo(new GeneratedBuff(ID, new CostModifier(1)), PileFlag.both | PileFlag.hand),
+                (g, c, b) => g.triggers.getRecordedEvents()
+                    .skipUntilLast(e => e is THHGame.TurnStartEventArg)
+                    .OfType<THHPlayer.UseEventArg>()
+                    .Where(u => u.card.pile.name != PILE.SKILL).Count() < 1)
             //new THHEffectBefore<THHGame.TurnStartEventArg>(PileName.FIELD,null,null,async (g,c,a)=>
             //{
             //    foreach (var player in g.players)
@@ -548,9 +561,8 @@ namespace TouhouHeartstone.Builtin
             //    }
             //})
         };
-
-        
     }
+
     /// <summary>
     /// 212 橙 战吼：获得+2攻击力和突袭
     /// </summary>
@@ -561,15 +573,17 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect(async(game,card)=>
+            new NoTargetEffect(async (game, card) =>
             {
-                await card.addKeywords(game,KEYWORD.RUSH);
-                await card.addBuff(game,new GeneratedBuff(ID, new AttackModifier(2)));
+                await card.addKeywords(game, KEYWORD.RUSH);
+                await card.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2)));
             })
         };
     }
+
     /// <summary>
     /// 333 小恶魔 战吼：随机将一张墓地中的法术并置入你的手牌。
     /// </summary>
@@ -580,19 +594,22 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = new string[] { TAG.DEMON };
+        public override string[] tags { get; set; } = new string[] {TAG.DEMON};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
         static async Task effect(THHGame game, Card card)
         {
             THHPlayer player = card.getOwner();
             if (!player.hand.isFull)
                 await player.grave.moveTo(game, player.grave.Where(c => c.isSpell()).random(game), player.hand);
-                // await card.getOwner().reborn(game, player.grave.Where(c => c.isSpell()).random(game), player.hand);
+            // await card.getOwner().reborn(game, player.grave.Where(c => c.isSpell()).random(game), player.hand);
         }
     }
+
     /// <summary>
     /// 324 爱丽丝·玛格特洛依德 唯一，当你的回合结束时，召唤一个1/1的人形。
     /// </summary>
@@ -603,15 +620,17 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new BeforeYourTurnEnd(async(game,card,arg)=>
+            new BeforeYourTurnEnd(async (game, card, arg) =>
             {
                 await card.getOwner().createToken(game, game.getDefine<Doll_N>());
             })
         };
     }
+
     /// <summary>
     /// 衍生物 111 人形
     /// </summary>
@@ -623,8 +642,9 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override bool isToken { get; set; } = true;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.TAUNT};
     }
+
     /// <summary>
     /// 433 帕秋莉·诺蕾姬 唯一，战吼：发现两张元素法术，将它们融合并置入手牌。
     /// </summary>
@@ -635,19 +655,21 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 3;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect(async (g1,c1)=>
+            new NoTargetEffect(async (g1, c1) =>
             {
                 List<Card> elementCards = new List<Card>(g1.createCards(Patchouli.getElementCards(g1)));
-                Card a = await c1.getOwner().discover(g1,elementCards,title:"选择一张元素法术作为融合素材");
+                Card a = await c1.getOwner().discover(g1, elementCards, title: "选择一张元素法术作为融合素材");
                 elementCards.Remove(a);
-                Card b = await c1.getOwner().discover(g1,elementCards,title:"选择另一张元素法术作为融合素材");
-                await Patchouli.tryMix(g1,c1.getOwner(),a,b);
+                Card b = await c1.getOwner().discover(g1, elementCards, title: "选择另一张元素法术作为融合素材");
+                await Patchouli.tryMix(g1, c1.getOwner(), a, b);
             })
         };
     }
+
     /// <summary>
     /// 423 莉莉白 当你的回合开始时，使你的其它随从获得+1/+1。
     /// </summary>
@@ -658,17 +680,17 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
-        public override IEffect[] effects { get; set; } = new IEffect[]{
-            new AfterTurnStart(async(game,card,arg)=>
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new AfterTurnStart(async (game, card, arg) =>
             {
-                foreach(var servant in card.getOwner().field.Where(c=>c!=card))
-                    await servant.addBuff(game,new GeneratedBuff(ID,new AttackModifier(1),new LifeModifier(1)));
-            },(game, card, arg) =>
-            {
-                return arg.player == card.getOwner();
-            })
+                foreach (var servant in card.getOwner().field.Where(c => c != card))
+                    await servant.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
+            }, (game, card, arg) => { return arg.player == card.getOwner(); })
         };
     }
+
     /// <summary>
     /// 534 魂魄妖梦 突袭，风怒。
     /// </summary>
@@ -679,8 +701,9 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD.WINDFURY };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.RUSH, KEYWORD.WINDFURY};
     }
+
     /// <summary>
     /// 646 蕾米莉亚·斯卡蕾特 唯一，战吼：弃三张牌，抽三张牌。
     /// </summary>
@@ -691,10 +714,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 6;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
-        public override IEffect[] effects { get; set; } = new IEffect[]{
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE};
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
             new NoTargetEffect(effect)
         };
+
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().randomDiscard(game, 3);
@@ -704,6 +730,7 @@ namespace TouhouHeartstone.Builtin
             }
         }
     }
+
     /// <summary>
     /// 6/6/4 芙兰朵露·斯卡蕾特 唯一，战吼：弃一张牌，随机消灭一个敌方随从。
     /// </summary>
@@ -714,16 +741,20 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
-        public override IEffect[] effects { get; set; } = new IEffect[]{
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE};
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
             new NoTargetEffect(effect)
         };
+
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().randomDiscard(game, 1);
             await game.getOpponent(card.getOwner()).field.random(game).setDead(game, true);
         }
     }
+
     /// <summary>
     /// 6/2/2 十六夜咲夜 战吼：抽一张牌，使其本回合法力值消耗变为0点。
     /// </summary>
@@ -734,17 +765,21 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
             new NoTargetEffect(effect)
         };
+
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().draw(game, out var draw);
             var drawed = draw.card;
             await drawed.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true),
-              new RemoveBuffBefore<THHGame.TurnEndEventArg>(PILE.HAND, ID)));
+                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PILE.HAND, ID)));
         }
     }
+
     /// <summary>
     /// 7/4/5 八云蓝 战吼：召唤橙，并使其获得+3/+1和突袭。
     /// </summary>
@@ -755,12 +790,16 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 7;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 5;
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
             new NoTargetEffect(effect)
         };
+
         static async Task effect(THHGame game, Card card)
         {
-            var createToken = await card.getOwner().createToken(game, game.getDefine<Chen_N>(), card.pile.indexOf(card) + 1);
+            var createToken =
+                await card.getOwner().createToken(game, game.getDefine<Chen_N>(), card.pile.indexOf(card) + 1);
             var chen = createToken.card;
             await chen.addBuff(game, new GeneratedBuff(ID,
                 new AttackModifier(3),
@@ -768,6 +807,7 @@ namespace TouhouHeartstone.Builtin
             await chen.addKeywords(game, KEYWORD.RUSH);
         }
     }
+
     /// <summary>
     /// 8/8/8 西行寺幽幽子 唯一，战吼：吃掉一个随从。
     /// </summary>
@@ -778,15 +818,15 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 8;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((game,card,target)=>
-            {
-                return target.setDead(game,true);
-            },PileFlag.both | PileFlag.field)
+            new LambdaSingleTargetEffect((game, card, target) => { return target.setDead(game, true); },
+                PileFlag.both | PileFlag.field)
         };
     }
+
     /// <summary>
     /// 10/8/8 紫妈 战吼：将其它随从移回其拥有者的手牌。
     /// </summary>
@@ -797,10 +837,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 10;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE};
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
             new NoTargetEffect(effect)
         };
+
         static async Task effect(THHGame game, Card card)
         {
             foreach (var player in game.players)
@@ -809,6 +852,7 @@ namespace TouhouHeartstone.Builtin
             }
         }
     }
+
     /// <summary>
     /// 122 露米娅 潜行，使用骰子决定攻击目标
     /// </summary>
@@ -819,22 +863,22 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.STEALTH };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.STEALTH};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHCard.AttackEventArg>(PILE.FIELD,(g,c,a)=>
-            {
-                return a.card == c;
-            },null,(g,c,a)=>
-            {
-                var oppo = g.getOpponent(c.getOwner());
-                Card[] targets = (new Card[]{ oppo.master }).Concat(oppo.field).ToArray();
-                int dice = g.dice(targets.Length);
-                a.target = targets[dice - 1];
-                return Task.CompletedTask;
-            })
+            new THHEffectBefore<THHCard.AttackEventArg>(PILE.FIELD, (g, c, a) => { return a.card == c; }, null,
+                (g, c, a) =>
+                {
+                    var oppo = g.getOpponent(c.getOwner());
+                    Card[] targets = (new Card[] {oppo.master}).Concat(oppo.field).ToArray();
+                    int dice = g.dice(targets.Length);
+                    a.target = targets[dice - 1];
+                    return Task.CompletedTask;
+                })
         };
     }
+
     /// <summary>
     /// 露娜萨·普莉兹姆利巴 622 战吼：乐队集合！（无论其他成员在哪里！）
     /// </summary>
@@ -845,38 +889,43 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect((g1,c1)=>
-            {
-                return bandAssemble(g1,c1.getOwner(),c1.pile.indexOf(c1));
-            })
+            new NoTargetEffect((g1, c1) => { return bandAssemble(g1, c1.getOwner(), c1.pile.indexOf(c1)); })
         };
+
         public static async Task bandAssemble(THHGame game, THHPlayer player, int position)
         {
             var lunasa = player.field.FirstOrDefault(c => c.define.id == LunasaPrismriver_N.ID);
             if (lunasa == null)
             {
-                lunasa = player.findCardsWherever(game, c => c.define.id == LunasaPrismriver_N.ID, PileFlag.self | PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
+                lunasa = player.findCardsWherever(game, c => c.define.id == LunasaPrismriver_N.ID,
+                    PileFlag.self | PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
                 if (lunasa != null)
                     await player.tryEnterField(game, lunasa.pile, lunasa, position);
             }
+
             var merlin = player.field.FirstOrDefault(c => c.define.id == MerlinPrismriver_N.ID);
             if (merlin == null)
             {
-                merlin = player.findCardsWherever(game, c => c.define.id == MerlinPrismriver_N.ID, PileFlag.self | PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
+                merlin = player.findCardsWherever(game, c => c.define.id == MerlinPrismriver_N.ID,
+                    PileFlag.self | PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
                 if (merlin != null)
                     await player.tryEnterField(game, merlin.pile, merlin, lunasa.pile.indexOf(lunasa) + 1);
             }
+
             var lyrica = player.field.FirstOrDefault(c => c.define.id == LyricaPrismriver_N.ID);
             if (lyrica == null)
             {
-                lyrica = player.findCardsWherever(game, c => c.define.id == LyricaPrismriver_N.ID, PileFlag.self | PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
+                lyrica = player.findCardsWherever(game, c => c.define.id == LyricaPrismriver_N.ID,
+                    PileFlag.self | PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
                 if (lyrica != null)
                     await player.tryEnterField(game, lyrica.pile, lyrica, merlin.pile.indexOf(merlin) + 1);
             }
         }
     }
+
     /// <summary>
     /// 梅露兰·普莉兹姆利巴 612 嘲讽，战吼：乐队集合！（无论其他成员在哪里！）
     /// </summary>
@@ -887,15 +936,17 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.TAUNT};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect((g1,c1)=>
+            new NoTargetEffect((g1, c1) =>
             {
-                return LunasaPrismriver_N.bandAssemble(g1,c1.getOwner(),c1.pile.indexOf(c1));
+                return LunasaPrismriver_N.bandAssemble(g1, c1.getOwner(), c1.pile.indexOf(c1));
             })
         };
     }
+
     /// <summary>
     /// 莉莉卡·普莉兹姆利巴 621 圣盾，战吼：乐队集合！（无论其他成员在哪里！）
     /// </summary>
@@ -906,12 +957,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.SHIELD};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect((g1,c1)=>
+            new NoTargetEffect((g1, c1) =>
             {
-                return LunasaPrismriver_N.bandAssemble(g1,c1.getOwner(),c1.pile.indexOf(c1));
+                return LunasaPrismriver_N.bandAssemble(g1, c1.getOwner(), c1.pile.indexOf(c1));
             })
         };
     }
@@ -928,15 +980,17 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
-        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD._DeathRattle};
+        public override string[] tags { get; set; } = {TAG.BEAST, TAG.BUG};
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new DeathRattle(ID,async(g1,c1,p)=>
-            {
-                await c1.getOwner().addRandomCardToHand(g1, g1.getDefines(new int[] { Beetle_N.ID, Moth_N.ID, Spider_N.ID }));
-            })
+            new DeathRattle(ID,
+                async (g1, c1, p) =>
+                {
+                    await c1.getOwner().addRandomCardToHand(g1,
+                        g1.getDefines(new int[] {Beetle_N.ID, Moth_N.ID, Spider_N.ID}));
+                })
         };
     }
 
@@ -951,8 +1005,8 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override string[] tags { get; set; } = {TAG.BEAST, TAG.BUG};
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.TAUNT};
         public override IEffect[] effects { get; set; } = new IEffect[] { };
     }
 
@@ -967,8 +1021,8 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
+        public override string[] tags { get; set; } = {TAG.BEAST, TAG.BUG};
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.RUSH};
         public override IEffect[] effects { get; set; } = new IEffect[] { };
     }
 
@@ -983,8 +1037,8 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
+        public override string[] tags { get; set; } = {TAG.BEAST, TAG.BUG};
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.POISONOUS};
         public override IEffect[] effects { get; set; } = new IEffect[] { };
     }
 
@@ -998,17 +1052,18 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
-        public override string[] tags { get; set; } = { TAG.BEAST };
+
+        public override string[] tags { get; set; } = {TAG.BEAST};
+
         //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
             new LambdaSingleTargetEffect(async (g, c, t) =>
             {
-                await t.addBuff(g,new GeneratedBuff(ID,new AttackModifier(1,true),
-                                                       new RemoveBuffAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g1, c1, a) =>
-                                                                                {
-                                                                                    return a.player == c.getOwner();
-                                                                                }, ID)));
-            },PileFlag.both | PileFlag.field)
+                await t.addBuff(g, new GeneratedBuff(ID, new AttackModifier(1, true),
+                    new RemoveBuffAfter<THHGame.TurnStartEventArg>(PILE.FIELD,
+                        (g1, c1, a) => { return a.player == c.getOwner(); }, ID)));
+            }, PileFlag.both | PileFlag.field)
         };
     }
 
@@ -1021,10 +1076,13 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
+
         public override int life { get; set; } = 4;
+
         //public override string[] tags { get; set; } = { TAG.BEAST };
         //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
             new NoTargetEffect(effect)
         };
 
@@ -1047,9 +1105,10 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = { TAG.BEAST };
+        public override string[] tags { get; set; } = {TAG.BEAST};
 
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
             new NoTargetEffect(effect)
         };
 
@@ -1057,7 +1116,8 @@ namespace TouhouHeartstone.Builtin
         {
             Card discover = await card.getOwner().discover(game, card.getOwner().deck);
 
-            await card.getOwner().deck.moveTo(game, discover, card.getOwner().deck, card.getOwner().deck.indexOf(card.getOwner().deck.top));
+            await card.getOwner().deck.moveTo(game, discover, card.getOwner().deck,
+                card.getOwner().deck.indexOf(card.getOwner().deck.top));
         }
     }
 
@@ -1072,16 +1132,12 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
 
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
             new NoTargetEffect(effect),
             new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND,
-                                                        (g, c, a) =>
-                                                        {
-                                                            return a.player == c.getOwner() && c.pile == c.getOwner().hand;
-                                                        },null,
-                                                        async(g,c,a)=>{
-                                                            await THHCard.setDefine(c,g,g.getDefine<KamishirasawaKeine_Beast_N>());
-                                                        })
+                (g, c, a) => { return a.player == c.getOwner() && c.pile == c.getOwner().hand; }, null,
+                async (g, c, a) => { await THHCard.setDefine(c, g, g.getDefine<KamishirasawaKeine_Beast_N>()); })
         };
 
         static async Task effect(THHGame game, Card card)
@@ -1105,18 +1161,16 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 2;
         public override bool isToken { get; set; } = true;
-        public override string[] tags { get; set; } = { TAG.BEAST };
+
+        public override string[] tags { get; set; } = {TAG.BEAST};
+
         //  public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
             new NoTargetEffect(effect),
             new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND,
-                                                        (g, c, a) =>
-                                                        {
-                                                            return a.player == c.getOwner() && c.pile == c.getOwner().hand;
-                                                        },null,
-                                                        async(g,c,a)=>{
-                                                            await THHCard.setDefine(c,g,g.getDefine<KamishirasawaKeine_Human_N>());
-                                                        })
+                (g, c, a) => { return a.player == c.getOwner() && c.pile == c.getOwner().hand; }, null,
+                async (g, c, a) => { await THHCard.setDefine(c, g, g.getDefine<KamishirasawaKeine_Human_N>()); })
         };
 
         static async Task effect(THHGame game, Card card)
@@ -1141,24 +1195,22 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 3;
 
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH,KEYWORD._DeathRattle };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.RUSH, KEYWORD._DeathRattle};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-
-            new DeathRattle(ID,async(game,card,arg)=>{
-                await game.getAllServants().damage(game,card,2);
-
-                await card.getOwner().master.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.MASTER,
-                                                                                                                              (g1, c1, a1) =>
-                                                                                                                              {
-                                                                                                                                  return a1.player == c1.getOwner() && card.pile == card.getOwner().grave;
-                                                                                                                              },null,
-                                                                                                                              async (g1, c1, a1) =>
-                                                                                                                              {
-                                                                                                                                  await c1.getOwner().grave.moveTo(g1,card,c1.getOwner().hand);
-
-                                                                                                                                  await c1.getOwner().master.removeBuff(g1);
-                                                                                                                              })));
+            new DeathRattle(ID, async (game, card, arg) =>
+            {
+                await game.getAllServants().damage(game, card, 2);
+                await card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
+                    new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.MASTER,
+                        (g1, c1, a1) => { return a1.player == c1.getOwner() && card.pile == card.getOwner().grave; },
+                        null,
+                        async (g1, c1, a1) =>
+                        {
+                            await c1.getOwner().grave.moveTo(g1, card, c1.getOwner().hand);
+                            await c1.getOwner().master.removeBuff(g1);
+                        })));
                 await game.updateDeath(game);
             })
         };
@@ -1176,31 +1228,32 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 10;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (g, c, t) =>
             {
                 int health = t.getCurrentLife(g);
-                List<Card> options = new List<Card>{g.createCard<GameOfLife_Rise_N>(),g.createCard<GameOfLife_Fall_N>() };
-                Card choice = await c.getOwner().discover(g,options,2,"选择一项");
-                if(choice.define == g.getDefine<GameOfLife_Rise_N>())
+                List<Card> options = new List<Card>
+                    {g.createCard<GameOfLife_Rise_N>(), g.createCard<GameOfLife_Fall_N>()};
+                Card choice = await c.getOwner().discover(g, options, 2, "选择一项");
+                if (choice.define == g.getDefine<GameOfLife_Rise_N>())
                 {
-                    if(health <= t.getLife(g)/2)
+                    if (health <= t.getLife(g) / 2)
                     {
-                        await t.setCurrentLife(g,health*2);
+                        await t.setCurrentLife(g, health * 2);
                     }
                     else
                     {
-                        await t.setCurrentLife(g,t.getLife(g));
+                        await t.setCurrentLife(g, t.getLife(g));
                     }
-
                 }
                 else
                 {
-                    await t.setCurrentLife(g,health/2);
+                    await t.setCurrentLife(g, health / 2);
                 }
-            },PileFlag.both | PileFlag.master)
+            }, PileFlag.both | PileFlag.master)
         };
     }
 
@@ -1246,51 +1299,37 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 10;
         public override int attack { get; set; } = 5;
         public override int life { get; set; } = 10;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
-
         };
 
         static async Task effect(THHGame g, Card c)
         {
-            List<Card> options = new List<Card> { g.createCard<ReturnOfImperishableNight_Eternity_N>(), g.createCard<EndOfImperishableNight_Instant_N>() };
+            List<Card> options = new List<Card>
+            {
+                g.createCard<ReturnOfImperishableNight_Eternity_N>(), g.createCard<EndOfImperishableNight_Instant_N>()
+            };
             Card choice = await c.getOwner().discover(g, options, 2, "选择一项");
             if (choice.define == g.getDefine<ReturnOfImperishableNight_Eternity_N>())
             {
-                await c.getOwner().master.addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
-                                                                                                                (g1, c1, a1) =>
-                                                                                                                {
-                                                                                                                    return a1.player == c1.getOwner();
-                                                                                                                },
-                                                                                                                null,
-                                                                                                                async (g1, c1, a1) =>
-                                                                                                                {
-                                                                                                                    a1.isCanceled = true;
-                                                                                                                }
-                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,
-                                                                                                                                                                       (g1, c1, a1) =>
-                                                                                                                                                                       {
-                                                                                                                                                                           return a1.player == c1.getOwner();
-                                                                                                                                                                       }, ID, 2)));
+                await c.getOwner().master.addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<THHPlayer.DrawEventArg>(
+                    PILE.MASTER,
+                    (g1, c1, a1) => { return a1.player == c1.getOwner(); },
+                    null,
+                    async (g1, c1, a1) => { a1.isCanceled = true; }
+                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,
+                    (g1, c1, a1) => { return a1.player == c1.getOwner(); }, ID, 2)));
 
-                await g.getOpponent(c.getOwner()).master.addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
-                                                                                                                (g1, c1, a1) =>
-                                                                                                                {
-                                                                                                                    return a1.player == c1.getOwner();
-                                                                                                                },
-                                                                                                                null,
-                                                                                                                async (g1, c1, a1) =>
-                                                                                                                {
-                                                                                                                    a1.isCanceled = true;
-                                                                                                                }
-                                                                                                                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,
-                                                                                                                                                                        (g1, c1, a1) =>
-                                                                                                                                                                        {
-                                                                                                                                                                            return a1.player == c1.getOwner();
-                                                                                                                                                                        }, ID, 2)));
-
+                await g.getOpponent(c.getOwner()).master.addBuff(g, new GeneratedBuff(ID,
+                    new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
+                        (g1, c1, a1) => { return a1.player == c1.getOwner(); },
+                        null,
+                        async (g1, c1, a1) => { a1.isCanceled = true; }
+                    ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,
+                        (g1, c1, a1) => { return a1.player == c1.getOwner(); }, ID, 2)));
             }
             else
             {
@@ -1338,6 +1377,7 @@ namespace TouhouHeartstone.Builtin
         {
         };
     }
+
     /// <summary>
     /// 红美铃 407 嘲讽 当该随从受到伤害后攻击力+3
     /// </summary>
@@ -1348,16 +1388,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 7;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.TAUNT};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field,(g,c,a)=>
-            {
-                return a.infoDic.ContainsKey(c);
-            },null,(g,c,a)=>
-            {
-                return c.addBuff(g,new GeneratedBuff(ID,new AttackModifier(3)));
-            })
+            new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field,
+                (g, c, a) => { return a.infoDic.ContainsKey(c); }, null,
+                (g, c, a) => { return c.addBuff(g, new GeneratedBuff(ID, new AttackModifier(3))); })
         };
     }
 
@@ -1373,18 +1410,14 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 4;
-        public override string[] tags { get; set; } = { TAG.GOD };
+        public override string[] tags { get; set; } = {TAG.GOD};
 
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
-            {
-                return arg.player == card.getOwner();
-            },null,async(game,card,arg)=>
-            {
-                await game.getOpponent(card.getOwner()).addCardToHand<Neutral_73>(game);
-            })
+            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD,
+                (game, card, arg) => { return arg.player == card.getOwner(); }, null,
+                async (game, card, arg) => { await game.getOpponent(card.getOwner()).addCardToHand<Neutral_73>(game); })
         };
     }
 
@@ -1398,16 +1431,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = { TAG.GOD };
+        public override string[] tags { get; set; } = {TAG.GOD};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
-            {
-                return arg.player == card.getOwner();
-            },null,async(game,card,arg)=>
-            {
-                await card.getOwner().addCardToHand<Neutral_74>(game);
-            })
+            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD,
+                (game, card, arg) => { return arg.player == card.getOwner(); }, null,
+                async (game, card, arg) => { await card.getOwner().addCardToHand<Neutral_74>(game); })
         };
     }
 
@@ -1422,7 +1452,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = { TAG.GOD };
+        public override string[] tags { get; set; } = {TAG.GOD};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -1445,7 +1476,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD, KEYWORD.STEALTH };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.SHIELD, KEYWORD.STEALTH};
         public override IEffect[] effects { get; set; } = new IEffect[] { };
     }
 
@@ -1461,7 +1492,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 5;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.TAUNT};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -1488,7 +1520,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 3;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.CHARGE };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.CHARGE};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -1511,14 +1544,17 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD.UNIQUE};
-        public override string[] tags { get; set; } = { TAG.GOD };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.RUSH, KEYWORD.UNIQUE};
+        public override string[] tags { get; set; } = {TAG.GOD};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new DeathRattle(ID, async (game, card, p) =>
-            {
-                await card.getOwner().createToken(game, game.getOpponent(card.getOwner()).field.count, game.getDefine<Frog_N>());
-            })
+            new DeathRattle(ID,
+                async (game, card, p) =>
+                {
+                    await card.getOwner().createToken(game, game.getOpponent(card.getOwner()).field.count,
+                        game.getDefine<Frog_N>());
+                })
         };
     }
 
@@ -1534,7 +1570,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
         public override bool isToken { get; set; } = true;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.RUSH};
     }
 
     /// <summary>
@@ -1548,12 +1584,14 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 7;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 6;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
-        public override string[] tags { get; set; } = { TAG.GOD };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE};
+        public override string[] tags { get; set; } = {TAG.GOD};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
         static async Task effect(THHGame game, Card card)
         {
             Card top;
@@ -1577,8 +1615,9 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 10;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
-        public override string[] tags { get; set; } = { TAG.GOD };
+        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE};
+        public override string[] tags { get; set; } = {TAG.GOD};
+
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -1591,13 +1630,13 @@ namespace TouhouHeartstone.Builtin
             var enumerable = cards.ToList();
             foreach (var t in enumerable)
             {
-                await card.getOwner().hand.moveTo(game, t, card.getOwner().deck);              
+                await card.getOwner().hand.moveTo(game, t, card.getOwner().deck);
             }
-            for(int i=0; i < enumerable.Count; i++)
+
+            for (int i = 0; i < enumerable.Count; i++)
             {
                 await card.getOwner().createToken(game, game.getDefine<Onbashira>());
             }
-            
         }
     }
 
@@ -1621,15 +1660,18 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Neutral_73 : SpellCardDefine
     {
-        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x073;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x073;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
+
         public override bool isToken { get; set; } = true;
+
         //  public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
         static async Task effect(THHGame game, Card card)
         {
         }
@@ -1640,17 +1682,80 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Neutral_74 : SpellCardDefine
     {
-        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x074;
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x074;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
+
         public override bool isToken { get; set; } = true;
+
         //  public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect(async(game,card,target)=>
-            {
-                await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(2)));
-            },PileFlag.both | PileFlag.field)
+            new LambdaSingleTargetEffect(
+                async (game, card, target) =>
+                {
+                    await target.addBuff(game, new GeneratedBuff(ID, new LifeModifier(2)));
+                }, PileFlag.both | PileFlag.field)
+        };
+    }
+
+    /// <summary>
+    /// 琪斯美 2/2/2
+    /// 在对手使用一张花费大于或等于4的仆从后，将该仆从从你的手牌置入战场。
+    /// </summary>
+    public class Kisume : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x075;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 2;
+        public override int life { get; set; } = 2;
+        public override string[] keywords { get; set; } = {KEYWORD.TAUNT};
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.HAND,
+                (game, card, arg) =>
+                    card.getOwner() != arg.player && arg.cost >= 4 && arg.card.define is ServantCardDefine, null,
+                (game, card, arg) => card.getOwner().hand.moveTo(game, card, card.getOwner().field))
+        };
+    }
+
+    /// <summary>
+    /// 黑谷山女 2/1/4
+    /// 该仆从对其他仆从造成伤害后，若受伤仆从仍然存活则将其生命值转变为1。
+    /// </summary>
+    public class KurodaniYamame : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x076;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 1;
+
+        public override int life { get; set; } = 4;
+        // public override string[] keywords { get; set; } = {};
+        // public override string type { get; set; }
+        // public override bool isToken { get; set; }
+        // public override bool isActive { get; set; }
+        // public override int spellDamage { get; set; }
+        // public override int damageReduce { get; set; }
+        // public override string[] tags { get; set; }
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field, 
+                (game, card, arg) => arg.infoDic.Values.Select(info=>info.source).Contains(card),null,
+                (game, card, arg) => 
+                {
+                    foreach (var pair in arg.infoDic.Where(info => info.Value.source == card))
+                    {
+                        if (!pair.Key.isDead(game) && !(pair.Key.define is MasterCardDefine))
+                        {
+                            pair.Key.setCurrentLife(game,1);
+                        }
+                    }
+                    return Task.CompletedTask;
+                })
         };
     }
 }
