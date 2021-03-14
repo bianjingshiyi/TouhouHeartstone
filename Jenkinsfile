@@ -141,7 +141,7 @@ pipeline {
                     // Upload ALL package to CowTransfer (or other)
                     withCredentials([string(credentialsId: 'cow_cookie', variable: 'cow_cookie')]) {
                         script {
-                            def result = sh label: '', returnStdout: true, script: "$JENKINS_HOME/transfer cow --cookie=\"\$cow_cookie;\" -s $WORKSPACE/Build/_artifact/ | grep 'Download Link' | awk '{print \$3}'"
+                            def result = sh label: '', returnStdout: true, script: "$JENKINS_HOME/transfer wet -s $WORKSPACE/Build/_artifact/ | grep 'Download Link' | awk '{print \$3}'"
                             env.DOWNLOAD_LINK = result
                             echo "${result}"
                         }
