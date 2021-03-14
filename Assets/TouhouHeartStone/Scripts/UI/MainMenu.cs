@@ -15,24 +15,29 @@ namespace UI
         {
             base.Awake();
             autoInit();
-            buildButtonButtonBlack.asButton.onClick.AddListener(() =>
+            buildButton.onClick.AddListener(() =>
             {
                 main.display(main.Build);
             });
-            quitButtonButtonBlack.asButton.onClick.AddListener(() =>
+            quitButton.onClick.AddListener(() =>
             {
                 Application.Quit();
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
 #endif
             });
-            aboutButtonButtonBlack.asButton.onClick.AddListener(() =>
+            aboutButton.onClick.AddListener(() =>
             {
                 main.display(main.AboutPage);
             });
-            settingButtonButtonBlack.asButton.onClick.AddListener(() =>
+            settingButton.onClick.AddListener(() =>
             {
                 main.display(main.SettingPage);
+            });
+            newsButton.onClick.AddListener(() => 
+            {
+                // 等之后有空再改
+                newsPanel.gameObject.SetActive(true);
             });
         }
     }

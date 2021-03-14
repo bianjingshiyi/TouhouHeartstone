@@ -47,13 +47,13 @@ namespace Game
             base.onAwake();
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             Main main = ui.getObject<Main>();
-            main.MainMenu.manMachineButtonButtonBlack.asButton.onClick.set(showLocalRoom);
-            main.MainMenu.networkButtonButtonBlack.asButton.onClick.set(() =>
+            main.MainMenu.vsBotButton.onClick.set(showLocalRoom);
+            main.MainMenu.lANButton.onClick.set(() =>
             {
                 main.display(main.NetworkingPage);
                 _ = network.displayPanelForLAN();
             });
-            main.MainMenu.lobbyButtonButtonBlack.asButton.onClick.set(() =>
+            main.MainMenu.serverButton.onClick.set(() =>
             {
                 if (network.client.account != null)
                 {

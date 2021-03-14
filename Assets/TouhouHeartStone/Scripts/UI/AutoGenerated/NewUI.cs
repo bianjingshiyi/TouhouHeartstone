@@ -27,7 +27,7 @@ namespace UI
         {
             this.m_as_Canvas = this.GetComponent<Canvas>();
             this._Main = this.transform.Find("Main").GetComponent<Main>();
-            this._CopyrightText = this.transform.Find("Copyright").GetComponent<Text>();
+            // this._CopyrightText = this.transform.Find("Copyright").GetComponent<Text>();
             this._VersionText = this.transform.Find("Version").GetComponent<Text>();
         }
         [SerializeField()]
@@ -56,7 +56,7 @@ namespace UI
                 return this._Main;
             }
         }
-        [SerializeField()]
+/*        [SerializeField()]
         private Text _CopyrightText;
         public Text CopyrightText
         {
@@ -68,7 +68,7 @@ namespace UI
                 }
                 return this._CopyrightText;
             }
-        }
+        }*/
         [SerializeField()]
         private Text _VersionText;
         public Text VersionText

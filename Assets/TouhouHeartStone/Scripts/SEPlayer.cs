@@ -13,7 +13,7 @@ namespace Game
         }
         public void PlaySE(string name)
         {
-            this.findInstance<SEManager>().PlaySE(name);
+            this.findInstance<SEManager>()?.PlaySE(name);
         }
     }
 }

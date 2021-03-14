@@ -18,6 +18,11 @@ namespace IGensoukyo.Utilities
 
         protected int ItemCount => itemList.Count;
 
+        protected void Awake()
+        {
+            prefab.gameObject.SetActive(false);
+        }
+
         protected T SpawnItem()
         {
             T item = Instantiate(prefab, spawnRoot);

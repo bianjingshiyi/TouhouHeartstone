@@ -11,136 +11,211 @@
 namespace UI
 {
     using System;
+    using UnityEngine;
+    using BJSYGameCore;
     using UnityEngine.UI;
-    using BJSYGameCore.AutoCompo;
     using UI;
     
     public partial class MainMenu
     {
         public void autoInit()
         {
-            this._ButtonsVerticalLayoutGroup = this.transform.Find(PATH_BUTTONSVERTICALLAYOUTGROUP).GetComponent<VerticalLayoutGroup>();
-            this._ManMachineButtonButtonBlack = this.transform.Find(PATH_MANMACHINEBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
-            this._NetworkButtonButtonBlack = this.transform.Find(PATH_NETWORKBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
-            this._LobbyButtonButtonBlack = this.transform.Find(PATH_LOBBYBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
-            this._BuildButtonButtonBlack = this.transform.Find(PATH_BUILDBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
-            this._SettingButtonButtonBlack = this.transform.Find(PATH_SETTINGBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
-            this._AboutButtonButtonBlack = this.transform.Find(PATH_ABOUTBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
-            this._QuitButtonButtonBlack = this.transform.Find(PATH_QUITBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
+            this._buttonPanel = this.transform.Find(PATH_BUTTONPANEL).gameObject;
+            this._vsBotButton = this.transform.Find(PATH_VSBOTBUTTON).GetComponent<Button>();
+            this._vsBotButton.onClick.AddListener(this.VsBotButtonClickCallback);
+            this._lANButton = this.transform.Find(PATH_LANBUTTON).GetComponent<Button>();
+            this._lANButton.onClick.AddListener(this.LANButtonClickCallback);
+            this._serverButton = this.transform.Find(PATH_SERVERBUTTON).GetComponent<Button>();
+            this._serverButton.onClick.AddListener(this.ServerButtonClickCallback);
+            this._buildButton = this.transform.Find(PATH_BUILDBUTTON).GetComponent<Button>();
+            this._buildButton.onClick.AddListener(this.BuildButtonClickCallback);
+            this._replayButton = this.transform.Find(PATH_REPLAYBUTTON).GetComponent<Button>();
+            this._replayButton.onClick.AddListener(this.ReplayButtonClickCallback);
+            this._newsButton = this.transform.Find(PATH_NEWSBUTTON).GetComponent<Button>();
+            this._newsButton.onClick.AddListener(this.NewsButtonClickCallback);
+            this._aboutButton = this.transform.Find(PATH_ABOUTBUTTON).GetComponent<Button>();
+            this._aboutButton.onClick.AddListener(this.AboutButtonClickCallback);
             this._LogoImage = this.transform.Find(PATH_LOGOIMAGE).GetComponent<Image>();
             this._RegisterPanel = this.transform.Find(PATH_REGISTERPANEL).GetComponent<RegisterPanel>();
             this._LoginPanel = this.transform.Find(PATH_LOGINPANEL).GetComponent<LoginPanel>();
             this._RecoverPanel = this.transform.Find(PATH_RECOVERPANEL).GetComponent<RecoverPanel>();
             this._PlayerInfoPanel = this.transform.Find(PATH_PLAYERINFOPANEL).GetComponent<PlayerInfoPanel>();
-            this._replayButton = this.transform.Find(PATH_REPLAYBUTTON).GetComponent<Button>();
-            this._replayButton.onClick.AddListener(this.ReplayButtonClickCallback);
+            this._settingButton = this.transform.Find(PATH_SETTINGBUTTON).GetComponent<Button>();
+            this._settingButton.onClick.AddListener(this.SettingButtonClickCallback);
+            this._newsPanel = this.transform.Find(PATH_NEWSPANEL).GetComponent<NewsPanel>();
+            this._quitButton = this.transform.Find(PATH_QUITBUTTON).GetComponent<Button>();
+            this._quitButton.onClick.AddListener(this.QuitButtonClickCallback);
         }
         public void autoClear()
         {
+            this._vsBotButton.onClick.RemoveListener(this.VsBotButtonClickCallback);
+            this._lANButton.onClick.RemoveListener(this.LANButtonClickCallback);
+            this._serverButton.onClick.RemoveListener(this.ServerButtonClickCallback);
+            this._buildButton.onClick.RemoveListener(this.BuildButtonClickCallback);
             this._replayButton.onClick.RemoveListener(this.ReplayButtonClickCallback);
+            this._newsButton.onClick.RemoveListener(this.NewsButtonClickCallback);
+            this._aboutButton.onClick.RemoveListener(this.AboutButtonClickCallback);
+            this._settingButton.onClick.RemoveListener(this.SettingButtonClickCallback);
+            this._quitButton.onClick.RemoveListener(this.QuitButtonClickCallback);
         }
-        public VerticalLayoutGroup _ButtonsVerticalLayoutGroup;
-        public const string PATH_BUTTONSVERTICALLAYOUTGROUP = "ButtonPanel/Buttons";
-        public VerticalLayoutGroup buttonsVerticalLayoutGroup
+        public GameObject _buttonPanel;
+        public const string PATH_BUTTONPANEL = "ButtonPanel";
+        public GameObject buttonPanel
         {
             get
             {
-                if ((this._ButtonsVerticalLayoutGroup == null))
+                if ((this._buttonPanel == null))
                 {
-                    this._ButtonsVerticalLayoutGroup = this.transform.Find(PATH_BUTTONSVERTICALLAYOUTGROUP).GetComponent<VerticalLayoutGroup>();
+                    this._buttonPanel = this.transform.Find(PATH_BUTTONPANEL).gameObject;
                 }
-                return this._ButtonsVerticalLayoutGroup;
+                return this._buttonPanel;
             }
         }
-        public ButtonBlack _ManMachineButtonButtonBlack;
-        public const string PATH_MANMACHINEBUTTONBUTTONBLACK = "ButtonPanel/Buttons/ManMachineButton";
-        public ButtonBlack manMachineButtonButtonBlack
+        public Button _vsBotButton;
+        public const string PATH_VSBOTBUTTON = "ButtonPanel/MainBtn/VsBot";
+        public Button vsBotButton
         {
             get
             {
-                if ((this._ManMachineButtonButtonBlack == null))
+                if ((this._vsBotButton == null))
                 {
-                    this._ManMachineButtonButtonBlack = this.transform.Find(PATH_MANMACHINEBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
+                    this._vsBotButton = this.transform.Find(PATH_VSBOTBUTTON).GetComponent<Button>();
                 }
-                return this._ManMachineButtonButtonBlack;
+                return this._vsBotButton;
             }
         }
-        public ButtonBlack _NetworkButtonButtonBlack;
-        public const string PATH_NETWORKBUTTONBUTTONBLACK = "ButtonPanel/Buttons/NetworkButton";
-        public ButtonBlack networkButtonButtonBlack
+        public event Action onVsBotButtonClick;
+        private void VsBotButtonClickCallback()
         {
-            get
+            if ((this.onVsBotButtonClick != null))
             {
-                if ((this._NetworkButtonButtonBlack == null))
-                {
-                    this._NetworkButtonButtonBlack = this.transform.Find(PATH_NETWORKBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
-                }
-                return this._NetworkButtonButtonBlack;
+                this.onVsBotButtonClick();
             }
         }
-        public ButtonBlack _LobbyButtonButtonBlack;
-        public const string PATH_LOBBYBUTTONBUTTONBLACK = "ButtonPanel/Buttons/LobbyButton";
-        public ButtonBlack lobbyButtonButtonBlack
+        public Button _lANButton;
+        public const string PATH_LANBUTTON = "ButtonPanel/MainBtn/LAN";
+        public Button lANButton
         {
             get
             {
-                if ((this._LobbyButtonButtonBlack == null))
+                if ((this._lANButton == null))
                 {
-                    this._LobbyButtonButtonBlack = this.transform.Find(PATH_LOBBYBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
+                    this._lANButton = this.transform.Find(PATH_LANBUTTON).GetComponent<Button>();
                 }
-                return this._LobbyButtonButtonBlack;
+                return this._lANButton;
             }
         }
-        public ButtonBlack _BuildButtonButtonBlack;
-        public const string PATH_BUILDBUTTONBUTTONBLACK = "ButtonPanel/Buttons/BuildButton";
-        public ButtonBlack buildButtonButtonBlack
+        public event Action onLANButtonClick;
+        private void LANButtonClickCallback()
         {
-            get
+            if ((this.onLANButtonClick != null))
             {
-                if ((this._BuildButtonButtonBlack == null))
-                {
-                    this._BuildButtonButtonBlack = this.transform.Find(PATH_BUILDBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
-                }
-                return this._BuildButtonButtonBlack;
+                this.onLANButtonClick();
             }
         }
-        public ButtonBlack _SettingButtonButtonBlack;
-        public const string PATH_SETTINGBUTTONBUTTONBLACK = "ButtonPanel/Buttons/SettingButton";
-        public ButtonBlack settingButtonButtonBlack
+        public Button _serverButton;
+        public const string PATH_SERVERBUTTON = "ButtonPanel/MainBtn/Server";
+        public Button serverButton
         {
             get
             {
-                if ((this._SettingButtonButtonBlack == null))
+                if ((this._serverButton == null))
                 {
-                    this._SettingButtonButtonBlack = this.transform.Find(PATH_SETTINGBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
+                    this._serverButton = this.transform.Find(PATH_SERVERBUTTON).GetComponent<Button>();
                 }
-                return this._SettingButtonButtonBlack;
+                return this._serverButton;
             }
         }
-        public ButtonBlack _AboutButtonButtonBlack;
-        public const string PATH_ABOUTBUTTONBUTTONBLACK = "ButtonPanel/Buttons/AboutButton";
-        public ButtonBlack aboutButtonButtonBlack
+        public event Action onServerButtonClick;
+        private void ServerButtonClickCallback()
         {
-            get
+            if ((this.onServerButtonClick != null))
             {
-                if ((this._AboutButtonButtonBlack == null))
-                {
-                    this._AboutButtonButtonBlack = this.transform.Find(PATH_ABOUTBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
-                }
-                return this._AboutButtonButtonBlack;
+                this.onServerButtonClick();
             }
         }
-        public ButtonBlack _QuitButtonButtonBlack;
-        public const string PATH_QUITBUTTONBUTTONBLACK = "ButtonPanel/Buttons/QuitButton";
-        public ButtonBlack quitButtonButtonBlack
+        public Button _buildButton;
+        public const string PATH_BUILDBUTTON = "ButtonPanel/MainBtn/Build";
+        public Button buildButton
         {
             get
             {
-                if ((this._QuitButtonButtonBlack == null))
+                if ((this._buildButton == null))
                 {
-                    this._QuitButtonButtonBlack = this.transform.Find(PATH_QUITBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
+                    this._buildButton = this.transform.Find(PATH_BUILDBUTTON).GetComponent<Button>();
                 }
-                return this._QuitButtonButtonBlack;
+                return this._buildButton;
+            }
+        }
+        public event Action onBuildButtonClick;
+        private void BuildButtonClickCallback()
+        {
+            if ((this.onBuildButtonClick != null))
+            {
+                this.onBuildButtonClick();
+            }
+        }
+        public Button _replayButton;
+        public const string PATH_REPLAYBUTTON = "ButtonPanel/MainBtn/Replay";
+        public Button replayButton
+        {
+            get
+            {
+                if ((this._replayButton == null))
+                {
+                    this._replayButton = this.transform.Find(PATH_REPLAYBUTTON).GetComponent<Button>();
+                }
+                return this._replayButton;
+            }
+        }
+        public event Action onReplayButtonClick;
+        private void ReplayButtonClickCallback()
+        {
+            if ((this.onReplayButtonClick != null))
+            {
+                this.onReplayButtonClick();
+            }
+        }
+        public Button _newsButton;
+        public const string PATH_NEWSBUTTON = "ButtonPanel/SettingBtns/NewsButton";
+        public Button newsButton
+        {
+            get
+            {
+                if ((this._newsButton == null))
+                {
+                    this._newsButton = this.transform.Find(PATH_NEWSBUTTON).GetComponent<Button>();
+                }
+                return this._newsButton;
+            }
+        }
+        public event Action onNewsButtonClick;
+        private void NewsButtonClickCallback()
+        {
+            if ((this.onNewsButtonClick != null))
+            {
+                this.onNewsButtonClick();
+            }
+        }
+        public Button _aboutButton;
+        public const string PATH_ABOUTBUTTON = "ButtonPanel/SettingBtns/AboutButton";
+        public Button aboutButton
+        {
+            get
+            {
+                if ((this._aboutButton == null))
+                {
+                    this._aboutButton = this.transform.Find(PATH_ABOUTBUTTON).GetComponent<Button>();
+                }
+                return this._aboutButton;
+            }
+        }
+        public event Action onAboutButtonClick;
+        private void AboutButtonClickCallback()
+        {
+            if ((this.onAboutButtonClick != null))
+            {
+                this.onAboutButtonClick();
             }
         }
         public Image _LogoImage;
@@ -208,25 +283,59 @@ namespace UI
                 return this._PlayerInfoPanel;
             }
         }
-        public Button _replayButton;
-        public const string PATH_REPLAYBUTTON = "ButtonPanel/Buttons/ReplayButton";
-        public Button replayButton
+        public Button _settingButton;
+        public const string PATH_SETTINGBUTTON = "ButtonPanel/SettingBtns/SettingButton";
+        public Button settingButton
         {
             get
             {
-                if ((this._replayButton == null))
+                if ((this._settingButton == null))
                 {
-                    this._replayButton = this.transform.Find(PATH_REPLAYBUTTON).GetComponent<Button>();
+                    this._settingButton = this.transform.Find(PATH_SETTINGBUTTON).GetComponent<Button>();
                 }
-                return this._replayButton;
+                return this._settingButton;
             }
         }
-        public event Action onReplayButtonClick;
-        private void ReplayButtonClickCallback()
+        public event Action onSettingButtonClick;
+        private void SettingButtonClickCallback()
         {
-            if ((this.onReplayButtonClick != null))
+            if ((this.onSettingButtonClick != null))
             {
-                this.onReplayButtonClick();
+                this.onSettingButtonClick();
+            }
+        }
+        public NewsPanel _newsPanel;
+        public const string PATH_NEWSPANEL = "NewsPanel";
+        public NewsPanel newsPanel
+        {
+            get
+            {
+                if ((this._newsPanel == null))
+                {
+                    this._newsPanel = this.transform.Find(PATH_NEWSPANEL).GetComponent<NewsPanel>();
+                }
+                return this._newsPanel;
+            }
+        }
+        public Button _quitButton;
+        public const string PATH_QUITBUTTON = "ButtonPanel/SettingBtns/QuitButton";
+        public Button quitButton
+        {
+            get
+            {
+                if ((this._quitButton == null))
+                {
+                    this._quitButton = this.transform.Find(PATH_QUITBUTTON).GetComponent<Button>();
+                }
+                return this._quitButton;
+            }
+        }
+        public event Action onQuitButtonClick;
+        private void QuitButtonClickCallback()
+        {
+            if ((this.onQuitButtonClick != null))
+            {
+                this.onQuitButtonClick();
             }
         }
     }

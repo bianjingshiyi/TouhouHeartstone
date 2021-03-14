@@ -27,7 +27,11 @@ namespace IGensoukyo
         public string Html
         {
             get => _html;
-            set => _html = value;
+            set {
+                _cachedHtml = value;
+                _html = value;
+                renderHTML();
+            }
         }
 
         void Update()
@@ -274,12 +278,12 @@ namespace IGensoukyo
 
         void renderHTML()
         {
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(_cachedHtml);
-
             // reset
             hideAll();
             listIntent = 0;
+
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(_cachedHtml);
 
             var currentNode = htmlDoc.DocumentNode.FirstChild;
             while (currentNode != null)
