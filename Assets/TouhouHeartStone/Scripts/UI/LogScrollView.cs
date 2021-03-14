@@ -22,12 +22,14 @@ namespace UI
         public void shrink()
         {
             _isExpanded = false;
-            rectTransform.setWidth(_minSize.x);
+            hide();
+            //rectTransform.setWidth(_minSize.x);
         }
         public void expand()
         {
             _isExpanded = true;
-            rectTransform.setWidth(LogList.rectTransform.rect.size.x);
+            display();
+            //rectTransform.setWidth(LogList.rectTransform.rect.size.x);
         }
     }
 }
