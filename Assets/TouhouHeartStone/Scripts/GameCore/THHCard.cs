@@ -1407,7 +1407,6 @@ namespace TouhouHeartstone
                 {
                     var toHand = g.Take(restCount);
                     game.logger.log("将" + string.Join("，", toHand) + "置入" + g.Key + "的手牌");
-                    await cards.resetCard(game);
                     await g.Key.grave.moveTo(game, toHand, g.Key.hand);
                 }
                 if (restCount < g.Count())

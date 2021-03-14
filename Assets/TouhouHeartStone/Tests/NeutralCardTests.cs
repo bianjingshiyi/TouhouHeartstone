@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using System.Linq;
@@ -1031,15 +1032,106 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(KurodaniYamame.ID, 2));
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse<DefaultServant>(game,out var ds);
+            oppo.cmdUse<DefaultServant>(game, out var ds);
             game.skipUntilCanUse<KurodaniYamame>(you);
             you.cmdUse<KurodaniYamame>(game, out var s);
             you.cmdTurnEnd(game);
             game.skipUntilYourTurn(you);
             you.cmdAttack(game, s, ds);
             Assert.False(ds.isDead(game));
-            Assert.AreEqual(1,ds.getCurrentLife(game));
+            Assert.AreEqual(1, ds.getCurrentLife(game));
             game.Dispose();
+        }
+
+        [Test]
+        public void MizuhashiParseeTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(MizuhashiParsee.ID, 2));
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            oppo.cmdUse<DefaultServant>(game, out var def);
+            game.skipUntilCanUse<MizuhashiParsee>(you);
+            you.cmdUse<MizuhashiParsee>(game, out var s);
+            Assert.AreEqual(2, s.getAttack(game));
+            game.skipUntilCanUse<MizuhashiParsee>(you);
+            def.setAttack(game, 3);
+            you.cmdUse<MizuhashiParsee>(game, out s);
+            Assert.AreEqual(4, s.getAttack(game));
+            game.Dispose();
+        }
+
+        [Test]
+        public void HoshigumaYugiTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(HoshigumaYugi.ID, 2));
+            game.skipUntilCanUse<DefaultServant>(oppo);
+            var yugi = you.hand.getCard<HoshigumaYugi>();
+            Assert.NotNull(yugi);
+            Assert.AreEqual(8, yugi.getCost(game));
+            oppo.cmdUse<DefaultServant>(game, out var def);
+            Assert.AreEqual(8 - def.getAttack(game), yugi.getCost(game));
+            def.addBuff(game, new GeneratedBuff(1, new AttackModifier(2)));
+            Assert.AreEqual(8 - def.getAttack(game), yugi.getCost(game));
+            game.Dispose();
+        }
+
+        [Test]
+        public void KomeijiSatoriTest()
+        {
+            TestGameflow.createGame<KomeijiSatori, DefaultServant>(out var game, out var you, out var oppo);
+            game.skipUntilHasGem(oppo, 10);
+            oppo.cmdUse<DefaultServant>(game, out var def);
+            game.skipUntilYourTurn(you);
+            you.cmdUse<KomeijiSatori>(game);
+            DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
+            Assert.NotNull(discoverRequest);
+            int id = discoverRequest.cardIdArray[0];
+            you.cmdDiscover(game, id);
+            Assert.AreEqual(1, you.hand.Count(c => c.define is DefaultServant));
+        }
+
+        [Test]
+        public void KaenbyouRinTest()
+        {
+            TestGameflow.createGame<KaenbyouRin, DefaultServant>(out var game, out var you, out var oppo);
+            game.skipUntilHasGem(oppo, 10);
+            for (int i = 0; i < 3; i++)
+            {
+                oppo.cmdUse<DefaultServant>(game);
+            }
+            game.skipUntilYourTurn(you);
+            you.cmdUse<KaenbyouRin>(game, out var rin);
+            var atk = rin.getAttack(game);
+            Assert.AreEqual(1,atk);
+            oppo.field.setDead(game, true);
+            rin.setDead(game,true);
+            game.updateDeath(game);
+            you.cmdUse<KaenbyouRin>(game, out rin);
+            Assert.AreEqual(atk+4, rin.getAttack(game));
+        }
+
+        [Test]
+        public void ReiujiUtsuhoTest()
+        {
+            TestGameflow.createGame<ReiujiUtsuho, DefaultServant>(out var game, out var you, out var oppo);
+            game.skipUntilHasGem(oppo, 10);
+            for (int i = 0; i < 3; i++)
+            {
+                oppo.cmdUse<DefaultServant>(game);
+            }
+
+            game.skipUntilYourTurn(you);
+            you.cmdUse<ReiujiUtsuho>(game);
+            you.cmdTurnEnd(game);
+            Assert.AreEqual(oppo.field[0].getLife(game) - 3, oppo.field[0].getCurrentLife(game));
+            Assert.AreEqual(you.master.getLife(game) - 3, you.master.getCurrentLife(game));
+        }
+        
+        [Test]
+        public void KomeijiKoishiTest()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1714,10 +1714,10 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.HAND,
+            new THHEffectAfter<THHPlayer.UseEventArg>(PileFlag.hand,
                 (game, card, arg) =>
                     card.getOwner() != arg.player && arg.cost >= 4 && arg.card.define is ServantCardDefine, null,
-                (game, card, arg) => card.getOwner().hand.moveTo(game, card, card.getOwner().field))
+                (game, card, arg) => card.getOwner().tryEnterField(game, card.pile, card, card.getOwner().field.count))
         };
     }
 
@@ -1728,6 +1728,118 @@ namespace TouhouHeartstone.Builtin
     public class KurodaniYamame : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x076;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override int attack { get; set; } = 1;
+
+        public override int life { get; set; } = 4;
+        // public override string[] keywords { get; set; } = {};
+        // public override string type { get; set; }
+        // public override bool isToken { get; set; }
+        // public override bool isActive { get; set; }
+        // public override int spellDamage { get; set; }
+        // public override int damageReduce { get; set; }
+        // public override string[] tags { get; set; }
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field,
+                (game, card, arg) => arg.infoDic.Values.Select(info => info.source).Contains(card), null,
+                (game, card, arg) =>
+                {
+                    foreach (var pair in arg.infoDic.Where(info => info.Value.source == card))
+                    {
+                        if (!pair.Key.isDead(game) && !(pair.Key.define is MasterCardDefine))
+                        {
+                            pair.Key.setCurrentLife(game, 1);
+                        }
+                    }
+
+                    return Task.CompletedTask;
+                })
+        };
+    }
+
+    /// <summary>
+    /// 水桥帕露西 3/2/4
+    /// 宣言：如果场上存在攻击力大于该仆从的角色，获得增益：攻击力+2
+    /// </summary>
+    public class MizuhashiParsee : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x077;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
+
+        public override int life { get; set; } = 4;
+        // public override string[] keywords { get; set; } = {};
+        // public override string type { get; set; }
+        // public override bool isToken { get; set; }
+        // public override bool isActive { get; set; }
+        // public override int spellDamage { get; set; }
+        // public override int damageReduce { get; set; }
+        // public override string[] tags { get; set; }
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            // new NoTargetEffect((game, card) => card.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2))),
+            //     (game, card) => game.getAllServants()
+            //         .Any(s => s.getAttack(game) > card.getAttack(game)))
+            new NoTargetEffect((game, card) =>
+            {
+                if (game.getAllServants().Any(s => s.getAttack(game) > card.getAttack(game)))
+                {
+                    card.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2)));
+                }
+
+                return Task.CompletedTask;
+            })
+        };
+    }
+
+    /// <summary>
+    /// 星熊勇仪 8/7/7
+    /// 对手所控制的最高攻击力仆从每有一点攻击力，该仆从便减少一点花费。
+    /// </summary>
+    public class HoshigumaYugi : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x078;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 8;
+        public override int attack { get; set; } = 7;
+
+        public override int life { get; set; } = 7;
+        // public override string[] keywords { get; set; } = {};
+        // public override string type { get; set; }
+        // public override bool isToken { get; set; }
+        // public override bool isActive { get; set; }
+        // public override int spellDamage { get; set; }
+        // public override int damageReduce { get; set; }
+        // public override string[] tags { get; set; }
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new IntPropFixer<Card.PropChangeEventArg>(PileFlag.hand,
+                new IntPropFixer<Card.PropChangeEventArg>.ModifierFixer(new CostModifier(0),
+                    (game, card, buff, arg) =>
+                    {
+                        var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
+                        return -oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0;
+                    })),
+            // new IntPropFixer<THHPlayer.UseEventArg>(PileFlag.hand,
+            //     new IntPropFixer<THHPlayer.UseEventArg>.ModifierFixer(new CostModifier(0),
+            //         (game, card, buff, arg) => (game as THHGame).getOpponent(card.getOwner()).field
+            //             .Select(s => s.getAttack(game)).Max()))
+        };
+    }
+
+    /// <summary>
+    /// 古明地觉 3/1/4
+    /// 宣言：从对手上个回合内使用过的三张随机牌中选择一张并将其复制置入你的手牌。
+    /// </summary>
+    public class KomeijiSatori : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x079;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 1;
@@ -1743,19 +1855,177 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field, 
-                (game, card, arg) => arg.infoDic.Values.Select(info=>info.source).Contains(card),null,
-                (game, card, arg) => 
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            var recorded = game.triggers.getRecordedEvents();
+            var usedCards = new List<Card>();
+            bool count = false;
+            for (int i = recorded.Length - 1; i >= 0; i--)
+            {
+                if (!count)
                 {
-                    foreach (var pair in arg.infoDic.Where(info => info.Value.source == card))
+                    if (recorded[i] is THHGame.TurnEndEventArg)
                     {
-                        if (!pair.Key.isDead(game) && !(pair.Key.define is MasterCardDefine))
-                        {
-                            pair.Key.setCurrentLife(game,1);
-                        }
+                        count = true;
                     }
-                    return Task.CompletedTask;
-                })
+                }
+                else
+                {
+                    if (recorded[i] is THHPlayer.UseEventArg)
+                    {
+                        usedCards.Add((recorded[i] as THHPlayer.UseEventArg)?.card);
+                    }
+
+                    if (recorded[i] is THHGame.TurnEndEventArg)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            Card choice = await card.getOwner().discover(game, usedCards, 3, null);
+            Card copy = game.createCard(choice.define);
+            await card.getOwner().tryAddCardToHand(game, copy);
+        }
+    }
+
+    /// <summary>
+    /// 火焰猫燐 4/1/3
+    /// 宣言：本回合内每死亡过一个仆从，便获得增益：攻击力+1
+    /// </summary>
+    public class KaenbyouRin : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x080;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+        public override int attack { get; set; } = 1;
+
+        public override int life { get; set; } = 3;
+        // public override string[] keywords { get; set; } = {};
+        // public override string type { get; set; }
+        // public override bool isToken { get; set; }
+        // public override bool isActive { get; set; }
+        // public override int spellDamage { get; set; }
+        // public override int damageReduce { get; set; }
+        // public override string[] tags { get; set; }
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static Task effect(THHGame game, Card card)
+        {
+            var recorded = game.triggers.getRecordedEvents();
+            int count = 0;
+            for (int i = recorded.Length - 1; i > 0; i--)
+            {
+                if (recorded[i] is THHCard.DeathEventArg)
+                {
+                    count += (recorded[i] as THHCard.DeathEventArg).infoDic.Count;
+                }
+
+                if (recorded[i] is THHGame.TurnEndEventArg)
+                {
+                    break;
+                }
+            }
+
+            card.addBuff(game, new GeneratedBuff(ID, new AttackModifier(count)));
+            return Task.CompletedTask;
+        }
+    }
+
+    /// <summary>
+    /// 灵乌路空 6/6/6
+    /// 无法攻击，每当你的回合结束时对其他所有角色造成3点伤害。
+    /// </summary>
+    public class ReiujiUtsuho : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x081;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 6;
+        public override int attack { get; set; } = 6;
+
+        public override int life { get; set; } = 6;
+
+        public override string[] keywords { get; set; } = {KEYWORD.CANTATTACK};
+        // public override string type { get; set; }
+        // public override bool isToken { get; set; }
+        // public override bool isActive { get; set; }
+        // public override int spellDamage { get; set; }
+        // public override int damageReduce { get; set; }
+        // public override string[] tags { get; set; }
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new BeforeYourTurnEnd((game, card, arg) =>
+            {
+                var targets = game.getAllCharacters().ToList();
+                targets.Remove(card);
+                targets.damage(game, card, 3);
+                return Task.CompletedTask;
+            })
+        };
+    }
+
+    /// <summary>
+    /// 古明地恋 5/1/4
+    /// 唯一，永久隐匿，所有目标选择都会改为选择该仆从以外的随机目标。
+    /// </summary>
+    public class KomeijiKoishi : ServantCardDefine
+    {
+        public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x082;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 5;
+        public override int attack { get; set; } = 1;
+
+        public override int life { get; set; } = 4;
+
+        public override string[] keywords { get; set; } = {KEYWORD.STEALTH, KEYWORD.UNIQUE};
+        // public override string type { get; set; }
+        // public override bool isToken { get; set; }
+        // public override bool isActive { get; set; }
+        // public override int spellDamage { get; set; }
+        // public override int damageReduce { get; set; }
+        // public override string[] tags { get; set; }
+
+        private static bool block = true;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field,
+                (game, card, arg) => arg.infoDic.Values.Select(info => info.source).Contains(card), null,
+                async (game, card, arg) => card.setStealth(game, true)),
+            new THHEffectBefore<THHPlayer.UseEventArg>(PileFlag.field,
+                (game, card, arg) => { return arg.targets.Length > 0 && block; }, null,
+                async (game, card, arg) =>
+                {
+                    arg.isCanceled = true;
+                    var count = arg.targets.Count();
+                    block = false;
+                    var availableTargets = arg.card.getAvaliableTargets(game).Where(c => c != card);
+                    var newTargets = availableTargets.randomTake(game, count).ToArray();
+                    var cost = arg.cost;
+                    arg.card.setCost(game,0);
+                    await arg.player.tryUse(game, arg.card, arg.position, newTargets);
+                    arg.card.setCost(game,cost);
+                    block = true;
+                }),
+            // new THHEffectBefore<THHCard.AttackEventArg>(PileFlag.field,
+            //     (game, card, arg) => { return block; }, null,
+            //     async (game, card, arg) =>
+            //     {
+            //         arg.isCanceled = true;
+            //         block = false;
+            //         var availableTargets = arg.card.getAvaliableTargets(game).Where(c => c != card);
+            //         var newTarget = availableTargets.random(game);
+            //         await arg.card.tryAttack(game, arg.card.getOwner(), newTarget);
+            //         block = true;
+            //     })
         };
     }
 }
