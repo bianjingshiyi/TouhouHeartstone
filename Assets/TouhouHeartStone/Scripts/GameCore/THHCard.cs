@@ -784,6 +784,12 @@ namespace TouhouHeartstone
             targets = null;
             return false;
         }
+        /// <summary>
+        /// 这张卡的主动效果的可选目标
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
         public static Card[] getAvaliableTargets(this Card card, THHGame game)
         {
             isNeedTarget(card, game, out var targets);
@@ -1331,6 +1337,34 @@ namespace TouhouHeartstone
             if (index == card.pile.count - 1 && card.pile.count > 1)
                 return new Card[] { card.pile[card.pile.count - 2] };
             return new Card[] { card.pile[index - 1], card.pile[index + 1] };
+        }
+
+        /// <summary>
+        /// 这个随从的可选攻击目标（法术应该不会在场上出现吧
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static List<Card> getAttackableTargets(this Card card, THHGame game)
+        {
+            var targets = new List<Card>();
+            if (card.pile != card.getOwner().field && !(card.define is MasterCardDefine))
+            {
+                return targets;
+            }
+
+            var oppo = game.getOpponent(card.getOwner());
+            var allEnem = oppo.field.ToList().Append(oppo.master).Where(c=>!c.hasKeyword(game,KEYWORD.STEALTH)).ToList();
+            if (allEnem.Any(c=>c.hasKeyword(game,KEYWORD.TAUNT)))
+            {
+                targets.AddRange(allEnem.Where(c => c.hasKeyword(game, KEYWORD.TAUNT)));
+            }
+            else
+            {
+                targets.AddRange(allEnem);
+            }
+            
+            return targets;
         }
 
         public static Task fieldBackToHand(this Card card, THHGame game)

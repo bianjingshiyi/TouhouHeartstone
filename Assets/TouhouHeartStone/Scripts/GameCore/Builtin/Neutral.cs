@@ -1992,40 +1992,34 @@ namespace TouhouHeartstone.Builtin
         // public override int spellDamage { get; set; }
         // public override int damageReduce { get; set; }
         // public override string[] tags { get; set; }
-
-        private static bool block = true;
-
+        
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field,
                 (game, card, arg) => arg.infoDic.Values.Select(info => info.source).Contains(card), null,
                 async (game, card, arg) => card.setStealth(game, true)),
             new THHEffectBefore<THHPlayer.UseEventArg>(PileFlag.field,
-                (game, card, arg) => { return arg.targets.Length > 0 && block; }, null,
-                async (game, card, arg) =>
+                (game, card, arg) =>  arg.targets.Length > 0 , null,
+                (game, card, arg) =>
                 {
-                    arg.isCanceled = true;
                     var count = arg.targets.Count();
-                    block = false;
                     var availableTargets = arg.card.getAvaliableTargets(game).Where(c => c != card);
                     var newTargets = availableTargets.randomTake(game, count).ToArray();
-                    var cost = arg.cost;
-                    arg.card.setCost(game,0);
-                    await arg.player.tryUse(game, arg.card, arg.position, newTargets);
-                    arg.card.setCost(game,cost);
-                    block = true;
+                    arg.targets = newTargets;
+                    return Task.CompletedTask;
                 }),
-            // new THHEffectBefore<THHCard.AttackEventArg>(PileFlag.field,
-            //     (game, card, arg) => { return block; }, null,
-            //     async (game, card, arg) =>
-            //     {
-            //         arg.isCanceled = true;
-            //         block = false;
-            //         var availableTargets = arg.card.getAvaliableTargets(game).Where(c => c != card);
-            //         var newTarget = availableTargets.random(game);
-            //         await arg.card.tryAttack(game, arg.card.getOwner(), newTarget);
-            //         block = true;
-            //     })
+            new THHEffectBefore<THHCard.AttackEventArg>(PileFlag.field,
+                null, null,
+                (game, card, arg) =>
+                {
+                    var availableTargets = arg.card.getAttackableTargets(game);
+                    if (availableTargets.Contains(card))
+                    {
+                        availableTargets.Remove(card);
+                    }
+                    arg.target = availableTargets.random(game);
+                    return Task.CompletedTask;
+                })
         };
     }
 }
