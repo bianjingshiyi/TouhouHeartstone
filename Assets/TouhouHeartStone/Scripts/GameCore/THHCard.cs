@@ -1341,6 +1341,7 @@ namespace TouhouHeartstone
 
         /// <summary>
         /// 这个随从的可选攻击目标（法术应该不会在场上出现吧
+        /// 本来是写给恋恋的，现在只能弃用了
         /// </summary>
         /// <param name="card"></param>
         /// <param name="game"></param>

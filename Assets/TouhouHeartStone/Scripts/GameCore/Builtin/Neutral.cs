@@ -1824,7 +1824,7 @@ namespace TouhouHeartstone.Builtin
                     (game, card, buff, arg) =>
                     {
                         var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
-                        return -oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0;
+                        return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
                     })),
             // new IntPropFixer<THHPlayer.UseEventArg>(PileFlag.hand,
             //     new IntPropFixer<THHPlayer.UseEventArg>.ModifierFixer(new CostModifier(0),
@@ -1874,7 +1874,7 @@ namespace TouhouHeartstone.Builtin
                 }
                 else
                 {
-                    if (recorded[i] is THHPlayer.UseEventArg)
+                    if (recorded[i] is THHPlayer.UseEventArg && !((recorded[i] as THHPlayer.UseEventArg).card.define is SkillCardDefine))
                     {
                         usedCards.Add((recorded[i] as THHPlayer.UseEventArg)?.card);
                     }
@@ -2012,7 +2012,8 @@ namespace TouhouHeartstone.Builtin
                 null, null,
                 (game, card, arg) =>
                 {
-                    var availableTargets = arg.card.getAttackableTargets(game);
+                    var oppo = game.getOpponent(arg.card.getOwner());
+                    var availableTargets = oppo.field.ToList().Append(oppo.master).Where(c=>!c.hasKeyword(game,KEYWORD.STEALTH)).ToList();
                     if (availableTargets.Contains(card))
                     {
                         availableTargets.Remove(card);
