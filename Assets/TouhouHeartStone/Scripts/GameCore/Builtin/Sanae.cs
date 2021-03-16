@@ -825,12 +825,21 @@ namespace TouhouHeartstone.Builtin
             //        await card.addBuff(game,new GeneratedBuff(ID,new CostModifier(-1)));
             //    }),
             new NoTargetEffect(effect),
-            new IntPropFixer<Sanae.RevealDuelArg>(PileFlag.hand,new IntPropFixer<Sanae.RevealDuelArg>.ModifierFixer(new CostModifier(0),(g,c,b,a)=>
+            // new IntPropFixer<Sanae.RevealDuelArg>(PileFlag.hand,new IntPropFixer<Sanae.RevealDuelArg>.ModifierFixer(new CostModifier(0),(g,c,b,a)=>
+            // {
+            //     int v = g.triggers.getRecordedEvents().
+            //             skipUntilLast(e=> e is THHGame.StartEventArg GameStart).
+            //             OfType<Sanae.RevealDuelArg>().
+            //             Where(e2=>e2.player == c.getOwner()).Count();
+            //     g.logger.log(c+"的花费=>"+v);
+            //     return -v;
+            // })),
+            new VariableIntModifier(PileFlag.hand, new CostModifier(0), new VariableIntModifier.ModifierFixer<Sanae.RevealDuelArg>((g,c,a)=>
             {
                 int v = g.triggers.getRecordedEvents().
-                        skipUntilLast(e=> e is THHGame.StartEventArg GameStart).
-                        OfType<Sanae.RevealDuelArg>().
-                        Where(e2=>e2.player == c.getOwner()).Count();
+                    skipUntilLast(e=> e is THHGame.StartEventArg GameStart).
+                    OfType<Sanae.RevealDuelArg>().
+                    Where(e2=>e2.player == c.getOwner()).Count();
                 g.logger.log(c+"的花费=>"+v);
                 return -v;
             }))

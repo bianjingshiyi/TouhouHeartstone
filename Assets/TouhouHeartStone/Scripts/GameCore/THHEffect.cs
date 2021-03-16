@@ -1081,6 +1081,7 @@ namespace TouhouHeartstone
 
             public void onEnable(THHGame game, Card card, IntPropModifier modifier)
             {
+                modifier.setValue(game, card, fixer(game, card, default));
                 THHEffect effect = getEffect(modifier);
                 effect.onEnable(game, card, null);
             }
