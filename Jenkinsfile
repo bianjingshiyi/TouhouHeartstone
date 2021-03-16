@@ -73,6 +73,9 @@ pipeline {
             }
         }
         stage('Build Android Debug') {
+            when {
+                environment name: 'DEPLOY_TO', value: 'release'
+            }
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
