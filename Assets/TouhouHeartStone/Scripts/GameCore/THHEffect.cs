@@ -1057,6 +1057,82 @@ namespace TouhouHeartstone
         }
     }
 
+    /// <summary>
+    /// 上面IntPropModifier的变式，可以注册多个事件
+    /// </summary>
+    public class VariableIntModifier : PassiveEffect
+    {
+        public override string[] piles { get; }
+        IntPropModifier Modifier { get; }
+        IModifierFixer[] fixers { get; }
+
+        public interface IModifierFixer
+        {
+            void onEnable(THHGame game, Card card, IntPropModifier modifier);
+            void onDisable(THHGame game, Card card, IntPropModifier modifier);
+        }
+        public class ModifierFixer<T> : IModifierFixer where T : IEventArg
+        {
+            public Func<IGame, Card, T, int> fixer;
+            public ModifierFixer(Func<IGame, Card, T, int> fixer)
+            {
+                this.fixer = fixer;
+            }
+
+            public void onEnable(THHGame game, Card card, IntPropModifier modifier)
+            {
+                THHEffect effect = getEffect(modifier);
+                effect.onEnable(game, card, null);
+            }
+
+            public void onDisable(THHGame game, Card card, IntPropModifier modifier)
+            {
+                THHEffect effect = getEffect(modifier);
+                effect.onDisable(game, card, null);
+            }
+
+            THHEffectAfter<T> getEffect(IntPropModifier modifier)
+            {
+                return new THHEffectAfter<T>(null, null, null,
+                    (g, c, a) =>
+                    {
+                        return modifier.setValue(g, c, fixer(g, c, a));
+                    });
+            }
+        }
+
+        public VariableIntModifier(PileFlag piles, IntPropModifier modifier, params IModifierFixer[] fixers)
+        {
+            this.piles = piles.getPiles();
+            Modifier = modifier;
+            this.fixers = fixers;
+        }
+
+        public override async Task onEnable(THHGame game, Card card, Buff buff)
+        {
+            card.addModifier(game, Modifier);
+            card.setProp(game, getModifierName(Modifier, buff), Modifier);
+            foreach (var fixer in fixers)
+            {
+                fixer.onEnable(game, card, Modifier);
+            }
+        }
+
+        public override async Task onDisable(THHGame game, Card card, Buff buff)
+        {
+            card.removeModifier(game, Modifier);
+            foreach (var fixer in fixers)
+            {
+                fixer.onDisable(game, card, Modifier);
+            }
+        }
+        
+        private string getModifierName(IntPropModifier modifier, Buff buff)
+        {
+            return nameof(VariableIntModifier) + modifier.GetType().Name + (buff != null ? buff.instanceID.ToString() : "");
+        }
+    }
+
 
     //public class ChooseOneEffect : SingleTargetEffect
     //{

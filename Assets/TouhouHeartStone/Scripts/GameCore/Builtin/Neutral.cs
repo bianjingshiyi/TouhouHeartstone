@@ -1807,7 +1807,6 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 8;
         public override int attack { get; set; } = 7;
-
         public override int life { get; set; } = 7;
         // public override string[] keywords { get; set; } = {};
         // public override string type { get; set; }
@@ -1819,17 +1818,27 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new IntPropFixer<Card.PropChangeEventArg>(PileFlag.hand,
-                new IntPropFixer<Card.PropChangeEventArg>.ModifierFixer(new CostModifier(0),
-                    (game, card, buff, arg) =>
-                    {
-                        var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
-                        return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
-                    })),
-            // new IntPropFixer<THHPlayer.UseEventArg>(PileFlag.hand,
-            //     new IntPropFixer<THHPlayer.UseEventArg>.ModifierFixer(new CostModifier(0),
-            //         (game, card, buff, arg) => (game as THHGame).getOpponent(card.getOwner()).field
-            //             .Select(s => s.getAttack(game)).Max()))
+            // new IntPropFixer<Card.PropChangeEventArg>(PileFlag.hand,
+            //     new IntPropFixer<Card.PropChangeEventArg>.ModifierFixer(new CostModifier(0),
+            //         (game, card, buff, arg) =>
+            //         {
+            //             var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
+            //             return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
+            //         })),
+            new VariableIntModifier(PileFlag.hand, new CostModifier(0), 
+                new VariableIntModifier.ModifierFixer<Card.PropChangeEventArg>((game, card, arg) =>
+                {
+                    var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
+                    return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
+                }), new VariableIntModifier.ModifierFixer<THHPlayer.UseEventArg>((game, card, arg) =>
+                {
+                    var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
+                    return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
+                }), new VariableIntModifier.ModifierFixer<THHCard.DeathEventArg>((game, card, arg) =>
+                {
+                    var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
+                    return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
+                }))
         };
     }
 
