@@ -57,7 +57,7 @@ pipeline {
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2019.4.20f1-windows-mono-0', 'win64-debug')
+                    unitybuilder.buildPlatform('2019.4.22f1-windows-mono-0', 'win64-debug')
                 }
             }
         }
@@ -68,7 +68,7 @@ pipeline {
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2019.4.20f1-windows-mono-0', 'win64-release;win32-release')
+                    unitybuilder.buildPlatform('2019.4.22f1-windows-mono-0', 'win64-release;win32-release')
                 }
             }
         }
@@ -76,7 +76,7 @@ pipeline {
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2019.4.20f1-android-0', 'android-debug')
+                    unitybuilder.buildPlatform('2019.4.22f1-android-0', 'android-debug')
                 }
             }
         }
@@ -87,7 +87,7 @@ pipeline {
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2019.4.20f1-android-0', 'android-release')
+                    unitybuilder.buildPlatform('2019.4.22f1-android-0', 'android-release')
                 }
             }
         }
@@ -98,7 +98,7 @@ pipeline {
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2019.4.20f1-android-0', 'linux-debug;linux-release')
+                    unitybuilder.buildPlatform('2019.4.22f1-android-0', 'linux-debug;linux-release')
                 }
             }
         }
