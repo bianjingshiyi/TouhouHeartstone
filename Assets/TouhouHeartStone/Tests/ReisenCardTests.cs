@@ -316,9 +316,7 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(), targets: you.field[0]);
             game.Dispose();
         }
-
-        // 332 狂月枪
-        // 每当你将一个奥秘置入战场，便获得+1耐久度。
+        
         [Test]
         public void LunaticGunTest()
         {
@@ -337,9 +335,7 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<FreezingTrap>());
             game.Dispose();
         }
-
-        // 幻象震爆
-        // 2,对敌方英雄打5
+        
         [Test]
         public void ReisebMindExplosionTest()
         {

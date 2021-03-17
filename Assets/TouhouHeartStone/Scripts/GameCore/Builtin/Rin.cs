@@ -338,7 +338,7 @@ namespace TouhouHeartstone.Builtin
             {
                 foreach(var death in a.infoDic)
                 {
-                    if(c.getOwner().hand.count<c.getOwner().hand.maxCount)
+                    if(c.getOwner().hand.count<c.getOwner().hand.maxCount && death.Key.getOwner() == c.getOwner())
                     {
                         await c.getOwner().addCardToHand<GhostOfHatred>(g);
                     }

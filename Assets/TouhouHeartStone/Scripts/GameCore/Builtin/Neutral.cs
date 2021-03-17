@@ -611,7 +611,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 324 爱丽丝·玛格特洛依德 唯一，当你的回合结束时，召唤一个1/1的人形。
+    /// 324 爱丽丝·玛格特洛依德 唯一，当你的回合开始时，召唤一个1/1的人形。
     /// </summary>
     public class AliceMargatroid_N : ServantCardDefine
     {

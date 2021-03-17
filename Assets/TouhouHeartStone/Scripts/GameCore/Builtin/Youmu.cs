@@ -179,7 +179,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 121 冥界住人 亡语：将一个1/1的幽灵置入你的手牌
+    /// 121 冥界住人 亡语：将一个1/1的幽灵置入你的手牌 并使其获得+1+1
     /// </summary>
     public class NetherworldInhabitant : ServantCardDefine
     {
@@ -193,7 +193,10 @@ namespace TouhouHeartstone.Builtin
         {
             new DeathRattle(ID,(g1,c1,p)=>
             {
-                return c1.getOwner().addCardToHand<Ghost>(g1);
+                Card ghost = g1.createCard<Ghost>();
+                ghost.addBuff(g1, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
+                c1.getOwner().tryAddCardToHand(g1,ghost);
+                return Task.CompletedTask;
             })
         };
     }

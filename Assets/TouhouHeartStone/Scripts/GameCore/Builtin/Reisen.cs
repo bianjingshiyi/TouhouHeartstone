@@ -275,20 +275,20 @@ namespace TouhouHeartstone.Builtin
     }
     /// <summary>
     /// 幻象震爆
-    /// 2,对敌方英雄打5
+    /// 1,对敌方英雄打3
     /// </summary>
     public class MindExplosion : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x010;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
+        public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.getOwner()).master.damage(game, card, 5);
+            await game.getOpponent(card.getOwner()).master.damage(game, card, 3);
         }
     }
 
@@ -495,7 +495,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 322 狂月枪
+    /// 332 狂月枪
     /// 每当你将一个奥秘置入战场，便获得+1耐久度。
     /// </summary>
     public class LunaticGun : ItemCardDefine
@@ -503,7 +503,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Reisen.ID | CATEGORY.ITEM | 0x018;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
-        public override int attack { get; set; } = 2;
+        public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
@@ -520,13 +520,13 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 虚假幻象 1 将你本回合中使用的上一张法术牌的复制置入你的手牌。
+    /// 虚假幻象 2 将你本回合中使用的上一张法术牌的复制置入你的手牌。
     /// </summary>
     public class DisbeliefAspect : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x019;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
+        public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect((g,c)=>
