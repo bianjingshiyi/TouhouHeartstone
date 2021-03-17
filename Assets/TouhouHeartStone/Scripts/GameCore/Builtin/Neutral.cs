@@ -1940,7 +1940,7 @@ namespace TouhouHeartstone.Builtin
                     count += (recorded[i] as THHCard.DeathEventArg).infoDic.Count;
                 }
 
-                if (recorded[i] is THHGame.TurnEndEventArg)
+                if (recorded[i] is THHGame.TurnStartEventArg)
                 {
                     break;
                 }
