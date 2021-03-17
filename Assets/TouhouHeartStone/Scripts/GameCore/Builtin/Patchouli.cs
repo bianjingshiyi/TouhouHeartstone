@@ -145,7 +145,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 777 帕秋莉机器人 如果你在本回合中使用过花费大于0的法术牌，花费-2
+    /// 777 机械帕秋莉 如果你在本回合中使用过法术牌，花费-2
     /// </summary>
     public class MegaReaver : ServantCardDefine
     {
@@ -159,7 +159,7 @@ namespace TouhouHeartstone.Builtin
         {
             new AddBuffAfter<THHPlayer.UseEventArg>(PILE.HAND,(g,c,a)=>
             {
-                return a.player == c.getOwner() && a.card.isSpell() && a.card.getCost(g) > 0 && !c.containBuff(ID);
+                return a.player == c.getOwner() && a.card.isSpell() && !c.containBuff(ID);
             },new GeneratedBuff(ID,new CostModifier(-2),
                 new RemoveBuffBefore<THHGame.TurnEndEventArg>(PILE.HAND,ID)))
         };
@@ -355,7 +355,10 @@ namespace TouhouHeartstone.Builtin
         {
             var discovered = await card.getOwner().discover(game, card.getOwner().grave.Where(c => c.isSpell()));
             if (!card.getOwner().hand.isFull)
+            {
                 await card.getOwner().grave.moveTo(game, discovered, card.getOwner().hand);
+                discovered.addBuff(game, new GeneratedBuff(ID, new CostModifier(-3)));
+            }
         }
     }
     /// <summary>
@@ -725,7 +728,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
     /// <summary>
-    /// 4 水火符【燃素之雨】 造成点6伤害，随机分配给所有敌方角色
+    /// 4 水火符【燃素之雨】 造成7点伤害，随机分配给所有敌方角色
     /// </summary>
     public class PhlogisticRain : SpellCardDefine
     {
@@ -739,7 +742,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getAllEnemies(card.getOwner()).damageByRandom(game, card, card.getOwner().getSpellDamage(game, 6));
+            await game.getAllEnemies(card.getOwner()).damageByRandom(game, card, card.getOwner().getSpellDamage(game, 7));
             await Patchouli.tryMix(game, card);
         }
     }
@@ -872,14 +875,14 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
     /// <summary>
-    /// 464 噬法触手 突袭，当你的回合开始时随机弃一张法术牌
+    /// 454 噬法触手 突袭，当你的回合开始时随机弃一张法术牌
     /// </summary>
     public class BiteTentacle : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x034;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override int attack { get; set; } = 4;
+        public override int attack { get; set; } = 5;
         public override int life { get; set; } = 4;
         public override string[] tags { get; set; } = new string[] { TAG.DEMON };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
