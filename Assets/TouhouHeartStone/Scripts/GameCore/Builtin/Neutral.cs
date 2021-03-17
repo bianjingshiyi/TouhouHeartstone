@@ -1979,6 +1979,7 @@ namespace TouhouHeartstone.Builtin
                 var targets = game.getAllCharacters().ToList();
                 targets.Remove(card);
                 targets.damage(game, card, 3);
+                game.updateDeath();
                 return Task.CompletedTask;
             })
         };
