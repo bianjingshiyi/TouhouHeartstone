@@ -151,7 +151,7 @@ namespace TouhouHeartstone
                     player.fatigue++;
                     game.logger.log(player + "已经没有卡牌了，当前疲劳值：" + player.fatigue);
                     var damage = await player.master.damage(game, null, player.fatigue);
-                    await game.updateDeath(game);
+                    await game.updateDeath();
                 }
             }
             else
@@ -202,7 +202,7 @@ namespace TouhouHeartstone
                         game.logger.log("debug");
                         await card.activeEffect(game, player, new Card[0]);
                         await player.warp.moveTo(game, card, player.grave);
-                        await game.updateDeath(game);
+                        await game.updateDeath();
                         await draw(game);
                     }
                     else
@@ -372,7 +372,7 @@ namespace TouhouHeartstone
                      await card.activeEffect(game, player, targets);
                  }
              });
-            await game.updateDeath(game);
+            await game.updateDeath();
             return true;
         }
         public async Task equip(THHGame game, Card item)

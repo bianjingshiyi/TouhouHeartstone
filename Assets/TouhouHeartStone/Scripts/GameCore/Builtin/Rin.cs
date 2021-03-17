@@ -110,7 +110,7 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID,async(g1,c1,p)=>
             {
                 await g1.getOpponent(c1.getOwner()).master.damage(g1,c1,3);
-                await g1.updateDeath(g1);
+                await g1.updateDeath();
             })
         };
     }
@@ -134,7 +134,7 @@ namespace TouhouHeartstone.Builtin
                 await c1.addBuff(game, new GeneratedBuff(ID, new DeathRattle(ID, async (g, c, b, p) =>
                 {
                     await g.getOpponent(c.getOwner()).master.damage(g, c, 1);
-                    await g.updateDeath(game);
+                    await g.updateDeath();
                 })));
             }
         }
@@ -156,7 +156,7 @@ namespace TouhouHeartstone.Builtin
         {
             Card[] field = card.getOwner().field.ToArray();
             await field.setDead(game, true);
-            await game.updateDeath(game);
+            await game.updateDeath();
             foreach (var c in field)
             {
                 await card.getOwner().reborn(game, c, c.getOwner().field);
@@ -166,7 +166,7 @@ namespace TouhouHeartstone.Builtin
             // {
             //     Card c = card.getOwner().field[0];
             //     await c.setDead(game, true);
-            //     await game.updateDeath(game);
+            //     await game.updateDeath();
             //     await c.getOwner().reborn(game, c, c.getOwner().field, count);
             // }
 
@@ -216,7 +216,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
                 await target.setDead(game,true);
-                await game.updateDeath(game);
+                await game.updateDeath();
             },PileFlag.self | PileFlag.field)
         };
     }
@@ -372,7 +372,7 @@ namespace TouhouHeartstone.Builtin
                     }, null, async (g, c, a) =>
                     {
                         await c.setDead(g, true);
-                        await g.updateDeath(g);
+                        await g.updateDeath();
                     })));
                 }
             };

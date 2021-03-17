@@ -590,7 +590,7 @@ namespace TouhouHeartstone.Builtin.Proble
                         //起效部分，效果是消灭随从
                         await c1.setDead(game, true);
                         //由于回合开始不会进行死亡结算，所以这里要强制进行一次。
-                        await g1.updateDeath(g1);
+                        await g1.updateDeath();
                     }
                     )) );
             }, PileFlag.oppo | PileFlag.field)//后缀表示只能指向随从
@@ -943,7 +943,7 @@ namespace TouhouHeartstone.Builtin.Proble
                                                       {
                                                           await c.getOwner().createToken(g,g.getDefine(a.card.define.id));
                                                           await c.setDead(g,true);
-                                                          await g.updateDeath(g);
+                                                          await g.updateDeath();
                                                        
                                                       })
         };
@@ -994,7 +994,7 @@ namespace TouhouHeartstone.Builtin.Proble
                                                           var token = await c.getOwner().createToken(g,g.getDefine<PersevereMan>(),c.getOwner().field.count);
                                                           a.target = token.card;
                                                           await c.setDead(g,true);
-                                                          await g.updateDeath(g);
+                                                          await g.updateDeath();
                                                          
                                                       })
         };

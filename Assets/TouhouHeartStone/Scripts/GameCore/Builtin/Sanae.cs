@@ -417,7 +417,7 @@ namespace TouhouHeartstone.Builtin
                 Where(e2=>e2.player == card.getOwner()).Count();
 
                 await game.getAllServants().damage(game,card,count);
-                await game.updateDeath(game);
+                await game.updateDeath();
 
             })
         };
@@ -478,7 +478,7 @@ namespace TouhouHeartstone.Builtin
              new LambdaSingleTargetEffect(async(g,c,t)=>
                                          {
                                              await t.setDead(g,true);
-                                             await g.updateDeath(g);
+                                             await g.updateDeath();
                                          },PileFlag.oppo | PileFlag.field)
 
         };
@@ -728,7 +728,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await target.setDead(game,true);
                 await card.getOwner().master.damage(game,card,card.getOwner().getSpellDamage(game,target.getCurrentLife(game)));
-                await game.updateDeath(game);
+                await game.updateDeath();
             },PileFlag.oppo | PileFlag.field)
             
         };

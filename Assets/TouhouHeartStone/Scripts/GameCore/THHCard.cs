@@ -974,7 +974,7 @@ namespace TouhouHeartstone
                     }
                 }
             });
-            await game.updateDeath(game);
+            await game.updateDeath();
             return eventArg;
         }
         public class AttackEventArg : EventArg, IDescribableEventArg
@@ -1391,7 +1391,7 @@ namespace TouhouHeartstone
                     await toGrave.setDead(game, true);
                 }
             }
-            await game.updateDeath(game);
+            await game.updateDeath();
         }
 
         public static Task fieldToDeck(this Card card,THHGame game,bool isYourDeck=true)
@@ -1451,7 +1451,7 @@ namespace TouhouHeartstone
                     //await toGrave.setDead(game, true);
                 }
             }
-            //await game.updateDeath(game);
+            //await game.updateDeath();
         }
 
         public static async Task removeBuff(this IEnumerable<Card> cards, IGame game, int buffId)

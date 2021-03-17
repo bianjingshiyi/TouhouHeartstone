@@ -1211,7 +1211,7 @@ namespace TouhouHeartstone.Builtin
                             await c1.getOwner().grave.moveTo(g1, card, c1.getOwner().hand);
                             await c1.getOwner().master.removeBuff(g1);
                         })));
-                await game.updateDeath(game);
+                await game.updateDeath();
             })
         };
     }

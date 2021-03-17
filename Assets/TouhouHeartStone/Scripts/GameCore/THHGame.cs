@@ -437,7 +437,7 @@ namespace TouhouHeartstone
         /// 清理战场上死亡的随从
         /// </summary>
         /// <returns></returns>
-        public Task updateDeath(THHGame game)
+        public Task updateDeath()
         {
             List<Card> deathList = new List<Card>();
             foreach (THHPlayer player in players)
