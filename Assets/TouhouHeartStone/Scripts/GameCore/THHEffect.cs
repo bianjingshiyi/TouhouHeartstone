@@ -1056,75 +1056,128 @@ namespace TouhouHeartstone
             return Task.CompletedTask;
         }
     }
-
-    /// <summary>
-    /// 上面IntPropModifier的变式，可以注册多个事件
-    /// </summary>
+    
     public class VariableIntModifier : PassiveEffect
     {
         public override string[] piles { get; }
-        IntPropModifier Modifier { get; }
+        IntPropModifier modifier { get; }
         IModifierFixer[] fixers { get; }
 
         public interface IModifierFixer
         {
-            void onEnable(THHGame game, Card card, IntPropModifier modifier);
-            void onDisable(THHGame game, Card card, IntPropModifier modifier);
+            void onEnable(THHGame game, Card card, Buff buff, string modifierName);
+            void onDisable(THHGame game, Card card, Buff buff, string modifierName);
         }
         public class ModifierFixer<T> : IModifierFixer where T : IEventArg
         {
-            public Func<IGame, Card, T, int> fixer;
-            public ModifierFixer(Func<IGame, Card, T, int> fixer)
+            public Func<IGame, Card, Buff, T, int> fixer;
+            public Func<IGame, Card, Buff, T, bool> onCheckCondition;
+
+            public ModifierFixer(Func<IGame, Card, Buff, T, bool> onCheckCondition, Func<IGame, Card, Buff, T, int> fixer)
             {
                 this.fixer = fixer;
             }
 
-            public void onEnable(THHGame game, Card card, IntPropModifier modifier)
+            public async void onEnable(THHGame game, Card card, Buff buff, string modifierName)
             {
-                modifier.setValue(game, card, fixer(game, card, default));
-                THHEffect effect = getEffect(modifier);
-                effect.onEnable(game, card, null);
-            }
-
-            public void onDisable(THHGame game, Card card, IntPropModifier modifier)
-            {
-                THHEffect effect = getEffect(modifier);
-                effect.onDisable(game, card, null);
-            }
-
-            THHEffectAfter<T> getEffect(IntPropModifier modifier)
-            {
-                return new THHEffectAfter<T>(null, null, null,
-                    (g, c, a) =>
+                var modifier = card.getProp<IntPropModifier>(game, modifierName);
+                var beforeValue = modifier.value;
+                var value = fixer(game, card, buff, default);
+                if (value != beforeValue)
+                {
+                    game.triggers.doEvent(
+                        new Card.PropChangeEventArg()
+                        {
+                            game = game, card = card, propName = modifier.propName, beforeValue = beforeValue,
+                            value = value
+                        },
+                        async a =>
+                        {
+                            var m = card.getProp<IntPropModifier>(game, modifierName);
+                            m.setValue(game, card, value);
+                        });
+                }
+                
+                Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(buff));
+                if (trigger == null)
+                {
+                    trigger = new Trigger<T>(async arg =>
                     {
-                        return modifier.setValue(g, c, fixer(g, c, a));
+                        if (onCheckCondition == null || onCheckCondition(game, card, buff, arg))
+                        {
+                            var m = card.getProp<IntPropModifier>(game, modifierName);
+                            beforeValue = m.value;
+                            value = fixer(game, card, buff, arg);
+                            if (beforeValue!=value)
+                            {
+                                game.triggers.doEvent(
+                                    new Card.PropChangeEventArg()
+                                    {
+                                        game = game, card = card, propName = m.propName, beforeValue = beforeValue,
+                                        value = value
+                                    },
+                                    async a => { m.setValue(game, card, value); }); 
+                            }
+                        }
                     });
+                    await card.setProp(game, getTriggerName(buff), trigger);
+                }
+                game.triggers.registerAfter(trigger);
+            }
+
+            public async void onDisable(THHGame game, Card card,Buff buff, string modifierName)
+            {
+                var modifier = card.getProp<IntPropModifier>(game, modifierName);
+                if (modifier!=null)
+                {
+                    card.removeModifier(game, modifier);
+                }
+                Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(buff));
+                if (trigger != null)
+                    game.triggers.removeAfter(trigger);
+            }
+
+            private string getModifierName(IntPropModifier modifier, Buff buff)
+            {
+                return nameof(VariableIntModifier) + modifier.GetType().Name + (buff != null ? buff.instanceID.ToString() : "");
+            }
+            private static string getTriggerName(Buff buff)
+            {
+                return nameof(VariableIntModifier) + "Trigger" + (buff != null ? buff.instanceID.ToString() : "");
             }
         }
 
         public VariableIntModifier(PileFlag piles, IntPropModifier modifier, params IModifierFixer[] fixers)
         {
             this.piles = piles.getPiles();
-            Modifier = modifier;
+            this.modifier = modifier;
             this.fixers = fixers;
         }
 
         public override async Task onEnable(THHGame game, Card card, Buff buff)
         {
-            card.addModifier(game, Modifier);
-            card.setProp(game, getModifierName(Modifier, buff), Modifier);
+            IntPropModifier modifier = card.getProp<IntPropModifier>(game, getModifierName(this.modifier, buff));
+            if (modifier == null)
+            {
+                modifier = this.modifier.clone() as IntPropModifier;
+                await card.setProp(game, getModifierName(this.modifier, buff), modifier);
+            }
+            if (!card.getModifiers().Contains(modifier))
+            {
+                await card.addModifier(game, modifier);
+            }
             foreach (var fixer in fixers)
             {
-                fixer.onEnable(game, card, Modifier);
+                fixer.onEnable(game, card,null, getModifierName(this.modifier, null));
             }
         }
 
         public override async Task onDisable(THHGame game, Card card, Buff buff)
         {
-            card.removeModifier(game, Modifier);
+            card.removeModifier(game, modifier);
             foreach (var fixer in fixers)
             {
-                fixer.onDisable(game, card, Modifier);
+                fixer.onDisable(game, card,null, getModifierName(modifier, null));
             }
         }
         
@@ -1132,7 +1185,7 @@ namespace TouhouHeartstone
         {
             return nameof(VariableIntModifier) + modifier.GetType().Name + (buff != null ? buff.instanceID.ToString() : "");
         }
-    }
+}
 
 
     //public class ChooseOneEffect : SingleTargetEffect

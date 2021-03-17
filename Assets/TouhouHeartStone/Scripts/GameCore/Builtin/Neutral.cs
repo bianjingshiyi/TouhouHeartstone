@@ -1826,15 +1826,18 @@ namespace TouhouHeartstone.Builtin
             //             return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
             //         })),
             new VariableIntModifier(PileFlag.hand, new CostModifier(0), 
-                new VariableIntModifier.ModifierFixer<Card.PropChangeEventArg>((game, card, arg) =>
+                new VariableIntModifier.ModifierFixer<Card.PropChangeEventArg>((game, card, buff, arg) =>
+                {
+                    return arg.propName == nameof(ServantCardDefine.attack);
+                },(game, card, buff, arg) =>
                 {
                     var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
                     return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
-                }), new VariableIntModifier.ModifierFixer<THHPlayer.UseEventArg>((game, card, arg) =>
+                }), new VariableIntModifier.ModifierFixer<THHPlayer.UseEventArg>(null,(game, card, buff, arg) =>
                 {
                     var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
                     return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
-                }), new VariableIntModifier.ModifierFixer<THHCard.DeathEventArg>((game, card, arg) =>
+                }), new VariableIntModifier.ModifierFixer<THHCard.DeathEventArg>(null,(game, card, buff, arg) =>
                 {
                     var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
                     return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);

@@ -834,7 +834,7 @@ namespace TouhouHeartstone.Builtin
             //     g.logger.log(c+"的花费=>"+v);
             //     return -v;
             // })),
-            new VariableIntModifier(PileFlag.hand, new CostModifier(0), new VariableIntModifier.ModifierFixer<Sanae.RevealDuelArg>((g,c,a)=>
+            new VariableIntModifier(PileFlag.hand, new CostModifier(0), new VariableIntModifier.ModifierFixer<Sanae.RevealDuelArg>(null,(g,c,b,a)=>
             {
                 int v = g.triggers.getRecordedEvents().
                     skipUntilLast(e=> e is THHGame.StartEventArg GameStart).

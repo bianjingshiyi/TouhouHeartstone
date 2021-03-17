@@ -413,17 +413,27 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new IntPropFixer<THHCard.SetArmorEventArg>(PileFlag.field,
-                new IntPropFixer<THHCard.SetArmorEventArg>.ModifierFixer(
-                    new AttackModifier(0),(g,c,b,a)=>
-                    {
-                        return c.getOwner().master.getArmor(g);
-                    }),
-                new IntPropFixer<THHCard.SetArmorEventArg>.ModifierFixer(
-                    new LifeModifier(0),(g,c,b,a)=>
-                    {
-                        return c.getOwner().master.getArmor(g);
-                    }))
+            // new IntPropFixer<THHCard.SetArmorEventArg>(PileFlag.field,
+                // new IntPropFixer<THHCard.SetArmorEventArg>.ModifierFixer(
+                //     new AttackModifier(0),(g,c,b,a)=>
+                //     {
+                //         return c.getOwner().master.getArmor(g);
+                //     }),
+                // new IntPropFixer<THHCard.SetArmorEventArg>.ModifierFixer(
+                //     new LifeModifier(0),(g,c,b,a)=>
+                //     {
+                //         return c.getOwner().master.getArmor(g);
+                //     }))
+            new VariableIntModifier(PileFlag.field, new AttackModifier(0),
+                new VariableIntModifier.ModifierFixer<THHCard.SetArmorEventArg>(null,(game, card, buff, arg) =>
+                {
+                    return card.getOwner().master.getArmor(game);
+                })),
+            new VariableIntModifier(PileFlag.field, new LifeModifier(0),
+                new VariableIntModifier.ModifierFixer<THHCard.SetArmorEventArg>(null,(game, card, buff, arg) =>
+                {
+                    return card.getOwner().master.getArmor(game);
+                })),
         };
     }
     /// <summary>
