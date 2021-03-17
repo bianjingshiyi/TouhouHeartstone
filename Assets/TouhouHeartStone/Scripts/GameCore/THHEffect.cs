@@ -1098,7 +1098,7 @@ namespace TouhouHeartstone
                         });
                 }
                 
-                Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(buff));
+                Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(modifier,buff));
                 if (trigger == null)
                 {
                     trigger = new Trigger<T>(async arg =>
@@ -1120,7 +1120,7 @@ namespace TouhouHeartstone
                             }
                         }
                     });
-                    await card.setProp(game, getTriggerName(buff), trigger);
+                    await card.setProp(game, getTriggerName(modifier,buff), trigger);
                 }
                 game.triggers.registerAfter(trigger);
             }
@@ -1132,7 +1132,7 @@ namespace TouhouHeartstone
                 {
                     card.removeModifier(game, modifier);
                 }
-                Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(buff));
+                Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(modifier, buff));
                 if (trigger != null)
                     game.triggers.removeAfter(trigger);
             }
@@ -1141,9 +1141,9 @@ namespace TouhouHeartstone
             {
                 return nameof(VariableIntModifier) + modifier.GetType().Name + (buff != null ? buff.instanceID.ToString() : "");
             }
-            private static string getTriggerName(Buff buff)
+            private static string getTriggerName(IntPropModifier modifier, Buff buff)
             {
-                return nameof(VariableIntModifier) + "Trigger" + (buff != null ? buff.instanceID.ToString() : "");
+                return nameof(VariableIntModifier.ModifierFixer<T>) + modifier.GetType() + "Trigger" + (buff != null ? buff.instanceID.ToString() : "");
             }
         }
 
