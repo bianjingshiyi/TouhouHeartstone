@@ -627,7 +627,7 @@ namespace TouhouHeartstone.Builtin
             new AfterTurnStart(async (game, card, arg) =>
             {
                 await card.getOwner().createToken(game, game.getDefine<Doll_N>());
-            })
+            }, (game, card, arg) => arg.player == card.getOwner())
         };
     }
 
