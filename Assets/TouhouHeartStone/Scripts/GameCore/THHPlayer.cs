@@ -358,6 +358,7 @@ namespace TouhouHeartstone
                      else
                      {
                          await card.activeEffect(game, player, targets);
+                         await card.resetCard(game);
                          if (card.hasKeyword(game, KEYWORD._RETURNHEAD))
                          {
                              await player.warp.moveTo(game, card, player.hand);
