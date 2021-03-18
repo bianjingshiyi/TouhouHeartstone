@@ -26,8 +26,8 @@ namespace UI
 
             confirmButton.onClick.RemoveAllListeners();
             confirmButton.onClick.AddListener(() => {
-                onConfirm?.Invoke();
                 gameObject.SetActive(false);
+                onConfirm?.Invoke();
             });
 
             confirmButton.gameObject.SetActive(true);
@@ -35,8 +35,8 @@ namespace UI
 
             cancleButton.onClick.RemoveAllListeners();
             cancleButton.onClick.AddListener(() => { 
-                onCancle?.Invoke(); 
                 gameObject.SetActive(false);
+                onCancle?.Invoke();
             });
 
             gameObject.SetActive(true);
@@ -55,8 +55,8 @@ namespace UI
 
             confirmButton.onClick.RemoveAllListeners();
             confirmButton.onClick.AddListener(() => {
-                onConfirm?.Invoke();
                 gameObject.SetActive(false);
+                onConfirm?.Invoke();
             });
 
             cancleButton.gameObject.SetActive(false);
@@ -85,8 +85,8 @@ namespace UI
                 int index = i;
                 btn.onClick.RemoveAllListeners();
                 btn.onClick.AddListener(() => {
-                    onSelectOption?.Invoke(index);
                     gameObject.SetActive(false);
+                    onSelectOption?.Invoke(index);
                 });
                 btn.GetComponentInChildren<Text>().text = options[i];
                 btn.gameObject.SetActive(true);
