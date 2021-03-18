@@ -36,7 +36,7 @@ namespace Game
             if (lastCulture == cultureInfo) return;
 
             // 加载语言资源
-            await i18n.LoadFileAsync(Path.Combine(Application.streamingAssetsPath, folderPath), cultureInfo);
+            await i18n.LoadFileAsync(folderPath, cultureInfo);
 
             // 触发事件来通知UI进行更改。
             Task changeCultureTask = OnCultureChange?.Invoke(cultureInfo);
@@ -145,7 +145,7 @@ namespace Game
                 UberDebug.Log($"加载语言{lang}的翻译");
                 var culture = new CultureInfo(lang);
                 cultures.Add(culture);
-                i18n.Load(Path.Combine(Application.streamingAssetsPath, folderPath), culture);
+                i18n.Load(folderPath, culture);
             }
             catch (FileNotFoundException e)
             {

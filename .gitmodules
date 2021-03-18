@@ -27,6 +27,6 @@
 	branch = master
 	url = https://code.lotlab.org/IGensokyo/MukioI18n
 [submodule "Assets/StreamingAssets/i18n"]
-	path = Assets/StreamingAssets/i18n
+	path = ExternalData/i18n
 	branch = master
 	url = https://code.lotlab.org/IGensokyo/TouhouHearthstoneTranslation.git
