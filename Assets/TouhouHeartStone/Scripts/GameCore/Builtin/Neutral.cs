@@ -1205,20 +1205,19 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID, async (game, card, arg) =>
             {
                 await game.getAllServants().damage(game, card, 2);
+                await game.updateDeath();
                 await card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
                     new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.MASTER,
-                        (g1, c1, a1) => { return a1.player == c1.getOwner(); },
+                        (g, c, a) => { return a.player == c.getOwner(); },
                         null,
-                        async (g1, c1, a1) =>
+                        async (g, c, a) =>
                         {
-                            if (c1.pile == a1.player.grave)
+                            if (card.pile == a.player.grave)
                             {
-                                await c1.getOwner().grave.moveTo(g1, card, c1.getOwner().hand);
+                                await card.getOwner().grave.moveTo(g, card, card.getOwner().deck);
                             }
-
-                            await c1.getOwner().master.removeBuff(g1);
+                            await card.getOwner().master.removeBuff(game, ID);
                         })));
-                await game.updateDeath();
             })
         };
     }
