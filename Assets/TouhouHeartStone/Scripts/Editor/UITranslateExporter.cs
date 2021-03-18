@@ -30,7 +30,7 @@ namespace TouhouHeartstone {
 
             TranslateMsgAttributeFinder.FindAll(potGenerator);
 
-            potGenerator.WriteOut(System.IO.Path.Combine(Application.streamingAssetsPath, "i18n", "ui", "zmcs.pot"));
+            potGenerator.WriteOut(System.IO.Path.Combine(FileLoader.FolderPath, "i18n", "ui", "zmcs.pot"));
             Debug.Log("翻译文件写出完毕");
             EditorSceneManager.OpenScene(active);
         }

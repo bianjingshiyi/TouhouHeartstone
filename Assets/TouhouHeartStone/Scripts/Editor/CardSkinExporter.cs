@@ -152,7 +152,7 @@ namespace TouhouHeartstone
                 potGenerator.AddString(desc);
             }
 
-            string path = Path.Combine(Application.streamingAssetsPath, "i18n", "skin", Path.GetFileNameWithoutExtension(_outputPath) + ".pot");
+            string path = Path.Combine(FileLoader.FolderPath, "i18n", "skin", Path.GetFileNameWithoutExtension(_outputPath) + ".pot");
             potGenerator.WriteOut(path);
             Debug.Log("导出皮肤文件" + path + "成功");
         }
