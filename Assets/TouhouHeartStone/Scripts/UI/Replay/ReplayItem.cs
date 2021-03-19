@@ -6,6 +6,10 @@ namespace UI
 {
     partial class ReplayItem : UIObject
     {
+        public void onAwake()
+        {
+            autoInit();
+        }
         public void updateView(ReplayItemViewData viewData)
         {
             _playerAImage.sprite = ui.getManager<CardManager>().getSkin(viewData.playerAMasterId).image;

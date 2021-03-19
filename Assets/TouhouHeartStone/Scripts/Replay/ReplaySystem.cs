@@ -8,10 +8,6 @@ using System.Collections.Generic;
 
 namespace Game.Replays
 {
-    public class ReplayPlayer
-    {
-
-    }
     public class ReplaySystem
     {
         public void startRecord(THHGame game, RoomPlayerData[] players)

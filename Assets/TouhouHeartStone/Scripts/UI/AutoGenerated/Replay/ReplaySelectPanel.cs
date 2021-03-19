@@ -12,19 +12,23 @@ namespace UI
 {
     using System;
     using UnityEngine.UI;
+    using BJSYGameCore;
     using UnityEngine;
-
+    
     public partial class ReplaySelectPanel
     {
         public void autoInit()
         {
             this._playButton = this.transform.Find(PATH_PLAYBUTTON).GetComponent<Button>();
-            this._playButton.onClick.AddListener(this.PlayButtonClickCallback);
-            this._replayListRoot = this.transform.Find(PATH_REPLAYITEMROOT).GetComponent<RectTransform>();
+            _playButton.onClick.AddListener(PlayButtonClickCallback);
+            this._returnButton = this.transform.Find(PATH_RETURNBUTTON).GetComponent<Button>();
+            _returnButton.onClick.AddListener(ReturnButtonClickCallback);
+            this._replayListRoot = this.transform.Find(PATH_REPLAYLISTROOT).GetComponent<RectTransform>();
         }
         public void autoClear()
         {
-            this._playButton.onClick.RemoveListener(this.PlayButtonClickCallback);
+            _playButton.onClick.RemoveListener(PlayButtonClickCallback);
+            _returnButton.onClick.RemoveListener(ReturnButtonClickCallback);
         }
         public Button _playButton;
         public const string PATH_PLAYBUTTON = "Play";
@@ -47,15 +51,36 @@ namespace UI
                 onPlayButtonClick(this);
             }
         }
+        public Button _returnButton;
+        public const string PATH_RETURNBUTTON = "Return";
+        public Button returnButton
+        {
+            get
+            {
+                if ((this._returnButton == null))
+                {
+                    this._returnButton = this.transform.Find(PATH_RETURNBUTTON).GetComponent<Button>();
+                }
+                return this._returnButton;
+            }
+        }
+        public event Action<ReplaySelectPanel> onReturnButtonClick;
+        private void ReturnButtonClickCallback()
+        {
+            if ((onReturnButtonClick != null))
+            {
+                onReturnButtonClick(this);
+            }
+        }
         public RectTransform _replayListRoot;
-        public const string PATH_REPLAYITEMROOT = "Scroll View/Viewport/Content";
-        public RectTransform replayItemRoot
+        public const string PATH_REPLAYLISTROOT = "Scroll View/Viewport/Content";
+        public RectTransform replayListRoot
         {
             get
             {
                 if ((this._replayListRoot == null))
                 {
-                    this._replayListRoot = this.transform.Find(PATH_REPLAYITEMROOT).GetComponent<RectTransform>();
+                    this._replayListRoot = this.transform.Find(PATH_REPLAYLISTROOT).GetComponent<RectTransform>();
                 }
                 return this._replayListRoot;
             }

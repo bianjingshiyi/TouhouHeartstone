@@ -211,8 +211,8 @@ namespace Game
             if (recordReplay)
                 _replaySystem.startRecord(game, game.players.Select(p =>
                 {
-                    RoomPlayerData playerData = new RoomPlayerData(p.name, RoomPlayerType.human);
-                    playerData.setDeck(p.deck.Select(c => c.define.id).ToArray());
+                    RoomPlayerData playerData = new RoomPlayerData(p.id, p.name, RoomPlayerType.human);
+                    playerData.setDeck(new int[] { p.master.define.id }.Concat(p.deck.Select(c => c.define.id)).ToArray());
                     return playerData;
                 }).ToArray());
             onGameStart?.Invoke();
@@ -500,7 +500,7 @@ namespace Game
         private const string GAME_MANAGER_DRAW = "抽牌";
         private void onSaveReplayButtonClick()
         {
-            getManager<MainManager>().fileManager.saveFile(
+            _ = getManager<MainManager>().fileManager.saveFile(
                 _replaySystem.getSaveDir() + "/" + _replaySystem.getSaveFileName(_replaySystem.replay) + "." + _replaySystem.getSaveFileExtension(),
                 _replaySystem.replay.players.Select(p => p.getDeck()[0]).ToArray().ToJson() + "\r\n" +
                 _replaySystem.replay.ToJson());

@@ -181,7 +181,10 @@ namespace Game
                         Debug.LogError("动画" + anim + "播放异常被跳过：" + e);
                     }
                 }
+                if (_animationQueue.Count < 1)
+                    onAllAnimsFinished?.Invoke();
             }
         }
+        public event Action onAllAnimsFinished;
     }
 }
