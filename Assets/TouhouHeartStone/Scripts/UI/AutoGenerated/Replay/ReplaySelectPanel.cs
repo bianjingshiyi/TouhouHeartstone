@@ -39,12 +39,12 @@ namespace UI
                 return this._playButton;
             }
         }
-        public event Action onPlayButtonClick;
+        public event Action<ReplaySelectPanel> onPlayButtonClick;
         private void PlayButtonClickCallback()
         {
-            if ((this.onPlayButtonClick != null))
+            if ((onPlayButtonClick != null))
             {
-                this.onPlayButtonClick();
+                onPlayButtonClick(this);
             }
         }
         public RectTransform _replayListRoot;

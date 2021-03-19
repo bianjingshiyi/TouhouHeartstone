@@ -22,11 +22,11 @@ namespace UI
             this._playerBImage = this.transform.Find(PATH_PLAYERBIMAGE).GetComponent<Image>();
             this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<Text>();
             this._asButton = this.transform.Find(PATH_ASBUTTON).GetComponent<Button>();
-            this._asButton.onClick.AddListener(this.AsButtonClickCallback);
+            _asButton.onClick.AddListener(clickCallback);
         }
         public void autoClear()
         {
-            this._asButton.onClick.RemoveListener(this.AsButtonClickCallback);
+            _asButton.onClick.RemoveListener(clickCallback);
         }
         public Image _playerAImage;
         public const string PATH_PLAYERAIMAGE = "PlayerA/Image";
@@ -80,12 +80,12 @@ namespace UI
                 return this._asButton;
             }
         }
-        public event Action onAsButtonClick;
-        private void AsButtonClickCallback()
+        public event Action<ReplayItem> onClick;
+        private void clickCallback()
         {
-            if ((this.onAsButtonClick != null))
+            if ((onClick != null))
             {
-                this.onAsButtonClick();
+                onClick(this);
             }
         }
     }

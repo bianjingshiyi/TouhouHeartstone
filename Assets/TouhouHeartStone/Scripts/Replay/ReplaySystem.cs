@@ -34,6 +34,18 @@ namespace Game.Replays
             game.onEnd -= onEnd;
             game = null;
         }
+        public string getSaveDir()
+        {
+            return "Replays";
+        }
+        public string getSaveFileName(ReplayData replay)
+        {
+            return DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+        }
+        public string getSaveFileExtension()
+        {
+            return "zmrep";
+        }
         public bool isRecording
         {
             get { return game != null; }

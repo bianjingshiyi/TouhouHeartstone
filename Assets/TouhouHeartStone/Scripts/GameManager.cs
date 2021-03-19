@@ -500,7 +500,8 @@ namespace Game
         private const string GAME_MANAGER_DRAW = "抽牌";
         private void onSaveReplayButtonClick()
         {
-            getManager<MainManager>().fileManager.saveFile("Replays/" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".zmrep",
+            getManager<MainManager>().fileManager.saveFile(
+                _replaySystem.getSaveDir() + "/" + _replaySystem.getSaveFileName(_replaySystem.replay) + "." + _replaySystem.getSaveFileExtension(),
                 _replaySystem.replay.players.Select(p => p.getDeck()[0]).ToArray().ToJson() + "\r\n" +
                 _replaySystem.replay.ToJson());
         }
