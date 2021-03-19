@@ -536,7 +536,7 @@ namespace Tests
             you.cmdUse(game, you.hand.getCard<RushServant>());
             Assert.True(you.field.getCard<RushServant>().isRush(game));
             Assert.True(you.field.getCard<RushServant>().canAttack(game));
-            _ = you.field.getCard<RushServant>().fieldBackToHand(game);
+            _ = you.field.getCard<RushServant>().fieldToHand(game);
             Assert.True(you.hand.getCard<RushServant>().isRush(game));
             you.cmdUse(game, you.hand.getCard<RushServant>());
             Assert.True(you.field.getCard<RushServant>().isRush(game));

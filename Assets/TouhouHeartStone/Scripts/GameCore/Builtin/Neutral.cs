@@ -208,7 +208,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((game, card, target) => { return target.fieldBackToHand(game); },
+            new LambdaSingleTargetEffect((game, card, target) => { return target.fieldToHand(game); },
                 PileFlag.self | PileFlag.field)
         };
     }
@@ -851,7 +851,7 @@ namespace TouhouHeartstone.Builtin
         {
             foreach (var player in game.players)
             {
-                await player.field.Where(c => c != card).fieldBackToHand(game);
+                await player.field.Where(c => c != card).fieldToHand(game);
             }
         }
     }
@@ -1188,7 +1188,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 藤原妹红 8/6/3 亡语：并对所有随从造成2点伤害,下回合开始时，返回手牌。
+    /// 藤原妹红 8/7/3 亡语：并对所有随从造成2点伤害,下回合开始时，返回手牌。
     /// </summary>
     public class HuziwaraNoMokou_N : ServantCardDefine
     {
@@ -1212,10 +1212,7 @@ namespace TouhouHeartstone.Builtin
                         null,
                         async (g, c, a) =>
                         {
-                            if (card.pile == a.player.grave)
-                            {
-                                await card.getOwner().grave.moveTo(g, card, card.getOwner().deck);
-                            }
+                            await card.fieldToDeck(game, true);
                             await card.getOwner().master.removeBuff(game, ID);
                         })));
             })

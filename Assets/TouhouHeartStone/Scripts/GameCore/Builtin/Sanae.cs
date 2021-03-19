@@ -350,7 +350,7 @@ namespace TouhouHeartstone.Builtin
                         //int index = game.randomInt(0, c.getOwner().deck.count);
                         //await god.resetCard(game);
                         //await c.getOwner().field.moveTo(game, god, c.getOwner().deck, index);
-                        await c.fieldToDeck(game);
+                        await c.fieldToDeck(game, true);
                     })));
             }
         }
@@ -845,8 +845,8 @@ namespace TouhouHeartstone.Builtin
             THHPlayer oppo = game.getOpponent(you);
             //int index = 0;
 
-            await you.field.fieldToDeck(game);
-            await oppo.field.fieldToDeck(game);
+            await you.field.fieldToDeck(game, true);
+            await oppo.field.fieldToDeck(game, true);
 
             //while (you.field.count != 0)
             //{

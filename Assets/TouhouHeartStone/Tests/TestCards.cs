@@ -680,7 +680,7 @@ namespace Tests
                 return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
             },async(g,c,a)=>
             {
-                 await a.card.fieldBackToHand(g);
+                 await a.card.fieldToHand(g);
                  await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
             })
         };
@@ -800,7 +800,7 @@ namespace Tests
             {
                 THHPlayer player = c.getOwner();
                 player.createToken(g,g.getDefine<Nerubian>(),p);
-                return c.fieldBackToHand(g);
+                return c.fieldToHand(g);
             })
         };
     }

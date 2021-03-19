@@ -221,7 +221,7 @@ namespace Tests
             game.skipUntilCanUse<HalfPhantom>(you);
             you.cmdUse<HalfPhantom>(game);
             Assert.AreEqual(you.master.getArmor(game),you.field.getCard<HalfPhantom>().getAttack(game));
-            you.field.getCard<HalfPhantom>().fieldBackToHand(game);
+            you.field.getCard<HalfPhantom>().fieldToHand(game);
             Assert.True(you.field.count==0);
             game.skipUntilCanUse<HalfPhantom>(you);
             you.cmdUse<HalfPhantom>(game);

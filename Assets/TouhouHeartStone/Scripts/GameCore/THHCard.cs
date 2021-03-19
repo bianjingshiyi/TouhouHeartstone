@@ -1368,11 +1368,11 @@ namespace TouhouHeartstone
             return targets;
         }
 
-        public static Task fieldBackToHand(this Card card, THHGame game)
+        public static Task fieldToHand(this Card card, THHGame game)
         {
-            return fieldBackToHand(new Card[] { card }, game);
+            return fieldToHand(new Card[] { card }, game);
         }
-        public static async Task fieldBackToHand(this IEnumerable<Card> cards, THHGame game)
+        public static async Task fieldToHand(this IEnumerable<Card> cards, THHGame game)
         {
             foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
             {
@@ -1394,13 +1394,38 @@ namespace TouhouHeartstone
             await game.updateDeath();
         }
 
-        public static Task fieldToDeck(this Card card,THHGame game,bool isYourDeck=true)
+        /// <summary>
+        /// 场上回牌库
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="isYourDeck"></param>
+        /// <param name="random">若为 false, 将移动到牌堆顶</param>
+        /// <returns></returns>
+        public static Task fieldToDeck(this Card card,THHGame game, bool random)
         {
-            return fieldToDeck(new Card[] { card }, game, isYourDeck);
+            return fieldToDeck(new Card[] { card }, game, random);
         }
-        public static async Task fieldToDeck(this IEnumerable<Card> cards,THHGame game,bool isYourDeck=true)
+        /// <summary>
+        /// 场上回牌库
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <param name="game"></param>
+        /// <param name="isYourDeck"></param>
+        /// <param name="random">若为 false, 将移动到牌堆顶</param>
+        /// <returns></returns>
+        public static async Task fieldToDeck(this IEnumerable<Card> cards,THHGame game, bool random)
         {
-            int index = 0;
+            foreach (var g in cards.GroupBy(c=>c.getOwner()))
+            {
+                // 场上随从没死 = 没重置，所以这里手动重置
+                g.resetCard(game);
+                foreach (var card in g)
+                {
+                    int position = random ? game.randomInt(0, g.Key.deck.count) : g.Key.deck.count;
+                    g.Key.field.moveTo(game, card, g.Key.deck, position);
+                }
+            }
             //foreach(Card c in cards)
             //{              
             //    THHPlayer player = c.getOwner();
@@ -1412,28 +1437,42 @@ namespace TouhouHeartstone
             //    await c.resetCard(game);
             //    await c.getOwner().field.moveTo(game, c, player.deck, index);
             //}
-            foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
-            {
-                int restCount = g.Key.field.count;
-                THHPlayer player = g.Key;
-                if (!isYourDeck)
-                {
-                    player = game.getOpponent(g.Key);
-                }
-                index = game.randomInt(0, player.deck.count);
-                var c = g.Take(restCount);
-                await c.resetCard(game);
-                await g.Key.field.moveTo(game, c, player.deck, index);
-            }
+            // foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
+            // {
+            //     int restCount = g.Key.field.count;
+            //     THHPlayer player = g.Key;
+            //     if (!isYourDeck)
+            //     {
+            //         player = game.getOpponent(g.Key);
+            //     }
+            //     index = game.randomInt(0, player.deck.count);
+            //     var c = g.Take(restCount);
+            //     await c.resetCard(game);
+            //     await g.Key.field.moveTo(game, c, player.deck, index);
+            // }
 
         }
 
-        public static Task graveBackToHand(this Card card, THHGame game)
+        /// <summary>
+        /// 墓地回手
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="random">若为 false, 将移动到牌堆顶</param>
+        /// <returns></returns>
+        public static Task graveToHand(this Card card, THHGame game)
         {
-            return graveBackToHand(new Card[] { card }, game);
+            return graveToHand(new Card[] { card }, game);
         }
 
-        public static async Task graveBackToHand(this IEnumerable<Card> cards, THHGame game)
+        /// <summary>
+        /// 墓地回手
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <param name="game"></param>
+        /// <param name="random">若为 false, 将移动到牌堆顶</param>
+        /// <returns></returns>
+        public static async Task graveToHand(this IEnumerable<Card> cards, THHGame game)
         {
             foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
             {
@@ -1448,10 +1487,39 @@ namespace TouhouHeartstone
                 {
                     var toGrave = g.Skip(restCount);
                     game.logger.log(g.Key + "的手牌已满，无法将" + string.Join(",", toGrave) + "置入手牌");
-                    //await toGrave.setDead(game, true);
                 }
             }
-            //await game.updateDeath();
+        }
+        
+        /// <summary>
+        /// 墓地回牌库
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="random">若为 false, 将移动到牌堆顶</param>
+        /// <returns></returns>
+        public static Task graveToDeck(this Card card, THHGame game, bool random)
+        {
+            return graveToDeck(new Card[] { card }, game, random);
+        }
+
+        /// <summary>
+        /// 墓地回牌库
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <param name="game"></param>
+        /// <param name="random">若为 false, 将移动到牌堆顶</param>
+        /// <returns></returns>
+        public static async Task graveToDeck(this IEnumerable<Card> cards, THHGame game, bool random)
+        {
+            foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
+            {
+                foreach (var card in g)
+                {
+                    int position = random ? game.randomInt(0, g.Key.deck.count) : g.Key.deck.count;
+                    g.Key.grave.moveTo(game, g.Take(g.Count()), g.Key.deck, position);
+                }
+            }
         }
 
         public static async Task removeBuff(this IEnumerable<Card> cards, IGame game, int buffId)
