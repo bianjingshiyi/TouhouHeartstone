@@ -245,7 +245,7 @@ namespace Game
                     value = 1;
                     return true;
                 case Neutral_74 _:
-                    value = calcBuffValue(game, player, oppo, target, 0, 2);
+                    value = calcHealingValue(game, player, oppo, target, 2);
                     return true;
                 default:
                     value = 0;
