@@ -27,14 +27,15 @@ namespace UI
         public void SetContent(int id, Sprite img, string title, string content, string date)
         {
             _title.text = title;
-            _description.text = content;
+            _description.text = content.Replace("\n", " ").Replace("\r", "");
+            Debug.Log(_description.text);
             _date.text = date;
             ID = id;
             if (img != null)
             {
                 _image.sprite = img;
-                _imageObj.SetActive(true);
-            } 
+                _imageObj.SetActive(true); 
+            }
             else
             {
                 _imageObj.SetActive(false);

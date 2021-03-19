@@ -15,6 +15,7 @@ namespace IGensoukyo
         [SerializeField]
         [HideInInspector]
         TextMeshProUGUI[] items = new TextMeshProUGUI[0];
+        List<GameObject> objs = new List<GameObject>();
 
         List<TextMeshProUGUI> itemList;
 
@@ -27,7 +28,8 @@ namespace IGensoukyo
         public string Html
         {
             get => _html;
-            set {
+            set
+            {
                 _cachedHtml = value;
                 _html = value;
                 renderHTML();
@@ -53,14 +55,25 @@ namespace IGensoukyo
 
         void hideAll()
         {
-            if (items == null) return;
-
-            foreach (var item in items)
-            {
-                item?.gameObject?.SetActive(false);
+            if (items != null) {
+                foreach (var item in items)
+                {
+                    item?.gameObject?.SetActive(false);
+                }
             }
+
             currentIndex = 0;
+
+            foreach (var item in objs)
+            {
+                Destroy(item);
+            }
+            objs.Clear();
+
+            contentIndex = 1;
         }
+
+        int contentIndex = 1;
 
         TextMeshProUGUI createItem()
         {
@@ -70,12 +83,15 @@ namespace IGensoukyo
                 {
                     currentIndex = i + 1;
                     items[i].gameObject.SetActive(true);
+                    items[i].transform.SetSiblingIndex(contentIndex++);
                     return items[i];
                 }
             }
 
             var item = Instantiate(_item, this.transform);
             item.gameObject.SetActive(true);
+            item.transform.SetSiblingIndex(contentIndex++);
+
             if (itemList == null)
                 itemList = new List<TextMeshProUGUI>(items);
 
@@ -87,6 +103,21 @@ namespace IGensoukyo
             return item;
         }
 
+        void createImageItem(string url)
+        {
+            var go = new GameObject("Img");
+            go.transform.parent = this.transform;
+            go.transform.SetSiblingIndex(contentIndex++);
+            go.transform.localScale = new Vector3(1, 1, 1);
+            var img = go.AddComponent<UnityEngine.UI.Image>();
+            img.preserveAspect = true;
+
+            var imgFU = go.AddComponent<ImageFromUrl>();
+            imgFU.ImageUrl = url;
+
+            objs.Add(go);
+        }
+
         bool listIsOrdered = false;
         /// <summary>
         /// 有序列表Index
@@ -95,7 +126,8 @@ namespace IGensoukyo
         /// <summary>
         /// 缩进
         /// </summary>
-        int listIntent { 
+        int listIntent
+        {
             get;
             set;
         }
@@ -119,6 +151,8 @@ namespace IGensoukyo
                 case "article":
                     break; // 忽略，不做任何处理
                 case "img":
+                    var url = node.GetAttributeValue("src", "");
+                    createImageItem(url);
                     break; // 暂时不知道怎么处理
                 case "head":
                 case "script":

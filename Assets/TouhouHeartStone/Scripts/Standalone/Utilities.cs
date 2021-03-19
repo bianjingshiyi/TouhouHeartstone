@@ -38,6 +38,21 @@ namespace IGensoukyo.Utilities
             result = result.Replace("</li>", "");
             result = result.Replace("</ul>", "");
             result = result.Replace("</ol>", "");
+
+            result = result.Replace("&lt;", "<");
+            result = result.Replace("&gt;", ">");
+            result = result.Replace("&amp;", "&");
+            result = result.Replace("&quot;", "\"");
+            result = result.Replace("&copy;", "©");
+            result = result.Replace("&reg;", "®");
+            return result;
+        }
+    
+        public static string HTMLRemoveTags(string original) 
+        {
+            var result = original.Replace("\n", "");
+            result = HTMLToUnityText(result);
+
             return result;
         }
     }

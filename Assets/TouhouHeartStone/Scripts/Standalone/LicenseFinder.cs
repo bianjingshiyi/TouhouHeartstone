@@ -20,7 +20,8 @@ namespace IGensoukyo.Utilities
             Dictionary<string, License> dic = new Dictionary<string, License>();
             foreach (var item in licenses)
             {
-                dic.Add(item.Path, item);
+                var path = item.Path.Replace("\\", "/");
+                dic[path] = item;
             }
 
             List<string> files = new List<string>();
@@ -32,13 +33,14 @@ namespace IGensoukyo.Utilities
 
             foreach (var file in files)
             {
-                var path = file.Replace(currentDir, "");
+                var path = file.Replace(currentDir, "").Replace("\\", "/");
                 var data = File.ReadAllText(file);
                 if (dic.ContainsKey(path))
                 {
                     var item = dic[path];
                     item.Content = data;
-                } else
+                } 
+                else
                 {
                     var item = new License()
                     {

@@ -67,7 +67,13 @@ namespace UI
                 cachedPosts.Add(item.id, item);
 
                 var obj = SpawnItem();
-                obj.SetContent(item.id, null, item.title.rendered, item.excerpt.rendered, item.date.Value.ToString("yyyy-MM-dd HH:mm"));
+                obj.SetContent(
+                    item.id, 
+                    null, 
+                    Utilities.HTMLRemoveTags(item.title.rendered), 
+                    Utilities.HTMLRemoveTags(item.excerpt.rendered), 
+                    item.date.Value.ToString("yyyy-MM-dd HH:mm")
+                );
                 obj.OnClick += showArticle;
             }
         }
@@ -91,6 +97,13 @@ namespace UI
         {
             detailView.SetActive(detail);
             listView.SetActive(!detail);
+
+            if (detail) {
+                var rt = this.detail.GetComponent<RectTransform>();
+                var p = rt.anchoredPosition;
+                p.y = 0;
+                rt.anchoredPosition = p;
+            }
         }
     }
 }
