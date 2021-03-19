@@ -1188,7 +1188,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 藤原妹红 8/7/3 亡语：并对所有随从造成2点伤害,下回合开始时，返回手牌。
+    /// 藤原妹红 8/7/3 亡语：并对所有随从造成2点伤害，返回牌库。
     /// </summary>
     public class HuziwaraNoMokou_N : ServantCardDefine
     {
@@ -1206,15 +1206,16 @@ namespace TouhouHeartstone.Builtin
             {
                 await game.getAllServants().damage(game, card, 2);
                 await game.updateDeath();
-                await card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
-                    new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.MASTER,
-                        (g, c, a) => { return a.player == c.getOwner(); },
-                        null,
-                        async (g, c, a) =>
-                        {
-                            await card.fieldToDeck(game, true);
-                            await card.getOwner().master.removeBuff(game, ID);
-                        })));
+                // await card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
+                //     new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.MASTER,
+                //         (g, c, a) => { return a.player == c.getOwner(); },
+                //         null,
+                //         async (g, c, a) =>
+                //         {
+                //             await card.fieldToDeck(game, true);
+                //             await card.getOwner().master.removeBuff(game, ID);
+                //         })));
+                await card.graveToDeck(game, true);
             })
         };
     }
