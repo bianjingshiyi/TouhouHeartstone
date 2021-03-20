@@ -100,19 +100,11 @@ namespace UI
             var deck = dm.GetDeck(currentDeckID);
             string outputString = exportStringHeader + " " + deck.Name + "\n";
 
-            byte[] dataBytes = new byte[(currentDeckCards.Count + 1) * sizeof(int)];
+            List<int> cards = new List<int>(1 + currentDeckCards.Count);
+            cards.Add(deck.MasterID);
+            cards.AddRange(currentDeckCards);
 
-            int offset = 0;
-            BitConverter.GetBytes(deck.MasterID).CopyTo(dataBytes, offset);
-            offset += 4;
-
-            foreach (var item in currentDeckCards)
-            {
-                BitConverter.GetBytes(item).CopyTo(dataBytes, offset);
-                offset += 4;
-            }
-
-            outputString += Convert.ToBase64String(gzipCompress(dataBytes));
+            outputString += dm.DeckToString(cards.ToArray());
             GUIUtility.systemCopyBuffer = outputString;
 
             UIDialog.ShowConfirm(lang._(StringTable.HINT_TITLE), lang._(PILE_EXPORTED), null);
@@ -152,31 +144,25 @@ namespace UI
 
             try
             {
-                var compressdData = Convert.FromBase64String(deckContent);
-                var decompressedData = gzipDecompress(compressdData);
-                List<int> cards = new List<int>();
-                int master = 0;
-                for (int i = 0; i < decompressedData.Length; i += 4)
-                {
-                    var card = BitConverter.ToInt32(decompressedData, i);
+                var cards = dm.StringToDeck(deckContent);
+                int master = cards[0];
 
+                // 检查卡片是否存在
+                for (int i = 0; i < cards.Length; i++)
+                {
+                    var card = cards[i];
                     if (cm.GetCardDefine(card) == null)
                     {
                         UIDialog.ShowConfirm(lang._(ERROR_TITLE), lang._(CARD_NOT_EXISTS, card), null);
                         return;
                     }
-
-                    if (i == 0)
-                        master = card;
-                    else
-                        cards.Add(card);
                 }
 
                 // 创建卡组
                 long deckID = dm.CreateDeck(deckName, master);
-                foreach (var item in cards)
+                for (int i = 1; i < cards.Length; i++)
                 {
-                    dm.AddCard(deckID, item);
+                    dm.AddCard(deckID, cards[i]);
                 }
                 
                 // 进入编辑模式
@@ -195,43 +181,6 @@ namespace UI
             {
                 UIDialog.ShowConfirm(lang._(ERROR_TITLE), lang._(PILE_IMPORT_ERROR, e.Message), null);
                 Debug.LogWarning(e);
-            }
-        }
-
-        /// <summary>
-        /// 压缩字节
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        byte[] gzipCompress(byte[] data)
-        {
-            using (var outputStream = new MemoryStream())
-            {
-                using (var inputStream = new GZipStream(outputStream, CompressionMode.Compress))
-                {
-                    inputStream.Write(data, 0, data.Length);
-                }
-                return outputStream.ToArray();
-            }
-        }
-
-        /// <summary>
-        /// 解压字节
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        byte[] gzipDecompress(byte[] data)
-        {
-            using (var originalStream = new MemoryStream(data))
-            {
-                using (var decompressedStream = new MemoryStream())
-                {
-                    using (var decompressionStream = new GZipStream(originalStream, CompressionMode.Decompress))
-                    {
-                        decompressionStream.CopyTo(decompressedStream);
-                    }
-                    return decompressedStream.ToArray();
-                }
             }
         }
 

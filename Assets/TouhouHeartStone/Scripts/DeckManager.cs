@@ -4,18 +4,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.Common;
 using System;
+using System.IO.Compression;
+using System.IO;
 
 namespace Game
 {
     public class DeckManager : Manager
     {
+        #region DB
         public SqlDatabase db => getManager<DatabaseManager>().Database;
 
         DbTransaction tr = null;
 
         const string tableDeck = "deck";
         const string tableCards = "deck_cards";
-
 
         protected override void onAwake()
         {
@@ -311,6 +313,217 @@ namespace Game
         /// 是否处于事务中
         /// </summary>
         public bool IsInTransation => tr != null;
+        #endregion
+        #region DeckCode
+
+        const byte GzipHeaderByte1 = 0x1f;
+        const byte GzipHeaderByte2 = 0x8b;
+
+        const byte ZMHeaderByte1 = (byte)'z';
+        const byte ZMHeaderByte2 = (byte)'c';
+
+        /// <summary>
+        /// Deck转String，V1版本
+        /// </summary>
+        /// <param name="deck"></param>
+        /// <returns></returns>
+        public string DeckToStringV1(int[] deck)
+        {
+            byte[] encByte = Deck2ByteV1(deck);
+            return Convert.ToBase64String(encByte);
+        }
+
+        /// <summary>
+        /// Deck转String
+        /// </summary>
+        /// <param name="deck"></param>
+        /// <returns></returns>
+        public string DeckToString(int[] deck)
+        {
+            return Convert.ToBase64String(Deck2ByteV2(deck));
+        }
+
+        /// <summary>
+        /// Deck转Byte，V1版本
+        /// </summary>
+        /// <param name="deck"></param>
+        /// <returns></returns>
+        private byte[] Deck2ByteV1(int[] deck)
+        {
+            byte[] dataBytes = new byte[(deck.Length) * sizeof(int)];
+
+            int offset = 0;
+            foreach (var item in deck)
+            {
+                BitConverter.GetBytes(item).CopyTo(dataBytes, offset);
+                offset += 4;
+            }
+            byte[] encByte = gzipCompress(dataBytes);
+            return encByte;
+        }
+
+        /// <summary>
+        /// Deck转Byte，V2版本
+        /// </summary>
+        /// <param name="deck"></param>
+        /// <returns></returns>
+        private byte[] Deck2ByteV2(int[] deck)
+        {
+            var bytes = Deck2ByteV1(deck);
+            var srcLen = bytes.Length;
+            var dstLen = srcLen - 10;
+            // 去除10byte的文件头和4byte的尾部，加上3byte的新文件头
+            byte[] result = new byte[dstLen];
+
+            result[0] = ZMHeaderByte1;
+            result[1] = ZMHeaderByte2; 
+            result[2] = 2; // Version
+            result[3] = bytes[srcLen - 4]; // Len的MSB。因为它不会大于256，所以直接使用
+
+            Array.Copy(bytes, 10, result, 4, srcLen - 10 - 4);
+
+            return result;
+        }
+
+        /// <summary>
+        /// String转Deck，V1版本
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        /// <exception cref="FormatException">不是完整的Base64字符串</exception>
+        /// <exception cref="IOException">无法以Gzip方式解压</exception>
+        public int[] StringToDeckV1(string str)
+        {
+            var compressdData = Convert.FromBase64String(str);
+            return Byte2DeckV1(compressdData);
+        }
+
+        /// <summary>
+        /// String转Deck
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        /// <exception cref="FormatException">不是完整的Base64字符串</exception>
+        /// <exception cref="IOException">无法以Gzip方式解压</exception>
+        public int[] StringToDeck(string str)
+        {
+            var compressdData = Convert.FromBase64String(str);
+            return Byte2Deck(compressdData);
+        }
+
+        /// <summary>
+        /// Byte转Deck
+        /// </summary>
+        /// <param name="compressdData"></param>
+        /// <returns></returns>
+        private int[] Byte2Deck(byte[] compressdData)
+        {
+            if (compressdData[0] == GzipHeaderByte1 && compressdData[1] == GzipHeaderByte2)
+            {
+                return Byte2DeckV1(compressdData);
+            }
+            if (compressdData[0] == ZMHeaderByte1 && compressdData[1] == ZMHeaderByte2)
+            {
+                // 版本号
+                if (compressdData[2] == 2)
+                {
+                    return Byte2DeckV2(compressdData);
+                }
+                throw new Exception("无法识别的组卡代码版本");
+            }
+            throw new Exception("无法辨认的格式");
+        }
+
+        /// <summary>
+        /// Byte转Deck，V1版本
+        /// </summary>
+        /// <param name="compressdData"></param>
+        /// <exception cref="IOException">无法以Gzip方式解压</exception>
+        /// <returns></returns>
+        private int[] Byte2DeckV1(byte[] compressdData)
+        {
+            var decompressedData = gzipDecompress(compressdData);
+            List<int> cards = new List<int>();
+            for (int i = 0; i < decompressedData.Length; i += 4)
+            {
+                var card = BitConverter.ToInt32(decompressedData, i);
+                cards.Add(card);
+            }
+            return cards.ToArray();
+        }
+
+        /// <summary>
+        /// Byte转Deck，v2版本
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private int[] Byte2DeckV2(byte[] data)
+        {
+            var bytes = new byte[data.Length + 10];
+            var i = 0;
+
+            bytes[i++] = GzipHeaderByte1; // header, 2 bytes
+            bytes[i++] = GzipHeaderByte2; 
+            bytes[i++] = 0x08; // CM, 8 = Deflate
+            bytes[i++] = 0x00; // FLAG, disable all feature
+
+            bytes[i++] = 0; // MTIME, 0
+            bytes[i++] = 0;
+            bytes[i++] = 0;
+            bytes[i++] = 0;
+
+            bytes[i++] = 2; // XFL, 2 = maximum compression
+            bytes[i++] = 0; // OS, 0 = FAT system.
+
+            Array.Copy(data, 4, bytes, 10, data.Length - 4);
+            i += data.Length - 4;
+
+            bytes[i++] = data[3]; // Length
+            bytes[i++] = 0;
+            bytes[i++] = 0;
+            bytes[i++] = 0;
+
+            return Byte2DeckV1(bytes);
+        }
+
+        /// <summary>
+        /// 压缩字节
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        byte[] gzipCompress(byte[] data)
+        {
+            using (var outputStream = new MemoryStream())
+            {
+                using (var inputStream = new GZipStream(outputStream, CompressionMode.Compress))
+                {
+                    inputStream.Write(data, 0, data.Length);
+                }
+                return outputStream.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// 解压字节
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        byte[] gzipDecompress(byte[] data)
+        {
+            using (var originalStream = new MemoryStream(data))
+            {
+                using (var decompressedStream = new MemoryStream())
+                {
+                    using (var decompressionStream = new GZipStream(originalStream, CompressionMode.Decompress))
+                    {
+                        decompressionStream.CopyTo(decompressedStream);
+                    }
+                    return decompressedStream.ToArray();
+                }
+            }
+        }
+
+        #endregion
     }
 
     public struct DeckDefine
