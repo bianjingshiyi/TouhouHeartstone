@@ -48,7 +48,7 @@ pipeline {
                     env.BUILD_GIT_TAG = gitTag.trim()
 
                     // 清理过期
-                    sh 'rm -r Build/*'
+                    sh 'rm -rf Build/*'
                 }
             }
         }
