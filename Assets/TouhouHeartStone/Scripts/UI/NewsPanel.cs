@@ -35,20 +35,23 @@ namespace UI
         [SerializeField]
         HTMLRenderer detail;
 
+        [SerializeField]
+        GameObject loadingImg;
+
         WordPressRestfulClient client;
 
         Dictionary<int, WordPressRestfulClient.WordPressPost> cachedPosts = new Dictionary<int, WordPressRestfulClient.WordPressPost>();
 
         private new void Awake()
         {
-            base.Awake();   
+            base.Awake();
             client = new WordPressRestfulClient(newsSite);
 
             closeButton.onClick.AddListener(() => { gameObject.SetActive(false); });
             detailBackButton.onClick.AddListener(() => { switchMode(false); });
         }
 
-        int[] NEWS_CATEGORY = new int[]{ 3, 4, 5, 7 };
+        int[] NEWS_CATEGORY = new int[] { 3, 4, 5, 7 };
 
         private void OnEnable()
         {
@@ -56,35 +59,45 @@ namespace UI
             reloadNews();
         }
 
-        private void reloadNews()
+        private async void reloadNews()
         {
+            loadingImg.SetActive(true);
+
             RemoveAllItem();
             cachedPosts.Clear();
 
-            var data = client.GetPosts(NEWS_CATEGORY);
-            foreach (var item in data)
+            try
             {
-                cachedPosts.Add(item.id, item);
+                var data = await client.GetPostsAsync(NEWS_CATEGORY);
+                foreach (var item in data)
+                {
+                    cachedPosts.Add(item.id, item);
 
-                var obj = SpawnItem();
-                obj.SetContent(
-                    item.id, 
-                    null, 
-                    Utilities.HTMLRemoveTags(item.title.rendered), 
-                    Utilities.HTMLRemoveTags(item.excerpt.rendered), 
-                    item.date.Value.ToString("yyyy-MM-dd HH:mm")
-                );
-                obj.OnClick += showArticle;
+                    var obj = SpawnItem();
+                    obj.SetContent(
+                        item.id,
+                        null,
+                        Utilities.HTMLRemoveTags(item.title.rendered),
+                        Utilities.HTMLRemoveTags(item.excerpt.rendered),
+                        item.date.Value.ToString("yyyy-MM-dd HH:mm")
+                    );
+                    obj.OnClick += showArticle;
+                }
+            }
+            catch (NetClientException e)
+            {
+                Debug.LogException(e);
+            }
+            finally
+            {
+                loadingImg.SetActive(false);
             }
         }
 
         private void showArticle(int id)
         {
-            Debug.Log("Show article ID: " + id);
             if (!cachedPosts.ContainsKey(id))
-            {
                 return;
-            }
 
             var post = cachedPosts[id];
             detailTitle.text = post.title.rendered;
@@ -98,7 +111,8 @@ namespace UI
             detailView.SetActive(detail);
             listView.SetActive(!detail);
 
-            if (detail) {
+            if (detail)
+            {
                 var rt = this.detail.GetComponent<RectTransform>();
                 var p = rt.anchoredPosition;
                 p.y = 0;

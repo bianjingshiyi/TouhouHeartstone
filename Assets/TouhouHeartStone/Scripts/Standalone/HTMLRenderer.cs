@@ -13,6 +13,9 @@ namespace IGensoukyo
         TextMeshProUGUI _item;
 
         [SerializeField]
+        Sprite defaultImg;
+
+        [SerializeField]
         [HideInInspector]
         TextMeshProUGUI[] items = new TextMeshProUGUI[0];
         List<GameObject> objs = new List<GameObject>();
@@ -111,6 +114,7 @@ namespace IGensoukyo
             go.transform.localScale = new Vector3(1, 1, 1);
             var img = go.AddComponent<UnityEngine.UI.Image>();
             img.preserveAspect = true;
+            img.sprite = defaultImg;
 
             var imgFU = go.AddComponent<ImageFromUrl>();
             imgFU.ImageUrl = url;
@@ -149,10 +153,13 @@ namespace IGensoukyo
                 case "noscript":
                 case "label":
                 case "article":
+                case "figure":
                     break; // 忽略，不做任何处理
                 case "img":
                     var url = node.GetAttributeValue("src", "");
                     createImageItem(url);
+                    break; 
+                case "hr":
                     break; // 暂时不知道怎么处理
                 case "head":
                 case "script":
@@ -173,6 +180,7 @@ namespace IGensoukyo
                     var target = node.GetAttributeValue("href", "");
                     currentSectionText += $"<link=\"{target}\"><color=blue><u>";
                     break;
+                case "figcaption":
                 case "p":
                 case "h1":
                 case "h2":
@@ -252,6 +260,7 @@ namespace IGensoukyo
                 case "header":
                 case "footer":
                 case "li":
+                case "figcaption":
                     item = TryCreateNodeWithContent();
                     break;
                 case "b":
@@ -294,6 +303,9 @@ namespace IGensoukyo
                     break;
                 case "h3":
                     item.textStyle = sheet.GetStyle("h3");
+                    break;
+                case "figcaption":
+                    item.textStyle = sheet.GetStyle("caption");
                     break;
                 case "h4":
                 case "h5":

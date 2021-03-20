@@ -24,6 +24,14 @@ namespace IGensoukyo
             loadImage();
         }
 
+        UnityWebRequestAsyncOperation requestOP;
+        bool destroyed = false;
+        private void OnDestroy()
+        {
+            destroyed = true;
+            requestOP.completed -= requestHandler;
+        }
+
         void loadImage()
         {
             if (String.IsNullOrEmpty(_imageUrl)) 
@@ -36,22 +44,29 @@ namespace IGensoukyo
             if (url.StartsWith("//"))
                 url = "https:" + ImageUrl;
 
-            UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url);
-            uwr.SendWebRequest().completed += op =>
+            UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
+            requestOP = request.SendWebRequest();
+            requestOP.completed += requestHandler;
+        }
+
+        void requestHandler(AsyncOperation op)
+        {
+            var uop = op as UnityWebRequestAsyncOperation;
+            if (destroyed)
+                return;
+            var req = uop.webRequest;
+
+            if (req.isNetworkError || req.isHttpError || req.downloadHandler.data == null)
             {
-                var uop = op as UnityWebRequestAsyncOperation;
-                if (uop.webRequest.isNetworkError || uop.webRequest.isHttpError || uwr.downloadHandler.data == null)
-                {
-                    img.sprite = null;
-                    return;
-                }
+                img.sprite = null;
+                return;
+            }
 
-                Texture2D texture = new Texture2D(512, 512, TextureFormat.RGB24, true);
-                texture.LoadImage(uwr.downloadHandler.data);
+            Texture2D texture = new Texture2D(512, 512, TextureFormat.RGB24, true);
+            texture.LoadImage(req.downloadHandler.data);
 
-                img.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-                uwr.Dispose();
-            };
+            img.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            // request.Dispose();
         }
     }
 }
