@@ -50,6 +50,7 @@ namespace Game
             {
                 _mainUI.game = this;
                 _mainUI.Game.GameResultDialog._ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
+                _mainUI.Game.GameResultDialog.onSaveReplayButtonClick += quitGame; // 保存并退出
                 _ui = _mainUI.Game;
             }
             ui.GameResultDialog.onSaveReplayButtonClick += onSaveReplayButtonClick;

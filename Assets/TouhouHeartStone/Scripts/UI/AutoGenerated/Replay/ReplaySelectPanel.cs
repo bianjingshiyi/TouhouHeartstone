@@ -21,14 +21,14 @@ namespace UI
         {
             this._playButton = this.transform.Find(PATH_PLAYBUTTON).GetComponent<Button>();
             _playButton.onClick.AddListener(PlayButtonClickCallback);
-            this._returnButton = this.transform.Find(PATH_RETURNBUTTON).GetComponent<Button>();
-            _returnButton.onClick.AddListener(ReturnButtonClickCallback);
+            this._backButton = this.transform.Find(PATH_BACKBUTTON).GetComponent<Button>();
+            _backButton.onClick.AddListener(BackButtonClickCallback);
             this._replayListRoot = this.transform.Find(PATH_REPLAYLISTROOT).GetComponent<RectTransform>();
         }
         public void autoClear()
         {
             _playButton.onClick.RemoveListener(PlayButtonClickCallback);
-            _returnButton.onClick.RemoveListener(ReturnButtonClickCallback);
+            _backButton.onClick.RemoveListener(BackButtonClickCallback);
         }
         public Button _playButton;
         public const string PATH_PLAYBUTTON = "Play";
@@ -51,25 +51,25 @@ namespace UI
                 onPlayButtonClick(this);
             }
         }
-        public Button _returnButton;
-        public const string PATH_RETURNBUTTON = "Return";
-        public Button returnButton
+        public Button _backButton;
+        public const string PATH_BACKBUTTON = "TitleBar/Back";
+        public Button backButton
         {
             get
             {
-                if ((this._returnButton == null))
+                if ((this._backButton == null))
                 {
-                    this._returnButton = this.transform.Find(PATH_RETURNBUTTON).GetComponent<Button>();
+                    this._backButton = this.transform.Find(PATH_BACKBUTTON).GetComponent<Button>();
                 }
-                return this._returnButton;
+                return this._backButton;
             }
         }
-        public event Action<ReplaySelectPanel> onReturnButtonClick;
-        private void ReturnButtonClickCallback()
+        public event Action<ReplaySelectPanel> onBackButtonClick;
+        private void BackButtonClickCallback()
         {
-            if ((onReturnButtonClick != null))
+            if ((onBackButtonClick != null))
             {
-                onReturnButtonClick(this);
+                onBackButtonClick(this);
             }
         }
         public RectTransform _replayListRoot;

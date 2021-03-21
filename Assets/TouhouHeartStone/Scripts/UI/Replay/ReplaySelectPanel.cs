@@ -110,7 +110,7 @@ namespace UI
             _ui.onAwake();
             _ui.onPlayButtonClick += onPlayButtonClick;
             _ui.onReplayListClick += onReplayListClick;
-            _ui.onReturnButtonClick += onReturnButtonClick;
+            _ui.onBackButtonClick += onReturnButtonClick;
         }
 
         private void onReturnButtonClick(ReplaySelectPanel ui)
@@ -191,6 +191,10 @@ namespace UI
             {
                 _replayList.updateList(_replayListTemplate, _replayListRoot, viewData.replayItemViewDatas,
                     onReplayListCreate, onReplayListUpdate, onReplayListRecycle);
+            }
+            for (int i = 0; i < _replayList.Count; i++)
+            {
+                _replayList[i].setSelected(viewData.selectIndex == i);
             }
         }
         ReplayItem onReplayListCreate(GameObject gameObject)

@@ -16,6 +16,11 @@ namespace UI
             _playerBImage.sprite = ui.getManager<CardManager>().getSkin(viewData.playerBMasterId).image;
             _nameText.text = viewData.name;
         }
+
+        public void setSelected(bool selected)
+        {
+            _selected.gameObject.SetActive(selected);
+        }
     }
     public class ReplayItemViewData
     {

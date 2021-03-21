@@ -13,6 +13,7 @@ namespace UI
     using System;
     using UnityEngine.UI;
     using BJSYGameCore;
+    using UnityEngine;
     
     public partial class ReplayItem
     {
@@ -20,16 +21,17 @@ namespace UI
         {
             this._playerAImage = this.transform.Find(PATH_PLAYERAIMAGE).GetComponent<Image>();
             this._playerBImage = this.transform.Find(PATH_PLAYERBIMAGE).GetComponent<Image>();
-            this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<Text>();
             this._asButton = this.transform.Find(PATH_ASBUTTON).GetComponent<Button>();
             _asButton.onClick.AddListener(clickCallback);
+            this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<Text>();
+            this._selected = this.transform.Find(PATH_SELECTED).gameObject;
         }
         public void autoClear()
         {
             _asButton.onClick.RemoveListener(clickCallback);
         }
         public Image _playerAImage;
-        public const string PATH_PLAYERAIMAGE = "PlayerA/Image";
+        public const string PATH_PLAYERAIMAGE = "PlayerImage/PlayerA/Image";
         public Image playerAImage
         {
             get
@@ -42,7 +44,7 @@ namespace UI
             }
         }
         public Image _playerBImage;
-        public const string PATH_PLAYERBIMAGE = "PlayerB/Image";
+        public const string PATH_PLAYERBIMAGE = "PlayerImage/PlayerB/Image";
         public Image playerBImage
         {
             get
@@ -52,19 +54,6 @@ namespace UI
                     this._playerBImage = this.transform.Find(PATH_PLAYERBIMAGE).GetComponent<Image>();
                 }
                 return this._playerBImage;
-            }
-        }
-        public Text _nameText;
-        public const string PATH_NAMETEXT = "Name";
-        public Text nameText
-        {
-            get
-            {
-                if ((this._nameText == null))
-                {
-                    this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<Text>();
-                }
-                return this._nameText;
             }
         }
         public Button _asButton;
@@ -86,6 +75,32 @@ namespace UI
             if ((onClick != null))
             {
                 onClick(this);
+            }
+        }
+        public Text _nameText;
+        public const string PATH_NAMETEXT = "Name";
+        public Text nameText
+        {
+            get
+            {
+                if ((this._nameText == null))
+                {
+                    this._nameText = this.transform.Find(PATH_NAMETEXT).GetComponent<Text>();
+                }
+                return this._nameText;
+            }
+        }
+        public GameObject _selected;
+        public const string PATH_SELECTED = "Selected";
+        public GameObject selected
+        {
+            get
+            {
+                if ((this._selected == null))
+                {
+                    this._selected = this.transform.Find(PATH_SELECTED).gameObject;
+                }
+                return this._selected;
             }
         }
     }
