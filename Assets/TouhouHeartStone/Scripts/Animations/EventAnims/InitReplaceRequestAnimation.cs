@@ -24,11 +24,13 @@ namespace Game
                     });
                 });
                 table.ui.InitReplaceDialog.InitReplaceCardList.sortItems((a, b) => table.player.init.indexOf(a.Card.card) - table.player.init.indexOf(b.Card.card));
-                table.ui.InitReplaceDialog.ConfirmButtonBlack.asButton.setSelectable(true);
+                table.ui.InitReplaceDialog.ConfirmButtonBlack.gameObject.SetActive(true);
+                table.ui.InitReplaceDialog.WaitingText.SetActive(false);
                 table.ui.InitReplaceDialog.ConfirmButtonBlack.asButton.onClick.set(() =>
                 {
                     table.player.cmdInitReplace(table.game, table.ui.InitReplaceDialog.InitReplaceCardList.Where(item => item.MarkImage.enabled).Select(item => item.Card.card).ToArray());
-                    table.ui.InitReplaceDialog.ConfirmButtonBlack.asButton.setSelectable(false);
+                    table.ui.InitReplaceDialog.ConfirmButtonBlack.gameObject.SetActive(false);
+                    table.ui.InitReplaceDialog.WaitingText.SetActive(true);
                 });
             }
             return true;

@@ -90,6 +90,11 @@ namespace UI
                 return this._ConfirmButtonBlack;
             }
         }
+
+        [SerializeField]
+        private GameObject _waitingText;
+        public GameObject WaitingText => _waitingText;
+
         partial void onAwake();
     }
 }
