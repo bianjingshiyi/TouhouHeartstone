@@ -371,8 +371,11 @@ namespace TouhouHeartstone.Builtin
                         return a.player == c.getOwner();
                     }, null, async (g, c, a) =>
                     {
-                        await c.setDead(g, true);
-                        await g.updateDeath();
+                        if (card.pile.name == PILE.FIELD)
+                        {
+                            await c.setDead(g, true);
+                            await g.updateDeath();
+                        }
                     })));
                 }
             };
