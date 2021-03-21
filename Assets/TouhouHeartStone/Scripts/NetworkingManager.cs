@@ -122,13 +122,13 @@ namespace Game
                 await ShowPanel(mainUI, Panel.Recover);
             });
             mainUI.loginPanel.hide();
-            mainUI.playerInfoPanel.OnLoginClick += async () =>
+            mainUI.playerInfoPanel.onLoginButtonClick += async (p) =>
             {
                 loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out var password);
                 mainUI.loginPanel.SetContent(rememberUserName, userName, rememberPassword, password);
                 await ShowPanel(mainUI, Panel.Login);
             };
-            mainUI.playerInfoPanel.OnLogoutClick += () =>
+            mainUI.playerInfoPanel.onLogoutButtonClick += (p) =>
             {
                 mainUI.playerInfoPanel.SetPlayerInfo(null);
                 _ = client.logout();
@@ -454,7 +454,7 @@ namespace Game
         #region UI
         async Task updateAccountPanel()
         {
-            var playerInfoPanel = getManager<UIManager>().getObject<PlayerInfoPanel>();
+            var playerInfoPanel = getManager<UIManager>().findInstance<PlayerInfoPanel>();
             try
             {
                 var info = await client.getUserInfo();

@@ -11,105 +11,120 @@
 namespace UI
 {
     using System;
-    using UnityEngine;
     using UnityEngine.UI;
-    using BJSYGameCore.UI;
+    using BJSYGameCore;
     
-    public partial class PlayerInfoPanel : UIObject
+    public partial class PlayerInfoPanel
     {
-        protected override void Awake()
+        public void autoInit()
         {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
+            this._InfoContainerImage = this.transform.Find(PATH_INFOCONTAINERIMAGE).GetComponent<Image>();
+            this._NickNameText = this.transform.Find(PATH_NICKNAMETEXT).GetComponent<Text>();
+            this._EmailText = this.transform.Find(PATH_EMAILTEXT).GetComponent<Text>();
+            this._HeadImage = this.transform.Find(PATH_HEADIMAGE).GetComponent<Image>();
+            this._logoutButton = this.transform.Find(PATH_LOGOUTBUTTON).GetComponent<Button>();
+            _logoutButton.onClick.AddListener(LogoutButtonClickCallback);
+            this._loginButton = this.transform.Find(PATH_LOGINBUTTON).GetComponent<Button>();
+            _loginButton.onClick.AddListener(LoginButtonClickCallback);
         }
-        public void autoBind()
+        public void autoClear()
         {
-            this._InfoContainerImage = this.transform.Find("InfoContainer").GetComponent<Image>();
-            this._LogoutButtonBlack = this.transform.Find("InfoContainer").Find("Logout").GetComponent<ButtonBlack>();
-            this._NickNameText = this.transform.Find("InfoContainer").Find("NickName").GetComponent<Text>();
-            this._EmailText = this.transform.Find("InfoContainer").Find("Email").GetComponent<Text>();
-            this._HeadImage = this.transform.Find("HeadImage").GetComponent<Image>();
-            this._LoginButtonBlack = this.transform.Find("Login").GetComponent<ButtonBlack>();
+            _logoutButton.onClick.RemoveListener(LogoutButtonClickCallback);
+            _loginButton.onClick.RemoveListener(LoginButtonClickCallback);
         }
-        [SerializeField()]
-        private Image _InfoContainerImage;
-        public Image InfoContainerImage
+        public Image _InfoContainerImage;
+        public const string PATH_INFOCONTAINERIMAGE = "InfoContainer";
+        public Image infoContainerImage
         {
             get
             {
                 if ((this._InfoContainerImage == null))
                 {
-                    this._InfoContainerImage = this.transform.Find("InfoContainer").GetComponent<Image>();
+                    this._InfoContainerImage = this.transform.Find(PATH_INFOCONTAINERIMAGE).GetComponent<Image>();
                 }
                 return this._InfoContainerImage;
             }
         }
-        [SerializeField()]
-        private ButtonBlack _LogoutButtonBlack;
-        public ButtonBlack LogoutButtonBlack
-        {
-            get
-            {
-                if ((this._LogoutButtonBlack == null))
-                {
-                    this._LogoutButtonBlack = this.transform.Find("InfoContainer").Find("Logout").GetComponent<ButtonBlack>();
-                }
-                return this._LogoutButtonBlack;
-            }
-        }
-        [SerializeField()]
-        private Text _NickNameText;
-        public Text NickNameText
+        public Text _NickNameText;
+        public const string PATH_NICKNAMETEXT = "InfoContainer/NickName";
+        public Text nickNameText
         {
             get
             {
                 if ((this._NickNameText == null))
                 {
-                    this._NickNameText = this.transform.Find("InfoContainer").Find("NickName").GetComponent<Text>();
+                    this._NickNameText = this.transform.Find(PATH_NICKNAMETEXT).GetComponent<Text>();
                 }
                 return this._NickNameText;
             }
         }
-        [SerializeField()]
-        private Text _EmailText;
-        public Text EmailText
+        public Text _EmailText;
+        public const string PATH_EMAILTEXT = "InfoContainer/Email";
+        public Text emailText
         {
             get
             {
                 if ((this._EmailText == null))
                 {
-                    this._EmailText = this.transform.Find("InfoContainer").Find("Email").GetComponent<Text>();
+                    this._EmailText = this.transform.Find(PATH_EMAILTEXT).GetComponent<Text>();
                 }
                 return this._EmailText;
             }
         }
-        [SerializeField()]
-        private Image _HeadImage;
-        public Image HeadImage
+        public Image _HeadImage;
+        public const string PATH_HEADIMAGE = "HeadImage";
+        public Image headImage
         {
             get
             {
                 if ((this._HeadImage == null))
                 {
-                    this._HeadImage = this.transform.Find("HeadImage").GetComponent<Image>();
+                    this._HeadImage = this.transform.Find(PATH_HEADIMAGE).GetComponent<Image>();
                 }
                 return this._HeadImage;
             }
         }
-        [SerializeField()]
-        private ButtonBlack _LoginButtonBlack;
-        public ButtonBlack LoginButtonBlack
+        public Button _logoutButton;
+        public const string PATH_LOGOUTBUTTON = "InfoContainer/Logout";
+        public Button logoutButton
         {
             get
             {
-                if ((this._LoginButtonBlack == null))
+                if ((this._logoutButton == null))
                 {
-                    this._LoginButtonBlack = this.transform.Find("Login").GetComponent<ButtonBlack>();
+                    this._logoutButton = this.transform.Find(PATH_LOGOUTBUTTON).GetComponent<Button>();
                 }
-                return this._LoginButtonBlack;
+                return this._logoutButton;
             }
         }
-        partial void onAwake();
+        public event Action<PlayerInfoPanel> onLogoutButtonClick;
+        private void LogoutButtonClickCallback()
+        {
+            if ((onLogoutButtonClick != null))
+            {
+                onLogoutButtonClick(this);
+            }
+        }
+        public Button _loginButton;
+        public const string PATH_LOGINBUTTON = "Login";
+        public Button loginButton
+        {
+            get
+            {
+                if ((this._loginButton == null))
+                {
+                    this._loginButton = this.transform.Find(PATH_LOGINBUTTON).GetComponent<Button>();
+                }
+                return this._loginButton;
+            }
+        }
+        public event Action<PlayerInfoPanel> onLoginButtonClick;
+        private void LoginButtonClickCallback()
+        {
+            if ((onLoginButtonClick != null))
+            {
+                onLoginButtonClick(this);
+            }
+        }
     }
 }

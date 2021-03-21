@@ -5,22 +5,13 @@ using UnityEngine;
 
 namespace UI
 {
-    partial class PlayerInfoPanel
+    partial class PlayerInfoPanel : MonoBehaviour
     {
-        public event Action OnLoginClick;
-        public event Action OnLogoutClick;
-        partial void onAwake()
+        void Awake()
         {
-            LoginButtonBlack.asButton.onClick.AddListener(() =>
-            {
-                OnLoginClick?.Invoke();
-            });
-
-            LogoutButtonBlack.asButton.onClick.AddListener(() =>
-            {
-                OnLogoutClick?.Invoke();
-            });
+            autoInit();
         }
+        
         public void SetPlayerInfo(PublicBasicUserInfo info)
         {
             if (info == null || info.UID >= 1000000000)
@@ -30,17 +21,17 @@ namespace UI
             }
             else
             {
-                NickNameText.text = info.Name;
-                EmailText.text = "UID: " + info.UID;
+                nickNameText.text = info.Name;
+                emailText.text = "UID: " + info.UID;
                 // todo: 加载头像
                 toggleLoginStatus(true);
             }
         }
         private void toggleLoginStatus(bool logined)
         {
-            LoginButtonBlack.gameObject.SetActive(!logined);
-            HeadImage.gameObject.SetActive(logined);
-            InfoContainerImage.gameObject.SetActive(logined);
+            loginButton.gameObject.SetActive(!logined);
+            headImage.gameObject.SetActive(logined);
+            infoContainerImage.gameObject.SetActive(logined);
         }
     }
 
