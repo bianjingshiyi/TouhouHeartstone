@@ -17,12 +17,18 @@ namespace Game.Replays
             for (int i = 0; i < request.playersId.Length; i++)
             {
                 IResponse response = replay.responses[currentResponseIndex];
-                if (!request.isValidResponse(response))
-                    throw new InvalidOperationException(response + "不是" + request + "的有效回应");
-                game.answers.answer(response.playerId, response);
                 currentResponseIndex++;
-                if (request.isAny)
-                    return;
+                while (!request.isValidResponse(response) && !isReplayEnd)
+                {
+                    response = replay.responses[currentResponseIndex];
+                    currentResponseIndex++;
+                }
+                if (request.isValidResponse(response))
+                {
+                    game.answers.answer(response.playerId, response);
+                    if (request.isAny)
+                        return;
+                }
             }
         }
         public bool isReplayEnd

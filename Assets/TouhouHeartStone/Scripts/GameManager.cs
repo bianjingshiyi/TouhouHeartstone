@@ -93,6 +93,7 @@ namespace Game
         {
             if (gameTask != null)
             {
+                //检查游戏是否结束
                 if (gameTask.IsCanceled || gameTask.IsFaulted)
                 {
                     if (gameTask.Exception != null)
@@ -102,7 +103,13 @@ namespace Game
                     quitGame();
                     return;
                 }
-                eventCache.poll();
+                if (_replayPlayer != null)
+                {
+                    //如果在Replay模式
+                    onReplayGameUpdate();
+                }
+                //在Update中抛出游戏中发生的事件，避免线程冲突并隔离异常的发生。
+                gameTriggerEventCache.poll();
             }
         }
         #region 外部接口
@@ -225,6 +232,8 @@ namespace Game
         /// </summary>
         public void endGame()
         {
+            if (_replayPlayer != null)
+                _replayPlayer = null;
             if (_replaySystem.isRecording)
                 _replaySystem.stopRecord();
             if (game != null)
@@ -289,12 +298,12 @@ namespace Game
             getManager<TableManager>().setGame(game, localPlayer);
             _mainUI.Game.Table.setGame(game, localPlayer);
 
-            game.triggers.onEventBefore += t1 => eventCache.cache(onEventBefore, t1);
-            game.triggers.onEventAfter += t1 => eventCache.cache(onEventAfter, t1);
+            game.triggers.onEventBefore += t1 => gameTriggerEventCache.cache(onEventBefore, t1);
+            game.triggers.onEventAfter += t1 => gameTriggerEventCache.cache(onEventAfter, t1);
             ui.LogScrollView.shrink();
             ui.LogScrollView.LogList.clearItems();
         }
-        ActionEventCache eventCache { get; } = new ActionEventCache();
+        ActionEventCache gameTriggerEventCache { get; } = new ActionEventCache();
         void onEventBefore(IEventArg obj)
         {
             switch (obj)

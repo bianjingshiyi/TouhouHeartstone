@@ -23,25 +23,36 @@ namespace Game
             localPlayer = game.players.First();
             displayGameUI(game, localPlayer);
             mode = GameMode.replay;
-            game.answers.onRequest += onReplayGameRequest;
+            //game.answers.onRequest += onReplayGameRequest;
             return runGame(game, false);
         }
-        void onReplayGameRequest(IRequest request)
+        void onReplayGameUpdate()
         {
             TableManager table = getManager<TableManager>();
-            table.onAllAnimsFinished += onReplayGameAllAnimFinished;
-            //if (table.getAnimQueue().Length > 0)
+            if (table.getAnimQueue().Length < 1 &&//没有其他动画在播放
+                game.answers.getAllRequests().FirstOrDefault() is IRequest request &&//有询问
+                !_replayPlayer.isReplayEnd//没放完
+                )
+            {
+                _replayPlayer.playNextMove(request);
+            }
+        }
+        //void onReplayGameRequest(IRequest request)
+        //{
+        //    TableManager table = getManager<TableManager>();
+        //    table.onAllAnimsFinished += onReplayGameAllAnimFinished;
+        //    //if (table.getAnimQueue().Length > 0)
 
-            //else
-            //    _replayPlayer.playNextMove(request);
-        }
-        void onReplayGameAllAnimFinished()
-        {
-            TableManager table = getManager<TableManager>();
-            _replayPlayer.playNextMove(game.answers.getAllRequests()[0]);
-            table.onAllAnimsFinished -= onReplayGameAllAnimFinished;
-        }
-        ReplayDataPlayer _replayPlayer;
+        //    //else
+        //    //    _replayPlayer.playNextMove(request);
+        //}
+        //void onReplayGameAllAnimFinished()
+        //{
+        //    TableManager table = getManager<TableManager>();
+        //    _replayPlayer.playNextMove(game.answers.getAllRequests()[0]);
+        //    table.onAllAnimsFinished -= onReplayGameAllAnimFinished;
+        //}
+        ReplayDataPlayer _replayPlayer = null;
         ReplaySystem _replaySystem = new ReplaySystem();
     }
 }
