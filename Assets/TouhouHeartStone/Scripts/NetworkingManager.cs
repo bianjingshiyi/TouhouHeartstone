@@ -295,7 +295,7 @@ namespace Game
         public async Task createRoom()
         {
             isHost = true;
-            if (client.account != null)
+            if (isServerMode)
             {
                 //服务器
                 currentPlayer = new RoomPlayerInfo()
@@ -340,9 +340,10 @@ namespace Game
         [TranslateMsg]
         private const String NETMANAGER_HOMEMASTER = "房主";
 
+        [Obsolete("Use flushRooms instead")]
         public async Task findRooms()
         {
-            if (client.account != null)
+            if (isServerMode)
             {
                 //服务器获取房间列表
                 ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.clearItems();
@@ -358,7 +359,7 @@ namespace Game
         }
         public async Task flushRooms()
         {
-            if (client.account != null)
+            if (isServerMode)
             {
                 //服务器获取房间列表
                 ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.clearItems();
@@ -374,7 +375,8 @@ namespace Game
                 //局域网寻找房间
                 _LANRoomList.Clear();
                 ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList.clearItems();
-                await findRooms();
+                // await findRooms();
+                client.findRoom(_port);
             }
         }
         public void updateAllRooms()
@@ -407,19 +409,17 @@ namespace Game
                     name = client.account.nickName,
                     PlayerID = client.account.uid
                 };
-                roomPanel.SetSelfID(currentPlayer.PlayerID);
-
-                await client.joinRoom(roomInfo, currentPlayer);
             }
             else
             {
                 //局域网
                 currentPlayer = new RoomPlayerInfo();
                 currentPlayer.name = lang._(NETMANAGER_PLAYER2); // todo: 替换为真实的玩家名称
-                roomPanel.SetSelfID(currentPlayer.PlayerID);
-
-                await client.joinRoom(roomInfo, currentPlayer);
             }
+
+            roomPanel.SetSelfID(currentPlayer.PlayerID);
+
+            await client.joinRoom(roomInfo, currentPlayer);
 
             // ui.RoomButton.interactable = true;
             // ui.RoomButton.image.color = Color.white;
@@ -471,10 +471,17 @@ namespace Game
         }
         [SerializeField]
         int _port;
-        public async Task displayPanelForLAN()
+
+        /// <summary>
+        /// 当前是服务器的Lobby，还是局域网模式
+        /// </summary>
+        bool isServerMode = false;
+
+        async Task displayPanel()
         {
             LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
             ui.NetworkingPageGroup.display(lanPanel);
+
             lanPanel.LoadingPanelImage.gameObject.SetActive(false);
             lanPanel.FlushRoomButton.onClick.set(async () =>
             {
@@ -486,8 +493,9 @@ namespace Game
                 lanPanel.LoadingPanelImage.gameObject.SetActive(true);
                 try
                 {
+                    lanPanel.LoadingPanelImage.gameObject.SetActive(true);
                     await createRoom();
-                } 
+                }
                 catch (NetClientException e)
                 {
                     lanPanel.LoadingPanelImage.gameObject.SetActive(false);
@@ -498,24 +506,11 @@ namespace Game
             {
                 ui.parent.display(ui.parent.MainMenu);
             });
+
+            lanPanel.IP_FieldImage.gameObject.SetActive(!isServerMode);
             lanPanel.ConnectButtonButtonBlack.asButton.onClick.set(() =>
             {
-                int port = _port;
-                string address = "";
-                var uri = new Uri("http://" + lanPanel.IPInputField.text);
-
-                if (uri.HostNameType == UriHostNameType.Dns)
-                {
-                    address = Dns.GetHostAddresses(uri.Host).FirstOrDefault(e => e.AddressFamily == AddressFamily.InterNetwork)?.ToString();
-                }
-                else
-                {
-                    address = uri.Host;
-                }
-
-                if (uri.Port != 80)
-                    port = uri.Port;
-
+                addrParser(lanPanel.IPInputField.text, _port, out string address, out int port);
                 _ = joinRoom(new RoomInfo()
                 {
                     ip = address,
@@ -527,70 +522,49 @@ namespace Game
             lanPanel.NameText.text = null;
             lanPanel.IPText.text = null;
             lanPanel.DescText.text = null;
+
             if (host.RoomIsValid)
             {
                 displayRoomPanel();
             }
             else
             {
-                await findRooms();
+                await flushRooms();
             }
+        }
+
+        /// <summary>
+        /// 地址解析
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <param name="defaultPort"></param>
+        /// <param name="ip"></param>
+        /// <param name="port"></param>
+        void addrParser(string addr, int defaultPort, out string ip, out int port)
+        {
+            var uri = new Uri("http://" + addr);
+            if (uri.HostNameType == UriHostNameType.Dns)
+            {
+                ip = Dns.GetHostAddresses(uri.Host).FirstOrDefault(e => e.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+            }
+            else
+            {
+                ip = uri.Host;
+            }
+            port = uri.Port != 80 ? uri.Port : defaultPort;
+        }
+
+        public async Task displayPanelForLAN()
+        {
+            isServerMode = false;
+            await displayPanel();
         }
         public async Task displayPanelForLobby()
         {
-            LANPanel panel = ui.NetworkingPageGroup.LANPanel;
-            ui.NetworkingPageGroup.display(panel);
-            panel.LoadingPanelImage.gameObject.SetActive(false);
-            panel.FlushRoomButton.onClick.set(async () =>
-            {
-                await flushRooms();
-            });
-            panel.CreateRoomButtonButtonBlack.asButton.interactable = !host.RoomIsValid;
-            panel.CreateRoomButtonButtonBlack.asButton.onClick.set(async () =>
-            {
-                panel.LoadingPanelImage.gameObject.SetActive(true);
-                await createRoom();
-            });
-            panel.ReturnBtnButtonBlack.asButton.onClick.AddListener(() =>
-            {
-                ui.parent.display(ui.parent.MainMenu);
-            });
-            panel.ConnectButtonButtonBlack.asButton.onClick.set(() =>
-            {
-                int port = _port;
-                string address = "";
-                var uri = new Uri("http://" + panel.IPInputField.text);
-                if (uri.HostNameType == UriHostNameType.Dns)
-                {
-                    address = Dns.GetHostAddresses(uri.Host).FirstOrDefault(e => e.AddressFamily == AddressFamily.InterNetwork)?.ToString();
-                }
-                else
-                {
-                    address = uri.Host;
-                }
-                if (uri.Port != 80)
-                    port = uri.Port;
-                _ = joinRoom(new RoomInfo()
-                {
-                    ip = address,
-                    port = port
-                });
-                // getManager<UIManager>().getObject<Dialog>().display("输入的地址格式有误", null);
-            });
-            //panel.IPInputField.hide();
-            //panel.ConnectButtonButtonBlack.hide();
-            panel.NameText.text = null;
-            panel.IPText.text = null;
-            panel.DescText.text = null;
-            if (host.RoomIsValid)
-            {
-                displayRoomPanel();
-            }
-            else
-            {
-                await findRooms();
-            }
+            isServerMode = true;
+            await displayPanel();
         }
+
         [TranslateMsg]
         private const String NETMANAGER_DESCRIBE = "描述";
         [TranslateMsg("参数的玩家名称")]
@@ -610,7 +584,7 @@ namespace Game
                 else
                 {
                     lanPanel.NameText.text = obj.id.ToString();
-                    lanPanel.IPText.text = obj.ip;
+                    lanPanel.IPText.text = isServerMode ? "???" : obj.ip;
                     lanPanel.DescText.text = lang._(NETMANAGER_DESCRIBE);
                 }
             });
@@ -747,7 +721,7 @@ namespace Game
         }
         private void Client_onQuitRoom()
         {
-            _ = displayPanelForLAN();
+            _ = displayPanel();
         }
         #endregion
         #region UI事件处理
