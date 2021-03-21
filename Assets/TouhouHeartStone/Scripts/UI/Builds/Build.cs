@@ -13,6 +13,8 @@ using BJSYGameCore.UI;
 using System.IO.Compression;
 using System.IO;
 using MukioI18n;
+using NitoriNetwork.Common;
+using System.Threading.Tasks;
 
 namespace UI
 {
@@ -224,10 +226,90 @@ namespace UI
                 uiModeSwitch(true);
             });
 
+            UploadBtn.onClick.AddListener(onUploadDeckClick);
+            DownloadBtn.onClick.AddListener(onDownloadDeckClick);
+
             MasterCardSelection.OnSelect += onMasterSelect;
 
             HintMessageText.gameObject.SetActive(false);
+            LoadingImg.SetActive(false);
             // UIDialog.gameObject.SetActive(false);
+        }
+
+        [TranslateMsg]
+        const string PILE_UPLOAD_WARN_MSG = "卡组数据上传功能将会覆盖您在云端的数据，是否上传？";
+
+        [TranslateMsg]
+        const string PILE_UPLOAD_NO_LOGIN = "游客无法使用此功能。";
+
+        [TranslateMsg]
+        const string PILE_DOWNLOAD_WARN_MSG = "卡组数据下载功能将会从云端同步你的卡组数据并与本地数据合并，可能会覆盖本地的某些卡组，是否下载？";
+
+        [TranslateMsg]
+        const string PILE_UPLOAD_SUCCES = "卡组上传完毕";
+
+        [TranslateMsg]
+        const string PILE_DOWNLOAD_SUCCES = "卡组下载完毕";
+
+        /// <summary>
+        /// 上传卡组
+        /// </summary>
+        private void onDownloadDeckClick()
+        {
+            if (!client.AccountIsValid)
+            {
+                UIDialog.ShowConfirm(lang._(StringTable.HINT_TITLE), lang._(PILE_UPLOAD_NO_LOGIN), null);
+                return;
+            }
+            UIDialog.ShowQuestion(lang._(StringTable.HINT_TITLE), lang._(PILE_DOWNLOAD_WARN_MSG), async () =>
+            {
+                LoadingImg.SetActive(true);
+                try
+                {
+                    await DownloadDeck();
+                    UIDialog.ShowConfirm(lang._(StringTable.HINT_TITLE), lang._(PILE_DOWNLOAD_SUCCES), null);
+                    reloadDeckList();
+                }
+                catch (Exception e)
+                {
+                    UIDialog.ShowConfirm(lang._(ERROR_TITLE), e.Message, null);
+                    Debug.LogError(e);
+                }
+                finally
+                {
+                    LoadingImg.SetActive(false);
+                }
+            });
+        }
+
+        /// <summary>
+        /// 下载卡组
+        /// </summary>
+        private void onUploadDeckClick()
+        {
+            if (!client.AccountIsValid)
+            {
+                UIDialog.ShowConfirm(lang._(StringTable.HINT_TITLE), lang._(PILE_UPLOAD_NO_LOGIN), null);
+                return;
+            }
+            UIDialog.ShowQuestion(lang._(StringTable.HINT_TITLE), lang._(PILE_UPLOAD_WARN_MSG), async () =>
+            {
+                LoadingImg.SetActive(true);
+                try
+                {
+                    await UploadDeck();
+                    UIDialog.ShowConfirm(lang._(StringTable.HINT_TITLE), lang._(PILE_UPLOAD_SUCCES), null);
+                }
+                catch (Exception e)
+                {
+                    UIDialog.ShowConfirm(lang._(ERROR_TITLE), e.Message, null);
+                    Debug.LogError(e);
+                }
+                finally
+                {
+                    LoadingImg.SetActive(false);
+                }
+            });
         }
 
         /// <summary>
@@ -351,10 +433,6 @@ namespace UI
         void showMasterSelection()
         {
             var masters = avaliableCards.Where(c => isMaster(c));
-            foreach (var master in masters)
-            {
-                Debug.Log("Found " + master);
-            }
             MasterCardSelection.SetItems(masters);
             MasterCardSelection.display();
         }
@@ -727,6 +805,71 @@ namespace UI
         public void DeckItemDeselect(BuildDeckListItem item)
         {
             DragCard.hide();
+        }
+
+        NetworkingManager nwManager => ui.getManager<NetworkingManager>();
+        ClientManager client => nwManager.client;
+
+        async Task UploadDeck()
+        {
+            if (!client.AccountIsValid) 
+                return;
+
+            List<DeckDataItem> deckToSend = new List<DeckDataItem>();
+            var decks = dm.GetDecks();
+            foreach (var item in decks)
+            {
+                List<int> cards = new List<int>();
+                cards.Add(item.MasterID);
+
+                var cs = dm.GetDeckCards(item.ID);
+                foreach (var c in cs)
+                    cards.Add((int)c.Value);
+                
+                deckToSend.Add(new DeckDataItem() {
+                    ID = (int)item.ID,
+                    Name = item.Name,
+                    Content = dm.DeckToString(cards.ToArray())
+                });
+            }
+
+            await client.ServerClient.SetUserDecksAsync(deckToSend.ToArray());
+        }
+
+        async Task DownloadDeck()
+        {
+            if (!client.AccountIsValid)
+                return;
+
+            var decks = await client.ServerClient.GetUserDecksAsync();
+            foreach (var deck in decks)
+            {
+                try
+                {
+                    int id = deck.ID;
+                    int[] cards = dm.StringToDeck(deck.Content);
+
+                    if (dm.HasDeck(id))
+                    {
+                        dm.RenameDeck(id, deck.Name);
+                        dm.SetDeckMasterID(id, cards[0]);
+                    }
+                    else
+                    {
+                        dm.CreateDeck(id, deck.Name, cards[0]);
+                    }
+
+                    dm.ClearDeck(id);
+                    for (int i = 1; i < cards.Length; i++)
+                    {
+                        dm.AddCard(id, cards[i]);
+                    }
+                }
+                catch
+                {
+
+                }
+            }
         }
     }
 }

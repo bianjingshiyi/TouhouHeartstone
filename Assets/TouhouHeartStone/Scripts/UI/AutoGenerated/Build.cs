@@ -406,5 +406,18 @@ namespace UI
             }
         }
         partial void onAwake();
+
+        [SerializeField]
+        Button _uploadBtn;
+        public Button UploadBtn => _uploadBtn;
+
+        [SerializeField]
+        Button _downloadBtn;
+        public Button DownloadBtn => _downloadBtn;
+
+        [SerializeField]
+        GameObject _loadingImg;
+
+        public GameObject LoadingImg => _loadingImg;
     }
 }

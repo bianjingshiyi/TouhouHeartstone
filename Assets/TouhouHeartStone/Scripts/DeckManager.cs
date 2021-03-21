@@ -65,6 +65,17 @@ namespace Game
         }
 
         /// <summary>
+        /// 创建一个牌组
+        /// </summary>
+        /// <param name="name">牌组名称</param>
+        /// <returns>新的牌组的ID</returns>
+        public long CreateDeck(long deckID, string name, int masterID)
+        {
+            db.Execute($@"INSERT INTO {tableDeck} (deckID, name, masterID) VALUES (?, ?,?)", null, deckID, name, masterID);
+            return db.GetLastInsertID(tableDeck);
+        }
+
+        /// <summary>
         /// 获取牌组的MasterCardID
         /// </summary>
         /// <param name="id"></param>
@@ -138,6 +149,18 @@ namespace Game
         public void ClearDeck(long id)
         {
             db.Execute($@"DELETE FROM {tableCards} WHERE deckID = ?", null, args: id); // 先清理卡定义
+        }
+
+        /// <summary>
+        /// 查询是否有指定ID的牌组
+        /// </summary>
+        /// <param name="id"></param>
+        public bool HasDeck(long id)
+        {
+            return db.Read<bool>($@"SELECT name FROM {tableDeck} WHERE deckID = ?", (r) =>
+            {
+                return r.HasRows;
+            }, id);
         }
 
         /// <summary>
