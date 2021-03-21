@@ -158,9 +158,25 @@ namespace TouhouHeartstone
             {
                 return null;
             }
+
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return card.getFormatString() + "的护甲变为" + value;
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [TranslateMsg("{0}是卡，{1}是护甲值")]
+            const string TEMPLATE = "{0}的护甲变为{1}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    card.getFormatString(),
+                    value
+                };
             }
         }
         public static int getCurrentLife(this Card card, IGame game)
@@ -555,7 +571,19 @@ namespace TouhouHeartstone
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return string.Join("，", cards.Select(c => c.getFormatString())) + "被沉默";
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是卡牌列表")]
+            const string TEMPLATE = "{0}被沉默";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] { string.Join("，", cards.Select(c => c.getFormatString())) };
             }
         }
         public static Task<SilenceEventArg> silence(this Card card, THHGame game)
@@ -991,7 +1019,19 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return card.getFormatString() + "攻击" + target.getFormatString();
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0} {1}是卡")]
+            const string TEMPLATE = "{0}攻击{1}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] { };
             }
         }
         public static Task<DamageEventArg> damage(this Card card, THHGame game, Card source, int value)
@@ -1150,6 +1190,44 @@ namespace TouhouHeartstone
                     p.Key.getFormatString() + "受到" + p.Value.damagedValue + "点伤害"));
             }
 
+            [MukioI18n.TranslateMsg("{0}是卡，{1}是伤害值")]
+            const string TEMPLATE_RECV = "{0}受到{1}点伤害";
+            [MukioI18n.TranslateMsg("{0}{1}是卡，{2}是伤害值")]
+            const string TEMPLATE_ATK = "{0}对{1}造成{2}点伤害";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                if (infoDic.Count == 1)
+                {
+                    return infoDic.First().Value.source != null ? TEMPLATE_ATK : TEMPLATE_RECV;
+                }
+                // todo: 暂时不支持列表
+                IDescribableEventArg arg = this;
+                return arg.toString(game, viewer);
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                if (infoDic.Count == 1)
+                {
+                    var kv = infoDic.First();
+                    if (kv.Value.source != null)
+                    {
+                        return new object[] {
+                            kv.Value.source.getFormatString(),
+                            kv.Key.getFormatString(),
+                            kv.Value.damagedValue
+                        };
+                    }
+                    else
+                    {
+                        return new object[] {
+                            kv.Key.getFormatString(),
+                            kv.Value.damagedValue
+                        };
+                    }
+                }
+                return new object[0];
+            }
+
             public class Info
             {
                 public Card source;
@@ -1236,6 +1314,27 @@ namespace TouhouHeartstone
             {
                 return string.Join("，", infoDic.Select(p => "治疗" + p.Key.getFormatString() + p.Value.healedValue + "点生命值"));
             }
+            [MukioI18n.TranslateMsg("{0}是卡，{1}是治疗量")]
+            const string TEMPLATE = "治疗{0}{1}点生命值";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                if (infoDic.Count() == 1)
+                {
+                    return TEMPLATE;
+                }
+                // todo: 列表的实现
+                return (this as IDescribableEventArg).toString(game, viewer);
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                if (infoDic.Count() == 1)
+                {
+                    var kv = infoDic.First();
+                    return new object[] { kv.Key.getFormatString(), kv.Value.healedValue };
+                }
+                else
+                    return new object[] { };
+            }
 
             public class Info
             {
@@ -1316,15 +1415,28 @@ namespace TouhouHeartstone
                 return infoDic.Count > 1 ? infoDic.Keys.ToArray() : null;
             }
 
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                return string.Join("，", infoDic.Keys.Select(c => c.getFormatString())) + "死亡";
-            }
-
             public class Info
             {
                 public THHPlayer player;
                 public int position;
+            }
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是卡牌列表")]
+            const string TEMPLATE = "{0}死亡";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    string.Join("，", infoDic.Keys.Select(c => c.getFormatString()))
+                };
             }
         }
         public static Card[] getNearbyCards(this Card card)
@@ -1558,7 +1670,19 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return card.getFormatString() + "被触发！";
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是卡")]
+            const string TEMPLATE = "{0}被触发";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] { card.getFormatString() };
             }
         }
 
@@ -1620,10 +1744,27 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是卡")]
+            const string TEMPLATE_NO_TARGET = "{0}的战吼。";
+            [MukioI18n.TranslateMsg("{0}是卡，{1}是目标")]
+            const string TEMPLATE_HAS_TARGET = "{0}的战吼。目标：{1}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
                 if (targets == null || targets.Length < 1)
-                    return card.define.id + "的战吼。";
+                    return TEMPLATE_NO_TARGET;
                 else
-                    return card.define.id + "的战吼。，目标：" + string.Join("，", targets.Select(c => "{card:" + c.define.id + "}"));
+                    return TEMPLATE_HAS_TARGET;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    card.getFormatString(),
+                    string.Join("，", targets?.Select(c => c.getFormatString()))
+                };
             }
         }
 

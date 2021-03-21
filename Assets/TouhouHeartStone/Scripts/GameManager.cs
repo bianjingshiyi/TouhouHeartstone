@@ -322,7 +322,11 @@ namespace Game
                 case THHPlayer.DrawEventArg _:
                     if (obj is IDescribableEventArg describable)
                     {
-                        string info = describable.toString(game, localPlayer);
+                        // string info = describable.toString(game, localPlayer);
+                        string info = lang._(
+                            describable.localizeTemplateString(game, localPlayer), 
+                            describable.localizeStringArgs(game, localPlayer)
+                        );
                         if (info != null)
                         {
                             var DrawItem = ui.LogScrollView.LogList.addItem();
@@ -513,7 +517,7 @@ namespace Game
             if (arg is IDescribableEventArg describable)
             {
                 ui.LogScrollView.LogInfoHorizantal.display();
-                string info = describable.toString(game, localPlayer);
+                string info = lang._(describable.localizeTemplateString(game, localPlayer), describable.localizeStringArgs(game, localPlayer));
                 info = Regex.Replace(info, @"{card:(?<id>\d+)}", m => int.TryParse(m.Groups["id"].Value, out var id) ?
                     getManager<CardManager>().getSkin(id).name : "未知卡牌");
                 ui.LogScrollView.LogInfoHorizantal.Text.text = info;

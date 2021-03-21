@@ -92,12 +92,29 @@ namespace TouhouHeartstone.Builtin
                 return null;
             }
 
-            public string toString(IGame game, IPlayer viewer)
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return youCard != null
-                    ? player.name + "发动了对决，她揭示了:{ card:" + youCard.define.id + "} " + "。她的对手揭示了：{ card:" + oppoCard +
-                      "}。结果是" + result
-                    : player + "揭示了个寂寞，输掉了对决。";
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是自己的卡，{2}是对手的卡，{3}是结果")]
+            const string TEMPLATE = "{0}发动了对决，她揭示了:{1}。她的对手揭示了：{2}。结果是{3}";
+
+            [MukioI18n.TranslateMsg("{0}是玩家")]
+            const string TEMPLATE_NULL = "{0}揭示了个寂寞，输掉了对决。";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return youCard != null ? TEMPLATE : TEMPLATE_NULL;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    youCard?.getFormatString(),
+                    oppoCard?.getFormatString(),
+                    result
+                };
             }
         }
     }

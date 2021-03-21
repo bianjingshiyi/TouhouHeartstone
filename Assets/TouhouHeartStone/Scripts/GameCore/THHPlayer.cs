@@ -102,7 +102,22 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return player.name + "的法力值变为" + value;
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家名称，{1}是法力值")]
+            const string TEMPLATE = "{0}的法力值变为{1}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    value
+                };
             }
         }
         public Task setMaxGem(THHGame game, int value)
@@ -135,6 +150,20 @@ namespace TouhouHeartstone
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 return player.name + "的最大法力值变为" + value;
+            }
+
+            [MukioI18n.TranslateMsg("{0}:玩家，{1}值")]
+            const string TEMPLATE = "{0}的最大法力值变为{1}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    value
+                };
             }
         }
         public Task draw(THHGame game, out DrawEventArg drawEvent, out BurnEventArg burnEvent, out FatigueEventArg fatigueEvent)
@@ -262,17 +291,33 @@ namespace TouhouHeartstone
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}玩家，{1}卡")]
+            const string TEMPLATE_SELF = "{0}抽{1}";
+
+            [MukioI18n.TranslateMsg("{0}玩家")]
+            const string TEMPLATE_OTHER = "抽了一张牌";
+
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
                 if (!isCanceled)
                 {
-                    if (viewer == player)
-                        return player.name + "抽{card:" + card.define.id + "}";
-                    else
-                        return player.name + "抽了一张牌";
+                    return viewer == player ? TEMPLATE_SELF : TEMPLATE_OTHER;
                 }
                 else
                 {
-                    return null;
+                    return "";
                 }
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    card.getFormatString()
+                };
             }
         }
         public class BurnEventArg : EventArg, IDescribableEventArg
@@ -289,7 +334,19 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return player.name + "抽{card:" + card.define.id + "}，但是由于手牌已满它被送入墓地";
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是手牌")]
+            const string TEMPLATE = "{0}抽{1}，但是由于手牌已满它被送入墓地";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] { player.name, card.getFormatString() };
             }
         }
         public class FatigueEventArg : EventArg, IDescribableEventArg
@@ -308,7 +365,19 @@ namespace TouhouHeartstone
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return player.name + "已经无牌可抽，即将受到疲劳伤害";
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家")]
+            const string TEMPLATE = "{0}已经无牌可抽，即将受到疲劳伤害";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] { player.name };
             }
         }
         /// <summary>
@@ -433,14 +502,35 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡。")]
+            const string TEMPLATE_NO_TARGET = "{0}使用{1}";
+            [MukioI18n.TranslateMsg("{0}是玩家，使用的是奥秘")]
+            const string TEMPLATE_SECRET_OTHER = "{0}使用了一张奥秘牌";
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡，{2}是目标")]
+            const string TEMPLATE_HAS_TARGET = "{0}使用{1}，目标：{2}";
+
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
                 if (card.hasKeyword(game, KEYWORD.SECRET))
                 {
-                    return viewer == player ? player.name + "使用{card:" + card.define.id + "}" : player.name + "使用了一张奥秘牌";
+                    return viewer == player ? TEMPLATE_NO_TARGET : TEMPLATE_SECRET_OTHER;
                 }
                 if (targets == null || targets.Length < 1)
-                    return player.name + "使用{card:" + card.define.id + "}";
+                    return TEMPLATE_NO_TARGET;
                 else
-                    return player.name + "使用{card:" + card.define.id + "}，目标：" + string.Join("，", targets.Select(c => "{card:" + c.define.id + "}"));
+                    return TEMPLATE_HAS_TARGET;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] { 
+                    player.name,
+                    card?.getFormatString(),
+                    string.Join("，", targets?.Select(c => "{card:" + c.define.id + "}"))
+                };
             }
         }
         public class ActiveEventArg : EventArg, IDescribableEventArg
@@ -464,10 +554,30 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡，{2}是目标列表")]
+            const string TEMPLATE_HAS_TARGET = "{0}发动{1}的效果，目标：{2}";
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
+            const string TEMPLATE_NO_TARGET = "{0}发动{1}的效果";
+
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
                 if (targets == null || targets.Length < 1)
-                    return player.name + "发动" + card.getFormatString() + "的效果";
+                    return TEMPLATE_NO_TARGET;
                 else
-                    return player.name + "发动" + card.getFormatString() + "的效果，目标：" + string.Join("，", targets.Select(t => t is Card c ? c.getFormatString() : t.ToString()));
+                    return TEMPLATE_HAS_TARGET;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    card.getFormatString(),
+                    string.Join(", ", targets.Select(t => t is Card c ? c.getFormatString() : t.ToString()))
+                };
             }
         }
         public Task<EnterFieldEventArg> tryEnterField(THHGame game, Pile from, Card card, int position)
@@ -524,7 +634,23 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return player.name + "将" + card.getFormatString() + "置入战场，位于" + position;
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡，{2}是位置")]
+            const string TEMPLATE = "{0}将{1}置入战场，位于{2}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] { 
+                    player.name,
+                    card.getFormatString(),
+                    position
+                };
             }
         }
         public Task<CreateTokenEventArg> createToken(THHGame game, CardDefine define, int position = -1)
@@ -578,7 +704,22 @@ namespace TouhouHeartstone
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return player.name + "召唤衍生物" + card.getFormatString();
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
+            const string TEMPLATE = "{0}召唤衍生物{1}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    card.getFormatString()
+                };
             }
         }
         public async Task<RebornEventArg> reborn(THHGame game, Card card, Pile pile, int position = -1)
@@ -630,7 +771,22 @@ namespace TouhouHeartstone
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return player.name + "复活" + card.getFormatString();
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
+            const string TEMPLATE = "{0}复活{1}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    card.getFormatString()
+                };
             }
         }
         public int getSpellDamage(THHGame game, int baseDamage)
@@ -713,7 +869,22 @@ namespace TouhouHeartstone
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return player.name + "弃牌：" + string.Join("，", cards.Select(c => c.getFormatString()));
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡牌列表")]
+            const string TEMPLATE = "{0}弃牌：{1}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    string.Join("，", cards.Select(c => c.getFormatString()))
+                };
             }
         }
         public bool isFriend(Card card)
@@ -855,12 +1026,28 @@ namespace TouhouHeartstone
                 return null;
             }
 
-            public string toString(IGame game, IPlayer viewer)
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return card == null ? "揭示了个寂寞" : player.name + "揭示了{card:" + card.define.id + "}";
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
 
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
+            const string TEMPLATE_VALID = "{0}揭示了{1}";
 
+            [MukioI18n.TranslateMsg("")]
+            const string TEMPLATE_INVALID = "揭示了个寂寞";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return card == null ? TEMPLATE_INVALID : TEMPLATE_VALID;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] { 
+                    player.name,
+                    card?.getFormatString()
+                };
+            }
         }
 
 
