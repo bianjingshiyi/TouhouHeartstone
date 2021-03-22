@@ -26,7 +26,7 @@ namespace UI
         public void autoBind()
         {
             this._PanelImage = this.transform.Find("Panel").GetComponent<Image>();
-            this._Text = this.transform.Find("Panel").Find("Text").GetComponent<Text>();
+            this._Text = this.transform.Find("Panel").Find("Image").Find("Text").GetComponent<Text>();
             this._HoriCardList = this.transform.Find("Panel").Find("HoriCardList").GetComponent<HoriCardList>();
             this._ButtonButtonBlack = this.transform.Find("Button").GetComponent<ButtonBlack>();
         }
@@ -51,7 +51,7 @@ namespace UI
             {
                 if ((this._Text == null))
                 {
-                    this._Text = this.transform.Find("Panel").Find("Text").GetComponent<Text>();
+                    this._Text = this.transform.Find("Panel").Find("Image").Find("Text").GetComponent<Text>();
                 }
                 return this._Text;
             }
