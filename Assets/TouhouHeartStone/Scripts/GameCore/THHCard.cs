@@ -250,13 +250,13 @@ namespace TouhouHeartstone
         const string INFO_CANNOT_ATTACK_SELF = "你不能攻击友方角色";
 
         [TranslateMsg]
-        const string INFO_GUARD_SERVANT = "你必须先攻击具有嘲讽的随从";
+        const string INFO_GUARD_SERVANT = "你必须先攻击具有守卫的仆从";
 
         [TranslateMsg]
-        const string INFO_HASTE_NOT_PREPARED = "具有突袭的随从在没有准备好的情况下不能攻击敌方英雄";
+        const string INFO_HASTE_NOT_PREPARED = "具有速攻的仆从在没有准备好的情况下不能攻击敌方英雄";
 
         [TranslateMsg]
-        const string INFO_TARGET_IS_STEALTH = "无法攻击潜行的目标";
+        const string INFO_TARGET_IS_STEALTH = "无法攻击隐匿的目标";
 
         [TranslateMsg]
         const string INFO_INVALID_TARGET = "无法攻击目标";
@@ -576,7 +576,7 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是卡牌列表")]
-            const string TEMPLATE = "{0}被沉默";
+            const string TEMPLATE = "{0}被封印";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return TEMPLATE;
@@ -648,13 +648,13 @@ namespace TouhouHeartstone
         [TranslateMsg]
         const string ONLY_SKILL_OR_HAND = "你只能使用技能或手牌";
         [TranslateMsg]
-        const string NOT_ENOUGH_SPIRIT = "你没有足够的法力值";
+        const string NOT_ENOUGH_SPIRIT = "你没有足够的灵力值";
         [TranslateMsg]
-        const string SERVANT_FIELD_FULL = "你无法将更多的随从置入战场";
+        const string SERVANT_FIELD_FULL = "你无法将更多的仆从置入战场";
         [TranslateMsg]
-        const string NO_SPACE_FOR_TRAP = "你没有多余的位置挂载奥秘";
+        const string NO_SPACE_FOR_TRAP = "你没有多余的位置挂载陷阱";
         [TranslateMsg]
-        const string DUPLICATED_TRAP = "你已挂载了相同的奥秘";
+        const string DUPLICATED_TRAP = "你已挂载了相同的陷阱";
         [TranslateMsg]
         const string SKILL_USED = "你已经使用过技能了";
         [TranslateMsg]
@@ -1652,7 +1652,7 @@ namespace TouhouHeartstone
         {
             return game.triggers.doEvent(new SecretTriggerEventArg() { card = card }, async arg =>
             {
-                game.logger.log("触发奥秘" + card);
+                game.logger.log("触发陷阱" + card);
                 THHPlayer player = arg.card.getOwner();
                 await player.head.moveTo(game, arg.card, player.grave);
             });
@@ -1749,9 +1749,9 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是卡")]
-            const string TEMPLATE_NO_TARGET = "{0}的战吼。";
+            const string TEMPLATE_NO_TARGET = "{0}的宣言。";
             [MukioI18n.TranslateMsg("{0}是卡，{1}是目标")]
-            const string TEMPLATE_HAS_TARGET = "{0}的战吼。目标：{1}";
+            const string TEMPLATE_HAS_TARGET = "{0}的宣言。目标：{1}";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 if (targets == null || targets.Length < 1)

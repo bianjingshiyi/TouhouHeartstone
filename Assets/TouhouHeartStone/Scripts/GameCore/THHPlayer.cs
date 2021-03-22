@@ -106,8 +106,8 @@ namespace TouhouHeartstone
                 return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
 
-            [MukioI18n.TranslateMsg("{0}是玩家名称，{1}是法力值")]
-            const string TEMPLATE = "{0}的法力值变为{1}";
+            [MukioI18n.TranslateMsg("{0}是玩家名称，{1}是灵力值")]
+            const string TEMPLATE = "{0}的灵力值变为{1}";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return TEMPLATE;
@@ -149,11 +149,12 @@ namespace TouhouHeartstone
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return player.name + "的最大法力值变为" + value;
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
 
             [MukioI18n.TranslateMsg("{0}:玩家，{1}值")]
-            const string TEMPLATE = "{0}的最大法力值变为{1}";
+            const string TEMPLATE = "{0}的最大灵力值变为{1}";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return TEMPLATE;
@@ -508,8 +509,8 @@ namespace TouhouHeartstone
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡。")]
             const string TEMPLATE_NO_TARGET = "{0}使用{1}";
-            [MukioI18n.TranslateMsg("{0}是玩家，使用的是奥秘")]
-            const string TEMPLATE_SECRET_OTHER = "{0}使用了一张奥秘牌";
+            [MukioI18n.TranslateMsg("{0}是玩家，使用的是陷阱")]
+            const string TEMPLATE_SECRET_OTHER = "{0}使用了一张陷阱牌";
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡，{2}是目标")]
             const string TEMPLATE_HAS_TARGET = "{0}使用{1}，目标：{2}";
 

@@ -27,13 +27,13 @@ namespace UI
         const string FILTER_TYPE_MASTER = "英雄";
 
         [TranslateMsg]
-        const string FILTER_TYPE_SERVANT = "随从";
+        const string FILTER_TYPE_SERVANT = "仆从";
 
         [TranslateMsg]
         const string FILTER_TYPE_SPELL = "法术";
 
         [TranslateMsg]
-        const string FILTER_TYPE_ITEM = "武器";
+        const string FILTER_TYPE_ITEM = "道具";
 
         KeyValuePair<string, string>[] typeName = {
             new KeyValuePair<string, string>("", FILTER_TYPE_ALL),

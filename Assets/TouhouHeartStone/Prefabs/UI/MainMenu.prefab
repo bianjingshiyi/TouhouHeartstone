@@ -243,20 +243,22 @@ MonoBehaviour:
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  _ButtonsVerticalLayoutGroup: {fileID: 0}
-  _ManMachineButtonButtonBlack: {fileID: 0}
-  _NetworkButtonButtonBlack: {fileID: 0}
-  _LobbyButtonButtonBlack: {fileID: 0}
-  _BuildButtonButtonBlack: {fileID: 0}
-  _SettingButtonButtonBlack: {fileID: 0}
-  _AboutButtonButtonBlack: {fileID: 0}
-  _QuitButtonButtonBlack: {fileID: 0}
+  _buttonPanel: {fileID: 0}
+  _vsBotButton: {fileID: 0}
+  _lANButton: {fileID: 0}
+  _serverButton: {fileID: 0}
+  _buildButton: {fileID: 0}
+  _replayButton: {fileID: 0}
+  _newsButton: {fileID: 0}
+  _aboutButton: {fileID: 0}
   _LogoImage: {fileID: 7871270487260421509}
   _RegisterPanel: {fileID: 2520806415830137503}
   _LoginPanel: {fileID: 2432918322644402924}
   _RecoverPanel: {fileID: 473044912990662278}
   _PlayerInfoPanel: {fileID: 8174166712726022085}
-  _replayButton: {fileID: 0}
+  _settingButton: {fileID: 0}
+  _newsPanel: {fileID: 0}
+  _quitButton: {fileID: 0}
   _eulaPanel: {fileID: 4477834188440846498}
 --- !u!95 &7871270485528993334
 Animator:
@@ -507,7 +509,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "QQ\u7FA4\uFF1A957440521\n\xA9 2020-2021 \u9189\u68A6\u4F20\u8BF4\u5236\u4F5C\u7EC4
+  m_Text: "QQ\u7FA4\uFF1A957440521, 820332712\n\xA9 2020-2021 \u9189\u68A6\u4F20\u8BF4\u5236\u4F5C\u7EC4
     \n\xA9 2018-2021 IGensoukyo"
 --- !u!114 &6361775775560978309
 MonoBehaviour:

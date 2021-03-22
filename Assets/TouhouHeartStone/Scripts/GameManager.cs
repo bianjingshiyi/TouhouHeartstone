@@ -493,9 +493,9 @@ namespace Game
         [TranslateMsg]
         private const string GAME_MANAGER_DEATH = "死亡";
         [TranslateMsg]
-        private const string GAME_MANAGER_SECRET = "奥秘";
+        private const string GAME_MANAGER_SECRET = "陷阱";
         [TranslateMsg]
-        private const string GAME_MANAGER_SILENCE = "沉默";
+        private const string GAME_MANAGER_SILENCE = "封印";
         [TranslateMsg]
         private const string GAME_MANAGER_ATTACK = "攻击";
         [TranslateMsg]

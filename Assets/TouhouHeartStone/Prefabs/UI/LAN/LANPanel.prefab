@@ -234,7 +234,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 192.168.114.51:41919
+  m_Text: 192.168.x.x:xxxxx
 --- !u!114 &2386124638150259812
 MonoBehaviour:
   m_ObjectHideFlags: 0
