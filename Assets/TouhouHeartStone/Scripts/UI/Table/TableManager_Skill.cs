@@ -3,6 +3,8 @@ using UI;
 using TouhouHeartstone;
 using UnityEngine.EventSystems;
 using Card = TouhouCardEngine.Card;
+using BJSYGameCore.UI;
+
 namespace Game
 {
     partial class TableManager
@@ -145,6 +147,22 @@ namespace Game
                     showTip(info);
             }
             cancelSkill();
+        }
+        private void onSkillPointerExit(Skill arg1, PointerEventData arg2)
+        {
+            Debug.Log("Skill pointer exit");
+            ui.TipBox.hide();
+        }
+
+        private void onSkillPointerEnter(Skill skill, PointerEventData pointer)
+        {
+            Debug.Log("Skill pointer enter");
+            ui.TipBox.display(getSkin(player.skill).desc, pointer.position + _tipBoxOffset);
+        }
+
+        private void onSkillPointerMove(Skill arg1, Vector2 pointer)
+        {
+            ui.TipBox.updatePos(pointer);
         }
         /// <summary>
         /// 取消正在执行的技能UI

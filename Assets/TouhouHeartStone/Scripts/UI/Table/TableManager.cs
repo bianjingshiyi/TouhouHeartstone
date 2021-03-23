@@ -176,7 +176,12 @@ namespace Game
             ui.SelfSkill.asButton.onClick.set(onClickSkill);
             ui.SelfSkill.onDrag.set(onDragSkill);
             ui.SelfSkill.onDragEnd.set(onDragSkillEnd);
+            ui.SelfSkill.onPointerEnter.set(onSkillPointerEnter);
+            ui.SelfSkill.onPointerExit.set(onSkillPointerExit);
+            ui.SelfSkill.onPointerMove.set(onSkillPointerMove);
             ui.SelfItem.hide();
+            ui.SelfItem.onPointerEnter.set(onItemPointerEnter);
+            ui.SelfItem.onPointerExit.set(onItemPointerExit);
             ui.SelfHandList.clearItems();
             ui.SelfHandList.asButton.onClick.set(() =>
             {
@@ -230,6 +235,7 @@ namespace Game
             }
             this.player = player;
         }
+
         void onRequestHandler(IRequest request)
         {
             eventCache.cache(onRequest, request);
@@ -515,6 +521,17 @@ namespace Game
             item.Image.sprite = skin.image;
             
         }
+        private void onItemPointerExit(Item item, PointerEventData pointer)
+        {
+            ui.TipBox.hide();
+        }
+
+        private void onItemPointerEnter(Item item, PointerEventData pointer)
+        {
+            if (item.card != null)
+                ui.TipBox.display(getSkin(item.card).desc, pointer.position + _tipBoxOffset);
+        }
+
         void displayArrow(RectTransform source, Vector2 from, Vector2 to)
         {
             ui.AttackArrowImage.display();
@@ -1562,6 +1579,7 @@ namespace Game
         {
             ui.Discover.display();
             ui.Discover.Text.text = title;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(ui.Discover.Text.rectTransform);
             ui.Discover.HoriCardList.clearItems();
             foreach (var cardId in cardIdArray)
             {
@@ -1593,6 +1611,7 @@ namespace Game
             {
                 ui.Discover.ButtonButtonBlack.asButton.setText(lang._(TAB_HIDE));
                 ui.Discover.PanelImage.display();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(ui.Discover.Text.rectTransform);
                 displayDiscoverDialog(game.answers.getRequest<DiscoverRequest>(player.id).cardIdArray, ui.Discover.Text.text);
             }
         }

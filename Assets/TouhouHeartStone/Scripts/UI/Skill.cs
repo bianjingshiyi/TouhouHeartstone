@@ -5,10 +5,15 @@ using TouhouHeartstone;
 using System.Linq;
 using TouhouCardEngine;
 using UnityEngine.Events;
+using BJSYGameCore.UI;
+
 namespace UI
 {
-    partial class Skill : IBeginDragHandler, IDragHandler, IEndDragHandler
+    partial class Skill : IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
     {
+        public ActionEvent<Skill, PointerEventData> onPointerEnter { get; set; } = new ActionEvent<Skill, PointerEventData>();
+        public ActionEvent<Skill, PointerEventData> onPointerExit { get; set; } = new ActionEvent<Skill, PointerEventData>();
+        public ActionEvent<Skill, Vector2> onPointerMove { get; set; } = new ActionEvent<Skill, Vector2>();
         protected override void Awake()
         {
             base.Awake();
@@ -63,6 +68,34 @@ namespace UI
             onDragEnd.invoke(this, eventData);
         }
         public ActionEvent<Skill, PointerEventData> onDragEnd { get; } = new ActionEvent<Skill, PointerEventData>();
+
+        [SerializeField]
+        bool _isHovered = false;
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+        {
+            onPointerEnter.invoke(this, eventData);
+            _isHovered = true;
+        }
+        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        {
+            onPointerExit.invoke(this, eventData);
+            _isHovered = false;
+        }
+        private void Update()
+        {
+            if (_isHovered)
+            {
+                Vector2 position;
+                position = EventSystem.current.currentInputModule.input.mousePosition;
+                onPointerMove?.invoke(this, position);
+                /* if (!rectTransform.contains(position))
+                {
+                    onPointerExit?.invoke(this, null);
+                    _isHovered = false;
+                } */
+            }
+        }
+
         public bool isUsable
         {
             set
