@@ -1389,8 +1389,7 @@ namespace TouhouHeartstone
             }
             foreach (var card in eventArg.infoDic.Keys)
             {
-                if (card.pile.name == PILE.GRAVE)
-                    await card.resetCard(game);
+                await card.resetCard(game);
             }
             if (remainPlayerList.Count != game.players.Length)
             {
