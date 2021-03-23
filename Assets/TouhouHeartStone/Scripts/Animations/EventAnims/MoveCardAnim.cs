@@ -146,6 +146,20 @@ namespace Game
                 case PILE.GRAVE:
                     {
                         RectTransform graveTransform = eventArg.from == table.player.grave ? table.ui.SelfGraveDeck.rectTransform : table.ui.EnemyGraveDeck.rectTransform;
+                        if(eventArg.to.name == PILE.DECK)
+                        {
+                            var targetTransform = eventArg.from == table.player.grave ? table.ui.SelfDeck.rectTransform : table.ui.EnemyDeck.rectTransform;
+                            if (!table.tryGetHand(eventArg.card, out var hand))
+                            {
+                                hand = table.createHand(eventArg.card);
+                                hand.rectTransform.position = graveTransform.position;
+                                hand.GetComponentInChildren<PositionLerp>().setTarget(targetTransform);
+                            }
+                            if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator, time))
+                                return false;
+                            table.ui.SelfHandList.removeItem(hand);
+                            table.ui.EnemyHandList.removeItem(hand);
+                        }
                         if (eventArg.to.name == PILE.HAND)
                         {
                             //从墓地抽牌
