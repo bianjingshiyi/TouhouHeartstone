@@ -432,11 +432,19 @@ namespace Game
                 master.onSelectableFalse.invokeBeforeAnim();
                 master.onSelectableFalse.invokeAfterAnim();
             }
+            if (card.getOwner() == player && game.currentPlayer == player)
+            {
+                GetRelatedItem(card).onItemON.invokeBeforeAnim();
+                GetRelatedItem(card).onItemON.invokeAfterAnim();
+            }
+            else
+            {
+                GetRelatedItem(card).onItemOff.invokeBeforeAnim();
+                GetRelatedItem(card).onItemOff.invokeAfterAnim();
+            }
             if (card.getOwner() == player && game.currentPlayer == player && card.canAttack(game))
             {
                 // master.HighlightController = Master.Highlight.Green;
-                GetRelatedItem(card).onItemON.invokeBeforeAnim();
-                GetRelatedItem(card).onItemON.invokeAfterAnim();
                 master.onCanAttackTrue.invokeBeforeAnim();
                 master.onCanAttackTrue.invokeAfterAnim();
                 master.onClick.add(onClickMaster);
@@ -446,8 +454,6 @@ namespace Game
             else
             {
                 // master.HighlightController = Master.Highlight.None;
-                GetRelatedItem(card).onItemOff.invokeBeforeAnim();
-                GetRelatedItem(card).onItemOff.invokeAfterAnim();
                 master.onCanAttackFalse.invokeBeforeAnim();
                 master.onCanAttackFalse.invokeAfterAnim();
             }
