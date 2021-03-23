@@ -368,7 +368,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     await reborn.card.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g, c, a) =>
                     {
-                        return a.player == c.getOwner();
+                        return a.player == c.getOwner() && c.pile.name == PILE.FIELD;
                     }, null, async (g, c, a) =>
                     {
                         await c.setDead(g, true);
