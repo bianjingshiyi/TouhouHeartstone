@@ -108,7 +108,9 @@ namespace Game
                             else if (eventArg.to.name == PILE.GRAVE)
                             {
                                 //弃牌
-                                if (!SimpleAnimHelper.update(table, ref _anim, hand.onDiscard, hand.CardAnimator, time, next =>
+                                hand.GetComponentInChildren<PositionLerp>().resetPosition();
+                                hand.GetComponentInChildren<PositionLerp>().setTarget(hand.getChild("GameObject").GetComponent<RectTransform>());
+                                if (!SimpleAnimHelper.update(table, ref _anim, hand.onDiscard, hand.animator, time, next =>
                                 {
                                     if (next is MoveCardAnim moveCard && moveCard.tEventArg.card != eventArg.card)
                                         return true;
