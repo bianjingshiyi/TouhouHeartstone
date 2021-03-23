@@ -478,10 +478,19 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new AddBuffAfter<Sanae.RevealDuelArg>(PILE.HAND,
-                (g, c, a) => { return a.player == c.getOwner() && !c.containBuff(ID); }, new GeneratedBuff(ID,
-                    new CostModifier(-4),
-                    new RemoveBuffBefore<THHGame.TurnEndEventArg>(PILE.HAND, ID))),
+            new VariableIntModifier(PileFlag.hand, new CostModifier(0),
+                new VariableIntModifier.ModifierFixer<THHGame.TurnEndEventArg>(
+                    (game, card, buff, arg) => card.getOwner() == arg.player,
+                    (game, card, buff, arg) => 0),
+                new VariableIntModifier.ModifierFixer<Sanae.RevealDuelArg>(
+                    (game, card, buff, arg) => card.getOwner() == arg.player,
+                    (game, card, buff, arg) =>
+                    {
+                        return game.triggers.getRecordedEvents().skipUntilLast(a => a is THHGame.TurnStartEventArg)
+                            .Any(a => a is Sanae.RevealDuelArg)
+                            ? -4
+                            : 0;
+                    })),
             new LambdaSingleTargetEffect(async (g, c, t) =>
             {
                 await t.setDead(g, true);

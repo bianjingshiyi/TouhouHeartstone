@@ -1068,6 +1068,10 @@ namespace TouhouHeartstone
             void onEnable(THHGame game, Card card, Buff buff, string modifierName);
             void onDisable(THHGame game, Card card, Buff buff, string modifierName);
         }
+        /// <summary>
+        /// VariableIntModifier中的 ModifierFixer会在 VaraibleIntModifier激活时按照顺序各生效一次
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public class ModifierFixer<T> : IModifierFixer where T : IEventArg
         {
             public Func<IGame, Card, Buff, T, int> fixer;
