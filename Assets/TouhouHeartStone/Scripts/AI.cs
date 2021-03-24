@@ -884,8 +884,7 @@ namespace Game
         {
             if (player.field.Contains(target))
                 return target.getAttack(game) - target.getCurrentLife(game);
-            // 如果有随从：（潜行，战吼：使目标获得潜行）会出问题
-            if (target.hasKeyword(game, KEYWORD.STEALTH))
+            if (target.isStealth(game))
                 return target.getAttack(game) - target.getLife(game);
             if (opponent.field.Contains(target) && target.hasKeyword(game, KEYWORD.TAUNT))
                 return target.getCurrentLife(game);

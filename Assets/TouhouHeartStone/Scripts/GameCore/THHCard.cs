@@ -357,7 +357,7 @@ namespace TouhouHeartstone
         }
         public static bool isStealth(this Card card, IGame game)
         {
-            return card.hasKeyword(game, KEYWORD.STEALTH);
+            return card.hasKeyword(game, KEYWORD.STEALTH) || card.hasKeyword(game, KEYWORD.PERMANENTSTEALTH);
         }
         public static void setStealth(this Card card, IGame game, bool value)
         {
@@ -1466,7 +1466,7 @@ namespace TouhouHeartstone
             }
 
             var oppo = game.getOpponent(card.getOwner());
-            var allEnem = oppo.field.ToList().Append(oppo.master).Where(c=>!c.hasKeyword(game,KEYWORD.STEALTH)).ToList();
+            var allEnem = oppo.field.ToList().Append(oppo.master).Where(c=>!c.isStealth(game)).ToList();
             if (allEnem.Any(c=>c.hasKeyword(game,KEYWORD.TAUNT)))
             {
                 targets.AddRange(allEnem.Where(c => c.hasKeyword(game, KEYWORD.TAUNT)));

@@ -23,6 +23,10 @@
         /// </summary>
         public const string STEALTH = "stealth";
         /// <summary>
+        /// 永久潜行
+        /// </summary>
+        public const string PERMANENTSTEALTH = "permanentStealth";
+        /// <summary>
         /// 吸血
         /// </summary>
         public const string DRAIN = "drain";

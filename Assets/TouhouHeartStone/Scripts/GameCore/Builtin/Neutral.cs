@@ -1900,7 +1900,7 @@ namespace TouhouHeartstone.Builtin
                 }
             }
 
-            Card choice = await card.getOwner().discover(game, usedCards, 3, null);
+            Card choice = await card.getOwner().discover(game, usedCards, 3, "恐怖催眠术");
             Card copy = game.createCard(choice.define);
             await card.getOwner().tryAddCardToHand(game, copy);
         }
@@ -2000,7 +2000,7 @@ namespace TouhouHeartstone.Builtin
 
         public override int life { get; set; } = 4;
 
-        public override string[] keywords { get; set; } = {KEYWORD.STEALTH, KEYWORD.UNIQUE};
+        public override string[] keywords { get; set; } = {KEYWORD.PERMANENTSTEALTH, KEYWORD.UNIQUE};
         // public override string type { get; set; }
         // public override bool isToken { get; set; }
         // public override bool isActive { get; set; }
@@ -2010,9 +2010,9 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field,
-                (game, card, arg) => arg.infoDic.Values.Select(info => info.source).Contains(card), null,
-                async (game, card, arg) => card.setStealth(game, true)),
+            // new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field,
+            //     (game, card, arg) => arg.infoDic.Values.Select(info => info.source).Contains(card), null,
+            //     async (game, card, arg) => card.setStealth(game, true)),
             new THHEffectBefore<THHPlayer.UseEventArg>(PileFlag.field,
                 (game, card, arg) => arg.targets.Length > 0, null,
                 (game, card, arg) =>
@@ -2029,7 +2029,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     var oppo = game.getOpponent(arg.card.getOwner());
                     var availableTargets = oppo.field.ToList().Append(oppo.master)
-                        .Where(c => !c.hasKeyword(game, KEYWORD.STEALTH)).ToList();
+                        .Where(c => !c.isStealth(game)).ToList();
                     if (availableTargets.Contains(card))
                     {
                         availableTargets.Remove(card);
