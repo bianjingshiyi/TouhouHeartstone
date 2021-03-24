@@ -317,7 +317,7 @@ namespace Game
                 case THHPlayer.CreateTokenEventArg _:
                 case THHPlayer.RebornEventArg _:
                 case THHCard.AttackEventArg _:
-                case THHCard.DamageEventArg _:
+                //case THHCard.DamageEventArg _:
                 //case THHCard.SetArmorEventArg _:
                 //case THHCard.HealEventArg _:
                 //case THHCard.SilenceEventArg _:
