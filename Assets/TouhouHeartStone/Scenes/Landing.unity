@@ -384,6 +384,7 @@ GameObject:
   - component: {fileID: 746921087}
   - component: {fileID: 746921086}
   - component: {fileID: 746921085}
+  - component: {fileID: 746921089}
   - component: {fileID: 746921088}
   m_Layer: 5
   m_Name: VersionText
@@ -423,7 +424,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 965b1cc6c9154cb47af017aab5b76138, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  versionPrefix: "\u9189\u68A6\u4F20\u8BF4"
+  versionPrefix: Ver.
   includeBuildDate: 1
 --- !u!114 &746921086
 MonoBehaviour:
@@ -437,7 +438,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+    type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
@@ -445,7 +447,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 0811d11d855d67144a4dc8107652e329, type: 3}
+    m_Font: {fileID: 12800000, guid: 2c3a2d5fe7fee4344a22cd42f4292a1d, type: 3}
     m_FontSize: 24
     m_FontStyle: 0
     m_BestFit: 0
@@ -457,7 +459,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u9189\u68A6\u4F20\u8BF4-v1.0.0-g1234567-2020/09/09 09:09:09"
+  m_Text: Ver.1.0.0-g1234567
 --- !u!222 &746921087
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -478,12 +480,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0848bff101191904ead4bb831f7084db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BlurFactor: 1
+  m_BlurFactor: 0.5
   m_Style: 3
   m_AdditionalShadows: []
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 2, y: -2}
   m_UseGraphicAlpha: 1
+--- !u!114 &746921089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 746921083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 300
+  m_EffectMaterial: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+    type: 2}
+  m_EffectFactor: 1
+  m_ColorFactor: 1
+  m_BlurFactor: 0
+  m_EffectMode: 0
+  m_ColorMode: 0
+  m_BlurMode: 1
+  m_AdvancedBlur: 0
+  m_ShadowBlur: 1
+  m_ShadowStyle: 0
+  m_ShadowColor: {r: 0, g: 0, b: 0, a: 1}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
+  m_EffectColor: {r: 1, g: 1, b: 1, a: 1}
+  m_AdditionalShadows: []
 --- !u!1 &1107525635
 GameObject:
   m_ObjectHideFlags: 0
