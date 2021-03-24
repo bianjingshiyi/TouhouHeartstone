@@ -1806,7 +1806,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x078;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 8;
+        public override int cost { get; set; } = 9;
         public override int attack { get; set; } = 7;
 
         public override int life { get; set; } = 7;
@@ -1931,7 +1931,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static Task effect(THHGame game, Card card)
+        static async Task effect(THHGame game, Card card)
         {
             var recorded = game.triggers.getRecordedEvents();
             int count = 0;
@@ -1948,8 +1948,7 @@ namespace TouhouHeartstone.Builtin
                 }
             }
 
-            card.addBuff(game, new GeneratedBuff(ID, new AttackModifier(count)));
-            return Task.CompletedTask;
+            await card.addBuff(game, new GeneratedBuff(ID, new AttackModifier(count)));
         }
     }
 

@@ -109,7 +109,7 @@ namespace TouhouHeartstone.Builtin
         {
             new DeathRattle(ID,async(g1,c1,p)=>
             {
-                await g1.getOpponent(c1.getOwner()).master.damage(g1,c1,3);
+                await g1.getOpponent(c1.getOwner()).master.damage(g1,c1,2);
                 await g1.updateDeath();
             })
         };
@@ -180,7 +180,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Rin.ID | CATEGORY.SPELL | 0x007;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 4;
+        public override int cost { get; set; } = 5;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -203,7 +203,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Rin.ID | CATEGORY.SERVANT | 0x008;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
-        public override int attack { get; set; } = 3;
+        public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
         public override IEffect[] effects { get; set; } = new IEffect[]
