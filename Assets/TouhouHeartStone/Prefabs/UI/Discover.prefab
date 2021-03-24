@@ -265,7 +265,6 @@ GameObject:
   - component: {fileID: 584470671157726322}
   - component: {fileID: 1590711810547941664}
   - component: {fileID: 6659285124226945386}
-  - component: {fileID: 12282971611425997}
   - component: {fileID: 1538255165404397357}
   m_Layer: 5
   m_Name: Text
@@ -334,19 +333,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\u8BF7\u9009\u62E9\u4E00\u5F20\u5361\u724C"
---- !u!114 &12282971611425997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6132088252773866696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  comment: "\u53D1\u73B0\uFF08\u9009\u62E9\uFF09\u754C\u9762\u7684\u6807\u9898"
 --- !u!114 &1538255165404397357
 MonoBehaviour:
   m_ObjectHideFlags: 0
