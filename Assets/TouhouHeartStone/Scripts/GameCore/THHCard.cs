@@ -1031,7 +1031,10 @@ namespace TouhouHeartstone
             }
             object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
             {
-                return new object[] { };
+                return new object[] { 
+                    card.getFormatString(),
+                    target.getFormatString()
+                };
             }
         }
         public static Task<DamageEventArg> damage(this Card card, THHGame game, Card source, int value)
