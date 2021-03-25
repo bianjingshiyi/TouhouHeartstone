@@ -659,5 +659,23 @@ namespace Tests
             Assert.AreEqual(nameof(ServantCardDefine.attack), propChange.propName);
             Assert.AreEqual(4, propChange.value);
         }
+
+        [Test]
+        public void DeathAndEndTurnSpawnTest()
+        {
+            TestGameflow.createGame(out var game, out var you, out _,
+                new KeyValuePair<int, int>[]
+                {
+                    new KeyValuePair<int, int>(DeadSpawn2Token_EndTurnDie.ID, 1),
+                    new KeyValuePair<int, int>(EndTurn1Spawn.ID, 1)
+                });
+            game.skipUntilCanUse<DeadSpawn2Token_EndTurnDie>(you);
+            you.cmdUse<EndTurn1Spawn>(game);
+            you.cmdUse<DeadSpawn2Token_EndTurnDie>(game);
+            
+
+            you.cmdTurnEnd(game);
+            game.Dispose();
+        }
     }
 }

@@ -841,4 +841,49 @@ namespace Tests
             })
         };
     }
+
+    /// <summary>
+    /// 亡语来两个
+    /// </summary>
+    public class DeadSpawn2Token_EndTurnDie : ServantCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x30;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new DeathRattle(ID,async(g1,c1,p)=>
+            {
+                await c1.getOwner().createToken(g1,g1.getDefine<DefaultServant>());
+                await c1.getOwner().createToken(g1,g1.getDefine<DefaultServant>());
+            }), 
+            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD, (g, c, a) =>
+            {
+                return a.player == c.getOwner() && c.pile.name == PILE.FIELD;
+            }, null, async (g, c, a) =>
+            {
+                await c.setDead(g, true);
+                await g.updateDeath();
+            })
+        };
+    }
+
+    public class EndTurn1Spawn : ServantCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x31;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[0];
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new BeforeYourTurnEnd(async(game,card,arg)=>
+            {
+                 await card.getOwner().createToken(game, game.getDefine<DefaultServant>());
+            })
+        };
+    }
 }
