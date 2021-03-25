@@ -176,7 +176,7 @@ namespace Game
             ui.SelfSkill.asButton.onClick.set(onClickSkill);
             ui.SelfSkill.onDrag.set(onDragSkill);
             ui.SelfSkill.onDragEnd.set(onDragSkillEnd);
-            ui.SelfSkill.onPointerEnter.set(onSkillPointerEnter);
+            ui.SelfSkill.onPointerEnter.set(onSelfSkillPointerEnter);
             ui.SelfSkill.onPointerExit.set(onSkillPointerExit);
             ui.SelfSkill.onPointerMove.set(onSkillPointerMove);
             ui.SelfItem.hide();
@@ -207,8 +207,13 @@ namespace Game
             ui.EnemyGem.Text.text = "0";
             ui.EnemyMaster.ArmorPropNumber.text.text = "0";
             ui.EnemyItem.hide();
+            ui.EnemyItem.onPointerEnter.set(onItemPointerEnter);
+            ui.EnemyItem.onPointerExit.set(onItemPointerExit);
             ui.EnemyFieldList.clearItems();
             ui.EnemyHandList.clearItems();
+            ui.EnemySkill.onPointerEnter.set(onEnemySkillPointerEnter);
+            ui.EnemySkill.onPointerExit.set(onSkillPointerExit);
+            ui.EnemySkill.onPointerMove.set(onSkillPointerMove);
             ui.AttackArrowImage.hide();
             ui.Fatigue.hide();
             ui.Discover.ButtonButtonBlack.asButton.onClick.set(onDiscoverHideButtonClick);

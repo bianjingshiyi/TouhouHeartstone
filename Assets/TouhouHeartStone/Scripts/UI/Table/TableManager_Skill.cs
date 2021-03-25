@@ -150,14 +150,17 @@ namespace Game
         }
         private void onSkillPointerExit(Skill arg1, PointerEventData arg2)
         {
-            Debug.Log("Skill pointer exit");
             ui.TipBox.hide();
         }
 
-        private void onSkillPointerEnter(Skill skill, PointerEventData pointer)
+        private void onSelfSkillPointerEnter(Skill skill, PointerEventData pointer)
         {
-            Debug.Log("Skill pointer enter");
             ui.TipBox.display(getSkin(player.skill).desc, pointer.position + _tipBoxOffset);
+        }
+
+        private void onEnemySkillPointerEnter(Skill skill, PointerEventData pointer)
+        {
+            ui.TipBox.display(getSkin(game.getOpponent(player).skill).desc, pointer.position + _tipBoxOffset);
         }
 
         private void onSkillPointerMove(Skill arg1, Vector2 pointer)
