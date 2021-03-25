@@ -1623,7 +1623,7 @@ namespace Game
         [TranslateMsg]
         private const String TAB_YOUR_BOX = "你的牌库";
         [TranslateMsg]
-        private const String TAB_BOX_HAS = "牌库里有{0}张手牌";
+        private const String TAB_BOX_HAS = "牌库里有{0}张卡牌";
         [TranslateMsg]
         private const String TAB_YOUR_NO_HAVE_CARD = "你已经没有卡牌了";
         void onDeckClick()
@@ -1661,7 +1661,7 @@ namespace Game
             }
         }
         [TranslateMsg]
-        private const String TAB_GRAVEYARD_HAS = "墓地里有{0}张手牌";
+        private const String TAB_GRAVEYARD_HAS = "墓地里有{0}张卡牌";
         [TranslateMsg]
         private const String TAB_GRAVEYARD_NULL = "墓地是空的";
         void onGravePointerEnter(UI.Deck deck, PointerEventData pointer)
