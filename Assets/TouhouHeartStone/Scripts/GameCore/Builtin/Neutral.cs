@@ -1335,7 +1335,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 永夜归-永恒：假卡，无实际效果。
-    /// 使其剩余生命值翻倍
+    /// 
     /// </summary>
     public class ReturnOfImperishableNight_Eternity_N : SpellCardDefine
     {
@@ -1351,7 +1351,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 永夜返-须臾：假卡，无实际效果。
-    /// 使其剩余生命值翻倍
+    /// 
     /// </summary>
     public class EndOfImperishableNight_Instant_N : SpellCardDefine
     {
