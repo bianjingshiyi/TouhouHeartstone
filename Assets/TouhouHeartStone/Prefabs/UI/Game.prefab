@@ -16,6 +16,18 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!225 &2736165323693290597
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 367609467211569915}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!114 &7072975925436828016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,6 +146,7 @@ GameObject:
   - component: {fileID: 7303461688658179188}
   - component: {fileID: 6532457211585768843}
   - component: {fileID: 772682268812053978}
+  - component: {fileID: 4264889781545659709}
   m_Layer: 5
   m_Name: Logs
   m_TagString: Untagged
@@ -158,8 +171,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 142.2, y: -5}
-  m_SizeDelta: {x: 608.9693, y: 961.6013}
+  m_AnchoredPosition: {x: 223.3, y: -5}
+  m_SizeDelta: {x: 771.1965, y: 961.6013}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7303461688658179188
 CanvasRenderer:
@@ -211,6 +224,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
+--- !u!225 &4264889781545659709
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6112163101998924944}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &7072975925100823734
 GameObject:
   m_ObjectHideFlags: 0
@@ -1695,15 +1720,15 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 540330429358873650}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &4071999755755487777 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4610847768318942739, guid: a3f8f4a73f240724f8b50ecefd1a11d5,
-    type: 3}
-  m_PrefabInstance: {fileID: 540330429358873650}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &7072975925509231592 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7302553299056267226, guid: a3f8f4a73f240724f8b50ecefd1a11d5,
+    type: 3}
+  m_PrefabInstance: {fileID: 540330429358873650}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &4071999755755487777 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4610847768318942739, guid: a3f8f4a73f240724f8b50ecefd1a11d5,
     type: 3}
   m_PrefabInstance: {fileID: 540330429358873650}
   m_PrefabAsset: {fileID: 0}

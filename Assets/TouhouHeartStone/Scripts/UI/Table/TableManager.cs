@@ -445,13 +445,19 @@ namespace Game
             }
             if (card.getOwner() == player && game.currentPlayer == player)
             {
-                GetRelatedItem(card).onItemON.invokeBeforeAnim();
-                GetRelatedItem(card).onItemON.invokeAfterAnim();
+                if (GetRelatedItem(card).animator.gameObject.activeSelf)
+                {
+                    GetRelatedItem(card).onItemON.invokeBeforeAnim();
+                    GetRelatedItem(card).onItemON.invokeAfterAnim();
+                }
             }
             else
             {
-                GetRelatedItem(card).onItemOff.invokeBeforeAnim();
-                GetRelatedItem(card).onItemOff.invokeAfterAnim();
+                if (GetRelatedItem(card).animator.gameObject.activeSelf)
+                {
+                    GetRelatedItem(card).onItemOff.invokeBeforeAnim();
+                    GetRelatedItem(card).onItemOff.invokeAfterAnim();
+                }
             }
             if (card.getOwner() == player && game.currentPlayer == player && card.canAttack(game))
             {
