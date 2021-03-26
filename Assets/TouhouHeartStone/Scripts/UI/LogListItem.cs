@@ -4,7 +4,23 @@ namespace UI
 {
     partial class LogListItem
     {
+
+
+        public Sprite selfsprite
+        {
+            get { return _selfsprite; } 
+        }
         [Header("Config")]
+        [SerializeField]
+        private Sprite _selfsprite;
+        [SerializeField]
+        private Sprite _opposprite;
+
+        public Sprite opposprite
+        {
+            get { return _opposprite; }
+        }
+
         [SerializeField]
         Color _selfColor = new Color(.2f, .2f, .8f);
         public Color selfColor
