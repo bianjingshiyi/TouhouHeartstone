@@ -17,13 +17,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
-        public override string[] tags { get; set; } = new string[] {TAG.FAIRY};
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.CHARGE};
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.CHARGE };
         public override IEffect[] effects { get; set; } = new IEffect[0];
     }
 
     /// <summary>
-    /// 人类村落守卫，325，嘲讽
+    /// 人类村落守卫
     /// </summary>
     public class HumanVillageGuard : ServantCardDefine
     {
@@ -542,24 +542,7 @@ namespace TouhouHeartstone.Builtin
                     .skipUntilLast(e => e is THHGame.TurnStartEventArg)
                     .OfType<THHPlayer.UseEventArg>()
                     .Where(u => u.card.pile.name != PILE.SKILL).Count() < 1)
-            //new THHEffectBefore<THHGame.TurnStartEventArg>(PileName.FIELD,null,null,async (g,c,a)=>
-            //{
-            //    foreach (var player in g.players)
-            //    {
-            //        foreach (var card in player.hand)
-            //        {
-            //            await card.addBuff(g,new GeneratedBuff(ID,new CostModifier(1),
-            //                new THHEffectAfter<THHPlayer.UseEventArg>(PileName.HAND,(g2,c2,a2)=>
-            //                {
-            //                    return a2.player == c2.getOwner();
-            //                },null,async (g3,c3,a3)=>
-            //                {
-            //                    await c3.removeBuff(g3,ID);
-            //                    await c3.getOwner().hand.removeBuff(g3,ID);
-            //                })));
-            //        }
-            //    }
-            //})
+            
         };
     }
 
@@ -662,9 +645,9 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(async (g1, c1) =>
             {
                 List<Card> elementCards = new List<Card>(g1.createCards(Patchouli.getElementCards(g1)));
-                Card a = await c1.getOwner().discover(g1, elementCards, title: "选择一张元素法术作为融合素材");
+                Card a = await c1.getOwner().discover(g1, elementCards, title: "加入原料");
                 elementCards.Remove(a);
-                Card b = await c1.getOwner().discover(g1, elementCards, title: "选择另一张元素法术作为融合素材");
+                Card b = await c1.getOwner().discover(g1, elementCards, title: "收获");
                 await Patchouli.tryMix(g1, c1.getOwner(), a, b);
             })
         };
@@ -1117,7 +1100,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            Card discover = await card.getOwner().discover(game, card.getOwner().deck);
+            Card discover = await card.getOwner().discover(game, card.getOwner().deck,3,"选择一张牌置于牌组顶");
 
             await card.getOwner().deck.moveTo(game, discover, card.getOwner().deck,
                 card.getOwner().deck.indexOf(card.getOwner().deck.top));
@@ -1900,7 +1883,7 @@ namespace TouhouHeartstone.Builtin
                 }
             }
 
-            Card choice = await card.getOwner().discover(game, usedCards, 3, "恐怖催眠术");
+            Card choice = await card.getOwner().discover(game, usedCards, 3, "想起【......】");
             Card copy = game.createCard(choice.define);
             await card.getOwner().tryAddCardToHand(game, copy);
         }

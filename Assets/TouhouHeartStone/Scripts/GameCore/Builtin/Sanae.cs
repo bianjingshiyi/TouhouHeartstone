@@ -216,29 +216,29 @@ namespace TouhouHeartstone.Builtin
     /// 商业繁荣祈愿
     /// 信仰对决（随从牌） 对目标随从造成3点伤害；获胜时再治愈你的英雄4点生命值。
     /// </summary>
-    [IgnoreCardDefine]
-    public class CharmOfGoodCommerce : SpellCardDefine
-    {
-        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x003;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD._RevealDuel};
+    //[IgnoreCardDefine]
+    //public class CharmOfGoodCommerce : SpellCardDefine
+    //{
+    //    public const int ID = Sanae.ID | CATEGORY.SPELL | 0x003;
+    //    public override int id { get; set; } = ID;
+    //    public override int cost { get; set; } = 2;
+    //    public override string[] keywords { get; set; } = new string[] {KEYWORD._RevealDuel};
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            new LambdaSingleTargetEffect(async (game, card, target) =>
-            {
-                THHPlayer you = card.getOwner();
-                var duel = await Sanae.revealDuel(you, game, 2);
-                if (duel.result)
-                {
-                    await you.master.heal(game, card, 4);
-                }
+    //    public override IEffect[] effects { get; set; } = new IEffect[]
+    //    {
+    //        new LambdaSingleTargetEffect(async (game, card, target) =>
+    //        {
+    //            THHPlayer you = card.getOwner();
+    //            var duel = await Sanae.revealDuel(you, game, 2);
+    //            if (duel.result)
+    //            {
+    //                await you.master.heal(game, card, 4);
+    //            }
 
-                await target.damage(game, card, 3);
-            }, PileFlag.both | PileFlag.field)
-        };
-    }
+    //            await target.damage(game, card, 3);
+    //        }, PileFlag.both | PileFlag.field)
+    //    };
+    //}
 
     /// <summary>
     /// 五谷丰穰
@@ -651,7 +651,7 @@ namespace TouhouHeartstone.Builtin
     /// 泄矢诹访子
     /// 唯一，突袭
     /// 位于手牌中时，本局对战你每揭示过一次法力值消耗减少（1）点。
-    /// 亡语：随机释放一场灾祸。
+    /// 亡语：
     /// </summary>
     public class MoriyaSuwako : ServantCardDefine
     {
@@ -837,24 +837,9 @@ namespace TouhouHeartstone.Builtin
         // public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            //new THHEffectAfter<Sanae.RevealDuelArg>(PILE.HAND,
-            //    (game, card, arg) =>
-            //    {
-            //        return arg.player == card.getOwner();
-            //    },null,async(game,card,arg)=>
-            //    {
-            //        await card.addBuff(game,new GeneratedBuff(ID,new CostModifier(-1)));
-            //    }),
+            
             new NoTargetEffect(effect),
-            // new IntPropFixer<Sanae.RevealDuelArg>(PileFlag.hand,new IntPropFixer<Sanae.RevealDuelArg>.ModifierFixer(new CostModifier(0),(g,c,b,a)=>
-            // {
-            //     int v = g.triggers.getRecordedEvents().
-            //             skipUntilLast(e=> e is THHGame.StartEventArg GameStart).
-            //             OfType<Sanae.RevealDuelArg>().
-            //             Where(e2=>e2.player == c.getOwner()).Count();
-            //     g.logger.log(c+"的花费=>"+v);
-            //     return -v;
-            // })),
+            
             new VariableIntModifier(PileFlag.hand, new CostModifier(0),
                 new VariableIntModifier.ModifierFixer<Sanae.RevealDuelArg>(null, (g, c, b, a) =>
                 {
@@ -874,19 +859,7 @@ namespace TouhouHeartstone.Builtin
             await you.field.fieldToDeck(game, true);
             await oppo.field.fieldToDeck(game, true);
 
-            //while (you.field.count != 0)
-            //{
-            //    index = game.randomInt(0, oppo.deck.count);
-            //    await you.field[0].resetCard(game);
-            //    await you.field.moveTo(game, you.field[0], you.deck, index);
-            //}
-
-            //while (oppo.field.count != 0)
-            //{
-            //    index = game.randomInt(0, oppo.deck.count);
-            //    await oppo.field[0].resetCard(game);
-            //    await oppo.field.moveTo(game, oppo.field[0], oppo.deck, index);
-            //}
+            
         }
     }
 

@@ -65,7 +65,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 2 妖梦技能：奇妙半身 叠甲过
+    /// 2 妖梦技能
     /// </summary>
     public class StrangeHalfbody : SkillCardDefine
     {

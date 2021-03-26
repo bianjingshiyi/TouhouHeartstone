@@ -289,7 +289,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             Card choice = await card.getOwner().discover(game,
-                card.getOwner().grave.Where(c => c.isServant() && c.hasDeathRattle(game)), 3);
+                card.getOwner().grave.Where(c => c.isServant() && c.hasDeathRattle(game)), 3,"尼科之咒！");
             if (choice != null)
             {
                 if (!card.getOwner().hand.isFull)

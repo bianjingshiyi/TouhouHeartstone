@@ -53,9 +53,9 @@ namespace TouhouHeartstone.Builtin
             var mixableCards = player.hand.Where(c => getMixCards(game, card.define, c.define).Length > 0).ToArray();//检查手牌中有没有可以融合的牌
             if (mixableCards.Length > 0)
             {
-                var mixCard = await player.discover(game, mixableCards, -1, "选择一张卡片进行元素融合");
+                var mixCard = await player.discover(game, mixableCards, -1, "加入原料");
                 var mixedResults = getMixCards(game, card.define, mixCard.define).Select(define => game.createCard(define)).ToArray();
-                var mixedResult = await player.discover(game, mixedResults, -1, "选择一张融合元素法术加入你的手牌");
+                var mixedResult = await player.discover(game, mixedResults, -1, "收获");
                 //await player.discard(game, mixCard);
                 //await player.tryAddCardToHand(game, mixedResult);
                 await THHCard.setDefine(mixCard, game, mixedResult.define);
@@ -66,34 +66,34 @@ namespace TouhouHeartstone.Builtin
         public static async Task tryMix(THHGame game, THHPlayer player, Card a, Card b)
         {
             var mixedResults = getMixCards(game, a.define, b.define).Select(define => game.createCard(define)).ToArray();
-            var mixedResult = await player.discover(game, mixedResults, -1, "选择一张融合元素法术加入你的手牌");
+            var mixedResult = await player.discover(game, mixedResults, -1, "收获");
             await player.tryAddCardToHand(game, mixedResult);
         }
     }
     /// <summary>
     /// 知识引流
     /// </summary>
-    [Obsolete]
-    public class KnowledgeTap : SkillCardDefine
-    {
-        public const int ID = Patchouli.ID | CATEGORY.SKILL | 0x000;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]
-        {
-            new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,card,arg)=>
-            {
-                return true;
-            },(game,card,targets)=>
-            {
-                return false;
-            },async (game,card,arg,targets)=>
-            {
-                await arg.player.master.damage(game,card, 2);
-                await arg.player.draw(game);
-            })
-        };
-    }
+    //[Obsolete]
+    //public class KnowledgeTap : SkillCardDefine
+    //{
+    //    public const int ID = Patchouli.ID | CATEGORY.SKILL | 0x000;
+    //    public override int id { get; set; } = ID;
+    //    public override int cost { get; set; } = 2;
+    //    public override IEffect[] effects { get; set; } = new IEffect[]
+    //    {
+    //        new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,card,arg)=>
+    //        {
+    //            return true;
+    //        },(game,card,targets)=>
+    //        {
+    //            return false;
+    //        },async (game,card,arg,targets)=>
+    //        {
+    //            await arg.player.master.damage(game,card, 2);
+    //            await arg.player.draw(game);
+    //        })
+    //    };
+    //}
     /// <summary>
     /// 2 夏之火 造成1点伤害
     /// </summary>
@@ -431,7 +431,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            var discovered = await card.getOwner().discover(game, card.getOwner().deck,5);
+            var discovered = await card.getOwner().discover(game, card.getOwner().deck,5,"查询图书");
             await card.getOwner().draw(game, discovered);
            
         }
@@ -471,7 +471,7 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 2; i++)
             {
-                var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5);
+                var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5,"搜寻知识");
                 await card.getOwner().draw(game, discovered);
             }
         }

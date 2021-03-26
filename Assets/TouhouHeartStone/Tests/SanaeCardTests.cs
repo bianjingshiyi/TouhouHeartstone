@@ -115,25 +115,25 @@ namespace Tests
             game.Dispose();
         }
 
-        [Test]
-        public void CharmOfGoodCommerceTest()
-        {
-            TestGameflow.createGame<FlyingSnake, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption() { shuffle = false },
-                Sanae.ID, new[] { new KeyValuePair<int, int>(CharmOfGoodCommerce.ID, 2) },
-                Sanae.ID, new KeyValuePair<int, int>[0]);
-            game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+        //[Test]
+        //public void CharmOfGoodCommerceTest()
+        //{
+        //    TestGameflow.createGame<FlyingSnake, DefaultServant>(out var game, out var you, out var oppo,
+        //        new GameOption() { shuffle = false },
+        //        Sanae.ID, new[] { new KeyValuePair<int, int>(CharmOfGoodCommerce.ID, 2) },
+        //        Sanae.ID, new KeyValuePair<int, int>[0]);
+        //    game.skipUntilCanUse<DefaultServant>(oppo);
+        //    oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
 
-            game.skipUntilCanUse<CharmOfGoodCommerce>(you);
-            you.master.damage(game, null, 5);
-            int targetLife = oppo.field[0].getCurrentLife(game);
-            int masterLife = you.master.getCurrentLife(game);
-            you.cmdUse(game, you.hand.getCard<CharmOfGoodCommerce>(), targets: oppo.field[0]);
-            Assert.AreEqual(targetLife - 3, oppo.field[0].getCurrentLife(game));
-            Assert.AreEqual(masterLife + 4, you.master.getCurrentLife(game));
-            game.Dispose();
-        }
+        //    game.skipUntilCanUse<CharmOfGoodCommerce>(you);
+        //    you.master.damage(game, null, 5);
+        //    int targetLife = oppo.field[0].getCurrentLife(game);
+        //    int masterLife = you.master.getCurrentLife(game);
+        //    you.cmdUse(game, you.hand.getCard<CharmOfGoodCommerce>(), targets: oppo.field[0]);
+        //    Assert.AreEqual(targetLife - 3, oppo.field[0].getCurrentLife(game));
+        //    Assert.AreEqual(masterLife + 4, you.master.getCurrentLife(game));
+        //    game.Dispose();
+        //}
 
         [Test]
         public void BumperCropTest()
