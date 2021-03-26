@@ -6,6 +6,7 @@ namespace UI
     {
         [SerializeField]
         Vector2 _minSize;
+        public Animation SEAnimation;
         partial void onAwake()
         {
 
@@ -22,16 +23,18 @@ namespace UI
         public void shrink()
         {
             _isExpanded = false;
-            animator.speed = -1;
-            animator.Play("LogON");
+            if (SEAnimation.isPlaying == false)
+                SEAnimation["LogON"].time = SEAnimation["LogON"].length;
+            SEAnimation["LogON"].speed = -1;
+            SEAnimation.Play("LogON");
             //hide();
             //rectTransform.setWidth(_minSize.x);
         }
         public void expand()
         {
             _isExpanded = true;
-            animator.speed = 1;
-            animator.Play("LogON");
+            SEAnimation["LogON"].speed = 1;
+            SEAnimation.Play("LogON");
             //display();
             //rectTransform.setWidth(LogList.rectTransform.rect.size.x);
         }
