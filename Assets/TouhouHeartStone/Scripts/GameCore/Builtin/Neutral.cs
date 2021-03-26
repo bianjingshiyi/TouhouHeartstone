@@ -1307,7 +1307,7 @@ namespace TouhouHeartstone.Builtin
                     (g1, c1, a1) => { return a1.player == c1.getOwner(); },
                     null,
                     async (g1, c1, a1) => { a1.isCanceled = true; }
-                ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,
+                ), new RemoveBuffAfterTimeUp<THHGame.TurnEndEventArg>(PILE.MASTER,
                     (g1, c1, a1) => { return a1.player == c1.getOwner(); }, ID, 2)));
 
                 await g.getOpponent(c.getOwner()).master.addBuff(g, new GeneratedBuff(ID,
@@ -1315,7 +1315,7 @@ namespace TouhouHeartstone.Builtin
                         (g1, c1, a1) => { return a1.player == c1.getOwner(); },
                         null,
                         async (g1, c1, a1) => { a1.isCanceled = true; }
-                    ), new RemoveBuffAfterTimeUp<THHGame.TurnStartEventArg>(PILE.MASTER,
+                    ), new RemoveBuffAfterTimeUp<THHGame.TurnEndEventArg>(PILE.MASTER,
                         (g1, c1, a1) => { return a1.player == c1.getOwner(); }, ID, 2)));
             }
             else
