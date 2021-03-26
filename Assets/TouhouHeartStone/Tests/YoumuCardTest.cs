@@ -378,6 +378,19 @@ namespace Tests
             Assert.AreEqual(27, oppo.master.getCurrentLife(game));
             Assert.AreEqual(1, you.item.getCurrentLife(game));
         }
+        
+        [Test]
+        public void HalfPhatomPropChangeEventTest()
+        {
+            TestGameflow.createGame<HoshigumaYugi,HalfPhantom>(out var game, out var you, out var oppo);
+            game.skipUntilCanUse<HalfPhantom>(oppo);
+            oppo.master.setArmor(game, 2);
+            oppo.cmdUse<HalfPhantom>(game, out var s);
+            var yugi = you.hand.getCard<HoshigumaYugi>();
+            Assert.AreEqual(yugi.define.getCost(),yugi.getCost(game)+s.getAttack(game));
+            oppo.master.setArmor(game,4);
+            Assert.AreEqual(yugi.define.getCost()-s.getAttack(game),yugi.getCost(game));
+        }
     }
 }
 

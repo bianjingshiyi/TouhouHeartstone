@@ -478,11 +478,11 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new VariableIntModifier(PileFlag.hand, new CostModifier(0),
-                new VariableIntModifier.ModifierFixer<THHGame.TurnEndEventArg>(
+            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0),
+                new EventTriggeredModifierFixer<int>.ModifierFixer<THHGame.TurnEndEventArg>(
                     (game, card, buff, arg) => card.getOwner() == arg.player,
-                    (game, card, buff, arg) => 0),
-                new VariableIntModifier.ModifierFixer<Sanae.RevealDuelArg>(
+                    (game, card, buff, arg) => 0, false),
+                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(
                     (game, card, buff, arg) => card.getOwner() == arg.player,
                     (game, card, buff, arg) =>
                     {
@@ -840,8 +840,8 @@ namespace TouhouHeartstone.Builtin
             
             new NoTargetEffect(effect),
             
-            new VariableIntModifier(PileFlag.hand, new CostModifier(0),
-                new VariableIntModifier.ModifierFixer<Sanae.RevealDuelArg>(null, (g, c, b, a) =>
+            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0),
+                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(null, (g, c, b, a) =>
                 {
                     int v = g.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.StartEventArg GameStart)
                         .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == c.getOwner()).Count();

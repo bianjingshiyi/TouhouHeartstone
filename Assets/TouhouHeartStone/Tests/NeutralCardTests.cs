@@ -1068,14 +1068,14 @@ namespace Tests
             game.skipUntilCanUse<DefaultServant>(oppo);
             var yugi = you.hand.getCard<HoshigumaYugi>();
             Assert.NotNull(yugi);
-            Assert.AreEqual(8, yugi.getCost(game));
+            Assert.AreEqual(9, yugi.getCost(game));
             oppo.cmdUse<DefaultServant>(game, out var def);
-            Assert.AreEqual(8 - def.getAttack(game), yugi.getCost(game));
+            Assert.AreEqual(9 - def.getAttack(game), yugi.getCost(game));
             def.addBuff(game, new GeneratedBuff(1, new AttackModifier(2)));
-            Assert.AreEqual(8 - def.getAttack(game), yugi.getCost(game));
+            Assert.AreEqual(9 - def.getAttack(game), yugi.getCost(game));
             def.setDead(game, true);
             game.updateDeath();
-            Assert.AreEqual(8,yugi.getCost(game));
+            Assert.AreEqual(9,yugi.getCost(game));
             game.Dispose();
         }
 

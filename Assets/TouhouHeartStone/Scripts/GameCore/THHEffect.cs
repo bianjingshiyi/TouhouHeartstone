@@ -1057,10 +1057,14 @@ namespace TouhouHeartstone
         }
     }
     
-    public class VariableIntModifier : PassiveEffect
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="Prop">Modifier对应的属性</typeparam>
+    public class EventTriggeredModifierFixer<Prop> : PassiveEffect
     {
         public override string[] piles { get; }
-        IntPropModifier modifier { get; }
+        PropModifier<Prop> modifier { get; }
         IModifierFixer[] fixers { get; }
 
         public interface IModifierFixer
@@ -1068,38 +1072,31 @@ namespace TouhouHeartstone
             void onEnable(THHGame game, Card card, Buff buff, string modifierName);
             void onDisable(THHGame game, Card card, Buff buff, string modifierName);
         }
-        /// <summary>
-        /// VariableIntModifier中的 ModifierFixer会在 VaraibleIntModifier激活时按照顺序各生效一次
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
+
         public class ModifierFixer<T> : IModifierFixer where T : IEventArg
         {
-            public Func<IGame, Card, Buff, T, int> fixer;
+            public Func<IGame, Card, Buff, T, Prop> fixer;
             public Func<IGame, Card, Buff, T, bool> onCheckCondition;
+            public bool isUpdatedOnEnable;
 
-            public ModifierFixer(Func<IGame, Card, Buff, T, bool> onCheckCondition, Func<IGame, Card, Buff, T, int> fixer)
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="onCheckCondition"></param>
+            /// <param name="fixer">使用fixer返回的值更新Modifier</param>
+            /// <param name="isUpdatedOnEnable">如果fixer需要使用到事件，设成false</param>
+            public ModifierFixer(Func<IGame, Card, Buff, T, bool> onCheckCondition, Func<IGame, Card, Buff, T, Prop> fixer, bool isUpdatedOnEnable = true)
             {
                 this.fixer = fixer;
+                this.isUpdatedOnEnable = isUpdatedOnEnable;
             }
 
             public async void onEnable(THHGame game, Card card, Buff buff, string modifierName)
             {
-                var modifier = card.getProp<IntPropModifier>(game, modifierName);
-                var beforeValue = modifier.value;
-                var value = fixer(game, card, buff, default);
-                if (value != beforeValue)
+                var modifier = card.getProp<PropModifier<Prop>>(game, modifierName);
+                if (isUpdatedOnEnable)
                 {
-                    game.triggers.doEvent(
-                        new Card.PropChangeEventArg()
-                        {
-                            game = game, card = card, propName = modifier.propName, beforeValue = beforeValue,
-                            value = value
-                        },
-                        async a =>
-                        {
-                            var m = card.getProp<IntPropModifier>(game, modifierName);
-                            m.setValue(game, card, value);
-                        });
+                    modifier.setValue(game, card, fixer(game, card, buff, default));
                 }
                 
                 Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(modifier,buff));
@@ -1109,19 +1106,8 @@ namespace TouhouHeartstone
                     {
                         if (onCheckCondition == null || onCheckCondition(game, card, buff, arg))
                         {
-                            var m = card.getProp<IntPropModifier>(game, modifierName);
-                            beforeValue = m.value;
-                            value = fixer(game, card, buff, arg);
-                            if (beforeValue!=value)
-                            {
-                                game.triggers.doEvent(
-                                    new Card.PropChangeEventArg()
-                                    {
-                                        game = game, card = card, propName = m.propName, beforeValue = beforeValue,
-                                        value = value
-                                    },
-                                    async a => { m.setValue(game, card, value); }); 
-                            }
+                            var m = card.getProp<PropModifier<Prop>>(game, modifierName);
+                            m.setValue(game, card, fixer(game, card, buff, arg));
                         }
                     });
                     await card.setProp(game, getTriggerName(modifier,buff), trigger);
@@ -1131,7 +1117,7 @@ namespace TouhouHeartstone
 
             public async void onDisable(THHGame game, Card card,Buff buff, string modifierName)
             {
-                var modifier = card.getProp<IntPropModifier>(game, modifierName);
+                var modifier = card.getProp<PropModifier<Prop>>(game, modifierName);
                 if (modifier!=null)
                 {
                     card.removeModifier(game, modifier);
@@ -1141,17 +1127,17 @@ namespace TouhouHeartstone
                     game.triggers.removeAfter(trigger);
             }
 
-            private string getModifierName(IntPropModifier modifier, Buff buff)
+            private string getModifierName(PropModifier<Prop> modifier, Buff buff)
             {
-                return nameof(VariableIntModifier) + modifier.GetType().Name + (buff != null ? buff.instanceID.ToString() : "");
+                return nameof(EventTriggeredModifierFixer<T>) + modifier.GetType().Name + (buff != null ? buff.instanceID.ToString() : "");
             }
-            private static string getTriggerName(IntPropModifier modifier, Buff buff)
+            private static string getTriggerName(PropModifier<Prop> modifier, Buff buff)
             {
-                return nameof(VariableIntModifier.ModifierFixer<T>) + modifier.GetType() + "Trigger" + (buff != null ? buff.instanceID.ToString() : "");
+                return nameof(EventTriggeredModifierFixer<T>.ModifierFixer<T>) + modifier.GetType() + "Trigger" + (buff != null ? buff.instanceID.ToString() : "");
             }
         }
 
-        public VariableIntModifier(PileFlag piles, IntPropModifier modifier, params IModifierFixer[] fixers)
+        public EventTriggeredModifierFixer(PileFlag piles, PropModifier<Prop> modifier, params IModifierFixer[] fixers)
         {
             this.piles = piles.getPiles();
             this.modifier = modifier;
@@ -1160,10 +1146,10 @@ namespace TouhouHeartstone
 
         public override async Task onEnable(THHGame game, Card card, Buff buff)
         {
-            IntPropModifier modifier = card.getProp<IntPropModifier>(game, getModifierName(this.modifier, buff));
+            PropModifier<Prop> modifier = card.getProp<PropModifier<Prop>>(game, getModifierName(this.modifier, buff));
             if (modifier == null)
             {
-                modifier = this.modifier.clone() as IntPropModifier;
+                modifier = this.modifier.clone() as PropModifier<Prop>;
                 await card.setProp(game, getModifierName(this.modifier, buff), modifier);
             }
             if (!card.getModifiers().Contains(modifier))
@@ -1185,11 +1171,11 @@ namespace TouhouHeartstone
             }
         }
         
-        private string getModifierName(IntPropModifier modifier, Buff buff)
+        private string getModifierName(PropModifier<Prop> modifier, Buff buff)
         {
-            return nameof(VariableIntModifier) + modifier.GetType().Name + (buff != null ? buff.instanceID.ToString() : "");
+            return nameof(EventTriggeredModifierFixer<Prop>) + modifier.GetType().Name + (buff != null ? buff.instanceID.ToString() : "");
         }
-}
+    }
 
 
     //public class ChooseOneEffect : SingleTargetEffect

@@ -1810,18 +1810,18 @@ namespace TouhouHeartstone.Builtin
             //             var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
             //             return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
             //         })),
-            new VariableIntModifier(PileFlag.hand, new CostModifier(0),
-                new VariableIntModifier.ModifierFixer<Card.PropChangeEventArg>(
+            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0),
+                new EventTriggeredModifierFixer<int>.ModifierFixer<Card.PropChangeEventArg>(
                     (game, card, buff, arg) => { return arg.propName == nameof(ServantCardDefine.attack); },
                     (game, card, buff, arg) =>
                     {
                         var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
                         return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
-                    }), new VariableIntModifier.ModifierFixer<THHPlayer.UseEventArg>(null, (game, card, buff, arg) =>
+                    }), new EventTriggeredModifierFixer<int>.ModifierFixer<THHPlayer.UseEventArg>(null, (game, card, buff, arg) =>
                 {
                     var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
                     return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
-                }), new VariableIntModifier.ModifierFixer<THHCard.DeathEventArg>(null, (game, card, buff, arg) =>
+                }), new EventTriggeredModifierFixer<int>.ModifierFixer<THHCard.DeathEventArg>(null, (game, card, buff, arg) =>
                 {
                     var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
                     return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
