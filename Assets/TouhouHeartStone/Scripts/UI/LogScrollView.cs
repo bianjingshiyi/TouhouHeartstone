@@ -22,13 +22,17 @@ namespace UI
         public void shrink()
         {
             _isExpanded = false;
-            hide();
+            animator.speed = -1;
+            animator.Play("LogON");
+            //hide();
             //rectTransform.setWidth(_minSize.x);
         }
         public void expand()
         {
             _isExpanded = true;
-            display();
+            animator.speed = 1;
+            animator.Play("LogON");
+            //display();
             //rectTransform.setWidth(LogList.rectTransform.rect.size.x);
         }
     }
