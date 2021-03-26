@@ -815,7 +815,7 @@ namespace Game
                     }
                 }
             }
-            removeHighlights();
+            //removeHighlights();
         }
         /// <summary>
         /// 点击Master卡处理
