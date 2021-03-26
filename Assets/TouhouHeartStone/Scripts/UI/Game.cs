@@ -12,8 +12,15 @@ namespace UI
         [MukioI18n.TranslateMsg]
         const string QUIT_GAME_QUESTION = "是否要结束本场游戏？";
 
+        protected override void Awake()
+        {
+            onAwake();
+        }
+
         partial void onAwake()
         {
+            Debug.Log("成功添加监听");
+
             QuitButtonButtonBlack.asButton.onClick.AddListener(() =>
             {
                 ui.getManager<UIManager>().getObject<UIDialog>()?.ShowQuestion(StringTable.HINT_TITLE, QUIT_GAME_QUESTION, () => {
