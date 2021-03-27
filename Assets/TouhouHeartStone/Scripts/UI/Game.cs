@@ -7,7 +7,7 @@ using Game;
 
 namespace UI
 {
-    partial class Game : IPointerDownHandler
+    partial class Game : UIObject, IPointerDownHandler
     {
         [MukioI18n.TranslateMsg]
         const string QUIT_GAME_QUESTION = "是否要结束本场游戏？";
@@ -17,11 +17,11 @@ namespace UI
             onAwake();
         }
 
-        partial void onAwake()
+        void onAwake()
         {
             Debug.Log("成功添加监听");
 
-            QuitButtonButtonBlack.asButton.onClick.AddListener(() =>
+            quitButton.onClick.AddListener(() =>
             {
                 ui.getManager<UIManager>().getObject<UIDialog>()?.ShowQuestion(StringTable.HINT_TITLE, QUIT_GAME_QUESTION, () => {
                     Main main = GetComponentInParent<Main>();
@@ -32,7 +32,7 @@ namespace UI
         }
         public void OnPointerDown(PointerEventData eventData)
         {
-            Table.clickNoWhere(eventData);
+            table.clickNoWhere(eventData);
         }
 
         [SerializeField]
@@ -50,5 +50,9 @@ namespace UI
         {
             onPageClose?.Invoke();
         }
+
+        public GameResultDialog GameResultDialog => gameResultDialog;
+        public Table Table => table;
+        public LogScrollView LogScrollView => logPanel.logScrollView;
     }
 }

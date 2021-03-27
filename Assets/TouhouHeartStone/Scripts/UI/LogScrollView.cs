@@ -2,15 +2,12 @@
 using BJSYGameCore.UI;
 namespace UI
 {
-    partial class LogScrollView
+    partial class LogPanel
     {
         [SerializeField]
         Vector2 _minSize;
         public Animation SEAnimation;
-        partial void onAwake()
-        {
 
-        }
         [SerializeField]
         bool _isExpanded = false;
         public void expandOrShrink()

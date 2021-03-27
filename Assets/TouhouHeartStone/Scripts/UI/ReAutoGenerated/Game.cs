@@ -10,27 +10,29 @@
 
 namespace UI
 {
-    using UnityEngine;
     using System;
-    using UnityEngine.UI;
-    using BJSYGameCore.UI;
     using UI;
     using BJSYGameCore;
+    using UnityEngine.UI;
     
-    public partial class Game:UIObject
+    public partial class Game
     {
         public void autoInit()
         {
             this._Table = this.transform.Find(PATH_TABLE).GetComponent<Table>();
             this._BackgroundImage = this.transform.Find(PATH_BACKGROUNDIMAGE).GetComponent<Image>();
-            this._LogButtonBlack = this.transform.Find(PATH_LOGBUTTONBLACK).GetComponent<ButtonBlack>();
-            this._LogScrollView = this.transform.Find(PATH_LOGSCROLLVIEW).GetComponent<LogScrollView>();
-            this._QuitButtonButtonBlack = this.transform.Find(PATH_QUITBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
-            this._GameResultDialog = this.transform.Find(PATH_GAMERESULTDIALOG).GetComponent<GameResultDialog>();
+            this._logPanel = this.transform.Find(PATH_LOGPANEL).GetComponent<LogPanel>();
+            this._quitButton = this.transform.Find(PATH_QUITBUTTON).GetComponent<Button>();
+            _quitButton.onClick.AddListener(QuitButtonClickCallback);
+            this._gameResultDialog = this.transform.Find(PATH_GAMERESULTDIALOG).GetComponent<GameResultDialog>();
+        }
+        public void autoClear()
+        {
+            _quitButton.onClick.RemoveListener(QuitButtonClickCallback);
         }
         public Table _Table;
         public const string PATH_TABLE = "Table";
-        public Table Table
+        public Table table
         {
             get
             {
@@ -43,7 +45,7 @@ namespace UI
         }
         public Image _BackgroundImage;
         public const string PATH_BACKGROUNDIMAGE = "Background";
-        public Image BackgroundImage
+        public Image backgroundImage
         {
             get
             {
@@ -54,59 +56,52 @@ namespace UI
                 return this._BackgroundImage;
             }
         }
-        public ButtonBlack _LogButtonBlack;
-        public const string PATH_LOGBUTTONBLACK = "LeftButtonGroup/Logs/Log";
-        public ButtonBlack LogButtonBlack
+        public LogPanel _logPanel;
+        public const string PATH_LOGPANEL = "LeftButtonGroup/LogPanel";
+        public LogPanel logPanel
         {
             get
             {
-                if ((this._LogButtonBlack == null))
+                if ((this._logPanel == null))
                 {
-                    this._LogButtonBlack = this.transform.Find(PATH_LOGBUTTONBLACK).GetComponent<ButtonBlack>();
+                    this._logPanel = this.transform.Find(PATH_LOGPANEL).GetComponent<LogPanel>();
                 }
-                return this._LogButtonBlack;
+                return this._logPanel;
             }
         }
-        public LogScrollView _LogScrollView;
-        public const string PATH_LOGSCROLLVIEW = "LeftButtonGroup/Logs/Log/LogScrollView";
-        public LogScrollView LogScrollView
+        public Button _quitButton;
+        public const string PATH_QUITBUTTON = "QuitButton";
+        public Button quitButton
         {
             get
             {
-                if ((this._LogScrollView == null))
+                if ((this._quitButton == null))
                 {
-                    this._LogScrollView = this.transform.Find(PATH_LOGSCROLLVIEW).GetComponent<LogScrollView>();
+                    this._quitButton = this.transform.Find(PATH_QUITBUTTON).GetComponent<Button>();
                 }
-                return this._LogScrollView;
+                return this._quitButton;
             }
         }
-        public ButtonBlack _QuitButtonButtonBlack;
-        public const string PATH_QUITBUTTONBUTTONBLACK = "QuitButton";
-        public ButtonBlack QuitButtonButtonBlack
+        public event Action<Game> onQuitButtonClick;
+        private void QuitButtonClickCallback()
         {
-            get
+            if ((onQuitButtonClick != null))
             {
-                if ((this._QuitButtonButtonBlack == null))
-                {
-                    this._QuitButtonButtonBlack = this.transform.Find(PATH_QUITBUTTONBUTTONBLACK).GetComponent<ButtonBlack>();
-                }
-                return this._QuitButtonButtonBlack;
+                onQuitButtonClick(this);
             }
         }
-        public GameResultDialog _GameResultDialog;
+        public GameResultDialog _gameResultDialog;
         public const string PATH_GAMERESULTDIALOG = "GameResultDialog";
-        public GameResultDialog GameResultDialog
+        public GameResultDialog gameResultDialog
         {
             get
             {
-                if ((this._GameResultDialog == null))
+                if ((this._gameResultDialog == null))
                 {
-                    this._GameResultDialog = this.transform.Find(PATH_GAMERESULTDIALOG).GetComponent<GameResultDialog>();
+                    this._gameResultDialog = this.transform.Find(PATH_GAMERESULTDIALOG).GetComponent<GameResultDialog>();
                 }
-                return this._GameResultDialog;
+                return this._gameResultDialog;
             }
         }
-
-        partial void onAwake();
     }
 }
