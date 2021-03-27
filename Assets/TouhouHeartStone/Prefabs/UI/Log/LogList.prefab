@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 12
     m_Right: 6
-    m_Top: 10
+    m_Top: 0
     m_Bottom: 10
   m_ChildAlignment: 0
   m_Spacing: 2
@@ -591,7 +591,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.3773585, g: 0.17633574, b: 0, a: 0.827451}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
