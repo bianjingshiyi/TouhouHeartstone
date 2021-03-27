@@ -421,6 +421,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6256509991239784210, guid: 9faa770efd931f749906939f01596edb,
         type: 3}
+      propertyPath: m_Padding.m_Top
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6256509991239784210, guid: 9faa770efd931f749906939f01596edb,
+        type: 3}
       propertyPath: m_Padding.m_Left
       value: 6
       objectReference: {fileID: 0}
@@ -428,6 +433,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Padding.m_Right
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6256509991239784210, guid: 9faa770efd931f749906939f01596edb,
+        type: 3}
+      propertyPath: m_Padding.m_Bottom
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6256509991378568680, guid: 9faa770efd931f749906939f01596edb,
         type: 3}
@@ -543,11 +553,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6256509991378568683, guid: 9faa770efd931f749906939f01596edb,
-        type: 3}
-      propertyPath: m_VerticalScrollbarSpacing
-      value: -12
       objectReference: {fileID: 0}
     - target: {fileID: 6256509991976975887, guid: 9faa770efd931f749906939f01596edb,
         type: 3}

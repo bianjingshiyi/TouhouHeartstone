@@ -333,7 +333,7 @@ namespace Game
                     {
                         // string info = describable.toString(game, localPlayer);
                         string info = lang._(
-                            describable.localizeTemplateString(game, localPlayer), 
+                            describable.localizeTemplateString(game, localPlayer),
                             describable.localizeStringArgs(game, localPlayer)
                         );
                         if (info != null)
@@ -351,107 +351,106 @@ namespace Game
         }
         void onEventAfter(IEventArg obj)
         {
-            
-                var item = ui.LogScrollView.LogList.getItems().FirstOrDefault(i => i.getProp("event") == obj);
-                if (item == null)
-                    return;
-                foreach (var parentItem in ui.LogScrollView.LogList.getItems())
+            var item = ui.LogScrollView.LogList.getItems().FirstOrDefault(i => i.getProp("event") == obj);
+            if (item == null)
+                return;
+            foreach (var parentItem in ui.LogScrollView.LogList.getItems())
+            {
+                int depth = 0;
+                if (isChildOf(parentItem.getProp<IEventArg>("event"), item.getProp<IEventArg>("event"), ref depth))
                 {
-                    int depth = 0;
-                    if (isChildOf(parentItem.getProp<IEventArg>("event"), item.getProp<IEventArg>("event"), ref depth))
-                    {
-                        item.rectTransform.setWidth(item.rectTransform.getWidth() + 20 * depth);
-                        break;
-                    }
+                    item.SetLevel(depth);
+                    break;
                 }
-                bool isChildOf(IEventArg parent, IEventArg child, ref int depth)
+            }
+            bool isChildOf(IEventArg parent, IEventArg child, ref int depth)
+            {
+                if (depth > 100)
+                    throw new StackOverflowException();
+                if (child == null)
+                    return false;
+                if (parent == null)
+                    return false;
+                if (child.parent == null)
+                    return false;
+                if (child.parent == parent)
                 {
-                    if (depth > 100)
-                        throw new StackOverflowException();
-                    if (child == null)
-                        return false;
-                    if (parent == null)
-                        return false;
-                    if (child.parent == null)
-                        return false;
-                    if (child.parent == parent)
-                    {
-                        depth++;
-                        return true;
-                    }
-                    else
-                    {
-                        depth++;
-                        return isChildOf(parent, child.parent, ref depth);
-                    }
+                    depth++;
+                    return true;
                 }
-                LayoutRebuilder.ForceRebuildLayoutImmediate(ui.LogScrollView.LogList.rectTransform);
-                ui.LogScrollView.asScrollRect.verticalNormalizedPosition = 0;
-                switch (obj)
+                else
                 {
-                    //case THHPlayer.SetGemEventArg setGem:
-                    //    item.IconImage.sprite = item.gemIcon;
-                    //    item.Text.text = "=>" + setGem.value;
-                    //    item.Image.sprite = getManager<TableManager>().getSkin(game.getDefine<LuckyCoin>()).image;
-                    //    item.BorderImage.color = setGem.player == localPlayer ? item.selfColor : item.oppoColor;
-                    //    break;
-                    //case THHPlayer.SetMaxGemEventArg setMaxGem:
-                    //    item.IconImage.sprite = item.gemIcon;
-                    //    item.Text.text = "=>" + setMaxGem.value;
-                    //    item.Image.sprite = getManager<TableManager>().getSkin(game.getDefine<LuckyCoin>()).image;
-                    //    item.BorderImage.color = setMaxGem.player == localPlayer ? item.selfColor : item.oppoColor;
-                    //    break;
-                    case THHPlayer.DrawEventArg draw:
-                        item.IconImage.sprite = item.drawIcon;
-                        item.Text.text = lang._(GAME_MANAGER_DRAW);
-                        item.Image.sprite = getManager<TableManager>().getSkin(draw.player == localPlayer ? draw.card : draw.player.master).image;
-                        item.BorderImage.sprite = draw.player == localPlayer ? item.selfsprite : item.opposprite;
-                        break;
-                    case THHPlayer.BurnEventArg burn:
+                    depth++;
+                    return isChildOf(parent, child.parent, ref depth);
+                }
+            }
+            LayoutRebuilder.ForceRebuildLayoutImmediate(ui.LogScrollView.LogList.rectTransform);
+            ui.LogScrollView.asScrollRect.verticalNormalizedPosition = 0;
+            switch (obj)
+            {
+                //case THHPlayer.SetGemEventArg setGem:
+                //    item.IconImage.sprite = item.gemIcon;
+                //    item.Text.text = "=>" + setGem.value;
+                //    item.Image.sprite = getManager<TableManager>().getSkin(game.getDefine<LuckyCoin>()).image;
+                //    item.BorderImage.color = setGem.player == localPlayer ? item.selfColor : item.oppoColor;
+                //    break;
+                //case THHPlayer.SetMaxGemEventArg setMaxGem:
+                //    item.IconImage.sprite = item.gemIcon;
+                //    item.Text.text = "=>" + setMaxGem.value;
+                //    item.Image.sprite = getManager<TableManager>().getSkin(game.getDefine<LuckyCoin>()).image;
+                //    item.BorderImage.color = setMaxGem.player == localPlayer ? item.selfColor : item.oppoColor;
+                //    break;
+                case THHPlayer.DrawEventArg draw:
+                    item.IconImage.sprite = item.drawIcon;
+                    item.Text.text = lang._(GAME_MANAGER_DRAW);
+                    item.Image.sprite = getManager<TableManager>().getSkin(draw.player == localPlayer ? draw.card : draw.player.master).image;
+                    item.BorderImage.sprite = draw.player == localPlayer ? item.selfsprite : item.opposprite;
+                    break;
+                case THHPlayer.BurnEventArg burn:
 
-                        item.IconImage.sprite = item.burnIcon;
-                        item.Text.text = lang._(GAME_MANAGER_BURN);
-                        item.Image.sprite = getManager<TableManager>().getSkin(burn.card).image;
-                        item.BorderImage.sprite = burn.player == localPlayer ? item.selfsprite : item.opposprite;
-                        break;
-                    case THHPlayer.FatigueEventArg fatigue:
-                        item.IconImage.sprite = item.fatigueIcon;
-                        item.Text.text = lang._(GAME_MANAGER_FATIGUE);
-                        item.Image.sprite = getManager<TableManager>().getSkin(fatigue.player.master).image;
-                        item.BorderImage.sprite = fatigue.player == localPlayer ? item.selfsprite : item.opposprite;
-                        break;
-                    case THHPlayer.DiscardEventArg discard:
-                        item.IconImage.sprite = item.discardIcon;
-                        item.Text.text = lang._(GAME_MANAGER_DISCARD);
-                        item.Image.sprite = getManager<TableManager>().getSkin(discard.cards[0]).image;
-                        item.BorderImage.sprite = discard.player == localPlayer ? item.selfsprite : item.opposprite;
-                        break;
-                    case THHPlayer.UseEventArg use:
-                        item.IconImage.sprite = item.useIcon;
-                        item.Text.text = lang._(GAME_MANAGER_USE);
-                        item.Image.sprite = use.card.hasKeyword(game, KEYWORD.SECRET) ?
-                            getManager<TableManager>().getSkin(use.card.getOwner().master).image :
-                            getManager<TableManager>().getSkin(use.card).image;
-                        item.BorderImage.sprite = use.player == localPlayer ? item.selfsprite : item.opposprite;
-                        break;
-                    case THHPlayer.CreateTokenEventArg token:
-                        item.IconImage.sprite = item.rebornIcon;
-                        item.Text.text = lang._(GAME_MANAGER_TOKEN);
-                        item.Image.sprite = getManager<TableManager>().getSkin(token.card).image;
-                        item.BorderImage.sprite = token.player == localPlayer ? item.selfsprite : item.opposprite;
-                        break;
-                    case THHPlayer.RebornEventArg reborn:
-                        item.IconImage.sprite = item.rebornIcon;
-                        item.Text.text = lang._(GAME_MANAGER_REBORN);
-                        item.Image.sprite = getManager<TableManager>().getSkin(reborn.card).image;
-                        item.BorderImage.sprite = reborn.player == localPlayer ? item.selfsprite : item.opposprite;
-                        break;
-                    case THHCard.AttackEventArg attack:
-                        item.IconImage.sprite = item.attackIcon;
-                        item.Text.text = lang._(GAME_MANAGER_ATTACK);
-                        item.Image.sprite = getManager<TableManager>().getSkin(attack.card).image;
-                        item.BorderImage.sprite = attack.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
-                        break;
+                    item.IconImage.sprite = item.burnIcon;
+                    item.Text.text = lang._(GAME_MANAGER_BURN);
+                    item.Image.sprite = getManager<TableManager>().getSkin(burn.card).image;
+                    item.BorderImage.sprite = burn.player == localPlayer ? item.selfsprite : item.opposprite;
+                    break;
+                case THHPlayer.FatigueEventArg fatigue:
+                    item.IconImage.sprite = item.fatigueIcon;
+                    item.Text.text = lang._(GAME_MANAGER_FATIGUE);
+                    item.Image.sprite = getManager<TableManager>().getSkin(fatigue.player.master).image;
+                    item.BorderImage.sprite = fatigue.player == localPlayer ? item.selfsprite : item.opposprite;
+                    break;
+                case THHPlayer.DiscardEventArg discard:
+                    item.IconImage.sprite = item.discardIcon;
+                    item.Text.text = lang._(GAME_MANAGER_DISCARD);
+                    item.Image.sprite = getManager<TableManager>().getSkin(discard.cards[0]).image;
+                    item.BorderImage.sprite = discard.player == localPlayer ? item.selfsprite : item.opposprite;
+                    break;
+                case THHPlayer.UseEventArg use:
+                    item.IconImage.sprite = item.useIcon;
+                    item.Text.text = lang._(GAME_MANAGER_USE);
+                    item.Image.sprite = use.card.hasKeyword(game, KEYWORD.SECRET) ?
+                        getManager<TableManager>().getSkin(use.card.getOwner().master).image :
+                        getManager<TableManager>().getSkin(use.card).image;
+                    item.BorderImage.sprite = use.player == localPlayer ? item.selfsprite : item.opposprite;
+                    break;
+                case THHPlayer.CreateTokenEventArg token:
+                    item.IconImage.sprite = item.rebornIcon;
+                    item.Text.text = lang._(GAME_MANAGER_TOKEN);
+                    item.Image.sprite = getManager<TableManager>().getSkin(token.card).image;
+                    item.BorderImage.sprite = token.player == localPlayer ? item.selfsprite : item.opposprite;
+                    break;
+                case THHPlayer.RebornEventArg reborn:
+                    item.IconImage.sprite = item.rebornIcon;
+                    item.Text.text = lang._(GAME_MANAGER_REBORN);
+                    item.Image.sprite = getManager<TableManager>().getSkin(reborn.card).image;
+                    item.BorderImage.sprite = reborn.player == localPlayer ? item.selfsprite : item.opposprite;
+                    break;
+                case THHCard.AttackEventArg attack:
+                    item.IconImage.sprite = item.attackIcon;
+                    item.Text.text = lang._(GAME_MANAGER_ATTACK);
+                    item.Image.sprite = getManager<TableManager>().getSkin(attack.card).image;
+                    item.BorderImage.sprite = attack.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
+                    break;
                 case THHCard.DamageEventArg damage:
                     item.IconImage.sprite = item.damageIcon;
                     item.Text.text = "-" + damage.infoDic.First().Value.damagedValue;
@@ -477,22 +476,22 @@ namespace Game
                 //    item.BorderImage.color = silence.cards[0].getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                 //    break;
                 case THHCard.SecretTriggerEventArg secret:
-                        item.IconImage.sprite = item.secretIcon;
-                        item.Text.text = lang._(GAME_MANAGER_SECRET);
-                        item.Image.sprite = getManager<TableManager>().getSkin(secret.card).image;
-                        item.BorderImage.sprite = secret.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
-                        break;
-                    case THHCard.DeathEventArg death:
-                        item.IconImage.sprite = item.deathIcon;
-                        item.Text.text = lang._(GAME_MANAGER_DEATH);
-                        item.Image.sprite = getManager<TableManager>().getSkin(death.infoDic.First().Key).image;
-                        item.BorderImage.sprite = death.infoDic.First().Key.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
-                        break;
-                    default:
-                        break;
-                }
-            
-            
+                    item.IconImage.sprite = item.secretIcon;
+                    item.Text.text = lang._(GAME_MANAGER_SECRET);
+                    item.Image.sprite = getManager<TableManager>().getSkin(secret.card).image;
+                    item.BorderImage.sprite = secret.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
+                    break;
+                case THHCard.DeathEventArg death:
+                    item.IconImage.sprite = item.deathIcon;
+                    item.Text.text = lang._(GAME_MANAGER_DEATH);
+                    item.Image.sprite = getManager<TableManager>().getSkin(death.infoDic.First().Key).image;
+                    item.BorderImage.sprite = death.infoDic.First().Key.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
+                    break;
+                default:
+                    break;
+            }
+
+
         }
         [TranslateMsg]
         private const string GAME_MANAGER_DEATH = "死亡";
@@ -551,7 +550,7 @@ namespace Game
                         targetItem.Card.setCard(target.define as CardDefine, getManager<CardManager>().getSkin(target as Card));
                     }
                     ui.LogScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(true);
-                } 
+                }
                 else
                 {
                     ui.LogScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(false);

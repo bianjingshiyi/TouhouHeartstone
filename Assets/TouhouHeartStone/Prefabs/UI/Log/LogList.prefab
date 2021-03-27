@@ -532,6 +532,7 @@ MonoBehaviour:
   _secretIcon: {fileID: 21300000, guid: cca9ca156bf61e445b872555e11ba23e, type: 3}
   _deathIcon: {fileID: 21300000, guid: ea48f42d704ced14b89d95cf206a788f, type: 3}
   _isHovered: 0
+  content: {fileID: 4514938058074507143}
 --- !u!1 &4514938058591415649
 GameObject:
   m_ObjectHideFlags: 0

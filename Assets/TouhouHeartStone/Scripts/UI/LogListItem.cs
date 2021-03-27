@@ -136,6 +136,10 @@ namespace UI
         {
             get { return _isHovered; }
         }
+
+        [SerializeField]
+        RectTransform content;
+
         public ActionEvent<LogListItem> onPointerEnter { get; } = new ActionEvent<LogListItem>();
         public ActionEvent<LogListItem> onPointerExit { get; } = new ActionEvent<LogListItem>();
         protected void Update()
@@ -156,6 +160,13 @@ namespace UI
                     onPointerExit.invoke(this);
                 }
             }
+        }
+
+        public void SetLevel(int lvl)
+        {
+            var min = content.offsetMin;
+            min.x = lvl * 20;
+            content.offsetMin = min;
         }
     }
 }
