@@ -550,6 +550,11 @@ namespace Game
                         var targetItem = ui.LogScrollView.LogInfoHorizantal.TargetGridList.addItem();
                         targetItem.Card.setCard(target.define as CardDefine, getManager<CardManager>().getSkin(target as Card));
                     }
+                    ui.LogScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(true);
+                } 
+                else
+                {
+                    ui.LogScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(false);
                 }
                 LayoutRebuilder.ForceRebuildLayoutImmediate(ui.LogScrollView.LogInfoHorizantal.TargetGridList.rectTransform);
                 LayoutRebuilder.ForceRebuildLayoutImmediate(ui.LogScrollView.LogInfoHorizantal.LogInfoVerticalVerticalLayoutGroup.GetComponent<RectTransform>());
