@@ -8803,6 +8803,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7072975924307965986, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: m_VerticalScrollbarSpacing
+      value: -14
+      objectReference: {fileID: 0}
     - target: {fileID: 7072975924649186001, guid: 83c0b33294cc7ac4295dbe5157864e9d,
         type: 3}
       propertyPath: m_AnchorMax.y

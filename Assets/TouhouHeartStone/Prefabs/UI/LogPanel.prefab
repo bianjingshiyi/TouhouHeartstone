@@ -849,6 +849,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8081680233804709051, guid: f85d347e47e809640b67ef5a900aaae4,
         type: 3}
+      propertyPath: m_Transition
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8081680233804709051, guid: f85d347e47e809640b67ef5a900aaae4,
+        type: 3}
+      propertyPath: m_SpriteState.m_PressedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4d7d151553abb064abf8c28644bf2fd2,
+        type: 3}
+    - target: {fileID: 8081680233804709051, guid: f85d347e47e809640b67ef5a900aaae4,
+        type: 3}
+      propertyPath: m_SpriteState.m_DisabledSprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8081680233804709051, guid: f85d347e47e809640b67ef5a900aaae4,
+        type: 3}
+      propertyPath: m_SpriteState.m_HighlightedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4d7d151553abb064abf8c28644bf2fd2,
+        type: 3}
+    - target: {fileID: 8081680233804709051, guid: f85d347e47e809640b67ef5a900aaae4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
