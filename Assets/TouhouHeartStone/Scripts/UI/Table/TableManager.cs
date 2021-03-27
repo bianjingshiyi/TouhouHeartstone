@@ -356,11 +356,11 @@ namespace Game
             }
         }
 
-    /// <summary>
-    /// 删除强制退出过程之中产生的揭示动画
-    /// </summary>
-    /// <param name="master"></param>
-    public void DestroyInvokeCard()
+        /// <summary>
+        /// 删除强制退出过程之中产生的揭示动画
+        /// </summary>
+        /// <param name="master"></param>
+        public void DestroyInvokeCard()
         {
             Transform[] Cards = this.ui.InvokeDisPlayRectTransform.GetComponentsInChildren<Transform>();
             for (int i = 1; i < this.ui.InvokeDisPlayRectTransform.GetComponentsInChildren<Transform>().Count(); i++)
@@ -374,18 +374,18 @@ namespace Game
         /// </summary>
         /// <param name="master"></param>
 
-    public void initMaster(Master master)
+        public void initMaster(Master master)
         {
             master.onClick.add(onClickMaster);
             master.Head.clearSecret();
             master.LifePropNumber.WhiteText.invokeBeforeAnim();
-            master.asAnimator.SetBool("isShackle",false);
+            master.asAnimator.SetBool("isShackle", false);
             master.onCanAttackFalse.invokeBeforeAnim();
             master.HighlightImage.hide();
             master.AttackPropNumber.hide();
-            master.asAnimator.SetBool("hasArmor",false);
+            master.asAnimator.SetBool("hasArmor", false);
             master.HealImage.hide();
-            master.Image.color = new Color(1,1,1,1);
+            master.Image.color = new Color(1, 1, 1, 1);
             ResetPos(master);
             master.rectTransform.localScale = new Vector3(1, 1, 1);
         }
@@ -393,7 +393,7 @@ namespace Game
         /// 用于重置非正常退出后的英雄位置
         /// </summary>
         /// <param name="ReMaster"></param>
-    public void ResetPos(Master ReMaster)
+        public void ResetPos(Master ReMaster)
         {
             ReMaster.GetComponentInChildren<PositionLerp>()._time = 0.0f;
             ReMaster.GetComponentInChildren<PositionLerp>().enabled = false;
@@ -468,7 +468,7 @@ namespace Game
                 master.onDrag.add(onDragMaster);
                 master.onDragEnd.add(onDragEndMaster);
             }
-            else if(game.currentPlayer == player)
+            else if (game.currentPlayer == player)
             {
                 // master.HighlightController = Master.Highlight.None;
                 master.onCanAttackFalse.invokeBeforeAnim();
@@ -495,7 +495,7 @@ namespace Game
         }
 
         public Item GetRelatedItem(Card card) => card.owner == game.currentPlayer ? ui.SelfItem : ui.EnemyItem;
-        
+
 
         public bool tryGetItem(Card card, out Item item)
         {
@@ -530,7 +530,7 @@ namespace Game
             item.display();
             CardSkinData skin = getSkin(card);
             item.Image.sprite = skin.image;
-            
+
         }
         private void onItemPointerExit(Item item, PointerEventData pointer)
         {
@@ -990,7 +990,7 @@ namespace Game
 
         public UI.Card createInvokeCard(Card card, Vector3 position, float height = -1, bool isFaceUp = true)
         {
-            var ui = Instantiate(cardPrefab, position, Quaternion.identity,this.ui.InvokeDisPlayRectTransform);
+            var ui = Instantiate(cardPrefab, position, Quaternion.identity, this.ui.InvokeDisPlayRectTransform);
             setCard(ui, card, isFaceUp);
             if (height < 0)
                 return ui;
@@ -1589,7 +1589,10 @@ namespace Game
         public void displayDiscoverDialog(int[] cardIdArray, string title)
         {
             ui.Discover.display();
-            ui.Discover.Text.text = title;
+            if (string.IsNullOrEmpty(title))
+                ui.Discover.Text.text = StringTable.HINT_SELECT_A_CARD;
+            else
+                ui.Discover.Text.text = title;
             LayoutRebuilder.ForceRebuildLayoutImmediate(ui.Discover.Text.rectTransform);
             ui.Discover.HoriCardList.clearItems();
             foreach (var cardId in cardIdArray)

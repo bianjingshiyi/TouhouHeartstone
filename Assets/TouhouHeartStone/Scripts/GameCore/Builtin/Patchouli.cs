@@ -181,7 +181,7 @@ namespace TouhouHeartstone.Builtin
             {
                 c1.damage(g1,c1,1);
                 return c1.getOwner().addRandomCardToHand(g1,g1.getDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
-                
+
             }),
             new ItemTrigggerEffectBefore<THHGame.TurnEndEventArg>((g1,c1,a1)=>
             {
@@ -353,7 +353,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            var discovered = await card.getOwner().discover(game, card.getOwner().grave.Where(c => c.isSpell()));
+            var discovered = await card.getOwner().discover(game, card.getOwner().grave.Where(c => c.isSpell()), title: "选择一张墓地中的法术加入手牌");
             if (!card.getOwner().hand.isFull)
             {
                 await card.getOwner().grave.moveTo(game, discovered, card.getOwner().hand);
@@ -431,9 +431,9 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            var discovered = await card.getOwner().discover(game, card.getOwner().deck,5,"查询图书");
+            var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5, "查询图书");
             await card.getOwner().draw(game, discovered);
-           
+
         }
     }
     /// <summary>
@@ -471,7 +471,7 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 2; i++)
             {
-                var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5,"搜寻知识");
+                var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5, "搜寻知识");
                 await card.getOwner().draw(game, discovered);
             }
         }

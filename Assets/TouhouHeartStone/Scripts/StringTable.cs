@@ -18,5 +18,7 @@ namespace Game
         public const string INVALID_DOWNLOAD_URL = "发现了更新版本的游戏，但无法获取下载链接。请访问官网手动更新游戏。";
         [TranslateMsg]
         public const string HINT_TITLE = "提示";
+        [TranslateMsg("在发现界面提示玩家选择一张卡牌")]
+        public const string HINT_SELECT_A_CARD = "选择一张卡牌";
     }
 }

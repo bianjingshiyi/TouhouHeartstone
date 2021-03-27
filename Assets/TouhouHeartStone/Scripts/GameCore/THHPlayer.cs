@@ -527,7 +527,7 @@ namespace TouhouHeartstone
             }
             object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
             {
-                return new object[] { 
+                return new object[] {
                     player.name,
                     card?.getFormatString(),
                     string.Join("，", targets?.Select(c => "{card:" + c.define.id + "}"))
@@ -647,7 +647,7 @@ namespace TouhouHeartstone
             }
             object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
             {
-                return new object[] { 
+                return new object[] {
                     player.name,
                     card.getFormatString(),
                     position
@@ -1048,7 +1048,7 @@ namespace TouhouHeartstone
             }
             object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
             {
-                return new object[] { 
+                return new object[] {
                     player.name,
                     card?.getFormatString()
                 };

@@ -1733,16 +1733,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6254713322776656598, guid: 366ec6071395d3642b865f8d720ef7aa,
         type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6254713322776656598, guid: 366ec6071395d3642b865f8d720ef7aa,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6254713322776656598, guid: 366ec6071395d3642b865f8d720ef7aa,
-        type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
