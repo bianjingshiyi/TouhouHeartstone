@@ -90,10 +90,32 @@ MonoBehaviour:
   _initStates: []
   onPageOpen:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: PlayList
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Game
+          m_BoolArgument: 0
+        m_CallState: 2
   onPageClose:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: PlayList
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Menu
+          m_BoolArgument: 0
+        m_CallState: 2
   _Table: {fileID: 0}
   _BackgroundImage: {fileID: 0}
   _logPanel: {fileID: 0}
@@ -1534,6 +1556,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7072975925692672795}
     m_Modifications:
+    - target: {fileID: 190189879500933343, guid: 366ec6071395d3642b865f8d720ef7aa,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1050719291125461181, guid: 366ec6071395d3642b865f8d720ef7aa,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -62
+      objectReference: {fileID: 0}
     - target: {fileID: 1167370619401575811, guid: 366ec6071395d3642b865f8d720ef7aa,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -1592,12 +1624,12 @@ PrefabInstance:
     - target: {fileID: 2941163242520569031, guid: 366ec6071395d3642b865f8d720ef7aa,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 344
+      value: 433.6446
       objectReference: {fileID: 0}
     - target: {fileID: 2941163242520569031, guid: 366ec6071395d3642b865f8d720ef7aa,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 776
+      value: 840.28723
       objectReference: {fileID: 0}
     - target: {fileID: 2941163242520569031, guid: 366ec6071395d3642b865f8d720ef7aa,
         type: 3}
@@ -1642,7 +1674,7 @@ PrefabInstance:
     - target: {fileID: 2941163242520569031, guid: 366ec6071395d3642b865f8d720ef7aa,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 32.2
       objectReference: {fileID: 0}
     - target: {fileID: 2941163242520569031, guid: 366ec6071395d3642b865f8d720ef7aa,
         type: 3}
@@ -1748,6 +1780,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6254713323263022027, guid: 366ec6071395d3642b865f8d720ef7aa,
+        type: 3}
+      propertyPath: m_Padding.m_Top
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6254713323263022027, guid: 366ec6071395d3642b865f8d720ef7aa,
+        type: 3}
+      propertyPath: m_Padding.m_Left
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6254713323392336177, guid: 366ec6071395d3642b865f8d720ef7aa,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -210.82335
+      objectReference: {fileID: 0}
+    - target: {fileID: 6254713323392336177, guid: 366ec6071395d3642b865f8d720ef7aa,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -94.75946
+      objectReference: {fileID: 0}
+    - target: {fileID: 6254713323392336177, guid: 366ec6071395d3642b865f8d720ef7aa,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -10.100006
+      objectReference: {fileID: 0}
+    - target: {fileID: 6254713323392336177, guid: 366ec6071395d3642b865f8d720ef7aa,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6254713323392336178, guid: 366ec6071395d3642b865f8d720ef7aa,
+        type: 3}
+      propertyPath: m_VerticalScrollbarSpacing
+      value: -14
       objectReference: {fileID: 0}
     - target: {fileID: 6282801708467830100, guid: 366ec6071395d3642b865f8d720ef7aa,
         type: 3}
