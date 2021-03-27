@@ -468,7 +468,7 @@ namespace Game
                 master.onDrag.add(onDragMaster);
                 master.onDragEnd.add(onDragEndMaster);
             }
-            else
+            else if(game.currentPlayer == player)
             {
                 // master.HighlightController = Master.Highlight.None;
                 master.onCanAttackFalse.invokeBeforeAnim();
