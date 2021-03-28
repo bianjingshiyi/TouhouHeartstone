@@ -317,10 +317,10 @@ namespace Game
                 case THHPlayer.CreateTokenEventArg _:
                 case THHPlayer.RebornEventArg _:
                 case THHCard.AttackEventArg _:
-                //case THHCard.DamageEventArg _:
-                //case THHCard.SetArmorEventArg _:
-                //case THHCard.HealEventArg _:
-                //case THHCard.SilenceEventArg _:
+                case THHCard.DamageEventArg _:
+                case THHCard.SetArmorEventArg _:
+                case THHCard.HealEventArg _:
+                case THHCard.SilenceEventArg _:
                 case THHCard.DeathEventArg _:
                 case THHCard.SecretTriggerEventArg _:
                     var item = ui.LogScrollView.LogList.addItem();
@@ -469,12 +469,12 @@ namespace Game
                     item.Image.sprite = getManager<TableManager>().getSkin(heal.infoDic.First().Key).image;
                     item.BorderImage.sprite = heal.infoDic.First().Key.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
-                //case THHCard.SilenceEventArg silence:
-                //    item.IconImage.sprite = item.healIcon;
-                //    item.Text.text = lang._(GAME_MANAGER_SILENCE);
-                //    item.Image.sprite = getManager<TableManager>().getSkin(silence.cards[0]).image;
-                //    item.BorderImage.color = silence.cards[0].getOwner() == localPlayer ? item.selfColor : item.oppoColor;
-                //    break;
+                case THHCard.SilenceEventArg silence:
+                    item.IconImage.sprite = item.healIcon;
+                    item.Text.text = lang._(GAME_MANAGER_SILENCE);
+                    item.Image.sprite = getManager<TableManager>().getSkin(silence.cards[0]).image;
+                    item.BorderImage.color = silence.cards[0].getOwner() == localPlayer ? item.selfColor : item.oppoColor;
+                    break;
                 case THHCard.SecretTriggerEventArg secret:
                     item.IconImage.sprite = item.secretIcon;
                     item.Text.text = lang._(GAME_MANAGER_SECRET);

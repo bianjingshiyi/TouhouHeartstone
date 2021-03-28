@@ -29,8 +29,6 @@ namespace UI
             this.m_as_ScrollRect = this.GetComponent<ScrollRect>();
             this._ViewportMask = this.transform.Find("Viewport").GetComponent<Mask>();
             this._LogList = this.transform.Find("Viewport").Find("LogList").GetComponent<LogList>();
-            this._ScrollbarHorizontal = this.transform.Find("ScrollbarHorizontal").GetComponent<ScrollbarHorizontal>();
-            this._ScrollbarVertical = this.transform.Find("ScrollbarVertical").GetComponent<ScrollbarVertical>();
             this._LogInfoHorizantal = this.transform.Find("LogInfoHorizantal").GetComponent<LogInfoHorizantal>();
         }
         [SerializeField()]
@@ -83,32 +81,6 @@ namespace UI
                     this._LogList = this.transform.Find("Viewport").Find("LogList").GetComponent<LogList>();
                 }
                 return this._LogList;
-            }
-        }
-        [SerializeField()]
-        private ScrollbarHorizontal _ScrollbarHorizontal;
-        public ScrollbarHorizontal ScrollbarHorizontal
-        {
-            get
-            {
-                if ((this._ScrollbarHorizontal == null))
-                {
-                    this._ScrollbarHorizontal = this.transform.Find("ScrollbarHorizontal").GetComponent<ScrollbarHorizontal>();
-                }
-                return this._ScrollbarHorizontal;
-            }
-        }
-        [SerializeField()]
-        private ScrollbarVertical _ScrollbarVertical;
-        public ScrollbarVertical ScrollbarVertical
-        {
-            get
-            {
-                if ((this._ScrollbarVertical == null))
-                {
-                    this._ScrollbarVertical = this.transform.Find("ScrollbarVertical").GetComponent<ScrollbarVertical>();
-                }
-                return this._ScrollbarVertical;
             }
         }
         [SerializeField()]
