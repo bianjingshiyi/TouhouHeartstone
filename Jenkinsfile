@@ -42,13 +42,20 @@ pipeline {
                     env.GIT_PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_COMMIT
                     env.GIT_COMMIT = scmVars.GIT_COMMIT
                     echo "${GIT_COMMIT} to ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
+
+                    // 更新翻译
+                    sh label: 'Pulling Latest Translation', script: '''cd ExternalData/i18n
+                        git checkout master
+                        git pull
+                        cd ../../
+                    '''
                     
                     // 设置构建版本
                     def gitTag = sh label: '', returnStdout: true, script: 'git describe --always'
                     env.BUILD_GIT_TAG = gitTag.trim()
 
-                    // 清理过期
-                    sh 'rm -rf Build/*'
+                    // 清理过期构建
+                    sh label: 'Clean Build Folder', script: 'rm -rf Build/*'
                 }
             }
         }
