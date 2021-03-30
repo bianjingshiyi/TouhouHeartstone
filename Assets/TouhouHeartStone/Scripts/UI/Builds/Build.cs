@@ -491,6 +491,7 @@ namespace UI
 
             reloadDeckList();
             loadCardList();
+            reloadCardList();
 
             HintMessageText.gameObject.SetActive(false);
         }

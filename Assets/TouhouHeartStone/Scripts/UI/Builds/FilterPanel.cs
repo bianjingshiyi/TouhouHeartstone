@@ -104,10 +104,9 @@ namespace UI
             && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null).Select(d => d.id).ToArray();
 
             // 添加中立卡的过滤
-            allCharacters = allCharacters.Append(CATEGORY.CHARACTER_NEUTRAL).ToArray();
+            allCharacters = allCharacters.Prepend(CATEGORY.CHARACTER_NEUTRAL).ToArray();
 
             DropdownCharacterDropdownLight.asDropdown.options.Clear();
-            DropdownCharacterDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(langManager._(FILTER_TYPE_ALL)));
             for (int i = 0; i < allCharacters.Length; i++)
             {
                 var id = allCharacters[i];
@@ -144,11 +143,8 @@ namespace UI
             }
 
             // 过滤角色
-            if (filterCharacter != 0)
-            {
-                if (cd.getCharacterID() != allCharacters?[filterCharacter - 1])
-                    return false;
-            }
+            if (cd.getCharacterID() != allCharacters?[filterCharacter])
+                return false;
 
             // 过滤名字
             if (!string.IsNullOrEmpty(filterKeyword))
