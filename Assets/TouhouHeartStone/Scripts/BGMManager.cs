@@ -76,6 +76,12 @@ namespace Game
 
         private void playList(BGMList item)
         {
+            if (currentList?.name == item.name)
+            {
+                Debug.Log($"The list ({item.name}) is now playing");
+                return;
+            }
+
             if (item.shuffle == true)
                 item.Randomize();
             currentList = item;

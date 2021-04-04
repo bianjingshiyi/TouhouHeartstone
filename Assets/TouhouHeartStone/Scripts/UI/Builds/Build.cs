@@ -171,11 +171,11 @@ namespace UI
                 reloadDeckList();
                 deckEnterEditMode((int)deckID);
             }
-            catch (FormatException e)
+            catch (FormatException)
             {
                 UIDialog.ShowConfirm(lang._(ERROR_TITLE), lang._(PILE_CODE_INCOMPLETE), null);
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 UIDialog.ShowConfirm(lang._(ERROR_TITLE), lang._(PILE_CODE_CORRUPTED), null);
             }
@@ -212,7 +212,7 @@ namespace UI
         {
             BackButtonBlack.asButton.onClick.AddListener(onBackBtnClick);
 
-            FilterPanel.onFilterConditionChange += reloadCardList;
+            FilterPanel.onFilterConditionChange += loadCardList;
             FilterPanel.onSortChange += onSortChange;
 
             EditingDeckDeckListItem.onDeckRename += onDeckRename;
@@ -334,11 +334,9 @@ namespace UI
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        int sortCompareMethod(BuildCardListItem a, BuildCardListItem b)
+        int sortCompareMethod(BuildCardViewData a, BuildCardViewData b)
         {
-            var ca = getCardItem(a);
-            var cb = getCardItem(b);
-            return FilterPanel.sortCompareMethod(ca.define, cb.define);
+            return FilterPanel.sortCompareMethod(a.define, b.define);
         }
 
         /// <summary>
@@ -346,7 +344,8 @@ namespace UI
         /// </summary>
         private void onSortChange()
         {
-            BuildCardList.sortItems(sortCompareMethod);
+            displayedCardList.Sort(sortCompareMethod);
+            BuildCardList.SetList(displayedCardList.ToArray());
         }
 
         private void OnEnable()
@@ -456,28 +455,7 @@ namespace UI
                 return false;
         }
 
-        struct CardItem
-        {
-            public CardDefine define;
-            public CardSkinData skin;
-            public BuildCardListItem buildItem;
-        }
-
-        List<CardItem> cardItemList = new List<CardItem>();
-
-        private CardItem getCardItem(BuildCardListItem a)
-        {
-            return cardItemList.Where(c => c.buildItem == a).FirstOrDefault();
-        }
-        private CardItem getCardItem(CardDefine a)
-        {
-            return GetCardItem(a.id);
-        }
-        private CardItem GetCardItem(int cardID)
-        {
-            return cardItemList.Where(c => c.define.id == cardID).FirstOrDefault();
-        }
-
+        List<BuildCardViewData> displayedCardList = new List<BuildCardViewData>();
         /// <summary>
         /// 所有可用的卡
         /// </summary>
@@ -491,7 +469,6 @@ namespace UI
 
             reloadDeckList();
             loadCardList();
-            reloadCardList();
 
             HintMessageText.gameObject.SetActive(false);
         }
@@ -527,7 +504,7 @@ namespace UI
         }
 
         /// <summary>
-        /// 更新列表
+        /// 更新当前正在编辑的卡组的卡片列表
         /// </summary>
         void updateUIDeckCardsList()
         {
@@ -574,12 +551,11 @@ namespace UI
         }
 
         /// <summary>
-        /// 加载所有卡
+        /// 加载所有卡，并应用过滤器和排序
         /// </summary>
         void loadCardList()
         {
-            BuildCardList.clearItems();
-            cardItemList.Clear();
+            displayedCardList.Clear();
 
             foreach (CardDefine card in
                 avaliableCards.Where(
@@ -589,38 +565,23 @@ namespace UI
             {
                 if (ui.getManager<CardManager>().tryGetSkin(card.id, out var skin))
                 {
-                    var item = BuildCardList.addItem();
-                    item.setRemainText(0, card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
-                    cardItemList.Add(new CardItem() { buildItem = item, define = card, skin = skin });
-                    item.Card.setCard(card, skin);
+                    if (FilterPanel.cardFilter(card, skin))
+                    {
+                        displayedCardList.Add(new BuildCardViewData()
+                        {
+                            define = card,
+                            skin = skin,
+                            useCount = 0,
+                            maxCount = card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2
+                        });
+                    }
                 }
                 else
                     UberDebug.LogErrorChannel("UI", "无法找到" + card + "的皮肤");
             }
 
-            BuildCardList.sortItems(sortCompareMethod);
-        }
-
-        /// <summary>
-        /// 重载卡片列表
-        /// </summary>
-        private void reloadCardList()
-        {
-            foreach (var item in cardItemList)
-            {
-                if (item.buildItem != null)
-                {
-                    item.buildItem.gameObject.SetActive(FilterPanel.cardFilter(item.define, item.skin));
-                    item.buildItem.Card.isFaceup = true; // Animator默认状态是false，重置之后得还原
-                    item.buildItem.Card.setCard(item.define, item.skin);
-                }
-                else
-                {
-                    Debug.LogWarning($"{item}.buildItem does not exists.");
-                }
-            }
-
-            onSortChange(); // 更新排序
+            onSortChange();
+            updateCardRemainText();
         }
 
         /// <summary>
@@ -628,10 +589,30 @@ namespace UI
         /// </summary>
         void updateCardRemainText()
         {
-            foreach (var card in cardItemList)
+            for (int i = 0; i < displayedCardList.Count; i++)
             {
-                var cardCount = currentDeckCards.Where(i => i == card.define.id).Count();
-                card.buildItem.setRemainText(cardCount, card.define.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
+                var card = displayedCardList[i];
+                var cardCount = currentDeckCards.Where(id => id == card.define.id).Count();
+                card.useCount = cardCount;
+                displayedCardList[i] = card;
+                BuildCardList.SetContent(i, card);
+            }
+        }
+
+        /// <summary>
+        /// 更新卡片剩余数量文本
+        /// </summary>
+        private void updateCardRemainTextAt(int cardID, int count)
+        {
+            for (int i = 0; i < displayedCardList.Count; i++)
+            {
+                var card = displayedCardList[i];
+                if (card.define.id == cardID)
+                {
+                    card.useCount = count;
+                    displayedCardList[i] = card;
+                    BuildCardList.SetContent(i, card);
+                }
             }
         }
 
@@ -643,7 +624,8 @@ namespace UI
 
         public void onDragCardItem(BuildCardListItem item, PointerEventData pointer)
         {
-            onDragItem(getCardItem(item).define, pointer.position);
+            var cd = avaliableCards.Where(i => i.id == item.CardID).FirstOrDefault();
+            onDragItem(cd, pointer.position);
         }
         public void onDragDeckItem(BuildDeckListItem item, PointerEventData pointer)
         {
@@ -673,7 +655,7 @@ namespace UI
 
                 // 更新可用信息
                 var cardCount = currentDeckCards.Where(i => i == item.card.id).Count();
-                getCardItem(item.card).buildItem.setRemainText(cardCount, item.card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
+                updateCardRemainTextAt(item.card.id, cardCount);
 
                 // 更新UI
                 if (item.count < 1)
@@ -758,7 +740,7 @@ namespace UI
             cardCount = currentDeckCards.Where(i => i == card.id).Count();
 
             // 更新可用信息
-            getCardItem(card).buildItem.setRemainText(cardCount, card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2);
+            updateCardRemainTextAt(card.id, cardCount);
 
             // 标记为已经修改
             onDeckCardChange();
@@ -777,6 +759,7 @@ namespace UI
                 newItem.update(DragCard.BuildDeckListItem.card, ui.getManager<CardManager>().getSkin(DragCard.BuildDeckListItem.card.id), 1);
                 deckItem = newItem;
             }
+            
             BuildDeckList.sortItems((a, b) =>
             {
                 if (a.card.getCost() != b.card.getCost())
@@ -866,9 +849,9 @@ namespace UI
                         dm.AddCard(id, cards[i]);
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-
+                    Debug.LogWarning(e);
                 }
             }
         }
