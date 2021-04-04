@@ -97,7 +97,8 @@ namespace UI
             for (int i = 0; i < list.Length; i++)
                 cardVList.addItem();
 
-            cardVList.ReloadViewportElements();
+            // cardVList.ReloadViewportElements();
+            cardVList.reset();
         }
 
         public void SetContent(int index, BuildCardViewData d)
