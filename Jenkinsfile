@@ -200,7 +200,10 @@ pipeline {
 
                 writeFile encoding: 'UTF-8', file: 'Build/_html/index.html', text: log
                 writeFile encoding: 'UTF-8', file: "Build/_html/${BUILD_NUMBER}.html", text: log
-                sh script: "cat ${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_NUMBER}/log >> Build/_html/${BUILD_NUMBER}.log"
+                
+                String buildLog = currentBuild.rawBuild.getLogText()
+                writeFile encoding: 'UTF-8', file: "Build/_html/${BUILD_NUMBER}.log", text: buildLog
+
                 sshPublisher(
                     publishers: [
                         sshPublisherDesc(
