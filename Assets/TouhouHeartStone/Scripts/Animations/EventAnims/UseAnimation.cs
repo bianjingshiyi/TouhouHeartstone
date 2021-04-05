@@ -64,6 +64,14 @@ namespace Game
                     var hand = table.getHand(eventArg.card);
                     if (hand == null && _moveAnim == null)
                         throw new ActorNotFoundException(eventArg.card);
+                    if (hand != null)
+                    {
+                        table.setCard(hand.Card, eventArg.card, true);
+                        hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.LeftDisplayImage.rectTransform);
+                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator, time))
+                            return false;
+                        table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
+                    }
                     if (_moveAnim == null)
                         _moveAnim = new HandToFieldAnim(table, hand, table.ui.EnemyFieldList, eventArg.position);
                     if (hand != null && !_moveAnim.update(table, time))
