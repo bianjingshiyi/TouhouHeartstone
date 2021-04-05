@@ -344,7 +344,7 @@ namespace UI
         /// </summary>
         private void onSortChange()
         {
-            displayedCardList.Sort(sortCompareMethod);
+            Array.Sort(displayedCardList, sortCompareMethod);
             BuildCardList.SetList(displayedCardList.ToArray());
         }
 
@@ -455,7 +455,7 @@ namespace UI
                 return false;
         }
 
-        List<BuildCardViewData> displayedCardList = new List<BuildCardViewData>();
+        BuildCardViewData[] displayedCardList = new BuildCardViewData[0];
         /// <summary>
         /// 所有可用的卡
         /// </summary>
@@ -555,7 +555,7 @@ namespace UI
         /// </summary>
         void loadCardList()
         {
-            displayedCardList.Clear();
+            var list = new List<BuildCardViewData>();
 
             foreach (CardDefine card in
                 avaliableCards.Where(
@@ -567,7 +567,7 @@ namespace UI
                 {
                     if (FilterPanel.cardFilter(card, skin))
                     {
-                        displayedCardList.Add(new BuildCardViewData()
+                        list.Add(new BuildCardViewData()
                         {
                             define = card,
                             skin = skin,
@@ -580,6 +580,8 @@ namespace UI
                     UberDebug.LogErrorChannel("UI", "无法找到" + card + "的皮肤");
             }
 
+            displayedCardList = list.ToArray();
+
             onSortChange();
             updateCardRemainText();
         }
@@ -589,14 +591,12 @@ namespace UI
         /// </summary>
         void updateCardRemainText()
         {
-            for (int i = 0; i < displayedCardList.Count; i++)
+            for (int i = 0; i < displayedCardList.Length; i++)
             {
                 var card = displayedCardList[i];
-                var cardCount = currentDeckCards.Where(id => id == card.define.id).Count();
-                card.useCount = cardCount;
-                displayedCardList[i] = card;
-                BuildCardList.SetContent(i, card);
+                displayedCardList[i].useCount = currentDeckCards.Where(id => id == card.define.id).Count();
             }
+            BuildCardList.SetList(displayedCardList);
         }
 
         /// <summary>
@@ -604,16 +604,15 @@ namespace UI
         /// </summary>
         private void updateCardRemainTextAt(int cardID, int count)
         {
-            for (int i = 0; i < displayedCardList.Count; i++)
+            for (int i = 0; i < displayedCardList.Length; i++)
             {
                 var card = displayedCardList[i];
                 if (card.define.id == cardID)
                 {
-                    card.useCount = count;
-                    displayedCardList[i] = card;
-                    BuildCardList.SetContent(i, card);
+                    displayedCardList[i].useCount = count;
                 }
             }
+            BuildCardList.SetList(displayedCardList.ToArray());
         }
 
         void onDeckCardChange()

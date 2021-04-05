@@ -33,7 +33,7 @@ namespace UI
             {
                 Build build = GetComponentInParent<Build>();
                 build.onDragCardItem(this, eventData);
-            } 
+            }
             else
             {
                 GetComponentInParent<ScrollRect>()?.SendMessage("OnDrag", eventData, SendMessageOptions.DontRequireReceiver);
@@ -85,37 +85,35 @@ namespace UI
         {
             cardVList = new VirtualList<BuildCardListItem>(addItem, asGridLayoutGroup);
             cardVList.onDisplayUIObj += setItemArgs;
-            cardVList.reset();
         }
 
         BuildCardViewData[] listData;
 
         public void SetList(BuildCardViewData[] list)
         {
+            cardVList.reset();
             listData = list;
             cardVList.TotalDataCount = list.Length;
 
             for (int i = 0; i < list.Length; i++)
                 cardVList.addItem();
-
-            cardVList.ReloadViewportElements();
         }
 
-        private void OnEnable()
-        {
-            cardVList.reset();
-        }
-
+        [Obsolete("Use SetList Instead")]
         public void SetContent(int index, BuildCardViewData d)
         {
             listData[index] = d;
-            cardVList.ReloadElementAt(index);
+            SetList(listData);
         }
 
         private void setItemArgs(int index, BuildCardListItem item)
         {
-            if (index < 0 || index >= listData.Length) return;
             item.SetCardData(listData[index]);
+        }
+
+        private void OnDestroy()
+        {
+            cardVList.onDisplayUIObj -= setItemArgs;
         }
     }
 
