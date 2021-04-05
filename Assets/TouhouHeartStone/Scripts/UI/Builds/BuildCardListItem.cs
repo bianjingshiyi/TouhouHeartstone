@@ -85,6 +85,7 @@ namespace UI
         {
             cardVList = new VirtualList<BuildCardListItem>(addItem, asGridLayoutGroup);
             cardVList.onDisplayUIObj += setItemArgs;
+            cardVList.reset();
         }
 
         BuildCardViewData[] listData;
@@ -97,7 +98,11 @@ namespace UI
             for (int i = 0; i < list.Length; i++)
                 cardVList.addItem();
 
-            // cardVList.ReloadViewportElements();
+            cardVList.ReloadViewportElements();
+        }
+
+        private void OnEnable()
+        {
             cardVList.reset();
         }
 

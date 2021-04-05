@@ -201,8 +201,8 @@ pipeline {
                 writeFile encoding: 'UTF-8', file: 'Build/_html/index.html', text: log
                 writeFile encoding: 'UTF-8', file: "Build/_html/${BUILD_NUMBER}.html", text: log
                 
-                String buildLog = currentBuild.rawBuild.getLogText()
-                writeFile encoding: 'UTF-8', file: "Build/_html/${BUILD_NUMBER}.log", text: buildLog
+                // String buildLog = currentBuild.rawBuild.getLogText()
+                // writeFile encoding: 'UTF-8', file: "Build/_html/${BUILD_NUMBER}.log", text: buildLog
 
                 sshPublisher(
                     publishers: [
