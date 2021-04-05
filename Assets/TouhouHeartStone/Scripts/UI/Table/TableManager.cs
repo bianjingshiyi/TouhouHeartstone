@@ -90,6 +90,9 @@ namespace Game
         HandToFieldAnim _handToFieldAnim = null;
         public Card attackingCard { get; set; } = null;
         public SimpleAnim simpleAnim = null;
+
+
+
         protected override void onAwake()
         {
             base.onAwake();
@@ -99,6 +102,14 @@ namespace Game
         }
         protected void Update()
         {
+            if (_showCardTimer.isExpired())
+            {
+                // 显示卡面
+                if (_servant != null)
+                    displayLargeCard(_pointer.position.x < Screen.width / 2, getCard(_servant));
+                _showCardTimer.reset();
+            }
+
             if (_tipTimer.isExpired())
             {
                 _tipTimer.reset();
@@ -108,6 +119,8 @@ namespace Game
             {
                 ui.TipText.setAlpha(1/*_tipTimer.getRemainedTime() / _tipTimer.duration*/);
             }
+
+            
 
             if (game == null)
                 return;
@@ -1288,12 +1301,20 @@ namespace Game
             //    servant.shieldImage.hide();
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
         }
+        [SerializeField]
+        BJSYGameCore.Timer _showCardTimer = new BJSYGameCore.Timer() { duration = 1 };
+        ServantItem _servant;
+        PointerEventData _pointer;
         void onEnterServant(ServantItem servant, PointerEventData pointer)
         {
-            displayLargeCard(pointer.position.x < Screen.width / 2, getCard(servant));
+            _showCardTimer.start();
+            _servant = servant;
+            _pointer = pointer;
+            //displayLargeCard(pointer.position.x < Screen.width / 2, getCard(servant));
         }
         void onExitServant(ServantItem servant, PointerEventData pointer)
         {
+            _showCardTimer.reset();           
             hideLargeCard();
         }
         /// <summary>
