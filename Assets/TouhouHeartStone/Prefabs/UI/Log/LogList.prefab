@@ -511,8 +511,8 @@ MonoBehaviour:
   _IconImage: {fileID: 4514938058562137377}
   _Text: {fileID: 4514938058591415663}
   _BorderImage: {fileID: 4514938058713749634}
-  _selfsprite: {fileID: 21300000, guid: b80e6e4ab0c5b3a489cc5f0ee871bb4b, type: 3}
-  _opposprite: {fileID: 21300000, guid: ce5bc37a28c2efd46a0290d1a6b2d794, type: 3}
+  _selfsprite: {fileID: 21300000, guid: ce5bc37a28c2efd46a0290d1a6b2d794, type: 3}
+  _opposprite: {fileID: 21300000, guid: b80e6e4ab0c5b3a489cc5f0ee871bb4b, type: 3}
   _selfColor: {r: 0.2, g: 0.2, b: 0.8, a: 1}
   _oppoColor: {r: 0.8, g: 0.2, b: 0.2, a: 1}
   _gemIcon: {fileID: 21300000, guid: be5129279b1dfca4ab4fa9ddc1c574f0, type: 3}
