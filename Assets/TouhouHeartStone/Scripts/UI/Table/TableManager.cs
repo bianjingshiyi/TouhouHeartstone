@@ -1726,7 +1726,7 @@ namespace Game
             return projectile;
         }
         [SerializeField]
-        BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer() { duration = 3 };
+        BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer() { duration = 2 };
         /// <summary>
         /// 显示文本提示
         /// </summary>
