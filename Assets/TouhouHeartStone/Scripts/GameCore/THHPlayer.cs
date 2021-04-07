@@ -484,6 +484,139 @@ namespace TouhouHeartstone
             game.logger.log(this + "选择" + selected);
             return selected;
         }
+
+        public async Task<ChooseOneEventArg> chooseOne(this THHPlayer player,THHGame game,IEnumerable<Card> options, bool isShow = true ,string title = "选择一项")
+        {
+            game.logger.log(this + "从" + string.Join("，", options) + "中选择一项");
+            //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
+            var eventArg = await game.triggers.doEvent(new ChooseOneEventArg() { player = player , options = options , choose = null , isShow = isShow }, async arg =>
+            {
+                var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
+                await task;
+                arg.choose = options.First(c => c.id == (task.Result as DiscoverResponse).cardId);
+                game.logger.log(this + "选择" + arg.choose);
+            });
+            return eventArg;
+        }
+
+        /// <summary>
+        /// 选择事件，一般指从几个选项中选择一项
+        /// 卡面描述："选择一项"
+        /// </summary>
+        public class ChooseOneEventArg : EventArg, IDescribableEventArg
+        {
+            public THHPlayer player;
+            public IEnumerable<Card> options;
+            public Card choose;
+            public bool isShow = true;
+
+            public ICard getCard(IGame game, IPlayer viewer)
+            {
+                return choose;
+            }
+
+            public ICard[] getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是选项。")]
+            const string TEMPLATE = "{0} 选择 {1}";
+            [MukioI18n.TranslateMsg("{0}是玩家")]
+            const string TEMPLATE_NotShow = "{0} 进行了选择";
+
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                if (isShow)
+                    return TEMPLATE;
+                else
+                    return TEMPLATE_NotShow;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    choose?.getFormatString()
+                };
+            }
+            
+        }
+
+        public async Task<SearchPileEventArg> searchPile(this THHPlayer player, THHGame game, IEnumerable<Card> cards, bool isShow = false,  int count = 3,string title = "选择一项")
+        {
+            game.logger.log(this + "从" + string.Join("，", cards) + "中选择一张");
+            if (cards.Count() < 1)
+                return null;
+            if (count > 0)
+                cards = cards.randomTake(game, count);
+            //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
+            var eventArg = await game.triggers.doEvent(new SearchPileEventArg() { player = player, cards = cards, choose = null, isShow = isShow }, async arg =>
+            {             
+                var task = game.answers.ask(id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title));
+                await task;
+                arg.choose = cards.First(c => c.id == (task.Result as DiscoverResponse).cardId);
+                game.logger.log(this + "选择" + arg.choose);
+            });
+            return eventArg;
+        }
+
+        /// <summary>
+        /// 检视事件，指从特定牌堆随机几张卡选择一张。
+        /// 卡面描述：检视某牌堆X张牌
+        /// </summary>
+        public class SearchPileEventArg : EventArg, IDescribableEventArg
+        {
+            public THHPlayer player;
+            public IEnumerable<Card> cards;
+            public Card choose;
+            public bool isShow = true;
+
+            public ICard getCard(IGame game, IPlayer viewer)
+            {
+                return choose;
+            }
+
+            public ICard[] getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是选项,{2}是牌堆。")]
+            const string TEMPLATE = "{0} 检视 {2} , 选择了 {1}";
+            [MukioI18n.TranslateMsg("{0}是玩家")]
+            const string TEMPLATE_NotShow = "{0} 检视 {2} ，进行了选择";
+
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                if (isShow)
+                    return TEMPLATE;
+                else
+                    return TEMPLATE_NotShow;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] 
+                {
+                        player.name,
+                        choose?.getFormatString(),
+                        pile.name
+                };
+            }
+
+        }
+
         public class UseEventArg : EventArg, IDescribableEventArg
         {
             public THHPlayer player;
@@ -508,11 +641,11 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡。")]
-            const string TEMPLATE_NO_TARGET = "{0}使用{1}";
+            const string TEMPLATE_NO_TARGET = "{0} 使用 {1}";
             [MukioI18n.TranslateMsg("{0}是玩家，使用的是陷阱")]
-            const string TEMPLATE_SECRET_OTHER = "{0}使用了一张陷阱牌";
+            const string TEMPLATE_SECRET_OTHER = "{0} 使用了一张陷阱牌";
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡，{2}是目标")]
-            const string TEMPLATE_HAS_TARGET = "{0}使用{1}，目标：{2}";
+            const string TEMPLATE_HAS_TARGET = "{0} 对 {2} 使用了 {1}";
 
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
@@ -560,10 +693,10 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡，{2}是目标列表")]
-            const string TEMPLATE_HAS_TARGET = "{0}发动{1}的效果，目标：{2}";
+            const string TEMPLATE_HAS_TARGET = "{0} 对 {2} 发动 {1} 的效果";
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
-            const string TEMPLATE_NO_TARGET = "{0}发动{1}的效果";
+            const string TEMPLATE_NO_TARGET = "{0} 发动了 {1} 的效果";
 
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
@@ -640,7 +773,7 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡，{2}是位置")]
-            const string TEMPLATE = "{0}将{1}置入战场，位于{2}";
+            const string TEMPLATE = "{0} 将{1} 置入战场，位于 {2}";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return TEMPLATE;
@@ -710,7 +843,7 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
-            const string TEMPLATE = "{0}召唤衍生物{1}";
+            const string TEMPLATE = "{0} 召唤了 {1}";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return TEMPLATE;
@@ -781,7 +914,7 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
-            const string TEMPLATE = "{0}复活{1}";
+            const string TEMPLATE = "{0} 复活了 {1}";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return TEMPLATE;
@@ -879,7 +1012,7 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡牌列表")]
-            const string TEMPLATE = "{0}弃牌：{1}";
+            const string TEMPLATE = "{0} 丢弃 {1}";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return TEMPLATE;
@@ -1038,10 +1171,10 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
-            const string TEMPLATE_VALID = "{0}揭示了{1}";
+            const string TEMPLATE_VALID = "{0} 揭示了 {1}";
 
-            [MukioI18n.TranslateMsg("")]
-            const string TEMPLATE_INVALID = "揭示了个寂寞";
+            [MukioI18n.TranslateMsg("{0}是玩家")]
+            const string TEMPLATE_INVALID = "{0} 揭示了个寂寞";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return card == null ? TEMPLATE_INVALID : TEMPLATE_VALID;

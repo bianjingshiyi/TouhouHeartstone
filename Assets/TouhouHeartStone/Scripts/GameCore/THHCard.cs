@@ -1714,7 +1714,7 @@ namespace TouhouHeartstone
             if (activeEffect != null)
             {
                 var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card, player = player, targets = targets }, async arg =>
-                 {
+                {
                      await card.activeEffect(game, player, targets);//执行随从效果
                      if (targets != null &&
                         targets.Length > 0)
@@ -1725,7 +1725,7 @@ namespace TouhouHeartstone
                      {
                          game.logger.log("触发战吼" + card);
                      }
-                 });
+                });
                 return eventArg;
             }
             return null;
