@@ -99,10 +99,10 @@ namespace TouhouHeartstone.Builtin
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是自己的卡，{2}是对手的卡，{3}是结果")]
-            const string TEMPLATE = "{0}发动了对决，她揭示了:{1}。她的对手揭示了：{2}。结果是{3}";
+            const string TEMPLATE = "{0} 发动了对决，她揭示了:{1}。她的对手揭示了：{2}。结果是 {3}";
 
             [MukioI18n.TranslateMsg("{0}是玩家")]
-            const string TEMPLATE_NULL = "{0}揭示了个寂寞，输掉了对决。";
+            const string TEMPLATE_NULL = "{0} 揭示了个寂寞，输掉了对决。";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return youCard != null ? TEMPLATE : TEMPLATE_NULL;
@@ -429,36 +429,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
-    /// <summary>
-    /// 妖怪信众
-    /// 信仰对决(法术牌) 获胜时抽一张牌
-    /// </summary>
-
-    //public class YoukaiBelievers : ServantCardDefine
-    //{
-    //    public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x011;
-    //    public override int id { get; set; } = ID;
-    //    public override int cost { get; set; } = 5;
-    //    public override int attack { get; set; } = 4;
-    //    public override int life { get; set; } = 6;
-    //    //public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
-    //    //public override string[] tags { get; set; } = { TAG.BEAST };
-    //    public override IEffect[] effects { get; set; } = new IEffect[]
-    //    {
-    //        new NoTargetEffect(effect)
-    //    };
-
-    //    static async Task effect(THHGame game, Card card)
-    //    {
-    //        THHPlayer you = card.getOwner();
-    //        var duel = await Sanae.revealDuel(you, game,1);
-    //        if (duel.result)
-    //        {
-    //            await you.draw(game);
-    //        }
-
-    //    }
-    //}
+    
 
     /// <summary>
     /// 神代大蛇
@@ -535,9 +506,9 @@ namespace TouhouHeartstone.Builtin
             await card3.setProp<int>(game, "count3", count + 6);
             await card4.setProp<int>(game, "count4", count + 2);
 
-
-            Card choice = await card.getOwner().discover(game, options, 4, "见证神迹！");
-
+            
+            var arg = await card.getOwner().chooseOne(game, options, title:  "见证神迹！");
+            Card choice = arg.choose;
 
             if (choice.define == game.getDefine<GodMiracleOfRain>())
             {

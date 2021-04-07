@@ -485,11 +485,11 @@ namespace TouhouHeartstone
             return selected;
         }
 
-        public async Task<ChooseOneEventArg> chooseOne(this THHPlayer player,THHGame game,IEnumerable<Card> options, bool isShow = true ,string title = "选择一项")
+        public async Task<ChooseOneEventArg> chooseOne(THHGame game,IEnumerable<Card> options, bool isShow = true ,string title = "选择一项")
         {
             game.logger.log(this + "从" + string.Join("，", options) + "中选择一项");
             //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
-            var eventArg = await game.triggers.doEvent(new ChooseOneEventArg() { player = player , options = options , choose = null , isShow = isShow }, async arg =>
+            var eventArg = await game.triggers.doEvent(new ChooseOneEventArg() { player = this , options = options , choose = null , isShow = isShow }, async arg =>
             {
                 var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
                 await task;
@@ -548,7 +548,7 @@ namespace TouhouHeartstone
             
         }
 
-        public async Task<SearchPileEventArg> searchPile(this THHPlayer player, THHGame game, IEnumerable<Card> cards, bool isShow = false,  int count = 3,string title = "选择一项")
+        public async Task<SearchPileEventArg> searchPile(THHGame game, IEnumerable<Card> cards, bool isShow = false,  int count = 3,string title = "选择一项")
         {
             game.logger.log(this + "从" + string.Join("，", cards) + "中选择一张");
             if (cards.Count() < 1)
@@ -556,7 +556,7 @@ namespace TouhouHeartstone
             if (count > 0)
                 cards = cards.randomTake(game, count);
             //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
-            var eventArg = await game.triggers.doEvent(new SearchPileEventArg() { player = player, cards = cards, choose = null, isShow = isShow }, async arg =>
+            var eventArg = await game.triggers.doEvent(new SearchPileEventArg() { player = this, cards = cards, choose = null, isShow = isShow }, async arg =>
             {             
                 var task = game.answers.ask(id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title));
                 await task;
@@ -593,10 +593,10 @@ namespace TouhouHeartstone
                 return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
 
-            [MukioI18n.TranslateMsg("{0}是玩家，{1}是选项,{2}是牌堆。")]
-            const string TEMPLATE = "{0} 检视 {2} , 选择了 {1}";
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是选项。")]
+            const string TEMPLATE = "{0} , 选择了 {1}";
             [MukioI18n.TranslateMsg("{0}是玩家")]
-            const string TEMPLATE_NotShow = "{0} 检视 {2} ，进行了选择";
+            const string TEMPLATE_NotShow = "{0} ，进行了选择";
 
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
@@ -610,8 +610,7 @@ namespace TouhouHeartstone
                 return new object[] 
                 {
                         player.name,
-                        choose?.getFormatString(),
-                        pile.name
+                        choose?.getFormatString()
                 };
             }
 

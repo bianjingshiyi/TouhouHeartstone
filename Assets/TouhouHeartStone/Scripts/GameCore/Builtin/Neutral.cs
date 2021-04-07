@@ -645,10 +645,10 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(async (g1, c1) =>
             {
                 List<Card> elementCards = new List<Card>(g1.createCards(Patchouli.getElementCards(g1)));
-                Card a = await c1.getOwner().discover(g1, elementCards, title: "加入原料");
-                elementCards.Remove(a);
-                Card b = await c1.getOwner().discover(g1, elementCards, title: "收获");
-                await Patchouli.tryMix(g1, c1.getOwner(), a, b);
+                var a = await c1.getOwner().chooseOne(g1, elementCards,isShow:false, title: "加入原料");
+                elementCards.Remove(a.choose);
+                var b = await c1.getOwner().chooseOne(g1, elementCards,isShow:false, title: "收获");
+                await Patchouli.tryMix(g1, c1.getOwner(), a.choose, b.choose);
             })
         };
     }
@@ -1100,9 +1100,9 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            Card discover = await card.getOwner().discover(game, card.getOwner().deck,3,"选择一张牌置于牌组顶");
-
-            await card.getOwner().deck.moveTo(game, discover, card.getOwner().deck,
+            var discover = await card.getOwner().searchPile(game, card.getOwner().deck,false, 3,"选择一张牌置于牌组顶");
+            Card c = discover.choose;
+            await card.getOwner().deck.moveTo(game, c, card.getOwner().deck,
                 card.getOwner().deck.indexOf(card.getOwner().deck.top));
         }
     }
@@ -1224,8 +1224,9 @@ namespace TouhouHeartstone.Builtin
                 int health = t.getCurrentLife(g);
                 List<Card> options = new List<Card>
                     {g.createCard<GameOfLife_Rise_N>(), g.createCard<GameOfLife_Fall_N>()};
-                Card choice = await c.getOwner().discover(g, options, 2, "选择一项");
-                if (choice.define == g.getDefine<GameOfLife_Rise_N>())
+                //Card choice = await c.getOwner().discover(g, options, 2, "选择一项");
+                var choice = await c.getOwner().chooseOne(g,options);
+                if (choice.choose.define == g.getDefine<GameOfLife_Rise_N>())
                 {
                     if (health <= t.getLife(g) / 2)
                     {
@@ -1299,8 +1300,8 @@ namespace TouhouHeartstone.Builtin
             {
                 g.createCard<ReturnOfImperishableNight_Eternity_N>(), g.createCard<EndOfImperishableNight_Instant_N>()
             };
-            Card choice = await c.getOwner().discover(g, options, 2, "选择一项");
-            if (choice.define == g.getDefine<ReturnOfImperishableNight_Eternity_N>())
+            var choice = await c.getOwner().chooseOne(g, options,true,  "选择一项");
+            if (choice.choose.define == g.getDefine<ReturnOfImperishableNight_Eternity_N>())
             {
                 await c.getOwner().master.addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<THHPlayer.DrawEventArg>(
                     PILE.MASTER,
@@ -1547,7 +1548,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 青蛙
-    /// 衍生卡，3/2/4嘲讽
+    /// 衍生卡
     /// </summary>
     public class Frog_N : ServantCardDefine
     {
@@ -1627,20 +1628,6 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
-    /// <summary>
-    /// 御柱
-    /// 
-    /// </summary>
-    //public class Onbashira_N : ServantCardDefine
-    //{
-    //    public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x072;
-    //    public override int id { get; set; } = ID;
-    //    public override int cost { get; set; } = 4;
-    //    public override int attack { get; set; } = 4;
-    //    public override int life { get; set; } = 4;
-    //    public override bool isToken { get; set; } = true;
-    //    public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
-    //}
 
     /// <summary>
     /// 衍生物 枫叶
@@ -1839,14 +1826,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
 
         public override int life { get; set; } = 4;
-        // public override string[] keywords { get; set; } = {};
-        // public override string type { get; set; }
-        // public override bool isToken { get; set; }
-        // public override bool isActive { get; set; }
-        // public override int spellDamage { get; set; }
-        // public override int damageReduce { get; set; }
-        // public override string[] tags { get; set; }
-
+       
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -1881,8 +1861,8 @@ namespace TouhouHeartstone.Builtin
                 }
             }
 
-            Card choice = await card.getOwner().discover(game, usedCards, 3, "想起【......】");
-            Card copy = game.createCard(choice.define);
+            var choice = await card.getOwner().searchPile(game, usedCards,false, 3, "想起【......】");
+            Card copy = game.createCard(choice.choose.define);
             await card.getOwner().tryAddCardToHand(game, copy);
         }
     }

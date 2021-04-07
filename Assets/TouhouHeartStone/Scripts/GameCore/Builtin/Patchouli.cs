@@ -53,12 +53,10 @@ namespace TouhouHeartstone.Builtin
             var mixableCards = player.hand.Where(c => getMixCards(game, card.define, c.define).Length > 0).ToArray();//检查手牌中有没有可以融合的牌
             if (mixableCards.Length > 0)
             {
-                var mixCard = await player.discover(game, mixableCards, -1, "加入原料");
-                var mixedResults = getMixCards(game, card.define, mixCard.define).Select(define => game.createCard(define)).ToArray();
-                var mixedResult = await player.discover(game, mixedResults, -1, "收获");
-                //await player.discard(game, mixCard);
-                //await player.tryAddCardToHand(game, mixedResult);
-                await THHCard.setDefine(mixCard, game, mixedResult.define);
+                var mixCard = await player.chooseOne(game, mixableCards,false, "加入原料");
+                var mixedResults = getMixCards(game, card.define, mixCard.choose.define).Select(define => game.createCard(define)).ToArray();
+                var mixedResult = await player.chooseOne(game, mixedResults, false, "收获");
+                await THHCard.setDefine(mixCard.choose, game, mixedResult.choose.define);
             }
         }
 
@@ -66,34 +64,11 @@ namespace TouhouHeartstone.Builtin
         public static async Task tryMix(THHGame game, THHPlayer player, Card a, Card b)
         {
             var mixedResults = getMixCards(game, a.define, b.define).Select(define => game.createCard(define)).ToArray();
-            var mixedResult = await player.discover(game, mixedResults, -1, "收获");
-            await player.tryAddCardToHand(game, mixedResult);
+            var mixedResult = await player.chooseOne(game, mixedResults, false, "收获");
+            await player.tryAddCardToHand(game, mixedResult.choose);
         }
     }
-    /// <summary>
-    /// 知识引流
-    /// </summary>
-    //[Obsolete]
-    //public class KnowledgeTap : SkillCardDefine
-    //{
-    //    public const int ID = Patchouli.ID | CATEGORY.SKILL | 0x000;
-    //    public override int id { get; set; } = ID;
-    //    public override int cost { get; set; } = 2;
-    //    public override IEffect[] effects { get; set; } = new IEffect[]
-    //    {
-    //        new THHEffect<THHPlayer.ActiveEventArg>("Skill",(game,card,arg)=>
-    //        {
-    //            return true;
-    //        },(game,card,targets)=>
-    //        {
-    //            return false;
-    //        },async (game,card,arg,targets)=>
-    //        {
-    //            await arg.player.master.damage(game,card, 2);
-    //            await arg.player.draw(game);
-    //        })
-    //    };
-    //}
+    
     /// <summary>
     /// 2 夏之火 造成1点伤害
     /// </summary>
@@ -353,11 +328,11 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            var discovered = await card.getOwner().discover(game, card.getOwner().grave.Where(c => c.isSpell()), title: "选择一张墓地中的法术加入手牌");
+            var discovered = await card.getOwner().searchPile(game, card.getOwner().grave.Where(c => c.isSpell()), title: "选择一张墓地中的法术加入手牌");
             if (!card.getOwner().hand.isFull)
             {
-                await card.getOwner().grave.moveTo(game, discovered, card.getOwner().hand);
-                discovered.addBuff(game, new GeneratedBuff(ID, new CostModifier(-3)));
+                await card.getOwner().grave.moveTo(game, discovered.choose, card.getOwner().hand);
+                await discovered.choose.addBuff(game, new GeneratedBuff(ID, new CostModifier(-3)));
             }
         }
     }
@@ -431,8 +406,9 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5, "查询图书");
-            await card.getOwner().draw(game, discovered);
+            //var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5, "查询图书");
+            var discover = await card.getOwner().searchPile(game, card.getOwner().deck, false, 5, "查询图书");
+            await card.getOwner().draw(game, discover.choose);
 
         }
     }
@@ -471,8 +447,8 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 2; i++)
             {
-                var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5, "搜寻知识");
-                await card.getOwner().draw(game, discovered);
+                var discovered = await card.getOwner().searchPile(game, card.getOwner().deck,false, 5, "搜寻知识");
+                await card.getOwner().draw(game, discovered.choose);
             }
         }
     }
