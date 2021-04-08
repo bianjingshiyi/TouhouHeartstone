@@ -307,13 +307,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3231289549623003552, guid: 0170c536da3dfbe49b323cb0e30aa962,
         type: 3}
-      propertyPath: onHoverCard.animName
-      value: 
+      propertyPath: onHoverCard.beforeAnim.m_PersistentCalls.m_Calls.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3231289549623003552, guid: 0170c536da3dfbe49b323cb0e30aa962,
         type: 3}
-      propertyPath: onHoverCard.beforeAnim.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      propertyPath: onHoverCard.animName
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3231289549623003552, guid: 0170c536da3dfbe49b323cb0e30aa962,
         type: 3}
