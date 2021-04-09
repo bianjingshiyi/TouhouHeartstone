@@ -303,17 +303,11 @@ namespace TouhouHeartstone
         }
         Task IPassiveEffect.onEnable(IGame game, ICard card, IBuff buff)
         {
-            if (enabled)
-            {
-                return Task.CompletedTask;
-            }
-            enabled = true;
             return onEnable(game as THHGame, card as Card, buff as Buff);
         }
         public abstract Task onEnable(THHGame game, Card card, Buff buff);
         Task IPassiveEffect.onDisable(IGame game, ICard card, IBuff buff)
         {
-            enabled = false;
             return onDisable(game as THHGame, card as Card, buff as Buff);
         }
         public abstract Task onDisable(THHGame game, Card card, Buff buff);

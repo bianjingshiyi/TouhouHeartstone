@@ -885,6 +885,7 @@ namespace TouhouHeartstone
                 {
                     if (effect.piles.Contains(pile.name))
                     {
+                        await effect.onDisable(game, card, null);
                         await effect.onEnable(game, card, null);
                     }
                 }
