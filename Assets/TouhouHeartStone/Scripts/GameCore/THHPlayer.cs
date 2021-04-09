@@ -57,6 +57,9 @@ namespace TouhouHeartstone
             this[PILE.SKILL].add(game, game.createCard(game.getDefine(master.skillID)));
             this[PILE.DECK].add(game, deck.Select(d => game.createCard(d)).ToArray());
             setIsPrepared(false);
+            setGem(game, 0);
+            setMaxGem(game, 0);
+            setFatigue(0);
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
         {

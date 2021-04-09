@@ -12,7 +12,7 @@ namespace Game
         {
             if (_anim == null) 
             {
-                table.ui.Fatigue.Text.text = "没有牌了，你受到了" + eventArg.player.fatigue + "点伤害！";
+                table.ui.Fatigue.Text.text = "没有牌了，你受到了" + eventArg.player.getFatigue() + "点伤害！";
                 var deck = eventArg.player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck;
                 table.ui.Fatigue.display();
                 table.ui.Fatigue.rectTransform.position = deck.rectTransform.position;
