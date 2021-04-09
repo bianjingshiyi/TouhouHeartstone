@@ -878,11 +878,11 @@ namespace TouhouHeartstone
                     return;
                 game.logger.log(player + "复活" + arg.card.define.GetType().Name + "位于" + position);
                 await arg.player.grave.moveTo(game, arg.card, arg.pile, position);
+                //亡语随从在墓地与场上移动时不会进行效果的激活与禁用
                 foreach (IPassiveEffect effect in arg.card.define.effects.OfType<DeathRattle>())
                 {
                     if (effect.piles.Contains(pile.name))
                     {
-                        await effect.onDisable(game, card, null);
                         await effect.onEnable(game, card, null);
                     }
                 }
