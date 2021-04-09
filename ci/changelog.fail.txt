@@ -1,1 +1,2 @@
-醉梦传说自动构建结果 - ${buildver} - Git检出失败
+醉梦传说自动构建结果 - ${branch} - ${buildver} - Git检出失败
+详情请访问： ${projectUrl}
