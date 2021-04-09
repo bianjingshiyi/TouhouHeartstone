@@ -33,14 +33,14 @@ namespace Tests
 
             THHGame.InitEventArg init = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.InitEventArg) as THHGame.InitEventArg;
             Assert.NotNull(init);
-            Assert.AreEqual(TestMaster.ID, game.players[0].master.define.id);
-            Assert.AreEqual(30, game.players[0].master.getCurrentLife(game));
-            Assert.AreEqual(TestMaster.ID, game.players[1].master.define.id);
-            Assert.AreEqual(30, game.players[1].master.getCurrentLife(game));
+            Assert.AreEqual(TestMaster.ID, game.players[0].getMaster().define.id);
+            Assert.AreEqual(30, game.players[0].getMaster().getCurrentLife(game));
+            Assert.AreEqual(TestMaster.ID, game.players[1].getMaster().define.id);
+            Assert.AreEqual(30, game.players[1].getMaster().getCurrentLife(game));
             Assert.AreEqual(2, game.sortedPlayers.Length);
             bool isFirstPlayer = game.getPlayerIndex(game.sortedPlayers[0]) == 0;
-            Assert.AreEqual(isFirstPlayer ? 3 : 4, game.players[0].init.count);
-            Assert.AreEqual(isFirstPlayer ? 4 : 3, game.players[1].init.count);
+            Assert.AreEqual(isFirstPlayer ? 3 : 4, game.players[0].getInit().count);
+            Assert.AreEqual(isFirstPlayer ? 4 : 3, game.players[1].getInit().count);
             game.Dispose();
         }
         [UnityTest]
@@ -49,8 +49,8 @@ namespace Tests
             THHGame game = TestGameflow.initStandardGame();
 
             _ = game.run();
-            yield return game.players[0].cmdInitReplace(game, game.players[0].init[0]).wait();
-            yield return game.players[1].cmdInitReplace(game, game.players[1].init[0, 1]).wait();
+            yield return game.players[0].cmdInitReplace(game, game.players[0].getInit()[0]).wait();
+            yield return game.players[1].cmdInitReplace(game, game.players[1].getInit()[0, 1]).wait();
             //替换手牌
             IEventArg[] events = game.triggers.getRecordedEvents();
             THHPlayer.InitReplaceEventArg initReplace = events.OfType<THHPlayer.InitReplaceEventArg>().First();
@@ -91,7 +91,7 @@ namespace Tests
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
             yield return new WaitForSeconds(.1f);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
             yield return new WaitForSeconds(.1f);
 
             game.players[0].cmdInitReplace(game);
@@ -115,15 +115,15 @@ namespace Tests
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
             yield return new WaitForSeconds(.1f);
-            Card card = game.sortedPlayers[0].hand[0];
+            Card card = game.sortedPlayers[0].getHand()[0];
             var task = game.sortedPlayers[0].cmdUse(game, card, 0);
             yield return TestHelper.waitTask(task);
-            Assert.True(game.sortedPlayers[0].field.Contains(card));
+            Assert.True(game.sortedPlayers[0].getField().Contains(card));
 
             THHPlayer.UseEventArg use = game.triggers.getRecordedEvents().FirstOrDefault(e => e is THHPlayer.UseEventArg) as THHPlayer.UseEventArg;
             Assert.NotNull(use);
             Assert.AreEqual(game.sortedPlayers[0], use.player);
-            Assert.AreEqual(game.sortedPlayers[0].field[0], use.card);
+            Assert.AreEqual(game.sortedPlayers[0].getField()[0], use.card);
             Assert.AreEqual(TestServant.ID, use.card.define.id);
             Assert.AreEqual(0, use.position);
             Assert.AreEqual(0, use.targets.Length);
@@ -178,7 +178,7 @@ namespace Tests
                 timeoutForTurn = 1
             }, new KeyValuePair<int, int>(DiscoverCopy.ID, 1));
             game.skipTurnUntil(() => game.currentPlayer == you);
-            you.cmdUse(game, you.hand.getCard<DiscoverCopy>());
+            you.cmdUse(game, you.getHand().getCard<DiscoverCopy>());
             Assert.AreEqual(1, game.answers.getRequests(you.id).Length);
             Assert.NotNull(game.answers.getRequest<DiscoverRequest>(you.id));
             //挂机的阿凯
@@ -215,7 +215,7 @@ namespace Tests
             THHPlayer.BurnEventArg burn = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.BurnEventArg) as THHPlayer.BurnEventArg;
             Assert.NotNull(burn);
             Assert.AreEqual(game.sortedPlayers[0], burn.player);
-            Assert.AreEqual(game.sortedPlayers[0].grave[0], burn.card);
+            Assert.AreEqual(game.sortedPlayers[0].getGrave()[0], burn.card);
             game.Dispose();
         }
         [Test]
@@ -233,12 +233,12 @@ namespace Tests
             THHPlayer.FatigueEventArg fatigue = game.triggers.getRecordedEvents().OfType<THHPlayer.FatigueEventArg>().First();
             Assert.AreEqual(you, fatigue.player);
             THHCard.DamageEventArg damage = fatigue.getChildEvents().OfType<THHCard.DamageEventArg>().First();
-            Assert.AreEqual(you.master, damage.infoDic.First().Key);
+            Assert.AreEqual(you.getMaster(), damage.infoDic.First().Key);
             Assert.AreEqual(1, damage.infoDic.First().Value.damagedValue);
-            while (you.master.getCurrentLife(game) > 0)
+            while (you.getMaster().getCurrentLife(game) > 0)
             {
                 you.cmdTurnEnd(game);
-                if (you.fatigue >= you.master.getCurrentLife(game))
+                if (you.getFatigue() >= you.getMaster().getCurrentLife(game))
                 {
                     oppo.cmdTurnEnd(game);
                     THHGame.TurnStartEventArg turnStart = game.triggers.getRecordedEvents().OfType<THHGame.TurnStartEventArg>().Last();
@@ -266,15 +266,15 @@ namespace Tests
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
             yield return new WaitForSeconds(.1f);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
             yield return new WaitForSeconds(.1f);
             game.sortedPlayers[0].cmdTurnEnd(game);
             yield return new WaitForSeconds(.1f);
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 0);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].getHand()[0], 0);
             yield return new WaitForSeconds(.1f);
             game.sortedPlayers[1].cmdTurnEnd(game);
             yield return new WaitForSeconds(.1f);
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].field[0]);
+            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].getField()[0], game.sortedPlayers[1].getField()[0]);
             yield return new WaitForSeconds(.1f);
 
             THHCard.AttackEventArg attack = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.AttackEventArg) as THHCard.AttackEventArg;
@@ -295,12 +295,12 @@ namespace Tests
         public void masterAttackTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo);
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 1);
-            oppo.cmdUse(game, oppo.hand.First());//对手拍一张白板随从
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 1);
+            oppo.cmdUse(game, oppo.getHand().First());//对手拍一张白板随从
             oppo.cmdTurnEnd(game);
-            you.master.setAttack(game, 5);
-            you.cmdAttack(game, you.master, oppo.field[0]);
-            Assert.AreEqual(2, oppo.field[0].getCurrentLife(game));
+            you.getMaster().setAttack(game, 5);
+            you.cmdAttack(game, you.getMaster(), oppo.getField()[0]);
+            Assert.AreEqual(2, oppo.getField()[0].getCurrentLife(game));
         }
         [UnityTest]
         public IEnumerator winTest()
@@ -311,7 +311,7 @@ namespace Tests
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
             yield return new WaitForSeconds(.1f);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
             yield return new WaitForSeconds(.1f);
             for (int i = 0; i < 15; i++)
             {
@@ -319,7 +319,7 @@ namespace Tests
                 yield return new WaitForSeconds(.1f);
                 game.sortedPlayers[1].cmdTurnEnd(game);
                 yield return new WaitForSeconds(.1f);
-                game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].master);
+                game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].getField()[0], game.sortedPlayers[1].getMaster());
                 yield return new WaitForSeconds(.1f);
             }
             THHCard.AttackEventArg attack = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.AttackEventArg) as THHCard.AttackEventArg;
@@ -371,17 +371,17 @@ namespace Tests
             _ = g1.run();
             _ = g2.run();
             yield return new WaitForSeconds(.5f);
-            g1.players[0].cmdInitReplace(g1, g1.players[0].init[0, 1]);
+            g1.players[0].cmdInitReplace(g1, g1.players[0].getInit()[0, 1]);
             yield return new WaitForSeconds(.5f);
             g2.players[1].cmdInitReplace(g2);
             yield return new WaitForSeconds(.5f);
-            g1.players[0].cmdUse(g1, g1.players[0].hand[0], 0);
+            g1.players[0].cmdUse(g1, g1.players[0].getHand()[0], 0);
             yield return new WaitForSeconds(.5f);
             g1.players[0].cmdTurnEnd(g1);
             yield return new WaitForSeconds(.5f);
             g2.players[1].cmdTurnEnd(g2);
             yield return new WaitForSeconds(.5f);
-            g1.players[0].cmdAttack(g1, g1.players[0].field[0], g1.players[1].master);
+            g1.players[0].cmdAttack(g1, g1.players[0].getField()[0], g1.players[1].getMaster());
             yield return new WaitForSeconds(.5f);
 
             g1.Dispose();
@@ -494,35 +494,35 @@ namespace Tests
             THHPlayer localPlayer = localGame.getPlayer(local.id);
             Assert.AreEqual(0, localPlayer.id);
             yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is InitReplaceRequest);
-            Assert.Greater(localPlayer.init.count, 0);
+            Assert.Greater(localPlayer.getInit().count, 0);
             localPlayer.cmdInitReplace(localGame);
             yield return new WaitUntil(() => localGame.answers.getResponse(localPlayer.id, localGame.answers.getRequests(localPlayer.id).FirstOrDefault()) is InitReplaceResponse);
 
             THHPlayer remotePlayer = remoteGame.getPlayer(remote.id);
             Assert.AreEqual(1, remotePlayer.id);
             yield return new WaitUntil(() => remoteGame.answers.getRequests(remotePlayer.id).FirstOrDefault() is InitReplaceRequest);
-            Assert.Greater(remotePlayer.init.count, 0);
+            Assert.Greater(remotePlayer.getInit().count, 0);
             remotePlayer.cmdInitReplace(remoteGame);
             yield return new WaitUntil(() => remoteGame.triggers.getRecordedEvents().Any(e => e is THHGame.StartEventArg));
             //拍怪
             if (localGame.sortedPlayers[0] == localPlayer)
             {
                 yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is FreeActRequest);
-                localPlayer.cmdUse(localGame, localPlayer.hand[0], 0);
-                yield return new WaitUntil(() => localPlayer.field.count > 0);
+                localPlayer.cmdUse(localGame, localPlayer.getHand()[0], 0);
+                yield return new WaitUntil(() => localPlayer.getField().count > 0);
                 localPlayer.cmdTurnEnd(localGame);
                 yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
             }
             yield return new WaitUntil(() => remoteGame.answers.getRequests(remotePlayer.id).FirstOrDefault() is FreeActRequest);
-            remotePlayer.cmdUse(remoteGame, remotePlayer.hand[0], 0);
-            yield return new WaitUntil(() => remotePlayer.field.count > 0);
+            remotePlayer.cmdUse(remoteGame, remotePlayer.getHand()[0], 0);
+            yield return new WaitUntil(() => remotePlayer.getField().count > 0);
             remotePlayer.cmdTurnEnd(remoteGame);
             yield return new WaitUntil(() => remoteGame.currentPlayer != remotePlayer);
             if (localGame.sortedPlayers[0] != localPlayer)
             {
                 yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is FreeActRequest);
-                localPlayer.cmdUse(localGame, localPlayer.hand[0], 0);
-                yield return new WaitUntil(() => localPlayer.field.count > 0);
+                localPlayer.cmdUse(localGame, localPlayer.getHand()[0], 0);
+                yield return new WaitUntil(() => localPlayer.getField().count > 0);
                 localPlayer.cmdTurnEnd(localGame);
                 yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
             }
@@ -531,15 +531,15 @@ namespace Tests
                 yield return new WaitUntil(() => localGame.currentPlayer == localPlayer || remoteGame.currentPlayer == remotePlayer);
                 if (localGame.currentPlayer == localPlayer)
                 {
-                    localPlayer.cmdAttack(localGame, localPlayer.field[0], localGame.getOpponent(localPlayer).master);
-                    yield return new WaitUntil(() => localPlayer.field[0].getAttackTimes(localGame) > 0);
+                    localPlayer.cmdAttack(localGame, localPlayer.getField()[0], localGame.getOpponent(localPlayer).getMaster());
+                    yield return new WaitUntil(() => localPlayer.getField()[0].getAttackTimes(localGame) > 0);
                     localPlayer.cmdTurnEnd(localGame);
                     yield return new WaitUntil(() => localGame.currentPlayer != localPlayer);
                 }
                 else if (remoteGame.currentPlayer == remotePlayer)
                 {
-                    remotePlayer.cmdAttack(remoteGame, remotePlayer.field[0], remoteGame.getOpponent(remotePlayer).master);
-                    yield return new WaitUntil(() => remotePlayer.field[0].getAttackTimes(remoteGame) > 0);
+                    remotePlayer.cmdAttack(remoteGame, remotePlayer.getField()[0], remoteGame.getOpponent(remotePlayer).getMaster());
+                    yield return new WaitUntil(() => remotePlayer.getField()[0].getAttackTimes(remoteGame) > 0);
                     remotePlayer.cmdTurnEnd(remoteGame);
                     yield return new WaitUntil(() => remoteGame.currentPlayer != remotePlayer);
                 }
@@ -561,12 +561,12 @@ namespace Tests
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
             yield return new WaitForSeconds(.1f);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
             yield return new WaitForSeconds(.1f);
             game.sortedPlayers[0].cmdTurnEnd(game);
             yield return new WaitForSeconds(.1f);
 
-            Assert.True(game.sortedPlayers[0].field[0].getProp<bool>(game, "TestResult"));
+            Assert.True(game.sortedPlayers[0].getField()[0].getProp<bool>(game, "TestResult"));
         }
         [Test]
         public void attackSelfTest()
@@ -579,14 +579,14 @@ namespace Tests
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 1);
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[0].master);
-            Assert.AreEqual(30, game.sortedPlayers[0].master.getCurrentLife(game));
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[0].field[1]);
-            Assert.AreEqual(7, game.sortedPlayers[0].field[1].getCurrentLife(game));
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 1);
+            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].getField()[0], game.sortedPlayers[0].getMaster());
+            Assert.AreEqual(30, game.sortedPlayers[0].getMaster().getCurrentLife(game));
+            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].getField()[0], game.sortedPlayers[0].getField()[1]);
+            Assert.AreEqual(7, game.sortedPlayers[0].getField()[1].getCurrentLife(game));
         }
 
 
@@ -609,17 +609,17 @@ namespace Tests
             game.sortedPlayers[1].cmdInitReplace(game);
 
             game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[0], 0);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].getHand()[0], 0);
             game.sortedPlayers[1].cmdTurnEnd(game);
-            int gemNum = game.sortedPlayers[0].gem;
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].skill, 0, game.sortedPlayers[1].field[0]);
-            Assert.True(game.sortedPlayers[0].skill.isUsed(game));  //技能已使用
-            Assert.AreEqual(6, game.sortedPlayers[1].field[0].getCurrentLife(game));    //敌方随从受到伤害
-            Assert.AreEqual(1, gemNum - game.sortedPlayers[0].gem);     //水晶减1
-            gemNum = game.sortedPlayers[0].gem;
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand.getCard<TestSpellCard>(), 0, game.sortedPlayers[1].field[0]);
-            Assert.AreEqual(5, game.sortedPlayers[1].field[0].getCurrentLife(game));
-            Assert.AreEqual(1, gemNum - game.sortedPlayers[0].gem);     //水晶减1
+            int gemNum = game.sortedPlayers[0].getGem();
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getSkill(), 0, game.sortedPlayers[1].getField()[0]);
+            Assert.True(game.sortedPlayers[0].getSkill().isUsed(game));  //技能已使用
+            Assert.AreEqual(6, game.sortedPlayers[1].getField()[0].getCurrentLife(game));    //敌方随从受到伤害
+            Assert.AreEqual(1, gemNum - game.sortedPlayers[0].getGem());     //水晶减1
+            gemNum = game.sortedPlayers[0].getGem();
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand().getCard<TestSpellCard>(), 0, game.sortedPlayers[1].getField()[0]);
+            Assert.AreEqual(5, game.sortedPlayers[1].getField()[0].getCurrentLife(game));
+            Assert.AreEqual(1, gemNum - game.sortedPlayers[0].getGem());     //水晶减1
         }
         [UnityTest]
         public IEnumerator surrenderTest()
@@ -688,22 +688,22 @@ namespace Tests
             Assert.AreEqual(localGame.sortedPlayers[1].id, remoteGame.sortedPlayers[1].id);
             //交换手牌
             THHPlayer localPlayer = localGameManager.localPlayer;
-            yield return localPlayer.cmdInitReplace(localGame, localPlayer.init[0]).wait();
+            yield return localPlayer.cmdInitReplace(localGame, localPlayer.getInit()[0]).wait();
             THHPlayer remotePlayer = remoteGameManager.localPlayer;
-            yield return remotePlayer.cmdInitReplace(remoteGame, remotePlayer.init[0, 1]).wait();
+            yield return remotePlayer.cmdInitReplace(remoteGame, remotePlayer.getInit()[0, 1]).wait();
             do
             {
                 if (localGame.currentPlayer == localPlayer)
                 {
                     do
                     {
-                        yield return localPlayer.cmdUse(localGame, localPlayer.hand[0], 0).wait();
+                        yield return localPlayer.cmdUse(localGame, localPlayer.getHand()[0], 0).wait();
                     }
-                    while (localPlayer.hand.count > 0 && localPlayer.gem > localPlayer.hand[0].getCost(localGame) && !localPlayer.field.isFull);
-                    foreach (var servant in localPlayer.field)
+                    while (localPlayer.getHand().count > 0 && localPlayer.getGem() > localPlayer.getHand()[0].getCost(localGame) && !localPlayer.getField().isFull);
+                    foreach (var servant in localPlayer.getField())
                     {
-                        if (servant.canAttack(localGame) && !localGame.getOpponent(localPlayer).master.isDead(localGame))
-                            yield return localPlayer.cmdAttack(localGame, servant, localGame.getOpponent(localPlayer).master).wait();
+                        if (servant.canAttack(localGame) && !localGame.getOpponent(localPlayer).getMaster().isDead(localGame))
+                            yield return localPlayer.cmdAttack(localGame, servant, localGame.getOpponent(localPlayer).getMaster()).wait();
                     }
                     if (localGame.triggers.getRecordedEvents().OfType<THHGame.GameEndEventArg>().FirstOrDefault() is THHGame.GameEndEventArg gameEnd)
                         break;
@@ -714,13 +714,13 @@ namespace Tests
                 {
                     do
                     {
-                        yield return remotePlayer.cmdUse(remoteGame, remotePlayer.hand[0], 0).wait();
+                        yield return remotePlayer.cmdUse(remoteGame, remotePlayer.getHand()[0], 0).wait();
                     }
-                    while (remotePlayer.hand.count > 0 && remotePlayer.gem > remotePlayer.hand[0].getCost(remoteGame) && !remotePlayer.field.isFull);
-                    foreach (var servant in remotePlayer.field)
+                    while (remotePlayer.getHand().count > 0 && remotePlayer.getGem() > remotePlayer.getHand()[0].getCost(remoteGame) && !remotePlayer.getField().isFull);
+                    foreach (var servant in remotePlayer.getField())
                     {
-                        if (servant.canAttack(remoteGame) && !remoteGame.getOpponent(remotePlayer).master.isDead(remoteGame))
-                            yield return remotePlayer.cmdAttack(remoteGame, servant, remoteGame.getOpponent(remotePlayer).master).wait();
+                        if (servant.canAttack(remoteGame) && !remoteGame.getOpponent(remotePlayer).getMaster().isDead(remoteGame))
+                            yield return remotePlayer.cmdAttack(remoteGame, servant, remoteGame.getOpponent(remotePlayer).getMaster()).wait();
                     }
                     if (remoteGame.triggers.getRecordedEvents().OfType<THHGame.GameEndEventArg>().FirstOrDefault() is THHGame.GameEndEventArg gameEnd)
                         break;
@@ -835,9 +835,9 @@ namespace Tests
             Assert.AreEqual(localGame.sortedPlayers[1].id, remoteGame.sortedPlayers[1].id);
             //交换手牌
             THHPlayer localPlayer = localGameManager.localPlayer;
-            yield return localPlayer.cmdInitReplace(localGame, localPlayer.init[0]).wait();
+            yield return localPlayer.cmdInitReplace(localGame, localPlayer.getInit()[0]).wait();
             THHPlayer remotePlayer = remoteGameManager.localPlayer;
-            yield return remotePlayer.cmdInitReplace(remoteGame, remotePlayer.init[0, 1]).wait();
+            yield return remotePlayer.cmdInitReplace(remoteGame, remotePlayer.getInit()[0, 1]).wait();
             //战斗至死
             do
             {
@@ -845,13 +845,13 @@ namespace Tests
                 {
                     do
                     {
-                        yield return localPlayer.cmdUse(localGame, localPlayer.hand[0], 0).wait();
+                        yield return localPlayer.cmdUse(localGame, localPlayer.getHand()[0], 0).wait();
                     }
-                    while (localPlayer.hand.count > 0 && localPlayer.gem > localPlayer.hand[0].getCost(localGame) && !localPlayer.field.isFull);
-                    foreach (var servant in localPlayer.field)
+                    while (localPlayer.getHand().count > 0 && localPlayer.getGem() > localPlayer.getHand()[0].getCost(localGame) && !localPlayer.getField().isFull);
+                    foreach (var servant in localPlayer.getField())
                     {
-                        if (servant.canAttack(localGame) && !localGame.getOpponent(localPlayer).master.isDead(localGame))
-                            yield return localPlayer.cmdAttack(localGame, servant, localGame.getOpponent(localPlayer).master).wait();
+                        if (servant.canAttack(localGame) && !localGame.getOpponent(localPlayer).getMaster().isDead(localGame))
+                            yield return localPlayer.cmdAttack(localGame, servant, localGame.getOpponent(localPlayer).getMaster()).wait();
                     }
                     if (localGame.triggers.getRecordedEvents().OfType<THHGame.GameEndEventArg>().FirstOrDefault() is THHGame.GameEndEventArg gameEnd)
                         break;
@@ -862,13 +862,13 @@ namespace Tests
                 {
                     do
                     {
-                        yield return remotePlayer.cmdUse(remoteGame, remotePlayer.hand[0], 0).wait();
+                        yield return remotePlayer.cmdUse(remoteGame, remotePlayer.getHand()[0], 0).wait();
                     }
-                    while (remotePlayer.hand.count > 0 && remotePlayer.gem > remotePlayer.hand[0].getCost(remoteGame) && !remotePlayer.field.isFull);
-                    foreach (var servant in remotePlayer.field)
+                    while (remotePlayer.getHand().count > 0 && remotePlayer.getGem() > remotePlayer.getHand()[0].getCost(remoteGame) && !remotePlayer.getField().isFull);
+                    foreach (var servant in remotePlayer.getField())
                     {
-                        if (servant.canAttack(remoteGame) && !remoteGame.getOpponent(remotePlayer).master.isDead(remoteGame))
-                            yield return remotePlayer.cmdAttack(remoteGame, servant, remoteGame.getOpponent(remotePlayer).master).wait();
+                        if (servant.canAttack(remoteGame) && !remoteGame.getOpponent(remotePlayer).getMaster().isDead(remoteGame))
+                            yield return remotePlayer.cmdAttack(remoteGame, servant, remoteGame.getOpponent(remotePlayer).getMaster()).wait();
                     }
                     if (remoteGame.triggers.getRecordedEvents().OfType<THHGame.GameEndEventArg>().FirstOrDefault() is THHGame.GameEndEventArg gameEnd)
                         break;

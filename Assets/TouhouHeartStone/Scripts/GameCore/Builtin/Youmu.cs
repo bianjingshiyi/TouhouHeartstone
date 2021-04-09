@@ -21,7 +21,7 @@ namespace TouhouHeartstone.Builtin
         {
             public SetPreHeatEffect() : base(PILE.HAND, (g1, c1, a1) =>
             {
-                return c1.getOwner() == a1.player && c1.getOwner().maxGem >= c1.getCost(g1) && !isPreHeated(g1, c1);
+                return c1.getOwner() == a1.player && c1.getOwner().getMaxGem() >= c1.getCost(g1) && !isPreHeated(g1, c1);
             }, null, (g, c, a) =>
             {
                 return setPreHeated(g, c, true);
@@ -35,7 +35,7 @@ namespace TouhouHeartstone.Builtin
             public RemovePreHeatEffect() : base(PileFlag.field | PileFlag.warp | PileFlag.item,
             (g1, c1, a1) =>
             {
-                return a1.card == c1 && (a1.to == a1.card.getOwner().grave|| a1.to == c1.getOwner().deck);
+                return a1.card == c1 && (a1.to == a1.card.getOwner().getGrave()|| a1.to == c1.getOwner().getDeck());
             }, null, (g1, c1, a1) =>
             {
                 return setPreHeated(g1, c1, false);
@@ -78,7 +78,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.gainArmor(game, 2);
+            await card.getOwner().getMaster().gainArmor(game, 2);
         }
     }
     /// <summary>
@@ -98,11 +98,11 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             if (!Youmu.isPreHeated(game, card))
-                await card.getOwner().master.addBuff(game,
+                await card.getOwner().getMaster().addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(2),
                     new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
             else
-                await card.getOwner().master.addBuff(game,
+                await card.getOwner().getMaster().addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(3),
                     new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
         }
@@ -147,10 +147,10 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.gainArmor(game, 6);
+            await card.getOwner().getMaster().gainArmor(game, 6);
             if (!Youmu.isPreHeated(game, card))
             {
-                await card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
+                await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
                     new BeforeTurnStart(async (g, c, a) =>
                     {
                         await c.loseArmor(g, 3);
@@ -174,7 +174,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await target.damage(game,card,card.getOwner().master.getArmor(game));
+                await target.damage(game,card,card.getOwner().getMaster().getArmor(game));
             },PileFlag.both | PileFlag.field)
         };
     }
@@ -232,12 +232,12 @@ namespace TouhouHeartstone.Builtin
                 {
                     return card.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<THHCard.AttackEventArg>(PILE.ITEM,(g,c,a)=>
                     {
-                        return a.card == c.getOwner().master;
+                        return a.card == c.getOwner().getMaster();
                     },null,(g,c,a)=>
                     {
                         if(a.target.isDead(g))
                         {
-                            return c.getOwner().master.setAttackTimes(game,c.getOwner().master.getAttackTimes(g)-1);
+                            return c.getOwner().getMaster().setAttackTimes(game,c.getOwner().getMaster().getAttackTimes(g)-1);
                         }
                         return Task.CompletedTask;
                     })));
@@ -262,7 +262,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().draw(game);
-            if (card.getOwner().master.getArmor(game) > 0)
+            if (card.getOwner().getMaster().getArmor(game) > 0)
                 await card.getOwner().draw(game);
         }
     }
@@ -281,12 +281,12 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             THHPlayer player = card.getOwner();
-            await player.master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
-            Card[] servants = game.getOpponent(player).field.OrderBy(c => c.getCurrentLife(game)).ToArray();
+            await player.getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+            Card[] servants = game.getOpponent(player).getField().OrderBy(c => c.getCurrentLife(game)).ToArray();
             foreach (Card target in servants)
             {
-                if (player.master.getAttack(game) > 0)
-                    await player.master.forceAttack(game, player, target);
+                if (player.getMaster().getAttack(game) > 0)
+                    await player.getMaster().forceAttack(game, player, target);
             }
         }
     }
@@ -304,9 +304,9 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().master.getArmor(game)),
+            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().getMaster().getArmor(game)),
                 new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
-            await card.getOwner().master.loseArmor(game, card.getOwner().master.getArmor(game));
+            await card.getOwner().getMaster().loseArmor(game, card.getOwner().getMaster().getArmor(game));
         }
     }
     /// <summary>
@@ -323,8 +323,8 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.gainArmor(game, 5);
-            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new AttackModifier(5),
+            await card.getOwner().getMaster().gainArmor(game, 5);
+            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(5),
                 new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
         }
     }
@@ -343,11 +343,11 @@ namespace TouhouHeartstone.Builtin
         {
             new THHEffectBefore<THHCard.AttackEventArg>(PILE.FIELD,(g,c,a)=>
             {
-                return a.card == c.getOwner().master;
+                return a.card == c.getOwner().getMaster();
             },null,async(g,c,a)=>
             {
-                if(c.getOwner().item != null)
-                    await c.getOwner().item.addBuff(g, new GeneratedBuff(ID, new AttackModifier(1)));
+                if(c.getOwner().getItem() != null)
+                    await c.getOwner().getItem().addBuff(g, new GeneratedBuff(ID, new AttackModifier(1)));
             })
         };
     }
@@ -368,8 +368,8 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().item.addKeywords(game, KEYWORD.IMMUNITY);
-            await card.getOwner().item.addBuff(game, new GeneratedBuff(ID,
+            await card.getOwner().getItem().addKeywords(game, KEYWORD.IMMUNITY);
+            await card.getOwner().getItem().addBuff(game, new GeneratedBuff(ID,
                 new THHEffectBefore<THHGame.TurnEndEventArg>(PILE.ITEM,(g,c,a)=> 
                 {
                     return a.player == c.getOwner();
@@ -398,7 +398,7 @@ namespace TouhouHeartstone.Builtin
         {
             new BeforeYourTurnEnd(async(game,card,arg)=>
             {
-                if(card.getOwner().master.getArmor(game)>0)
+                if(card.getOwner().getMaster().getArmor(game)>0)
                     await card.getOwner().createToken(game, game.getDefine<Ghost>());
             })
         };
@@ -430,12 +430,12 @@ namespace TouhouHeartstone.Builtin
             new EventTriggeredModifierFixer<int>(PileFlag.field, new AttackModifier(0),
                 new EventTriggeredModifierFixer<int>.ModifierFixer<THHCard.SetArmorEventArg>(null,(game, card, buff, arg) =>
                 {
-                    return card.getOwner().master.getArmor(game);
+                    return card.getOwner().getMaster().getArmor(game);
                 })),
             new EventTriggeredModifierFixer<int>(PileFlag.field, new LifeModifier(0),
                 new EventTriggeredModifierFixer<int>.ModifierFixer<THHCard.SetArmorEventArg>(null,(game, card, buff, arg) =>
                 {
-                    return card.getOwner().master.getArmor(game);
+                    return card.getOwner().getMaster().getArmor(game);
                 })),
         };
     }
@@ -454,15 +454,15 @@ namespace TouhouHeartstone.Builtin
             new THHEffectBefore<THHPlayer.UseEventArg>(PILE.HAND,
                 (g1,c1,a1)=>
                 {
-                    return a1.card == c1 && c1.getOwner().item != null;
+                    return a1.card == c1 && c1.getOwner().getItem() != null;
                 },null,
                 async (g1,c1,a1)=>
                 {
                     a1.action = async arg =>
                     {
                         THHPlayer player = c1.getOwner();
-                        await player.item.addBuff(g1,new GeneratedBuff(ID,new LifeModifier(c1.getLife(g1))));
-                        await player.hand.moveTo(g1,c1,player.grave);
+                        await player.getItem().addBuff(g1,new GeneratedBuff(ID,new LifeModifier(c1.getLife(g1))));
+                        await player.getHand().moveTo(g1,c1,player.getGrave());
                     };
                    
                 })

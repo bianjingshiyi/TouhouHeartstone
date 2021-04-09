@@ -31,10 +31,10 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<PowrOverwhelming>(), 3)));
 
             game.skipUntilCanUse<DefaultServant>(you);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
 
             game.skipUntilCanUse<PowrOverwhelming>(you);
-            you.cmdUse(game, you.hand.getCard<PowrOverwhelming>(), targets: you.field[0]);
+            you.cmdUse(game, you.getHand().getCard<PowrOverwhelming>(), targets: you.getField()[0]);
             you.cmdTurnEnd(game);
             game.Dispose();
         }
@@ -54,8 +54,8 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<TestHeal>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<Velen>(), 1)));
 
             game.skipUntilCanUse<Velen>(you);
-            you.cmdUse(game, you.hand.getCard<Velen>());
-            you.cmdUse(game, you.hand.getCard<TestHeal>(), targets: you.master);
+            you.cmdUse(game, you.getHand().getCard<Velen>());
+            you.cmdUse(game, you.getHand().getCard<TestHeal>(), targets: you.getMaster());
 
             game.Dispose();
         }
@@ -75,13 +75,13 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<XWave>(), 1)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
 
             game.skipUntilCanUse<XWave>(you);
-            you.cmdUse(game, you.hand.getCard<XWave>());
+            you.cmdUse(game, you.getHand().getCard<XWave>());
             you.cmdTurnEnd(game);
 
-            oppo.cmdAttack(game, oppo.field[0], you.master);
+            oppo.cmdAttack(game, oppo.getField()[0], you.getMaster());
 
             game.Dispose();
         }
@@ -96,12 +96,12 @@ namespace Tests
                 new KeyValuePair<int, int>(MindStopper.ID, 3)
             );
             game.skipUntilCanUse<MindStopper>(you);
-            you.cmdUse(game, you.hand.getCard<MindStopper>());
+            you.cmdUse(game, you.getHand().getCard<MindStopper>());
             you.cmdTurnEnd(game);
-            Assert.AreEqual(3, oppo.gem);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-            Assert.AreEqual(0, oppo.field.count);
-            Assert.AreEqual(2, oppo.gem);
+            Assert.AreEqual(3, oppo.getGem());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
+            Assert.AreEqual(0, oppo.getField().count);
+            Assert.AreEqual(2, oppo.getGem());
 
         }
 
@@ -120,11 +120,11 @@ namespace Tests
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<WildYoukaiRabbit>() as CardDefine, 1));
 
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
-            you.cmdUse(game, you.hand.getCard<WildYoukaiRabbit>());
-            Assert.AreEqual(1, you.field[0].getAttack(game));
-            you.cmdUse(game, you.skill, targets: oppo.master);
-            Assert.AreEqual(3, you.field[0].getAttack(game));
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 4);
+            you.cmdUse(game, you.getHand().getCard<WildYoukaiRabbit>());
+            Assert.AreEqual(1, you.getField()[0].getAttack(game));
+            you.cmdUse(game, you.getSkill(), targets: oppo.getMaster());
+            Assert.AreEqual(3, you.getField()[0].getAttack(game));
         }
 
         // 赤眼催眠
@@ -144,19 +144,19 @@ namespace Tests
             game.skipUntilHasGem(oppo, 10);
 
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
 
-            while (you.field.count < 7)
+            while (you.getField().count < 7)
             {
                 game.skipUntilCanUse<DefaultServant>(you);
-                you.cmdUse(game, you.hand.getCard<DefaultServant>());
+                you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             }
 
             game.skipUntilCanUse<MindShaker>(you);
-            you.cmdUse(game, you.hand.getCard<MindShaker>());
+            you.cmdUse(game, you.getHand().getCard<MindShaker>());
             you.cmdTurnEnd(game);
 
-            oppo.cmdAttack(game, oppo.field[0], you.master);
+            oppo.cmdAttack(game, oppo.getField()[0], you.getMaster());
 
             game.Dispose();
         }
@@ -175,13 +175,13 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<DisorderEye>(), 1)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
 
             game.skipUntilCanUse<DisorderEye>(you);
-            you.cmdUse(game, you.hand.getCard<DisorderEye>());
+            you.cmdUse(game, you.getHand().getCard<DisorderEye>());
             you.cmdTurnEnd(game);
 
-            oppo.cmdAttack(game, oppo.field[0], you.master);
+            oppo.cmdAttack(game, oppo.getField()[0], you.getMaster());
 
             game.Dispose();
         }
@@ -204,15 +204,15 @@ namespace Tests
             for (int i = 0; i < 2; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(you);
-                you.cmdUse(game, you.hand.getCard<DefaultServant>());
+                you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             }
 
             game.skipUntilCanUse<VisionaryTuning>(you);
-            you.cmdUse(game, you.hand.getCard<VisionaryTuning>());
+            you.cmdUse(game, you.getHand().getCard<VisionaryTuning>());
             you.cmdTurnEnd(game);
 
-            oppo.cmdUse(game, oppo.hand.getCard<TestFreezeBrain>(), targets: you.field[0]);
-            Assert.False(you.field[0].isFreeze(game));
+            oppo.cmdUse(game, oppo.getHand().getCard<TestFreezeBrain>(), targets: you.getField()[0]);
+            Assert.False(you.getField()[0].isFreeze(game));
             game.Dispose();
         }
 
@@ -231,13 +231,13 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<FieldUltraViolet>(), 1)));
 
             game.skipUntilHasGem(you, 3);
-            Assert.False(you.skill.isUsed(game));
-            you.cmdUse(game, you.skill);
-            Assert.True(you.skill.isUsed(game));
-            you.cmdUse(game, you.hand.getCard<FieldUltraViolet>());
-            Assert.False(you.skill.isUsed(game));
-            you.cmdUse(game, you.skill);
-            Assert.True(you.skill.isUsed(game));
+            Assert.False(you.getSkill().isUsed(game));
+            you.cmdUse(game, you.getSkill());
+            Assert.True(you.getSkill().isUsed(game));
+            you.cmdUse(game, you.getHand().getCard<FieldUltraViolet>());
+            Assert.False(you.getSkill().isUsed(game));
+            you.cmdUse(game, you.getSkill());
+            Assert.True(you.getSkill().isUsed(game));
 
             game.Dispose();
         }
@@ -256,17 +256,17 @@ namespace Tests
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MindDropping>(), 1)));
             game.skipUntilCanUse<DefaultServant>(oppo);
-            Card servant = oppo.hand.getCard<DefaultServant>();
+            Card servant = oppo.getHand().getCard<DefaultServant>();
             oppo.cmdUse(game, servant);
             oppo.cmdTurnEnd(game);
             game.skipUntilCanUse<MindDropping>(you);
             you.setGem(game, 10);
-            you.cmdUse(game, you.skill);
-            you.cmdUse(game, you.hand.getCard<MindDropping>());
-            Assert.True(you.skill.define is LunaticShoot_MindDropping);
-            you.cmdUse(game, you.skill, targets: oppo.field[0]);
-            Assert.True(you.skill.define is LunaticShoot);
-            Assert.AreEqual(5, oppo.field[0].getCurrentLife(game));
+            you.cmdUse(game, you.getSkill());
+            you.cmdUse(game, you.getHand().getCard<MindDropping>());
+            Assert.True(you.getSkill().define is LunaticShoot_MindDropping);
+            you.cmdUse(game, you.getSkill(), targets: oppo.getField()[0]);
+            Assert.True(you.getSkill().define is LunaticShoot);
+            Assert.AreEqual(5, oppo.getField()[0].getCurrentLife(game));
 
         }
 
@@ -285,11 +285,11 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<FreezingTrap>() as CardDefine, 9).Concat(Enumerable.Repeat(game.getDefine<TewiInaba>(), 1)));
 
             game.skipUntilCanUse<TewiInaba>(you);
-            Assert.AreEqual(0, you.head.count);
-            int handCount = you.hand.count; 
-            you.cmdUse(game, you.hand.getCard<TewiInaba>());
-            Assert.AreEqual(1, you.head.count);
-            Assert.AreEqual(handCount,you.hand.count);
+            Assert.AreEqual(0, you.getHead().count);
+            int handCount = you.getHand().count; 
+            you.cmdUse(game, you.getHand().getCard<TewiInaba>());
+            Assert.AreEqual(1, you.getHead().count);
+            Assert.AreEqual(handCount,you.getHand().count);
             game.Dispose();
         }
 
@@ -307,13 +307,13 @@ namespace Tests
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 3).Concat(Enumerable.Repeat(game.getDefine<PeerlessPatriotsElixir>(), 4)));
 
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 4);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(), targets: you.field[0]);
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 5);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(), targets: you.field[0]);
-            you.cmdUse(game, you.hand.getCard<PeerlessPatriotsElixir>(), targets: you.field[0]);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 4);
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<PeerlessPatriotsElixir>(), targets: you.getField()[0]);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 5);
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<PeerlessPatriotsElixir>(), targets: you.getField()[0]);
+            you.cmdUse(game, you.getHand().getCard<PeerlessPatriotsElixir>(), targets: you.getField()[0]);
             game.Dispose();
         }
         
@@ -330,9 +330,9 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<FreezingTrap>() as CardDefine, 9).Concat(Enumerable.Repeat(game.getDefine<LunaticGun>(), 1)));
 
             game.skipUntilCanUse<LunaticGun>(you);
-            you.cmdUse(game, you.hand.getCard<LunaticGun>());
+            you.cmdUse(game, you.getHand().getCard<LunaticGun>());
             game.skipUntilCanUse<FreezingTrap>(you);
-            you.cmdUse(game, you.hand.getCard<FreezingTrap>());
+            you.cmdUse(game, you.getHand().getCard<FreezingTrap>());
             game.Dispose();
         }
         
@@ -343,7 +343,7 @@ namespace Tests
                 new KeyValuePair<int, int>(MindExplosion.ID, 3)
             );
             game.skipUntilCanUse<MindExplosion>(you);
-            you.cmdUse(game, you.hand.getCard<MindExplosion>());
+            you.cmdUse(game, you.getHand().getCard<MindExplosion>());
 
             game.Dispose();
         }
@@ -363,11 +363,11 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<TestHeal>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<Eirin_TheMaster>(), 1)));
 
             game.skipUntilCanUse<Eirin_TheMaster>(you);
-            you.cmdUse(game, you.hand.getCard<Eirin_TheMaster>());
-            you.cmdUse(game, you.hand.getCard<TestHeal>(), targets: you.master);
+            you.cmdUse(game, you.getHand().getCard<Eirin_TheMaster>());
+            you.cmdUse(game, you.getHand().getCard<TestHeal>(), targets: you.getMaster());
 
             game.skipUntilCanUse<LunaticShoot>(you);
-            you.cmdUse(game, you.skill);
+            you.cmdUse(game, you.getSkill());
 
             game.Dispose();
         }
@@ -380,11 +380,11 @@ namespace Tests
             );
 
             game.skipUntilCanUse<DefectedAgent>(you);
-            you.cmdUse(game, you.hand.getCard<DefectedAgent>());
+            you.cmdUse(game, you.getHand().getCard<DefectedAgent>());
 
 
             game.skipUntilCanUse<LunaticShoot>(you);
-            you.cmdUse(game, you.skill);
+            you.cmdUse(game, you.getSkill());
 
             game.Dispose();
         }
@@ -397,16 +397,16 @@ namespace Tests
             );
 
             game.skipUntilCanUse<DisbeliefAspect>(you);
-            var count = you.hand.count;
+            var count = you.getHand().count;
             you.cmdUse<DisbeliefAspect>(game);
-            Assert.AreEqual(count-1,you.hand.count);
+            Assert.AreEqual(count-1,you.getHand().count);
             game.skipUntilCanUse<FireBall>(you);
-            var fireBall = you.hand.getCard<FireBall>();
-            you.cmdUse(game,fireBall,0,oppo.master);
-            count = you.hand.count;
+            var fireBall = you.getHand().getCard<FireBall>();
+            you.cmdUse(game,fireBall,0,oppo.getMaster());
+            count = you.getHand().count;
             you.cmdUse<DisbeliefAspect>(game);
-            Assert.AreEqual(count,you.hand.count);
-            Assert.True(you.hand[count-1].define is FireBall);
+            Assert.AreEqual(count,you.getHand().count);
+            Assert.True(you.getHand()[count-1].define is FireBall);
 
             game.Dispose();
         }
@@ -416,11 +416,11 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var _,
                 new KeyValuePair<int, int>(MedicineSellman.ID, 1));
             game.skipUntilCanUse(you, game.getDefine<DefaultServant>(), game.getDefine<MedicineSellman>());
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.field.getCard<DefaultServant>().damage(game, null, 6);
-            Assert.AreEqual(1, you.field.getCard<DefaultServant>().getCurrentLife(game));
-            you.cmdUse(game, you.hand.getCard<MedicineSellman>(), 0, you.field.getCard<DefaultServant>());
-            Assert.AreEqual(5, you.field.getCard<DefaultServant>().getCurrentLife(game));
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            you.getField().getCard<DefaultServant>().damage(game, null, 6);
+            Assert.AreEqual(1, you.getField().getCard<DefaultServant>().getCurrentLife(game));
+            you.cmdUse(game, you.getHand().getCard<MedicineSellman>(), 0, you.getField().getCard<DefaultServant>());
+            Assert.AreEqual(5, you.getField().getCard<DefaultServant>().getCurrentLife(game));
         }
 
 
@@ -437,11 +437,11 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<FieldUltraRed>(), 3)));
 
             game.skipUntilHasGem(you, 10);
-            you.cmdUse(game, you.hand.getCard<FieldUltraRed>());
-            you.cmdUse(game, you.hand.getCard<FieldUltraRed>());
-            you.cmdUse(game, you.skill);
-            you.skill.setUsed(game, false);
-            you.cmdUse(game, you.skill);
+            you.cmdUse(game, you.getHand().getCard<FieldUltraRed>());
+            you.cmdUse(game, you.getHand().getCard<FieldUltraRed>());
+            you.cmdUse(game, you.getSkill());
+            you.getSkill().setUsed(game, false);
+            you.cmdUse(game, you.getSkill());
 
             game.Dispose();
         }
@@ -453,11 +453,11 @@ namespace Tests
             game.skipUntilCanUse(you, game.getDefine<FieldUltraRed>(), game.getDefine<FieldUltraRed>(), game.getDefine<LunaticShoot>());
             you.cmdUse<FieldUltraRed>(game);
             you.cmdUse<FieldUltraRed>(game);
-            you.cmdUse(game, you.skill);
+            you.cmdUse(game, you.getSkill());
             Assert.AreEqual(8, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().infoDic.First().Value.damagedValue);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.skill);
+            you.cmdUse(game, you.getSkill());
             Assert.AreEqual(2, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().infoDic.First().Value.damagedValue);
         }
     }

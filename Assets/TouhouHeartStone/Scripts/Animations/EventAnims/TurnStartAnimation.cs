@@ -28,13 +28,13 @@ namespace Game
                 table.ui.TurnTipImage.GetComponent<Animator>().Play("Display");
                 foreach (var player in table.game.players)
                 {
-                    table.setSkill(player == table.player ? table.ui.SelfSkill : table.ui.EnemySkill, player.skill);
-                    foreach (var card in player.field)
+                    table.setSkill(player == table.player ? table.ui.SelfSkill : table.ui.EnemySkill, player.getSkill());
+                    foreach (var card in player.getField())
                     {
                         var servant = table.getServant(card);
                         table.setServant(servant, card);
                     }
-                    table.setMaster(player == table.player ? table.ui.SelfMaster: table.ui.EnemyMaster, player.master);
+                    table.setMaster(player == table.player ? table.ui.SelfMaster: table.ui.EnemyMaster, player.getMaster());
                 }
             }
             if (!_timer.isExpired())

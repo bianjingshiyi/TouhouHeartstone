@@ -59,28 +59,28 @@ namespace Tests
         }
         public static void skipUntilCanUse<T>(this THHGame game, THHPlayer you) where T : CardDefine
         {
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<T>().getProp<int>(nameof(ServantCardDefine.cost)));
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<T>().getProp<int>(nameof(ServantCardDefine.cost)));
         }
         public static void skipUntilHasGem(this THHGame game, THHPlayer you, int gem)
         {
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= gem);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= gem);
         }
         public static void skipUntilCanUse(this THHGame game, THHPlayer you, params CardDefine[] card)
         {
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= card.Sum(c => c.getCost()));
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= card.Sum(c => c.getCost()));
         }
         public static void cmdUse<T>(this THHPlayer player, THHGame game, int position = 0, params Card[] targets) where T : CardDefine
         {
-            player.cmdUse(game, player.hand.getCard<T>(), position, targets);
+            player.cmdUse(game, player.getHand().getCard<T>(), position, targets);
         }
         public static void cmdUse<T>(this THHPlayer player, THHGame game, out Card servant,int position = 0, params Card[] targets) where T : ServantCardDefine
         {
-            servant = player.hand.getCard<T>();
+            servant = player.getHand().getCard<T>();
             player.cmdUse(game, servant, position, targets);
         }
         public static void cmdAttack<T>(this THHPlayer player, THHGame game, Card target) where T : CardDefine
         {
-            player.cmdAttack(game, player.field.getCard<T>(), target);
+            player.cmdAttack(game, player.getField().getCard<T>(), target);
         }
     }
 }

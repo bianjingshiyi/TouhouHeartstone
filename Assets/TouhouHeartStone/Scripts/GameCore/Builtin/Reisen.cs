@@ -33,7 +33,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.owner as THHPlayer).master.damage(game, card, 2);
+            await game.getOpponent(card.owner as THHPlayer).getMaster().damage(game, card, 2);
         }
     }
     /// <summary>
@@ -122,13 +122,13 @@ namespace TouhouHeartstone.Builtin
                 (g, c, a) =>
                 {
                     return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g) && a.card.isServant() &&
-                           a.card.getAttack(g) <= 2 && c.getOwner().field.count < 7;
+                           a.card.getAttack(g) <= 2 && c.getOwner().getField().count < 7;
                 }, async (g, c, a) =>
                 {
                     a.isCanceled = true; //取消攻击
                     THHPlayer you = c.getOwner();
                     THHPlayer oppo = a.card.getOwner();
-                    await oppo.field.moveTo(g, a.card, you.field); //交换控制权
+                    await oppo.getField().moveTo(g, a.card, you.getField()); //交换控制权
                     
                 })
         };
@@ -148,7 +148,7 @@ namespace TouhouHeartstone.Builtin
         {
             new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
             {
-                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g) && c.getOwner().field.count<=4;
+                return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g) && c.getOwner().getField().count<=4;
             },async(g,c,a)=>
             {
                  List<Card> tokens = new List<Card>();
@@ -156,9 +156,9 @@ namespace TouhouHeartstone.Builtin
                 {
                     Card token;
                     if(i!=1)
-                        token = (await c.getOwner().createToken(g,g.getDefine<AfterImage>(),c.getOwner().field.count)).card;
+                        token = (await c.getOwner().createToken(g,g.getDefine<AfterImage>(),c.getOwner().getField().count)).card;
                     else
-                        token = (await c.getOwner().createToken(g,g.getDefine<AfterImage_Main>(),c.getOwner().field.count)).card;
+                        token = (await c.getOwner().createToken(g,g.getDefine<AfterImage_Main>(),c.getOwner().getField().count)).card;
                     tokens.Add(token);
                 }
                 a.target = tokens.random(g);
@@ -222,13 +222,13 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().skill.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true), new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.SKILL, (g, c, a) =>
+            await card.getOwner().getSkill().addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true), new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.SKILL, (g, c, a) =>
             {
                 return a.player == c.getOwner() && a.card.isSkill();
             }, ID)));
-            if (card.getOwner().skill.isUsed(game))
+            if (card.getOwner().getSkill().isUsed(game))
             {
-                await card.getOwner().skill.setUsed(game, false);
+                await card.getOwner().getSkill().setUsed(game, false);
             }
         }
     }
@@ -288,7 +288,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.getOwner()).master.damage(game, card, 3);
+            await game.getOpponent(card.getOwner()).getMaster().damage(game, card, 3);
         }
     }
 
@@ -345,21 +345,21 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            if (card.getOwner().skill.isUsed(game))
+            if (card.getOwner().getSkill().isUsed(game))
             {
-                await card.getOwner().skill.setUsed(game, false);
+                await card.getOwner().getSkill().setUsed(game, false);
             }
-            if (!(card.getOwner().skill.define.Equals(game.getDefine<LunaticShoot_MindDropping>())))
+            if (!(card.getOwner().getSkill().define.Equals(game.getDefine<LunaticShoot_MindDropping>())))
             {
-                var arg = await THHCard.setDefine(card.getOwner().skill, game, game.getDefine<LunaticShoot_MindDropping>());
-                await card.getOwner().skill.addBuff(game, new GeneratedBuff(ID,
+                var arg = await THHCard.setDefine(card.getOwner().getSkill(), game, game.getDefine<LunaticShoot_MindDropping>());
+                await card.getOwner().getSkill().addBuff(game, new GeneratedBuff(ID,
                     new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
                   (g, c, a) =>
                   {
                       return a.player == c.getOwner() && a.card.isSkill();
                   }, null, async (g, c, a) =>
                   {
-                      await THHCard.setDefine(card.getOwner().skill, game, arg.beforeDefine);
+                      await THHCard.setDefine(card.getOwner().getSkill(), game, arg.beforeDefine);
                   }
                  )));
             }
@@ -444,17 +444,17 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            Card topCard = card.getOwner().deck.top;
+            Card topCard = card.getOwner().getDeck().top;
 
             while (topCard!=null && 
                    topCard.hasKeyword(game, KEYWORD.SECRET) &&
                    topCard.define is SpellCardDefine &&
-                   card.getOwner().head.count < card.getOwner().head.maxCount &&
-                   card.getOwner().head.All(c => c.define != topCard.define))
+                   card.getOwner().getHead().count < card.getOwner().getHead().maxCount &&
+                   card.getOwner().getHead().All(c => c.define != topCard.define))
             {
                 await card.getOwner().draw(game);
-                await card.getOwner().hand.moveTo(game, topCard, card.getOwner().head);
-                topCard = card.getOwner().deck.top;
+                await card.getOwner().getHand().moveTo(game, topCard, card.getOwner().getHead());
+                topCard = card.getOwner().getDeck().top;
             }
             await card.getOwner().draw(game);
         }
@@ -474,7 +474,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new THHEffectBefore<THHCard.DamageEventArg>(PILE.MASTER,
+            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new THHEffectBefore<THHCard.DamageEventArg>(PILE.MASTER,
             (g, c, a) =>
             {
                 return a.infoDic.Any(p => p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill());
@@ -510,7 +510,7 @@ namespace TouhouHeartstone.Builtin
             new THHEffectAfter<Pile.MoveCardEventArg>(PILE.ITEM,
             (g,c,a)=>{
                 return a.from.owner == c.getOwner() &&
-                a.to == c.getOwner().head &&
+                a.to == c.getOwner().getHead() &&
                 a.card.define is SpellCardDefine &&
                 a.card.hasKeyword(g,KEYWORD.SECRET);
             },null,
@@ -537,7 +537,7 @@ namespace TouhouHeartstone.Builtin
 
                 if (spellsUsedInTurn.Length>1)
                 {
-                    return c.getOwner().hand.add(g, g.createCard(spellsUsedInTurn[spellsUsedInTurn.Length - 2].define));
+                    return c.getOwner().getHand().add(g, g.createCard(spellsUsedInTurn[spellsUsedInTurn.Length - 2].define));
                 }
                 return Task.CompletedTask;
             })

@@ -13,7 +13,7 @@ namespace Game
             {
                 table.ui.InitReplaceDialog.display();
                 table.ui.InitReplaceDialog.InitReplaceCardList.clearItems();
-                table.ui.InitReplaceDialog.InitReplaceCardList.updateItems(table.player.init, (i, c) => i.Card.card == c, (item, card) =>
+                table.ui.InitReplaceDialog.InitReplaceCardList.updateItems(table.player.getInit(), (i, c) => i.Card.card == c, (item, card) =>
                 {
                     item.Card.card = card;//TODO:如果不这么做会导致下面的换卡逻辑无法使用，这口屎只能暂时吃了。
                     table.setCard(item.Card, card, true);
@@ -23,7 +23,7 @@ namespace Game
                         item.MarkImage.enabled = !item.MarkImage.enabled;
                     });
                 });
-                table.ui.InitReplaceDialog.InitReplaceCardList.sortItems((a, b) => table.player.init.indexOf(a.Card.card) - table.player.init.indexOf(b.Card.card));
+                table.ui.InitReplaceDialog.InitReplaceCardList.sortItems((a, b) => table.player.getInit().indexOf(a.Card.card) - table.player.getInit().indexOf(b.Card.card));
                 table.ui.InitReplaceDialog.ConfirmButtonBlack.gameObject.SetActive(true);
                 table.ui.InitReplaceDialog.WaitingText.SetActive(false);
                 table.ui.InitReplaceDialog.ConfirmButtonBlack.asButton.onClick.set(() =>

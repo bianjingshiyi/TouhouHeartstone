@@ -28,7 +28,7 @@ namespace Tests
                 yield return new WaitForSeconds(.1f);
             }
             var actions = ai.calcActions(game, player);
-            Assert.AreEqual(player.hand.count, actions.Count);
+            Assert.AreEqual(player.getHand().count, actions.Count);
             UseResponse use = actions.Keys.First() as UseResponse;
             Assert.NotNull(use);
         }

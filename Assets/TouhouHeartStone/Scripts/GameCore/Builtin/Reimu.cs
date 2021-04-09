@@ -30,22 +30,22 @@ namespace TouhouHeartstone.Builtin
                     game.getDefine<ManaTotem>(),
                     game.getDefine<TauntTotem>()
                 };
-                if(totemDefines.All(d=>card.getOwner().field.Any(c=>c.define==d)) ||//场上四种类型的图腾都有
-                    !totemDefines.Any(d=>card.getOwner().field.Any(c=>c.define==d)))//或者都没有
+                if(totemDefines.All(d=>card.getOwner().getField().Any(c=>c.define==d)) ||//场上四种类型的图腾都有
+                    !totemDefines.Any(d=>card.getOwner().getField().Any(c=>c.define==d)))//或者都没有
                 {
                     //随便召唤一种类型的图腾
                     CardDefine totemDefine = totemDefines[game.randomInt(0,3)];
-                    return card.getOwner().createToken(game,totemDefine,card.getOwner().field.count);
+                    return card.getOwner().createToken(game,totemDefine,card.getOwner().getField().count);
                 }
                 else
                 {
                     //召唤一种场上没有的图腾
-                    CardDefine totemDefine = totemDefines.Where(d=>!card.getOwner().field.Any(c=>c.define==d)).shuffle(game).First();
-                    return card.getOwner().createToken(game,totemDefine,card.getOwner().field.count);
+                    CardDefine totemDefine = totemDefines.Where(d=>!card.getOwner().getField().Any(c=>c.define==d)).shuffle(game).First();
+                    return card.getOwner().createToken(game,totemDefine,card.getOwner().getField().count);
                 }
             },(game,card)=>
             {
-                return !card.getOwner().field.isFull;
+                return !card.getOwner().getField().isFull;
             })
         };
     }
@@ -69,7 +69,7 @@ namespace TouhouHeartstone.Builtin
                 return false;
             },async (game,card,arg)=>
             {
-                await THHCard.heal(arg.player.field,game,card,1);
+                await THHCard.heal(arg.player.getField(),game,card,1);
             })
         };
     }
@@ -124,10 +124,10 @@ namespace TouhouHeartstone.Builtin
             },async (game,card,arg,targets)=>
             {
                 THHPlayer opponent = game.getOpponent(arg.player);
-                if(opponent.field.count<4)
-                    await opponent.field.damage(game,card, arg.player.getSpellDamage(game,2));
+                if(opponent.getField().count<4)
+                    await opponent.getField().damage(game,card, arg.player.getSpellDamage(game,2));
                 else
-                    await opponent.field.randomTake(game,3).damage(game,card, arg.player.getSpellDamage(game,2));
+                    await opponent.getField().randomTake(game,3).damage(game,card, arg.player.getSpellDamage(game,2));
             })
         };
     }

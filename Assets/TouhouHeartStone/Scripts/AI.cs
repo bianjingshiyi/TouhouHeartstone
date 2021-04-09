@@ -91,30 +91,30 @@ namespace Game
         {
             Dictionary<Response, float> responseDic = new Dictionary<Response, float>();
             UseResponse use;
-            if (player.skill.isUsable(game, player, out _))
+            if (player.getSkill().isUsable(game, player, out _))
             {
-                if (player.skill.isNeedTarget(game, out var targets))
+                if (player.getSkill().isNeedTarget(game, out var targets))
                 {
-                    foreach (var target in targets.Where(t => player.skill.isValidTarget(game, t)))
+                    foreach (var target in targets.Where(t => player.getSkill().isValidTarget(game, t)))
                     {
-                        use = new UseResponse() {cardId = player.skill.id, targetsId = new int[] {target.id}};
+                        use = new UseResponse() {cardId = player.getSkill().id, targetsId = new int[] {target.id}};
                         responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
                     }
                 }
                 else
                 {
-                    use = new UseResponse() {cardId = player.skill.id};
+                    use = new UseResponse() {cardId = player.getSkill().id};
                     responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
                 }
             }
 
-            foreach (var card in player.hand)
+            foreach (var card in player.getHand())
             {
                 if (!card.isUsable(game, player, out _))
                     continue;
                 if (card.define is ServantCardDefine && card.define.getActiveEffect() == null)
                 {
-                    for (int i = 0; i < player.field.count + 1; i++)
+                    for (int i = 0; i < player.getField().count + 1; i++)
                     {
                         if (card.isNeedTarget(game, out var targets) && targets.Length > 0)
                         {
@@ -151,47 +151,47 @@ namespace Game
                 }
             }
 
-            if (player.master.canAttack(game))
+            if (player.getMaster().canAttack(game))
             {
                 THHPlayer opponent = game.getOpponent(player);
-                if (player.master.isAttackable(game, player, opponent.master, out _))
+                if (player.getMaster().isAttackable(game, player, opponent.getMaster(), out _))
                 {
-                    int value = player.master.getAttack(game) > opponent.master.getCurrentLife(game)
-                        ? opponent.master.getLife(game)
-                        : player.master.getAttack(game);
-                    responseDic.Add(new AttackResponse() {cardId = player.master.id, targetId = opponent.master.id},
+                    int value = player.getMaster().getAttack(game) > opponent.getMaster().getCurrentLife(game)
+                        ? opponent.getMaster().getLife(game)
+                        : player.getMaster().getAttack(game);
+                    responseDic.Add(new AttackResponse() {cardId = player.getMaster().id, targetId = opponent.getMaster().id},
                         value);
                 }
 
-                foreach (var target in opponent.field)
+                foreach (var target in opponent.getField())
                 {
-                    if (!player.master.isAttackable(game, player, target, out _))
+                    if (!player.getMaster().isAttackable(game, player, target, out _))
                         continue;
-                    int value = player.master.getAttack(game) > target.getCurrentLife(game)
+                    int value = player.getMaster().getAttack(game) > target.getCurrentLife(game)
                         ? target.getAttack(game) + target.getCurrentLife(game)
-                        : player.master.getAttack(game);
-                    value += player.master.getCurrentLife(game) > target.getAttack(game)
+                        : player.getMaster().getAttack(game);
+                    value += player.getMaster().getCurrentLife(game) > target.getAttack(game)
                         ? -target.getAttack(game)
-                        : -player.master.getLife(game);
-                    responseDic.Add(new AttackResponse() {cardId = player.master.id, targetId = target.id},
+                        : -player.getMaster().getLife(game);
+                    responseDic.Add(new AttackResponse() {cardId = player.getMaster().id, targetId = target.id},
                         value);
                 }
             }
 
-            foreach (var servant in player.field)
+            foreach (var servant in player.getField())
             {
                 if (!servant.canAttack(game))
                     continue;
                 THHPlayer opponent = game.getOpponent(player);
-                if (servant.isAttackable(game, player, opponent.master, out _))
+                if (servant.isAttackable(game, player, opponent.getMaster(), out _))
                 {
-                    int value = servant.getAttack(game) > opponent.master.getCurrentLife(game)
-                        ? opponent.master.getLife(game)
+                    int value = servant.getAttack(game) > opponent.getMaster().getCurrentLife(game)
+                        ? opponent.getMaster().getLife(game)
                         : servant.getAttack(game);
-                    responseDic.Add(new AttackResponse() {cardId = servant.id, targetId = opponent.master.id}, value);
+                    responseDic.Add(new AttackResponse() {cardId = servant.id, targetId = opponent.getMaster().id}, value);
                 }
 
-                foreach (var target in opponent.field)
+                foreach (var target in opponent.getField())
                 {
                     if (!servant.isAttackable(game, player, target, out _))
                         continue;
@@ -262,39 +262,39 @@ namespace Game
                     return true;
                 case SlashOfPresentWorld _:
                     value = Youmu.isPreHeated(game, card)
-                        ? calcBuffValue(game, player, oppo, player.master, 3, 0)
-                        : calcBuffValue(game, player, oppo, player.master, 2, 0);
+                        ? calcBuffValue(game, player, oppo, player.getMaster(), 3, 0)
+                        : calcBuffValue(game, player, oppo, player.getMaster(), 2, 0);
                     return true;
                 case Meditation _:
                     value = Youmu.isPreHeated(game, card) ? 3 : 2;
                     return true;
                 case FantasyOfEnteringEnlightenment _:
-                    value = Youmu.isPreHeated(game, card) ? calcBuffValue(game, player, oppo, player.master, 0, 6) : 0;
+                    value = Youmu.isPreHeated(game, card) ? calcBuffValue(game, player, oppo, player.getMaster(), 0, 6) : 0;
                     return true;
                 case HalfPhantonSlam _:
-                    value = calcDamageValue(game, player, oppo, target, player.master.getArmor(game));
+                    value = calcDamageValue(game, player, oppo, target, player.getMaster().getArmor(game));
                     return true;
                 case Roukanken _:
-                    value = player.item == null
+                    value = player.getItem() == null
                         ? calcWeaponValue(game, card)
-                        : calcWeaponValue(game, card) - calcWeaponValue(player.item.getAttack(game),
-                            player.item.getCurrentLife(game));
+                        : calcWeaponValue(game, card) - calcWeaponValue(player.getItem().getAttack(game),
+                            player.getItem().getCurrentLife(game));
                     return true;
                 case TwoHundredYojanaOneSlash _:
                     value = Youmu.isPreHeated(game, card) ? 4 : 2;
                     return true;
                 case CherryBlossomFlashing _:
-                    value = calcAOEDamageValue(game, player, oppo, oppo.field, player.master.getAttack(game));
+                    value = calcAOEDamageValue(game, player, oppo, oppo.getField(), player.getMaster().getAttack(game));
                     return true;
                 case FiveSignsOfTheDyingDeva _:
                     value = Youmu.isPreHeated(game, card)
-                        ? calcBuffValue(game, player, oppo, player.master, 7, 0)
-                        : calcBuffValue(game, player, oppo, player.master, 5, 0);
+                        ? calcBuffValue(game, player, oppo, player.getMaster(), 7, 0)
+                        : calcBuffValue(game, player, oppo, player.getMaster(), 5, 0);
                     return true;
                 case Hakurouken _:
-                    value = player.item == null
+                    value = player.getItem() == null
                         ? calcWeaponValue(game, card)
-                        : calcBuffValue(game, player, oppo, player.item, 0, card.getLife(game));
+                        : calcBuffValue(game, player, oppo, player.getItem(), 0, card.getLife(game));
                     return true;
                 default:
                     value = 0;
@@ -311,7 +311,7 @@ namespace Game
                     value = calcDamageValue(game, player, opponent, target, 1);
                     return true;
                 case AutumnEdge _:
-                    value = calcRandomDamageValue(game, player, opponent, opponent.field, 2);
+                    value = calcRandomDamageValue(game, player, opponent, opponent.getField(), 2);
                     return true;
                 case SpringWind _:
                     value = calcBuffValue(game, player, opponent, target, 0, 2);
@@ -326,7 +326,7 @@ namespace Game
                     value = calcServantValue(1, 1);
                     return true;
                 case MultiCast _:
-                    value = player.hand.Where(c => c.isSpell() && c.getCost(game) > 1).Count() > 0 ? 2 : 0;
+                    value = player.getHand().Where(c => c.isSpell() && c.getCost(game) > 1).Count() > 0 ? 2 : 0;
                     return true;
                 case TheGreatLibrary _:
                     value = 1;
@@ -341,13 +341,13 @@ namespace Game
                     value = 2;
                     return true;
                 case MetalFatigue _:
-                    value = calcAOEDamageValue(game, player, opponent, opponent.field, 3);
+                    value = calcAOEDamageValue(game, player, opponent, opponent.getField(), 3);
                     return true;
                 case SylphyHorn _:
                     value = calcBuffValue(game, player, opponent, target, 3, 6);
                     return true;
                 case PrincessUndine _:
-                    value = calcAOEDamageValue(game, player, opponent, player.field, 3);
+                    value = calcAOEDamageValue(game, player, opponent, player.getField(), 3);
                     return true;
                 case AgniShine _:
                     value = calcDamageValue(game, player, opponent, target, 7);
@@ -356,35 +356,35 @@ namespace Game
                     value = calcServantValue(3, 9);
                     return true;
                 case RoyalFlare _:
-                    value = calcDamageValue(game, player, opponent, opponent.master, 15);
+                    value = calcDamageValue(game, player, opponent, opponent.getMaster(), 15);
                     return true;
                 case SilentSelene _:
-                    value = -calcServantsValue(game, player, opponent, opponent.field);
+                    value = -calcServantsValue(game, player, opponent, opponent.getField());
                     return true;
                 case ElementalHarvester _:
-                    value = calcAOEDamageValue(game, player, opponent, opponent.field, 2);
+                    value = calcAOEDamageValue(game, player, opponent, opponent.getField(), 2);
                     return true;
                 case BurgeoningRise _:
                     value = calcBuffValue(game, player, opponent, target, 3, 3) +
                         calcServantValue(game, player, opponent, target) - 1;
                     return true;
                 case PhlogisticRain _:
-                    value = calcRandomDamageValue(game, player, opponent, opponent.field.Append(opponent.master), 1) *
+                    value = calcRandomDamageValue(game, player, opponent, opponent.getField().Append(opponent.getMaster()), 1) *
                             6;
                     return true;
                 case StElmoPillar _:
                     value = calcDamageValue(game, player, opponent, target, 4) +
-                            calcDamageValue(game, player, opponent, opponent.master, 4);
+                            calcDamageValue(game, player, opponent, opponent.getMaster(), 4);
                     return true;
                 case NoachianDeluge _:
                     value = calcServantValue(2, 2) + 1;
                     return true;
                 case MercuryPoison _:
-                    value = calcAOEDamageValue(game, player, opponent, opponent.field, 3);
+                    value = calcAOEDamageValue(game, player, opponent, opponent.getField(), 3);
                     return true;
                 case ForestBlaze _:
-                    value = calcBuffAllValue(game, player, opponent, player.field, 2, 2) +
-                            calcRandomDamageValue(game, player, opponent, opponent.field, 1) * player.field.count;
+                    value = calcBuffAllValue(game, player, opponent, player.getField(), 2, 2) +
+                            calcRandomDamageValue(game, player, opponent, opponent.getField(), 1) * player.getField().count;
                     return true;
                 case WaterElf _:
                     value = calcHealingValue(game, player, opponent, target,
@@ -394,10 +394,10 @@ namespace Game
                     return true;
                 case LavaCromlech _:
                     value = (calcServantValue(2, 2) +
-                             calcRandomDamageValue(game, player, opponent, opponent.field, 2)) * 3;
+                             calcRandomDamageValue(game, player, opponent, opponent.getField(), 2)) * 3;
                     return true;
                 case GingerGust _:
-                    value = (calcServantValue(3, 1) + 1) * opponent.field.count;
+                    value = (calcServantValue(3, 1) + 1) * opponent.getField().count;
                     return true;
                 default:
                     value = 0;
@@ -411,25 +411,25 @@ namespace Game
             switch (card.define)
             {
                 case LunaticShoot _:
-                    value = calcDamageValue(game, player, opponent, opponent.master, 2);
+                    value = calcDamageValue(game, player, opponent, opponent.getMaster(), 2);
                     return true;
                 case LunaticShoot_MindDropping _:
                     value = calcDamageValue(game, player, opponent, target, 2);
                     return true;
                 case XWave _:
-                    value = 2 + opponent.field.count;
+                    value = 2 + opponent.getField().count;
                     return true;
                 case MindStopper _:
-                    value = 2 + opponent.field.count == 0 ? 1 : 0;
+                    value = 2 + opponent.getField().count == 0 ? 1 : 0;
                     return true;
                 case MindShaker _:
-                    value = 2 + opponent.field.count;
+                    value = 2 + opponent.getField().count;
                     return true;
                 case DisorderEye _:
-                    value = 2 + opponent.field.count == 0 ? 0 : 1;
+                    value = 2 + opponent.getField().count == 0 ? 0 : 1;
                     return true;
                 case VisionaryTuning _:
-                    value = 2 + player.field.count + player.master.getCurrentLife(game) < 15 ? 2 : 0;
+                    value = 2 + player.getField().count + player.getMaster().getCurrentLife(game) < 15 ? 2 : 0;
                     return true;
                 case FieldUltraViolet _:
                     value = 1;
@@ -439,13 +439,13 @@ namespace Game
                         opponent, target);
                     return true;
                 case MindExplosion _:
-                    value = calcDamageValue(game, player, opponent, opponent.master, 5);
+                    value = calcDamageValue(game, player, opponent, opponent.getMaster(), 5);
                     return true;
                 case MindDropping _:
                     value = 1;
                     return true;
                 case LunaticGun _:
-                    value = player.item == null ? calcWeaponValue(game, card) : 0;
+                    value = player.getItem() == null ? calcWeaponValue(game, card) : 0;
                     return true;
                 case DisbeliefAspect _:
                     value = 1;
@@ -474,14 +474,14 @@ namespace Game
                     value = 5 * calcRandomHealingValue(game, player, opponent, game.getAllAllys(player), 1);
                     return true;
                 case GuestStarsMiracle _:
-                    value = calcAOEDamageValue(game, player, opponent, opponent.field, 2);
+                    value = calcAOEDamageValue(game, player, opponent, opponent.getField(), 2);
                     return true;
                 case OpenSeaMiracle _:
                     value = calcDamageValue(game, player, opponent, target, 2);
                     return true;
                 case GodWind _:
-                    value = -calcServantsValue(game, player, opponent, opponent.field) -
-                            calcServantsValue(game, player, opponent, player.field);
+                    value = -calcServantsValue(game, player, opponent, opponent.getField()) -
+                            calcServantsValue(game, player, opponent, player.getField());
                     return true;
                 case ForgottenRecrption _:
                     value = 1;
@@ -496,20 +496,20 @@ namespace Game
                     value = calcDamageValue(game, player, opponent, target, 4);
                     return true;
                 case Bomb3 _:
-                    value = calcRandomDamageValue(game, player, opponent, opponent.field, 4);
+                    value = calcRandomDamageValue(game, player, opponent, opponent.getField(), 4);
                     return true;
                 case Bomb4 _:
-                    value = 6 * calcRandomDamageValue(game, player, opponent, opponent.field.Concat(player.field), 1);
+                    value = 6 * calcRandomDamageValue(game, player, opponent, opponent.getField().Concat(player.getField()), 1);
                     return true;
                 case GodSummon _:
                     value = 1;
                     return true;
                 case PlagueOfMishaguchi _:
-                    value = calcDamageValue(game, player, opponent, player.master, target.getLife(game)) +
+                    value = calcDamageValue(game, player, opponent, player.getMaster(), target.getLife(game)) +
                             calcServantValue(target.getAttack(game), target.getCurrentLife(game));
                     return true;
                 case PlagueOfFrogs _:
-                    value = opponent.field.count * calcServantValue(2, 2);
+                    value = opponent.getField().count * calcServantValue(2, 2);
                     return true;
                 case PlagueOfHibernation _:
                     value = 1;
@@ -533,7 +533,7 @@ namespace Game
                     value += calcDamageValue(game, player, opponent, target, 2);
                     return true;
                 case FlameFairy _:
-                    value += calcRandomDamageValue(game, player, opponent, opponent.field, 1);
+                    value += calcRandomDamageValue(game, player, opponent, opponent.getField(), 1);
                     return true;
                 case LunaChild _:
                     value += calcStealthValue(game, player, opponent, target);
@@ -559,8 +559,8 @@ namespace Game
                     //这？
                     return true;
                 case LilyWhite _:
-                    value += calcHealingValue(game, player, opponent, player.master, 4) +
-                             calcHealingValue(game, player, opponent, opponent.master, 4) +
+                    value += calcHealingValue(game, player, opponent, player.getMaster(), 4) +
+                             calcHealingValue(game, player, opponent, opponent.getMaster(), 4) +
                              calcDrawCardsValue(game, player, opponent, 2);
                     return true;
                 case Cirno_N_YYM _:
@@ -586,7 +586,7 @@ namespace Game
                 case RemiliaScarlet_N _:
                     return true;
                 case FlandreScarlet_N _:
-                    value = calcRandomServantsValue(game, player, opponent, opponent.field, 1);
+                    value = calcRandomServantsValue(game, player, opponent, opponent.getField(), 1);
                     return true;
                 case IzayoiSakuya_N _:
                     value += calcDrawCardsValue(game, player, opponent, 1) + 4;
@@ -598,8 +598,8 @@ namespace Game
                     value -= calcServantValue(game, player, opponent, target);
                     return true;
                 case YakumoYukari_N _:
-                    value -= calcServantsValue(game, player, opponent, opponent.field) +
-                             calcServantsValue(game, player, opponent, player.field);
+                    value -= calcServantsValue(game, player, opponent, opponent.getField()) +
+                             calcServantsValue(game, player, opponent, player.getField());
                     // 加个回手value
                     return true;
                 case LunasaPrismriver_N _:
@@ -618,7 +618,7 @@ namespace Game
                     value += calcBuffValue(game, player, opponent, target, 1 - target.getAttack(game), 0);
                     return true;
                 case ReisenUdongeinInaba_N _:
-                    value += calcDamageValue(game, player, opponent, opponent.master, 4);
+                    value += calcDamageValue(game, player, opponent, opponent.getMaster(), 4);
                     return true;
                 case TewiInaba_N _:
                     return true;
@@ -633,7 +633,7 @@ namespace Game
                     value += calcDrawCardsValue(game, player, opponent, 1);
                     return true;
                 case YoukaiSmith _:
-                    value += player.item?.getAttack(game) ?? 0;
+                    value += player.getItem()?.getAttack(game) ?? 0;
                     return true;
                 case Koakuma _:
                     value += calcDrawCardsValue(game, player, opponent, 1);
@@ -847,7 +847,7 @@ namespace Game
 
         float calcFreezeValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
         {
-            if (target == opponent.master || opponent.field.Contains(target))
+            if (target == opponent.getMaster() || opponent.getField().Contains(target))
                 return target.getAttack(game);
             return -target.getAttack(game);
         }
@@ -882,11 +882,11 @@ namespace Game
 
         float calcStealthValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
         {
-            if (player.field.Contains(target))
+            if (player.getField().Contains(target))
                 return target.getAttack(game) - target.getCurrentLife(game);
             if (target.isStealth(game))
                 return target.getAttack(game) - target.getLife(game);
-            if (opponent.field.Contains(target) && target.hasKeyword(game, KEYWORD.TAUNT))
+            if (opponent.getField().Contains(target) && target.hasKeyword(game, KEYWORD.TAUNT))
                 return target.getCurrentLife(game);
             return 0;
         }

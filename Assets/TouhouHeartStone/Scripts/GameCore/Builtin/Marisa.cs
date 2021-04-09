@@ -130,7 +130,7 @@ namespace TouhouHeartstone.Builtin
                 return true;
             },(game,card,targets)=>
             {
-                if(targets[0] is Card target && target.pile == game.getOpponent(card.owner).field)
+                if(targets[0] is Card target && target.pile == game.getOpponent(card.owner).getField())
                     return true;
                 return false;
             },async (game,card,arg,targets)=>

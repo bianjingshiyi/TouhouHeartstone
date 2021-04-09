@@ -13,12 +13,12 @@ namespace Game
             table.closeDiscoverDialog();
             table.ui.TurnEndButton.interactable = false;
 
-            if (table.tryGetMaster(eventArg.player.master, out var master))
+            if (table.tryGetMaster(eventArg.player.getMaster(), out var master))
             {
-                table.setMaster(master, eventArg.player.master);
+                table.setMaster(master, eventArg.player.getMaster());
             }
 
-            foreach (TouhouCardEngine.Card s in eventArg.player.field)
+            foreach (TouhouCardEngine.Card s in eventArg.player.getField())
             {
                 if (table.tryGetServant(s, out var servant))
                 {

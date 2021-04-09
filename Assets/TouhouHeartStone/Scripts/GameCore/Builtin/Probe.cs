@@ -73,7 +73,7 @@ namespace TouhouHeartstone.Builtin.Proble
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.owner as THHPlayer).master.damage(game, card, 2);
+            await game.getOpponent(card.owner as THHPlayer).getMaster().damage(game, card, 2);
         }
     }
 
@@ -95,7 +95,7 @@ namespace TouhouHeartstone.Builtin.Proble
 
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getDefine<Pylon>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getDefine<Pylon>(), card.getOwner().getField().count);
         }
 
     }
@@ -180,10 +180,10 @@ namespace TouhouHeartstone.Builtin.Proble
         static async Task effect(THHGame game, Card card)
         {
             //召唤水晶塔
-            await card.getOwner().createToken(game, game.getDefine<Pylon>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getDefine<Pylon>(), card.getOwner().getField().count);
 
             //buff
-            foreach (var servant in card.getOwner().field)
+            foreach (var servant in card.getOwner().getField())
             {
                 if (servant.define.id == Pylon.ID)
                 {
@@ -217,7 +217,7 @@ namespace TouhouHeartstone.Builtin.Proble
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getDefine<Vision>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getDefine<Vision>(), card.getOwner().getField().count);
         }
     }
 
@@ -263,8 +263,8 @@ namespace TouhouHeartstone.Builtin.Proble
         static async Task effect(THHGame game, Card card)
         {
             //遍历牌库寻找法力消耗最高的牌
-            Card _card = card.getOwner().deck.top;
-            foreach (Card c in card.getOwner().deck)
+            Card _card = card.getOwner().getDeck().top;
+            foreach (Card c in card.getOwner().getDeck())
             {
                 if (c.getCost(game) > _card.getCost(game))
                 {
@@ -395,8 +395,8 @@ namespace TouhouHeartstone.Builtin.Proble
         };
         static async Task effect(THHGame game, Card card)
         {
-            var discovered = await card.getOwner().discover(game, card.getOwner().grave.Where(c => c.isServant() && ((IList)c.getTags(game)).Contains(TAG.MACHINE)));
-            var theReborned = (await card.getOwner().reborn(game, discovered, card.getOwner().field)).card;
+            var discovered = await card.getOwner().discover(game, card.getOwner().getGrave().Where(c => c.isServant() && ((IList)c.getTags(game)).Contains(TAG.MACHINE)));
+            var theReborned = (await card.getOwner().reborn(game, discovered, card.getOwner().getField())).card;
             await theReborned.addBuff(game, new GeneratedBuff(ID, new AttackModifier(3, true), new LifeModifier(3, true)));
 
         }
@@ -447,7 +447,7 @@ namespace TouhouHeartstone.Builtin.Proble
             //存在目标的法术
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await target.getOwner().field.moveTo(game, target, card.getOwner().field);
+                await target.getOwner().getField().moveTo(game, target, card.getOwner().getField());
                 await target.addBuff(game , new GeneratedBuff(ID,new AttackModifier(3,true),new LifeModifier(3,true)));
             }, PileFlag.oppo | PileFlag.field,onCheckTarget:(g,c,t)=> t.define.hasTag(TAG.MACHINE))//后缀表示只能指向随从
         };
@@ -504,7 +504,7 @@ namespace TouhouHeartstone.Builtin.Proble
                     return a.player == c.getOwner();
                 },null,(g,c,a)=>
                 {
-                    return c.getOwner().createToken(g, g.getDefine<MiniRobot>(), c.getOwner().field.count);
+                    return c.getOwner().createToken(g, g.getDefine<MiniRobot>(), c.getOwner().getField().count);
                 }
             )
 
@@ -549,12 +549,12 @@ namespace TouhouHeartstone.Builtin.Proble
                 int right = target.pile.indexOf(target) + 1;
                 if(left >= 0)
                 {
-                    await game.getOpponent(card.getOwner()).field[left].damage(game,card,dam);
+                    await game.getOpponent(card.getOwner()).getField()[left].damage(game,card,dam);
                 }
 
-                if(game.getOpponent(card.getOwner()).field.right != target)
+                if(game.getOpponent(card.getOwner()).getField().right != target)
                 {
-                    await game.getOpponent(card.getOwner()).field[right].damage(game,card,dam);
+                    await game.getOpponent(card.getOwner()).getField()[right].damage(game,card,dam);
                 }
 
             }, PileFlag.oppo | PileFlag.field)//后缀表示只能指向随从
@@ -650,7 +650,7 @@ namespace TouhouHeartstone.Builtin.Proble
 
         static async Task effect(THHGame game, Card card)
         {
-            if (Probe.isJoinForce(card.getOwner().field, card))
+            if (Probe.isJoinForce(card.getOwner().getField(), card))
             {
                 for (int i = 0; i < 3; i++)
                 {
@@ -680,9 +680,9 @@ namespace TouhouHeartstone.Builtin.Proble
 
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.getOwner()).field.damageByRandomCount(game, card, 3, 1);
+            await game.getOpponent(card.getOwner()).getField().damageByRandomCount(game, card, 3, 1);
             await card.getOwner().createToken(game, game.getDefine<KarasuTenguobot>());
-            await card.getOwner().hand.add(game, game.createCard<CirculationOfGossip_2>());
+            await card.getOwner().getHand().add(game, game.createCard<CirculationOfGossip_2>());
         }
     }
 
@@ -706,10 +706,10 @@ namespace TouhouHeartstone.Builtin.Proble
 
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.getOwner()).field.damageByRandomCount(game, card, 6, 2);
+            await game.getOpponent(card.getOwner()).getField().damageByRandomCount(game, card, 6, 2);
             await card.getOwner().createToken(game, game.getDefine<KarasuTenguobot>());
             await card.getOwner().createToken(game, game.getDefine<KarasuTenguobot>());
-            await card.getOwner().hand.add(game, game.createCard<CirculationOfGossip_3>());
+            await card.getOwner().getHand().add(game, game.createCard<CirculationOfGossip_3>());
         }
     }
 
@@ -733,7 +733,7 @@ namespace TouhouHeartstone.Builtin.Proble
 
         static async Task effect(THHGame game, Card card)
         {
-            IEnumerable<Card> cards = game.getOpponent(card.getOwner()).field;
+            IEnumerable<Card> cards = game.getOpponent(card.getOwner()).getField();
             if (cards.Count() > 3)
             {
                 cards = cards.randomTake(game, 3);
@@ -814,11 +814,11 @@ namespace TouhouHeartstone.Builtin.Proble
 
         static Task effect(THHGame game, Card card)
         {
-            IEnumerable<Card> cards = game.getOpponent(card.getOwner()).field;
+            IEnumerable<Card> cards = game.getOpponent(card.getOwner()).getField();
 
             List<Card> results = new List<Card>();
 
-            int maxAttack = game.getOpponent(card.getOwner()).field[0].getAttack(game);
+            int maxAttack = game.getOpponent(card.getOwner()).getField()[0].getAttack(game);
             foreach (Card c in cards)
             {
                 if (c.getAttack(game) > maxAttack)
@@ -856,11 +856,11 @@ namespace TouhouHeartstone.Builtin.Proble
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.damage(game,card,1);
-                await card.getOwner().skill.addBuff(game,new GeneratedBuff(ID,new CostModifier(0,true),
+                await card.getOwner().getSkill().addBuff(game,new GeneratedBuff(ID,new CostModifier(0,true),
                                                          new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.SKILL,ID)));
-                if(card.getOwner().skill.isUsed(game) == true)
+                if(card.getOwner().getSkill().isUsed(game) == true)
                 {
-                    await card.getOwner().skill.setUsed(game,false);
+                    await card.getOwner().getSkill().setUsed(game,false);
                 }
             }, PileFlag.oppo | PileFlag.character)
 
@@ -889,7 +889,7 @@ namespace TouhouHeartstone.Builtin.Proble
                     return a.player == c.getOwner() && a.card.isSkill();
                 },null,(g,c,a)=>
                 {
-                        return c.getOwner().skill.setUsed(g,false);
+                        return c.getOwner().getSkill().setUsed(g,false);
 
                  }
             )
@@ -987,11 +987,11 @@ namespace TouhouHeartstone.Builtin.Proble
             new THHEffectBefore<THHCard.AttackEventArg>(PILE.FIELD,
                                                       (g, c, a) =>
                                                       {
-                                                          return a.card.getOwner() == g.getOpponent(c.getOwner()) && !c.getOwner().field.isFull;
+                                                          return a.card.getOwner() == g.getOpponent(c.getOwner()) && !c.getOwner().getField().isFull;
                                                       },null,
                                                       async (g, c, a) =>
                                                       {
-                                                          var token = await c.getOwner().createToken(g,g.getDefine<PersevereMan>(),c.getOwner().field.count);
+                                                          var token = await c.getOwner().createToken(g,g.getDefine<PersevereMan>(),c.getOwner().getField().count);
                                                           a.target = token.card;
                                                           await c.setDead(g,true);
                                                           await g.updateDeath();

@@ -23,8 +23,8 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(ParticulateLaser.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<ParticulateLaser>().cost);
-            you.cmdUse(game, you.hand.getCard<ParticulateLaser>(), targets: oppo.master);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<ParticulateLaser>().cost);
+            you.cmdUse(game, you.getHand().getCard<ParticulateLaser>(), targets: oppo.getMaster());
             game.Dispose();
         }
 
@@ -40,7 +40,7 @@ namespace Tests
             // 快进到可以使用此卡
             game.skipUntilCanUse<BulidPylon>(you);
             // 我方使用召唤水晶塔
-            you.cmdUse(game, you.hand.getCard<BulidPylon>());
+            you.cmdUse(game, you.getHand().getCard<BulidPylon>());
             // 回合结束
             you.cmdTurnEnd(game);
             // 快进到你的回合
@@ -60,13 +60,13 @@ namespace Tests
             );
             game.skipUntilCanUse<BulidPylon>(you);
             // 我方使用召唤水晶塔
-            you.cmdUse(game, you.hand.getCard<BulidPylon>());
+            you.cmdUse(game, you.getHand().getCard<BulidPylon>());
             // 回合结束
             you.cmdTurnEnd(game);
             game.skipUntilCanUse<PylonOverload>(you);
-            you.cmdUse(game, you.hand.getCard<PylonOverload>());
-            Debug.Log("第一个水晶塔是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game));
-            Debug.Log("第二个水晶塔是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game));
+            you.cmdUse(game, you.getHand().getCard<PylonOverload>());
+            Debug.Log("第一个水晶塔是" + you.getField()[0].getAttack(game) + "/" + you.getField()[0].getLife(game));
+            Debug.Log("第二个水晶塔是" + you.getField()[1].getAttack(game) + "/" + you.getField()[1].getLife(game));
             game.Dispose();
         }
 
@@ -83,15 +83,15 @@ namespace Tests
             );
             
             game.skipUntilCanUse<Protoss>(you);
-            you.cmdUse(game, you.hand.getCard<Protoss>());
+            you.cmdUse(game, you.getHand().getCard<Protoss>());
             game.skipUntilCanUse<Protoss>(you);
-            you.cmdUse(game, you.hand.getCard<Protoss>());
+            you.cmdUse(game, you.getHand().getCard<Protoss>());
             game.Dispose();
             int i = 0;
-            foreach(Card s in you.field)
+            foreach(Card s in you.getField())
             {
                 
-                Debug.Log("第"+i+"个是" + you.field[i].getAttack(game) + "/" + you.field[i].getLife(game));
+                Debug.Log("第"+i+"个是" + you.getField()[i].getAttack(game) + "/" + you.getField()[i].getLife(game));
                 i++;
             }
             game.Dispose();
@@ -112,7 +112,7 @@ namespace Tests
             // 回合结束
             //you.cmdTurnEnd(game);    
             game.skipUntilCanUse<ProphetRobot>(you);
-            you.cmdUse(game, you.hand.getCard<ProphetRobot>());
+            you.cmdUse(game, you.getHand().getCard<ProphetRobot>());
 
             game.Dispose();
         }
@@ -132,9 +132,9 @@ namespace Tests
             // 回合结束
             // you.cmdTurnEnd(game);    
             // game.skipUntilCanUse<Sentry>(you);
-            you.cmdUse(game, you.hand.getCard<Sentry>());
-            Debug.Log("第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game));
-            Debug.Log("第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game));
+            you.cmdUse(game, you.getHand().getCard<Sentry>());
+            Debug.Log("第一个是" + you.getField()[0].getAttack(game) + "/" + you.getField()[0].getLife(game));
+            Debug.Log("第二个是" + you.getField()[1].getAttack(game) + "/" + you.getField()[1].getLife(game));
             //Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
             game.Dispose();
         }
@@ -150,11 +150,11 @@ namespace Tests
                 new KeyValuePair<int, int>(Sentry.ID, 1)
             );
             game.skipUntilCanUse<Sentry>(you);
-            you.cmdUse(game, you.hand.getCard<Sentry>());
+            you.cmdUse(game, you.getHand().getCard<Sentry>());
             you.cmdTurnEnd(game);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<PsionicShock>());
+            you.cmdUse(game, you.getHand().getCard<PsionicShock>());
             game.Dispose();
         }
 
@@ -168,10 +168,10 @@ namespace Tests
                 new KeyValuePair<int, int>(EnergyAutophagy.ID, 1)
             );
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             oppo.cmdTurnEnd(game);
             game.skipUntilCanUse<EnergyAutophagy>(you);
-            you.cmdUse(game, you.hand.getCard<EnergyAutophagy>(), targets: oppo.field[0]);
+            you.cmdUse(game, you.getHand().getCard<EnergyAutophagy>(), targets: oppo.getField()[0]);
             game.Dispose();
         }
 
@@ -187,11 +187,11 @@ namespace Tests
 
             );
             game.skipUntilCanUse<Colossus>(you);
-            you.cmdUse(game, you.hand.getCard<Colossus>());
+            you.cmdUse(game, you.getHand().getCard<Colossus>());
             you.cmdTurnEnd(game);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             oppo.cmdTurnEnd(game);
             you.cmdTurnEnd(game);
             //Debug.Log( "第三个是" + you.field[2].getAttack(game) + "/" + you.field[2].getLife(game) );
@@ -211,12 +211,12 @@ namespace Tests
                 new KeyValuePair<int, int>(EnergyAutophagy.ID, 1)
             );
             game.skipUntilCanUse<Sentry>(you);
-            you.cmdUse(game, you.hand.getCard<Sentry>());
+            you.cmdUse(game, you.getHand().getCard<Sentry>());
             you.cmdTurnEnd(game);
             game.skipUntilCanUse<EnergyAutophagy>(you);
-            you.cmdUse(game, you.hand.getCard<EnergyAutophagy>(), targets: you.field[0]);
-            you.cmdUse(game, you.hand.getCard<ReconstructRay>(), targets: you.field[0]);
-            you.cmdUse(game, you.hand.getCard<ReconstructRay>(), targets: you.field[1]);
+            you.cmdUse(game, you.getHand().getCard<EnergyAutophagy>(), targets: you.getField()[0]);
+            you.cmdUse(game, you.getHand().getCard<ReconstructRay>(), targets: you.getField()[0]);
+            you.cmdUse(game, you.getHand().getCard<ReconstructRay>(), targets: you.getField()[1]);
             you.cmdTurnEnd(game);
 
             game.Dispose();
@@ -235,29 +235,29 @@ namespace Tests
             );
             game.skipUntilCanUse<Sentry>(you);
             //召唤3个哨兵，然后把哨兵和幻象都消灭
-            you.cmdUse(game, you.hand.getCard<Sentry>());
-            you.field[0].die(game);
-            you.field[0].die(game);
+            you.cmdUse(game, you.getHand().getCard<Sentry>());
+            you.getField()[0].die(game);
+            you.getField()[0].die(game);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<Sentry>());
-            you.field[0].die(game);
-            you.field[0].die(game);
+            you.cmdUse(game, you.getHand().getCard<Sentry>());
+            you.getField()[0].die(game);
+            you.getField()[0].die(game);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<Sentry>());
-            you.field[0].die(game);
-            you.field[0].die(game);
+            you.cmdUse(game, you.getHand().getCard<Sentry>());
+            you.getField()[0].die(game);
+            you.getField()[0].die(game);
             you.cmdTurnEnd(game);
 
             //快进到能使用山寨产品
             game.skipUntilCanUse<Imitation>(you);
-            you.cmdUse(game, you.hand.getCard<Imitation>());
+            you.cmdUse(game, you.getHand().getCard<Imitation>());
             DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
             int cardId = discoverRequest.cardIdArray[0];
-            Card card = you.grave.getCard(cardId);//随便选一张
+            Card card = you.getGrave().getCard(cardId);//随便选一张
             you.cmdDiscover(game, cardId);//选
-            Debug.Log("第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id);
+            Debug.Log("第一个是" + you.getField()[0].getAttack(game) + "/" + you.getField()[0].getLife(game) + "的" + you.getField()[0].define.id);
 
             game.Dispose();
         }
@@ -275,18 +275,18 @@ namespace Tests
                 new KeyValuePair<int, int>(Sentry.ID, 1)
             );
             game.skipUntilCanUse<Sentry>(you);
-            you.cmdUse(game, you.hand.getCard<Sentry>());
+            you.cmdUse(game, you.getHand().getCard<Sentry>());
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
 
             game.skipUntilCanUse<ProtectiveShell>(you);
-            you.cmdUse(game, you.hand.getCard<ProtectiveShell>(), targets: you.field[0]);
+            you.cmdUse(game, you.getHand().getCard<ProtectiveShell>(), targets: you.getField()[0]);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<ProtectiveShell>(), targets: you.field[1]);
+            you.cmdUse(game, you.getHand().getCard<ProtectiveShell>(), targets: you.getField()[1]);
 
-            Debug.Log("第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id);
-            Debug.Log("第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) + "的" + you.field[1].define.id);
+            Debug.Log("第一个是" + you.getField()[0].getAttack(game) + "/" + you.getField()[0].getLife(game) + "的" + you.getField()[0].define.id);
+            Debug.Log("第二个是" + you.getField()[1].getAttack(game) + "/" + you.getField()[1].getLife(game) + "的" + you.getField()[1].define.id);
 
             game.Dispose();
         }
@@ -326,16 +326,16 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getDefine<Sissel>(), 2)));
 
             game.skipUntilCanUse<Sentry>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<Sentry>());
+            oppo.cmdUse(game, oppo.getHand().getCard<Sentry>());
             oppo.cmdTurnEnd(game);
 
             game.skipUntilCanUse<Sissel>(you);
-            Card card = you.hand.getCard<Sissel>();
-            Assert.True(card.isValidTarget(game, oppo.field[0]));
-            you.cmdUse(game, you.hand.getCard<Sissel>(), targets: oppo.field[0]);
+            Card card = you.getHand().getCard<Sissel>();
+            Assert.True(card.isValidTarget(game, oppo.getField()[0]));
+            you.cmdUse(game, you.getHand().getCard<Sissel>(), targets: oppo.getField()[0]);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            Assert.False(card.isValidTarget(game, oppo.field[0]));
+            Assert.False(card.isValidTarget(game, oppo.getField()[0]));
 
             //you.cmdUse(game, you.hand.getCard<Sissel>(), targets: oppo.field[0]);
 
@@ -361,9 +361,9 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28).Concat(Enumerable.Repeat(game.getDefine<SilentCardCounter>(), 2)));
 
             game.skipUntilCanUse<SilentCardCounter>(you);
-            you.cmdUse(game, you.hand.getCard<SilentCardCounter>());
+            you.cmdUse(game, you.getHand().getCard<SilentCardCounter>());
             you.cmdTurnEnd(game);
-            oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
+            oppo.cmdUse(game, oppo.getHand().getCard<ParticulateLaser>(), targets: you.getField()[0]);
             //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
             game.Dispose();
         }
@@ -383,11 +383,11 @@ namespace Tests
             );
 
             game.skipUntilCanUse<AssemblyLine>(you);
-            you.cmdUse(game, you.hand.getCard<AssemblyLine>());
+            you.cmdUse(game, you.getHand().getCard<AssemblyLine>());
             game.skipUntilCanUse<DefaultServant>(you);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             game.skipUntilCanUse<FireBall>(you);
-            you.cmdUse(game, you.hand.getCard<FireBall>(),targets : oppo.master);
+            you.cmdUse(game, you.getHand().getCard<FireBall>(),targets : oppo.getMaster());
             //oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
             //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
             game.Dispose();
@@ -411,22 +411,22 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<ColludeWithTheEnemy>(), 3)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
 
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
 
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
 
             game.skipUntilCanUse<ColludeWithTheEnemy>(you);
-            you.cmdUse(game, you.hand.getCard<ColludeWithTheEnemy>(), targets: oppo.field[0]);
+            you.cmdUse(game, you.getHand().getCard<ColludeWithTheEnemy>(), targets: oppo.getField()[0]);
 
             game.skipUntilCanUse<ColludeWithTheEnemy>(you);
-            you.cmdUse(game, you.hand.getCard<ColludeWithTheEnemy>(), targets: oppo.field[1]);
+            you.cmdUse(game, you.getHand().getCard<ColludeWithTheEnemy>(), targets: oppo.getField()[1]);
 
             game.skipUntilCanUse<ColludeWithTheEnemy>(you);
-            you.cmdUse(game, you.hand.getCard<ColludeWithTheEnemy>(), targets: oppo.field[2]);
+            you.cmdUse(game, you.getHand().getCard<ColludeWithTheEnemy>(), targets: oppo.getField()[2]);
 
             
             game.Dispose();
@@ -450,10 +450,10 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<Corrosion>(), 3)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
 
             game.skipUntilCanUse<Corrosion>(you);
-            you.cmdUse(game, you.hand.getCard<Corrosion>(), targets: oppo.field[0]);
+            you.cmdUse(game, you.getHand().getCard<Corrosion>(), targets: oppo.getField()[0]);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
             game.Dispose();
@@ -467,9 +467,9 @@ namespace Tests
             );
 
             game.skipUntilCanUse<CablewayGuard>(you);
-            you.cmdUse(game, you.hand.getCard<CablewayGuard>());
+            you.cmdUse(game, you.getHand().getCard<CablewayGuard>());
             game.skipUntilCanUse<CablewayGuard>(you);
-            you.cmdUse(game, you.hand.getCard<CablewayGuard>());
+            you.cmdUse(game, you.getHand().getCard<CablewayGuard>());
             
             //oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
             //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
@@ -490,31 +490,31 @@ namespace Tests
 
             do {
                 game.skipUntilCanUse<DefaultServant>(oppo);
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-            } while (!oppo.field.isFull);
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
+            } while (!oppo.getField().isFull);
 
             game.skipUntilCanUse<CirculationOfGossip_1>(you);
-            you.cmdUse(game, you.hand.getCard<CirculationOfGossip_1>());
+            you.cmdUse(game, you.getHand().getCard<CirculationOfGossip_1>());
 
             
 
-            while (!oppo.field.isFull)
+            while (!oppo.getField().isFull)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             }
 
             game.skipUntilCanUse<CirculationOfGossip_2>(you);
-            you.cmdUse(game, you.hand.getCard<CirculationOfGossip_2>());
+            you.cmdUse(game, you.getHand().getCard<CirculationOfGossip_2>());
 
-            while (!oppo.field.isFull)
+            while (!oppo.getField().isFull)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             }
 
             game.skipUntilCanUse<CirculationOfGossip_3>(you);
-            you.cmdUse(game, you.hand.getCard<CirculationOfGossip_3>());
+            you.cmdUse(game, you.getHand().getCard<CirculationOfGossip_3>());
 
             //oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
             //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
@@ -529,14 +529,14 @@ namespace Tests
             );
 
             game.skipUntilCanUse<GoustFromTheBarrow>(you);
-            you.cmdUse(game, you.hand.getCard<GoustFromTheBarrow>());
+            you.cmdUse(game, you.getHand().getCard<GoustFromTheBarrow>());
 
 
             game.skipUntilCanUse<DefaultServant>(you);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
 
             game.skipUntilCanUse<GoustFromTheBarrow>(you);
-            you.cmdUse(game, you.hand.getCard<GoustFromTheBarrow>(),targets: you.field[0]);
+            you.cmdUse(game, you.getHand().getCard<GoustFromTheBarrow>(),targets: you.getField()[0]);
 
             //oppo.cmdUse(game, oppo.hand.getCard<ParticulateLaser>(), targets: you.field[0]);
             //Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) );
@@ -558,11 +558,11 @@ namespace Tests
             do
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-            } while (!oppo.field.isFull);
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
+            } while (!oppo.getField().isFull);
 
             game.skipUntilCanUse<Geralt_Igni>(you);
-            you.cmdUse(game, you.hand.getCard<Geralt_Igni>());
+            you.cmdUse(game, you.getHand().getCard<Geralt_Igni>());
          
             game.Dispose();
         }
@@ -580,13 +580,13 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<FastReload>(), 3)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             game.skipUntilHasGem(you, 3);
-            you.cmdUse(game, you.skill,targets:oppo.field[0]);
-            Assert.True(you.skill.isUsed(game));
-            you.cmdUse(game, you.hand.getCard<FastReload>(), targets: oppo.master);
-            Assert.False(you.skill.isUsed(game));
-            you.cmdUse(game, you.skill,targets:oppo.field[0]);
+            you.cmdUse(game, you.getSkill(),targets:oppo.getField()[0]);
+            Assert.True(you.getSkill().isUsed(game));
+            you.cmdUse(game, you.getHand().getCard<FastReload>(), targets: oppo.getMaster());
+            Assert.False(you.getSkill().isUsed(game));
+            you.cmdUse(game, you.getSkill(),targets:oppo.getField()[0]);
 
             game.Dispose();
         }
@@ -604,15 +604,15 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<FencingCoach>(), 3)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
 
             game.skipUntilHasGem(you, 5);
-            you.cmdUse(game, you.hand.getCard<FencingCoach>());
-            Assert.False(you.skill.isUsed(game));
-            you.cmdUse(game, you.skill, targets: oppo.field[0]);
-            Assert.False(you.skill.isUsed(game));
-            you.cmdUse(game, you.skill, targets: oppo.field[0]);
-            Assert.False(you.skill.isUsed(game));
+            you.cmdUse(game, you.getHand().getCard<FencingCoach>());
+            Assert.False(you.getSkill().isUsed(game));
+            you.cmdUse(game, you.getSkill(), targets: oppo.getField()[0]);
+            Assert.False(you.getSkill().isUsed(game));
+            you.cmdUse(game, you.getSkill(), targets: oppo.getField()[0]);
+            Assert.False(you.getSkill().isUsed(game));
 
             game.Dispose();
         }
@@ -630,13 +630,13 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<Mirror>(), 1)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
 
             game.skipUntilCanUse<Mirror>(you);
-            you.cmdUse(game, you.hand.getCard<Mirror>());
+            you.cmdUse(game, you.getHand().getCard<Mirror>());
             you.cmdTurnEnd(game);
 
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
 
             game.Dispose();
         }
@@ -654,18 +654,18 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 6).Concat(Enumerable.Repeat(game.getDefine<Persevere>(), 1)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
 
             for (int i=0 ; i<6; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(you);
-                you.cmdUse(game, you.hand.getCard<DefaultServant>());
+                you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             }
             game.skipUntilCanUse<Persevere>(you);
-            you.cmdUse(game, you.hand.getCard<Persevere>());
+            you.cmdUse(game, you.getHand().getCard<Persevere>());
             you.cmdTurnEnd(game);
 
-            oppo.cmdAttack(game, oppo.field[0], you.master);
+            oppo.cmdAttack(game, oppo.getField()[0], you.getMaster());
 
             game.Dispose();
         }

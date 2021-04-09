@@ -26,15 +26,15 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 20));
 
             game.skipUntilHasGem(you, 10);
-            you.cmdUse(game, you.skill);
-            Assert.True(you.hand[0].getCost(game) == 0);
-            Assert.True(you.hand[1].getCost(game) == 0);
-            Assert.True(you.hand[2].getCost(game) == 0);
+            you.cmdUse(game, you.getSkill());
+            Assert.True(you.getHand()[0].getCost(game) == 0);
+            Assert.True(you.getHand()[1].getCost(game) == 0);
+            Assert.True(you.getHand()[2].getCost(game) == 0);
 
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            Debug.Log("法力：" + you.hand[0].getCost(game));
-            Debug.Log("法力：" + you.hand[1].getCost(game));
-            Debug.Log("法力：" + you.hand[2].getCost(game));
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            Debug.Log("法力：" + you.getHand()[0].getCost(game));
+            Debug.Log("法力：" + you.getHand()[1].getCost(game));
+            Debug.Log("法力：" + you.getHand()[2].getCost(game));
 
             game.Dispose();
         }
@@ -52,11 +52,11 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<Crow>() as CardDefine, 20));
 
             game.skipUntilCanUse<Crow>(you);
-            you.cmdUse(game, you.hand.getCard<Crow>());
+            you.cmdUse(game, you.getHand().getCard<Crow>());
 
-            you.field[0].setDead(game, true);
+            you.getField()[0].setDead(game, true);
             game.updateDeath();
-            foreach (Card c in you.hand)
+            foreach (Card c in you.getHand())
             {
                 Debug.Log("法力：" + c.getCost(game));
             }
@@ -79,21 +79,21 @@ namespace Tests
             for (int i = 0; i < 5; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             }
 
             game.skipUntilHasGem(you, 8);
-            Card ND = you.hand.getCard<NewspaperDistribution>();
-            you.cmdUse(game, ND, targets: oppo.field[0]);
+            Card ND = you.getHand().getCard<NewspaperDistribution>();
+            you.cmdUse(game, ND, targets: oppo.getField()[0]);
 
-            Assert.True(you.hand.Any(u => u == ND));
-            Assert.False(ND.isValidTarget(game, oppo.field[0]));
-            Assert.True(ND.isValidTarget(game, oppo.field[1]));
+            Assert.True(you.getHand().Any(u => u == ND));
+            Assert.False(ND.isValidTarget(game, oppo.getField()[0]));
+            Assert.True(ND.isValidTarget(game, oppo.getField()[1]));
 
-            you.cmdUse(game, ND, targets: oppo.field[1]);
+            you.cmdUse(game, ND, targets: oppo.getField()[1]);
 
             you.cmdTurnEnd(game);
-            Assert.True(you.grave.Any(u => u == ND));
+            Assert.True(you.getGrave().Any(u => u == ND));
 
             game.Dispose();
         }
@@ -111,15 +111,15 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<Scoop>() as CardDefine, 5).Concat(Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 5)));
 
             game.skipUntilHasGem(you, 10);
-            you.cmdUse(game, you.hand.getCard<Scoop>());
-            Debug.Log("法力：" + you.hand[0].getCost(game));
-            Debug.Log("法力：" + you.hand[1].getCost(game));
-            Debug.Log("法力：" + you.hand[2].getCost(game));
+            you.cmdUse(game, you.getHand().getCard<Scoop>());
+            Debug.Log("法力：" + you.getHand()[0].getCost(game));
+            Debug.Log("法力：" + you.getHand()[1].getCost(game));
+            Debug.Log("法力：" + you.getHand()[2].getCost(game));
 
-            you.cmdUse(game, you.hand.getCard<FireBall>(), targets: oppo.master);
-            Debug.Log("法力：" + you.hand[0].getCost(game));
-            Debug.Log("法力：" + you.hand[1].getCost(game));
-            Debug.Log("法力：" + you.hand[2].getCost(game));
+            you.cmdUse(game, you.getHand().getCard<FireBall>(), targets: oppo.getMaster());
+            Debug.Log("法力：" + you.getHand()[0].getCost(game));
+            Debug.Log("法力：" + you.getHand()[1].getCost(game));
+            Debug.Log("法力：" + you.getHand()[2].getCost(game));
 
             game.Dispose();
         }
@@ -137,15 +137,15 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<LittleAya>() as CardDefine, 5).Concat(Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 5)));
 
             game.skipUntilHasGem(you, 5);
-            you.cmdUse(game, you.skill);
-            you.cmdUse(game, you.hand.getCard<LittleAya>());
+            you.cmdUse(game, you.getSkill());
+            you.cmdUse(game, you.getHand().getCard<LittleAya>());
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.skill);
-            you.field[0].setDead(game, true);
+            you.cmdUse(game, you.getSkill());
+            you.getField()[0].setDead(game, true);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.skill);
+            you.cmdUse(game, you.getSkill());
 
             game.Dispose();
         }
@@ -163,7 +163,7 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<BunbunmaruNews>() as CardDefine, 30));
 
             game.skipUntilHasGem(you, 4);
-            you.cmdUse(game, you.hand.getCard<BunbunmaruNews>());
+            you.cmdUse(game, you.getHand().getCard<BunbunmaruNews>());
             Card c = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
             you.cmdUse(game, c);
 
@@ -190,13 +190,13 @@ namespace Tests
             for (int i = 0; i < 5; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             }
 
             game.skipUntilHasGem(you, 10);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<MapleFansWind>());
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<MapleFansWind>());
 
             game.Dispose();
 
@@ -216,9 +216,9 @@ namespace Tests
 
             game.skipUntilHasGem(you, 10);
 
-            you.cmdUse(game, you.skill);
-            you.cmdUse(game, you.hand.getCard<WindGodFan>(), targets: oppo.master);
-            you.cmdUse(game, you.hand.getCard<WindGodFan>(), targets: oppo.master);
+            you.cmdUse(game, you.getSkill());
+            you.cmdUse(game, you.getHand().getCard<WindGodFan>(), targets: oppo.getMaster());
+            you.cmdUse(game, you.getHand().getCard<WindGodFan>(), targets: oppo.getMaster());
 
             game.Dispose();
         }
@@ -236,12 +236,12 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<ReporterCamera>() as CardDefine, 10));
 
             game.skipUntilCanUse<ReporterCamera>(you);
-            you.cmdUse(game, you.hand.getCard<ReporterCamera>());
+            you.cmdUse(game, you.getHand().getCard<ReporterCamera>());
 
             oppo.draw(game);
             oppo.draw(game);
 
-            Assert.True(you.hand.Any(e => e.define == game.getDefine<DefaultServant>()));
+            Assert.True(you.getHand().Any(e => e.define == game.getDefine<DefaultServant>()));
             game.Dispose();
         }
 
@@ -258,10 +258,10 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<HimekaidouHatate>() as CardDefine, 20));
 
             game.skipUntilCanUse<HimekaidouHatate>(you);
-            you.cmdUse(game, you.hand.getCard<HimekaidouHatate>());
+            you.cmdUse(game, you.getHand().getCard<HimekaidouHatate>());
             game.skipUntilCanUse<HimekaidouHatate>(you);
-            you.cmdUse(game, you.skill);
-            you.cmdUse(game, you.hand.getCard<HimekaidouHatate>());
+            you.cmdUse(game, you.getSkill());
+            you.cmdUse(game, you.getHand().getCard<HimekaidouHatate>());
 
             game.Dispose();
         }

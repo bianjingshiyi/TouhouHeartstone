@@ -24,11 +24,11 @@ namespace Tests
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
 
-            Assert.AreEqual(2, game.sortedPlayers[0].field[0].getAttack(game));
-            Assert.AreEqual(2, game.sortedPlayers[0].field[0].getLife(game));
-            Assert.AreEqual(2, game.sortedPlayers[0].field[0].getCurrentLife(game));
+            Assert.AreEqual(2, game.sortedPlayers[0].getField()[0].getAttack(game));
+            Assert.AreEqual(2, game.sortedPlayers[0].getField()[0].getLife(game));
+            Assert.AreEqual(2, game.sortedPlayers[0].getField()[0].getCurrentLife(game));
         }
         /// <summary>
         /// 加攻Buff测试
@@ -183,12 +183,12 @@ namespace Tests
             game.createPlayer(0, "玩家0", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<MountainGaint>() as CardDefine, 30));
             game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<MountainGaint>() as CardDefine, 30));
 
-            game.skipTurnWhen(() => game.sortedPlayers[0].hand.count < 10);
+            game.skipTurnWhen(() => game.sortedPlayers[0].getHand().count < 10);
 
-            Assert.AreEqual(3, game.sortedPlayers[0].hand[0].getCost(game));
-            int gemNow = game.sortedPlayers[0].gem;
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
-            Assert.AreEqual(gemNow - 3, game.sortedPlayers[0].gem);
+            Assert.AreEqual(3, game.sortedPlayers[0].getHand()[0].getCost(game));
+            int gemNow = game.sortedPlayers[0].getGem();
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
+            Assert.AreEqual(gemNow - 3, game.sortedPlayers[0].getGem());
         }
         class TestBuff : Buff
         {
@@ -222,12 +222,12 @@ namespace Tests
             game.createPlayer(0, "玩家0", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 30));
             game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 30));
 
-            game.skipTurnUntil(() => game.players[0].hand.count > 0);
-            Assert.False(game.players[0].hand[0].isUsable(game, game.players[0], out _));
-            game.skipTurnUntil(() => game.players[0].gem == 4);
-            Assert.True(game.players[0].hand[0].isUsable(game, game.players[0], out _));
-            Assert.True(game.players[0].hand[0].isValidTarget(game, game.players[1].master));
-            game.players[0].cmdUse(game, game.players[0].hand[0], 0, game.players[1].master);
+            game.skipTurnUntil(() => game.players[0].getHand().count > 0);
+            Assert.False(game.players[0].getHand()[0].isUsable(game, game.players[0], out _));
+            game.skipTurnUntil(() => game.players[0].getGem() == 4);
+            Assert.True(game.players[0].getHand()[0].isUsable(game, game.players[0], out _));
+            Assert.True(game.players[0].getHand()[0].isValidTarget(game, game.players[1].getMaster()));
+            game.players[0].cmdUse(game, game.players[0].getHand()[0], 0, game.players[1].getMaster());
             yield return new WaitUntil(() => game.triggers.getRecordedEvents().Any(e => e is THHCard.DamageEventArg));
             Assert.NotNull(game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last());
         }
@@ -247,24 +247,24 @@ namespace Tests
 
             game.skipTurnUntil(() =>
                 game.currentPlayer == game.players[0] &&
-                game.players[0].gem >= game.getDefine<SorcererApprentice>().cost &&
-                game.players[0].hand.Any(c => c.define is SorcererApprentice));
-            Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//火球术全是4费
-            var task = game.players[0].cmdUse(game, game.players[0].hand.getCard<SorcererApprentice>());//使用哀绿
+                game.players[0].getGem() >= game.getDefine<SorcererApprentice>().cost &&
+                game.players[0].getHand().Any(c => c.define is SorcererApprentice));
+            Assert.True(game.players[0].getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//火球术全是4费
+            var task = game.players[0].cmdUse(game, game.players[0].getHand().getCard<SorcererApprentice>());//使用哀绿
             yield return TestHelper.waitTask(task);
-            Assert.True(game.players[0].field.Any(c => c.define is SorcererApprentice));
-            Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 3));//火球术全是3费
+            Assert.True(game.players[0].getField().Any(c => c.define is SorcererApprentice));
+            Assert.True(game.players[0].getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 3));//火球术全是3费
             task = game.players[0].draw(game);//抽一张火球
             yield return TestHelper.waitTask(task);
-            Card card = game.players[0].hand.right;
+            Card card = game.players[0].getHand().right;
             Assert.AreEqual(3, card.getCost(game));
-            task = card.pile.moveTo(game, card, game.players[0].grave);//把火球送入墓地
+            task = card.pile.moveTo(game, card, game.players[0].getGrave());//把火球送入墓地
             yield return TestHelper.waitTask(task);
             Assert.AreEqual(4, card.getCost(game));
-            yield return game.players[0].field[0].die(game).wait();//杀死哀绿
-            Assert.True(game.players[0].hand.getCards<FireBall>().All(c => c.getCost(game) == 4));
+            yield return game.players[0].getField()[0].die(game).wait();//杀死哀绿
+            Assert.True(game.players[0].getHand().getCards<FireBall>().All(c => c.getCost(game) == 4));
             yield return game.players[0].draw(game).wait();//再抽一张火球术
-            Assert.True(game.players[0].hand.getCards<FireBall>().All(c => c.getCost(game) == 4));
+            Assert.True(game.players[0].getHand().getCards<FireBall>().All(c => c.getCost(game) == 4));
         }
         [Test]
         public void idTest()
@@ -275,7 +275,7 @@ namespace Tests
         public IEnumerator discoverTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo);
-            var cards = you.deck.randomTake(game, 3);
+            var cards = you.getDeck().randomTake(game, 3);
             var task = you.discover(game, cards);
             yield return new WaitForSeconds(.5f);
             you.cmdDiscover(game, cards.First().id);
@@ -286,7 +286,7 @@ namespace Tests
         public IEnumerator discoverTest_Cancel()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo);
-            var cards = you.deck.randomTake(game, 3);
+            var cards = you.getDeck().randomTake(game, 3);
             var task = you.discover(game, cards);
             yield return new WaitForSeconds(.5f);
             game.answers.cancelAll();
@@ -301,7 +301,7 @@ namespace Tests
                 timeoutForTurn = 1
             });
             game.skipTurnUntil(() => game.currentPlayer == you);
-            var cards = you.hand.randomTake(game, 3);
+            var cards = you.getHand().randomTake(game, 3);
             var task = you.discover(game, cards);
             Assert.NotNull(game.answers.getRequest<DiscoverRequest>(you.id));
             THHGame.TurnEndEventArg turnEnd = null;
@@ -330,12 +330,12 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Corruption.ID, 1));
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             game.skipUntilCanUse<Corruption>(you);
-            you.cmdUse(game, you.hand.getCard<Corruption>(), 0, oppo.field[0]);
+            you.cmdUse(game, you.getHand().getCard<Corruption>(), 0, oppo.getField()[0]);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            Assert.AreEqual(0, oppo.field.count);
+            Assert.AreEqual(0, oppo.getField().count);
         }
         [Test]
         public void equipTest()
@@ -343,19 +343,19 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(TestWeapon.ID, 30));
             game.skipUntilCanUse<TestWeapon>(you);
-            you.cmdUse(game, you.hand.getCard<TestWeapon>());
-            Assert.True(you.master.canAttack(game));
-            you.cmdAttack(game, you.master, oppo.master);
-            Assert.AreEqual(29, oppo.master.getCurrentLife(game));
+            you.cmdUse(game, you.getHand().getCard<TestWeapon>());
+            Assert.True(you.getMaster().canAttack(game));
+            you.cmdAttack(game, you.getMaster(), oppo.getMaster());
+            Assert.AreEqual(29, oppo.getMaster().getCurrentLife(game));
             game.skipUntilHasGem(you, 2);
-            you.cmdUse(game, you.hand.getCard<TestWeapon>());
-            Assert.IsInstanceOf<TestWeapon>(you.item.define);
-            you.cmdAttack(game, you.master, oppo.master);
-            Assert.AreEqual(28, oppo.master.getCurrentLife(game));
-            Assert.AreEqual(2, you.item.getCurrentLife(game));
-            you.cmdUse(game, you.hand.getCard<TestWeapon>());
-            Assert.AreEqual(2, you.grave.count);
-            Assert.AreEqual(3, you.item.getCurrentLife(game));
+            you.cmdUse(game, you.getHand().getCard<TestWeapon>());
+            Assert.IsInstanceOf<TestWeapon>(you.getItem().define);
+            you.cmdAttack(game, you.getMaster(), oppo.getMaster());
+            Assert.AreEqual(28, oppo.getMaster().getCurrentLife(game));
+            Assert.AreEqual(2, you.getItem().getCurrentLife(game));
+            you.cmdUse(game, you.getHand().getCard<TestWeapon>());
+            Assert.AreEqual(2, you.getGrave().count);
+            Assert.AreEqual(3, you.getItem().getCurrentLife(game));
         }
         [Test]
         public void lightspawnTest()
@@ -363,8 +363,8 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Lightspawn.ID, 1));
             game.skipUntilCanUse<Lightspawn>(you);
-            you.cmdUse(game, you.hand.getCard<Lightspawn>());
-            Card lightspawn = you.field.getCard<Lightspawn>();
+            you.cmdUse(game, you.getHand().getCard<Lightspawn>());
+            Card lightspawn = you.getField().getCard<Lightspawn>();
             Assert.AreEqual(5, lightspawn.getAttack(game));
             lightspawn.damage(game, null, 2);
             Assert.AreEqual(3, lightspawn.getAttack(game));
@@ -387,65 +387,65 @@ namespace Tests
             );
             //单独测试：冰冻、蒸发
             game.skipUntilCanUse<FreezingTrap>(you);
-            Card secret = you.hand.getCard<FreezingTrap>();
+            Card secret = you.getHand().getCard<FreezingTrap>();
             you.cmdUse(game, secret);
-            Assert.AreEqual(1, you.head.count);
-            Assert.AreEqual(secret, you.head[0]);
+            Assert.AreEqual(1, you.getHead().count);
+            Assert.AreEqual(secret, you.getHead()[0]);
             you.cmdTurnEnd(game);
-            Card servant = oppo.hand.getCard<ChargeServant>();
+            Card servant = oppo.getHand().getCard<ChargeServant>();
             oppo.cmdUse(game, servant);
-            oppo.cmdAttack(game, servant, you.master);
+            oppo.cmdAttack(game, servant, you.getMaster());
             var eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretTriggerEventArg>().Last();
             Assert.NotNull(eventArg);
             Assert.AreEqual(secret, eventArg.card);
-            Assert.True(oppo.hand.Contains(servant));
+            Assert.True(oppo.getHand().Contains(servant));
             oppo.cmdTurnEnd(game);
 
             game.skipUntilCanUse<Vaporize>(you);
-            secret = you.hand.getCard<Vaporize>();
+            secret = you.getHand().getCard<Vaporize>();
             you.cmdUse(game, secret);
             you.cmdTurnEnd(game);
-            servant = oppo.hand.getCard<ChargeServant>();
+            servant = oppo.getHand().getCard<ChargeServant>();
             oppo.cmdUse(game, servant);
-            oppo.cmdAttack(game, servant, you.master);
+            oppo.cmdAttack(game, servant, you.getMaster());
             eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretTriggerEventArg>().Last();
             Assert.AreEqual(secret, eventArg.card);
-            Assert.True(oppo.grave.Contains(servant));
+            Assert.True(oppo.getGrave().Contains(servant));
             oppo.cmdTurnEnd(game);
 
             //组合测试：蒸发、冰冻
             game.skipUntilCanUse(you, game.getDefine<FreezingTrap>(), game.getDefine<Vaporize>());
-            secret = you.hand.getCard<Vaporize>();
+            secret = you.getHand().getCard<Vaporize>();
             you.cmdUse(game, secret);
-            secret = you.hand.getCard<FreezingTrap>();
+            secret = you.getHand().getCard<FreezingTrap>();
             you.cmdUse(game, secret);
             you.cmdTurnEnd(game);
-            servant = oppo.hand.getCard<ChargeServant>();
+            servant = oppo.getHand().getCard<ChargeServant>();
             oppo.cmdUse(game, servant);
-            oppo.cmdAttack(game, servant, you.master);
+            oppo.cmdAttack(game, servant, you.getMaster());
             //断点观察：you头上是否还有冰冻
             eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretTriggerEventArg>().Last();
             Assert.IsInstanceOf<Vaporize>(eventArg.card.define);
-            Assert.IsInstanceOf<FreezingTrap>(you.head[0].define);
-            servant = oppo.hand.getCard<ChargeServant>();
+            Assert.IsInstanceOf<FreezingTrap>(you.getHead()[0].define);
+            servant = oppo.getHand().getCard<ChargeServant>();
             oppo.cmdUse(game, servant);
-            oppo.cmdAttack(game, oppo.field[0], you.master);
+            oppo.cmdAttack(game, oppo.getField()[0], you.getMaster());
 
 
             //组合测试：冰冻、蒸发
             game.skipUntilCanUse(you, game.getDefine<FreezingTrap>(), game.getDefine<Vaporize>());
-            secret = you.hand.getCard<FreezingTrap>();
+            secret = you.getHand().getCard<FreezingTrap>();
             you.cmdUse(game, secret);
-            secret = you.hand.getCard<Vaporize>();
+            secret = you.getHand().getCard<Vaporize>();
             you.cmdUse(game, secret);
             you.cmdTurnEnd(game);
-            servant = oppo.hand.getCard<ChargeServant>();
+            servant = oppo.getHand().getCard<ChargeServant>();
             oppo.cmdUse(game, servant);
-            oppo.cmdAttack(game, servant, you.master);
+            oppo.cmdAttack(game, servant, you.getMaster());
             //断点观察：you头上是否还有蒸发
             eventArg = game.triggers.getRecordedEvents().OfType<THHCard.SecretTriggerEventArg>().Last();
             Assert.IsInstanceOf<FreezingTrap>(eventArg.card.define);
-            Assert.IsInstanceOf<Vaporize>(you.head[0].define);
+            Assert.IsInstanceOf<Vaporize>(you.getHead()[0].define);
 
             game.Dispose();
         }
@@ -464,12 +464,12 @@ namespace Tests
                 }
             );
             game.skipUntilCanUse<DefaultServant>(oppo);
-            Card servant = oppo.hand.getCard<DefaultServant>();
+            Card servant = oppo.getHand().getCard<DefaultServant>();
             oppo.cmdUse(game, servant);
             oppo.cmdTurnEnd(game);
             game.skipUntilCanUse<Polymorph>(you);
-            Card polymorph = you.hand.getCard<Polymorph>();
-            you.cmdUse(game, polymorph, targets: oppo.field[0]);
+            Card polymorph = you.getHand().getCard<Polymorph>();
+            you.cmdUse(game, polymorph, targets: oppo.getField()[0]);
         }
         [Test]
         public void PowrOverwhelmingTest()
@@ -484,10 +484,10 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<PowrOverwhelming>(), 3)));
 
             game.skipUntilCanUse<DefaultServant>(you);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
 
             game.skipUntilCanUse<PowrOverwhelming>(you);
-            you.cmdUse(game, you.hand.getCard<PowrOverwhelming>(), targets: you.field[0]);
+            you.cmdUse(game, you.getHand().getCard<PowrOverwhelming>(), targets: you.getField()[0]);
             you.cmdTurnEnd(game);
             game.Dispose();
         }
@@ -504,8 +504,8 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<TestHeal>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<Velen>(), 1)));
 
             game.skipUntilCanUse<Velen>(you);
-            you.cmdUse(game, you.hand.getCard<Velen>());
-            you.cmdUse(game, you.hand.getCard<TestHeal>(), targets: you.master);
+            you.cmdUse(game, you.getHand().getCard<Velen>());
+            you.cmdUse(game, you.getHand().getCard<TestHeal>(), targets: you.getMaster());
 
             game.Dispose();
         }
@@ -518,12 +518,12 @@ namespace Tests
             game.skipUntilCanUse(you, game.getDefine<SorcererApprentice>(),
                                       game.getDefine<SorcererApprentice>(),
                                       game.getDefine<FireBall>());
-            you.cmdUse(game, you.hand.getCard<SorcererApprentice>());
-            you.cmdUse(game, you.hand.getCard<SorcererApprentice>());
-            Assert.AreEqual(game.getDefine<FireBall>().cost - 2, you.hand.getCard<FireBall>().getCost(game));
-            you.field.getCard<SorcererApprentice>().die(game);
+            you.cmdUse(game, you.getHand().getCard<SorcererApprentice>());
+            you.cmdUse(game, you.getHand().getCard<SorcererApprentice>());
+            Assert.AreEqual(game.getDefine<FireBall>().cost - 2, you.getHand().getCard<FireBall>().getCost(game));
+            you.getField().getCard<SorcererApprentice>().die(game);
             game.updateDeath();
-            Assert.AreEqual(game.getDefine<FireBall>().cost - 1, you.hand.getCard<FireBall>().getCost(game));
+            Assert.AreEqual(game.getDefine<FireBall>().cost - 1, you.getHand().getCard<FireBall>().getCost(game));
         }
         [Test]
         public void rushServantBackToHandTest()
@@ -531,17 +531,17 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(RushServant.ID, 1));
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             game.skipUntilCanUse(you, game.getDefine<RushServant>(), game.getDefine<RushServant>());
-            you.cmdUse(game, you.hand.getCard<RushServant>());
-            Assert.True(you.field.getCard<RushServant>().isRush(game));
-            Assert.True(you.field.getCard<RushServant>().canAttack(game));
-            _ = you.field.getCard<RushServant>().fieldToHand(game);
-            Assert.True(you.hand.getCard<RushServant>().isRush(game));
-            you.cmdUse(game, you.hand.getCard<RushServant>());
-            Assert.True(you.field.getCard<RushServant>().isRush(game));
-            Assert.True(you.field.getCard<RushServant>().canAttack(game));
-            you.cmdAttack(game, you.field.getCard<RushServant>(), oppo.field[0]);
+            you.cmdUse(game, you.getHand().getCard<RushServant>());
+            Assert.True(you.getField().getCard<RushServant>().isRush(game));
+            Assert.True(you.getField().getCard<RushServant>().canAttack(game));
+            _ = you.getField().getCard<RushServant>().fieldToHand(game);
+            Assert.True(you.getHand().getCard<RushServant>().isRush(game));
+            you.cmdUse(game, you.getHand().getCard<RushServant>());
+            Assert.True(you.getField().getCard<RushServant>().isRush(game));
+            Assert.True(you.getField().getCard<RushServant>().canAttack(game));
+            you.cmdAttack(game, you.getField().getCard<RushServant>(), oppo.getField()[0]);
             Assert.True(game.triggers.getRecordedEvents().OfType<THHCard.AttackEventArg>().Count() > 0);
         }
         [Test]
@@ -550,7 +550,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(EnemyOnlyBattleCry.ID, 1));
             game.skipUntilCanUse<EnemyOnlyBattleCry>(you);
-            Assert.False(you.hand.getCard<EnemyOnlyBattleCry>().isValidTarget(game, you.master));
+            Assert.False(you.getHand().getCard<EnemyOnlyBattleCry>().isValidTarget(game, you.getMaster()));
         }
 
         [Test]
@@ -561,9 +561,9 @@ namespace Tests
                 new KeyValuePair<int, int>(DefaultServant.ID, 1));
 
             game.skipUntilCanUse<DefaultServant>(you);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(), targets: you.field[0]);
-            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(), targets: you.master);
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<TestFreezeBrain>(), targets: you.getField()[0]);
+            you.cmdUse(game, you.getHand().getCard<TestFreezeBrain>(), targets: you.getMaster());
             you.cmdTurnEnd(game);
 
 
@@ -574,7 +574,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(DefaultServant.ID, 30)
             );
-            var reveal = you.Reveal(game, you.deck);
+            var reveal = you.Reveal(game, you.getDeck());
             Assert.True(reveal.IsCompleted);
 
             game.Dispose();
@@ -599,12 +599,12 @@ namespace Tests
             game.skipUntilCanUse<Dreadsteed>(oppo);
             oppo.cmdUse<Dreadsteed>(game);
             game.skipUntilYourTurn(you);
-            you.cmdAttack(game, you.field.getCard<Dreadsteed>(), oppo.field.getCard<Dreadsteed>());
+            you.cmdAttack(game, you.getField().getCard<Dreadsteed>(), oppo.getField().getCard<Dreadsteed>());
             //马都还在场上
-            Assert.AreEqual(1, you.field.count);
-            Assert.AreEqual(1, oppo.field.count);
-            Assert.AreEqual(1, you.field.getCard<Dreadsteed>().getCurrentLife(game));
-            Assert.AreEqual(1, oppo.field.getCard<Dreadsteed>().getCurrentLife(game));
+            Assert.AreEqual(1, you.getField().count);
+            Assert.AreEqual(1, oppo.getField().count);
+            Assert.AreEqual(1, you.getField().getCard<Dreadsteed>().getCurrentLife(game));
+            Assert.AreEqual(1, oppo.getField().getCard<Dreadsteed>().getCurrentLife(game));
         }
         /// <summary>
         /// 阿努巴拉克测试
@@ -622,23 +622,23 @@ namespace Tests
                     new KeyValuePair<int, int>(Anubarak.ID, 30)
                 });
             game.skipUntilCanUse<Anubarak>(you);
-            you.cmdUse(game, you.hand.getCard<Anubarak>());
-            Card firstAnubrak = you.field.getCard<Anubarak>();
+            you.cmdUse(game, you.getHand().getCard<Anubarak>());
+            Card firstAnubrak = you.getField().getCard<Anubarak>();
             game.skipUntilCanUse<Anubarak>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<Anubarak>());
+            oppo.cmdUse(game, oppo.getHand().getCard<Anubarak>());
             game.skipUntilYourTurn(you);
-            you.cmdUse(game, you.hand.getCard<Anubarak>());//腾一下手牌
-            Assert.AreEqual(9, you.hand.count);
-            you.cmdAttack(game, firstAnubrak, oppo.field.getCard<Anubarak>());//对撞，都死，生俩小蜘蛛，回手，当然对面的手牌已经满了
-            Assert.True(you.field.Any(c => c.define is Nerubian));
-            Assert.AreEqual(2, you.field.count);
-            Assert.True(oppo.field.Any(c => c.define is Nerubian));
-            Assert.AreEqual(1, oppo.field.count);
-            Assert.False(you.grave.Any(c => c.define is Anubarak));
-            Assert.AreEqual(10, you.hand.count);
-            Assert.True(you.hand.Contains(firstAnubrak));
-            Assert.AreEqual(10, oppo.hand.count);
-            Assert.True(oppo.grave.Any(c => c.define is Anubarak));
+            you.cmdUse(game, you.getHand().getCard<Anubarak>());//腾一下手牌
+            Assert.AreEqual(9, you.getHand().count);
+            you.cmdAttack(game, firstAnubrak, oppo.getField().getCard<Anubarak>());//对撞，都死，生俩小蜘蛛，回手，当然对面的手牌已经满了
+            Assert.True(you.getField().Any(c => c.define is Nerubian));
+            Assert.AreEqual(2, you.getField().count);
+            Assert.True(oppo.getField().Any(c => c.define is Nerubian));
+            Assert.AreEqual(1, oppo.getField().count);
+            Assert.False(you.getGrave().Any(c => c.define is Anubarak));
+            Assert.AreEqual(10, you.getHand().count);
+            Assert.True(you.getHand().Contains(firstAnubrak));
+            Assert.AreEqual(10, oppo.getHand().count);
+            Assert.True(oppo.getGrave().Any(c => c.define is Anubarak));
         }
         [Test]
         public void blessingOfMightTest()
@@ -652,8 +652,8 @@ namespace Tests
             game.skipUntilCanUse<DefaultServant>(you);
             you.cmdUse<DefaultServant>(game);
             game.skipUntilCanUse<BlessingOfMight>(you);
-            you.cmdUse<BlessingOfMight>(game, 0, you.field.getCard<DefaultServant>());
-            Assert.AreEqual(4, you.field.getCard<DefaultServant>().getAttack(game));
+            you.cmdUse<BlessingOfMight>(game, 0, you.getField().getCard<DefaultServant>());
+            Assert.AreEqual(4, you.getField().getCard<DefaultServant>().getAttack(game));
             Card.PropChangeEventArg propChange = game.triggers.getRecordedEvents().OfType<Card.PropChangeEventArg>().LastOrDefault();
             Assert.NotNull(propChange);
             Assert.AreEqual(nameof(ServantCardDefine.attack), propChange.propName);

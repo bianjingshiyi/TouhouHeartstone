@@ -9,62 +9,61 @@ namespace TouhouHeartstone
 {
     public class THHPlayer : Player
     {
-        public Card master { get; }
-        public Card skill { get; }
-        public Pile deck { get; }
-        public Pile init { get; }
-        public Pile hand { get; }
-        public Pile field { get; }
-        public Pile grave { get; }
+        public Card getMaster() => getPile(PILE.MASTER)[0];
+
+        public Card getSkill() => getPile(PILE.SKILL)[0];
+        public Pile getDeck() => getPile(PILE.DECK);
+        public Pile getInit() => getPile(PILE.INIT);
+        public Pile getHand() => getPile(PILE.HAND);
+        public Pile getField() => getPile(PILE.FIELD);
+        public Pile getGrave() => getPile(PILE.GRAVE);
+
         /// <summary>
         /// 正在使用的法术卡都会被置入亚空间
         /// </summary>
-        public Pile warp { get; }
+        public Pile getWarp() => getPile(PILE.WARP);
+
         /// <summary>
         /// 头顶的五个玩意
         /// </summary>
-        public Pile head { get; }
-        public Card item
+        public Pile getHead() => getPile(PILE.HEAD);
+
+        public Card getItem()
         {
-            get { return this[PILE.ITEM].count > 0 ? this[PILE.ITEM][0] : null; }
+            return this[PILE.ITEM].Any() ? this[PILE.ITEM][0] : null;
         }
-        public bool isPrepared { get; set; } = false;
-        public int gem { get; private set; } = 0;
-        public int maxGem { get; private set; } = 0;
-        public int fatigue { get; private set; } = 0;
+
+        public void setIsPrepared(bool value) => setProp(PLAYER.ISPREPARED, value);
+        public bool getIsPrepared() => getProp<bool>(PLAYER.ISPREPARED);
+        public int getGem() => getProp<int>(PLAYER.GEM);
+        public int getMaxGem() => getProp<int>(PLAYER.MAXGEM);
+
+        private void setFatigue(int value) => setProp(PLAYER.FATIGUE, value);
+        public int getFatigue() => getProp<int>(PLAYER.FATIGUE);
+
         public THHPlayer(THHGame game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck) : base(id, name)
         {
-            this.master = game.createCard(master);
             addPile(new Pile(game, PILE.MASTER, 1));
-            getPile(PILE.MASTER).add(game, this.master);
-            skill = game.createCardById(master.skillID);
             addPile(new Pile(game, PILE.SKILL, 1));
-            this[PILE.SKILL].add(game, skill);
-            this.deck = new Pile(game, PILE.DECK);
-            if (deck != null)
-                this.deck.add(game, deck.Select(d => game.createCard(d)).ToArray());
-            addPile(this.deck);
-            init = new Pile(game, PILE.INIT, maxCount: 4);
-            addPile(init);
-            hand = new Pile(game, PILE.HAND, maxCount: 10);
-            addPile(hand);
-            field = new Pile(game, PILE.FIELD, maxCount: 7);
-            addPile(field);
-            grave = new Pile(game, PILE.GRAVE);
-            addPile(grave);
-            warp = new Pile(game, PILE.WARP);
-            addPile(warp);
+            addPile(new Pile(game, PILE.DECK));
+            addPile(new Pile(game, PILE.HAND, maxCount: 10));
+            addPile(new Pile(game, PILE.INIT, maxCount: 4));
+            addPile(new Pile(game, PILE.FIELD, maxCount: 7));
+            addPile(new Pile(game, PILE.GRAVE));
+            addPile(new Pile(game, PILE.WARP));
+            addPile(new Pile(game, PILE.HEAD, maxCount: 5));
             addPile(new Pile(game, PILE.ITEM, 1));
-            head = new Pile(game, PILE.HEAD, maxCount: 5);
-            addPile(head);
-
+            this[PILE.MASTER].add(game, game.createCard(master));
+            this[PILE.SKILL].add(game, game.createCard(game.getDefine(master.skillID)));
+            this[PILE.DECK].add(game, deck.Select(d => game.createCard(d)).ToArray());
+            setIsPrepared(false);
         }
         internal async Task initReplace(THHGame game, params Card[] cards)
         {
             await game.triggers.doEvent(new InitReplaceEventArg() { player = this, cards = cards }, onInitReplace);
             async Task onInitReplace(InitReplaceEventArg arg)
             {
-                arg.replacedCards = await arg.player.init.replaceByRandom(game, arg.cards, arg.player.deck);
+                arg.replacedCards = await arg.player.getInit().replaceByRandom(game, arg.cards, arg.player.getDeck());
                 game.logger.log(arg.player + "替换卡牌：" + string.Join("，", arg.cards.Select(c => c.ToString())) + "=>"
                     + string.Join("，", arg.replacedCards.Select(c => c.ToString())));
             }
@@ -79,12 +78,12 @@ namespace TouhouHeartstone
         {
             return game.triggers.doEvent(new SetGemEventArg() { player = this, value = value }, arg =>
             {
-                arg.player.gem = arg.value;
-                if (arg.player.gem < 0)
-                    arg.player.gem = 0;
-                if (arg.player.gem > 10)
-                    arg.player.gem = 10;
-                game.logger.log(arg.player + "的法力水晶变为" + arg.player.gem);
+                arg.player.setProp(PLAYER.GEM, arg.value);
+                if (arg.player.getGem() < 0)
+                    arg.player.setProp(PLAYER.GEM, 0);
+                if (arg.player.getGem() > 10)
+                    arg.player.setProp(PLAYER.GEM, 10);
+                game.logger.log(arg.player + "的法力水晶变为" + arg.player.getGem());
                 return Task.CompletedTask;
             });
         }
@@ -124,14 +123,14 @@ namespace TouhouHeartstone
         {
             return game.triggers.doEvent(new SetMaxGemEventArg() { player = this, value = value }, arg =>
             {
-                arg.player.maxGem = arg.value;
-                if (arg.player.maxGem < 0)
-                    arg.player.maxGem = 0;
-                if (arg.player.maxGem > 10)
-                    arg.player.maxGem = 10;
-                if (arg.player.gem > arg.player.maxGem)
-                    arg.player.gem = 0;
-                game.logger.log(arg.player + "的法力水晶上限变为" + arg.player.maxGem);
+                arg.player.setProp(PLAYER.MAXGEM, arg.value);
+                if (arg.player.getMaxGem() < 0)
+                    arg.player.setProp(PLAYER.MAXGEM, 0);
+                if (arg.player.getMaxGem() > 10)
+                    arg.player.setProp(PLAYER.MAXGEM, 10);
+                if (arg.player.getGem() > arg.player.getMaxGem())
+                    arg.player.setProp(PLAYER.MAXGEM, 0);
+                game.logger.log(arg.player + "的法力水晶上限变为" + arg.player.getMaxGem());
                 return Task.CompletedTask;
             });
         }
@@ -169,7 +168,7 @@ namespace TouhouHeartstone
         }
         public Task draw(THHGame game, out DrawEventArg drawEvent, out BurnEventArg burnEvent, out FatigueEventArg fatigueEvent)
         {
-            if (deck.count < 1)//无牌可抽，疲劳！
+            if (getDeck().count < 1)//无牌可抽，疲劳！
             {
                 drawEvent = null;
                 burnEvent = null;
@@ -178,16 +177,16 @@ namespace TouhouHeartstone
                 async Task onFatigue(FatigueEventArg arg)
                 {
                     THHPlayer player = arg.player;
-                    player.fatigue++;
-                    game.logger.log(player + "已经没有卡牌了，当前疲劳值：" + player.fatigue);
-                    var damage = await player.master.damage(game, null, player.fatigue);
+                    player.setFatigue(player.getFatigue() + 1);
+                    game.logger.log(player + "已经没有卡牌了，当前疲劳值：" + player.getFatigue());
+                    var damage = await player.getMaster().damage(game, null, player.getFatigue());
                     await game.updateDeath();
                 }
             }
             else
             {
                 fatigueEvent = null;
-                return draw(game, deck.top, out drawEvent, out burnEvent);
+                return draw(game, getDeck().top, out drawEvent, out burnEvent);
             }
         }
         public Task draw(THHGame game, out DrawEventArg drawEvent)
@@ -200,20 +199,20 @@ namespace TouhouHeartstone
         }
         public Task draw(THHGame game, Card card, out DrawEventArg drawEvent, out BurnEventArg burnEvent)
         {
-            if (!deck.Contains(card))
+            if (!getDeck().Contains(card))
             {
                 drawEvent = null;
                 burnEvent = null;
                 return Task.CompletedTask;
             }
-            if (hand.count >= hand.maxCount)
+            if (getHand().count >= getHand().maxCount)
             {
                 drawEvent = null;
                 burnEvent = new BurnEventArg() { player = this, card = card };
                 return game.triggers.doEvent(burnEvent, arg =>
                 {
                     card = arg.card;
-                    arg.player.deck.moveTo(game, card, arg.player.grave, arg.player.grave.count);
+                    arg.player.getDeck().moveTo(game, card, arg.player.getGrave(), arg.player.getGrave().count);
                     game.logger.log(arg.player + "的手牌已经满了，" + card + "被送入墓地");
                     return Task.CompletedTask;
                 });
@@ -228,16 +227,16 @@ namespace TouhouHeartstone
                     card = arg.card;
                     if (card.define is SpellCardDefine spell && card.define.hasKeyword(KEYWORD.AUTOCAST))
                     {
-                        await player.deck.moveTo(game, card, player.warp);
+                        await player.getDeck().moveTo(game, card, player.getWarp());
                         game.logger.log("debug");
                         await card.activeEffect(game, player, new Card[0]);
-                        await player.warp.moveTo(game, card, player.grave);
+                        await player.getWarp().moveTo(game, card, player.getGrave());
                         await game.updateDeath();
                         await draw(game);
                     }
                     else
                     {
-                        await player.deck.moveTo(game, card, player.hand, player.hand.count);
+                        await player.getDeck().moveTo(game, card, player.getHand(), player.getHand().count);
                         game.logger.log(player + "抽" + card);
                     }
                 });
@@ -259,7 +258,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public Task draw(THHGame game, Func<Card, bool> filter, out DrawEventArg drawEvent)
         {
-            var cards = deck.Where(filter);
+            var cards = getDeck().Where(filter);
             if (cards.Count() > 0)
             {
                 var card = cards.random(game);
@@ -402,7 +401,7 @@ namespace TouhouHeartstone
                 //使用技能，设置技能使用状态为“已使用”
                 await card.setUsed(game, true);
             }
-            await setGem(game, gem - card.getCost(game));//消耗法力值
+            await setGem(game, getGem() - card.getCost(game));//消耗法力值
             await game.triggers.doEvent(new UseEventArg() { player = this, card = card, position = position, cost = card.getCost(game), targets = targets }, async arg =>
              {
                  THHPlayer player = arg.player;
@@ -411,7 +410,7 @@ namespace TouhouHeartstone
                  game.logger.log(arg.player + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
                  if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
                  {
-                     await tryEnterField(game, arg.player.hand, arg.card, arg.position);//随从卡，将卡置入战场
+                     await tryEnterField(game, arg.player.getHand(), arg.card, arg.position);//随从卡，将卡置入战场
                      await card.ComeOnStage(game, player, targets);//触发战吼事件
                                                                    //await card.activeEffect(game, player, targets);//执行随从效果
                  }
@@ -422,18 +421,18 @@ namespace TouhouHeartstone
                  else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SPELL))
                  {
                      //法术卡,释放效果
-                     await player.hand.moveTo(game, card, player.warp);
+                     await player.getHand().moveTo(game, card, player.getWarp());
                      if (card.hasKeyword(game, KEYWORD.SECRET))
-                         await tryEnterHead(game, warp, card);
+                         await tryEnterHead(game, getWarp(), card);
                      else
                      {
                          await card.activeEffect(game, player, targets);
                          await card.resetCard(game);
                          if (card.hasKeyword(game, KEYWORD._RETURNHEAD))
                          {
-                             await player.warp.moveTo(game, card, player.hand);
+                             await player.getWarp().moveTo(game, card, player.getHand());
                          }
-                         await player.warp.moveTo(game, card, player.grave);//如果是普通法术，则送入墓地
+                         await player.getWarp().moveTo(game, card, player.getGrave());//如果是普通法术，则送入墓地
                      }
                  }
                  else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == DEFINE.ITEM))
@@ -455,7 +454,7 @@ namespace TouhouHeartstone
             }
             await item.setAttack(game, item.getAttack(game));
             await item.setCurrentLife(game, item.getLife(game));
-            await hand.moveTo(game, item, this[PILE.ITEM]);
+            await getHand().moveTo(game, item, this[PILE.ITEM]);
             game.logger.log(this + "装备" + item);
         }
         public Task destroyItem(THHGame game)
@@ -715,7 +714,7 @@ namespace TouhouHeartstone
         }
         public Task<EnterFieldEventArg> tryEnterField(THHGame game, Pile from, Card card, int position)
         {
-            if (field.count >= field.maxCount)//没位置了
+            if (getField().count >= getField().maxCount)//没位置了
                 return Task.FromResult(default(EnterFieldEventArg));
             return game.triggers.doEvent(new EnterFieldEventArg() { player = this, from = from, card = card, position = position }, onEnterField);
             async Task onEnterField(EnterFieldEventArg arg)
@@ -735,18 +734,18 @@ namespace TouhouHeartstone
                     await card.setReady(game, false);
                 }
                 if (from != null)
-                    await from.moveTo(game, arg.card, arg.player.field, arg.position);//从某pile召唤随从
+                    await from.moveTo(game, arg.card, arg.player.getField(), arg.position);//从某pile召唤随从
                 else
-                    await player.field.insert(game, card, position);//虚空生成随从
+                    await player.getField().insert(game, card, position);//虚空生成随从
                 arg.attack = card.getAttack(game);
                 arg.life = card.getLife(game);
             }
         }
         public async Task<bool> tryEnterHead(THHGame game, Pile from, Card card)
         {
-            if (head.isFull)
+            if (getHead().isFull)
                 return false;
-            await from.moveTo(game, card, head);
+            await from.moveTo(game, card, getHead());
             return true;
         }
         public class EnterFieldEventArg : EventArg, IDescribableEventArg
@@ -792,17 +791,17 @@ namespace TouhouHeartstone
                 throw new ArgumentNullException(nameof(game));
             if (define == null)
                 throw new ArgumentNullException(nameof(define));
-            if (field.count >= field.maxCount)
+            if (getField().count >= getField().maxCount)
                 return null;
             if (position < 0)
-                position = field.count;
+                position = getField().count;
             CreateTokenEventArg eventArg = new CreateTokenEventArg() { player = this, define = define, position = position };
             return game.triggers.doEvent(eventArg, async arg =>
             {
                 THHPlayer player = arg.player;
                 define = arg.define;
                 position = arg.position;
-                if (field.count >= field.maxCount)
+                if (getField().count >= getField().maxCount)
                     return;
                 game.logger.log(player + "召唤" + define.GetType().Name + "位于" + position);
                 arg.card = game.createCard(define);
@@ -877,7 +876,7 @@ namespace TouhouHeartstone
                 if (pile.count >= pile.maxCount)
                     return;
                 game.logger.log(player + "复活" + arg.card.define.GetType().Name + "位于" + position);
-                await arg.player.grave.moveTo(game, arg.card, arg.pile, position);
+                await arg.player.getGrave().moveTo(game, arg.card, arg.pile, position);
                 //亡语随从在墓地与场上移动时不会进行效果的激活与禁用
                 foreach (IPassiveEffect effect in arg.card.define.effects.OfType<DeathRattle>())
                 {
@@ -929,7 +928,7 @@ namespace TouhouHeartstone
         public int getSpellDamage(THHGame game, int baseDamage)
         {
             int result = baseDamage;
-            foreach (var card in field)
+            foreach (var card in getField())
             {
                 result += card.getSpellDamage(game);
             }
@@ -942,33 +941,33 @@ namespace TouhouHeartstone
         }
         public Task shuffleCardToDeck(THHGame game, Card card)
         {
-            return deck.insert(game, card, game.randomInt(0, deck.count));
+            return getDeck().insert(game, card, game.randomInt(0, getDeck().count));
         }
         public Task addCardToHand<T>(THHGame game) where T : CardDefine
         {
-            if (hand.isFull)
+            if (getHand().isFull)
                 return Task.CompletedTask;
             Card card = game.createCard<T>();
-            return hand.add(game, card);
+            return getHand().add(game, card);
         }
         public async Task<bool> tryAddCardToHand(THHGame game, Card card)
         {
-            if (hand.isFull)
+            if (getHand().isFull)
                 return false;
             game.logger.log("将" + card + "置入" + this + "的手牌");
-            await hand.add(game, card);
+            await getHand().add(game, card);
             return true;
         }
         public Task addRandomCardToHand(THHGame game, IEnumerable<CardDefine> pool)
         {
-            if (hand.isFull)//手牌满了
+            if (getHand().isFull)//手牌满了
                 return Task.CompletedTask;
             Card card = game.createCardByRandom(pool);
-            return hand.add(game, card);
+            return getHand().add(game, card);
         }
         public Task randomDiscard(THHGame game, int count = 1, Func<Card, bool> filter = null)
         {
-            var cards = filter == null ? hand : hand.Where(c => filter(c));
+            var cards = filter == null ? getHand() : getHand().Where(c => filter(c));
             if (cards.Count() < 1)
                 return Task.CompletedTask;
             else if (cards.Count() <= count)
@@ -986,7 +985,7 @@ namespace TouhouHeartstone
             {
                 THHPlayer player = arg.player;
                 cards = arg.cards;
-                return player.hand.moveTo(game, cards, player.grave);
+                return player.getHand().moveTo(game, cards, player.getGrave());
             });
         }
         public class DiscardEventArg : EventArg, IDescribableEventArg

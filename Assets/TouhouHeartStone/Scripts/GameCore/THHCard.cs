@@ -56,8 +56,8 @@ namespace TouhouHeartstone
             {
                 if (card.define is MasterCardDefine)
                 {
-                    if (card.getOwner().item != null)
-                        result += card.getOwner().item.getAttack(game);
+                    if (card.getOwner().getItem() != null)
+                        result += card.getOwner().getItem().getAttack(game);
                 }
             }
             if (result < 0)
@@ -227,7 +227,7 @@ namespace TouhouHeartstone
                 //随从限定
                 if (!card.isReady(game)//还没准备好
                 && !card.isCharge(game)//且没有冲锋
-                && !(card.isRush(game) && game.getOpponent(card.getOwner()).field.Any(c => card.isAttackable(game, card.getOwner(), c, out _)))//且并非有突袭且有可以攻击的敌方随从
+                && !(card.isRush(game) && game.getOpponent(card.getOwner()).getField().Any(c => card.isAttackable(game, card.getOwner(), c, out _)))//且并非有突袭且有可以攻击的敌方随从
                 )
                     return false;
             }
@@ -271,17 +271,17 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool isAttackable(this Card card, THHGame game, THHPlayer player, Card target, out string tip)
         {
-            if (target == player.master || player.field.Contains(target))
+            if (target == player.getMaster() || player.getField().Contains(target))
             {
                 tip = INFO_CANNOT_ATTACK_SELF;
                 return false;
             }
-            if (game.getOpponent(player).field.Any(c => c.isTaunt(game)) && !target.isTaunt(game))
+            if (game.getOpponent(player).getField().Any(c => c.isTaunt(game)) && !target.isTaunt(game))
             {
                 tip = INFO_GUARD_SERVANT;
                 return false;
             }
-            if (card.isRush(game) && !card.isReady(game) && game.players.Any(p => p.master == target) && !card.isCharge(game))
+            if (card.isRush(game) && !card.isReady(game) && game.players.Any(p => p.getMaster() == target) && !card.isCharge(game))
             {
                 tip = INFO_HASTE_NOT_PREPARED;//除非你具有冲锋
                 return false;
@@ -683,12 +683,12 @@ namespace TouhouHeartstone
             }
             if (card.define is ServantCardDefine servant)
             {
-                if (player.gem < card.getCost(game))//费用不够
+                if (player.getGem() < card.getCost(game))//费用不够
                 {
                     info = NOT_ENOUGH_SPIRIT;
                     return false;
                 }
-                if (player.field.count >= player.field.maxCount)
+                if (player.getField().count >= player.getField().maxCount)
                 {
                     info = SERVANT_FIELD_FULL;
                     return false;
@@ -698,7 +698,7 @@ namespace TouhouHeartstone
             }
             else if (card.define is ItemCardDefine item)
             {
-                if (player.gem < card.getCost(game))//费用不够
+                if (player.getGem() < card.getCost(game))//费用不够
                 {
                     info = NOT_ENOUGH_SPIRIT;
                     return false;
@@ -708,20 +708,20 @@ namespace TouhouHeartstone
             }
             else if (card.define is SpellCardDefine spell)
             {
-                if (player.gem < card.getCost(game))
+                if (player.getGem() < card.getCost(game))
                 {
                     info = NOT_ENOUGH_SPIRIT;
                     return false;
                 }
                 if (spell.hasKeyword(KEYWORD.SECRET))
                 {
-                    if (card.getOwner().head.count >= card.getOwner().head.maxCount)
+                    if (card.getOwner().getHead().count >= card.getOwner().getHead().maxCount)
                     {
                         game.logger.log(NO_SPACE_FOR_TRAP);
                         info = NO_SPACE_FOR_TRAP;
                         return false;
                     }
-                    if (card.getOwner().head.Any(c => c.define == spell))
+                    if (card.getOwner().getHead().Any(c => c.define == spell))
                     {
                         game.logger.log(DUPLICATED_TRAP);
                         info = DUPLICATED_TRAP;
@@ -738,7 +738,7 @@ namespace TouhouHeartstone
                     info = SKILL_USED;
                     return false;
                 }
-                if (player.gem < card.getCost(game))//费用不够
+                if (player.getGem() < card.getCost(game))//费用不够
                 {
                     info = NOT_ENOUGH_SPIRIT;
                     return false;
@@ -782,9 +782,9 @@ namespace TouhouHeartstone
                 List<Card> targetList = new List<Card>();
                 foreach (THHPlayer player in game.players)
                 {
-                    if (card.isValidTarget(game, player.master, targetEffect, null))
-                        targetList.Add(player.master);
-                    foreach (Card servant in player.field)
+                    if (card.isValidTarget(game, player.getMaster(), targetEffect, null))
+                        targetList.Add(player.getMaster());
+                    foreach (Card servant in player.getField())
                     {
                         if (card.isValidTarget(game, servant, targetEffect, null))
                             targetList.Add(servant);
@@ -798,9 +798,9 @@ namespace TouhouHeartstone
                 List<Card> targetList = new List<Card>();
                 foreach (THHPlayer player in game.players)
                 {
-                    if (card.isValidTarget(game, player.master, null, triggerEffect))
-                        targetList.Add(player.master);
-                    foreach (Card servant in player.field)
+                    if (card.isValidTarget(game, player.getMaster(), null, triggerEffect))
+                        targetList.Add(player.getMaster());
+                    foreach (Card servant in player.getField())
                     {
                         if (card.isValidTarget(game, servant, null, triggerEffect))
                             targetList.Add(servant);
@@ -919,7 +919,7 @@ namespace TouhouHeartstone
                 {
                     infoDic = new Dictionary<Card, DeathEventArg.Info>()
                     {
-                        { card, new DeathEventArg.Info(){ player = card.getOwner(), position = card.getOwner().field.indexOf(card) } }
+                        { card, new DeathEventArg.Info(){ player = card.getOwner(), position = card.getOwner().getField().indexOf(card) } }
                     }
                 });
             }
@@ -932,7 +932,7 @@ namespace TouhouHeartstone
                     {
                         infoDic = new Dictionary<Card, DeathEventArg.Info>()
                         {
-                            { card, new DeathEventArg.Info(){ player = card.getOwner(), position = card.getOwner().field.indexOf(card) } }
+                            { card, new DeathEventArg.Info(){ player = card.getOwner(), position = card.getOwner().getField().indexOf(card) } }
                         }
                     });
                 }
@@ -994,9 +994,9 @@ namespace TouhouHeartstone
                     //消耗耐久
                     foreach (var p in game.players)
                     {
-                        if (p.master == card && p.item != null)
+                        if (p.getMaster() == card && p.getItem() != null)
                         {
-                            await p.item.damage(game, null, 1);
+                            await p.getItem().damage(game, null, 1);
                             break;
                         }
                     }
@@ -1148,10 +1148,10 @@ namespace TouhouHeartstone
             {
                 if (s != null)
                 {
-                    if (s.isPoisonous(g) && !g.players.Any(p => p.master == c))
+                    if (s.isPoisonous(g) && !g.players.Any(p => p.getMaster() == c))
                         await c.setDead(game, true);
                     if (s.isDrain(g))
-                        await s.getOwner().master.heal(g, c, d);
+                        await s.getOwner().getMaster().heal(g, c, d);
                 }
             }
         }
@@ -1374,7 +1374,7 @@ namespace TouhouHeartstone
                             player = card.getOwner(),
                             position = card.pile.indexOf(card)
                         });
-                        await card.pile.moveTo(game, card, card.getOwner().grave);
+                        await card.pile.moveTo(game, card, card.getOwner().getGrave());
                         game.logger.log(card + "阵亡");
                     }
                     else if (card.pile.name == PILE.ITEM)//装备摧毁
@@ -1384,7 +1384,7 @@ namespace TouhouHeartstone
                             player = card.getOwner(),
                             position = card.pile.indexOf(card)
                         });
-                        await card.pile.moveTo(game, card, card.getOwner().grave);
+                        await card.pile.moveTo(game, card, card.getOwner().getGrave());
                         game.logger.log(card + "摧毁");
                     }
                 }
@@ -1463,13 +1463,13 @@ namespace TouhouHeartstone
         public static List<Card> getAttackableTargets(this Card card, THHGame game)
         {
             var targets = new List<Card>();
-            if (card.pile != card.getOwner().field && !(card.define is MasterCardDefine))
+            if (card.pile != card.getOwner().getField() && !(card.define is MasterCardDefine))
             {
                 return targets;
             }
 
             var oppo = game.getOpponent(card.getOwner());
-            var allEnem = oppo.field.ToList().Append(oppo.master).Where(c=>!c.isStealth(game)).ToList();
+            var allEnem = oppo.getField().ToList().Append(oppo.getMaster()).Where(c=>!c.isStealth(game)).ToList();
             if (allEnem.Any(c=>c.hasKeyword(game,KEYWORD.TAUNT)))
             {
                 targets.AddRange(allEnem.Where(c => c.hasKeyword(game, KEYWORD.TAUNT)));
@@ -1490,13 +1490,13 @@ namespace TouhouHeartstone
         {
             foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
             {
-                int restCount = g.Key.hand.maxCount - g.Key.hand.count;
+                int restCount = g.Key.getHand().maxCount - g.Key.getHand().count;
                 if (restCount > 0)
                 {
                     var toHand = g.Take(restCount);
                     game.logger.log("将" + string.Join("，", toHand) + "置入" + g.Key + "的手牌");
                     await cards.resetCard(game);
-                    await g.Key.field.moveTo(game, toHand, g.Key.hand);
+                    await g.Key.getField().moveTo(game, toHand, g.Key.getHand());
                 }
                 if (restCount < g.Count())
                 {
@@ -1536,8 +1536,8 @@ namespace TouhouHeartstone
                 g.resetCard(game);
                 foreach (var card in g)
                 {
-                    int position = random ? game.randomInt(0, g.Key.deck.count) : g.Key.deck.count;
-                    g.Key.field.moveTo(game, card, g.Key.deck, position);
+                    int position = random ? game.randomInt(0, g.Key.getDeck().count) : g.Key.getDeck().count;
+                    g.Key.getField().moveTo(game, card, g.Key.getDeck(), position);
                 }
             }
             //foreach(Card c in cards)
@@ -1590,12 +1590,12 @@ namespace TouhouHeartstone
         {
             foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
             {
-                int restCount = g.Key.hand.maxCount - g.Key.hand.count;
+                int restCount = g.Key.getHand().maxCount - g.Key.getHand().count;
                 if (restCount > 0)
                 {
                     var toHand = g.Take(restCount);
                     game.logger.log("将" + string.Join("，", toHand) + "置入" + g.Key + "的手牌");
-                    await g.Key.grave.moveTo(game, toHand, g.Key.hand);
+                    await g.Key.getGrave().moveTo(game, toHand, g.Key.getHand());
                 }
                 if (restCount < g.Count())
                 {
@@ -1630,8 +1630,8 @@ namespace TouhouHeartstone
             {
                 foreach (var card in g)
                 {
-                    int position = random ? game.randomInt(0, g.Key.deck.count) : g.Key.deck.count;
-                    g.Key.grave.moveTo(game, g.Take(g.Count()), g.Key.deck, position);
+                    int position = random ? game.randomInt(0, g.Key.getDeck().count) : g.Key.getDeck().count;
+                    g.Key.getGrave().moveTo(game, g.Take(g.Count()), g.Key.getDeck(), position);
                 }
             }
         }
@@ -1656,7 +1656,7 @@ namespace TouhouHeartstone
             {
                 game.logger.log("触发陷阱" + card);
                 THHPlayer player = arg.card.getOwner();
-                await player.head.moveTo(game, arg.card, player.grave);
+                await player.getHead().moveTo(game, arg.card, player.getGrave());
             });
         }
         public class SecretTriggerEventArg : EventArg, IDescribableEventArg

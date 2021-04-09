@@ -153,9 +153,9 @@ namespace TouhouHeartstone
             List<Card> cardList = new List<Card>();
             foreach (THHPlayer player in players)
             {
-                if (filter == null || filter.Invoke(player.master))
-                    cardList.Add(player.master);
-                foreach (Card servant in player.field)
+                if (filter == null || filter.Invoke(player.getMaster()))
+                    cardList.Add(player.getMaster());
+                foreach (Card servant in player.getField())
                 {
                     if (filter == null || filter.Invoke(servant))
                         cardList.Add(servant);
@@ -168,8 +168,8 @@ namespace TouhouHeartstone
             List<Card> cardList = new List<Card>();
             foreach (var player in players)
             {
-                cardList.Add(player.master);
-                cardList.AddRange(player.field);
+                cardList.Add(player.getMaster());
+                cardList.AddRange(player.getField());
             }
             return cardList.ToArray();
         }
@@ -179,21 +179,21 @@ namespace TouhouHeartstone
             foreach (var player in players)
             {
                 if (e == null)
-                    e = player.field;
+                    e = player.getField();
                 else
-                    e = e.Concat(player.field);
+                    e = e.Concat(player.getField());
             }
             return e.ToArray();
         }
         public Card[] getAllEnemies(THHPlayer player)
         {
             THHPlayer opponent = getOpponent(player);
-            return opponent.field.Concat(new Card[] { opponent.master }).ToArray();
+            return opponent.getField().Concat(new Card[] {opponent.getMaster()}).ToArray();
         }
 
         public Card[] getAllAllys(THHPlayer player)
         {
-            return player.field.Concat(new Card[] { player.master }).ToArray();
+            return player.getField().Concat(new Card[] {player.getMaster()}).ToArray();
         }
 
 
@@ -264,7 +264,7 @@ namespace TouhouHeartstone
                 else
                     this.sortedPlayers = option.sortedPlayers.Select(id => players.FirstOrDefault(p => p.id == id)).ToArray();
                 //创建主人公和技能卡
-                Card[] masterCards = sortedPlayers.Select(p => { return p.master; }).ToArray();
+                Card[] masterCards = sortedPlayers.Select(p => { return p.getMaster(); }).ToArray();
                 foreach (Card card in masterCards)
                 {
                     await card.setCurrentLife(this, 30);
@@ -272,18 +272,18 @@ namespace TouhouHeartstone
                 //洗牌，然后抽初始卡牌
                 for (int i = 0; i < sortedPlayers.Length; i++)
                 {
-                    if (sortedPlayers[i].deck.count < 1)
+                    if (sortedPlayers[i].getDeck().count < 1)
                         continue;
                     if (option.shuffle)
-                        sortedPlayers[i].deck.shuffle(this);
+                        sortedPlayers[i].getDeck().shuffle(this);
                     int count = i == 0 ? 3 : 4;
-                    var cards = sortedPlayers[i].deck.Skip(sortedPlayers[i].deck.count - count).Reverse().ToArray();
-                    await sortedPlayers[i].deck.moveTo(this, cards, sortedPlayers[i].init);
+                    var cards = sortedPlayers[i].getDeck().Skip(sortedPlayers[i].getDeck().count - count).Reverse().ToArray();
+                    await sortedPlayers[i].getDeck().moveTo(this, cards, sortedPlayers[i].getInit());
                 }
                 logger.log("Debug", "游戏初始化，玩家行动顺序："
                     + string.Join("、", sortedPlayers.Select(p => p.ToString())) + "，"
-                    + "玩家英雄：" + string.Join("，", sortedPlayers.Select(p => p.master + "(" + p.skill + ")")) + "，"
-                    + "初始卡牌：" + string.Join("；", sortedPlayers.Select(p => string.Join("、", p.init.Select(c => c.ToString())))));
+                    + "玩家英雄：" + string.Join("，", sortedPlayers.Select(p => p.getMaster() + "(" + p.getSkill() + ")")) + "，"
+                    + "初始卡牌：" + string.Join("；", sortedPlayers.Select(p => string.Join("、", p.getInit().Select(c => c.ToString())))));
             });
         }
         public class InitEventArg : EventArg
@@ -300,16 +300,16 @@ namespace TouhouHeartstone
                 foreach (THHPlayer player in sortedPlayers)
                 {
                     await player.setMaxGem(this, option.startGem);
-                    await player.init.moveTo(this, player.init[0, player.init.count - 1], player.hand, 0);
+                    await player.getInit().moveTo(this, player.getInit()[0, player.getInit().count - 1], player.getHand(), 0);
                     if (player != sortedPlayers[0])
                     {
-                        await player.hand.add(this, createCard(getDefine<LuckyCoin>()));
+                        await player.getHand().add(this, createCard(getDefine<LuckyCoin>()));
                         logger.log("由于后手行动" + player + "获得一张幸运币");
                     }
                     arg.startHandDic.Add(player, new StartEventArg.StartInfo()
                     {
-                        gem = player.maxGem,
-                        hands = player.hand.ToArray()
+                        gem = player.getMaxGem(),
+                        hands = player.getHand().ToArray()
                     });
                 }
             });
@@ -332,20 +332,20 @@ namespace TouhouHeartstone
             {
                 logger.log("Debug", arg.player + "的回合开始");
                 //玩家的最大能量加1但是不超过10，充满玩家的能量。
-                await arg.player.setMaxGem(this, arg.player.maxGem + 1);
-                await arg.player.setGem(this, arg.player.maxGem);
+                await arg.player.setMaxGem(this, arg.player.getMaxGem() + 1);
+                await arg.player.setGem(this, arg.player.getMaxGem());
                 //抽一张牌
                 await arg.player.draw(this);
                 //重置技能
-                await player.skill.setUsed(this, false);
+                await player.getSkill().setUsed(this, false);
                 //使随从可以攻击
-                foreach (Card card in player.field)
+                foreach (Card card in player.getField())
                 {
                     await card.setReady(this, true);
                     await card.setAttackTimes(this, 0);
                 }
                 //使自己可以攻击
-                await player.master.setAttackTimes(this, 0);
+                await player.getMaster().setAttackTimes(this, 0);
             });
             //倒计时75秒
             turnTimer = time.startTimer(option.timeoutForTurn);
@@ -404,8 +404,8 @@ namespace TouhouHeartstone
                 logger.log("Debug", currentPlayer + "回合结束");
 
                 List<Card> AllCharactor = new List<Card>();
-                AllCharactor.Add(player.master);
-                AllCharactor.AddRange(player.field);
+                AllCharactor.Add(player.getMaster());
+                AllCharactor.AddRange(player.getField());
                 foreach (Card chara in AllCharactor)
                 {
                     if (chara.isFreeze(this))
@@ -442,15 +442,15 @@ namespace TouhouHeartstone
             List<Card> deathList = new List<Card>();
             foreach (THHPlayer player in players)
             {
-                if (player.master.isDead(this))
+                if (player.getMaster().isDead(this))
                 {
-                    deathList.Add(player.master);
+                    deathList.Add(player.getMaster());
                 }
-                if (player.item != null && player.item.isDead(this))
+                if (player.getItem() != null && player.getItem().isDead(this))
                 {
-                    deathList.Add(player.item);
+                    deathList.Add(player.getItem());
                 }
-                foreach (Card card in player.field)
+                foreach (Card card in player.getField())
                 {
                     if (card.isDead(this))
                     {
@@ -468,11 +468,11 @@ namespace TouhouHeartstone
         internal Task surrender(THHPlayer player)
         {
             logger.log(player + "投降");
-            return player.master.die(this);
+            return player.getMaster().die(this);
         }
         public async Task leave(THHPlayer player)
         {
-            await player.master.die(this);
+            await player.getMaster().die(this);
         }
         internal async Task gameEnd(THHPlayer[] winners)
         {

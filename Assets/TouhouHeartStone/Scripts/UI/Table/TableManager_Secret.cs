@@ -9,7 +9,7 @@ namespace Game
         public Secret createSecret(Card card)
         {
             Secret secret;
-            if (card.pile == player.head)
+            if (card.pile == player.getHead())
                 secret = ui.SelfMaster.Head.addSecret();
             else
                 secret = ui.EnemyMaster.Head.addSecret();

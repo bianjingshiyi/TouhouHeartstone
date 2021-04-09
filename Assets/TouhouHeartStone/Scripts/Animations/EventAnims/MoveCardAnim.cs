@@ -45,7 +45,7 @@ namespace Game
                     return true;
                 case PILE.DECK:
                     {
-                        RectTransform deckTransform = eventArg.from == table.player.deck ? table.ui.SelfDeck.rectTransform : table.ui.EnemyDeck.rectTransform;
+                        RectTransform deckTransform = eventArg.from == table.player.getDeck() ? table.ui.SelfDeck.rectTransform : table.ui.EnemyDeck.rectTransform;
                         if (eventArg.to.name == PILE.HAND)
                         {
                             //抽牌
@@ -79,7 +79,7 @@ namespace Game
                         }
                         else if (eventArg.to.name == PILE.GRAVE)
                         {
-                            var targetTransform = eventArg.from == table.player.deck ? table.ui.SelfGraveDeck.rectTransform : table.ui.EnemyGraveDeck.rectTransform;
+                            var targetTransform = eventArg.from == table.player.getDeck() ? table.ui.SelfGraveDeck.rectTransform : table.ui.EnemyGraveDeck.rectTransform;
                             if (!table.tryGetHand(eventArg.card, out var hand))
                             {
                                 hand = table.createHand(eventArg.card);
@@ -147,10 +147,10 @@ namespace Game
                     }
                 case PILE.GRAVE:
                     {
-                        RectTransform graveTransform = eventArg.from == table.player.grave ? table.ui.SelfGraveDeck.rectTransform : table.ui.EnemyGraveDeck.rectTransform;
+                        RectTransform graveTransform = eventArg.from == table.player.getGrave() ? table.ui.SelfGraveDeck.rectTransform : table.ui.EnemyGraveDeck.rectTransform;
                         if(eventArg.to.name == PILE.DECK)
                         {
-                            var targetTransform = eventArg.from == table.player.grave ? table.ui.SelfDeck.rectTransform : table.ui.EnemyDeck.rectTransform;
+                            var targetTransform = eventArg.from == table.player.getGrave() ? table.ui.SelfDeck.rectTransform : table.ui.EnemyDeck.rectTransform;
                             if (!table.tryGetHand(eventArg.card, out var hand))
                             {
                                 hand = table.createHand(eventArg.card);
@@ -164,7 +164,7 @@ namespace Game
                         }
                         if(eventArg.to.name == PILE.GRAVE)
                         {
-                            var targetTransform = eventArg.from == table.player.grave ? table.ui.EnemyGraveDeck.rectTransform:table.ui.SelfGraveDeck.rectTransform ;
+                            var targetTransform = eventArg.from == table.player.getGrave() ? table.ui.EnemyGraveDeck.rectTransform:table.ui.SelfGraveDeck.rectTransform ;
                             if (!table.tryGetHand(eventArg.card, out var hand))
                             {
                                 hand = table.createHand(eventArg.card);
@@ -197,7 +197,7 @@ namespace Game
                     }
                 case PILE.FIELD:
                     {
-                        RectTransform fieldTransform = eventArg.from == table.player.field ? table.ui.SelfFieldList.rectTransform : table.ui.SelfFieldList.rectTransform;
+                        RectTransform fieldTransform = eventArg.from == table.player.getField() ? table.ui.SelfFieldList.rectTransform : table.ui.SelfFieldList.rectTransform;
                         switch (eventArg.to.name)
                         {
                             case PILE.HAND:
@@ -229,7 +229,7 @@ namespace Game
                                     if (_anim == null)
                                     {
                                         if (table.tryGetServant(eventArg.card, out var servant))
-                                            _anim = new FieldMoveAnim(table, servant, eventArg.to == table.player.field ? table.ui.SelfFieldList : table.ui.EnemyFieldList, eventArg.position);
+                                            _anim = new FieldMoveAnim(table, servant, eventArg.to == table.player.getField() ? table.ui.SelfFieldList : table.ui.EnemyFieldList, eventArg.position);
                                         else
                                             throw new ActorNotFoundException(eventArg.card);
                                     }
@@ -256,7 +256,7 @@ namespace Game
                                     //播放动画
                                     if (_anim == null)
                                     {
-                                        UDeck targetDeck = eventArg.to == table.player.deck ? table.ui.SelfDeck : table.ui.EnemyDeck;
+                                        UDeck targetDeck = eventArg.to == table.player.getDeck() ? table.ui.SelfDeck : table.ui.EnemyDeck;
                                         _anim = new CardTransAnim(_card,
                                             targetDeck.transform,
                                             targetDeck.bottom.rect.height * targetDeck.bottom.lossyScale / _card.rectTransform.rect.height,

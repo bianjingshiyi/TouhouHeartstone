@@ -27,18 +27,18 @@ namespace Tests
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[0], 0);
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].field[0], game.sortedPlayers[1].master);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
+            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].getField()[0], game.sortedPlayers[1].getMaster());
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdTurnEnd(game);
             game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].skill, 0, game.sortedPlayers[1].master);
+            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].getSkill(), 0, game.sortedPlayers[1].getMaster());
 
             THHCard.HealEventArg heal =
                 game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.HealEventArg) as THHCard.HealEventArg;
             Assert.AreEqual(1, heal.cards.Length);
             Assert.AreEqual(2, heal.value);
-            Assert.AreEqual(1, heal.infoDic[game.sortedPlayers[1].master].healedValue);
+            Assert.AreEqual(1, heal.infoDic[game.sortedPlayers[1].getMaster()].healedValue);
         }
 
         //拼点测试
@@ -71,14 +71,14 @@ namespace Tests
                 Sanae.ID, new[] { new KeyValuePair<int, int>(StarRitual.ID, 2) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<StarRitual>(you);
-            int count = you.hand.count;
+            int count = you.getHand().count;
             you.cmdUse<StarRitual>(game);
-            Assert.AreEqual(count, you.hand.count);
-            Assert.AreEqual(4, you.hand[count - 1].getCost(game));
-            game.skipTurnUntil(() => you.deck.count == 0);
+            Assert.AreEqual(count, you.getHand().count);
+            Assert.AreEqual(4, you.getHand()[count - 1].getCost(game));
+            game.skipTurnUntil(() => you.getDeck().count == 0);
             you.cmdUse<StarRitual>(game);
-            count = you.hand.count;
-            Assert.AreEqual(1, you.hand[count - 1].getCost(game));
+            count = you.getHand().count;
+            Assert.AreEqual(1, you.getHand()[count - 1].getCost(game));
             game.Dispose();
         }
 
@@ -89,29 +89,29 @@ namespace Tests
                 Sanae.ID,
                 new KeyValuePair<int, int>(GrayThaumaturgy.ID, 3), new KeyValuePair<int, int>(StarRitual.ID, 4));
             game.skipUntilHasGem(you, 5);
-            oppo.master.damage(game, null, 20);
-            Assert.AreEqual(10, oppo.master.getCurrentLife(game));
-            you.cmdUse(game, you.hand.getCard<GrayThaumaturgy>(), targets: oppo.master);
-            Assert.AreEqual(18, oppo.master.getCurrentLife(game));
+            oppo.getMaster().damage(game, null, 20);
+            Assert.AreEqual(10, oppo.getMaster().getCurrentLife(game));
+            you.cmdUse(game, you.getHand().getCard<GrayThaumaturgy>(), targets: oppo.getMaster());
+            Assert.AreEqual(18, oppo.getMaster().getCurrentLife(game));
             you.cmdUse<StarRitual>(game);
-            Assert.AreEqual(22,oppo.master.getCurrentLife(game));
+            Assert.AreEqual(22,oppo.getMaster().getCurrentLife(game));
             game.turnEnd(you);
             game.skipUntilHasGem(you, 5);
-            you.master.damage(game, null, 20);
-            Assert.AreEqual(10, you.master.getCurrentLife(game));
-            you.cmdUse(game, you.hand.getCard<GrayThaumaturgy>(), targets: you.master);
-            Assert.AreEqual(18, you.master.getCurrentLife(game));
+            you.getMaster().damage(game, null, 20);
+            Assert.AreEqual(10, you.getMaster().getCurrentLife(game));
+            you.cmdUse(game, you.getHand().getCard<GrayThaumaturgy>(), targets: you.getMaster());
+            Assert.AreEqual(18, you.getMaster().getCurrentLife(game));
             game.turnEnd(you);
             game.skipUntilYourTurn(you);
             you.cmdUse<StarRitual>(game);
-            Assert.AreEqual(18, you.master.getCurrentLife(game));
-            you.cmdUse(game, you.hand.getCard<GrayThaumaturgy>(), targets: you.master);
-            Assert.AreEqual(26, you.master.getCurrentLife(game));
+            Assert.AreEqual(18, you.getMaster().getCurrentLife(game));
+            you.cmdUse(game, you.getHand().getCard<GrayThaumaturgy>(), targets: you.getMaster());
+            Assert.AreEqual(26, you.getMaster().getCurrentLife(game));
             you.cmdUse<StarRitual>(game);
-            Assert.AreEqual(30, you.master.getCurrentLife(game));
-            you.master.damage(game, null, 20);
+            Assert.AreEqual(30, you.getMaster().getCurrentLife(game));
+            you.getMaster().damage(game, null, 20);
             you.cmdUse<StarRitual>(game);
-            Assert.AreEqual(10, you.master.getCurrentLife(game));
+            Assert.AreEqual(10, you.getMaster().getCurrentLife(game));
             game.Dispose();
         }
 
@@ -144,19 +144,19 @@ namespace Tests
             for (int i = 0; i < 3; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(you);
-                you.cmdUse(game, you.hand.getCard<DefaultServant>());
-                you.field[0].damage(game, null, 1);
+                you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+                you.getField()[0].damage(game, null, 1);
             }
 
-            you.master.damage(game, null, 2);
+            you.getMaster().damage(game, null, 2);
             game.skipUntilCanUse<BumperCrop>(you);
-            you.cmdUse(game, you.hand.getCard<BumperCrop>());
+            you.cmdUse(game, you.getHand().getCard<BumperCrop>());
             for (int i = 0; i < 3; i++)
             {
-                Assert.AreEqual(you.field[i].getLife(game), you.field[i].getCurrentLife(game));
+                Assert.AreEqual(you.getField()[i].getLife(game), you.getField()[i].getCurrentLife(game));
             }
 
-            Assert.AreEqual(30, you.master.getCurrentLife(game));
+            Assert.AreEqual(30, you.getMaster().getCurrentLife(game));
             game.Dispose();
         }
 
@@ -170,18 +170,18 @@ namespace Tests
             for (int i = 0; i < 3; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             }
 
-            Pile oppoField = oppo.field;
+            Pile oppoField = oppo.getField();
             int defaultServantLife = oppoField[0].getCurrentLife(game);
             game.skipUntilCanUse<GuestStarsMiracle>(you);
-            int count = you.hand.count;
+            int count = you.getHand().count;
             you.cmdUse<GuestStarsMiracle>(game, targets: oppoField[1]);
             Assert.AreEqual(defaultServantLife - 2, oppoField[0].getCurrentLife(game));
             Assert.AreEqual(defaultServantLife - 2, oppoField[1].getCurrentLife(game));
             Assert.AreEqual(defaultServantLife - 2, oppoField[2].getCurrentLife(game));
-            Assert.AreEqual(count, you.hand.count);
+            Assert.AreEqual(count, you.getHand().count);
             game.Dispose();
         }
 
@@ -195,18 +195,18 @@ namespace Tests
             for (int i = 0; i < 3; i++)
             {
                 game.skipUntilCanUse<DefaultServant>(oppo);
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             }
 
-            Pile oppoField = oppo.field;
+            Pile oppoField = oppo.getField();
             int defaultServantLife = oppoField[0].getCurrentLife(game);
             game.skipUntilCanUse<OpenSeaMiracle>(you);
             you.cmdUse<OpenSeaMiracle>(game, targets: oppoField[1]);
             Assert.AreEqual(defaultServantLife - 4, oppoField[0].getCurrentLife(game));
             Assert.AreEqual(defaultServantLife - 2, oppoField[1].getCurrentLife(game));
             Assert.AreEqual(defaultServantLife - 4, oppoField[2].getCurrentLife(game));
-            game.skipTurnUntil(() => you.deck.count == 0);
-            you.cmdUse<OpenSeaMiracle>(game, targets: oppo.field[1]);
+            game.skipTurnUntil(() => you.getDeck().count == 0);
+            you.cmdUse<OpenSeaMiracle>(game, targets: oppo.getField()[1]);
             Assert.AreEqual(defaultServantLife - 2, oppoField[0].getCurrentLife(game));
             game.Dispose();
         }
@@ -217,15 +217,15 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 Sanae.ID, new KeyValuePair<int, int>(FlyingSnake.ID, 1));
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             game.skipUntilCanUse<FlyingSnake>(you);
-            Card snake = you.hand.getCard<FlyingSnake>();
+            Card snake = you.getHand().getCard<FlyingSnake>();
             you.cmdUse(game, snake);
-            Assert.True(snake.isAttackable(game, you, oppo.field[0], out _));
-            you.cmdAttack(game, snake, oppo.field[0]);
+            Assert.True(snake.isAttackable(game, you, oppo.getField()[0], out _));
+            you.cmdAttack(game, snake, oppo.getField()[0]);
             int attack = snake.getAttack(game);
             game.skipUntilHasGem(you, 2);
-            you.cmdUse(game, you.skill, 0, snake);
+            you.cmdUse(game, you.getSkill(), 0, snake);
             Assert.AreEqual(attack + 1, snake.getAttack(game));
             game.Dispose();
         }
@@ -258,20 +258,20 @@ namespace Tests
             oppo.cmdUse<DefaultServant>(game, out Card enemy);
             game.skipUntilCanUse<GodSummon>(you);
             you.cmdUse<GodSummon>(game);
-            Card kanako = you.field[0];
+            Card kanako = you.getField()[0];
             Assert.IsInstanceOf<YasakaKanako>(kanako.define);
             Assert.True(kanako.canAttack(game));
             you.cmdTurnEnd(game);
-            Assert.AreEqual(0, you.field.count);
-            Assert.True(you.deck.Contains(kanako));
+            Assert.AreEqual(0, you.getField().count);
+            Assert.True(you.getDeck().Contains(kanako));
             game.skipUntilYourTurn(you);
             you.cmdUse<GodSummon>(game);
-            kanako = you.field[0];
+            kanako = you.getField()[0];
             Assert.True(kanako.canAttack(game));
             kanako.die(game);
             you.cmdTurnEnd(game);
-            Assert.False(you.deck.Contains(kanako));
-            Assert.AreEqual(0, you.field.count);
+            Assert.False(you.getDeck().Contains(kanako));
+            Assert.AreEqual(0, you.getField().count);
             game.Dispose();
         }
 
@@ -305,12 +305,12 @@ namespace Tests
             game.skipUntilCanUse<ManipulatedGaintFrog>(you);
             Sanae.revealDuel(you, game);
             Sanae.revealDuel(you, game);
-            you.cmdUse(game, you.hand.getCard<ManipulatedGaintFrog>());
+            you.cmdUse(game, you.getHand().getCard<ManipulatedGaintFrog>());
             Sanae.revealDuel(you, game);
 
-            you.field[0].setDead(game, true);
+            you.getField()[0].setDead(game, true);
             game.updateDeath();
-            Assert.AreEqual(0, you.field.count + oppo.field.count);
+            Assert.AreEqual(0, you.getField().count + oppo.getField().count);
             game.Dispose();
         }
 
@@ -324,14 +324,14 @@ namespace Tests
             game.skipUntilCanUse<DefaultServant>(oppo);
             oppo.cmdUse<DefaultServant>(game, out Card enemServant);
             game.skipUntilCanUse<OrochiOfAncientTimes>(you);
-            Assert.AreEqual(9, you.hand.getCard<OrochiOfAncientTimes>().getCost(game));
+            Assert.AreEqual(9, you.getHand().getCard<OrochiOfAncientTimes>().getCost(game));
             you.cmdUse<StarRitual>(game);
-            Assert.AreEqual(5, you.hand.getCard<OrochiOfAncientTimes>().getCost(game));
-            Assert.True(you.hand.Last().define is OrochiOfAncientTimes);
-            Assert.AreEqual(5, you.hand.Last().getCost(game));
+            Assert.AreEqual(5, you.getHand().getCard<OrochiOfAncientTimes>().getCost(game));
+            Assert.True(you.getHand().Last().define is OrochiOfAncientTimes);
+            Assert.AreEqual(5, you.getHand().Last().getCost(game));
             you.cmdTurnEnd(game);
             game.skipUntilYourTurn(you);
-            Assert.AreEqual(9, you.hand.getCard<OrochiOfAncientTimes>().getCost(game));
+            Assert.AreEqual(9, you.getHand().getCard<OrochiOfAncientTimes>().getCost(game));
             game.Dispose();
         }
 
@@ -358,35 +358,35 @@ namespace Tests
             for (int i = 0; i < 4; i++)
             {
                 game.skipUntilCanUse<YasakaKanako>(you);
-                you.cmdUse<YasakaKanako>(game, targets: oppo.master);
+                you.cmdUse<YasakaKanako>(game, targets: oppo.getMaster());
                 DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
                 Assert.NotNull(discoverRequest);
                 int id = discoverRequest.cardIdArray[i];
-                int handCount = you.hand.count;
+                int handCount = you.getHand().count;
                 you.cmdDiscover(game, id);
                 Card card = game.getCard(id);
                 switch (card.define)
                 {
                     case GodMiracleOfRain _:
-                        foreach (var servant in oppo.field)
+                        foreach (var servant in oppo.getField())
                         {
                             Assert.AreEqual(4 - revealCount, servant.getCurrentLife(game));
                         }
 
                         break;
                     case GodMiracleOfOnbashira _:
-                        Assert.AreEqual((2 + revealCount <= 7) ? 2 + revealCount : 7, you.field.count);
+                        Assert.AreEqual((2 + revealCount <= 7) ? 2 + revealCount : 7, you.getField().count);
                         break;
                     case GodMiracleOfWar _:
-                        Assert.AreEqual(30 - 6 - revealCount, oppo.master.getCurrentLife(game));
+                        Assert.AreEqual(30 - 6 - revealCount, oppo.getMaster().getCurrentLife(game));
                         break;
                     case GodMiracleOfRevolution _:
                         Assert.AreEqual(handCount + 2 + revealCount <= 10 ? 2 + handCount + 2 + revealCount : 10,
-                            you.hand.count);
+                            you.getHand().count);
                         break;
                 }
 
-                you.field.setDead(game, true);
+                you.getField().setDead(game, true);
                 game.updateDeath();
             }
         }
@@ -399,7 +399,7 @@ namespace Tests
                 Sanae.ID, new[] { new KeyValuePair<int, int>(MoriyaSuwako.ID, 4) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilHasGem(you, 10);
-            int cost = you.hand.getCard<MoriyaSuwako>().getCost(game);
+            int cost = you.getHand().getCard<MoriyaSuwako>().getCost(game);
             for (int i = 0; i < 5; i++)
             {
                 you.cmdUse<StarRitual>(game);
@@ -412,7 +412,7 @@ namespace Tests
                 oppo.cmdUse<SorcererApprentice>(game);
             }
 
-            Assert.AreEqual(cost - 5, you.hand.getCard<MoriyaSuwako>().getCost(game));
+            Assert.AreEqual(cost - 5, you.getHand().getCard<MoriyaSuwako>().getCost(game));
             for (int i = 0; i < 4; i++)
             {
                 game.skipUntilCanUse<MoriyaSuwako>(you);
@@ -423,16 +423,16 @@ namespace Tests
                 switch (i)
                 {
                     case 0:
-                        Assert.AreEqual(oppoFieldCount - 1, oppo.field.count);
+                        Assert.AreEqual(oppoFieldCount - 1, oppo.getField().count);
                         break;
                     case 1:
-                        Assert.True(you.field.All(c => c.define is Frog));
+                        Assert.True(you.getField().All(c => c.define is Frog));
                         break;
                     case 2:
-                        Assert.True(oppo.field.All(c => c.getAttack(game) == 1));
+                        Assert.True(oppo.getField().All(c => c.getAttack(game) == 1));
                         break;
                     default:
-                        Assert.True(you.hand.Contains(suwako));
+                        Assert.True(you.getHand().Contains(suwako));
                         Assert.NotNull(suwako.getModifiers());
                         break;
                 }
@@ -449,9 +449,9 @@ namespace Tests
             game.skipUntilCanUse<InvokeCard>(you);
             you.cmdUse<InvokeCard>(game);
             //预期诹访子保持原费用
-            Assert.AreEqual(you.deck.getCard<MoriyaSuwako>().define.getCost(), you.deck.getCard<MoriyaSuwako>().getCost(game));
-            game.skipTurnUntil(() => you.hand.getCard<MoriyaSuwako>() != null);
-            Card suwako = you.hand.getCard<MoriyaSuwako>();
+            Assert.AreEqual(you.getDeck().getCard<MoriyaSuwako>().define.getCost(), you.getDeck().getCard<MoriyaSuwako>().getCost(game));
+            game.skipTurnUntil(() => you.getHand().getCard<MoriyaSuwako>() != null);
+            Card suwako = you.getHand().getCard<MoriyaSuwako>();
             Assert.AreEqual(suwako.define.getCost() - 1, suwako.getCost(game));
         }
         [Test]
@@ -463,12 +463,12 @@ namespace Tests
                 new KeyValuePair<int, int>(GodWind.ID, 1));
             //打一张祈求牌，预期牌库中的神风保持原费用
             game.skipUntilCanUse<InvokeCard>(you);
-            Assert.AreEqual(you.deck.getCard<GodWind>().define.getCost(), you.deck.getCard<GodWind>().getCost(game));
+            Assert.AreEqual(you.getDeck().getCard<GodWind>().define.getCost(), you.getDeck().getCard<GodWind>().getCost(game));
             you.cmdUse<InvokeCard>(game);
-            Assert.AreEqual(you.deck.getCard<GodWind>().define.getCost(), you.deck.getCard<GodWind>().getCost(game));
+            Assert.AreEqual(you.getDeck().getCard<GodWind>().define.getCost(), you.getDeck().getCard<GodWind>().getCost(game));
             //抽上来后，预期神风费用-1
-            game.skipTurnUntil(() => you.hand.getCard<GodWind>() != null);
-            Card godwind = you.hand.getCard<GodWind>();
+            game.skipTurnUntil(() => you.getHand().getCard<GodWind>() != null);
+            Card godwind = you.getHand().getCard<GodWind>();
             Assert.AreEqual(godwind.define.getCost() - 1, godwind.getCost(game));
             //再打一张祈求牌，费用再-1
             game.skipUntilCanUse<InvokeCard>(you);
@@ -482,7 +482,7 @@ namespace Tests
                 new KeyValuePair<int, int>(MoriyaSuwako.ID, 1));
             game.skipUntilCanUse<MoriyaSuwako>(you);
             you.cmdUse<MoriyaSuwako>(game, out Card suwako);
-            game.skipTurnUntil(() => you.hand.count == 10);
+            game.skipTurnUntil(() => you.getHand().count == 10);
             game.setNextRandomInt(4);
             // 这里偷了个懒，得把suwako亡语设成回手,因为目前诹访子的写法不允许选亡语触发
             // ——不许偷懒
@@ -490,7 +490,7 @@ namespace Tests
             game.updateDeath();
             //这检查结果也太几把偷懒了，起码要改成检查诹访子没有回手吧？
             //Assert.AreEqual(10,you.hand.count);
-            Assert.False(you.hand.Any(c => c.define is MoriyaSuwako));
+            Assert.False(you.getHand().Any(c => c.define is MoriyaSuwako));
         }
 
         [Test]
@@ -526,17 +526,17 @@ namespace Tests
 
             List<Card> yourServants = new List<Card>();
             List<Card> opposServants = new List<Card>();
-            yourServants.AddRange(you.field.ToArray());
-            opposServants.AddRange(oppo.field.ToArray());
+            yourServants.AddRange(you.getField().ToArray());
+            opposServants.AddRange(oppo.getField().ToArray());
 
             game.skipUntilCanUse<GodWind>(you);
             you.cmdUse<GodWind>(game);
             for (int i = 0; i < 3; i++)
             {
-                Assert.True(you.deck.Contains(yourServants[i]));
-                Assert.True(oppo.deck.Contains(opposServants[i]));
+                Assert.True(you.getDeck().Contains(yourServants[i]));
+                Assert.True(oppo.getDeck().Contains(opposServants[i]));
             }
-            Assert.True(you.deck.Contains(yourServants[3]));
+            Assert.True(you.getDeck().Contains(yourServants[3]));
         }
 
         [Test]
@@ -547,10 +547,10 @@ namespace Tests
                 Sanae.ID, new[] { new KeyValuePair<int, int>(LittleShrine.ID, 1) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<LittleShrine>(you);
-            int i = you.hand.count;
+            int i = you.getHand().count;
             you.cmdUse<LittleShrine>(game);
             you.cmdTurnEnd(game);
-            Assert.AreEqual(i, you.hand.count);
+            Assert.AreEqual(i, you.getHand().count);
         }
 
         [Test]
@@ -567,7 +567,7 @@ namespace Tests
             game.updateDeath();
             game.skipUntilCanUse<ForgottenRecrption>(you);
             you.cmdUse<ForgottenRecrption>(game);
-            Assert.True(you.hand.Contains(suwako));
+            Assert.True(you.getHand().Contains(suwako));
         }
 
         [Test]

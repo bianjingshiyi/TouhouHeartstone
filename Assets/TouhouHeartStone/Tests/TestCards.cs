@@ -318,7 +318,7 @@ namespace Tests
         {
             new IntPropFixer<Pile.MoveCardEventArg>(PileFlag.hand,new IntPropFixer<Pile.MoveCardEventArg>.ModifierFixer(new CostModifier(0),(g,c,b,a)=>
             {
-                int v = -c.getOwner().hand.Where(c1=>c1!=c).Count();
+                int v = -c.getOwner().getHand().Where(c1=>c1!=c).Count();
                 g.logger.log(c+"的花费=>"+v);
                 return v;
             }))
@@ -476,7 +476,7 @@ namespace Tests
             {
                 for(int i=0;i<6;i++)
                 {
-                    foreach (var character in game.getOpponent(card.owner as THHPlayer).field.randomTake(game, 1))
+                    foreach (var character in game.getOpponent(card.owner as THHPlayer).getField().randomTake(game, 1))
                     {
                         await character.damage(game, card, 1);
                     }
@@ -493,8 +493,8 @@ namespace Tests
         {
             new NoTargetEffect(async (game,card)=>
             {
-                var discovered = await card.getOwner().discover(game,card.getOwner().hand);
-                await card.getOwner().hand.add(game,game.createCard(discovered.define));
+                var discovered = await card.getOwner().discover(game,card.getOwner().getHand());
+                await card.getOwner().getHand().add(game,game.createCard(discovered.define));
             })
         };
     }
@@ -783,7 +783,7 @@ namespace Tests
             new DeathRattle(ID,(g,c,b,p)=>
             {
                 THHPlayer player = c.getOwner();
-                return player.reborn(g,c,player.field,p);
+                return player.reborn(g,c,player.getField(),p);
             })
         };
     }

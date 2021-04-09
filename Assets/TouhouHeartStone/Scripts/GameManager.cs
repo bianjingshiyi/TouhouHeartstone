@@ -220,7 +220,7 @@ namespace Game
                 _replaySystem.startRecord(game, game.players.Select(p =>
                 {
                     RoomPlayerData playerData = new RoomPlayerData(p.id, p.name, RoomPlayerType.human);
-                    playerData.setDeck(new int[] { p.master.define.id }.Concat(p.deck.Select(c => c.define.id)).ToArray());
+                    playerData.setDeck(new int[] { p.getMaster().define.id }.Concat(p.getDeck().Select(c => c.define.id)).ToArray());
                     return playerData;
                 }).ToArray());
             onGameStart?.Invoke();
@@ -403,7 +403,7 @@ namespace Game
                 case THHPlayer.DrawEventArg draw:
                     item.IconImage.sprite = item.drawIcon;
                     item.Text.text = lang._(GAME_MANAGER_DRAW);
-                    item.Image.sprite = getManager<TableManager>().getSkin(draw.player == localPlayer ? draw.card : draw.player.master).image;
+                    item.Image.sprite = getManager<TableManager>().getSkin(draw.player == localPlayer ? draw.card : draw.player.getMaster()).image;
                     item.BorderImage.sprite = draw.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHPlayer.BurnEventArg burn:
@@ -416,7 +416,7 @@ namespace Game
                 case THHPlayer.FatigueEventArg fatigue:
                     item.IconImage.sprite = item.fatigueIcon;
                     item.Text.text = lang._(GAME_MANAGER_FATIGUE);
-                    item.Image.sprite = getManager<TableManager>().getSkin(fatigue.player.master).image;
+                    item.Image.sprite = getManager<TableManager>().getSkin(fatigue.player.getMaster()).image;
                     item.BorderImage.sprite = fatigue.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHPlayer.DiscardEventArg discard:
@@ -429,7 +429,7 @@ namespace Game
                     item.IconImage.sprite = item.useIcon;
                     item.Text.text = lang._(GAME_MANAGER_USE);
                     item.Image.sprite = use.card.hasKeyword(game, KEYWORD.SECRET) ?
-                        getManager<TableManager>().getSkin(use.card.getOwner().master).image :
+                        getManager<TableManager>().getSkin(use.card.getOwner().getMaster()).image :
                         getManager<TableManager>().getSkin(use.card).image;
                     item.BorderImage.sprite = use.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;

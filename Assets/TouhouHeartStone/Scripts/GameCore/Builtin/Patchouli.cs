@@ -50,7 +50,7 @@ namespace TouhouHeartstone.Builtin
         public static async Task tryMix(THHGame game, Card card)
         {
             THHPlayer player = card.getOwner();
-            var mixableCards = player.hand.Where(c => getMixCards(game, card.define, c.define).Length > 0).ToArray();//检查手牌中有没有可以融合的牌
+            var mixableCards = player.getHand().Where(c => getMixCards(game, card.define, c.define).Length > 0).ToArray();//检查手牌中有没有可以融合的牌
             if (mixableCards.Length > 0)
             {
                 var mixCard = await player.chooseOne(game, mixableCards,false, "加入原料");
@@ -104,7 +104,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
+            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
                 new Halo(new GeneratedBuff(ID, new CostModifier(-5)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
                  {
                      return c1.isSpell();
@@ -222,13 +222,13 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(async (game,card)=>
             {
-                await card.getOwner().master.addBuff(game,new GeneratedBuff(ID,
+                await card.getOwner().getMaster().addBuff(game,new GeneratedBuff(ID,
                     new DamageReduceModifier(3),
                     new RemoveBuffBefore<THHGame.TurnStartEventArg>(PILE.MASTER,(g,c,a)=>
                     {
                         return a.player == card.getOwner();
                     },ID)));
-                foreach (var servant in card.getOwner().field)
+                foreach (var servant in card.getOwner().getField())
                 {
                     await servant.addBuff(game,new GeneratedBuff(ID,
                         new DamageReduceModifier(3),
@@ -273,7 +273,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getDefine<RockElement>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getDefine<RockElement>(), card.getOwner().getField().count);
             await Patchouli.tryMix(game, card);
         }
     }
@@ -306,7 +306,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.getOwner()).field.damage(game, card, card.getOwner().getSpellDamage(game, 3));
+            await game.getOpponent(card.getOwner()).getField().damage(game, card, card.getOwner().getSpellDamage(game, 3));
             await Patchouli.tryMix(game, card);
         }
     }
@@ -328,10 +328,10 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            var discovered = await card.getOwner().searchPile(game, card.getOwner().grave.Where(c => c.isSpell()), title: "选择一张墓地中的法术加入手牌");
-            if (!card.getOwner().hand.isFull)
+            var discovered = await card.getOwner().searchPile(game, card.getOwner().getGrave().Where(c => c.isSpell()), title: "选择一张墓地中的法术加入手牌");
+            if (!card.getOwner().getHand().isFull)
             {
-                await card.getOwner().grave.moveTo(game, discovered.choose, card.getOwner().hand);
+                await card.getOwner().getGrave().moveTo(game, discovered.choose, card.getOwner().getHand());
                 await discovered.choose.addBuff(game, new GeneratedBuff(ID, new CostModifier(-3)));
             }
         }
@@ -351,7 +351,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.owner as THHPlayer).master.damage(game, card, 15);
+            await game.getOpponent(card.owner as THHPlayer).getMaster().damage(game, card, 15);
         }
     }
     /// <summary>
@@ -369,8 +369,8 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.getOwner()).field.silence(game);
-            await game.getOpponent(card.getOwner()).field.die(game);
+            await game.getOpponent(card.getOwner()).getField().silence(game);
+            await game.getOpponent(card.getOwner()).getField().die(game);
         }
     }
     /// <summary>
@@ -407,7 +407,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             //var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5, "查询图书");
-            var discover = await card.getOwner().searchPile(game, card.getOwner().deck, false, 5, "查询图书");
+            var discover = await card.getOwner().searchPile(game, card.getOwner().getDeck(), false, 5, "查询图书");
             await card.getOwner().draw(game, discover.choose);
 
         }
@@ -429,7 +429,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.addBuff(game, new GeneratedBuff(ID, new LifeModifier(card.getOwner().hand.Where(c => c.isSpell()).Count())));
+            await card.addBuff(game, new GeneratedBuff(ID, new LifeModifier(card.getOwner().getHand().Where(c => c.isSpell()).Count())));
         }
     }
     /// <summary>
@@ -447,7 +447,7 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 2; i++)
             {
-                var discovered = await card.getOwner().searchPile(game, card.getOwner().deck,false, 5, "搜寻知识");
+                var discovered = await card.getOwner().searchPile(game, card.getOwner().getDeck(),false, 5, "搜寻知识");
                 await card.getOwner().draw(game, discovered.choose);
             }
         }
@@ -541,7 +541,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.getOwner()).field.random(game).damage(game, card, 2);
+            await game.getOpponent(card.getOwner()).getField().random(game).damage(game, card, 2);
             await Patchouli.tryMix(game, card);
         }
     }
@@ -560,7 +560,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getDefine<GemSpear>(), card.getOwner().field.count);
+            await card.getOwner().createToken(game, game.getDefine<GemSpear>(), card.getOwner().getField().count);
             await Patchouli.tryMix(game, card);
         }
     }
@@ -595,13 +595,13 @@ namespace TouhouHeartstone.Builtin
         {
             THHPlayer player = card.getOwner();
             THHPlayer opponent = game.getOpponent(player);
-            await opponent.field.damage(game, card, player.getSpellDamage(game, 2));
-            foreach (Card target in opponent.field)
+            await opponent.getField().damage(game, card, player.getSpellDamage(game, 2));
+            foreach (Card target in opponent.getField())
             {
                 if (target.isDead(game))
                 {
-                    if (player.field.count > 0)
-                        await player.field.random(game).addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
+                    if (player.getField().count > 0)
+                        await player.getField().random(game).addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
                 }
             }
             await Patchouli.tryMix(game, card);
@@ -622,7 +622,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(async (game,card)=>
             {
                 THHPlayer opponent = game.getOpponent(card.getOwner());
-                foreach(Card target in opponent.field)
+                foreach(Card target in opponent.getField())
                 {
                     await target.addBuff(game,
                         new GeneratedBuff(ID,new AttackModifier(-3),
@@ -648,11 +648,11 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                foreach(Card buffcard in card.getOwner().field)
+                foreach(Card buffcard in card.getOwner().getField())
                 {
                     await buffcard.addBuff(game,new GeneratedBuff(ID,new AttackModifier(2),new LifeModifier(2)));
                 }
-                await target.damage(game,card,card.getOwner().field.count);
+                await target.damage(game,card,card.getOwner().getField().count);
                 await Patchouli.tryMix(game, card);
             },PileFlag.oppo | PileFlag.field)
         };
@@ -673,7 +673,7 @@ namespace TouhouHeartstone.Builtin
                 await target.addKeywords(game,KEYWORD._DeathRattle);
                 await target.addBuff(game, new GeneratedBuff(ID,new DeathRattle(ID,async (g,c,b,p)=>
                 {
-                    var createToken = await target.getOwner().createToken(game,c.define,c.getOwner().field.count);
+                    var createToken = await target.getOwner().createToken(game,c.define,c.getOwner().getField().count);
                     if (createToken != null)
                         await createToken.card.addBuff(game,new GeneratedBuff(ID+1,new AttackModifier(3),new LifeModifier(3)));
 
@@ -736,7 +736,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await new Card[] { target, game.getOpponent(card.getOwner()).master }.damage(game,card,card.getOwner().getSpellDamage(game,4));
+                await new Card[] { target, game.getOpponent(card.getOwner()).getMaster() }.damage(game,card,card.getOwner().getSpellDamage(game,4));
                 await Patchouli.tryMix(game, card);
             }, PileFlag.both | PileFlag.field)
         };
@@ -796,7 +796,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().createToken(game, game.getOpponent(card.getOwner()).field.count, game.getDefine<DustElement>());
+            await card.getOwner().createToken(game, game.getOpponent(card.getOwner()).getField().count, game.getDefine<DustElement>());
             await Patchouli.tryMix(game, card);
         }
     }
@@ -885,7 +885,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(async (g1,c1)=>
             {
-                Card card = c1.getOwner().hand.Where(c=>c.isSpell()&&c.getCost(g1)>0).random(g1);
+                Card card = c1.getOwner().getHand().Where(c=>c.isSpell()&&c.getCost(g1)>0).random(g1);
                 if(card!=null)
                     await card.addBuff(g1, new GeneratedBuff(ID, new CostModifier(-2)));
                 c1.getOwner().setProp(nameof(Asthma),c1.getOwner().getProp<int>(nameof(Asthma))+1);
@@ -910,7 +910,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect((g1,c1)=>
             {
-                return c1.getOwner().master.damage(g1,c1,c1.getProp<int>(g1,"damage"));
+                return c1.getOwner().getMaster().damage(g1,c1,c1.getProp<int>(g1,"damage"));
             })
         };
     }

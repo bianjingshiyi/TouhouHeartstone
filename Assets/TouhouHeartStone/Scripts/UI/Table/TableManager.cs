@@ -352,12 +352,12 @@ namespace Game
         /// <returns></returns>
         public bool tryGetMaster(Card card, out Master master)
         {
-            if (player.master == card)
+            if (player.getMaster() == card)
             {
                 master = ui.SelfMaster;
                 return true;
             }
-            else if (game.getOpponent(player).master == card)
+            else if (game.getOpponent(player).getMaster() == card)
             {
                 master = ui.EnemyMaster;
                 return true;
@@ -517,12 +517,12 @@ namespace Game
                 item = null;
                 return false;
             }
-            if (player.item == card)
+            if (player.getItem() == card)
             {
                 item = ui.SelfItem;
                 return true;
             }
-            else if (game.getOpponent(player).item == card)
+            else if (game.getOpponent(player).getItem() == card)
             {
                 item = ui.EnemyItem;
                 return true;
@@ -692,7 +692,7 @@ namespace Game
                                 ui.SelfHandList.shrink();//手牌缩小
                             }
                             hand.Card.hide();//将那张牌暂时隐藏
-                            if (tryGetMaster(usingCard.getOwner().master, out var castMaster))
+                            if (tryGetMaster(usingCard.getOwner().getMaster(), out var castMaster))
                                 //拖出箭头
                                 displayArrow(castMaster.rectTransform, castMaster.rectTransform.position, pointer.position);
                         }
@@ -950,9 +950,9 @@ namespace Game
             handList.onHoverCard.invokeBeforeAnim();
             handList.onHoverCard.invokeAfterAnim();
             if (!ui.SelfHandList.isExpanded &&
-                player.hand.count > 0)
+                player.getHand().count > 0)
             {
-                ui.TipBox.display(lang._(TAB_CARD_NUMBER, getCard(handList).getOwner().hand.count), pointer.position + _tipBoxOffset);
+                ui.TipBox.display(lang._(TAB_CARD_NUMBER, getCard(handList).getOwner().getHand().count), pointer.position + _tipBoxOffset);
             }
         }
         void onHandPointerMove(HandListItem handList, Vector2 pointer)
@@ -987,9 +987,9 @@ namespace Game
         public Card getCard(Master master)
         {
             if (master == ui.SelfMaster)
-                return player.master;
+                return player.getMaster();
             else
-                return game.getOpponent(player).master;
+                return game.getOpponent(player).getMaster();
         }
         public UI.Card createCard(Card card, Vector3 position, float height = -1, bool isFaceUp = true)
         {
@@ -1665,7 +1665,7 @@ namespace Game
         {
             ui.PilePanel.display(lang._(TAB_YOUR_BOX));
             ui.PilePanel.VerticalOverflowCardList.clearItems();
-            foreach (var card in player.deck.OrderBy(c => c.define.getCost()))
+            foreach (var card in player.getDeck().OrderBy(c => c.define.getCost()))
             {
                 var item = ui.PilePanel.VerticalOverflowCardList.addItem();
                 setCard(item.Card, card, true);
@@ -1673,8 +1673,8 @@ namespace Game
         }
         void onDeckPointerEnter(UI.Deck deck, PointerEventData pointer)
         {
-            if (player.deck.count > 0)
-                ui.TipBox.display(lang._(TAB_BOX_HAS, player.deck.count), pointer.position + _tipBoxOffset);
+            if (player.getDeck().count > 0)
+                ui.TipBox.display(lang._(TAB_BOX_HAS, player.getDeck().count), pointer.position + _tipBoxOffset);
             else
                 ui.TipBox.display(lang._(TAB_YOUR_NO_HAVE_CARD), pointer.position + _tipBoxOffset);
         }
@@ -1689,7 +1689,7 @@ namespace Game
         {
             ui.PilePanel.display(lang._(TAB_YOUR_GRAVEYARD));
             ui.PilePanel.VerticalOverflowCardList.clearItems();
-            foreach (var card in player.grave)
+            foreach (var card in player.getGrave())
             {
                 var item = ui.PilePanel.VerticalOverflowCardList.addItem();
                 setCard(item.Card, card, true);
@@ -1701,8 +1701,8 @@ namespace Game
         private const String TAB_GRAVEYARD_NULL = "墓地是空的";
         void onGravePointerEnter(UI.Deck deck, PointerEventData pointer)
         {
-            if (player.grave.count > 0)
-                ui.TipBox.display(lang._(TAB_GRAVEYARD_HAS, player.grave.count), pointer.position + _tipBoxOffset);
+            if (player.getGrave().count > 0)
+                ui.TipBox.display(lang._(TAB_GRAVEYARD_HAS, player.getGrave().count), pointer.position + _tipBoxOffset);
             else
                 ui.TipBox.display(lang._(TAB_GRAVEYARD_NULL), pointer.position + _tipBoxOffset);
         }

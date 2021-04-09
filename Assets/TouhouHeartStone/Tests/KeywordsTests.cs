@@ -19,14 +19,14 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(RushServant.ID, 1));
             game.skipUntilCanUse(oppo, game.getDefine<DefaultServant>());
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             game.skipUntilCanUse(you, game.getDefine<RushServant>(), game.getDefine<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<RushServant>());
-            Assert.True(you.field.getCard<RushServant>().isRush(game));//是否为突袭随从
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            Assert.False(you.field.getCard<DefaultServant>().canAttack(game));//普通随从没准备好无法攻击
-            Assert.False(you.field.getCard<RushServant>().isAttackable(game, you, oppo.master, out _));//突袭的随从没准备好无法攻击master
-            Assert.True(you.field.getCard<RushServant>().isAttackable(game, you, oppo.field.getCard<DefaultServant>(), out _));//突袭的随从可以攻击敌方随从
+            you.cmdUse(game, you.getHand().getCard<RushServant>());
+            Assert.True(you.getField().getCard<RushServant>().isRush(game));//是否为突袭随从
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            Assert.False(you.getField().getCard<DefaultServant>().canAttack(game));//普通随从没准备好无法攻击
+            Assert.False(you.getField().getCard<RushServant>().isAttackable(game, you, oppo.getMaster(), out _));//突袭的随从没准备好无法攻击master
+            Assert.True(you.getField().getCard<RushServant>().isAttackable(game, you, oppo.getField().getCard<DefaultServant>(), out _));//突袭的随从可以攻击敌方随从
             game.Dispose();
             //THHGame game = GameInitWithoutPlayer<DefaultServant, RushServant>(29, 1);
 
@@ -54,17 +54,17 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(ShieldServant.ID, 1));
             game.skipUntilCanUse(you, game.getDefine<DefaultServant>(), game.getDefine<ShieldServant>());
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<ShieldServant>());
-            Assert.True(you.field.getCard<ShieldServant>().isShield(game));//圣盾随从带有圣盾
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<ShieldServant>());
+            Assert.True(you.getField().getCard<ShieldServant>().isShield(game));//圣盾随从带有圣盾
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             oppo.cmdTurnEnd(game);
-            you.cmdAttack(game, you.field.getCard<DefaultServant>(), oppo.field.getCard<DefaultServant>());
-            Assert.AreEqual(6, you.field.getCard<DefaultServant>().getCurrentLife(game));//没圣盾的随从攻击后受到反伤
-            you.cmdAttack(game, you.field.getCard<ShieldServant>(), oppo.field.getCard<DefaultServant>());
-            Assert.AreEqual(3, you.field.getCard<ShieldServant>().getCurrentLife(game));
-            Assert.False(you.field.getCard<ShieldServant>().isShield(game));
+            you.cmdAttack(game, you.getField().getCard<DefaultServant>(), oppo.getField().getCard<DefaultServant>());
+            Assert.AreEqual(6, you.getField().getCard<DefaultServant>().getCurrentLife(game));//没圣盾的随从攻击后受到反伤
+            you.cmdAttack(game, you.getField().getCard<ShieldServant>(), oppo.getField().getCard<DefaultServant>());
+            Assert.AreEqual(3, you.getField().getCard<ShieldServant>().getCurrentLife(game));
+            Assert.False(you.getField().getCard<ShieldServant>().isShield(game));
             //THHGame game = GameInitWithoutPlayer<DefaultServant, ShieldServant>(29, 1);
             //game.sortedPlayers[0].cmdTurnEnd(game);
             //game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].hand[1], 0);
@@ -92,19 +92,19 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(StealthServant.ID, 1));
             game.skipUntilCanUse(oppo, game.getDefine<DefaultServant>());
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             game.skipUntilCanUse(you, game.getDefine<StealthServant>(), game.getDefine<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<StealthServant>(),0);
-            Assert.True(you.field.getCard<StealthServant>().isStealth(game));//是否为潜行随从
-            you.cmdUse(game, you.hand.getCard<DefaultServant>(),1);
+            you.cmdUse(game, you.getHand().getCard<StealthServant>(),0);
+            Assert.True(you.getField().getCard<StealthServant>().isStealth(game));//是否为潜行随从
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>(),1);
             you.cmdTurnEnd(game);
-            oppo.cmdAttack(game, oppo.field[0], you.field[0]);
-            Assert.AreEqual(3, you.field[0].getCurrentLife(game));
-            oppo.cmdAttack(game, oppo.field[0], you.field[1]);
-            Assert.AreEqual(6, you.field[1].getCurrentLife(game));
+            oppo.cmdAttack(game, oppo.getField()[0], you.getField()[0]);
+            Assert.AreEqual(3, you.getField()[0].getCurrentLife(game));
+            oppo.cmdAttack(game, oppo.getField()[0], you.getField()[1]);
+            Assert.AreEqual(6, you.getField()[1].getCurrentLife(game));
             oppo.cmdTurnEnd(game);
-            you.cmdAttack(game, you.field[0], oppo.field[0]);
-            Assert.False(you.field.getCard<StealthServant>().isStealth(game));//是否为潜行随从
+            you.cmdAttack(game, you.getField()[0], oppo.getField()[0]);
+            Assert.False(you.getField().getCard<StealthServant>().isStealth(game));//是否为潜行随从
             game.Dispose();
 
             /*THHGame game = GameInitWithoutPlayer<DefaultServant, StealthServant>(29, 1);
@@ -146,15 +146,15 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(DrainServant.ID, 1));
             game.skipUntilCanUse<DefaultServant>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             game.skipUntilCanUse<DrainServant>(you);
-            you.cmdUse(game, you.hand.getCard<DrainServant>());
+            you.cmdUse(game, you.getHand().getCard<DrainServant>());
             you.cmdTurnEnd(game);
-            oppo.cmdAttack(game, oppo.field.getCard<DefaultServant>(), you.master);
-            Assert.AreEqual(you.master.getLife(game) - oppo.field.getCard<DefaultServant>().getAttack(game), you.master.getCurrentLife(game));
+            oppo.cmdAttack(game, oppo.getField().getCard<DefaultServant>(), you.getMaster());
+            Assert.AreEqual(you.getMaster().getLife(game) - oppo.getField().getCard<DefaultServant>().getAttack(game), you.getMaster().getCurrentLife(game));
             oppo.cmdTurnEnd(game);
-            you.cmdAttack(game, you.field.getCard<DrainServant>(), oppo.field.getCard<DefaultServant>());
-            Assert.AreEqual(30, you.master.getCurrentLife(game));
+            you.cmdAttack(game, you.getField().getCard<DrainServant>(), oppo.getField().getCard<DefaultServant>());
+            Assert.AreEqual(30, you.getMaster().getCurrentLife(game));
             game.Dispose();
             //oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
             //oppo.cmdTurnEnd(game);
@@ -193,22 +193,22 @@ namespace Tests
                     new KeyValuePair<int, int>(PoisonousServant.ID,1)
                 });
             game.skipUntilCanUse(you, game.getDefine<PoisonousServant>(), game.getDefine<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<PoisonousServant>());
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<PoisonousServant>());
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             game.skipUntilCanUse(oppo, game.getDefine<PoisonousServant>(), game.getDefine<DefaultServant>());
-            oppo.cmdUse(game, oppo.hand.getCard<PoisonousServant>());
-            oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<PoisonousServant>());
+            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             oppo.cmdTurnEnd(game);
             //没剧毒的随从攻击敌方随从，随从不死亡
-            you.cmdAttack(game, you.field.getCard<DefaultServant>(), oppo.field.getCard<DefaultServant>());
-            Assert.NotNull(oppo.field.getCard<DefaultServant>());
+            you.cmdAttack(game, you.getField().getCard<DefaultServant>(), oppo.getField().getCard<DefaultServant>());
+            Assert.NotNull(oppo.getField().getCard<DefaultServant>());
             //有剧毒的随从攻击敌方随从，随从死亡
-            you.cmdAttack(game, you.field.getCard<PoisonousServant>(), oppo.field.getCard<DefaultServant>());
-            Assert.Null(oppo.field.getCard<DefaultServant>());
+            you.cmdAttack(game, you.getField().getCard<PoisonousServant>(), oppo.getField().getCard<DefaultServant>());
+            Assert.Null(oppo.getField().getCard<DefaultServant>());
             you.cmdTurnEnd(game);
             //剧毒随从攻击master，master受到伤害，不会即死
-            oppo.cmdAttack(game, oppo.field.getCard<PoisonousServant>(), you.master);
-            Assert.False(you.master.isDead(game));
+            oppo.cmdAttack(game, oppo.getField().getCard<PoisonousServant>(), you.getMaster());
+            Assert.False(you.getMaster().isDead(game));
             //THHGame game = GameInitWithoutPlayer<DefaultServant, PoisonousServant>(29, 1);
             //AfterXRound(game, 1);
             //game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].hand[1], 0);
@@ -246,26 +246,26 @@ namespace Tests
             THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29)
             .Concat(Enumerable.Repeat(game.getDefine<ElusiveServant>(), 1)));
 
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 0);
 
-            game.skipTurnUntil(() => elusivePlayer.gem >= game.getDefine<ElusiveServant>().cost && game.currentPlayer == elusivePlayer);
-            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == ElusiveServant.ID), 0);
+            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<ElusiveServant>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.getHand().First(c => c.define.id == ElusiveServant.ID), 0);
 
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getDefine<TestSpellCard>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == TestSpellCard.ID), 0, defaultPlayer.field[0]);
-            Assert.AreEqual(6, defaultPlayer.field[0].getCurrentLife(game));//没有魔免的可以被法术指定
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == TestSpellCard.ID), 0, elusivePlayer.field[0]);
-            Assert.AreEqual(3, elusivePlayer.field[0].getCurrentLife(game));//魔免无法被法术指定
+            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<TestSpellCard>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == TestSpellCard.ID), 0, defaultPlayer.getField()[0]);
+            Assert.AreEqual(6, defaultPlayer.getField()[0].getCurrentLife(game));//没有魔免的可以被法术指定
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == TestSpellCard.ID), 0, elusivePlayer.getField()[0]);
+            Assert.AreEqual(3, elusivePlayer.getField()[0].getCurrentLife(game));//魔免无法被法术指定
 
-            game.skipTurnUntil(() => elusivePlayer.gem >= game.getDefine<TestDamageSkill>().cost && game.currentPlayer == elusivePlayer);
-            elusivePlayer.cmdUse(game, elusivePlayer.skill, 0, defaultPlayer.field[0]);
-            Assert.AreEqual(5, defaultPlayer.field[0].getCurrentLife(game));//没有魔免的可以被技能指定
+            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<TestDamageSkill>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.getSkill(), 0, defaultPlayer.getField()[0]);
+            Assert.AreEqual(5, defaultPlayer.getField()[0].getCurrentLife(game));//没有魔免的可以被技能指定
             elusivePlayer.cmdTurnEnd(game);
 
-            game.skipTurnUntil(() => elusivePlayer.gem >= game.getDefine<TestDamageSkill>().cost && game.currentPlayer == elusivePlayer);
-            elusivePlayer.cmdUse(game, elusivePlayer.skill, 0, elusivePlayer.field[0]);
-            Assert.AreEqual(3, elusivePlayer.field[0].getCurrentLife(game));//魔免无法被技能指定
+            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<TestDamageSkill>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.getSkill(), 0, elusivePlayer.getField()[0]);
+            Assert.AreEqual(3, elusivePlayer.getField()[0].getCurrentLife(game));//魔免无法被技能指定
 
             game.Dispose();
         }
@@ -283,24 +283,24 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<TestFreeze>(), 2)));
 
-            game.skipTurnUntil(() => you.gem >= game.getDefine<DefaultServant>().cost && game.currentPlayer == you);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>(), 0);
+            game.skipTurnUntil(() => you.getGem() >= game.getDefine<DefaultServant>().cost && game.currentPlayer == you);
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>(), 0);
             //玩家0拍白板一张
 
-            game.skipTurnUntil(() => oppo.gem >= game.getDefine<TestFreeze>().cost && game.currentPlayer == oppo);
-            oppo.cmdUse(game, oppo.hand.First(c => c.define.id == TestFreeze.ID), 0, you.field);
+            game.skipTurnUntil(() => oppo.getGem() >= game.getDefine<TestFreeze>().cost && game.currentPlayer == oppo);
+            oppo.cmdUse(game, oppo.getHand().First(c => c.define.id == TestFreeze.ID), 0, you.getField());
             //玩家1释放冰环
 
-            game.skipTurnUntil(() => you.gem >= game.getDefine<DefaultServant>().cost && game.currentPlayer == you);
-            you.cmdAttack(game, you.field[0], oppo.master);//被冻结的随从无法攻击
+            game.skipTurnUntil(() => you.getGem() >= game.getDefine<DefaultServant>().cost && game.currentPlayer == you);
+            you.cmdAttack(game, you.getField()[0], oppo.getMaster());//被冻结的随从无法攻击
             you.cmdTurnEnd(game);//回合结束，随从解冻
 
             oppo.cmdTurnEnd(game);
 
             game.skipUntilYourTurn(you);
-            Assert.True(you.field.getCard<DefaultServant>().canAttack(game));
-            you.cmdAttack(game, you.field[0], oppo.master);//已解除冰冻的随从可以攻击
-            Assert.AreEqual(29, oppo.master.getCurrentLife(game));
+            Assert.True(you.getField().getCard<DefaultServant>().canAttack(game));
+            you.cmdAttack(game, you.getField()[0], oppo.getMaster());//已解除冰冻的随从可以攻击
+            Assert.AreEqual(29, oppo.getMaster().getCurrentLife(game));
 
             game.Dispose();
         }
@@ -318,16 +318,16 @@ namespace Tests
             THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<Priestess>(), 2)));
 
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 0);
             //玩家0拍白板一张
 
-            game.skipTurnUntil(() => elusivePlayer.gem >= game.getDefine<Priestess>().cost && game.currentPlayer == elusivePlayer);
-            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == Priestess.ID), 0);
+            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<Priestess>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.getHand().First(c => c.define.id == Priestess.ID), 0);
             //玩家1拍女祭司
 
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 1);
+            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 1);
 
             game.Dispose();
         }
@@ -387,17 +387,17 @@ namespace Tests
                     new KeyValuePair<int, int>(TestFreezeBrain.ID,30)
                 });
             game.skipUntilCanUse<TestWeapon>(you);
-            you.cmdUse(game, you.hand.getCard<TestWeapon>());
-            Assert.True(you.master.canAttack(game));
-            you.cmdAttack(game, you.master, oppo.master);
-            Assert.AreEqual(29, oppo.master.getCurrentLife(game));//测试能进行正常攻击
+            you.cmdUse(game, you.getHand().getCard<TestWeapon>());
+            Assert.True(you.getMaster().canAttack(game));
+            you.cmdAttack(game, you.getMaster(), oppo.getMaster());
+            Assert.AreEqual(29, oppo.getMaster().getCurrentLife(game));//测试能进行正常攻击
             game.skipUntilCanUse<TestFreezeBrain>(oppo);
-            oppo.cmdUse(game, oppo.hand.getCard<TestFreezeBrain>(), 0, you.master);//冰冻
+            oppo.cmdUse(game, oppo.getHand().getCard<TestFreezeBrain>(), 0, you.getMaster());//冰冻
             game.skipUntilYourTurn(you);
-            Assert.False(you.master.canAttack(game));//被冻住，不能攻击
+            Assert.False(you.getMaster().canAttack(game));//被冻住，不能攻击
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            Assert.True(you.master.canAttack(game));//解冻了，应该可以攻击
+            Assert.True(you.getMaster().canAttack(game));//解冻了，应该可以攻击
 
             game.Dispose();
         }
@@ -418,22 +418,22 @@ namespace Tests
             );
 
             game.skipUntilCanUse<KonpakuYoumu_N>(you);
-            you.cmdUse(game, you.hand.getCard<KonpakuYoumu_N>());
+            you.cmdUse(game, you.getHand().getCard<KonpakuYoumu_N>());
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
 
-            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(), targets: you.field[0]);
+            you.cmdUse(game, you.getHand().getCard<TestFreezeBrain>(), targets: you.getField()[0]);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
 
-            you.cmdAttack(game, you.field[0], oppo.master);
-            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(), targets: you.field[0]);
+            you.cmdAttack(game, you.getField()[0], oppo.getMaster());
+            you.cmdUse(game, you.getHand().getCard<TestFreezeBrain>(), targets: you.getField()[0]);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
 
-            you.cmdAttack(game, you.field[0], oppo.master);
-            you.cmdAttack(game, you.field[0], oppo.master);
-            you.cmdUse(game, you.hand.getCard<TestFreezeBrain>(), targets: you.field[0]);
+            you.cmdAttack(game, you.getField()[0], oppo.getMaster());
+            you.cmdAttack(game, you.getField()[0], oppo.getMaster());
+            you.cmdUse(game, you.getHand().getCard<TestFreezeBrain>(), targets: you.getField()[0]);
             you.cmdTurnEnd(game);
 
             game.Dispose();

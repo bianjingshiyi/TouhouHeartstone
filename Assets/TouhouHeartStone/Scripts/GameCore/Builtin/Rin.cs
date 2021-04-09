@@ -31,8 +31,8 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.gainArmor(game, 1);
-            await card.getOwner().master.addBuff(game,
+            await card.getOwner().getMaster().gainArmor(game, 1);
+            await card.getOwner().getMaster().addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(1),
                     new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
         }
@@ -109,7 +109,7 @@ namespace TouhouHeartstone.Builtin
         {
             new DeathRattle(ID,async(g1,c1,p)=>
             {
-                await g1.getOpponent(c1.getOwner()).master.damage(g1,c1,2);
+                await g1.getOpponent(c1.getOwner()).getMaster().damage(g1,c1,2);
                 await g1.updateDeath();
             })
         };
@@ -129,11 +129,11 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            foreach (Card c1 in card.getOwner().field)
+            foreach (Card c1 in card.getOwner().getField())
             {
                 await c1.addBuff(game, new GeneratedBuff(ID, new DeathRattle(ID, async (g, c, b, p) =>
                 {
-                    await g.getOpponent(c.getOwner()).master.damage(g, c, 1);
+                    await g.getOpponent(c.getOwner()).getMaster().damage(g, c, 1);
                     await g.updateDeath();
                 })));
             }
@@ -154,12 +154,12 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            Card[] field = card.getOwner().field.ToArray();
+            Card[] field = card.getOwner().getField().ToArray();
             await field.setDead(game, true);
             await game.updateDeath();
             foreach (var c in field)
             {
-                await card.getOwner().reborn(game, c, c.getOwner().field);
+                await card.getOwner().reborn(game, c, c.getOwner().getField());
             }
             // int count = card.getOwner().field.count;
             // for (int i = 0; i < count; i++)
@@ -189,7 +189,7 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 3; i++)
             {
-                await card.getOwner().reborn(game, card.getOwner().grave.Where(c => c.getCost(game) <= 3 && c.isServant()).random(game), card.getOwner().field);
+                await card.getOwner().reborn(game, card.getOwner().getGrave().Where(c => c.getCost(game) <= 3 && c.isServant()).random(game), card.getOwner().getField());
                 //card.getOwner().grave.Where(c => c.getCost(game) <= 3 && c.isServant()).random(game);
             };
         }
@@ -236,7 +236,7 @@ namespace TouhouHeartstone.Builtin
         {
             new DeathRattle(ID,async(g1,c1,p)=>
             {
-                await c1.getOwner().draw(g1,c1.getOwner().deck.Where(c => c.hasDeathRattle(g1)).random(g1));
+                await c1.getOwner().draw(g1,c1.getOwner().getDeck().Where(c => c.hasDeathRattle(g1)).random(g1));
             }),
         };
     }
@@ -253,15 +253,15 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect((g1,c1)=>
             {
-                return c1.getOwner().master.addBuff(g1,
+                return c1.getOwner().getMaster().addBuff(g1,
                     new GeneratedBuff(ID, new AttackModifier(3),
                         new THHEffectAfter<THHCard.AttackEventArg>(PileFlag.master | PileFlag.self,(g2,c2,b1,a1)=>
                         {
-                            return a1.card == c2.getOwner().master;
+                            return a1.card == c2.getOwner().getMaster();
                         },(g2,c2,b1,a1)=>
                         {
                             string propName = nameof(CatWalk)+b1.instanceID+"Effected";
-                            Card master = c2.getOwner().master;
+                            Card master = c2.getOwner().getMaster();
                             if(a1.target.isDead(g2) && !master.getProp<bool>(g2,propName))
                             {
                                 master.setProp(g2,propName,true);
@@ -289,15 +289,15 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             var arg = await card.getOwner().searchPile(game,
-                card.getOwner().grave.Where(c => c.isServant() && c.hasDeathRattle(game)), 
+                card.getOwner().getGrave().Where(c => c.isServant() && c.hasDeathRattle(game)), 
                 true,
                 3,
                 "尼科之咒！");
             Card choice = arg.choose;
             if (choice != null)
             {
-                if (!card.getOwner().hand.isFull)
-                    await card.getOwner().grave.moveTo(game, choice, card.getOwner().hand);
+                if (!card.getOwner().getHand().isFull)
+                    await card.getOwner().getGrave().moveTo(game, choice, card.getOwner().getHand());
                 await choice.triggerDeathRattles(game);
             }
             
@@ -319,10 +319,10 @@ namespace TouhouHeartstone.Builtin
         {
             new THHEffectAfter<THHCard.AttackEventArg>(PILE.FIELD, (g, c, a) =>
                     {
-                         return a.card == c.getOwner().master;
+                         return a.card == c.getOwner().getMaster();
                     }, null, async (g, c, a) =>
                     {
-                         await c.getOwner().draw(g,c.getOwner().deck.Where(c1=>c1.isServant()).random(g));
+                         await c.getOwner().draw(g,c.getOwner().getDeck().Where(c1=>c1.isServant()).random(g));
                     })
         };
     }
@@ -347,7 +347,7 @@ namespace TouhouHeartstone.Builtin
             {
                 foreach(var death in a.infoDic)
                 {
-                    if(c.getOwner().hand.count<c.getOwner().hand.maxCount && death.Key.getOwner() == c.getOwner())
+                    if(c.getOwner().getHand().count<c.getOwner().getHand().maxCount && death.Key.getOwner() == c.getOwner())
                     {
                         await c.getOwner().addCardToHand<GhostOfHatred>(g);
                     }
@@ -372,7 +372,7 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 3; i++)
             {
-                var reborn = await card.getOwner().reborn(game, card.getOwner().grave.Where(c => c.hasDeathRattle(game) && c.isServant()).random(game), card.getOwner().field);
+                var reborn = await card.getOwner().reborn(game, card.getOwner().getGrave().Where(c => c.hasDeathRattle(game) && c.isServant()).random(game), card.getOwner().getField());
                 if (reborn != null)
                 {
                     await reborn.card.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g, c, a) =>
@@ -404,9 +404,9 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 3; i++)
             {
-                await card.getOwner().deck.moveTo(game, card.getOwner().deck.Where(c => c.isServant()).random(game), card.getOwner().grave);
+                await card.getOwner().getDeck().moveTo(game, card.getOwner().getDeck().Where(c => c.isServant()).random(game), card.getOwner().getGrave());
             };
-            await card.getOwner().master.addBuff(game,
+            await card.getOwner().getMaster().addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(3),
                     new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
         }
@@ -428,9 +428,9 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 3; i++)
             {
-                if(game.getOpponent(card.getOwner()).grave.Any(c => c.isServant()))
+                if(game.getOpponent(card.getOwner()).getGrave().Any(c => c.isServant()))
                 {
-                    await game.getOpponent(card.getOwner()).grave.moveTo(game, game.getOpponent(card.getOwner()).grave.Where(c => c.isServant()).Last(), card.getOwner().grave);
+                    await game.getOpponent(card.getOwner()).getGrave().moveTo(game, game.getOpponent(card.getOwner()).getGrave().Where(c => c.isServant()).Last(), card.getOwner().getGrave());
                 }
             }
 

@@ -24,29 +24,29 @@ namespace Tests
 
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].skill, 0);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getSkill(), 0);
 
-            Assert.AreEqual(1, game.sortedPlayers[0].field.count);
-
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].skill, 0);
-
-            Assert.AreEqual(2, game.sortedPlayers[0].field.count);
+            Assert.AreEqual(1, game.sortedPlayers[0].getField().count);
 
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].skill, 0);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getSkill(), 0);
 
-            Assert.AreEqual(3, game.sortedPlayers[0].field.count);
+            Assert.AreEqual(2, game.sortedPlayers[0].getField().count);
 
             game.sortedPlayers[0].cmdTurnEnd(game);
             game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].skill, 0);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getSkill(), 0);
 
-            Assert.AreEqual(4, game.sortedPlayers[0].field.count);
+            Assert.AreEqual(3, game.sortedPlayers[0].getField().count);
 
-            Assert.AreEqual(4, game.sortedPlayers[0].field.Select(c => c.define).Distinct().Count());//有4种图腾
+            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getSkill(), 0);
+
+            Assert.AreEqual(4, game.sortedPlayers[0].getField().count);
+
+            Assert.AreEqual(4, game.sortedPlayers[0].getField().Select(c => c.define).Distinct().Count());//有4种图腾
         }
     }
 }

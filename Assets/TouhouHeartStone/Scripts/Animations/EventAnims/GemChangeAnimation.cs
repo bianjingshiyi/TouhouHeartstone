@@ -7,10 +7,10 @@ namespace Game
         public override bool update(TableManager table, THHPlayer.SetGemEventArg eventArg, float time)
         {
             if (eventArg.player == table.player)
-                table.ui.SelfGem.Text.text = eventArg.player.gem.ToString();
+                table.ui.SelfGem.Text.text = eventArg.player.getGem().ToString();
             else
-                table.ui.EnemyGem.Text.text = eventArg.player.gem.ToString();
-            table.setSkill(table.ui.SelfSkill, table.player.skill);
+                table.ui.EnemyGem.Text.text = eventArg.player.getGem().ToString();
+            table.setSkill(table.ui.SelfSkill, table.player.getSkill());
             return true;
         }
     }

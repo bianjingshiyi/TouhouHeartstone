@@ -37,7 +37,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
+            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
                 new Halo(new GeneratedBuff(ID, new CostModifier(-1)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
                 {
                     return !c1.isSkill();
@@ -69,7 +69,7 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID,
                 async(g,c,p)=>
                 {
-                    await c.getOwner().hand.random(g).addBuff(g,new GeneratedBuff(ID, new CostModifier(-1)));
+                    await c.getOwner().getHand().random(g).addBuff(g,new GeneratedBuff(ID, new CostModifier(-1)));
                 })
         };
     }
@@ -99,7 +99,7 @@ namespace TouhouHeartstone.Builtin
                                                                 async(g,c,a)=>
                                                                 {
                                                                     THHPlayer you = c.getOwner();
-                                                                    await you.hand.moveTo(g,c,you.grave);
+                                                                    await you.getHand().moveTo(g,c,you.getGrave());
                                                                 })));
             }, PileFlag.both | PileFlag.character,null,
                 (game,card,target)=>
@@ -138,7 +138,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
+            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
                 new Halo(new GeneratedBuff(ID, new CostModifier(-2)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
                 {
                     return !c1.isSkill();
@@ -171,7 +171,7 @@ namespace TouhouHeartstone.Builtin
                                                                     {
                                                                         a.action = e1 =>
                                                                         {
-                                                                            return c.getOwner().hand.random(g).addBuff(g,new GeneratedBuff(ID,new CostModifier(-1)));
+                                                                            return c.getOwner().getHand().random(g).addBuff(g,new GeneratedBuff(ID,new CostModifier(-1)));
                                                                         };
                                                                     })
         };
@@ -198,7 +198,7 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().draw(game, out var draw);
             Card drawCard = draw.card;
-            await card.getOwner().master.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHPlayer.UseEventArg>(PILE.MASTER, (g, c, a) =>
+            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHPlayer.UseEventArg>(PILE.MASTER, (g, c, a) =>
                                                                                                                                     {
                                                                                                                                         return a.card == drawCard;
                                                                                                                                     }, null,
@@ -236,7 +236,7 @@ namespace TouhouHeartstone.Builtin
                         OfType<THHPlayer.UseEventArg>().
                         Where(e2 => e2.player == card.getOwner() && !e2.card.isSkill()).Count() + 1;
 
-            await game.getOpponent(card.getOwner()).field.damageByRandomCount(game, card, card.getOwner().getSpellDamage(game, dam), 3);
+            await game.getOpponent(card.getOwner()).getField().damageByRandomCount(game, card, card.getOwner().getSpellDamage(game, dam), 3);
         }
     }
 
@@ -290,7 +290,7 @@ namespace TouhouHeartstone.Builtin
                 return a.player == g.getOpponent(c.getOwner());
             },null,async(g,c,a)=>
             {
-                await c.getOwner().hand.add(g,g.createCard(a.card.define));
+                await c.getOwner().getHand().add(g,g.createCard(a.card.define));
                 await c.damage(g,c,1);
             })
         };
@@ -347,10 +347,10 @@ namespace TouhouHeartstone.Builtin
         {
             new THHEffectAfter<THHCard.AttackEventArg>(PILE.MASTER,(g,c,a)=>
             {
-                return a.card == c.getOwner().master;
+                return a.card == c.getOwner().getMaster();
             },null,async(g,c,a)=>
             {
-                await c.getOwner().hand.random(g).addBuff(g ,new GeneratedBuff(ID,new CostModifier(-1)));
+                await c.getOwner().getHand().random(g).addBuff(g ,new GeneratedBuff(ID,new CostModifier(-1)));
             })
         };
     }
@@ -437,7 +437,7 @@ namespace TouhouHeartstone.Builtin
                             return a.player == c.getOwner() && a.card.isSkill();
                        }, null, async(g, c, a) =>
                        {
-                           var cards = c.getOwner().hand.randomTake(g,3);
+                           var cards = c.getOwner().getHand().randomTake(g,3);
                            foreach(var ca in cards)
                            {
                                await ca.addBuff(g,new GeneratedBuff(ID,new CostModifier(-1)));
@@ -494,8 +494,8 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().master.damage(game, card, 4);
-            await game.getOpponent(card.getOwner()).field.random(game).damage(game, card, 4);
+            await card.getOwner().getMaster().damage(game, card, 4);
+            await game.getOpponent(card.getOwner()).getField().random(game).damage(game, card, 4);
             await card.getOwner().draw(game);
             await card.getOwner().draw(game);
             await card.getOwner().draw(game);

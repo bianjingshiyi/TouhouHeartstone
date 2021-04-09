@@ -11,12 +11,12 @@ namespace Game
     {
         public bool tryGetSkill(Card card, out Skill skill)
         {
-            if (card == player.skill)
+            if (card == player.getSkill())
             {
                 skill = ui.SelfSkill;
                 return true;
             }
-            else if (card == game.getOpponent(player).skill)
+            else if (card == game.getOpponent(player).getSkill())
             {
                 skill = ui.EnemySkill;
                 return true;
@@ -74,10 +74,10 @@ namespace Game
                 return;
             if (usingCard != null)//已经在用别的牌了，不能点技能
                 return;
-            if (player.skill.isUsable(game, player, out var info))
+            if (player.getSkill().isUsable(game, player, out var info))
             {
-                if (!player.skill.isNeedTarget(game, out _))
-                    player.cmdUse(game, player.skill);
+                if (!player.getSkill().isNeedTarget(game, out _))
+                    player.cmdUse(game, player.getSkill());
             }
             else
             {
@@ -95,7 +95,7 @@ namespace Game
             if (!canControl)
                 return;
             // Stage2: 当前正在拖拽，判断距离以决定是否退出目标选择模式
-            if (usingCard == player.skill)
+            if (usingCard == player.getSkill())
             {
                 if (Vector3.Distance(skill.rectTransform.position, pointer.position) < skillDragThreshold)
                     cancelSkill();
@@ -108,11 +108,11 @@ namespace Game
                 return;//已经在用别的牌了
             if (Vector3.Distance(skill.rectTransform.position, pointer.position) < skillDragThreshold)
                 return;
-            if (player.skill.isUsable(game, player, out var info))
+            if (player.getSkill().isUsable(game, player, out var info))
             {
-                if (player.skill.isNeedTarget(game, out var targets))
+                if (player.getSkill().isNeedTarget(game, out var targets))
                 {
-                    usingCard = player.skill;
+                    usingCard = player.getSkill();
                     highlightTargets(targets);
                     displayArrow(skill.rectTransform, skill.rectTransform.position, pointer.position);
                 }
@@ -132,17 +132,17 @@ namespace Game
                 cancelSkill();
                 return;
             }
-            if (usingCard != null && usingCard != player.skill)
+            if (usingCard != null && usingCard != player.getSkill())
                 return;//在用其他卡片
-            if (usingCard != player.skill)
+            if (usingCard != player.getSkill())
             {
                 cancelSkill();
                 return;
             }
             if (isOnTarget(pointer, out var target))
             {
-                if (player.skill.isUsable(game, player, out var info) && player.skill.isValidTarget(game, target))
-                    player.cmdUse(game, player.skill, 0, target);
+                if (player.getSkill().isUsable(game, player, out var info) && player.getSkill().isValidTarget(game, target))
+                    player.cmdUse(game, player.getSkill(), 0, target);
                 else
                     showTip(info);
             }
@@ -155,12 +155,12 @@ namespace Game
 
         private void onSelfSkillPointerEnter(Skill skill, PointerEventData pointer)
         {
-            ui.TipBox.display(getSkin(player.skill).desc, pointer.position + _tipBoxOffset);
+            ui.TipBox.display(getSkin(player.getSkill()).desc, pointer.position + _tipBoxOffset);
         }
 
         private void onEnemySkillPointerEnter(Skill skill, PointerEventData pointer)
         {
-            ui.TipBox.display(getSkin(game.getOpponent(player).skill).desc, pointer.position + _tipBoxOffset);
+            ui.TipBox.display(getSkin(game.getOpponent(player).getSkill()).desc, pointer.position + _tipBoxOffset);
         }
 
         private void onSkillPointerMove(Skill arg1, Vector2 pointer)

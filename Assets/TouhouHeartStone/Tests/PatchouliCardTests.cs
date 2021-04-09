@@ -42,8 +42,8 @@ namespace Tests
         {
             TestGameflow.createGame(out var game, out var you, out var oppo, Patchouli.ID);
             game.skipUntilCanUse<SummerFire>(you);
-            you.cmdUse(game, you.skill, 0, oppo.master);
-            Assert.AreEqual(oppo.master.getLife(game)-1, oppo.master.getCurrentLife(game));
+            you.cmdUse(game, you.getSkill(), 0, oppo.getMaster());
+            Assert.AreEqual(oppo.getMaster().getLife(game)-1, oppo.getMaster().getCurrentLife(game));
             game.Dispose();
         }
 
@@ -54,11 +54,11 @@ namespace Tests
                 new KeyValuePair<int, int>(BestMagic.ID, 1),
                 new KeyValuePair<int, int>(FireBall.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<BestMagic>().cost);
-            you.cmdUse(game, you.hand.getCard<BestMagic>());//使用秘藏魔法
-            Assert.True(you.hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 0));//火球术费用-5
-            you.cmdUse(game, you.hand.getCard<FireBall>(),0,you.master);
-            Assert.True(you.hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<BestMagic>().cost);
+            you.cmdUse(game, you.getHand().getCard<BestMagic>());//使用秘藏魔法
+            Assert.True(you.getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 0));//火球术费用-5
+            you.cmdUse(game, you.getHand().getCard<FireBall>(),0,you.getMaster());
+            Assert.True(you.getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));
             you.cmdTurnEnd(game);
             //Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//回合结束，效果消失
             game.Dispose();
@@ -71,12 +71,12 @@ namespace Tests
                 new KeyValuePair<int, int>(MegaReaver.ID, 1),
                 new KeyValuePair<int, int>(FireBall.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<FireBall>().cost);
-            Assert.True(game.players[0].hand.Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 7));
-            you.cmdUse(game, you.hand.getCard<FireBall>(),0,you.master);//使用法术牌
-            Assert.True(game.players[0].hand.Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 5));//费用-2
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<FireBall>().cost);
+            Assert.True(game.players[0].getHand().Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 7));
+            you.cmdUse(game, you.getHand().getCard<FireBall>(),0,you.getMaster());//使用法术牌
+            Assert.True(game.players[0].getHand().Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 5));//费用-2
             you.cmdTurnEnd(game);
-            Assert.True(game.players[0].hand.Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 7));//只能在当前回合生效
+            Assert.True(game.players[0].getHand().Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 7));//只能在当前回合生效
             game.Dispose();
         }
 
@@ -86,8 +86,8 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(AgniShine.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<AgniShine>().cost);
-            you.cmdUse(game, you.hand.getCard<AgniShine>(), targets: oppo.master);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<AgniShine>().cost);
+            you.cmdUse(game, you.getHand().getCard<AgniShine>(), targets: oppo.getMaster());
             game.Dispose();
         }
 
@@ -99,21 +99,21 @@ namespace Tests
                 new KeyValuePair<int, int>(DefaultServant.ID, 4),
                 new KeyValuePair<int, int>(SummerFire.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 8);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<PrincessUndine>());
-            var buff = you.master.getBuffs()[0];
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 8);
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<PrincessUndine>());
+            var buff = you.getMaster().getBuffs()[0];
             Assert.AreEqual(PrincessUndine.ID, buff.id);
-            you.cmdUse(game, you.hand.getCard<SummerFire>(), targets: you.field[0]);
-            Assert.True(you.field[0].getCurrentLife(game) == 7);
-            you.field[0].damage(game, you.master, 4);
-            Assert.True(you.field[0].getCurrentLife(game) == 6);
+            you.cmdUse(game, you.getHand().getCard<SummerFire>(), targets: you.getField()[0]);
+            Assert.True(you.getField()[0].getCurrentLife(game) == 7);
+            you.getField()[0].damage(game, you.getMaster(), 4);
+            Assert.True(you.getField()[0].getCurrentLife(game) == 6);
             you.cmdTurnEnd(game);
-            Assert.AreEqual(1, you.master.getBuffs().Length);
-            you.master.damage(game, null, 4);
-            Assert.AreEqual(1, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().infoDic[you.master].damagedValue);
+            Assert.AreEqual(1, you.getMaster().getBuffs().Length);
+            you.getMaster().damage(game, null, 4);
+            Assert.AreEqual(1, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().infoDic[you.getMaster()].damagedValue);
             oppo.cmdTurnEnd(game);
-            Assert.AreEqual(0, you.master.getBuffs().Length);
+            Assert.AreEqual(0, you.getMaster().getBuffs().Length);
 
             game.Dispose();
         }
@@ -125,9 +125,9 @@ namespace Tests
                 new KeyValuePair<int, int>(SylphyHorn.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<SylphyHorn>().cost + 1);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<SylphyHorn>(), targets: you.master);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<SylphyHorn>().cost + 1);
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<SylphyHorn>(), targets: you.getMaster());
             //Card.SetPropEventArg card = game.triggers.getRecordedEvents().OfType<Card.SetPropEventArg>().LastOrDefault(c =>c.card == you.master&&c.propName == PROPERTY.CURRENT_LIFE);
             //game.logger.log("a:" + card.value);
             game.Dispose();
@@ -138,13 +138,13 @@ namespace Tests
         {
             TestGameflow.createGame(out var game, out var you, out _, new KeyValuePair<int, int>(TrilithonShake.ID, 1));
             game.skipUntilCanUse<TrilithonShake>(you);
-            you.cmdUse(game, you.hand.getCard<TrilithonShake>());
+            you.cmdUse(game, you.getHand().getCard<TrilithonShake>());
             you.cmdTurnEnd(game);
             game.skipTurnUntil(() => game.currentPlayer == you);
-            Assert.False(you.field[0].canAttack(game));
-            Assert.True(you.field[0].getKeywords(game).Contains(KEYWORD.CANTATTACK));
-            you.field[0].silence(game);
-            Assert.True(you.field[0].canAttack(game));
+            Assert.False(you.getField()[0].canAttack(game));
+            Assert.True(you.getField()[0].getKeywords(game).Contains(KEYWORD.CANTATTACK));
+            you.getField()[0].silence(game);
+            Assert.True(you.getField()[0].canAttack(game));
 
             game.Dispose();
         }
@@ -160,16 +160,16 @@ namespace Tests
             THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<MetalFatigue>(), 2)));
 
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 0);
 
             elusivePlayer.cmdTurnEnd(game);
 
-            game.skipTurnUntil(() => defaultPlayer.gem >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.First(c => c.define.id == DefaultServant.ID), 0);
+            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 0);
 
-            game.skipTurnUntil(() => elusivePlayer.gem >= game.getDefine<MetalFatigue>().cost && game.currentPlayer == elusivePlayer);
-            elusivePlayer.cmdUse(game, elusivePlayer.hand.First(c => c.define.id == MetalFatigue.ID), 0);
+            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<MetalFatigue>().cost && game.currentPlayer == elusivePlayer);
+            elusivePlayer.cmdUse(game, elusivePlayer.getHand().First(c => c.define.id == MetalFatigue.ID), 0);
 
             game.Dispose();
         }
@@ -184,19 +184,19 @@ namespace Tests
             );//游戏初始化写的这么复杂干嘛
             for (int i = 0; i < 3; i++)
             {
-                game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<FireBall>().cost);
-                you.cmdUse(game, you.hand.getCard<FireBall>(), targets: oppo.master);
+                game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<FireBall>().cost);
+                you.cmdUse(game, you.getHand().getCard<FireBall>(), targets: oppo.getMaster());
                 you.cmdTurnEnd(game);
             }//先射三发火球
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<Koakuma>().cost);
-            you.cmdUse(game, you.hand.getCard<Koakuma>(), targets: oppo.master);//使用小恶魔
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<Koakuma>().cost);
+            you.cmdUse(game, you.getHand().getCard<Koakuma>(), targets: oppo.getMaster());//使用小恶魔
             DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
             Assert.NotNull(discoverRequest);//确实发现
-            Assert.True(discoverRequest.cardIdArray.All(id => you.grave.Any(c => c.id == id)));//发现的全是墓地里的卡
+            Assert.True(discoverRequest.cardIdArray.All(id => you.getGrave().Any(c => c.id == id)));//发现的全是墓地里的卡
             int cardId = discoverRequest.cardIdArray[0];
-            Card card = you.grave.getCard(cardId);//随便选一张
+            Card card = you.getGrave().getCard(cardId);//随便选一张
             you.cmdDiscover(game, cardId);//选
-            Assert.True(you.hand.Contains(card));//确认它在你的手牌里了
+            Assert.True(you.getHand().Contains(card));//确认它在你的手牌里了
             //TODO:落叶，补充各种特殊情况，比如墓地里没有卡，手牌满了，墓地里还有随从
             //game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<Koakuma>().cost);
             //you.cmdUse(game, you.hand.getCard<Koakuma>(), targets: oppo.master);//不射了，直接使用小恶魔
@@ -212,8 +212,8 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
             new KeyValuePair<int, int>(RoyalFlare.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<AgniShine>().cost);
-            you.cmdUse(game, you.hand.getCard<RoyalFlare>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<AgniShine>().cost);
+            you.cmdUse(game, you.getHand().getCard<RoyalFlare>());
             game.Dispose();
         }
 
@@ -223,8 +223,8 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
             new KeyValuePair<int, int>(ElementSprite.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<ElementSprite>().cost);
-            you.cmdUse(game, you.hand.getCard<ElementSprite>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<ElementSprite>().cost);
+            you.cmdUse(game, you.getHand().getCard<ElementSprite>());
 
             game.Dispose();
         }
@@ -236,15 +236,15 @@ namespace Tests
                 new KeyValuePair<int, int>(TheGreatLibrary.ID, 1),
                 new KeyValuePair<int, int>(FireBall.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<TheGreatLibrary>().cost);
-            you.cmdUse(game, you.hand.getCard<TheGreatLibrary>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<TheGreatLibrary>().cost);
+            you.cmdUse(game, you.getHand().getCard<TheGreatLibrary>());
             DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
             Assert.NotNull(discoverRequest);
-            Assert.True(discoverRequest.cardIdArray.All(id => you.deck.Any(c => c.id == id)));
+            Assert.True(discoverRequest.cardIdArray.All(id => you.getDeck().Any(c => c.id == id)));
             int cardId = discoverRequest.cardIdArray[0];
-            Card card = you.deck.getCard(cardId);
+            Card card = you.getDeck().getCard(cardId);
             you.cmdDiscover(game, cardId);
-            Assert.True(you.hand.Contains(card));
+            Assert.True(you.getHand().Contains(card));
             game.Dispose();
         }
 
@@ -255,8 +255,8 @@ namespace Tests
                 new KeyValuePair<int, int>(LibraryProtector.ID, 1),
                 new KeyValuePair<int, int>(FireBall.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<LibraryProtector>().cost);
-            you.cmdUse(game, you.hand.getCard<LibraryProtector>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<LibraryProtector>().cost);
+            you.cmdUse(game, you.getHand().getCard<LibraryProtector>());
             game.Dispose();
         }
 
@@ -267,8 +267,8 @@ namespace Tests
                 new KeyValuePair<int, int>(ArcaneKnowledge.ID, 1),
                 new KeyValuePair<int, int>(FireBall.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<ArcaneKnowledge>().cost);
-            you.cmdUse(game, you.hand.getCard<ArcaneKnowledge>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<ArcaneKnowledge>().cost);
+            you.cmdUse(game, you.getHand().getCard<ArcaneKnowledge>());
             game.Dispose();
         }
 
@@ -280,13 +280,13 @@ namespace Tests
             THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<SilentSelene>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<BestMagic>(), 2)));
 
-            game.skipTurnUntil(() => game.currentPlayer == defaultPlayer && defaultPlayer.gem >= game.getDefine<MissingSpecter>().cost);
-            defaultPlayer.cmdUse(game, defaultPlayer.hand.getCard<MissingSpecter>());
+            game.skipTurnUntil(() => game.currentPlayer == defaultPlayer && defaultPlayer.getGem() >= game.getDefine<MissingSpecter>().cost);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().getCard<MissingSpecter>());
 
-            game.skipTurnUntil(() => game.currentPlayer == elusivePlayer && elusivePlayer.gem >= 10);
-            elusivePlayer.cmdUse(game, elusivePlayer.hand.getCard<BestMagic>());//使用秘藏魔法减费
-            Assert.True(game.players[0].hand.Where(c => c.define is SilentSelene).All(c => c.getCost(game) == 7));
-            elusivePlayer.cmdUse(game, elusivePlayer.hand.getCard<SilentSelene>());
+            game.skipTurnUntil(() => game.currentPlayer == elusivePlayer && elusivePlayer.getGem() >= 10);
+            elusivePlayer.cmdUse(game, elusivePlayer.getHand().getCard<BestMagic>());//使用秘藏魔法减费
+            Assert.True(game.players[0].getHand().Where(c => c.define is SilentSelene).All(c => c.getCost(game) == 7));
+            elusivePlayer.cmdUse(game, elusivePlayer.getHand().getCard<SilentSelene>());
 
             game.Dispose();
         }
@@ -298,9 +298,9 @@ namespace Tests
                 new KeyValuePair<int, int>(SummerRed.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<DefaultServant>().cost);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<SummerRed>(), targets: you.field[0]);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<DefaultServant>().cost);
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<SummerRed>(), targets: you.getField()[0]);
             you.cmdTurnEnd(game);
             game.Dispose();
         }
@@ -312,12 +312,12 @@ namespace Tests
                 new KeyValuePair<int, int>(WinterElement.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<DefaultServant>().cost + 1);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<DefaultServant>().cost + 1);
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<WinterElement>(), targets: you.field[0]);
-            you.cmdAttack(game, you.field[0], oppo.master);
+            you.cmdUse(game, you.getHand().getCard<WinterElement>(), targets: you.getField()[0]);
+            you.cmdAttack(game, you.getField()[0], oppo.getMaster());
             game.Dispose();
         }
 
@@ -328,9 +328,9 @@ namespace Tests
                 new KeyValuePair<int, int>(SpringWind.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<SummerRed>().cost + 1);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.cmdUse(game, you.hand.getCard<SpringWind>(), targets: you.field[0]);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<SummerRed>().cost + 1);
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<SpringWind>(), targets: you.getField()[0]);
             you.cmdTurnEnd(game);
             game.Dispose();
         }
@@ -342,13 +342,13 @@ namespace Tests
                 new KeyValuePair<int, int>(AutumnEdge.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 3);
             for (int i = 0; i < 3; i++)
             {
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>(), i);
             }
             oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.hand.getCard<AutumnEdge>());
+            you.cmdUse(game, you.getHand().getCard<AutumnEdge>());
             game.Dispose();
         }
 
@@ -359,8 +359,8 @@ namespace Tests
                 new KeyValuePair<int, int>(DoyouSpear.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<SummerRed>().cost + 1);
-            you.cmdUse(game, you.hand.getCard<DoyouSpear>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<SummerRed>().cost + 1);
+            you.cmdUse(game, you.getHand().getCard<DoyouSpear>());
             game.Dispose();
         }
 
@@ -370,20 +370,20 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(ElementalHarvester.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<DefaultServant>().cost * 3);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<DefaultServant>().cost * 3);
             for (int i = 0; i < 3; i++)
             {
-                you.cmdUse(game, you.hand.getCard<DefaultServant>());
+                you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             }
             you.cmdTurnEnd(game);
             for (int i = 0; i < 3; i++)
             {
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
-                oppo.field[i].setCurrentLife(game, 2);
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
+                oppo.getField()[i].setCurrentLife(game, 2);
             }
             oppo.cmdTurnEnd(game);
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<ElementalHarvester>().cost);
-            you.cmdUse(game, you.hand.getCard<ElementalHarvester>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<ElementalHarvester>().cost);
+            you.cmdUse(game, you.getHand().getCard<ElementalHarvester>());
             game.Dispose();
         }
 
@@ -394,15 +394,15 @@ namespace Tests
                 new KeyValuePair<int, int>(MercuryPoison.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 3);
             for (int i = 0; i < 3; i++)
             {
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>(), i);
             }
-            oppo.field[0].setAttack(game, 5);
+            oppo.getField()[0].setAttack(game, 5);
             oppo.cmdTurnEnd(game);
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 6);
-            you.cmdUse(game, you.hand.getCard<MercuryPoison>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 6);
+            you.cmdUse(game, you.getHand().getCard<MercuryPoison>());
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
             game.Dispose();
@@ -421,12 +421,12 @@ namespace Tests
                 oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
             }
             oppo.cmdTurnEnd(game);*/
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 9);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 9);
             for (int i = 0; i < 3; i++)
             {
-                you.cmdUse(game, you.hand.getCard<DefaultServant>(), i);
+                you.cmdUse(game, you.getHand().getCard<DefaultServant>(), i);
             }
-            you.cmdUse(game, you.hand.getCard<ForestBlaze>(), targets: oppo.master);
+            you.cmdUse(game, you.getHand().getCard<ForestBlaze>(), targets: oppo.getMaster());
             game.Dispose();
         }
 
@@ -437,12 +437,12 @@ namespace Tests
                 new KeyValuePair<int, int>(BurgeoningRise.ID, 1)
             );
             game.skipUntilCanUse<DefaultServant>(you);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             game.skipUntilCanUse<BurgeoningRise>(you);
-            you.cmdUse(game, you.hand.getCard<BurgeoningRise>(), targets: you.field[0]);
-            you.field[0].die(game);
-            Assert.AreEqual(1, you.field.count);
-            var dead = you.field[0];
+            you.cmdUse(game, you.getHand().getCard<BurgeoningRise>(), targets: you.getField()[0]);
+            you.getField()[0].die(game);
+            Assert.AreEqual(1, you.getField().count);
+            var dead = you.getField()[0];
             Assert.IsInstanceOf<DefaultServant>(dead.define);
             Buff buff = dead.getBuffs()[0];
             Assert.NotNull(buff);
@@ -459,13 +459,13 @@ namespace Tests
                 new KeyValuePair<int, int>(WaterElf.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 7);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            you.field[0].damage(game, you.master, 4);
-            you.cmdUse(game, you.hand.getCard<WaterElf>(), targets: you.field[0]);
-            Assert.True(you.field[0].getCurrentLife(game) == 13);
-            Assert.True(you.field[0].hasKeyword(game, KEYWORD.TAUNT));
-            var keywords = you.field[0].getProp(game, PROPERTY.KEYWORDS);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 7);
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            you.getField()[0].damage(game, you.getMaster(), 4);
+            you.cmdUse(game, you.getHand().getCard<WaterElf>(), targets: you.getField()[0]);
+            Assert.True(you.getField()[0].getCurrentLife(game) == 13);
+            Assert.True(you.getField()[0].hasKeyword(game, KEYWORD.TAUNT));
+            var keywords = you.getField()[0].getProp(game, PROPERTY.KEYWORDS);
             Debug.Log(keywords.GetType());
             Assert.True(keywords is Array);
             Assert.True(keywords is IEnumerable);
@@ -478,16 +478,16 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(PhlogisticRain.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 3);
             for (int i = 0; i < 3; i++)
             {
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>(), i);
             }
             oppo.cmdTurnEnd(game);
             game.skipUntilCanUse<PhlogisticRain>(you);
-            int totalLife = oppo.master.getCurrentLife(game) + oppo.field.Sum(s => s.getCurrentLife(game));
-            you.cmdUse(game, you.hand.getCard<PhlogisticRain>());
-            Assert.AreEqual(totalLife - 6, oppo.master.getCurrentLife(game) + oppo.field.Sum(s => s.getCurrentLife(game)));
+            int totalLife = oppo.getMaster().getCurrentLife(game) + oppo.getField().Sum(s => s.getCurrentLife(game));
+            you.cmdUse(game, you.getHand().getCard<PhlogisticRain>());
+            Assert.AreEqual(totalLife - 6, oppo.getMaster().getCurrentLife(game) + oppo.getField().Sum(s => s.getCurrentLife(game)));
             game.Dispose();
         }
 
@@ -498,14 +498,14 @@ namespace Tests
                 new KeyValuePair<int, int>(StElmoPillar.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 3);
             for (int i = 0; i < 3; i++)
             {
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>(), i);
             }
             oppo.cmdTurnEnd(game);
 
-            you.cmdUse(game, you.hand.getCard<StElmoPillar>(), targets: oppo.field[1]);
+            you.cmdUse(game, you.getHand().getCard<StElmoPillar>(), targets: oppo.getField()[1]);
             game.Dispose();
         }
 
@@ -516,14 +516,14 @@ namespace Tests
                 new KeyValuePair<int, int>(LavaCromlech.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 3);
             for (int i = 0; i < 3; i++)
             {
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>(), i);
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>(), i);
             }
             oppo.cmdTurnEnd(game);
 
-            you.cmdUse(game, you.hand.getCard<LavaCromlech>());
+            you.cmdUse(game, you.getHand().getCard<LavaCromlech>());
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
             you.cmdTurnEnd(game);
@@ -537,15 +537,15 @@ namespace Tests
                 new KeyValuePair<int, int>(GingerGust.ID, 1),
                 new KeyValuePair<int, int>(DefaultServant.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.gem >= 3);
+            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 3);
             for (int i = 0; i < 3; i++)
             {
-                oppo.cmdUse(game, oppo.hand.getCard<DefaultServant>());
+                oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             }
             oppo.cmdTurnEnd(game);
             game.skipUntilCanUse<GingerGust>(you);
-            you.cmdUse(game, you.hand.getCard<GingerGust>());
-            you.cmdAttack(game, you.field[0], oppo.field[1]);
+            you.cmdUse(game, you.getHand().getCard<GingerGust>());
+            you.cmdAttack(game, you.getField()[0], oppo.getField()[1]);
             you.cmdTurnEnd(game);
             game.Dispose();
         }
@@ -557,9 +557,9 @@ namespace Tests
                 new KeyValuePair<int, int>(NoachianDeluge.ID, 1),
                 new KeyValuePair<int, int>(MissingSpecter.ID, 20)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 9);
-            you.cmdUse(game, you.hand.getCard<MissingSpecter>());
-            you.cmdUse(game, you.hand.getCard<NoachianDeluge>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 9);
+            you.cmdUse(game, you.getHand().getCard<MissingSpecter>());
+            you.cmdUse(game, you.getHand().getCard<NoachianDeluge>());
             game.Dispose();
         }
 
@@ -581,14 +581,14 @@ namespace Tests
             // getCard = you.hand.First(c => !handBeforeUse.Contains(c));//给的牌
             //TODO:现在是之前的版本，用一张牌给一张牌，但是是回合结束给牌，所以需要修改测试，让它通过。
             game.skipUntilCanUse<PhilosopherStone>(you);
-            var handBeforeUse = you.hand.ToArray().Length;
+            var handBeforeUse = you.getHand().ToArray().Length;
 
-            you.cmdUse(game, you.hand.getCard<PhilosopherStone>());
-            Assert.IsInstanceOf<PhilosopherStone>(you.item.define);
+            you.cmdUse(game, you.getHand().getCard<PhilosopherStone>());
+            Assert.IsInstanceOf<PhilosopherStone>(you.getItem().define);
 
             Debug.Log("手牌数量:" + handBeforeUse);
             you.cmdTurnEnd(game);
-            handBeforeUse = you.hand.ToArray().Length;
+            handBeforeUse = you.getHand().ToArray().Length;
             Debug.Log("手牌数量:" + handBeforeUse);
 
             game.Dispose();
@@ -601,11 +601,11 @@ namespace Tests
                 new KeyValuePair<int, int>(BiteTentacle.ID, 2),
                 new KeyValuePair<int, int>(GingerGust.ID, 6)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<BiteTentacle>().cost);
-            you.cmdUse(game, you.hand.getCard<BiteTentacle>());
-            var handBeforeUse = you.hand.ToArray();
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 5);
-            Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>().LastOrDefault(c => c.to == you.grave);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<BiteTentacle>().cost);
+            you.cmdUse(game, you.getHand().getCard<BiteTentacle>());
+            var handBeforeUse = you.getHand().ToArray();
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 5);
+            Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>().LastOrDefault(c => c.to == you.getGrave());
             Card throwcard = movecardevent.card;
             Assert.True(handBeforeUse.Contains(throwcard));
 
@@ -619,8 +619,8 @@ namespace Tests
                 new KeyValuePair<int, int>(MultiCast.ID, 2),
                 new KeyValuePair<int, int>(GingerGust.ID, 6)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getDefine<MultiCast>().cost);
-            you.cmdUse(game, you.hand.getCard<MultiCast>());
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<MultiCast>().cost);
+            you.cmdUse(game, you.getHand().getCard<MultiCast>());
             game.Dispose();
         }
 
@@ -630,11 +630,11 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(MultiCast.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= 2);
+            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 2);
             for (int i = 0; i < 2; i++)
             {
-                you.cmdUse(game, you.hand.getCard<MultiCast>());
-                you.draw(game, you.deck.Where(c => c.define is Asthma).ToArray()[0]);
+                you.cmdUse(game, you.getHand().getCard<MultiCast>());
+                you.draw(game, you.getDeck().Where(c => c.define is Asthma).ToArray()[0]);
             }
             game.Dispose();
         }
@@ -655,20 +655,20 @@ namespace Tests
                 new KeyValuePair<int, int>(DoyouSpear.ID, 1),
                 new KeyValuePair<int, int>(NoachianDeluge.ID, 1));
             game.skipUntilCanUse<LibraryProtector>(you);
-            you.cmdUse(game, you.hand.getCard<LibraryProtector>());
+            you.cmdUse(game, you.getHand().getCard<LibraryProtector>());
             int defineLife = game.getDefine<LibraryProtector>().life;
-            int lifeWhenUsed = you.field[0].getCurrentLife(game);
+            int lifeWhenUsed = you.getField()[0].getCurrentLife(game);
             Assert.Greater(lifeWhenUsed, defineLife);
             game.skipUntilCanUse<SylphyHorn>(you);
-            you.cmdUse(game, you.hand.getCard<SylphyHorn>(), 0, you.field[0]);
-            Assert.Greater(you.field[0].getCurrentLife(game), lifeWhenUsed);
-            you.cmdDiscover(game, you.hand.getCard<DoyouSpear>().id);
+            you.cmdUse(game, you.getHand().getCard<SylphyHorn>(), 0, you.getField()[0]);
+            Assert.Greater(you.getField()[0].getCurrentLife(game), lifeWhenUsed);
+            you.cmdDiscover(game, you.getHand().getCard<DoyouSpear>().id);
             you.cmdDiscover(game, game.answers.getRequest<DiscoverRequest>(you.id).cardIdArray[0]);
             game.skipUntilCanUse<NoachianDeluge>(you);
-            you.cmdUse(game, you.hand.getCard<NoachianDeluge>());
-            Assert.False(you.field[0].hasTag(game, KEYWORD.TAUNT));
-            Assert.AreEqual(defineLife, you.field[0].getCurrentLife(game));
-            Assert.AreEqual(defineLife, you.field[0].getLife(game));
+            you.cmdUse(game, you.getHand().getCard<NoachianDeluge>());
+            Assert.False(you.getField()[0].hasTag(game, KEYWORD.TAUNT));
+            Assert.AreEqual(defineLife, you.getField()[0].getCurrentLife(game));
+            Assert.AreEqual(defineLife, you.getField()[0].getLife(game));
 
             game.Dispose();
         }
@@ -680,14 +680,14 @@ namespace Tests
                 new KeyValuePair<int, int>(BurgeoningRise.ID, 2)
             );
             game.skipUntilCanUse<DefaultServant>(you);
-            you.cmdUse(game, you.hand.getCard<DefaultServant>());
+            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             game.skipUntilCanUse<BurgeoningRise>(you);
-            you.cmdUse(game, you.hand.getCard<BurgeoningRise>(), targets: you.field[0]);
+            you.cmdUse(game, you.getHand().getCard<BurgeoningRise>(), targets: you.getField()[0]);
             game.skipUntilCanUse<BurgeoningRise>(you);
-            you.cmdUse(game, you.hand.getCard<BurgeoningRise>(), targets: you.field[0]);
-            you.field[0].die(game);
-            Assert.AreEqual(2, you.field.count);
-            var dead = you.field[0];
+            you.cmdUse(game, you.getHand().getCard<BurgeoningRise>(), targets: you.getField()[0]);
+            you.getField()[0].die(game);
+            Assert.AreEqual(2, you.getField().count);
+            var dead = you.getField()[0];
             Assert.IsInstanceOf<DefaultServant>(dead.define);
             Buff buff = dead.getBuffs()[0];
             Assert.NotNull(buff);
