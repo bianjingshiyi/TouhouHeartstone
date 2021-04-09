@@ -31,8 +31,10 @@ namespace Game
                     table.setSkill(player == table.player ? table.ui.SelfSkill : table.ui.EnemySkill, player.getSkill());
                     foreach (var card in player.getField())
                     {
-                        var servant = table.getServant(card);
-                        table.setServant(servant, card);
+                        if (table.tryGetServant(card, out var servant))
+                        {
+                            table.setServant(servant, card);
+                        }
                     }
                     table.setMaster(player == table.player ? table.ui.SelfMaster: table.ui.EnemyMaster, player.getMaster());
                 }
