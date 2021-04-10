@@ -10,610 +10,613 @@
 
 namespace UI
 {
-    using BJSYGameCore.UI;
-    using UnityEngine;
-    using BJSYGameCore.AutoCompo;
     using System;
     using UnityEngine.UI;
     using BJSYGameCore;
+    using UI;
+    using UnityEngine;
+    using BJSYGameCore.UI;
 
-    [AutoCompoAttribute(24466)]
-    public partial class Table : UIObject
+    public partial class Table:UIObject
     {
-        public void init()
+        public void autoInit()
         {
-            this._FieldsImage = this.transform.findByPath("./Fields").GetComponent<Image>();
-            this._TurnEndButton = this.transform.findByPath("./Fields/TurnEnd").GetComponent<Button>();
-            this._TurnEndButton.onClick.AddListener(this.TurnEndButtonClickCallback);
-            this._TimeoutSlider = this.transform.findByPath("./Fields/Timeout").GetComponent<Slider>();
-            this._Weather = this.transform.findByPath("./Fields/Weather").GetComponent<Weather>();
-            this._EnemyFieldList = this.transform.findByPath("./Fields/EnemyField").GetComponent<FieldList>();
-            this._EnemyMaster = this.transform.findByPath("./Fields/EnemyMaster").GetComponent<Master>();
-            this._EnemyGraveDeck = this.transform.findByPath("./Fields/EnemyGrave").GetComponent<Deck>();
-            this._EnemyDeck = this.transform.findByPath("./Fields/EnemyDeck").GetComponent<Deck>();
-            this._EnemyGem = this.transform.findByPath("./Fields/EnemyGem").GetComponent<Gem>();
-            this._EnemyItem = this.transform.findByPath("./Fields/EnemyItem").GetComponent<Item>();
-            this._EnemySkill = this.transform.findByPath("./Fields/EnemySkill").GetComponent<Skill>();
-            this._EnemyHandList = this.transform.findByPath("./Fields/EnemyHand").GetComponent<HandList>();
-            this._AttackArrowImage = this.transform.findByPath("./Fields/AttackArrow").GetComponent<Image>();
-            this._SelfFieldList = this.transform.findByPath("./Fields/SelfField").GetComponent<FieldList>();
-            this._SelfMaster = this.transform.findByPath("./Fields/SelfMaster").GetComponent<Master>();
-            this._SelfGraveDeck = this.transform.findByPath("./Fields/SelfGrave").GetComponent<Deck>();
-            this._SelfDeck = this.transform.findByPath("./Fields/SelfDeck").GetComponent<Deck>();
-            this._SelfDeckRectTransform = this.transform.findByPath("./Fields/SelfDeck").GetComponent<RectTransform>();
-            this._SelfGem = this.transform.findByPath("./Fields/SelfGem").GetComponent<Gem>();
-            this._SelfItem = this.transform.findByPath("./Fields/SelfItem").GetComponent<Item>();
-            this._SelfSkill = this.transform.findByPath("./Fields/SelfSkill").GetComponent<Skill>();
-            this._BlockerButton = this.transform.findByPath("./Fields/Blocker").GetComponent<Button>();
-            this._BlockerButton.onClick.AddListener(this.BlockerButtonClickCallback);
-            this._SelfHandList = this.transform.findByPath("./Fields/SelfHand").GetComponent<HandList>();
-            this._ServantPlaceHolder = this.transform.findByPath("./Fields/ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
-            this._InitReplaceDialog = this.transform.findByPath("./InitReplaceDialog").GetComponent<InitReplaceDialog>();
-            this._LargeCard = this.transform.findByPath("./LargeCard").GetComponent<Card>();
-            this._LeftDisplayImage = this.transform.findByPath("./LeftDisplay").GetComponent<Image>();
-            this._CenterDisplayImage = this.transform.findByPath("./CenterDisplay").GetComponent<Image>();
-            this._RightDisplayImage = this.transform.findByPath("./RightDisplay").GetComponent<Image>();
-            this._TipText = this.transform.findByPath("./TipText").GetComponent<Text>();
-            this._Fatigue = this.transform.findByPath("./Fatigue").GetComponent<Fatigue>();
-            this._TurnTipImage = this.transform.findByPath("./TurnTipImage").GetComponent<Image>();
-            this._TurnTipText = this.transform.findByPath("./TurnTipImage/TurnTipText").GetComponent<Text>();
-            this._Discover = this.transform.findByPath("./Discover").GetComponent<Discover>();
-            this._PilePanel = this.transform.findByPath("./PilePanel").GetComponent<PilePanel>();
-            this._TipBox = this.transform.findByPath("./TipBox").GetComponent<TipBox>();
-            this._EnemyDeckRectTransform = this.transform.findByPath("./Fields/EnemyDeck").GetComponent<RectTransform>();
-            this._invokeDisPlayRectTransform = this.transform.findByPath("./Fields/InvokeDisPlay").GetComponent<RectTransform>();
+            _FieldsImage = transform.Find(PATH_FIELDSIMAGE).GetComponent<Image>();
+            _TurnEndButton = transform.Find(PATH_TURNENDBUTTON).GetComponent<Button>();
+            _TurnEndButton.onClick.AddListener(TurnEndButtonClickCallback);
+            _TimeoutSlider = transform.Find(PATH_TIMEOUTSLIDER).GetComponent<Slider>();
+            _Weather = transform.Find(PATH_WEATHER).GetComponent<Weather>();
+            _EnemyFieldList = transform.Find(PATH_EnemyFIELDLIST).GetComponent<FieldList>();
+            _EnemyMaster = transform.Find(PATH_EnemyMASTER).GetComponent<Master>();
+            _EnemyDeck = transform.Find(PATH_EnemyDECK).GetComponent<Deck>();
+            _EnemyGraveDeck = transform.Find(PATH_EnemyGRAVEDECK).GetComponent<Deck>();
+            _EnemyGem = transform.Find(PATH_EnemyGEM).GetComponent<Gem>();
+            _EnemyItem = transform.Find(PATH_EnemyITEM).GetComponent<Item>();
+            _EnemySkill = transform.Find(PATH_EnemySKILL).GetComponent<Skill>();
+            _EnemyHandList = transform.Find(PATH_EnemyHANDLIST).GetComponent<HandList>();
+            _AttackArrowImage = transform.Find(PATH_ATTACKARROWIMAGE).GetComponent<Image>();
+            _SelfFieldList = transform.Find(PATH_SelfFIELDLIST).GetComponent<FieldList>();
+            _SelfMaster = transform.Find(PATH_SelfMASTER).GetComponent<Master>();
+            _SelfGraveDeck = transform.Find(PATH_SelfGRAVEDECK).GetComponent<Deck>();
+            _SelfDeck = transform.Find(PATH_SelfDECK).GetComponent<Deck>();
+            _SelfDeckRectTransform = transform.Find(PATH_SelfDECKRECTTRANSFORM).GetComponent<RectTransform>();
+            _SelfGem = transform.Find(PATH_SelfGEM).GetComponent<Gem>();
+            _SelfItem = transform.Find(PATH_SelfITEM).GetComponent<Item>();
+            _SelfSkill = transform.Find(PATH_SelfSKILL).GetComponent<Skill>();
+            _BlockerButton = transform.Find(PATH_BlockerButton).GetComponent<Button>();
+            _BlockerButton.onClick.AddListener(BlockerButtonClickCallback);
+            _SelfHandList = transform.Find(PATH_SelfHANDLIST).GetComponent<HandList>();
+            _ServantPlaceHolder = transform.Find(PATH_ServantPlaceHolder).GetComponent<ServantPlaceHolder>();
+            _InitReplaceDialog = transform.Find(PATH_InitReplaceDialog).GetComponent<InitReplaceDialog>();
+            _LargeCard = transform.Find(PATH_LargeCard).GetComponent<Card>();
+            _LeftDisplayImage = transform.Find(PATH_LeftDisplayImage).GetComponent<Image>();
+            _CenterDisplayImage = transform.Find(PATH_CenterDisplayImage).GetComponent<Image>();
+            _RightDisplayImage = transform.Find(PATH_RightDisplayImage).GetComponent<Image>();
+            _TipText = transform.Find(PATH_TipText).GetComponent<Text>();
+            _Fatigue = transform.Find(PATH_Fatigue).GetComponent<Fatigue>();
+            _TurnTipImage = transform.Find(PATH_TurnTipImage).GetComponent<Image>();
+            _TurnTipText = transform.Find(PATH_TurnTipText).GetComponent<Text>();
+            _Discover = transform.Find(PATH_Discover).GetComponent<Discover>();
+            _PilePanel = transform.Find(PATH_PilePanel).GetComponent<PilePanel>();
+            _TipBox = transform.Find(PATH_TipBoX).GetComponent<TipBox>();
+            _EnemyDeckRectTransform = transform.Find(PATH_EnemyDECKRECTTRANSFORM).GetComponent<RectTransform>();
+            _InvokeDisPlayRectTransform = transform.Find(PATH_InvokeDISPLAYRECTTRANSFORM).GetComponent<RectTransform>();
+            this._Waiting = this.transform.Find(PATH_Waiting).gameObject;
+            _WaitingRectTransform = transform.Find(PATH_WaitingRectTransform).GetComponent<RectTransform>();
+            _WaitingImage = transform.Find(PATH_WaitingImage).GetComponent<Image>();
         }
-        public void clear()
+        public void autoClear()
         {
-            this._TurnEndButton.onClick.RemoveListener(this.TurnEndButtonClickCallback);
-            this._BlockerButton.onClick.RemoveListener(this.BlockerButtonClickCallback);
+            _TurnEndButton.onClick.RemoveListener(TurnEndButtonClickCallback);
+            _BlockerButton.onClick.RemoveListener(BlockerButtonClickCallback);
         }
-        [SerializeField()]
-        [AutoCompo(41460, "./Fields")]
-        private Image _FieldsImage;
+        public Image _FieldsImage;
+        public const string PATH_FIELDSIMAGE = "Fields";
         public Image FieldsImage
         {
             get
             {
-                if ((this._FieldsImage == null))
+                if ((_FieldsImage == null))
                 {
-                    this._FieldsImage = this.transform.findByPath("./Fields").GetComponent<Image>();
+                    _FieldsImage = transform.Find(PATH_FIELDSIMAGE).GetComponent<Image>();
                 }
-                return this._FieldsImage;
+                return _FieldsImage;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41418, "./Fields/TurnEnd")]
-        private Button _TurnEndButton;
+        public Button _TurnEndButton;
+        public const string PATH_TURNENDBUTTON = "Fields/TurnEnd";
         public Button TurnEndButton
         {
             get
             {
-                if ((this._TurnEndButton == null))
+                if ((_TurnEndButton == null))
                 {
-                    this._TurnEndButton = this.transform.findByPath("./Fields/TurnEnd").GetComponent<Button>();
+                    _TurnEndButton = transform.Find(PATH_TURNENDBUTTON).GetComponent<Button>();
                 }
-                return this._TurnEndButton;
+                return _TurnEndButton;
             }
         }
-        public event Action onTurnEndButtonClick;
+        public event Action<Table> onTurnEndButtonClick;
         private void TurnEndButtonClickCallback()
         {
-            if ((this.onTurnEndButtonClick != null))
+            if ((onTurnEndButtonClick != null))
             {
-                this.onTurnEndButtonClick();
+                onTurnEndButtonClick(this);
             }
         }
-        [SerializeField()]
-        [AutoCompo(41450, "./Fields/Timeout")]
-        private Slider _TimeoutSlider;
+        public Slider _TimeoutSlider;
+        public const string PATH_TIMEOUTSLIDER = "Fields/Timeout";
         public Slider TimeoutSlider
         {
             get
             {
-                if ((this._TimeoutSlider == null))
+                if ((_TimeoutSlider == null))
                 {
-                    this._TimeoutSlider = this.transform.findByPath("./Fields/Timeout").GetComponent<Slider>();
+                    _TimeoutSlider = transform.Find(PATH_TIMEOUTSLIDER).GetComponent<Slider>();
                 }
-                return this._TimeoutSlider;
+                return _TimeoutSlider;
             }
         }
-        [SerializeField()]
-        [AutoCompo(42044, "./Fields/Weather")]
-        private Weather _Weather;
+        public Weather _Weather;
+        public const string PATH_WEATHER = "Fields/Weather";
         public Weather Weather
         {
             get
             {
-                if ((this._Weather == null))
+                if ((_Weather == null))
                 {
-                    this._Weather = this.transform.findByPath("./Fields/Weather").GetComponent<Weather>();
+                    _Weather = transform.Find(PATH_WEATHER).GetComponent<Weather>();
                 }
-                return this._Weather;
+                return _Weather;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41538, "./Fields/EnemyField")]
-        private FieldList _EnemyFieldList;
+        public FieldList _EnemyFieldList;
+        public const string PATH_EnemyFIELDLIST = "Fields/EnemyField";
         public FieldList EnemyFieldList
         {
             get
             {
-                if ((this._EnemyFieldList == null))
+                if ((_EnemyFieldList == null))
                 {
-                    this._EnemyFieldList = this.transform.findByPath("./Fields/EnemyField").GetComponent<FieldList>();
+                    _EnemyFieldList = transform.Find(PATH_EnemyFIELDLIST).GetComponent<FieldList>();
                 }
-                return this._EnemyFieldList;
+                return _EnemyFieldList;
             }
         }
-        [SerializeField()]
-        [AutoCompo(42270, "./Fields/EnemyMaster")]
-        private Master _EnemyMaster;
+        public Master _EnemyMaster;
+        public const string PATH_EnemyMASTER = "Fields/EnemyMaster";
         public Master EnemyMaster
         {
             get
             {
-                if ((this._EnemyMaster == null))
+                if ((_EnemyMaster == null))
                 {
-                    this._EnemyMaster = this.transform.findByPath("./Fields/EnemyMaster").GetComponent<Master>();
+                    _EnemyMaster = transform.Find(PATH_EnemyMASTER).GetComponent<Master>();
                 }
-                return this._EnemyMaster;
+                return _EnemyMaster;
             }
         }
-        [SerializeField()]
-        [AutoCompo(40834, "./Fields/EnemyGrave")]
-        private Deck _EnemyGraveDeck;
-        public Deck EnemyGraveDeck
-        {
-            get
-            {
-                if ((this._EnemyGraveDeck == null))
-                {
-                    this._EnemyGraveDeck = this.transform.findByPath("./Fields/EnemyGrave").GetComponent<Deck>();
-                }
-                return this._EnemyGraveDeck;
-            }
-        }
-        [SerializeField()]
-        [AutoCompo(40830, "./Fields/EnemyDeck")]
-        private Deck _EnemyDeck;
+        public Deck _EnemyDeck;
+        public const string PATH_EnemyDECK = "Fields/EnemyDeck";
         public Deck EnemyDeck
         {
             get
             {
-                if ((this._EnemyDeck == null))
+                if ((_EnemyDeck == null))
                 {
-                    this._EnemyDeck = this.transform.findByPath("./Fields/EnemyDeck").GetComponent<Deck>();
+                    _EnemyDeck = transform.Find(PATH_EnemyDECK).GetComponent<Deck>();
                 }
-                return this._EnemyDeck;
+                return _EnemyDeck;
             }
         }
-        [SerializeField()]
-        [AutoCompo(42668, "./Fields/EnemyGem")]
-        private Gem _EnemyGem;
+        public Deck _EnemyGraveDeck;
+        public const string PATH_EnemyGRAVEDECK = "Fields/EnemyGrave";
+        public Deck EnemyGraveDeck
+        {
+            get
+            {
+                if ((_EnemyGraveDeck == null))
+                {
+                    _EnemyGraveDeck = transform.Find(PATH_EnemyGRAVEDECK).GetComponent<Deck>();
+                }
+                return _EnemyGraveDeck;
+            }
+        }
+        public Gem _EnemyGem;
+        public const string PATH_EnemyGEM = "Fields/EnemyGem";
         public Gem EnemyGem
         {
             get
             {
-                if ((this._EnemyGem == null))
+                if ((_EnemyGem == null))
                 {
-                    this._EnemyGem = this.transform.findByPath("./Fields/EnemyGem").GetComponent<Gem>();
+                    _EnemyGem = transform.Find(PATH_EnemyGEM).GetComponent<Gem>();
                 }
-                return this._EnemyGem;
+                return _EnemyGem;
             }
         }
-        [SerializeField()]
-        [AutoCompo(43092, "./Fields/EnemyItem")]
-        private Item _EnemyItem;
+        public Item _EnemyItem;
+        public const string PATH_EnemyITEM = "Fields/EnemyItem";
         public Item EnemyItem
         {
             get
             {
-                if ((this._EnemyItem == null))
+                if ((_EnemyItem == null))
                 {
-                    this._EnemyItem = this.transform.findByPath("./Fields/EnemyItem").GetComponent<Item>();
+                    _EnemyItem = transform.Find(PATH_EnemyITEM).GetComponent<Item>();
                 }
-                return this._EnemyItem;
+                return _EnemyItem;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41708, "./Fields/EnemySkill")]
-        private Skill _EnemySkill;
+        public Skill _EnemySkill;
+        public const string PATH_EnemySKILL = "Fields/EnemySkill";
         public Skill EnemySkill
         {
             get
             {
-                if ((this._EnemySkill == null))
+                if ((_EnemySkill == null))
                 {
-                    this._EnemySkill = this.transform.findByPath("./Fields/EnemySkill").GetComponent<Skill>();
+                    _EnemySkill = transform.Find(PATH_EnemySKILL).GetComponent<Skill>();
                 }
-                return this._EnemySkill;
+                return _EnemySkill;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41030, "./Fields/EnemyHand")]
-        private HandList _EnemyHandList;
+        public HandList _EnemyHandList;
+        public const string PATH_EnemyHANDLIST = "Fields/EnemyHand";
         public HandList EnemyHandList
         {
             get
             {
-                if ((this._EnemyHandList == null))
+                if ((_EnemyHandList == null))
                 {
-                    this._EnemyHandList = this.transform.findByPath("./Fields/EnemyHand").GetComponent<HandList>();
+                    _EnemyHandList = transform.Find(PATH_EnemyHANDLIST).GetComponent<HandList>();
                 }
-                return this._EnemyHandList;
+                return _EnemyHandList;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41368, "./Fields/AttackArrow")]
-        private Image _AttackArrowImage;
+        public Image _AttackArrowImage;
+        public const string PATH_ATTACKARROWIMAGE = "Fields/AttackArrow";
         public Image AttackArrowImage
         {
             get
             {
-                if ((this._AttackArrowImage == null))
+                if ((_AttackArrowImage == null))
                 {
-                    this._AttackArrowImage = this.transform.findByPath("./Fields/AttackArrow").GetComponent<Image>();
+                    _AttackArrowImage = transform.Find(PATH_ATTACKARROWIMAGE).GetComponent<Image>();
                 }
-                return this._AttackArrowImage;
+                return _AttackArrowImage;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41304, "./Fields/SelfField")]
-        private FieldList _SelfFieldList;
+        public FieldList _SelfFieldList;
+        public const string PATH_SelfFIELDLIST = "Fields/SelfField";
         public FieldList SelfFieldList
         {
             get
             {
-                if ((this._SelfFieldList == null))
+                if ((_SelfFieldList == null))
                 {
-                    this._SelfFieldList = this.transform.findByPath("./Fields/SelfField").GetComponent<FieldList>();
+                    _SelfFieldList = transform.Find(PATH_SelfFIELDLIST).GetComponent<FieldList>();
                 }
-                return this._SelfFieldList;
+                return _SelfFieldList;
             }
         }
-        [SerializeField()]
-        [AutoCompo(42272, "./Fields/SelfMaster")]
-        private Master _SelfMaster;
+        public Master _SelfMaster;
+        public const string PATH_SelfMASTER = "Fields/SelfMaster";
         public Master SelfMaster
         {
             get
             {
-                if ((this._SelfMaster == null))
+                if ((_SelfMaster == null))
                 {
-                    this._SelfMaster = this.transform.findByPath("./Fields/SelfMaster").GetComponent<Master>();
+                    _SelfMaster = transform.Find(PATH_SelfMASTER).GetComponent<Master>();
                 }
-                return this._SelfMaster;
+                return _SelfMaster;
             }
         }
-        [SerializeField()]
-        [AutoCompo(40826, "./Fields/SelfGrave")]
-        private Deck _SelfGraveDeck;
+        public Deck _SelfGraveDeck;
+        public const string PATH_SelfGRAVEDECK = "Fields/SelfGrave";
         public Deck SelfGraveDeck
         {
             get
             {
-                if ((this._SelfGraveDeck == null))
+                if ((_SelfGraveDeck == null))
                 {
-                    this._SelfGraveDeck = this.transform.findByPath("./Fields/SelfGrave").GetComponent<Deck>();
+                    _SelfGraveDeck = transform.Find(PATH_SelfGRAVEDECK).GetComponent<Deck>();
                 }
-                return this._SelfGraveDeck;
+                return _SelfGraveDeck;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41004, "./Fields/SelfDeck")]
-        private Deck _SelfDeck;
+        public Deck _SelfDeck;
+        public const string PATH_SelfDECK = "Fields/SelfDeck";
         public Deck SelfDeck
         {
             get
             {
-                if ((this._SelfDeck == null))
+                if ((_SelfDeck == null))
                 {
-                    this._SelfDeck = this.transform.findByPath("./Fields/SelfDeck").GetComponent<Deck>();
+                    _SelfDeck = transform.Find(PATH_SelfDECK).GetComponent<Deck>();
                 }
-                return this._SelfDeck;
+                return _SelfDeck;
             }
         }
-        [SerializeField()]
-        [AutoCompo(40524, "./Fields/SelfDeck")]
-        private RectTransform _SelfDeckRectTransform;
+        public RectTransform _SelfDeckRectTransform;
+        public const string PATH_SelfDECKRECTTRANSFORM = "Fields/SelfDeck";
         public RectTransform SelfDeckRectTransform
         {
             get
             {
-                if ((this._SelfDeckRectTransform == null))
+                if ((_SelfDeckRectTransform == null))
                 {
-                    this._SelfDeckRectTransform = this.transform.findByPath("./Fields/SelfDeck").GetComponent<RectTransform>();
+                    _SelfDeckRectTransform = transform.Find(PATH_SelfDECKRECTTRANSFORM).GetComponent<RectTransform>();
                 }
-                return this._SelfDeckRectTransform;
+                return _SelfDeckRectTransform;
             }
         }
-        [SerializeField()]
-        [AutoCompo(42666, "./Fields/SelfGem")]
-        private Gem _SelfGem;
+        public Gem _SelfGem;
+        public const string PATH_SelfGEM = "Fields/SelfGem";
         public Gem SelfGem
         {
             get
             {
-                if ((this._SelfGem == null))
+                if ((_SelfGem == null))
                 {
-                    this._SelfGem = this.transform.findByPath("./Fields/SelfGem").GetComponent<Gem>();
+                    _SelfGem = transform.Find(PATH_SelfGEM).GetComponent<Gem>();
                 }
-                return this._SelfGem;
+                return _SelfGem;
             }
         }
-        [SerializeField()]
-        [AutoCompo(43090, "./Fields/SelfItem")]
-        private Item _SelfItem;
+        public Item _SelfItem;
+        public const string PATH_SelfITEM = "Fields/SelfItem";
         public Item SelfItem
         {
             get
             {
-                if ((this._SelfItem == null))
+                if ((_SelfItem == null))
                 {
-                    this._SelfItem = this.transform.findByPath("./Fields/SelfItem").GetComponent<Item>();
+                    _SelfItem = transform.Find(PATH_SelfITEM).GetComponent<Item>();
                 }
-                return this._SelfItem;
+                return _SelfItem;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41710, "./Fields/SelfSkill")]
-        private Skill _SelfSkill;
+        public Skill _SelfSkill;
+        public const string PATH_SelfSKILL = "Fields/SelfSkill";
         public Skill SelfSkill
         {
             get
             {
-                if ((this._SelfSkill == null))
+                if ((_SelfSkill == null))
                 {
-                    this._SelfSkill = this.transform.findByPath("./Fields/SelfSkill").GetComponent<Skill>();
+                    _SelfSkill = transform.Find(PATH_SelfSKILL).GetComponent<Skill>();
                 }
-                return this._SelfSkill;
+                return _SelfSkill;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41442, "./Fields/Blocker")]
-        private Button _BlockerButton;
+        public Button _BlockerButton;
+        public const string PATH_BlockerButton = "InitReplaceDialog/Blocker";
         public Button BlockerButton
         {
             get
             {
-                if ((this._BlockerButton == null))
+                if ((_BlockerButton == null))
                 {
-                    this._BlockerButton = this.transform.findByPath("./Fields/Blocker").GetComponent<Button>();
+                    _BlockerButton = transform.Find(PATH_BlockerButton).GetComponent<Button>();
                 }
-                return this._BlockerButton;
+                return _BlockerButton;
             }
         }
-        public event Action onBlockerButtonClick;
+        public event Action<Table> onBlockerButtonClick;
         private void BlockerButtonClickCallback()
         {
-            if ((this.onBlockerButtonClick != null))
+            if ((onBlockerButtonClick != null))
             {
-                this.onBlockerButtonClick();
+                onBlockerButtonClick(this);
             }
         }
-        [SerializeField()]
-        [AutoCompo(40810, "./Fields/SelfHand")]
-        private HandList _SelfHandList;
+        public HandList _SelfHandList;
+        public const string PATH_SelfHANDLIST = "Fields/SelfHand";
         public HandList SelfHandList
         {
             get
             {
-                if ((this._SelfHandList == null))
+                if ((_SelfHandList == null))
                 {
-                    this._SelfHandList = this.transform.findByPath("./Fields/SelfHand").GetComponent<HandList>();
+                    _SelfHandList = transform.Find(PATH_SelfHANDLIST).GetComponent<HandList>();
                 }
-                return this._SelfHandList;
+                return _SelfHandList;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41320, "./Fields/ServantPlaceHolder")]
-        private ServantPlaceHolder _ServantPlaceHolder;
+        public ServantPlaceHolder _ServantPlaceHolder;
+        public const string PATH_ServantPlaceHolder = "Fields/ServantPlaceHolder";
         public ServantPlaceHolder ServantPlaceHolder
         {
             get
             {
-                if ((this._ServantPlaceHolder == null))
+                if ((_ServantPlaceHolder == null))
                 {
-                    this._ServantPlaceHolder = this.transform.findByPath("./Fields/ServantPlaceHolder").GetComponent<ServantPlaceHolder>();
+                    _ServantPlaceHolder = transform.Find(PATH_ServantPlaceHolder).GetComponent<ServantPlaceHolder>();
                 }
-                return this._ServantPlaceHolder;
+                return _ServantPlaceHolder;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41374, "./InitReplaceDialog")]
-        private InitReplaceDialog _InitReplaceDialog;
+        public InitReplaceDialog _InitReplaceDialog;
+        public const string PATH_InitReplaceDialog = "InitReplaceDialog";
         public InitReplaceDialog InitReplaceDialog
         {
             get
             {
-                if ((this._InitReplaceDialog == null))
+                if ((_InitReplaceDialog == null))
                 {
-                    this._InitReplaceDialog = this.transform.findByPath("./InitReplaceDialog").GetComponent<InitReplaceDialog>();
+                    _InitReplaceDialog = transform.Find(PATH_InitReplaceDialog).GetComponent<InitReplaceDialog>();
                 }
-                return this._InitReplaceDialog;
+                return _InitReplaceDialog;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41678, "./LargeCard")]
-        private Card _LargeCard;
+        public Card _LargeCard;
+        public const string PATH_LargeCard = "LargeCard";
         public Card LargeCard
         {
             get
             {
-                if ((this._LargeCard == null))
+                if ((_LargeCard == null))
                 {
-                    this._LargeCard = this.transform.findByPath("./LargeCard").GetComponent<Card>();
+                    _LargeCard = transform.Find(PATH_LargeCard).GetComponent<Card>();
                 }
-                return this._LargeCard;
+                return _LargeCard;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41118, "./LeftDisplay")]
-        private Image _LeftDisplayImage;
+        public Image _LeftDisplayImage;
+        public const string PATH_LeftDisplayImage = "LeftDisplay";
         public Image LeftDisplayImage
         {
             get
             {
-                if ((this._LeftDisplayImage == null))
+                if ((_LeftDisplayImage == null))
                 {
-                    this._LeftDisplayImage = this.transform.findByPath("./LeftDisplay").GetComponent<Image>();
+                    _LeftDisplayImage = transform.Find(PATH_LeftDisplayImage).GetComponent<Image>();
                 }
-                return this._LeftDisplayImage;
+                return _LeftDisplayImage;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41158, "./CenterDisplay")]
-        private Image _CenterDisplayImage;
+        public Image _CenterDisplayImage;
+        public const string PATH_CenterDisplayImage = "CenterDisplay";
         public Image CenterDisplayImage
         {
             get
             {
-                if ((this._CenterDisplayImage == null))
+                if ((_CenterDisplayImage == null))
                 {
-                    this._CenterDisplayImage = this.transform.findByPath("./CenterDisplay").GetComponent<Image>();
+                    _CenterDisplayImage = transform.Find(PATH_CenterDisplayImage).GetComponent<Image>();
                 }
-                return this._CenterDisplayImage;
+                return _CenterDisplayImage;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41120, "./RightDisplay")]
-        private Image _RightDisplayImage;
+        public Image _RightDisplayImage;
+        public const string PATH_RightDisplayImage = "RightDisplay";
         public Image RightDisplayImage
         {
             get
             {
-                if ((this._RightDisplayImage == null))
+                if ((_RightDisplayImage == null))
                 {
-                    this._RightDisplayImage = this.transform.findByPath("./RightDisplay").GetComponent<Image>();
+                    _RightDisplayImage = transform.Find(PATH_RightDisplayImage).GetComponent<Image>();
                 }
-                return this._RightDisplayImage;
+                return _RightDisplayImage;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41432, "./TipText")]
-        private Text _TipText;
+        public Text _TipText;
+        public const string PATH_TipText = "TipText";
         public Text TipText
         {
             get
             {
-                if ((this._TipText == null))
+                if ((_TipText == null))
                 {
-                    this._TipText = this.transform.findByPath("./TipText").GetComponent<Text>();
+                    _TipText = transform.Find(PATH_TipText).GetComponent<Text>();
                 }
-                return this._TipText;
+                return _TipText;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41386, "./Fatigue")]
-        private Fatigue _Fatigue;
+        public Fatigue _Fatigue;
+        public const string PATH_Fatigue = "Fatigue";
         public Fatigue Fatigue
         {
             get
             {
-                if ((this._Fatigue == null))
+                if ((_Fatigue == null))
                 {
-                    this._Fatigue = this.transform.findByPath("./Fatigue").GetComponent<Fatigue>();
+                    _Fatigue = transform.Find(PATH_Fatigue).GetComponent<Fatigue>();
                 }
-                return this._Fatigue;
+                return _Fatigue;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41360, "./TurnTipImage")]
-        private Image _TurnTipImage;
+        public Image _TurnTipImage;
+        public const string PATH_TurnTipImage = "TurnTipImage";
         public Image TurnTipImage
         {
             get
             {
-                if ((this._TurnTipImage == null))
+                if ((_TurnTipImage == null))
                 {
-                    this._TurnTipImage = this.transform.findByPath("./TurnTipImage").GetComponent<Image>();
+                    _TurnTipImage = transform.Find(PATH_TurnTipImage).GetComponent<Image>();
                 }
-                return this._TurnTipImage;
+                return _TurnTipImage;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41430, "./TurnTipImage/TurnTipText")]
-        private Text _TurnTipText;
+        public Text _TurnTipText;
+        public const string PATH_TurnTipText = "TurnTipImage/TurnTipText";
         public Text TurnTipText
         {
             get
             {
-                if ((this._TurnTipText == null))
+                if ((_TurnTipText == null))
                 {
-                    this._TurnTipText = this.transform.findByPath("./TurnTipImage/TurnTipText").GetComponent<Text>();
+                    _TurnTipText = transform.Find(PATH_TurnTipText).GetComponent<Text>();
                 }
-                return this._TurnTipText;
+                return _TurnTipText;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41702, "./Discover")]
-        private Discover _Discover;
+        public Discover _Discover;
+        public const string PATH_Discover = "Discover";
         public Discover Discover
         {
             get
             {
-                if ((this._Discover == null))
+                if ((_Discover == null))
                 {
-                    this._Discover = this.transform.findByPath("./Discover").GetComponent<Discover>();
+                    _Discover = transform.Find(PATH_Discover).GetComponent<Discover>();
                 }
-                return this._Discover;
+                return _Discover;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41600, "./PilePanel")]
-        private PilePanel _PilePanel;
+        public PilePanel _PilePanel;
+        public const string PATH_PilePanel = "PilePanel";
         public PilePanel PilePanel
         {
             get
             {
-                if ((this._PilePanel == null))
+                if ((_PilePanel == null))
                 {
-                    this._PilePanel = this.transform.findByPath("./PilePanel").GetComponent<PilePanel>();
+                    _PilePanel = transform.Find(PATH_PilePanel).GetComponent<PilePanel>();
                 }
-                return this._PilePanel;
+                return _PilePanel;
             }
         }
-        [SerializeField()]
-        [AutoCompo(41126, "./TipBox")]
-        private TipBox _TipBox;
+        public TipBox _TipBox;
+        public const string PATH_TipBoX = "TipBox";
         public TipBox TipBox
         {
             get
             {
-                if ((this._TipBox == null))
+                if ((_TipBox == null))
                 {
-                    this._TipBox = this.transform.findByPath("./TipBox").GetComponent<TipBox>();
+                    _TipBox = transform.Find(PATH_TipBoX).GetComponent<TipBox>();
                 }
-                return this._TipBox;
+                return _TipBox;
             }
         }
-        [SerializeField()]
-        [AutoCompo(40416, "./Fields/EnemyDeck")]
-        private RectTransform _EnemyDeckRectTransform;
+        public RectTransform _EnemyDeckRectTransform;
+        public const string PATH_EnemyDECKRECTTRANSFORM = "Fields/EnemyDeck";
         public RectTransform EnemyDeckRectTransform
         {
             get
             {
-                if ((this._EnemyDeckRectTransform == null))
+                if ((_EnemyDeckRectTransform == null))
                 {
-                    this._EnemyDeckRectTransform = this.transform.findByPath("./Fields/EnemyDeck").GetComponent<RectTransform>();
+                    _EnemyDeckRectTransform = transform.Find(PATH_EnemyDECKRECTTRANSFORM).GetComponent<RectTransform>();
                 }
-                return this._EnemyDeckRectTransform;
+                return _EnemyDeckRectTransform;
             }
         }
-        [SerializeField()]
-        [AutoCompo(64460, "./Fields/InvokeDisPlay")]
-        private RectTransform _invokeDisPlayRectTransform;
+        public RectTransform _InvokeDisPlayRectTransform;
+        public const string PATH_InvokeDISPLAYRECTTRANSFORM = "Fields/InvokeDisPlay";
         public RectTransform InvokeDisPlayRectTransform
         {
             get
             {
-                if ((this._invokeDisPlayRectTransform == null))
+                if ((_InvokeDisPlayRectTransform == null))
                 {
-                    this._invokeDisPlayRectTransform = this.transform.findByPath("./Fields/InvokeDisPlay").GetComponent<RectTransform>();
+                    _InvokeDisPlayRectTransform = transform.Find(PATH_InvokeDISPLAYRECTTRANSFORM).GetComponent<RectTransform>();
                 }
-                return this._invokeDisPlayRectTransform;
+                return _InvokeDisPlayRectTransform;
+            }
+        }
+        public GameObject _Waiting;
+        public const string PATH_Waiting = "Waiting";
+        public GameObject Waiting
+        {
+            get
+            {
+                if ((this._Waiting == null))
+                {
+                    this._Waiting = this.transform.Find(PATH_Waiting).gameObject;
+                }
+                return this._Waiting;
+            }
+        }
+        public RectTransform _WaitingRectTransform;
+        public const string PATH_WaitingRectTransform = "Waiting";
+        public RectTransform WaitingRectTransform
+        {
+            get
+            {
+                if ((_WaitingRectTransform == null))
+                {
+                    _WaitingRectTransform = transform.Find(PATH_WaitingRectTransform).GetComponent<RectTransform>();
+                }
+                return _WaitingRectTransform;
+            }
+        }
+        public Image _WaitingImage;
+        public const string PATH_WaitingImage = "Waiting";
+        public Image WaitingImage
+        {
+            get
+            {
+                if ((_WaitingImage == null))
+                {
+                    _WaitingImage = transform.Find(PATH_WaitingImage).GetComponent<Image>();
+                }
+                return _WaitingImage;
             }
         }
     }

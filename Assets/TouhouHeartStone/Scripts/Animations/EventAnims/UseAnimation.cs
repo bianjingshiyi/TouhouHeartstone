@@ -3,6 +3,7 @@ using BJSYGameCore;
 using UnityEngine;
 using UI;
 using BJSYGameCore.UI;
+using System.Linq;
 
 namespace Game
 {
@@ -78,7 +79,6 @@ namespace Game
                         return false;
                     if (!eventArg.isCanceled)
                     {
-                        table.ui.EnemyHandList.removeItem(hand);
                         if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg, time))
                             return false;
                     }
@@ -173,6 +173,8 @@ namespace Game
                         return false;
                 }
             }
+            if (table.game.answers.getRequests(eventArg.player.id).FirstOrDefault() is DiscoverRequest&&eventArg.player!=table.player)
+                table.ui.Waiting.SetActive(true);
             return true;
         }
         bool tryTargetedAnim(TableManager table, UIObject sourceActor, THHPlayer.UseEventArg eventArg, float time)
