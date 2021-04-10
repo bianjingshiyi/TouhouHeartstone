@@ -143,5 +143,6 @@ namespace UI
         public string _flipToBackAnimName;
         public string _notifyAnimName;
         public SimpleAnim onCast;
+        public SimpleAnim ShowAnim;
     }
 }

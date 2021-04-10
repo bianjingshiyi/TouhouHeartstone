@@ -10,7 +10,7 @@ using System.Linq;
 public class SearchAnim : EventAnimation<THHPlayer.SearchPileEventArg>
 {
     Card _ChooseOne;
-    TableAnimation _ChooseAnim;
+    TableAnimation _anim;
     public override bool update(TableManager table, THHPlayer.SearchPileEventArg eventArg, float time)
     {
         //自己打出的效果不展示
@@ -20,12 +20,10 @@ public class SearchAnim : EventAnimation<THHPlayer.SearchPileEventArg>
             table.ui.Waiting.SetActive(false);
         if (_ChooseOne == null && eventArg.choose != null && eventArg.isShow)
         {
-            _ChooseOne = table.createInvokeCard(eventArg.choose, table.ui.LeftDisplayImage.rectTransform.position, table.ui.SelfDeck.rectTransform.rect.height, eventArg.isShow);
+            _ChooseOne = table.createInvokeCard(eventArg.choose, table.ui.LeftDisplayImage.rectTransform.position, table.cardPrefab.rectTransform.rect.height * table.ui.SelfHandList.rectTransform.localScale.y*1.2f, eventArg.isShow);
             _ChooseOne.asAnimator.SetBool("isFaceUp", eventArg.isShow);
         }
-        if (_ChooseAnim == null && eventArg.choose != null)
-            _ChooseAnim = (TableAnimation)new WaitAnim(0.5f);
-        if (_ChooseAnim != null && !_ChooseAnim.update(table, time))
+        if (!SimpleAnimHelper.update(table, ref _anim, _ChooseOne.ShowAnim, _ChooseOne.animator, time))
             return false;
         if (_ChooseOne != null)
             Object.Destroy(_ChooseOne.gameObject);

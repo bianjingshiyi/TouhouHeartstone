@@ -48,7 +48,10 @@ namespace Game
         }
         public override bool blockAnim(UIAnimation nextAnim)
         {
-            return false;
+            if (!(nextAnim is UseAnimation))
+                return false;
+            else
+                return base.blockAnim(nextAnim);
         }
     }
 }
