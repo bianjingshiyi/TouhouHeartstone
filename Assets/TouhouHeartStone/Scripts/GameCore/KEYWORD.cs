@@ -66,6 +66,10 @@
         /// 奥秘
         /// </summary>
         public const string SECRET = "secret";
+        /// <summary>
+        /// 任务，委托，或者别的什么东西
+        /// </summary>
+        public const string MISSION = "mission";
 
         /// <summary>
         /// 内部关键词：使用后回到手牌。

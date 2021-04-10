@@ -166,7 +166,7 @@ namespace TouhouHeartstone
             }
 
             [TranslateMsg("{0}是卡，{1}是护甲值")]
-            const string TEMPLATE = "{0}的护甲变为{1}";
+            const string TEMPLATE = "{0} 的护甲变为 {1}";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return TEMPLATE;
@@ -1677,7 +1677,51 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是卡")]
-            const string TEMPLATE = "{0}被触发";
+            const string TEMPLATE = "奥秘 {0} 被触发";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] { card.getFormatString() };
+            }
+        }
+
+        /// <summary>
+        /// 任务完成
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static Task<MissionCompleteArg> MissionComplete(this Card card,IGame game)
+        {
+            return game.triggers.doEvent(new MissionCompleteArg() { card = card }, async arg =>
+            {
+                game.logger.log("任务完成 : " + card);
+                THHPlayer player = arg.card.getOwner();
+                await player.getHead().moveTo(game, arg.card, player.getGrave());
+            });
+        }
+        public class MissionCompleteArg : EventArg, IDescribableEventArg
+        {
+            public Card card;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是卡")]
+            const string TEMPLATE = "任务 {0} 完成";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return TEMPLATE;

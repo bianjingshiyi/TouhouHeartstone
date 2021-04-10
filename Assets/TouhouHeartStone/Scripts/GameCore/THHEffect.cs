@@ -1056,6 +1056,52 @@ namespace TouhouHeartstone
             return Task.CompletedTask;
         }
     }
+
+    public class MissionTrigger<T> : THHEffectAfter<T> where T : IEventArg
+    {
+        int times = 0;
+        int aimCount;
+        public MissionTrigger(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute , int aimCount) : base(PILE.HEAD, onCheckCondition, null, onExecute)
+        {
+            this.aimCount = aimCount;
+        }
+
+        public override async Task onEnable(IGame game, ICard card, IBuff buff)
+        {
+            foreach (TriggerTime time in triggers)
+            {
+                string effectName = getEffectName(game, card, buff, time);
+                Trigger<T> trigger = new Trigger<T>(async arg =>
+                {
+                    if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
+                    {
+                        times += 1;
+                    }
+                    if(times == aimCount)
+                    {
+                        await (card as Card).MissionComplete(game);
+                        await (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
+                    }
+                }, name: effectName);
+                await card.setProp(game, effectName, trigger);
+                game.logger.log("Effect", card + "注册效果" + effectName);
+                game.triggers.registerBefore(trigger);
+            }
+        }
+
+        public override Task onDisable(IGame game, ICard card, IBuff buff)
+        {
+            foreach (TriggerTime time in triggers)
+            {
+                string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
+                Trigger<T> trigger = card.getProp<Trigger<T>>(game, effectName);
+                game.logger.log("Effect", card + "注销效果" + effectName);
+                game.triggers.removeAfter(trigger);
+            }
+            return Task.CompletedTask;
+        }
+
+    }
     
     /// <summary>
     /// 
@@ -1177,24 +1223,6 @@ namespace TouhouHeartstone
         }
     }
 
-
-    //public class ChooseOneEffect : SingleTargetEffect
-    //{
-    //    /// <summary>
-    //    /// 选择一项：从以下效果中选择一个触发
-    //    /// </summary>
-    //    /// <param name="cards">抉择选项，实质是法术衍生牌</param>
-    //    /// <param name="targetRange">指向型抉择的指向范围</param>
-    //    /// <param name="targetRange">指向型抉择的指向范围</param>
-    //    /// <returns></returns>
-    //    public ChooseOneEffect()
-    //    {
-
-    //    }
-    //    public override Task execute(THHGame game, Card card, Card target)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
+    
 
 }

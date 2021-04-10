@@ -406,7 +406,7 @@ namespace TouhouHeartstone
                  {
                      //法术卡,释放效果
                      await player.getHand().moveTo(game, card, player.getWarp());
-                     if (card.hasKeyword(game, KEYWORD.SECRET))
+                     if (card.hasKeyword(game, KEYWORD.SECRET) || card.hasKeyword(game,KEYWORD.MISSION))
                          await tryEnterHead(game, getWarp(), card);
                      else
                      {
@@ -931,6 +931,13 @@ namespace TouhouHeartstone
             if (getHand().isFull)
                 return Task.CompletedTask;
             Card card = game.createCard<T>();
+            return getHand().add(game, card);
+        }
+        public Task addCardToHand(CardDefine define, THHGame game)
+        {
+            if (getHand().isFull)
+                return Task.CompletedTask;
+            Card card = game.createCard(define);
             return getHand().add(game, card);
         }
         public async Task<bool> tryAddCardToHand(THHGame game, Card card)
