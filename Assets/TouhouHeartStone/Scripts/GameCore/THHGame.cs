@@ -46,7 +46,24 @@ namespace TouhouHeartstone
         {
             if (players.Any(p => p.id == id))
                 throw new ArgumentException("已经存在ID为" + id + "的玩家");
-            THHPlayer player = new THHPlayer(this, id, name, master, deck);
+            THHPlayer player = new THHPlayer(this, id, name);
+            player.addPile(new Pile(this, PILE.MASTER, 1));
+            player.addPile(new Pile(this, PILE.SKILL, 1));
+            player.addPile(new Pile(this, PILE.DECK));
+            player.addPile(new Pile(this, PILE.HAND, maxCount: 10));
+            player.addPile(new Pile(this, PILE.INIT, maxCount: 4));
+            player.addPile(new Pile(this, PILE.FIELD, maxCount: 7));
+            player.addPile(new Pile(this, PILE.GRAVE));
+            player.addPile(new Pile(this, PILE.WARP));
+            player.addPile(new Pile(this, PILE.HEAD, maxCount: 5));
+            player.addPile(new Pile(this, PILE.ITEM, 1));
+            player[PILE.MASTER].add(this, this.createCard(master));
+            player[PILE.SKILL].add(this, this.createCard(this.getDefine(master.skillID)));
+            player[PILE.DECK].add(this, deck.Select(d => this.createCard(d)));
+            player.setIsPrepared(false);
+            player.setGem(this, 0);
+            player.setMaxGem(this, 0);
+            player.setFatigue(0);
             addPlayer(player);
             return player;
         }
@@ -88,9 +105,9 @@ namespace TouhouHeartstone
         }
         #endregion
         #region Card
-        public override Card createCard(CardDefine define)
+        public Card createCard(CardDefine define)
         {
-            Card card = base.createCard(define);
+            Card card = this.issueCard(define);
             if (define is MasterCardDefine master)
             {
                 card.setLife(this, master.life);
@@ -100,7 +117,6 @@ namespace TouhouHeartstone
                 card.setCost(this, servant.cost);
                 card.setAttack(this, servant.attack);
                 card.setLife(this, servant.life);
-                card.setCurrentLife(this, servant.life);
                 card.setSpellDamage(this, servant.spellDamage);
                 
                 foreach (string keyword in servant.keywords)
@@ -535,6 +551,23 @@ namespace TouhouHeartstone
             shuffle = copyTarget.shuffle;
             timeoutForInitReplace = copyTarget.timeoutForInitReplace;
             timeoutForTurn = copyTarget.timeoutForTurn;
+            
+        }
+    }
+
+    public struct PlayerInfo
+    {
+        public int id;
+        public string name;
+        public int master;
+        public int[] deck;
+
+        public PlayerInfo(int id, string name, int master, int[] deck)
+        {
+            this.id = id;
+            this.name = name;
+            this.master = master;
+            this.deck = deck;
         }
     }
 

@@ -38,29 +38,10 @@ namespace TouhouHeartstone
         public int getGem() => getProp<int>(PLAYER.GEM);
         public int getMaxGem() => getProp<int>(PLAYER.MAXGEM);
 
-        private void setFatigue(int value) => setProp(PLAYER.FATIGUE, value);
+        public void setFatigue(int value) => setProp(PLAYER.FATIGUE, value);
         public int getFatigue() => getProp<int>(PLAYER.FATIGUE);
 
-        public THHPlayer(THHGame game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck) : base(id, name)
-        {
-            addPile(new Pile(game, PILE.MASTER, 1));
-            addPile(new Pile(game, PILE.SKILL, 1));
-            addPile(new Pile(game, PILE.DECK));
-            addPile(new Pile(game, PILE.HAND, maxCount: 10));
-            addPile(new Pile(game, PILE.INIT, maxCount: 4));
-            addPile(new Pile(game, PILE.FIELD, maxCount: 7));
-            addPile(new Pile(game, PILE.GRAVE));
-            addPile(new Pile(game, PILE.WARP));
-            addPile(new Pile(game, PILE.HEAD, maxCount: 5));
-            addPile(new Pile(game, PILE.ITEM, 1));
-            this[PILE.MASTER].add(game, game.createCard(master));
-            this[PILE.SKILL].add(game, game.createCard(game.getDefine(master.skillID)));
-            this[PILE.DECK].add(game, deck.Select(d => game.createCard(d)).ToArray());
-            setIsPrepared(false);
-            setGem(game, 0);
-            setMaxGem(game, 0);
-            setFatigue(0);
-        }
+        public THHPlayer(THHGame game, int id, string name) : base(id, name) {}
         internal async Task initReplace(THHGame game, params Card[] cards)
         {
             await game.triggers.doEvent(new InitReplaceEventArg() { player = this, cards = cards }, onInitReplace);
@@ -874,12 +855,10 @@ namespace TouhouHeartstone
             RebornEventArg eventArg = new RebornEventArg() { player = this, card = card, pile = pile, position = position };
             await game.triggers.doEvent(eventArg, async arg =>
             {
-                THHPlayer player = arg.player;
-                position = arg.position;
                 if (pile.count >= pile.maxCount)
                     return;
-                game.logger.log(player + "复活" + arg.card.define.GetType().Name + "位于" + position);
-                await arg.player.getGrave().moveTo(game, arg.card, arg.pile, position);
+                game.logger.log(arg.player + "复活" + arg.card.define.GetType().Name + "位于" + position);
+                await arg.player.tryEnterField(game,arg.player.getGrave(),arg.card,arg.position);
                 //亡语随从在墓地与场上移动时不会进行效果的激活与禁用
                 foreach (IPassiveEffect effect in arg.card.define.effects.OfType<DeathRattle>())
                 {
