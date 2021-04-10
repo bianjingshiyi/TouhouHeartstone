@@ -80,6 +80,18 @@ namespace UI
     partial class BuildCardList
     {
         VirtualList<BuildCardListItem> cardVList;
+        VirtualList<BuildCardListItem> CardVList
+        {
+            get
+            {
+                if (cardVList == null)
+                {
+                    cardVList = new VirtualList<BuildCardListItem>(addItem, asGridLayoutGroup);
+                    cardVList.onDisplayUIObj += setItemArgs;
+                }
+                return cardVList;
+            }
+        }
 
         partial void onAwake()
         {
@@ -91,9 +103,9 @@ namespace UI
 
         public void SetList(BuildCardViewData[] list)
         {
-            cardVList.reset();
+            CardVList.reset();
             listData = list;
-            cardVList.TotalDataCount = list.Length;
+            CardVList.TotalDataCount = list.Length;
 
             for (int i = 0; i < list.Length; i++)
                 cardVList.addItem();
@@ -113,7 +125,7 @@ namespace UI
 
         private void OnDestroy()
         {
-            cardVList.onDisplayUIObj -= setItemArgs;
+            CardVList.onDisplayUIObj -= setItemArgs;
         }
     }
 
