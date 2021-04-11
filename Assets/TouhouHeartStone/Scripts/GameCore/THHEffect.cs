@@ -323,7 +323,7 @@ namespace TouhouHeartstone
         public string[] events => throw new NotImplementedException();
         public string[] getEvents(ITriggerManager manager)
         {
-            return new string[] { manager.getName<THHPlayer.ActiveEventArg>() };
+            return new string[] { manager.getName<HearthStoneRule.ActiveEventArg>() };
         }
         public bool checkCondition(IGame game, ICard card, object[] vars)
         {
@@ -617,7 +617,7 @@ namespace TouhouHeartstone
         public override string[] piles => effect.piles;
         public override async Task onEnable(THHGame game, Card card, Buff buff)
         {
-            Trigger<THHGame.TurnStartEventArg> enableTrig = new Trigger<THHGame.TurnStartEventArg>(arg =>
+            Trigger<HearthStoneRule.TurnStartEventArg> enableTrig = new Trigger<HearthStoneRule.TurnStartEventArg>(arg =>
             {
                 if (condition == null || condition(game, card, buff))
                     effect.onEnable(game, card, buff);
@@ -625,7 +625,7 @@ namespace TouhouHeartstone
             });
             await card.setProp(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig", enableTrig);
             game.triggers.registerAfter(enableTrig);
-            Trigger<THHPlayer.UseEventArg> disableTrig = new Trigger<THHPlayer.UseEventArg>(arg =>
+            Trigger<HearthStoneRule.UseEventArg> disableTrig = new Trigger<HearthStoneRule.UseEventArg>(arg =>
             {
                 if (condition != null && !condition(game, card, buff))
                     effect.onDisable(game, card, buff);
@@ -638,8 +638,8 @@ namespace TouhouHeartstone
         }
         public override Task onDisable(THHGame game, Card card, Buff buff)
         {
-            game.triggers.removeAfter(card.getProp<Trigger<THHGame.TurnStartEventArg>>(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig"));
-            game.triggers.removeAfter(card.getProp<Trigger<THHPlayer.UseEventArg>>(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "disableTrig"));
+            game.triggers.removeAfter(card.getProp<Trigger<HearthStoneRule.TurnStartEventArg>>(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig"));
+            game.triggers.removeAfter(card.getProp<Trigger<HearthStoneRule.UseEventArg>>(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "disableTrig"));
             return effect.onDisable(game, card, buff);
         }
     }
@@ -803,7 +803,7 @@ namespace TouhouHeartstone
         }
     }
 
-    public class BeforeYourTurnEnd : THHEffectBefore<THHGame.TurnEndEventArg>
+    public class BeforeYourTurnEnd : THHEffectBefore<HearthStoneRule.TurnEndEventArg>
     {
         public BeforeYourTurnEnd(ExecuteDelegate onExecute) : base(PILE.FIELD, (game, card, arg) =>
         {
@@ -819,7 +819,7 @@ namespace TouhouHeartstone
         {
         }
     }
-    public class BeforeTurnStart : THHEffectBefore<THHGame.TurnStartEventArg>
+    public class BeforeTurnStart : THHEffectBefore<HearthStoneRule.TurnStartEventArg>
     {
         public BeforeTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PILE.FIELD, onCheckCondition, null, async (game, card, arg) =>
          {
@@ -832,7 +832,7 @@ namespace TouhouHeartstone
         {
         }
     }
-    public class AfterTurnStart : THHEffectAfter<THHGame.TurnStartEventArg>
+    public class AfterTurnStart : THHEffectAfter<HearthStoneRule.TurnStartEventArg>
     {
         public AfterTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PILE.FIELD, onCheckCondition, null, async (game, card, arg) =>
         {

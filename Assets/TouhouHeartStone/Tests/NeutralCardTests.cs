@@ -493,7 +493,7 @@ namespace Tests
             );
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 6);
             you.cmdUse(game, you.getHand().getCard<IzayoiSakuya_N>());
-            Card card = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
+            Card card = game.triggers.getRecordedEvents().OfType<HearthStoneRule.DrawEventArg>().Last().card;
             Assert.True(you.getHand().Contains(card));
             Assert.AreEqual(0, card.getCost(game));
         }
@@ -508,7 +508,7 @@ namespace Tests
             oppo.cmdUse(game, oppo.getHand().First());
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.getHand().getCard<YakumoRan_N>());
-            Card card = game.triggers.getRecordedEvents().OfType<THHPlayer.CreateTokenEventArg>().Last().card;
+            Card card = game.triggers.getRecordedEvents().OfType<HearthStoneRule.CreateTokenEventArg>().Last().card;
             Assert.IsInstanceOf<Chen_N>(card.define);
             Assert.True(you.getField()[1].hasKeyword(game, KEYWORD.RUSH));
             var buff = you.getField()[1].getBuffs()[0];

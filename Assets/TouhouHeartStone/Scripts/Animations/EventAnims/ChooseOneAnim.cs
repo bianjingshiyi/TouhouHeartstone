@@ -5,13 +5,13 @@ using UI;
 using BJSYGameCore;
 using TouhouHeartstone;
 using Game;
-public class ChooseOneAnim : EventAnimation<THHPlayer.ChooseOneEventArg>
+public class ChooseOneAnim : EventAnimation<HearthStoneRule.ChooseOneEventArg>
 {
 
     Card _ChooseOne;
     TableAnimation _anim;
 
-    public override bool update(TableManager table, THHPlayer.ChooseOneEventArg eventArg, float time)
+    public override bool update(TableManager table, HearthStoneRule.ChooseOneEventArg eventArg, float time)
     {
         //自己打出的效果不展示
         if (eventArg.player == table.player)

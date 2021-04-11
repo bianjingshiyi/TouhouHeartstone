@@ -472,7 +472,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             //测试表示：这张牌的扳机是使用卡牌生效后。
-            new AddBuffAfter<THHPlayer.UseEventArg>(PILE.FIELD,(g,c,a)=>
+            new AddBuffAfter<HearthStoneRule.UseEventArg>(PILE.FIELD,(g,c,a)=>
             {
                 return a.player == g.getOpponent(c.getOwner());
             },new GeneratedBuff(ID,new AttackModifier(1),new LifeModifier(2)))
@@ -498,7 +498,7 @@ namespace TouhouHeartstone.Builtin.Proble
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
 
-            new THHEffectBefore<THHPlayer.UseEventArg>(PILE.FIELD,
+            new THHEffectBefore<HearthStoneRule.UseEventArg>(PILE.FIELD,
                 (g,c,a) =>
                 {
                     return a.player == c.getOwner();
@@ -577,7 +577,7 @@ namespace TouhouHeartstone.Builtin.Proble
             //存在目标的法术
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnStartEventArg>(
+                await target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<HearthStoneRule.TurnStartEventArg>(
                     PILE.FIELD,
                     (g1,c1,a1) =>
                     {
@@ -857,7 +857,7 @@ namespace TouhouHeartstone.Builtin.Proble
             {
                 await target.damage(game,card,1);
                 await card.getOwner().getSkill().addBuff(game,new GeneratedBuff(ID,new CostModifier(0,true),
-                                                         new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.SKILL,ID)));
+                                                         new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.SKILL,ID)));
                 if(card.getOwner().getSkill().isUsed(game) == true)
                 {
                     await card.getOwner().getSkill().setUsed(game,false);
@@ -883,7 +883,7 @@ namespace TouhouHeartstone.Builtin.Proble
         // public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+            new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD,
                 (g,c,a) =>
                 {
                     return a.player == c.getOwner() && a.card.isSkill();
@@ -934,7 +934,7 @@ namespace TouhouHeartstone.Builtin.Proble
         //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE, KEYWORD.CHARGE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+            new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD,
                                                       (g, c, a) =>
                                                       {
                                                           return a.player == g.getOpponent(c.getOwner()) && a.card.isServant();

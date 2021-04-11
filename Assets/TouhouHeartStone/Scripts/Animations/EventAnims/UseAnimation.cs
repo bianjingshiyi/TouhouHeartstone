@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Game
 {
-    class UseAnimation : EventAnimation<THHPlayer.UseEventArg>
+    class UseAnimation : EventAnimation<HearthStoneRule.UseEventArg>
     {
         Vector3 _startPosition;
         Timer _timer = new Timer() { duration = 1f };
@@ -16,7 +16,7 @@ namespace Game
         AnimAnim _useAnim;
         AnimAnim _equipAnim;
         TableAnimation _targetedAnim;
-        public override bool update(TableManager table, THHPlayer.UseEventArg eventArg, float time)
+        public override bool update(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
         {
             UIObject sourceActor;
             if (eventArg.card.define is ServantCardDefine)
@@ -177,7 +177,7 @@ namespace Game
                 table.ui.Waiting.SetActive(true);
             return true;
         }
-        bool tryTargetedAnim(TableManager table, UIObject sourceActor, THHPlayer.UseEventArg eventArg, float time)
+        bool tryTargetedAnim(TableManager table, UIObject sourceActor, HearthStoneRule.UseEventArg eventArg, float time)
         {
             if (eventArg.targets != null && eventArg.targets.Length > 0 && eventArg.targets[0] is var targetCard)
             {

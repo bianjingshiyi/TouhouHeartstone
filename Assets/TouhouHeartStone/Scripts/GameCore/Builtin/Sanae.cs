@@ -195,7 +195,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
                 await target.heal(game, card, 8);
-                await target.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+                await target.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD,
                         (g, c, a) =>
                         {
                             return a.player == card.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
@@ -204,9 +204,9 @@ namespace TouhouHeartstone.Builtin
                             await target.heal(game, card, 4);
                             await target.removeBuff(game, ID);
                         }),
-                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.FIELD,
+                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,
                         (g, c, a) => { return a.player == card.getOwner(); }, ID),
-                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER,
+                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER,
                         (g, c, a) => { return a.player == card.getOwner(); }, ID)));
             })
         };
@@ -361,7 +361,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await you.tryEnterField(game, you.getDeck(), god, you.getField().count);
                 await god.addKeywords(game, KEYWORD.RUSH);
-                await god.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD,
+                await god.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,
                     (g, c, a) => { return a.player == c.getOwner(); }, null, async (g, c, a) =>
                     {
                         //int index = game.randomInt(0, c.getOwner().deck.count);
@@ -420,7 +420,7 @@ namespace TouhouHeartstone.Builtin
         {
             new DeathRattle(ID, async (game, card, p) =>
             {
-                int count = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.StartEventArg GameStart)
+                int count = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
                     .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == card.getOwner()).Count();
 
                 await game.getAllServants().damage(game, card, count);
@@ -450,14 +450,14 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0),
-                new EventTriggeredModifierFixer<int>.ModifierFixer<THHGame.TurnEndEventArg>(
+                new EventTriggeredModifierFixer<int>.ModifierFixer<HearthStoneRule.TurnEndEventArg>(
                     (game, card, buff, arg) => card.getOwner() == arg.player,
                     (game, card, buff, arg) => 0, false),
                 new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(
                     (game, card, buff, arg) => card.getOwner() == arg.player,
                     (game, card, buff, arg) =>
                     {
-                        return game.triggers.getRecordedEvents().skipUntilLast(a => a is THHGame.TurnStartEventArg)
+                        return game.triggers.getRecordedEvents().skipUntilLast(a => a is HearthStoneRule.TurnStartEventArg)
                             .Any(a => a is Sanae.RevealDuelArg)
                             ? -4
                             : 0;
@@ -493,7 +493,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            int count = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.StartEventArg GameStart)
+            int count = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
                 .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == card.getOwner()).Count();
             Card card1 = game.createCard<GodMiracleOfRain>();
             Card card2 = game.createCard<GodMiracleOfOnbashira>();
@@ -671,7 +671,7 @@ namespace TouhouHeartstone.Builtin
             new IntPropFixer<Sanae.RevealDuelArg>(PileFlag.hand, new IntPropFixer<Sanae.RevealDuelArg>.ModifierFixer(
                 new CostModifier(0), (g, c, b, a) =>
                 {
-                    int v = g.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.StartEventArg GameStart)
+                    int v = g.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
                         .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == c.getOwner()).Count();
                     g.logger.log(c + "的花费=>" + v);
                     return -v;
@@ -765,7 +765,7 @@ namespace TouhouHeartstone.Builtin
                 if (c.isServant())
                     await c.addBuff(game,
                         new GeneratedBuff(ID, new CostModifier(5),
-                            new RemoveBuffAfter<THHGame.TurnStartEventArg>(PILE.HAND,
+                            new RemoveBuffAfter<HearthStoneRule.TurnStartEventArg>(PILE.HAND,
                                 (g, c1, a) => { return a.player == card.getOwner(); }, ID)));
             }
         }
@@ -814,7 +814,7 @@ namespace TouhouHeartstone.Builtin
             new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0),
                 new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(null, (g, c, b, a) =>
                 {
-                    int v = g.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.StartEventArg GameStart)
+                    int v = g.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
                         .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == c.getOwner()).Count();
                     g.logger.log(c + "的花费=>" + v);
                     return -v;
@@ -868,7 +868,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD, (g, c, a) => { return a.player == c.getOwner(); },
+            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PILE.FIELD, (g, c, a) => { return a.player == c.getOwner(); },
                 null,
                 async (g, c, a) =>
                 {

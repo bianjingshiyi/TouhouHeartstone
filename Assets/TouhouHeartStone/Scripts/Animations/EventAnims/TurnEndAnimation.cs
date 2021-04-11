@@ -3,9 +3,9 @@ using UI;
 using BJSYGameCore.UI;
 namespace Game
 {
-    class TurnEndAnimation : EventAnimation<THHGame.TurnEndEventArg>
+    class TurnEndAnimation : EventAnimation<HearthStoneRule.TurnEndEventArg>
     {
-        public override bool update(TableManager table, THHGame.TurnEndEventArg eventArg, float time)
+        public override bool update(TableManager table, HearthStoneRule.TurnEndEventArg eventArg, float time)
         {
             table.canControl = false;
             table.cancelAttack();

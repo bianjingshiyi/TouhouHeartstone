@@ -42,7 +42,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     return !c1.isSkill();
                 }),
-                new RemoveBuffBefore<THHPlayer.UseEventArg>(PILE.MASTER, (g, c, a) =>
+                new RemoveBuffBefore<HearthStoneRule.UseEventArg>(PILE.MASTER, (g, c, a) =>
                 {
                     return a.player == card.getOwner() && !a.card.isSkill();
                 }, ID)));
@@ -91,7 +91,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await target.damage(game,card,card.getOwner().getSpellDamage(game,2));
                 await card.addBuff(game,new GeneratedBuff(ID,
-                    new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND,
+                    new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PILE.HAND,
                                                                 (g,c,a)=>
                                                                 {
                                                                     return a.player == c.getOwner();
@@ -105,8 +105,8 @@ namespace TouhouHeartstone.Builtin
                 (game,card,target)=>
                 {
                     if(!game.triggers.getRecordedEvents().
-                        skipUntilLast(e=> e is THHGame.TurnStartEventArg turnStart)
-                       .OfType<THHPlayer.UseEventArg>()
+                        skipUntilLast(e=> e is HearthStoneRule.TurnStartEventArg turnStart)
+                       .OfType<HearthStoneRule.UseEventArg>()
                        .Any(u => u.player == card.getOwner() &&
                                  u.card == card &&
                                  u.targets.Any(t => t==target)))
@@ -143,7 +143,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     return !c1.isSkill();
                 }),
-                new RemoveBuffBefore<THHPlayer.UseEventArg>(PILE.MASTER, (g, c, a) =>
+                new RemoveBuffBefore<HearthStoneRule.UseEventArg>(PILE.MASTER, (g, c, a) =>
                 {
                     return a.player == card.getOwner() && !a.card.isSkill();
                 }, ID)));
@@ -163,7 +163,7 @@ namespace TouhouHeartstone.Builtin
         //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHPlayer.UseEventArg>(PILE.FIELD, (g, c, a) =>
+            new THHEffectBefore<HearthStoneRule.UseEventArg>(PILE.FIELD, (g, c, a) =>
                                                                     {
                                                                         return c.getOwner() == a.player && a.card.isSkill();
                                                                     },null,
@@ -198,7 +198,7 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().draw(game, out var draw);
             Card drawCard = draw.card;
-            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHPlayer.UseEventArg>(PILE.MASTER, (g, c, a) =>
+            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.MASTER, (g, c, a) =>
                                                                                                                                     {
                                                                                                                                         return a.card == drawCard;
                                                                                                                                     }, null,
@@ -206,12 +206,12 @@ namespace TouhouHeartstone.Builtin
                                                                                                                                    {
                                                                                                                                        await effect(g, c);
                                                                                                                                    }),
-                                                                                                                                   new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.MASTER,
+                                                                                                                                   new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PILE.MASTER,
                                                                                                                                    (g, c, a) =>
                                                                                                                                    {
                                                                                                                                        return a.card == drawCard;
                                                                                                                                    }, ID),
-                                                                                                                                   new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+                                                                                                                                   new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
         }
     }
 
@@ -232,8 +232,8 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            int dam = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
-                        OfType<THHPlayer.UseEventArg>().
+            int dam = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg TurnStart).
+                        OfType<HearthStoneRule.UseEventArg>().
                         Where(e2 => e2.player == card.getOwner() && !e2.card.isSkill()).Count() + 1;
 
             await game.getOpponent(card.getOwner()).getField().damageByRandomCount(game, card, card.getOwner().getSpellDamage(game, dam), 3);
@@ -254,8 +254,8 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                bool x = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
-                        OfType<THHPlayer.UseEventArg>().Any( u => u.player == card.getOwner() &&
+                bool x = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg TurnStart).
+                        OfType<HearthStoneRule.UseEventArg>().Any( u => u.player == card.getOwner() &&
                                                                     u.cost != u.card.define.getCost() &&
                                                                     u.card != card);
                 if (x)
@@ -285,7 +285,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.DrawEventArg>(PILE.ITEM,(g,c,a)=>
+            new THHEffectAfter<HearthStoneRule.DrawEventArg>(PILE.ITEM,(g,c,a)=>
             {
                 return a.player == g.getOpponent(c.getOwner());
             },null,async(g,c,a)=>
@@ -317,8 +317,8 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            int CurrentCost = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
-                                OfType<THHPlayer.UseEventArg>().Last(u => u.player == card.getOwner()).cost;
+            int CurrentCost = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg TurnStart).
+                                OfType<HearthStoneRule.UseEventArg>().Last(u => u.player == card.getOwner()).cost;
             int baseCost = card.define.getCost();
 
             for (int i = 0; i < Math.Abs(CurrentCost - baseCost); i++)
@@ -372,8 +372,8 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            int cost = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
-                        OfType<THHPlayer.UseEventArg>().
+            int cost = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg TurnStart).
+                        OfType<HearthStoneRule.UseEventArg>().
                         Where(e2 => e2.player == card.getOwner() && !e2.card.isSkill()).Count() + 1;
 
             await card.getOwner().draw(game, out var draw);
@@ -403,8 +403,8 @@ namespace TouhouHeartstone.Builtin
 
             await card.getOwner().discover(game, cards);
 
-            bool x = game.triggers.getRecordedEvents().skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
-                        OfType<THHPlayer.UseEventArg>().
+            bool x = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg TurnStart).
+                        OfType<HearthStoneRule.UseEventArg>().
                         Any(e2 => e2.player == card.getOwner() && !e2.card.isSkill());
             if (x)
             {
@@ -432,7 +432,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-             new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+             new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD,
               (g,c,a)=>{
                             return a.player == c.getOwner() && a.card.isSkill();
                        }, null, async(g, c, a) =>
@@ -516,7 +516,7 @@ namespace TouhouHeartstone.Builtin
         //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD, (g, c, a) =>
+            new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD, (g, c, a) =>
             {
                 return a.player == g.getOpponent(c.getOwner()) && a.card.isServant();
             },null,async(g,c,a)=>

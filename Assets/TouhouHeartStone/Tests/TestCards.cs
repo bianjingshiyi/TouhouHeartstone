@@ -43,7 +43,7 @@ namespace Tests
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
+            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -76,7 +76,7 @@ namespace Tests
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE, (game,card,arg)=>
+            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE, (game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -97,7 +97,7 @@ namespace Tests
         public override int life { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE, (game,card,arg)=>
+            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE, (game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -249,7 +249,7 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.SKILL,(game,card,arg)=>
+            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.SKILL,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -276,7 +276,7 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
+            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -334,7 +334,7 @@ namespace Tests
         public override int cost { get; set; } = 0;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
+            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -464,7 +464,7 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHGame.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
+            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
             {
                 if(arg.player!=game.getCurrentPlayer())
                 return false;
@@ -519,7 +519,7 @@ namespace Tests
             new LambdaSingleTargetEffect((g,c,t)=>
             {
                 return t.addBuff(g,new GeneratedBuff(ID,
-                    new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.FIELD,(g1,c1,a1)=>
+                    new THHEffectBefore<HearthStoneRule.TurnStartEventArg>(PILE.FIELD,(g1,c1,a1)=>
                     {
                         return a1.player == c.getOwner();
                     },null,async (g1,c1,a1)=>
@@ -645,7 +645,7 @@ namespace Tests
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(4),new LifeModifier(4)));
-                await target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<THHGame.TurnEndEventArg>(
+                await target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(
                     PILE.FIELD,
                     (g1, c1, a1) =>
                     {
@@ -859,7 +859,7 @@ namespace Tests
                 await c1.getOwner().createToken(g1,g1.getDefine<DefaultServant>());
                 await c1.getOwner().createToken(g1,g1.getDefine<DefaultServant>());
             }), 
-            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD, (g, c, a) =>
+            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PILE.FIELD, (g, c, a) =>
             {
                 return a.player == c.getOwner() && c.pile.name == PILE.FIELD;
             }, null, async (g, c, a) =>

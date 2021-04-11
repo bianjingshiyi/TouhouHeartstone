@@ -32,7 +32,7 @@ namespace Tests
             _ = game.run();
             yield return new WaitForSeconds(.1f);
 
-            THHGame.InitEventArg init = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.InitEventArg) as THHGame.InitEventArg;
+            HearthStoneRule.InitEventArg init = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.InitEventArg) as HearthStoneRule.InitEventArg;
             Assert.NotNull(init);
             Assert.AreEqual(TestMaster.ID, game.players[0].getMaster().define.id);
             Assert.AreEqual(30, game.players[0].getMaster().getCurrentLife(game));
@@ -54,30 +54,30 @@ namespace Tests
             yield return game.players[1].cmdInitReplace(game, game.players[1].getInit()[0, 1]).wait();
             //替换手牌
             IEventArg[] events = game.triggers.getRecordedEvents();
-            THHPlayer.InitReplaceEventArg initReplace = events.OfType<THHPlayer.InitReplaceEventArg>().First();
+            HearthStoneRule.InitReplaceEventArg initReplace = events.OfType<HearthStoneRule.InitReplaceEventArg>().First();
             Assert.NotNull(initReplace);
             Assert.AreEqual(game.players[0], initReplace.player);
             Assert.AreEqual(1, initReplace.replacedCards.Length);
-            initReplace = events.OfType<THHPlayer.InitReplaceEventArg>().Skip(1).First();
+            initReplace = events.OfType<HearthStoneRule.InitReplaceEventArg>().Skip(1).First();
             Assert.NotNull(initReplace);
             Assert.AreEqual(game.players[1], initReplace.player);
             Assert.AreEqual(2, initReplace.replacedCards.Length);
             //游戏开始
-            THHGame.StartEventArg start = events.OfType<THHGame.StartEventArg>().First();
+            HearthStoneRule.StartEventArg start = events.OfType<HearthStoneRule.StartEventArg>().First();
             Assert.NotNull(start);
             //玩家回合开始
-            THHGame.TurnStartEventArg turnStart = events.OfType<THHGame.TurnStartEventArg>().First();
+            HearthStoneRule.TurnStartEventArg turnStart = events.OfType<HearthStoneRule.TurnStartEventArg>().First();
             Assert.NotNull(turnStart);
             Assert.AreEqual(game.getSortedPlayers()[0], turnStart.player);
             //增加法力水晶并充满
-            THHPlayer.SetMaxGemEventArg setMaxGem = events.skipUntil(e => e is THHGame.TurnStartEventArg).OfType<THHPlayer.SetMaxGemEventArg>().First();
+            HearthStoneRule.SetMaxGemEventArg setMaxGem = events.skipUntil(e => e is HearthStoneRule.TurnStartEventArg).OfType<HearthStoneRule.SetMaxGemEventArg>().First();
             Assert.NotNull(setMaxGem);
             Assert.AreEqual(1, setMaxGem.value);
-            THHPlayer.SetGemEventArg setGem = events.OfType<THHPlayer.SetGemEventArg>().First();
+            HearthStoneRule.SetGemEventArg setGem = events.OfType<HearthStoneRule.SetGemEventArg>().First();
             Assert.NotNull(setGem);
             Assert.AreEqual(1, setGem.value);
             //抽一张卡
-            THHPlayer.DrawEventArg draw = events.OfType<THHPlayer.DrawEventArg>().First();
+            HearthStoneRule.DrawEventArg draw = events.OfType<HearthStoneRule.DrawEventArg>().First();
             Assert.NotNull(draw);
             Assert.AreEqual(game.getSortedPlayers()[0], draw.player);
             game.Dispose();
@@ -98,10 +98,10 @@ namespace Tests
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
 
-            var args = game.triggers.getRecordedEvents().Where(e => e is THHPlayer.InitReplaceEventArg);
+            var args = game.triggers.getRecordedEvents().Where(e => e is HearthStoneRule.InitReplaceEventArg);
             Assert.AreEqual(args.Count(), 2);
-            Assert.AreEqual(((THHPlayer.InitReplaceEventArg)args.ElementAt(0)).player, game.players[0]);
-            Assert.AreEqual(((THHPlayer.InitReplaceEventArg)args.ElementAt(1)).player, game.players[1]);
+            Assert.AreEqual(((HearthStoneRule.InitReplaceEventArg)args.ElementAt(0)).player, game.players[0]);
+            Assert.AreEqual(((HearthStoneRule.InitReplaceEventArg)args.ElementAt(1)).player, game.players[1]);
 
             game.Dispose();
         }
@@ -121,16 +121,16 @@ namespace Tests
             yield return TestHelper.waitTask(task);
             Assert.True(game.getSortedPlayers()[0].getField().Contains(card));
 
-            THHPlayer.UseEventArg use = game.triggers.getRecordedEvents().FirstOrDefault(e => e is THHPlayer.UseEventArg) as THHPlayer.UseEventArg;
+            HearthStoneRule.UseEventArg use = game.triggers.getRecordedEvents().FirstOrDefault(e => e is HearthStoneRule.UseEventArg) as HearthStoneRule.UseEventArg;
             Assert.NotNull(use);
             Assert.AreEqual(game.getSortedPlayers()[0], use.player);
             Assert.AreEqual(game.getSortedPlayers()[0].getField()[0], use.card);
             Assert.AreEqual(TestServant.ID, use.card.define.id);
             Assert.AreEqual(0, use.position);
             Assert.AreEqual(0, use.targets.Length);
-            THHPlayer.SetGemEventArg setGem = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.SetGemEventArg) as THHPlayer.SetGemEventArg;
+            HearthStoneRule.SetGemEventArg setGem = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.SetGemEventArg) as HearthStoneRule.SetGemEventArg;
             Assert.AreEqual(0, setGem.value);
-            THHPlayer.EnterFieldEventArg summon = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.EnterFieldEventArg) as THHPlayer.EnterFieldEventArg;
+            HearthStoneRule.EnterFieldEventArg summon = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.EnterFieldEventArg) as HearthStoneRule.EnterFieldEventArg;
             Assert.NotNull(summon);
             Assert.AreEqual(game.getSortedPlayers()[0], summon.player);
             Assert.AreEqual(TestServant.ID, summon.card.define.id);
@@ -147,10 +147,10 @@ namespace Tests
             game.players[1].cmdInitReplace(game);
             game.getSortedPlayers()[0].cmdTurnEnd(game);
 
-            THHGame.TurnEndEventArg turnEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.TurnEndEventArg) as THHGame.TurnEndEventArg;
+            HearthStoneRule.TurnEndEventArg turnEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.TurnEndEventArg) as HearthStoneRule.TurnEndEventArg;
             Assert.NotNull(turnEnd);
             Assert.AreEqual(game.getSortedPlayers()[0], turnEnd.player);
-            THHGame.TurnStartEventArg turnStart = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.TurnStartEventArg) as THHGame.TurnStartEventArg;
+            HearthStoneRule.TurnStartEventArg turnStart = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.TurnStartEventArg) as HearthStoneRule.TurnStartEventArg;
             Assert.NotNull(turnStart);
             Assert.AreEqual(game.getSortedPlayers()[1], turnStart.player);
             game.Dispose();
@@ -161,13 +161,13 @@ namespace Tests
         {
             TestGameflow.createGameWithoutDeck(out var game, out var you, out _);
             game.skipTurnUntil(() => !game.isRunning);
-            var fatigue = game.triggers.getRecordedEvents().OfType<THHPlayer.FatigueEventArg>().Last();
+            var fatigue = game.triggers.getRecordedEvents().OfType<HearthStoneRule.FatigueEventArg>().Last();
             Assert.NotNull(fatigue);
             var damage = game.triggers.getRecordedEvents().skipUntil(e => e == fatigue).OfType<THHCard.DamageEventArg>().First();
             Assert.NotNull(damage);
             var death = game.triggers.getRecordedEvents().skipUntil(e => e == damage).OfType<THHCard.DeathEventArg>().First();
             Assert.NotNull(death);
-            var gameEnd = game.triggers.getRecordedEvents().skipUntil(e => e == death).OfType<THHGame.GameEndEventArg>().First();
+            var gameEnd = game.triggers.getRecordedEvents().skipUntil(e => e == death).OfType<HearthStoneRule.GameEndEventArg>().First();
             Assert.NotNull(gameEnd);
         }
         [UnityTest]
@@ -213,7 +213,7 @@ namespace Tests
                 yield return new WaitForSeconds(.1f);
             }
 
-            THHPlayer.BurnEventArg burn = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHPlayer.BurnEventArg) as THHPlayer.BurnEventArg;
+            HearthStoneRule.BurnEventArg burn = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.BurnEventArg) as HearthStoneRule.BurnEventArg;
             Assert.NotNull(burn);
             Assert.AreEqual(game.getSortedPlayers()[0], burn.player);
             Assert.AreEqual(game.getSortedPlayers()[0].getGrave()[0], burn.card);
@@ -231,7 +231,7 @@ namespace Tests
             you.cmdInitReplace(game);
             oppo.cmdInitReplace(game);
             you.cmdTurnEnd(game);
-            THHPlayer.FatigueEventArg fatigue = game.triggers.getRecordedEvents().OfType<THHPlayer.FatigueEventArg>().First();
+            HearthStoneRule.FatigueEventArg fatigue = game.triggers.getRecordedEvents().OfType<HearthStoneRule.FatigueEventArg>().First();
             Assert.AreEqual(you, fatigue.player);
             THHCard.DamageEventArg damage = fatigue.getChildEvents().OfType<THHCard.DamageEventArg>().First();
             Assert.AreEqual(you.getMaster(), damage.infoDic.First().Key);
@@ -242,13 +242,13 @@ namespace Tests
                 if (you.getFatigue() >= you.getMaster().getCurrentLife(game))
                 {
                     oppo.cmdTurnEnd(game);
-                    THHGame.TurnStartEventArg turnStart = game.triggers.getRecordedEvents().OfType<THHGame.TurnStartEventArg>().Last();
-                    fatigue = turnStart.getChildEvents().OfType<THHPlayer.FatigueEventArg>().Last();
+                    HearthStoneRule.TurnStartEventArg turnStart = game.triggers.getRecordedEvents().OfType<HearthStoneRule.TurnStartEventArg>().Last();
+                    fatigue = turnStart.getChildEvents().OfType<HearthStoneRule.FatigueEventArg>().Last();
                     damage = fatigue.getChildEvents().OfType<THHCard.DamageEventArg>().Last();
                     Assert.NotNull(damage);
                     THHCard.DeathEventArg death = fatigue.getChildEvents().OfType<THHCard.DeathEventArg>().Last();
                     Assert.NotNull(death);
-                    THHGame.GameEndEventArg gameEnd = fatigue.getChildEvents().OfType<THHGame.GameEndEventArg>().Last();
+                    HearthStoneRule.GameEndEventArg gameEnd = fatigue.getChildEvents().OfType<HearthStoneRule.GameEndEventArg>().Last();
                     Assert.NotNull(gameEnd);
                     break;
                 }
@@ -325,7 +325,7 @@ namespace Tests
             }
             THHCard.AttackEventArg attack = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.AttackEventArg) as THHCard.AttackEventArg;
             Assert.NotNull(attack);
-            THHGame.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.GameEndEventArg) as THHGame.GameEndEventArg;
+            HearthStoneRule.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.GameEndEventArg) as HearthStoneRule.GameEndEventArg;
             Assert.AreEqual(game.getSortedPlayers()[0], gameEnd.winners[0]);
             game.Dispose();
         }
@@ -504,7 +504,7 @@ namespace Tests
             yield return new WaitUntil(() => remoteGame.answers.getRequests(remotePlayer.id).FirstOrDefault() is InitReplaceRequest);
             Assert.Greater(remotePlayer.getInit().count, 0);
             remotePlayer.cmdInitReplace(remoteGame);
-            yield return new WaitUntil(() => remoteGame.triggers.getRecordedEvents().Any(e => e is THHGame.StartEventArg));
+            yield return new WaitUntil(() => remoteGame.triggers.getRecordedEvents().Any(e => e is HearthStoneRule.StartEventArg));
             //拍怪
             if (localGame.getSortedPlayers()[0] == localPlayer)
             {
@@ -628,7 +628,7 @@ namespace Tests
             THHGame game = TestGameflow.initStandardGame();
             game.run();
             yield return game.players[0].cmdSurrender(game).wait();
-            THHGame.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHGame.GameEndEventArg) as THHGame.GameEndEventArg;
+            HearthStoneRule.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.GameEndEventArg) as HearthStoneRule.GameEndEventArg;
             Assert.AreEqual(game.players[1], gameEnd.winners[0]);
             game.Dispose();
             yield break;
@@ -706,7 +706,7 @@ namespace Tests
                         if (servant.canAttack(localGame) && !localGame.getOpponent(localPlayer).getMaster().isDead(localGame))
                             yield return localPlayer.cmdAttack(localGame, servant, localGame.getOpponent(localPlayer).getMaster()).wait();
                     }
-                    if (localGame.triggers.getRecordedEvents().OfType<THHGame.GameEndEventArg>().FirstOrDefault() is THHGame.GameEndEventArg gameEnd)
+                    if (localGame.triggers.getRecordedEvents().OfType<HearthStoneRule.GameEndEventArg>().FirstOrDefault() is HearthStoneRule.GameEndEventArg gameEnd)
                         break;
                     else
                         yield return localPlayer.cmdTurnEnd(localGame).wait();
@@ -723,7 +723,7 @@ namespace Tests
                         if (servant.canAttack(remoteGame) && !remoteGame.getOpponent(remotePlayer).getMaster().isDead(remoteGame))
                             yield return remotePlayer.cmdAttack(remoteGame, servant, remoteGame.getOpponent(remotePlayer).getMaster()).wait();
                     }
-                    if (remoteGame.triggers.getRecordedEvents().OfType<THHGame.GameEndEventArg>().FirstOrDefault() is THHGame.GameEndEventArg gameEnd)
+                    if (remoteGame.triggers.getRecordedEvents().OfType<HearthStoneRule.GameEndEventArg>().FirstOrDefault() is HearthStoneRule.GameEndEventArg gameEnd)
                         break;
                     else
                         yield return remotePlayer.cmdTurnEnd(remoteGame).wait();
@@ -854,7 +854,7 @@ namespace Tests
                         if (servant.canAttack(localGame) && !localGame.getOpponent(localPlayer).getMaster().isDead(localGame))
                             yield return localPlayer.cmdAttack(localGame, servant, localGame.getOpponent(localPlayer).getMaster()).wait();
                     }
-                    if (localGame.triggers.getRecordedEvents().OfType<THHGame.GameEndEventArg>().FirstOrDefault() is THHGame.GameEndEventArg gameEnd)
+                    if (localGame.triggers.getRecordedEvents().OfType<HearthStoneRule.GameEndEventArg>().FirstOrDefault() is HearthStoneRule.GameEndEventArg gameEnd)
                         break;
                     else
                         yield return localPlayer.cmdTurnEnd(localGame).wait();
@@ -871,7 +871,7 @@ namespace Tests
                         if (servant.canAttack(remoteGame) && !remoteGame.getOpponent(remotePlayer).getMaster().isDead(remoteGame))
                             yield return remotePlayer.cmdAttack(remoteGame, servant, remoteGame.getOpponent(remotePlayer).getMaster()).wait();
                     }
-                    if (remoteGame.triggers.getRecordedEvents().OfType<THHGame.GameEndEventArg>().FirstOrDefault() is THHGame.GameEndEventArg gameEnd)
+                    if (remoteGame.triggers.getRecordedEvents().OfType<HearthStoneRule.GameEndEventArg>().FirstOrDefault() is HearthStoneRule.GameEndEventArg gameEnd)
                         break;
                     else
                         yield return remotePlayer.cmdTurnEnd(remoteGame).wait();

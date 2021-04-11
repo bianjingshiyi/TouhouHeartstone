@@ -72,7 +72,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = { TAG.BEAST };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+            new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD,
               (g,c,a)=>{
                     return a.player == c.getOwner() && a.card.isSkill();
                 }, null, async(g, c, a) =>
@@ -94,7 +94,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new SecretTriggerBefore<THHPlayer.UseEventArg>((g,c,a)=>
+            new SecretTriggerBefore<HearthStoneRule.UseEventArg>((g,c,a)=>
             {
                 return a.card.getOwner() != c.getOwner() && a.card.isServant();
             },(g,c,a)=>
@@ -193,7 +193,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new SecretTriggerBefore<THHPlayer.UseEventArg>((g,c,a)=>
+            new SecretTriggerBefore<HearthStoneRule.UseEventArg>((g,c,a)=>
             {
                 return a.card.getOwner() != c.getOwner()  && a.card.isSpell() && a.card.define.getActiveEffect() is ITargetEffect &&  a.card.getAvaliableTargets(g).Where(target => !target.Equals(a.targets)) != null;
             },(g,c,a)=>
@@ -222,7 +222,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await card.getOwner().getSkill().addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true), new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.SKILL, (g, c, a) =>
+            await card.getOwner().getSkill().addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true), new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PILE.SKILL, (g, c, a) =>
             {
                 return a.player == c.getOwner() && a.card.isSkill();
             }, ID)));
@@ -249,7 +249,7 @@ namespace TouhouHeartstone.Builtin
                 if(!target.containBuff(ID))
                 {
                     await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(3),new LifeModifier(3)));
-                    await target.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<THHGame.TurnStartEventArg>(
+                    await target.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<HearthStoneRule.TurnStartEventArg>(
                     PILE.FIELD,
                     (g1, c1, a1) => a1.player == card.getOwner(),
                     null,
@@ -353,7 +353,7 @@ namespace TouhouHeartstone.Builtin
             {
                 var arg = await THHCard.setDefine(card.getOwner().getSkill(), game, game.getDefine<LunaticShoot_MindDropping>());
                 await card.getOwner().getSkill().addBuff(game, new GeneratedBuff(ID,
-                    new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+                    new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD,
                   (g, c, a) =>
                   {
                       return a.player == c.getOwner() && a.card.isSkill();
@@ -414,7 +414,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = { TAG.BEAST };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD,
+            new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD,
             (g, c, a) =>
             {
                 return a.player == c.getOwner() && a.card.isSkill();
@@ -487,7 +487,7 @@ namespace TouhouHeartstone.Builtin
                 }
                 return Task.CompletedTask;
             }, "技能伤害翻倍"),
-            new RemoveBuffAfter<THHPlayer.UseEventArg>(PILE.MASTER, (g, c, a) =>
+            new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PILE.MASTER, (g, c, a) =>
             {
                 return a.player == c.getOwner() && a.card.isSkill();
             }, ID)));
@@ -532,7 +532,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect((g,c)=>
             {
                 var spellsUsedInTurn = g.triggers.getRecordedEvents()
-                    .skipUntilLast(e => e is THHGame.TurnStartEventArg _).OfType<THHPlayer.UseEventArg>()
+                    .skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg _).OfType<HearthStoneRule.UseEventArg>()
                     .Select(e=>e.card).Where(c1=>c1.define is SpellCardDefine).ToArray();
 
                 if (spellsUsedInTurn.Length>1)

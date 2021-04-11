@@ -52,11 +52,11 @@ namespace Tests
             );
             game.skipUntilCanUse<Meditation>(you);
             you.cmdUse(game, you.getHand().getCard<Meditation>());//未蓄力
-            Card card = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
+            Card card = game.triggers.getRecordedEvents().OfType<HearthStoneRule.DrawEventArg>().Last().card;
             Assert.AreEqual(3, card.getLife(game));
             game.skipUntilCanUse<Meditation>(you);
             you.cmdUse(game, you.getHand().getCard<Meditation>());//蓄力
-            card = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
+            card = game.triggers.getRecordedEvents().OfType<HearthStoneRule.DrawEventArg>().Last().card;
             Assert.AreEqual(4, card.getLife(game));
         }
 
@@ -333,7 +333,7 @@ namespace Tests
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 3);
             you.cmdUse(game, you.getHand().First());
             you.cmdTurnEnd(game);
-            Assert.AreEqual(0, game.triggers.getRecordedEvents().OfType<THHPlayer.CreateTokenEventArg>().Count());
+            Assert.AreEqual(0, game.triggers.getRecordedEvents().OfType<HearthStoneRule.CreateTokenEventArg>().Count());
             oppo.cmdTurnEnd(game);
             you.getMaster().gainArmor(game, 5);
             you.cmdTurnEnd(game);

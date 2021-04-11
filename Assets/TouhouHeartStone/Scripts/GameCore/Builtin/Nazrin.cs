@@ -77,9 +77,9 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.ITEM, (game, card, arg) =>
+            new THHEffectBefore<HearthStoneRule.DrawEventArg>(PILE.ITEM, (game, card, arg) =>
             {
-                return arg.parent is THHGame.TurnStartEventArg;
+                return arg.parent is HearthStoneRule.TurnStartEventArg;
             },null,
             async (game, card, arg) =>
             {
@@ -104,7 +104,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = { TAG.BEAST };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g, c, a) =>
+            new THHEffectAfter<HearthStoneRule.TurnStartEventArg>(PILE.FIELD, (g, c, a) =>
             {
                 return a.player == c.getOwner();
             },null,
@@ -127,7 +127,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.MISSION }; 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new MissionTrigger<THHPlayer.EnterFieldEventArg>((game,card,arg)=>
+            new MissionTrigger<HearthStoneRule.EnterFieldEventArg>((game,card,arg)=>
             {
                 return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner();
             },async(game,card,arg)=>
@@ -227,7 +227,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = { KEYWORD.CANTATTACK };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.EnterFieldEventArg>(PILE.FIELD, (g, c, a) =>
+            new THHEffectAfter<HearthStoneRule.EnterFieldEventArg>(PILE.FIELD, (g, c, a) =>
             {
                 return a.player == c.getOwner() && a.card.getOwner() == c.getOwner();
             },null,
@@ -389,7 +389,7 @@ namespace TouhouHeartstone.Builtin
         
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.EnterFieldEventArg>(PILE.FIELD, (game, card, arg) =>
+            new THHEffectAfter<HearthStoneRule.EnterFieldEventArg>(PILE.FIELD, (game, card, arg) =>
             {
                 return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner();
             },null,async(game,card,arg)=>
@@ -443,7 +443,7 @@ namespace TouhouHeartstone.Builtin
         {
             foreach(Card c in card.getOwner().getField())
             {
-                await c.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+                await c.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
                 if(!c.hasKeyword(game,KEYWORD.RUSH))
                     await c.addKeywords(game, KEYWORD.RUSH);
             }
@@ -482,7 +482,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD, (game, card, arg) =>
+            new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD, (game, card, arg) =>
             {
                 return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner() && arg.card.hasKeyword(game,KEYWORD.UNIQUE) && arg.card.isServant();
             },null,async(game,card,arg)=>

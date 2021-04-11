@@ -7,11 +7,11 @@ using UI;
 using Game;
 using System.Linq;
 
-public class SearchAnim : EventAnimation<THHPlayer.SearchPileEventArg>
+public class SearchAnim : EventAnimation<HearthStoneRule.SearchPileEventArg>
 {
     Card _ChooseOne;
     TableAnimation _anim;
-    public override bool update(TableManager table, THHPlayer.SearchPileEventArg eventArg, float time)
+    public override bool update(TableManager table, HearthStoneRule.SearchPileEventArg eventArg, float time)
     {
         //自己打出的效果不展示
         if (eventArg.player == table.player)

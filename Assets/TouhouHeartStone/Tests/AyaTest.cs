@@ -164,12 +164,12 @@ namespace Tests
 
             game.skipUntilHasGem(you, 4);
             you.cmdUse(game, you.getHand().getCard<BunbunmaruNews>());
-            Card c = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
+            Card c = game.triggers.getRecordedEvents().OfType<HearthStoneRule.DrawEventArg>().Last().card;
             you.cmdUse(game, c);
 
             int x = game.triggers.getRecordedEvents().
-                        skipUntilLast(e => e is THHGame.TurnStartEventArg TurnStart).
-                        OfType<THHPlayer.DrawEventArg>().
+                        skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg TurnStart).
+                        OfType<HearthStoneRule.DrawEventArg>().
                         Where(e2 => e2.player == c.getOwner()).Count();
             Debug.Log("抽牌：" + x);
             game.Dispose();

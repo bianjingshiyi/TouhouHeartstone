@@ -2,9 +2,9 @@
 using UI;
 namespace Game
 {
-    class MaxGemChangeAnimation : EventAnimation<THHPlayer.SetMaxGemEventArg>
+    class MaxGemChangeAnimation : EventAnimation<HearthStoneRule.SetMaxGemEventArg>
     {
-        public override bool update(TableManager table, THHPlayer.SetMaxGemEventArg eventArg, float time)
+        public override bool update(TableManager table, HearthStoneRule.SetMaxGemEventArg eventArg, float time)
         {
             return true;
         }

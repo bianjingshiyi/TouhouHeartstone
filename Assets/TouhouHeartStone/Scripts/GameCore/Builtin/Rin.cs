@@ -34,7 +34,7 @@ namespace TouhouHeartstone.Builtin
             await card.getOwner().getMaster().gainArmor(game, 1);
             await card.getOwner().getMaster().addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(1),
-                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
         }
     }
 
@@ -269,7 +269,7 @@ namespace TouhouHeartstone.Builtin
                             }
                             return Task.CompletedTask;
                         }),
-                        new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+                        new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
             })
         };
     }
@@ -375,7 +375,7 @@ namespace TouhouHeartstone.Builtin
                 var reborn = await card.getOwner().reborn(game, card.getOwner().getGrave().Where(c => c.hasDeathRattle(game) && c.isServant()).random(game), card.getOwner().getField());
                 if (reborn != null)
                 {
-                    await reborn.card.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<THHGame.TurnStartEventArg>(PILE.FIELD, (g, c, a) =>
+                    await reborn.card.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<HearthStoneRule.TurnStartEventArg>(PILE.FIELD, (g, c, a) =>
                     {
                         return a.player == c.getOwner() && c.pile.name == PILE.FIELD;
                     }, null, async (g, c, a) =>
@@ -408,7 +408,7 @@ namespace TouhouHeartstone.Builtin
             };
             await card.getOwner().getMaster().addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(3),
-                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
         }
     }
 

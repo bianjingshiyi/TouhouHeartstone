@@ -43,7 +43,7 @@ namespace Tests
             yield return new WaitForSeconds(.1f);
             game.players[1].cmdInitReplace(game);
             yield return new WaitForSeconds(1f);
-            Assert.True(game.triggers.getRecordedEvents().Any(e => e is THHGame.StartEventArg));
+            Assert.True(game.triggers.getRecordedEvents().Any(e => e is HearthStoneRule.StartEventArg));
         }
         //[UnityTest]
         //public IEnumerator run_Turn1()

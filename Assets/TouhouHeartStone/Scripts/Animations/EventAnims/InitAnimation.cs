@@ -4,9 +4,9 @@ using System;
 using UI;
 namespace Game
 {
-    class InitAnimation : EventAnimation<THHGame.InitEventArg>
+    class InitAnimation : EventAnimation<HearthStoneRule.InitEventArg>
     {
-        public override bool update(TableManager table, THHGame.InitEventArg eventArg, float time)
+        public override bool update(TableManager table, HearthStoneRule.InitEventArg eventArg, float time)
         {
             table.setMaster(table.ui.SelfMaster, table.player.getMaster());
             table.setSkill(table.ui.SelfSkill, table.player.getSkill());

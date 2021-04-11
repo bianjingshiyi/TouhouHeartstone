@@ -2,9 +2,9 @@
 using UI;
 namespace Game
 {
-    class InitReplaceAnimation : EventAnimation<THHPlayer.InitReplaceEventArg>
+    class InitReplaceAnimation : EventAnimation<HearthStoneRule.InitReplaceEventArg>
     {
-        public override bool update(TableManager table, THHPlayer.InitReplaceEventArg eventArg, float time)
+        public override bool update(TableManager table, HearthStoneRule.InitReplaceEventArg eventArg, float time)
         {
             table.ui.InitReplaceDialog.hide();
             return true;

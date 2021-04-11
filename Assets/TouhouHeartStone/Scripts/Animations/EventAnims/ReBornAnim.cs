@@ -3,10 +3,10 @@ using BJSYGameCore.UI;
 using UI;
 namespace Game
 {
-    public class ReBornAnim : EventAnimation<THHPlayer.RebornEventArg>
+    public class ReBornAnim : EventAnimation<HearthStoneRule.RebornEventArg>
     {
         AnimAnim _anim;
-        public override bool update(TableManager table, THHPlayer.RebornEventArg eventArg, float time)
+        public override bool update(TableManager table, HearthStoneRule.RebornEventArg eventArg, float time)
         {
             if (!table.tryGetServant(eventArg.card, out var servant))
                 servant = table.createServant(eventArg.card, eventArg.position, eventArg.card.getAttack(table.game), eventArg.card.getLife(table.game));

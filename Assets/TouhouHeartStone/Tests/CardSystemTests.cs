@@ -305,11 +305,11 @@ namespace Tests
             var cards = you.getHand().randomTake(game, 3);
             var task = you.discover(game, cards);
             Assert.NotNull(game.answers.getRequest<DiscoverRequest>(you.id));
-            THHGame.TurnEndEventArg turnEnd = null;
+            HearthStoneRule.TurnEndEventArg turnEnd = null;
             game.triggers.onEventBefore += obj =>
             {
-                if (obj is THHGame.TurnEndEventArg)
-                    turnEnd = obj as THHGame.TurnEndEventArg;
+                if (obj is HearthStoneRule.TurnEndEventArg)
+                    turnEnd = obj as HearthStoneRule.TurnEndEventArg;
             };
             DiscoverResponse discoverResponse = null;
             game.answers.onResponse += response =>

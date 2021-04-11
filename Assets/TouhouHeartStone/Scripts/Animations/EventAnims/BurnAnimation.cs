@@ -4,11 +4,11 @@ using BJSYGameCore;
 using UI;
 namespace Game
 {
-    class BurnAnimation : EventAnimation<THHPlayer.BurnEventArg>
+    class BurnAnimation : EventAnimation<HearthStoneRule.BurnEventArg>
     {
         Timer _timer = new Timer() { duration = .2f };
         Card _card;
-        public override bool update(TableManager table, THHPlayer.BurnEventArg eventArg, float time)
+        public override bool update(TableManager table, HearthStoneRule.BurnEventArg eventArg, float time)
         {
             if (!_timer.isStarted)
             {

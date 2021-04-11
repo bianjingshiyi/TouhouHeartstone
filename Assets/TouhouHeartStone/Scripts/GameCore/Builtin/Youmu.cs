@@ -17,7 +17,7 @@ namespace TouhouHeartstone.Builtin
         /// <summary>
         /// 蓄力：当回合结束时，如果你的最大法力值大于等于这张卡的花费，那么将这张卡标记为蓄力。在使用一张牌的时候，如果这张牌具有蓄力效果且处于蓄力状态，那么触发该效果。
         /// </summary>
-        public class SetPreHeatEffect : THHEffectBefore<THHGame.TurnEndEventArg>
+        public class SetPreHeatEffect : THHEffectBefore<HearthStoneRule.TurnEndEventArg>
         {
             public SetPreHeatEffect() : base(PILE.HAND, (g1, c1, a1) =>
             {
@@ -100,11 +100,11 @@ namespace TouhouHeartstone.Builtin
             if (!Youmu.isPreHeated(game, card))
                 await card.getOwner().getMaster().addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(2),
-                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
             else
                 await card.getOwner().getMaster().addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(3),
-                    new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
         }
     }
     /// <summary>
@@ -281,7 +281,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             THHPlayer player = card.getOwner();
-            await player.getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+            await player.getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
             Card[] servants = game.getOpponent(player).getField().OrderBy(c => c.getCurrentLife(game)).ToArray();
             foreach (Card target in servants)
             {
@@ -305,7 +305,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().getMaster().getArmor(game)),
-                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+                new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
             await card.getOwner().getMaster().loseArmor(game, card.getOwner().getMaster().getArmor(game));
         }
     }
@@ -325,7 +325,7 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().getMaster().gainArmor(game, 5);
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(5),
-                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+                new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
         }
     }
     /// <summary>
@@ -370,14 +370,14 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().getItem().addKeywords(game, KEYWORD.IMMUNITY);
             await card.getOwner().getItem().addBuff(game, new GeneratedBuff(ID,
-                new THHEffectBefore<THHGame.TurnEndEventArg>(PILE.ITEM,(g,c,a)=> 
+                new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.ITEM,(g,c,a)=> 
                 {
                     return a.player == c.getOwner();
                 },null,async(g,c,a)=> 
                 {
                     await c.removeKeywords(g, KEYWORD.IMMUNITY);
                 }),
-                new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.ITEM,(g,c,a)=> 
+                new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.ITEM,(g,c,a)=> 
                 {
                     return a.player == c.getOwner();
                 },ID)));
@@ -451,7 +451,7 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHPlayer.UseEventArg>(PILE.HAND,
+            new THHEffectBefore<HearthStoneRule.UseEventArg>(PILE.HAND,
                 (g1,c1,a1)=>
                 {
                     return a1.card == c1 && c1.getOwner().getItem() != null;

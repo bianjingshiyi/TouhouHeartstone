@@ -11,7 +11,7 @@ namespace TouhouHeartstone
 {
     public class THHGame : CardEngine, IDisposable
     {
-        public static HeathStoneRule rule = new HeathStoneRule(null);
+        public static HearthStoneRule rule = new HearthStoneRule(null);
         public HearthstoneOption getOption() => this.option as HearthstoneOption;
 
         public new TriggerManager triggers
@@ -59,7 +59,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public THHPlayer createPlayer(int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
         {
-            return rule.createPlayer(this, id, name, master.id, deck.Select(d=>d.id).ToArray());
+            return rule.createPlayer(this, id, name, master.id, deck.Select(d=>d.id).ToArray()) as THHPlayer;
         }
 
         public THHPlayer[] players
@@ -69,7 +69,7 @@ namespace TouhouHeartstone
 
         public THHPlayer getPlayer(int id)
         {
-            return players.FirstOrDefault(p => p.id == id);
+            return rule.getPlayer(this, id) as THHPlayer;
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace TouhouHeartstone
         {
             if (!isRunning)
                 return;
-            await triggers.doEvent(new InitEventArg(), async arg =>
+            await triggers.doEvent(new HearthStoneRule.InitEventArg(), async arg =>
             {
                 //决定玩家行动顺序
                 if (getOption().sortedPlayers == null || getOption().sortedPlayers.Length != players.Length)
@@ -287,17 +287,13 @@ namespace TouhouHeartstone
             });
         }
 
-        public class InitEventArg : EventArg
-        {
-        }
-
         public THHPlayer[] getSortedPlayers() => players.OrderBy(player => player.getOrder()).ToArray();
 
         internal async Task start()
         {
             if (!isRunning)
                 return;
-            await triggers.doEvent(new StartEventArg(), async arg =>
+            await triggers.doEvent(new HearthStoneRule.StartEventArg(), async arg =>
             {
                 logger.log("Debug", "游戏开始");
                 foreach (THHPlayer player in getSortedPlayers())
@@ -311,7 +307,7 @@ namespace TouhouHeartstone
                         logger.log("由于后手行动" + player + "获得一张幸运币");
                     }
 
-                    arg.startHandDic.Add(player, new StartEventArg.StartInfo()
+                    arg.startHandDic.Add(player, new HearthStoneRule.StartEventArg.StartInfo()
                     {
                         gem = player.getMaxGem(),
                         hands = player.getHand().ToArray()
@@ -320,27 +316,14 @@ namespace TouhouHeartstone
             });
         }
 
-        public class StartEventArg : EventArg
-        {
-            public Dictionary<THHPlayer, StartInfo> startHandDic = new Dictionary<THHPlayer, StartInfo>();
-
-            public class StartInfo
-            {
-                public int gem;
-                public Card[] hands;
-            }
-        }
-
-        public const string CURRENTPLAYER = "CurrentPlayer";
-
-        private void setCurrentPlayer(THHPlayer value) => setProp(CURRENTPLAYER, value);
-        public THHPlayer getCurrentPlayer() => getProp<THHPlayer>(CURRENTPLAYER);
+        private void setCurrentPlayer(THHPlayer value) => setProp(GAME.CURRENTPLAYER, value);
+        public THHPlayer getCurrentPlayer() => getProp<THHPlayer>(GAME.CURRENTPLAYER);
 
         async Task turnStart(THHPlayer player)
         {
             if (!isRunning)
                 return;
-            await triggers.doEvent(new TurnStartEventArg() {player = player}, async arg =>
+            await triggers.doEvent(new HearthStoneRule.TurnStartEventArg() {player = player}, async arg =>
             {
                 logger.log("Debug", arg.player + "的回合开始");
                 //玩家的最大能量加1但是不超过10，充满玩家的能量。
@@ -372,11 +355,6 @@ namespace TouhouHeartstone
             logger.log("Debug", getCurrentPlayer() + "回合超时");
             turnTimer = null;
             answers.cancel(answers.getRequests(getCurrentPlayer().id));
-        }
-
-        public class TurnStartEventArg : EventArg
-        {
-            public THHPlayer player;
         }
 
         async Task turnLoop(THHPlayer player)
@@ -417,7 +395,7 @@ namespace TouhouHeartstone
         {
             if (!isRunning)
                 return;
-            await triggers.doEvent(new TurnEndEventArg() {player = player}, arg =>
+            await triggers.doEvent(new HearthStoneRule.TurnEndEventArg() {player = player}, arg =>
             {
                 logger.log("Debug", getCurrentPlayer() + "回合结束");
 
@@ -449,11 +427,6 @@ namespace TouhouHeartstone
             });
             time.cancel(turnTimer);
             turnTimer = null;
-        }
-
-        public class TurnEndEventArg : EventArg
-        {
-            public THHPlayer player;
         }
 
         /// <summary>
@@ -508,13 +481,8 @@ namespace TouhouHeartstone
             if (!isRunning)
                 return;
             logger.log("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
-            await triggers.doEvent(new GameEndEventArg() {winners = winners});
+            await triggers.doEvent(new HearthStoneRule.GameEndEventArg() {winners = winners});
             close();
-        }
-
-        public class GameEndEventArg : EventArg
-        {
-            public THHPlayer[] winners;
         }
 
         public void close()
@@ -652,13 +620,13 @@ namespace TouhouHeartstone
         }
     }
     
-    public partial class HeathStoneRule : Rule
+    public partial class HearthStoneRule : Rule
     {
-        public HeathStoneRule(CardDefine[] defines) : base(defines)
+        public HearthStoneRule(CardDefine[] defines) : base(defines)
         {
         }
 
-        public override void onGameInit(CardEngine game, TouhouCardEngine.GameOption options, RoomPlayerInfo[] players)
+        public override void onGameInit(CardEngine game, GameOption options, RoomPlayerInfo[] players)
         {
             game.option = options;
             var option = getOption(game);
@@ -676,7 +644,7 @@ namespace TouhouHeartstone
 
         public HearthstoneOption getOption(CardEngine game) => game.option as HearthstoneOption;
         
-        public THHPlayer createPlayer(CardEngine game, int id, string name, int master, int[] deck)
+        public Player createPlayer(CardEngine game, int id, string name, int master, int[] deck)
         {
             if (game.getDefine(master) is MasterCardDefine masterCardDefine)
             {
@@ -700,7 +668,7 @@ namespace TouhouHeartstone
             return createPlayer(game,id,name,masterCardDefine,game.getDefines(deck));
         }
         
-        public THHPlayer createPlayer(CardEngine game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
+        public Player createPlayer(CardEngine game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
         {
             if (game.players.Any(p => p.id == id))
                 throw new ArgumentException("已经存在ID为" + id + "的玩家");
@@ -724,6 +692,11 @@ namespace TouhouHeartstone
             player.setFatigue(0);
             game.addPlayer(player);
             return player;
+        }
+        
+        public Player getPlayer(CardEngine game, int id)
+        {
+            return game.players.FirstOrDefault(p => p.id == id);
         }
         
         public Card createCard(CardEngine game, CardDefine define)
@@ -776,38 +749,320 @@ namespace TouhouHeartstone
 
             return card;
         }
-        
-        // private async Task gameflow(CardEngine game, Action onInited = null)
-        // {
-        //     await init();
-        //     Task<Dictionary<int, IResponse>> task = answers.askAll(sortedPlayers.Select(p => p.id).ToArray(),
-        //         new InitReplaceRequest()
-        //         {
-        //         }, getOption().timeoutForInitReplace);
-        //     onInited?.Invoke();
-        //     Dictionary<int, IResponse> initReplaceResponses = await task;
-        //     if (!isRunning)
-        //         return;
-        //     foreach (var result in initReplaceResponses)
-        //     {
-        //         THHPlayer player = getPlayer(result.Key);
-        //         if (result.Value is InitReplaceResponse initReplace)
-        //             await player.initReplace(this, getCards(initReplace.cardsId));
-        //         else if (result.Value is SurrenderResponse surrender)
-        //             await this.surrender(player);
-        //     }
-        //
-        //     await start();
-        //     currentPlayer = sortedPlayers[0];
-        //     for (int i = 0; i < 100; i++)
-        //     {
-        //         await turnStart(currentPlayer);
-        //         await turnLoop(currentPlayer);
-        //         await turnEnd(currentPlayer);
-        //         currentPlayer = getPlayerForNextTurn(currentPlayer);
-        //     }
-        //
-        //     await gameEnd(new THHPlayer[0]);
-        // }
+
+
+        public class InitEventArg : EventArg
+        {
+        }
+
+        public class StartEventArg : EventArg
+        {
+            public Dictionary<THHPlayer, StartInfo> startHandDic = new Dictionary<THHPlayer, StartInfo>();
+
+            public class StartInfo
+            {
+                public int gem;
+                public Card[] hands;
+            }
+        }
+
+        public class TurnStartEventArg : EventArg
+        {
+            public THHPlayer player;
+        }
+
+        public class TurnEndEventArg : EventArg
+        {
+            public THHPlayer player;
+        }
+
+        public class GameEndEventArg : EventArg
+        {
+            public THHPlayer[] winners;
+        }
+
+        public class InitReplaceEventArg : EventArg
+        {
+            public THHPlayer player;
+            public Card[] cards;
+            public Card[] replacedCards;
+        }
+
+        public class SetMaxGemEventArg : EventArg, IDescribableEventArg
+        {
+            public THHPlayer player;
+            public int value;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}:玩家，{1}值")]
+            const string TEMPLATE = "{0}的最大灵力值变为{1}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    value
+                };
+            }
+        }
+
+        public class BurnEventArg : EventArg, IDescribableEventArg
+        {
+            public THHPlayer player;
+            public Card card;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是手牌")]
+            const string TEMPLATE = "{0}抽{1}，但是由于手牌已满它被送入墓地";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] { player.name, card.getFormatString() };
+            }
+        }
+
+        /// <summary>
+        /// 选择事件，一般指从几个选项中选择一项
+        /// 卡面描述："选择一项"
+        /// </summary>
+        public class ChooseOneEventArg : EventArg, IDescribableEventArg
+        {
+            public THHPlayer player;
+            public IEnumerable<Card> options;
+            public Card choose;
+            public bool isShow = true;
+
+            public ICard getCard(IGame game, IPlayer viewer)
+            {
+                return choose;
+            }
+
+            public ICard[] getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是选项。")]
+            const string TEMPLATE = "{0} 选择 {1}";
+            [MukioI18n.TranslateMsg("{0}是玩家")]
+            const string TEMPLATE_NotShow = "{0} 进行了选择";
+
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                if (isShow)
+                    return TEMPLATE;
+                else
+                    return TEMPLATE_NotShow;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    choose?.getFormatString()
+                };
+            }
+            
+        }
+
+        public class UseEventArg : EventArg, IDescribableEventArg
+        {
+            public THHPlayer player;
+            public Card card;
+            public int position;
+            public int cost;
+            public Card[] targets;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                if (card.hasKeyword(game, KEYWORD.SECRET))
+                    return viewer == player ? card : null;
+                return card;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return targets;
+            }
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡。")]
+            const string TEMPLATE_NO_TARGET = "{0} 使用 {1}";
+            [MukioI18n.TranslateMsg("{0}是玩家，使用的是陷阱")]
+            const string TEMPLATE_SECRET_OTHER = "{0} 使用了一张陷阱牌";
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡，{2}是目标")]
+            const string TEMPLATE_HAS_TARGET = "{0} 对 {2} 使用了 {1}";
+
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                if (card.hasKeyword(game, KEYWORD.SECRET))
+                {
+                    return viewer == player ? TEMPLATE_NO_TARGET : TEMPLATE_SECRET_OTHER;
+                }
+                if (targets == null || targets.Length < 1)
+                    return TEMPLATE_NO_TARGET;
+                else
+                    return TEMPLATE_HAS_TARGET;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    card?.getFormatString(),
+                    string.Join("，", targets?.Select(c => "{card:" + c.define.id + "}"))
+                };
+            }
+        }
+
+        public class EnterFieldEventArg : EventArg, IDescribableEventArg
+        {
+            public THHPlayer player;
+            public Pile from;
+            public Card card;
+            public int position;
+            public int attack;
+            public int life;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡，{2}是位置")]
+            const string TEMPLATE = "{0} 将{1} 置入战场，位于 {2}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    card.getFormatString(),
+                    position
+                };
+            }
+        }
+
+        public class RebornEventArg : EventArg, IDescribableEventArg
+        {
+            public THHPlayer player;
+            public int position;
+            public Card card;
+            public Pile pile;
+
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
+            const string TEMPLATE = "{0} 复活了 {1}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    card.getFormatString()
+                };
+            }
+        }
+
+        public class RevealArg : EventArg, IDescribableEventArg
+        {
+            public THHPlayer player;
+            public Card card;  //被揭示的牌
+
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            public ICard[] getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
+            const string TEMPLATE_VALID = "{0} 揭示了 {1}";
+
+            [MukioI18n.TranslateMsg("{0}是玩家")]
+            const string TEMPLATE_INVALID = "{0} 揭示了个寂寞";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return card == null ? TEMPLATE_INVALID : TEMPLATE_VALID;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    card?.getFormatString()
+                };
+            }
+        }
     }
 }

@@ -260,7 +260,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD, (game, card, arg) => { return true; },
+            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.FIELD, (game, card, arg) => { return true; },
                 (game, card, targets) => { return false; }, async (game, card, arg, targets) =>
                 {
                     foreach (var character in game.getAllCharacters().randomTake(game, 3))
@@ -334,7 +334,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD, (game, card, arg) => { return true; },
+            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.FIELD, (game, card, arg) => { return true; },
                 (game, card, targets) => { return false; }, async (game, card, arg, targets) =>
                 {
                     foreach (var servant in game.getAllServants())
@@ -414,7 +414,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD, (game, card, arg) => { return true; },
+            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.FIELD, (game, card, arg) => { return true; },
                 (game, card, targets) =>
                 {
                     if (targets[0] is Card target && target.pile.name == PILE.FIELD && target.hasTag(game, TAG.FAIRY))
@@ -446,7 +446,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<THHPlayer.ActiveEventArg>(PILE.FIELD, (game, card, arg) => { return true; },
+            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.FIELD, (game, card, arg) => { return true; },
                 (game, card, targets) => { return false; }, async (game, card, arg, targets) =>
                 {
                     await game.players.Select(p => p.getMaster()).heal(game, card, 4);
@@ -539,8 +539,8 @@ namespace TouhouHeartstone.Builtin
             new ConditionalPassiveEffect(
                 new Halo(new GeneratedBuff(ID, new CostModifier(1)), PileFlag.both | PileFlag.hand),
                 (g, c, b) => g.triggers.getRecordedEvents()
-                    .skipUntilLast(e => e is THHGame.TurnStartEventArg)
-                    .OfType<THHPlayer.UseEventArg>()
+                    .skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg)
+                    .OfType<HearthStoneRule.UseEventArg>()
                     .Where(u => u.card.pile.name != PILE.SKILL).Count() < 1)
             
         };
@@ -761,7 +761,7 @@ namespace TouhouHeartstone.Builtin
             await card.getOwner().draw(game, out var draw);
             var drawed = draw.card;
             await drawed.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true),
-                new RemoveBuffBefore<THHGame.TurnEndEventArg>(PILE.HAND, ID)));
+                new RemoveBuffBefore<HearthStoneRule.TurnEndEventArg>(PILE.HAND, ID)));
         }
     }
 
@@ -1047,7 +1047,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (g, c, t) =>
             {
                 await t.addBuff(g, new GeneratedBuff(ID, new AttackModifier(1, true),
-                    new RemoveBuffAfter<THHGame.TurnStartEventArg>(PILE.FIELD,
+                    new RemoveBuffAfter<HearthStoneRule.TurnStartEventArg>(PILE.FIELD,
                         (g1, c1, a) => { return a.player == c.getOwner(); }, ID)));
             }, PileFlag.both | PileFlag.field)
         };
@@ -1121,7 +1121,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect),
-            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND,
+            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PILE.HAND,
                 (g, c, a) => { return a.player == c.getOwner() && c.pile == c.getOwner().getHand(); }, null,
                 async (g, c, a) => { await THHCard.setDefine(c, g, g.getDefine<KamishirasawaKeine_Beast_N>()); })
         };
@@ -1154,7 +1154,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect),
-            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.HAND,
+            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PILE.HAND,
                 (g, c, a) => { return a.player == c.getOwner() && c.pile == c.getOwner().getHand(); }, null,
                 async (g, c, a) => { await THHCard.setDefine(c, g, g.getDefine<KamishirasawaKeine_Human_N>()); })
         };
@@ -1303,20 +1303,20 @@ namespace TouhouHeartstone.Builtin
             var choice = await c.getOwner().chooseOne(g, options,true,  "选择一项");
             if (choice.choose.define == g.getDefine<ReturnOfImperishableNight_Eternity_N>())
             {
-                await c.getOwner().getMaster().addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<THHPlayer.DrawEventArg>(
+                await c.getOwner().getMaster().addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<HearthStoneRule.DrawEventArg>(
                     PILE.MASTER,
                     (g1, c1, a1) => { return a1.player == c1.getOwner(); },
                     null,
                     async (g1, c1, a1) => { a1.isCanceled = true; }
-                ), new RemoveBuffAfterTimeUp<THHGame.TurnEndEventArg>(PILE.MASTER,
+                ), new RemoveBuffAfterTimeUp<HearthStoneRule.TurnEndEventArg>(PILE.MASTER,
                     (g1, c1, a1) => { return a1.player == c1.getOwner(); }, ID, 2)));
 
                 await g.getOpponent(c.getOwner()).getMaster().addBuff(g, new GeneratedBuff(ID,
-                    new THHEffectBefore<THHPlayer.DrawEventArg>(PILE.MASTER,
+                    new THHEffectBefore<HearthStoneRule.DrawEventArg>(PILE.MASTER,
                         (g1, c1, a1) => { return a1.player == c1.getOwner(); },
                         null,
                         async (g1, c1, a1) => { a1.isCanceled = true; }
-                    ), new RemoveBuffAfterTimeUp<THHGame.TurnEndEventArg>(PILE.MASTER,
+                    ), new RemoveBuffAfterTimeUp<HearthStoneRule.TurnEndEventArg>(PILE.MASTER,
                         (g1, c1, a1) => { return a1.player == c1.getOwner(); }, ID, 2)));
             }
             else
@@ -1403,7 +1403,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD,
+            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,
                 (game, card, arg) => { return arg.player == card.getOwner(); }, null,
                 async (game, card, arg) => { await game.getOpponent(card.getOwner()).addCardToHand<Neutral_73>(game); })
         };
@@ -1423,7 +1423,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHGame.TurnEndEventArg>(PILE.FIELD,
+            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,
                 (game, card, arg) => { return arg.player == card.getOwner(); }, null,
                 async (game, card, arg) => { await card.getOwner().addCardToHand<Neutral_74>(game); })
         };
@@ -1685,7 +1685,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHPlayer.UseEventArg>(PileFlag.hand,
+            new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.hand,
                 (game, card, arg) =>
                     card.getOwner() != arg.player && arg.cost >= 4 && arg.card.define is ServantCardDefine, null,
                 (game, card, arg) => card.getOwner().tryEnterField(game, card.pile, card, card.getOwner().getField().count))
@@ -1841,20 +1841,20 @@ namespace TouhouHeartstone.Builtin
             {
                 if (!count)
                 {
-                    if (recorded[i] is THHGame.TurnEndEventArg)
+                    if (recorded[i] is HearthStoneRule.TurnEndEventArg)
                     {
                         count = true;
                     }
                 }
                 else
                 {
-                    if (recorded[i] is THHPlayer.UseEventArg &&
-                        !((recorded[i] as THHPlayer.UseEventArg).card.define is SkillCardDefine))
+                    if (recorded[i] is HearthStoneRule.UseEventArg &&
+                        !((recorded[i] as HearthStoneRule.UseEventArg).card.define is SkillCardDefine))
                     {
-                        usedCards.Add((recorded[i] as THHPlayer.UseEventArg)?.card);
+                        usedCards.Add((recorded[i] as HearthStoneRule.UseEventArg)?.card);
                     }
 
-                    if (recorded[i] is THHGame.TurnEndEventArg)
+                    if (recorded[i] is HearthStoneRule.TurnEndEventArg)
                     {
                         break;
                     }
@@ -1903,7 +1903,7 @@ namespace TouhouHeartstone.Builtin
                     count += (recorded[i] as THHCard.DeathEventArg).infoDic.Count;
                 }
 
-                if (recorded[i] is THHGame.TurnStartEventArg)
+                if (recorded[i] is HearthStoneRule.TurnStartEventArg)
                 {
                     break;
                 }
@@ -1973,7 +1973,7 @@ namespace TouhouHeartstone.Builtin
             // new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field,
             //     (game, card, arg) => arg.infoDic.Values.Select(info => info.source).Contains(card), null,
             //     async (game, card, arg) => card.setStealth(game, true)),
-            new THHEffectBefore<THHPlayer.UseEventArg>(PileFlag.field,
+            new THHEffectBefore<HearthStoneRule.UseEventArg>(PileFlag.field,
                 (game, card, arg) => arg.targets.Length > 0, null,
                 (game, card, arg) =>
                 {

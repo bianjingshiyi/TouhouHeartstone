@@ -12,7 +12,7 @@ namespace Tests
             {
                 game.run();
             }
-            if (!game.triggers.getRecordedEvents().Any(e => e is THHGame.StartEventArg))
+            if (!game.triggers.getRecordedEvents().Any(e => e is HearthStoneRule.StartEventArg))
             {
                 game.getSortedPlayers()[0].cmdInitReplace(game);
                 game.getSortedPlayers()[1].cmdInitReplace(game);

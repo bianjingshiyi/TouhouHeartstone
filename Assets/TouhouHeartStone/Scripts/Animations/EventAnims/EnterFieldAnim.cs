@@ -3,11 +3,11 @@ using BJSYGameCore.UI;
 using UI;
 namespace Game
 {
-    class EnterFieldAnim : EventAnimation<THHPlayer.EnterFieldEventArg>
+    class EnterFieldAnim : EventAnimation<HearthStoneRule.EnterFieldEventArg>
     {
         //随从的入场动画
         AnimAnim _anim;
-        public override bool update(TableManager table, THHPlayer.EnterFieldEventArg eventArg, float time)
+        public override bool update(TableManager table, HearthStoneRule.EnterFieldEventArg eventArg, float time)
         {
             if (eventArg.from != null)
             {

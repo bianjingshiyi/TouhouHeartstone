@@ -4,11 +4,11 @@ using BJSYGameCore;
 using UI;
 namespace Game
 {
-    class FatigueAnimation : EventAnimation<THHPlayer.FatigueEventArg>
+    class FatigueAnimation : EventAnimation<HearthStoneRule.FatigueEventArg>
     {
         AnimAnim _anim;
 
-        public override bool update(TableManager table, THHPlayer.FatigueEventArg eventArg, float time)
+        public override bool update(TableManager table, HearthStoneRule.FatigueEventArg eventArg, float time)
         {
             if (_anim == null) 
             {

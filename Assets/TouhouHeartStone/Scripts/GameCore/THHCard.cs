@@ -743,11 +743,11 @@ namespace TouhouHeartstone
                     info = NOT_ENOUGH_SPIRIT;
                     return false;
                 }
-                if (skill.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is ITriggerEffect effect)
+                if (skill.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect effect)
                 {
                     if (!effect.checkCondition(game, card, new object[]
                     {
-                        new THHPlayer.ActiveEventArg(player,card,new object[0])
+                        new HearthStoneRule.ActiveEventArg(player,card,new object[0])
                     }))
                     {
                         info = SKILL_UNUSABLE;
@@ -793,7 +793,7 @@ namespace TouhouHeartstone
                 targets = targetList.ToArray();
                 return true;
             }
-            if (card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers) is ITriggerEffect triggerEffect)
+            if (card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect triggerEffect)
             {
                 List<Card> targetList = new List<Card>();
                 foreach (THHPlayer player in game.players)
@@ -826,7 +826,7 @@ namespace TouhouHeartstone
         public static bool isValidTarget(this Card card, THHGame game, Card target)
         {
             ITargetEffect targetEffect = card.define.getActiveEffect() as ITargetEffect;
-            ITriggerEffect triggerEffect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
             return isValidTarget(card, game, target, targetEffect, triggerEffect);
         }
         private static bool isValidTarget(this Card card, THHGame game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect)
@@ -898,15 +898,15 @@ namespace TouhouHeartstone
 
         public static Task activeEffect(this Card card, THHGame game, THHPlayer player, Card[] targets)
         {
-            ITriggerEffect triggerEffect = card.define.getEffectOn<THHPlayer.ActiveEventArg>(game.triggers);
+            ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
             if (triggerEffect != null)
             {
-                return triggerEffect.execute(game, card, new object[] { new THHPlayer.ActiveEventArg(player, card, targets) }, targets);
+                return triggerEffect.execute(game, card, new object[] { new HearthStoneRule.ActiveEventArg(player, card, targets) }, targets);
             }
             IActiveEffect activeEffect = card.define.getActiveEffect();
             if (activeEffect != null)
             {
-                return activeEffect.execute(game, card, new object[] { new THHPlayer.ActiveEventArg(player, card, targets) }, targets);
+                return activeEffect.execute(game, card, new object[] { new HearthStoneRule.ActiveEventArg(player, card, targets) }, targets);
             }
             return Task.CompletedTask;
         }
