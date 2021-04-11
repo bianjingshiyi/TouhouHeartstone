@@ -9,6 +9,7 @@ using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using System.Collections.Generic;
 using BJSYGameCore;
+
 namespace Tests
 {
     public class CardSystemTests
@@ -19,7 +20,7 @@ namespace Tests
             THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
             Enumerable.Repeat(new TestMaster(), 2).ToArray(),
             Enumerable.Repeat(Enumerable.Repeat(new TestServant_Buff(), 30).ToArray(), 2).ToArray(),
-            new GameOption() { });
+            new HearthstoneOption() { });
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
@@ -176,7 +177,7 @@ namespace Tests
         [Test]
         public void mountainGaintTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -215,7 +216,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator fireBallTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -234,7 +235,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator sorcererApprenticeTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -296,7 +297,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator discoverTest_TurnEnd()
         {
-            TestGameflow.createGame(out var game, out var you, out var _, new GameOption()
+            TestGameflow.createGame(out var game, out var you, out var _, new HearthstoneOption()
             {
                 timeoutForTurn = 1
             });
@@ -474,7 +475,7 @@ namespace Tests
         [Test]
         public void PowrOverwhelmingTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -494,7 +495,7 @@ namespace Tests
         [Test]
         public void VelenTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });

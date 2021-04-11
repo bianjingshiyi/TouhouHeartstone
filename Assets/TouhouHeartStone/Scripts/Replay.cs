@@ -13,7 +13,7 @@ namespace Game
     [Serializable]
     public class Replay
     {
-        public GameOption option;
+        public HearthstoneOption option;
         public RoomPlayerInfo[] players;
         //public ReplayPlayer[] players;
         public List<ReplayLogLine> logs = new List<ReplayLogLine>();
@@ -48,7 +48,7 @@ namespace Game
         }
         public Replay(THHGame game)
         {
-            option = game.option;
+            option = game.getOption();
             players = game.players.Select(p =>
             {
                 var player = new RoomPlayerInfo() { RoomID = p.id, name = p.name };

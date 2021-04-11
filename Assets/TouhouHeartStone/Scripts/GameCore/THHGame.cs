@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone.Builtin;
@@ -10,7 +11,8 @@ namespace TouhouHeartstone
 {
     public class THHGame : CardEngine, IDisposable
     {
-        public GameOption option { get; }
+        public static HeathStoneRule rule = new HeathStoneRule(null);
+        public HearthstoneOption getOption() => this.option as HearthstoneOption;
 
         public new TriggerManager triggers
         {
@@ -30,14 +32,19 @@ namespace TouhouHeartstone
             set { base.time = value; }
         }
 
-        public THHGame(params CardDefine[] defines) : base(GameOption.Default.randomSeed, defines)
+        public THHGame(params CardDefine[] defines) : base(HearthstoneOption.Default.randomSeed, defines)
         {
-            option = GameOption.Default;
+            option = HearthstoneOption.Default;
         }
 
-        public THHGame(GameOption option, params CardDefine[] defines) : base(option.randomSeed, defines)
+        public THHGame(HearthstoneOption option, params CardDefine[] defines) : base(option.randomSeed, defines)
         {
             this.option = option;
+        }
+
+        public THHGame() : base ()
+        {
+            
         }
 
         #region Player
@@ -52,33 +59,12 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public THHPlayer createPlayer(int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
         {
-            if (players.Any(p => p.id == id))
-                throw new ArgumentException("已经存在ID为" + id + "的玩家");
-            THHPlayer player = new THHPlayer(this, id, name);
-            player.addPile(new Pile(this, PILE.MASTER, 1));
-            player.addPile(new Pile(this, PILE.SKILL, 1));
-            player.addPile(new Pile(this, PILE.DECK));
-            player.addPile(new Pile(this, PILE.HAND, maxCount: 10));
-            player.addPile(new Pile(this, PILE.INIT, maxCount: 4));
-            player.addPile(new Pile(this, PILE.FIELD, maxCount: 7));
-            player.addPile(new Pile(this, PILE.GRAVE));
-            player.addPile(new Pile(this, PILE.WARP));
-            player.addPile(new Pile(this, PILE.HEAD, maxCount: 5));
-            player.addPile(new Pile(this, PILE.ITEM, 1));
-            player[PILE.MASTER].add(this, this.createCard(master));
-            player[PILE.SKILL].add(this, this.createCard(this.getDefine(master.skillID)));
-            player[PILE.DECK].add(this, deck.Select(d => this.createCard(d)));
-            player.setIsPrepared(false);
-            player.setGem(this, 0);
-            player.setMaxGem(this, 0);
-            player.setFatigue(0);
-            addPlayer(player);
-            return player;
+            return rule.createPlayer(this, id, name, master.id, deck.Select(d=>d.id).ToArray());
         }
 
         public THHPlayer[] players
         {
-            get { return getPlayers().Cast<THHPlayer>().ToArray(); }
+            get { return base.players.Cast<THHPlayer>().ToArray(); }
         }
 
         public THHPlayer getPlayer(int id)
@@ -123,53 +109,7 @@ namespace TouhouHeartstone
 
         public Card createCard(CardDefine define)
         {
-            Card card = this.issueCard(define);
-            if (define is MasterCardDefine master)
-            {
-                card.setLife(this, master.life);
-            }
-            else if (define is ServantCardDefine servant)
-            {
-                card.setCost(this, servant.cost);
-                card.setAttack(this, servant.attack);
-                card.setLife(this, servant.life);
-                card.setSpellDamage(this, servant.spellDamage);
-
-                foreach (string keyword in servant.keywords)
-                {
-                    if (string.IsNullOrEmpty(keyword))
-                        continue;
-                    card.setProp(this, keyword, true);
-                }
-
-                card.setProp(this, PROPERTY.KEYWORDS, servant.keywords);
-                card.setProp(this, nameof(ServantCardDefine.tags), servant.tags);
-            }
-            else if (define is SpellCardDefine spell)
-            {
-                card.setCost(this, spell.cost);
-                foreach (var keyword in spell.keywords)
-                {
-                    if (string.IsNullOrEmpty(keyword))
-                        continue;
-                    card.setProp(this, keyword, true);
-                }
-
-                card.setProp(this, PROPERTY.KEYWORDS, spell.keywords);
-                card.setProp(this, nameof(SpellCardDefine.tags), spell.tags);
-            }
-            else if (define is SkillCardDefine skill)
-            {
-                card.setCost(this, skill.cost);
-            }
-            else if (define is ItemCardDefine item)
-            {
-                card.setCost(this, item.cost);
-                card.setAttack(this, item.attack);
-                card.setLife(this, item.life);
-            }
-
-            return card;
+            return rule.createCard(this, define);
         }
 
         public Card createCard<T>() where T : CardDefine
@@ -265,7 +205,7 @@ namespace TouhouHeartstone
             Task<Dictionary<int, IResponse>> task = answers.askAll(sortedPlayers.Select(p => p.id).ToArray(),
                 new InitReplaceRequest()
                 {
-                }, option.timeoutForInitReplace);
+                }, getOption().timeoutForInitReplace);
             onInited?.Invoke();
             Dictionary<int, IResponse> initReplaceResponses = await task;
             if (!isRunning)
@@ -299,9 +239,9 @@ namespace TouhouHeartstone
             await triggers.doEvent(new InitEventArg(), async arg =>
             {
                 //决定玩家行动顺序
-                if (option.sortedPlayers == null || option.sortedPlayers.Length != players.Length)
+                if (getOption().sortedPlayers == null || getOption().sortedPlayers.Length != players.Length)
                 {
-                    if (option.sortedPlayers != null && option.sortedPlayers.Length != players.Length)
+                    if (getOption().sortedPlayers != null && getOption().sortedPlayers.Length != players.Length)
                         logger?.log("Warning", "游戏参数玩家行动顺序长度与实际数量不匹配");
                     List<THHPlayer> remainedList = new List<THHPlayer>(players);
                     THHPlayer[] sortedPlayers = new THHPlayer[remainedList.Count];
@@ -315,7 +255,7 @@ namespace TouhouHeartstone
                     this.sortedPlayers = sortedPlayers;
                 }
                 else
-                    this.sortedPlayers = option.sortedPlayers.Select(id => players.FirstOrDefault(p => p.id == id))
+                    this.sortedPlayers = getOption().sortedPlayers.Select(id => players.FirstOrDefault(p => p.id == id))
                         .ToArray();
 
                 //创建主人公和技能卡
@@ -330,7 +270,7 @@ namespace TouhouHeartstone
                 {
                     if (sortedPlayers[i].getDeck().count < 1)
                         continue;
-                    if (option.shuffle)
+                    if (getOption().shuffle)
                         sortedPlayers[i].getDeck().shuffle(this);
                     int count = i == 0 ? 3 : 4;
                     var cards = sortedPlayers[i].getDeck().Skip(sortedPlayers[i].getDeck().count - count).Reverse()
@@ -363,7 +303,7 @@ namespace TouhouHeartstone
                 logger.log("Debug", "游戏开始");
                 foreach (THHPlayer player in sortedPlayers)
                 {
-                    await player.setMaxGem(this, option.startGem);
+                    await player.setMaxGem(this, getOption().startGem);
                     await player.getInit().moveTo(this, player.getInit()[0, player.getInit().count - 1],
                         player.getHand(), 0);
                     if (player != sortedPlayers[0])
@@ -419,7 +359,7 @@ namespace TouhouHeartstone
                 await player.getMaster().setAttackTimes(this, 0);
             });
             //倒计时75秒
-            turnTimer = time.startTimer(option.timeoutForTurn);
+            turnTimer = time.startTimer(getOption().timeoutForTurn);
             turnTimer.onExpired += onTurnTimeout;
         }
 
@@ -447,7 +387,7 @@ namespace TouhouHeartstone
                     return;
                 if (turnTimer == null) //超时，结束回合
                     return;
-                IResponse response = await answers.ask(player.id, new FreeActRequest(), option.timeoutForTurn * 2);
+                IResponse response = await answers.ask(player.id, new FreeActRequest(), getOption().timeoutForTurn * 2);
                 switch (response)
                 {
                     case UseResponse use:
@@ -611,21 +551,21 @@ namespace TouhouHeartstone
     }
 
     [Serializable]
-    public class GameOption
+    public class HearthstoneOption : GameOption
     {
-        public static GameOption Default => new GameOption();
-        public int randomSeed = 0;
+        public static HearthstoneOption Default => new HearthstoneOption();
+        // public int randomSeed = 0;
         public int[] sortedPlayers = null;
         public bool shuffle = true;
         public float timeoutForInitReplace = 30;
         public float timeoutForTurn = 75;
         public int startGem = 0;
 
-        public GameOption()
+        public HearthstoneOption()
         {
         }
 
-        public GameOption(GameOption copyTarget)
+        public HearthstoneOption(HearthstoneOption copyTarget)
         {
             randomSeed = copyTarget.randomSeed;
             sortedPlayers = copyTarget.sortedPlayers;
@@ -710,59 +650,20 @@ namespace TouhouHeartstone
         }
     }
     
-    public class HearthStoneOption : IGameOption
-    {
-        public struct PlayerInfo
-        {
-            public int id;
-            public string name;
-            public int master;
-            public int[] deck;
-
-            public PlayerInfo(int id, string name, int master, int[] deck)
-            {
-                this.id = id;
-                this.name = name;
-                this.master = master;
-                this.deck = deck;
-            }
-        }
-        public static HearthStoneOption Default => new HearthStoneOption();
-        public int randomSeed = 0;
-        public int[] sortedPlayers = null;
-        public bool shuffle = true;
-        public float timeoutForInitReplace = 30;
-        public float timeoutForTurn = 75;
-        public int startGem = 0;
-        public PlayerInfo[] players = null;
-
-        public HearthStoneOption()
-        {
-        }
-
-        public HearthStoneOption(HearthStoneOption copyTarget)
-        {
-            randomSeed = copyTarget.randomSeed;
-            sortedPlayers = copyTarget.sortedPlayers;
-            shuffle = copyTarget.shuffle;
-            timeoutForInitReplace = copyTarget.timeoutForInitReplace;
-            timeoutForTurn = copyTarget.timeoutForTurn;
-            players = copyTarget.players;
-        }
-    }
     public partial class HeathStoneRule : Rule
     {
         public HeathStoneRule(CardDefine[] defines) : base(defines)
         {
         }
 
-        public override void onGameInit(CardEngine game, IGameOption options)
+        public override void onGameInit(CardEngine game, TouhouCardEngine.GameOption options, RoomPlayerInfo[] players)
         {
             game.option = options;
             var option = getOption(game);
-            foreach (var playerInfo in option.players)
+            foreach (var playerInfo in players)
             {
-                // createPlayer()
+                var deck = playerInfo.getProp<int[]>("deck");
+                createPlayer(game, playerInfo.RoomID, playerInfo.name, deck[0], deck.Skip(1).ToArray());
             }
         }
 
@@ -771,6 +672,107 @@ namespace TouhouHeartstone
             throw new NotImplementedException();
         }
 
-        public HearthStoneOption getOption(CardEngine game) => game.option as HearthStoneOption;
+        public HearthstoneOption getOption(CardEngine game) => game.option as HearthstoneOption;
+        
+        public THHPlayer createPlayer(CardEngine game, int id, string name, int master, int[] deck)
+        {
+            if (game.getDefine(master) is MasterCardDefine masterCardDefine)
+            {
+                
+            }
+            else
+            {
+                masterCardDefine = new Reimu();
+                game.logger.logError("非法角色ID" + master + "被替换为灵梦");
+            }
+
+            int luckyCoinId = new LuckyCoin().id;
+            for (int i = 1; i < deck.Length; i++)
+            {
+                if (game.getDefine(deck[i]) == null)
+                {
+                    game.logger.logError("非法卡牌ID" + deck[i] + "被替换为幸运币");
+                    deck[i] = luckyCoinId;
+                }
+            }
+            return createPlayer(game,id,name,masterCardDefine,game.getDefines(deck));
+        }
+        
+        public THHPlayer createPlayer(CardEngine game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
+        {
+            if (game.players.Any(p => p.id == id))
+                throw new ArgumentException("已经存在ID为" + id + "的玩家");
+            THHPlayer player = new THHPlayer(game, id, name);
+            player.addPile(new Pile(game, PILE.MASTER, 1));
+            player.addPile(new Pile(game, PILE.SKILL, 1));
+            player.addPile(new Pile(game, PILE.DECK));
+            player.addPile(new Pile(game, PILE.HAND, maxCount: 10));
+            player.addPile(new Pile(game, PILE.INIT, maxCount: 4));
+            player.addPile(new Pile(game, PILE.FIELD, maxCount: 7));
+            player.addPile(new Pile(game, PILE.GRAVE));
+            player.addPile(new Pile(game, PILE.WARP));
+            player.addPile(new Pile(game, PILE.HEAD, maxCount: 5));
+            player.addPile(new Pile(game, PILE.ITEM, 1));
+            player[PILE.MASTER].add(game, createCard(game, master));
+            player[PILE.SKILL].add(game, createCard(game, game.getDefine(master.skillID)));
+            player[PILE.DECK].add(game, deck.Select(d => createCard(game, d)));
+            player.setIsPrepared(false);
+            player.setGem(game, 0);
+            player.setMaxGem(game, 0);
+            player.setFatigue(0);
+            game.addPlayer(player);
+            return player;
+        }
+        
+        public Card createCard(CardEngine game, CardDefine define)
+        {
+            Card card = game.issueCard(define);
+            if (define is MasterCardDefine master)
+            {
+                card.setLife(game, master.life);
+            }
+            else if (define is ServantCardDefine servant)
+            {
+                card.setCost(game, servant.cost);
+                card.setAttack(game, servant.attack);
+                card.setLife(game, servant.life);
+                card.setSpellDamage(game, servant.spellDamage);
+
+                foreach (string keyword in servant.keywords)
+                {
+                    if (string.IsNullOrEmpty(keyword))
+                        continue;
+                    card.setProp(game, keyword, true);
+                }
+
+                card.setProp(game, PROPERTY.KEYWORDS, servant.keywords);
+                card.setProp(game, nameof(ServantCardDefine.tags), servant.tags);
+            }
+            else if (define is SpellCardDefine spell)
+            {
+                card.setCost(game, spell.cost);
+                foreach (var keyword in spell.keywords)
+                {
+                    if (string.IsNullOrEmpty(keyword))
+                        continue;
+                    card.setProp(game, keyword, true);
+                }
+
+                card.setProp(game, PROPERTY.KEYWORDS, spell.keywords);
+                card.setProp(game, nameof(SpellCardDefine.tags), spell.tags);
+            }
+            else if (define is SkillCardDefine skill)
+            {
+                card.setCost(game, skill.cost);
+            }
+            else if (define is ItemCardDefine item)
+            {
+                card.setCost(game, item.cost);
+                card.setAttack(game, item.attack);
+                card.setLife(game, item.life);
+            }
+
+            return card;
+        }
     }
 }

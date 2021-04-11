@@ -17,7 +17,7 @@ namespace Tests
             THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
                 Enumerable.Repeat(new Reimu(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
-                new GameOption() { });
+                new HearthstoneOption() { });
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);

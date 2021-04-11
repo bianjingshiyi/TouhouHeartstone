@@ -6,6 +6,7 @@ using TouhouHeartstone;
 using TouhouCardEngine;
 using TouhouHeartstone.Builtin;
 using System.Collections.Generic;
+
 namespace Tests
 {
     public class YoumuCardTest
@@ -364,7 +365,7 @@ namespace Tests
         [Test]
         public void caseCoinRoukankenTest()
         {
-            TestGameflow.createGame(out var game, out var you, out var oppo, new GameOption()
+            TestGameflow.createGame(out var game, out var you, out var oppo, new HearthstoneOption()
             {
                 shuffle = false,
                 sortedPlayers = new int[] { 2, 1 }

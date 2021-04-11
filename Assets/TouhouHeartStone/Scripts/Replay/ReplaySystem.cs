@@ -17,7 +17,7 @@ namespace Game.Replays
             this.game = game;
             replay = new ReplayData()
             {
-                option = game.option,
+                option = game.getOption(),
                 players = players,
                 responses = new List<IResponse>()
             };

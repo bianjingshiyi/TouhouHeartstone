@@ -169,7 +169,7 @@ namespace Game
             currentRoomInfo = new RoomInfo();
             var selfPlayer = new RoomPlayerInfo() { name = lang._(MMANGGE_MYSELF) };
             currentRoomInfo.playerList.Add(selfPlayer);
-            GameOption option = new GameOption();
+            HearthstoneOption option = new HearthstoneOption();
             var rand = new byte[4];
             System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
             option.randomSeed = BitConverter.ToInt32(rand, 0);

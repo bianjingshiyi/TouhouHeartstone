@@ -4,35 +4,36 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
 using BJSYGameCore;
+
 namespace Tests
 {
     public static class TestGameflow
     {
         public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, params KeyValuePair<int, int>[] yourDeck)
         {
-            createGame(out game, out you, out oppo, new GameOption() { shuffle = false }, yourDeck);
+            createGame(out game, out you, out oppo, new HearthstoneOption() { shuffle = false }, yourDeck);
         }
         public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, KeyValuePair<int, int>[] yourDeck, KeyValuePair<int, int>[] oppoDeck)
         {
-            createGame(out game, out you, out oppo, new GameOption() { shuffle = false }, TestMaster.ID, yourDeck, TestMaster.ID, oppoDeck);
+            createGame(out game, out you, out oppo, new HearthstoneOption() { shuffle = false }, TestMaster.ID, yourDeck, TestMaster.ID, oppoDeck);
         }
         public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, int yourMaster)
         {
-            createGame(out game, out you, out oppo, new GameOption() { shuffle = false }, yourMaster);
+            createGame(out game, out you, out oppo, new HearthstoneOption() { shuffle = false }, yourMaster);
         }
-        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option, params KeyValuePair<int, int>[] yourDeck)
+        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, HearthstoneOption option, params KeyValuePair<int, int>[] yourDeck)
         {
             createGame(out game, out you, out oppo, option, TestMaster.ID, yourDeck);
         }
-        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option, int yourMaster, params KeyValuePair<int, int>[] yourDeck)
+        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, HearthstoneOption option, int yourMaster, params KeyValuePair<int, int>[] yourDeck)
         {
             createGame(out game, out you, out oppo, option, yourMaster, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
         }
         public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, int yourMaster, params KeyValuePair<int, int>[] yourDeck)
         {
-            createGame(out game, out you, out oppo, new GameOption() { shuffle = false }, yourMaster, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
+            createGame(out game, out you, out oppo, new HearthstoneOption() { shuffle = false }, yourMaster, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
         }
-        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option,
+        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, HearthstoneOption option,
             int yourMaster, KeyValuePair<int, int>[] yourDeck,
             int oppoMaster, KeyValuePair<int, int>[] oppoDeck)
         {
@@ -55,7 +56,7 @@ namespace Tests
         /// <param name="oppoMaster"></param>
         /// <param name="oppoDeck"></param>
         /// <typeparam name="T"></typeparam>
-        public static void createGame<YourDeck,OppoDeck>(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option,
+        public static void createGame<YourDeck,OppoDeck>(out THHGame game, out THHPlayer you, out THHPlayer oppo, HearthstoneOption option,
             int yourMaster, KeyValuePair<int, int>[] yourDeck,
             int oppoMaster, KeyValuePair<int, int>[] oppoDeck) where YourDeck : CardDefine where OppoDeck : CardDefine
         {
@@ -69,7 +70,7 @@ namespace Tests
         public static void createGame<YourDeck, OppoDeck>(out THHGame game, out THHPlayer you, out THHPlayer oppo,
             params KeyValuePair<int, int>[] yourDeck) where YourDeck : CardDefine where OppoDeck : CardDefine
         {
-            createGame<YourDeck, OppoDeck>(out game, out you, out oppo, new GameOption() { shuffle = false }, TestMaster.ID, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
+            createGame<YourDeck, OppoDeck>(out game, out you, out oppo, new HearthstoneOption() { shuffle = false }, TestMaster.ID, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
         }
         
         private static IEnumerable<CardDefine> createDeck(THHGame game, KeyValuePair<int, int>[] yourDeck)
@@ -100,20 +101,20 @@ namespace Tests
             return yourTrueDeck;
         }
 
-        public static void createGameWithoutDeck(out THHGame game, out THHPlayer you, out THHPlayer oppo, GameOption option = null)
+        public static void createGameWithoutDeck(out THHGame game, out THHPlayer you, out THHPlayer oppo, HearthstoneOption option = null)
         {
             game = initGameWithoutPlayers(null, option);
             you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), null);
             oppo = game.createPlayer(2, "玩家2", game.getDefine<TestMaster>(), null);
         }
-        public static THHGame initStandardGame(string name = null, int deckCount = 30, int[] playersId = null, GameOption option = null)
+        public static THHGame initStandardGame(string name = null, int deckCount = 30, int[] playersId = null, HearthstoneOption option = null)
         {
             return initStandardGame(name, playersId,
                 Enumerable.Repeat(new TestMaster(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new TestServant(), deckCount).ToArray(), 2).ToArray(),
                 option);
         }
-        public static THHGame initStandardGame(string name, int[] playersId, MasterCardDefine[] masters, CardDefine[][] decks, GameOption option)
+        public static THHGame initStandardGame(string name, int[] playersId, MasterCardDefine[] masters, CardDefine[][] decks, HearthstoneOption option)
         {
             THHGame game = initGameWithoutPlayers(name, option);
             if (playersId == null)
@@ -123,18 +124,18 @@ namespace Tests
             if (decks == null)
                 decks = Enumerable.Repeat(Enumerable.Repeat(game.getDefine<TestServant>(), 30).ToArray(), playersId.Length).ToArray();
             if (option == null)
-                option = GameOption.Default;
+                option = HearthstoneOption.Default;
             for (int i = 0; i < playersId.Length; i++)
             {
                 game.createPlayer(playersId[i], "玩家" + playersId[i], masters[i], decks[i]);
             }
             return game;
         }
-        public static THHGame initGameWithoutPlayers(string name, GameOption option)
+        public static THHGame initGameWithoutPlayers(string name, HearthstoneOption option)
         {
             TaskExceptionHandler.register();
             ULogger logger = new ULogger(name) { blackList = new List<string>() { "Load" } };
-            THHGame game = new THHGame(option != null ? option : GameOption.Default, CardHelper.getCardDefines(logger))
+            THHGame game = new THHGame(option != null ? option : HearthstoneOption.Default, CardHelper.getCardDefines(logger))
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),

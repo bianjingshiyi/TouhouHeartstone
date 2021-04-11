@@ -19,7 +19,7 @@ namespace Tests
             THHGame game = TestGameflow.initStandardGame(null, new int[] {0, 1},
                 Enumerable.Repeat(new Reimu(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
-                new GameOption() { });
+                new HearthstoneOption() { });
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
@@ -35,7 +35,7 @@ namespace Tests
             THHGame game = TestGameflow.initStandardGame(null, new int[] {0, 1},
                 Enumerable.Repeat(new Reimu(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new HumanVillageGuard(), 30).ToArray(), 2).ToArray(),
-                new GameOption() { });
+                new HearthstoneOption() { });
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
@@ -55,7 +55,7 @@ namespace Tests
             THHGame game = TestGameflow.initStandardGame(null, new int[] {0, 1},
                 Enumerable.Repeat(new Reimu(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new RifleHunter(), 30).ToArray(), 2).ToArray(),
-                new GameOption() { });
+                new HearthstoneOption() { });
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
@@ -75,7 +75,7 @@ namespace Tests
             THHGame game = TestGameflow.initStandardGame(null, new int[] {0, 1},
                 Enumerable.Repeat(new Reimu(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new MissingSpecter(), 30).ToArray(), 2).ToArray(),
-                new GameOption() { });
+                new HearthstoneOption() { });
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
@@ -115,7 +115,7 @@ namespace Tests
         [Test]
         public void drizzleFairyTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -165,7 +165,7 @@ namespace Tests
         [Test]
         public void flameFairyTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             }); //首先，上来先新建一个不带玩家的游戏
@@ -200,7 +200,7 @@ namespace Tests
         [Test]
         public void SunnyMilkTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -218,7 +218,7 @@ namespace Tests
         [Test]
         public void LunaChildTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -261,7 +261,7 @@ namespace Tests
         [Test]
         public void BeerFairyTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -640,7 +640,7 @@ namespace Tests
         [Test]
         public void MoonedInsect_Wriggle_NTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -663,7 +663,7 @@ namespace Tests
         [Test]
         public void FlowerMix_Mystia_NTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -720,7 +720,7 @@ namespace Tests
         [Test]
         public void FullMoonNight_Keine_N()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -741,7 +741,7 @@ namespace Tests
         [Test]
         public void Mokou_NTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });

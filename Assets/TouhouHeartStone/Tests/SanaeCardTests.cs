@@ -22,7 +22,7 @@ namespace Tests
             THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
                 Enumerable.Repeat(new Sanae(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
-                new GameOption() { });
+                new HearthstoneOption() { });
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
@@ -45,7 +45,7 @@ namespace Tests
         [Test]
         public void RevealDuelTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -67,7 +67,7 @@ namespace Tests
         public void StarRitualTest()
         {
             TestGameflow.createGame<FireBall, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption() { shuffle = false },
+                new HearthstoneOption() { shuffle = false },
                 Sanae.ID, new[] { new KeyValuePair<int, int>(StarRitual.ID, 2) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<StarRitual>(you);
@@ -164,7 +164,7 @@ namespace Tests
         public void GuestStarsMiracleTest()
         {
             TestGameflow.createGame<FlyingSnake, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption() { shuffle = false },
+                new HearthstoneOption() { shuffle = false },
                 Sanae.ID, new[] { new KeyValuePair<int, int>(GuestStarsMiracle.ID, 1) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             for (int i = 0; i < 3; i++)
@@ -189,7 +189,7 @@ namespace Tests
         public void OpenSeaMiracleTest()
         {
             TestGameflow.createGame<FlyingSnake, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption { shuffle = false },
+                new HearthstoneOption { shuffle = false },
                 Sanae.ID, new[] { new KeyValuePair<int, int>(OpenSeaMiracle.ID, 2) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             for (int i = 0; i < 3; i++)
@@ -251,7 +251,7 @@ namespace Tests
         public void GodSummonTest()
         {
             TestGameflow.createGame<YasakaKanako, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption { shuffle = false },
+                new HearthstoneOption { shuffle = false },
                 Sanae.ID, new[] { new KeyValuePair<int, int>(GodSummon.ID, 2) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<DefaultServant>(oppo);
@@ -278,7 +278,7 @@ namespace Tests
         [Test]
         public void ManipulatedGaintFrogTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -318,7 +318,7 @@ namespace Tests
         public void OrochiOfAncientTimesTest()
         {
             TestGameflow.createGame<OrochiOfAncientTimes, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption { shuffle = false },
+                new HearthstoneOption { shuffle = false },
                 Sanae.ID, new[] { new KeyValuePair<int, int>(StarRitual.ID, 1) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<DefaultServant>(oppo);
@@ -339,7 +339,7 @@ namespace Tests
         public void YasakaKanakoTest()
         {
             TestGameflow.createGame<StarRitual, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption { shuffle = false },
+                new HearthstoneOption { shuffle = false },
                 Sanae.ID, new[] { new KeyValuePair<int, int>(YasakaKanako.ID, 4) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilHasGem(you, 10);
@@ -395,7 +395,7 @@ namespace Tests
         public void MoriyaSuwakoTest()
         {
             TestGameflow.createGame<StarRitual, SorcererApprentice>(out var game, out var you, out var oppo,
-                new GameOption { shuffle = false },
+                new HearthstoneOption { shuffle = false },
                 Sanae.ID, new[] { new KeyValuePair<int, int>(MoriyaSuwako.ID, 4) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilHasGem(you, 10);
@@ -543,7 +543,7 @@ namespace Tests
         public void LittleShrineTest()
         {
             TestGameflow.createGame<FireBall, DefaultServant>(out var game, out var you, out var oppo,
-                new GameOption { shuffle = false },
+                new HearthstoneOption { shuffle = false },
                 Sanae.ID, new[] { new KeyValuePair<int, int>(LittleShrine.ID, 1) },
                 Sanae.ID, new KeyValuePair<int, int>[0]);
             game.skipUntilCanUse<LittleShrine>(you);

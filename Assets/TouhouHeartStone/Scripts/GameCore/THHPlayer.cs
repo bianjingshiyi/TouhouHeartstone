@@ -41,7 +41,7 @@ namespace TouhouHeartstone
         public void setFatigue(int value) => setProp(PLAYER.FATIGUE, value);
         public int getFatigue() => getProp<int>(PLAYER.FATIGUE);
 
-        public THHPlayer(THHGame game, int id, string name) : base(id, name) {}
+        public THHPlayer(CardEngine game, int id, string name) : base(id, name) {}
         internal async Task initReplace(THHGame game, params Card[] cards)
         {
             await game.triggers.doEvent(new InitReplaceEventArg() { player = this, cards = cards }, onInitReplace);
@@ -58,7 +58,7 @@ namespace TouhouHeartstone
             public Card[] cards;
             public Card[] replacedCards;
         }
-        public Task setGem(THHGame game, int value)
+        public Task setGem(CardEngine game, int value)
         {
             return game.triggers.doEvent(new SetGemEventArg() { player = this, value = value }, arg =>
             {
@@ -103,7 +103,7 @@ namespace TouhouHeartstone
                 };
             }
         }
-        public Task setMaxGem(THHGame game, int value)
+        public Task setMaxGem(CardEngine game, int value)
         {
             return game.triggers.doEvent(new SetMaxGemEventArg() { player = this, value = value }, arg =>
             {

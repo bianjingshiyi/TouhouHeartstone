@@ -21,7 +21,7 @@ namespace Tests
         [Test]
         public void XWavegTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -44,7 +44,7 @@ namespace Tests
         [Test]
         public void VelenTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -65,7 +65,7 @@ namespace Tests
         [Test]
         public void ReisenXWavegTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -111,7 +111,7 @@ namespace Tests
         [Test]
         public void WildYoukaiRabbitTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -132,7 +132,7 @@ namespace Tests
         [Test]
         public void MineShakerTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -165,7 +165,7 @@ namespace Tests
         [Test]
         public void DisorderEyeTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -191,7 +191,7 @@ namespace Tests
         [Test]
         public void VisionaryTuningTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -221,7 +221,7 @@ namespace Tests
         [Test]
         public void FieldUltraVioletTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -247,7 +247,7 @@ namespace Tests
         [Test]
         public void MindDroppingTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -275,7 +275,7 @@ namespace Tests
         [Test]
         public void TewiInabaTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -298,7 +298,7 @@ namespace Tests
         [Test]
         public void PeerlessPatriotsElixirTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -320,7 +320,7 @@ namespace Tests
         [Test]
         public void LunaticGunTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -353,7 +353,7 @@ namespace Tests
         [Test]
         public void ReisenEirin_TheMasterTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -427,7 +427,7 @@ namespace Tests
         [Test]
         public void FieldUltraRedTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });

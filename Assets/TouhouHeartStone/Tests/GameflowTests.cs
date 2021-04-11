@@ -17,6 +17,7 @@ using BJSYGameCore;
 using NUnit.Framework.Constraints;
 using System.Reflection;
 using Card = TouhouCardEngine.Card;
+
 namespace Tests
 {
     public class GameflowTests
@@ -172,7 +173,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator turnEndTest_TimeoutWhenUsing()
         {
-            TestGameflow.createGame(out var game, out var you, out _, new GameOption()
+            TestGameflow.createGame(out var game, out var you, out _, new HearthstoneOption()
             {
                 shuffle = false,
                 timeoutForTurn = 1
@@ -221,7 +222,7 @@ namespace Tests
         [Test]
         public void fatigueTest()
         {
-            TestGameflow.createGameWithoutDeck(out var game, out var you, out var oppo, new GameOption()
+            TestGameflow.createGameWithoutDeck(out var game, out var you, out var oppo, new HearthstoneOption()
             {
                 sortedPlayers = new int[] { 1, 2 }
             });
@@ -331,7 +332,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator closeTest()
         {
-            THHGame game = TestGameflow.initStandardGame(option: new GameOption()
+            THHGame game = TestGameflow.initStandardGame(option: new HearthstoneOption()
             {
                 timeoutForInitReplace = 5
             });
@@ -344,7 +345,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator remoteGameflowTest()
         {
-            THHGame g1 = TestGameflow.initStandardGame(name: "客户端0", playersId: new int[] { 0, 1 }, option: new GameOption()
+            THHGame g1 = TestGameflow.initStandardGame(name: "客户端0", playersId: new int[] { 0, 1 }, option: new HearthstoneOption()
             {
                 sortedPlayers = new int[] { 0, 1 }
             });
@@ -357,7 +358,7 @@ namespace Tests
             Task task = c1.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
             (g1.answers as AnswerManager).client = c1;
 
-            THHGame g2 = TestGameflow.initStandardGame(name: "客户端1", playersId: new int[] { 0, 1 }, option: new GameOption()
+            THHGame g2 = TestGameflow.initStandardGame(name: "客户端1", playersId: new int[] { 0, 1 }, option: new HearthstoneOption()
             {
                 sortedPlayers = new int[] { 0, 1 }
             });
@@ -397,7 +398,7 @@ namespace Tests
             local.logger = logger;
             //开房，打开Host，自己加入自己，房间应该有Option
             RoomInfo roomInfo = new RoomInfo();
-            roomInfo.setOption(new GameOption());
+            roomInfo.setOption(new HearthstoneOption());
             THHGame localGame = null;
             local.onConnected += () =>
             {
@@ -553,7 +554,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator effectRegisterTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, GameOption.Default);
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, HearthstoneOption.Default);
             game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant_TurnEndEffect>(), 30));
             game.createPlayer(2, "玩家2", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant_TurnEndEffect>(), 30));
             _ = game.run();
@@ -574,7 +575,7 @@ namespace Tests
             THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
             Enumerable.Repeat(new Reimu(), 2).ToArray(),
             Enumerable.Repeat(Enumerable.Repeat(new DefaultServant(), 30).ToArray(), 2).ToArray(),
-            new GameOption() { });
+            new HearthstoneOption() { });
             game.run();
             game.sortedPlayers[0].cmdInitReplace(game);
             game.sortedPlayers[1].cmdInitReplace(game);
@@ -596,7 +597,7 @@ namespace Tests
         [Test]
         public void SkillAndSpellCardTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -658,7 +659,7 @@ namespace Tests
             Assert.AreEqual("本地玩家", room.playerList[0].name);
             Assert.AreEqual(0, room.playerList[0].RoomID);
             // 更新房间信息
-            yield return localClient.invokeHost(RPCHelper.RoomPropSet(RoomInfoName.OPTION_GAMEOPTION, GameOption.Default));
+            yield return localClient.invokeHost(RPCHelper.RoomPropSet(RoomInfoName.OPTION_GAMEOPTION, HearthstoneOption.Default));
 
             //远程玩家加入房间
             ClientManager remoteClient = new GameObject(nameof(remoteClient)).AddComponent<ClientManager>();
@@ -683,7 +684,7 @@ namespace Tests
             yield return localClient.invokeHost(RPCHelper.GameStart()).wait();
             THHGame localGame = localGameManager.game;
             THHGame remoteGame = remoteGameManager.game;
-            Assert.AreEqual(localGame.option.randomSeed, remoteGame.option.randomSeed);
+            Assert.AreEqual(localGame.getOption().randomSeed, remoteGame.getOption().randomSeed);
             Assert.AreEqual(localGame.sortedPlayers[0].id, remoteGame.sortedPlayers[0].id);
             Assert.AreEqual(localGame.sortedPlayers[1].id, remoteGame.sortedPlayers[1].id);
             //交换手牌
@@ -767,7 +768,7 @@ namespace Tests
             //本地客户端创建房间
             RoomInfo room = new RoomInfo();
             // 不能这么干的呀兄弟
-            room.setOption(new GameOption()
+            room.setOption(new HearthstoneOption()
             {
                 randomSeed = 42
             });//我就是要这么干呀！
@@ -812,7 +813,7 @@ namespace Tests
             Assert.AreEqual(30 + 1, room.playerList[1].getDeck().Length); // 30张卡+1张Master卡
 
             // 更新房间信息
-            yield return localClient.invokeHost(RPCHelper.RoomPropSet(RoomInfoName.OPTION_GAMEOPTION, GameOption.Default));
+            yield return localClient.invokeHost(RPCHelper.RoomPropSet(RoomInfoName.OPTION_GAMEOPTION, HearthstoneOption.Default));
             yield return new WaitForSeconds(1); // 等待房间更新
 
             //开始游戏
@@ -828,9 +829,9 @@ namespace Tests
 
             THHGame localGame = localGameManager.game;
             THHGame remoteGame = remoteGameManager.game;
-            Assert.NotNull(localGame.option);
-            Assert.NotNull(remoteGame.option);
-            Assert.AreEqual(localGame.option.randomSeed, remoteGame.option.randomSeed);
+            Assert.NotNull(localGame.getOption());
+            Assert.NotNull(remoteGame.getOption());
+            Assert.AreEqual(localGame.getOption().randomSeed, remoteGame.getOption().randomSeed);
             Assert.AreEqual(localGame.sortedPlayers[0].id, remoteGame.sortedPlayers[0].id);
             Assert.AreEqual(localGame.sortedPlayers[1].id, remoteGame.sortedPlayers[1].id);
             //交换手牌

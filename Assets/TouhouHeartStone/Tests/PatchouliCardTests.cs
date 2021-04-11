@@ -8,6 +8,7 @@ using TouhouHeartstone.Builtin;
 using UnityEngine;
 using UnityEngine.TestTools;
 using System;
+
 namespace Tests
 {
     public class PatchouliCardTests
@@ -152,7 +153,7 @@ namespace Tests
         [Test]
         public void MetalFatigueTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -275,7 +276,7 @@ namespace Tests
         [Test]
         public void SilentSeleneTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption() { shuffle = false });
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption() { shuffle = false });
             THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<MissingSpecter>() as CardDefine, 30));
             THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<SilentSelene>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<BestMagic>(), 2)));

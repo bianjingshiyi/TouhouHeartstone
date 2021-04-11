@@ -10,7 +10,7 @@ namespace Game.Replays
     [Serializable]
     public class ReplayData
     {
-        public GameOption option;
+        public HearthstoneOption option;
         public RoomPlayerData[] players;
         public List<IResponse> responses;
     }

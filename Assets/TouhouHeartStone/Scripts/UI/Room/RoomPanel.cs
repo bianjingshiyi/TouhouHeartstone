@@ -110,7 +110,7 @@ namespace UI
             IsSortedToggleGameOptionItemToggle.Toggle.onValueChanged.set((value) =>
             {
                 Debug.Log("更新房间设定" + value);
-                roomInfo.setOption(new GameOption(roomInfo.getOption())
+                roomInfo.setOption(new HearthstoneOption(roomInfo.getOption())
                 {
                     sortedPlayers = value ? roomInfo.playerList.Select(p => p.RoomID).ToArray() : null
                 });
@@ -289,7 +289,7 @@ namespace UI
             // 设置房间选项
             try
             {
-                GameOption option = room.getOption();
+                HearthstoneOption option = room.getOption();
                 var seed = option.randomSeed;
                 RandomSeedContainerGameOptionItemText.InputField.text = seed == 0 ? "" : seed.ToString();
                 ShuffleContainerGameOptionItemToggle.Toggle.isOn = option.shuffle;

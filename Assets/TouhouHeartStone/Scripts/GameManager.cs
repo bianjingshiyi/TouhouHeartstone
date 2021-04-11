@@ -27,7 +27,7 @@ namespace Game
         [SerializeField]
         bool _useTimeAsRandomSeed = true;
         [SerializeField]
-        GameOption _option = new GameOption();
+        HearthstoneOption _option = new HearthstoneOption();
         [SerializeField]
         Main _mainUI;
         [SerializeField]
@@ -189,9 +189,29 @@ namespace Game
                 room.deserialize();
             return createGame(room.getOption(), room.playerList);
         }
-        THHGame createGame(GameOption option, IEnumerable<RoomPlayerInfo> playerList)
+        THHGame createGame(HearthstoneOption option, IEnumerable<RoomPlayerInfo> playerList)
         {
-            THHGame game = new THHGame(option, getManager<CardManager>().GetCardDefines())
+//             THHGame game = new THHGame(option, getManager<CardManager>().GetCardDefines())
+//             {
+//                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
+//                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
+//                 time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
+//                 logger = new ULogger()
+//             };
+//             game.answers.game = game;
+//             foreach (var info in playerList)
+//             {
+//                 var deck = info.getDeck();
+//                 checkDeckValid(game, deck);
+// #if UNITY_EDITOR
+//                 //检查卡组合法性
+//                 if (_useTestDeck)
+//                     deck = _testDeck.toIdArray();
+// #endif
+//                 THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getDefine(deck[0]) as MasterCardDefine,
+//                     deck.Skip(1).Select(id => game.getDefine(id)));
+//             }
+            THHGame game = new THHGame()
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
@@ -199,18 +219,13 @@ namespace Game
                 logger = new ULogger()
             };
             game.answers.game = game;
-            foreach (var info in playerList)
-            {
-                var deck = info.getDeck();
-                checkDeckValid(game, deck);
-#if UNITY_EDITOR
-                //检查卡组合法性
-                if (_useTestDeck)
-                    deck = _testDeck.toIdArray();
-#endif
-                THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getDefine(deck[0]) as MasterCardDefine,
-                    deck.Skip(1).Select(id => game.getDefine(id)));
-            }
+            //TODO: 在GameManager中应该能更简单地修改玩家牌库
+            game.init(new HeathStoneRule(getManager<CardManager>().GetCardDefines()),
+                option, playerList.ToArray());
+// #if UNITY_EDITOR
+//             if (_useTestDeck)
+//                 deck = _testDeck.toIdArray();
+// #endif
             return game;
         }
         Task runGame(THHGame game, bool recordReplay = true)

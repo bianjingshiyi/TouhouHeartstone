@@ -6,6 +6,7 @@ using TouhouCardEngine;
 using TouhouHeartstone.Builtin;
 using System;
 using System.Collections.Generic;
+
 namespace Tests
 {
     public class KeywordsTests
@@ -237,7 +238,7 @@ namespace Tests
         [Test]
         public void ElusiveTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -275,7 +276,7 @@ namespace Tests
         [Test]
         public void freezeTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -310,7 +311,7 @@ namespace Tests
         [Test]
         public void poisiousTest_ServantEffect()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -356,7 +357,7 @@ namespace Tests
         public THHGame GameInitWithoutPlayer<T1, T2>(int card1Count, int card2Count) where T1 : CardDefine where T2 : CardDefine
         {
 
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new GameOption()
+            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });

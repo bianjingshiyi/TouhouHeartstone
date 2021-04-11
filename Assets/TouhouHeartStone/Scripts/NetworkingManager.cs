@@ -306,7 +306,7 @@ namespace Game
                 roomPanel.SetSelfID(currentPlayer.PlayerID);
 
                 RoomInfo room = new RoomInfo(currentPlayer.PlayerID);
-                room.setOption(new GameOption()
+                room.setOption(new HearthstoneOption()
                 {
                     randomSeed = (int)DateTime.Now.ToBinary()
                 });
@@ -324,7 +324,7 @@ namespace Game
                 roomPanel.SetSelfID(currentPlayer.PlayerID);
 
                 RoomInfo room = new RoomInfo(currentPlayer.PlayerID);
-                room.setOption(new GameOption()
+                room.setOption(new HearthstoneOption()
                 {
                     randomSeed = (int)DateTime.Now.ToBinary()
                 });
@@ -912,11 +912,11 @@ namespace Game
     public static class RoomInfoName
     {
         public const string OPTION_GAMEOPTION = "option";
-        public static GameOption getOption(this RoomInfo roomInfo)
+        public static HearthstoneOption getOption(this RoomInfo roomInfo)
         {
-            return roomInfo.getProp<GameOption>(OPTION_GAMEOPTION);
+            return roomInfo.getProp<HearthstoneOption>(OPTION_GAMEOPTION);
         }
-        public static void setOption(this RoomInfo roomInfo, GameOption value)
+        public static void setOption(this RoomInfo roomInfo, HearthstoneOption value)
         {
             roomInfo.setProp(OPTION_GAMEOPTION, value);
         }
