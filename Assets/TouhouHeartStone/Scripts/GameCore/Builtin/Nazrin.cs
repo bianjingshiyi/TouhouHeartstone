@@ -129,7 +129,7 @@ namespace TouhouHeartstone.Builtin
         {
             new MissionTrigger<THHPlayer.EnterFieldEventArg>((game,card,arg)=>
             {
-                return arg.player == card.getOwner();
+                return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner();
             },async(game,card,arg)=>
             {
                 await card.getOwner().addCardToHand<Nazrin_05>(game);
@@ -229,7 +229,7 @@ namespace TouhouHeartstone.Builtin
         {
             new THHEffectAfter<THHPlayer.EnterFieldEventArg>(PILE.FIELD, (g, c, a) =>
             {
-                return a.player == c.getOwner();
+                return a.player == c.getOwner() && a.card.getOwner() == c.getOwner();
             },null,
             async (g,c,a)=>
             {
@@ -279,5 +279,217 @@ namespace TouhouHeartstone.Builtin
                 }
             })
         };       
+    }
+
+    /// <summary>
+    /// 鼠群呼唤
+    /// </summary>
+    public class Nazrin_11 : SpellCardDefine
+    {
+        public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x011;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+           await card.getOwner().tryEnterField(game, card.getOwner().getDeck(), card.getOwner().getDeck().Where(c=>c.getCost(game) <= 2 && c.isServant()).random(game),card.getOwner().getField().count);
+           await card.getOwner().tryEnterField(game, card.getOwner().getDeck(), card.getOwner().getDeck().Where(c => c.getCost(game) <= 2 && c.isServant()).random(game), card.getOwner().getField().count);
+        }
+    }
+
+    /// <summary>
+    /// 鼠潮
+    /// </summary>
+    public class Nazrin_12 : SpellCardDefine
+    {
+        public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x012;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            for(int i = 0; i < 2; i++)
+            {
+                var arg1 = await card.getOwner().createToken(game, game.getDefine<Nazrin_00>());
+                await arg1.card.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2)));
+                await arg1.card.addKeywords(game, KEYWORD.RUSH);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 淘金热
+    /// </summary>
+    public class Nazrin_13 : SpellCardDefine
+    {
+        public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x013;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            foreach(Card c in card.getOwner().getField())
+            {
+                if(!c.getOwner().getHand().isFull)
+                    await card.getOwner().addCardToHand<LuckyCoin>(game);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 寻宝探物
+    /// </summary>
+    public class Nazrin_14 : SpellCardDefine
+    {
+        public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x014;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            THHPlayer player = card.getOwner();
+            var lowCostCards = player.getDeck().OrderBy(c => c.getCost(game)).Take(2);
+            foreach (var c in lowCostCards)
+            {
+                await player.draw(game, c);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 便携鼠窝
+    /// </summary>
+    public class Nazrin_15 : ServantCardDefine
+    {
+        public const int ID = Nazrin.ID | CATEGORY.SERVANT | 0x015;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 0;
+        public override int life { get; set; } = 5;
+        
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHPlayer.EnterFieldEventArg>(PILE.FIELD, (game, card, arg) =>
+            {
+                return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner();
+            },null,async(game,card,arg)=>
+            {
+                await card.getOwner().createToken(game,game.getDefine<Nazrin_00>());
+            })
+        };
+    }
+
+    /// <summary>
+    /// 奶酪派对
+    /// </summary>
+    public class Nazrin_16 : SpellCardDefine
+    {
+        public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x016;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            for(int i=0; i<3; i++)
+            {
+                CardDefine[] defines = game.getDefines().Where(c => ((c.id >> 5) == (Nazrin.ID >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5)) && c is ServantCardDefine s && !s.isToken).ToArray();
+                Card[] servantCards = game.createCards(defines);
+                var arg1 = await card.getOwner().searchPile(game, servantCards);
+                await card.getOwner().tryAddCardToHand(game, arg1.choose);               
+            }
+        }
+    }
+
+    /// <summary>
+    /// 食物的诱惑
+    /// </summary>
+    public class Nazrin_17 : SpellCardDefine
+    {
+        public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x017;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 4;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new NoTargetEffect(effect)
+        };
+
+        static async Task effect(THHGame game, Card card)
+        {
+            foreach(Card c in card.getOwner().getField())
+            {
+                await c.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<THHGame.TurnEndEventArg>(PILE.MASTER, ID)));
+                if(!c.hasKeyword(game,KEYWORD.RUSH))
+                    await c.addKeywords(game, KEYWORD.RUSH);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 棒符【娜兹玲棒】
+    /// </summary>
+    public class Nazrin_18 : SpellCardDefine
+    {
+        public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x018;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 6;
+        public override bool isToken { get; set; } = true;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async (game, card, target) =>
+            {
+                await target.setDead(game,true);
+                await card.getOwner().createToken(game,game.getDefine<Nazrin_00>());
+                await game.updateDeath();
+                
+            })
+        };
+    }
+
+    public class Nazrin_19 : ServantCardDefine
+    {
+        public const int ID = Nazrin.ID | CATEGORY.SERVANT | 0x019;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 7;
+        public override int attack { get; set; } = 5;
+        public override int life { get; set; } = 7;
+
+        public override IEffect[] effects { get; set; } = new IEffect[]
+        {
+            new THHEffectAfter<THHPlayer.UseEventArg>(PILE.FIELD, (game, card, arg) =>
+            {
+                return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner() && arg.card.hasKeyword(game,KEYWORD.UNIQUE) && arg.card.isServant();
+            },null,async(game,card,arg)=>
+            {
+                await card.getOwner().tryAddCardToHand(game,arg.card);
+                await arg.card.addBuff(game, new GeneratedBuff(ID, new CostModifier(5), new AttackModifier(5), new LifeModifier(5)));
+            })
+        };
     }
 }
