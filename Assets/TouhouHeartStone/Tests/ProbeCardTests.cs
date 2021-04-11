@@ -23,7 +23,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(ParticulateLaser.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<ParticulateLaser>().cost);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<ParticulateLaser>().cost);
             you.cmdUse(game, you.getHand().getCard<ParticulateLaser>(), targets: oppo.getMaster());
             game.Dispose();
         }

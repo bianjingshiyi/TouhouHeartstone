@@ -79,13 +79,13 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public THHPlayer getPlayerForNextTurn(THHPlayer lastPlayer)
         {
-            int index = Array.IndexOf(sortedPlayers, lastPlayer);
+            int index = Array.IndexOf(getSortedPlayers(), lastPlayer);
             if (index < 0)
                 throw new IndexOutOfRangeException(lastPlayer + "不在玩家行动队列中");
             index++;
-            if (index >= sortedPlayers.Length)
+            if (index >= getSortedPlayers().Length)
                 index = 0;
-            return sortedPlayers[index];
+            return getSortedPlayers()[index];
         }
 
         /// <summary>
@@ -186,9 +186,7 @@ namespace TouhouHeartstone
         #endregion
 
         #region Gameflow
-
-        public bool isRunning { get; private set; } = false;
-
+        
         /// <summary>
         /// 运行游戏
         /// </summary>
@@ -202,7 +200,7 @@ namespace TouhouHeartstone
         private async Task gameflow(Action onInited = null)
         {
             await init();
-            Task<Dictionary<int, IResponse>> task = answers.askAll(sortedPlayers.Select(p => p.id).ToArray(),
+            Task<Dictionary<int, IResponse>> task = answers.askAll(getSortedPlayers().Select(p => p.id).ToArray(),
                 new InitReplaceRequest()
                 {
                 }, getOption().timeoutForInitReplace);
@@ -220,13 +218,13 @@ namespace TouhouHeartstone
             }
 
             await start();
-            currentPlayer = sortedPlayers[0];
+            setCurrentPlayer(getSortedPlayers()[0]);
             for (int i = 0; i < 100; i++)
             {
-                await turnStart(currentPlayer);
-                await turnLoop(currentPlayer);
-                await turnEnd(currentPlayer);
-                currentPlayer = getPlayerForNextTurn(currentPlayer);
+                await turnStart(getCurrentPlayer());
+                await turnLoop(getCurrentPlayer());
+                await turnEnd(getCurrentPlayer());
+                setCurrentPlayer(getPlayerForNextTurn(getCurrentPlayer()));
             }
 
             await gameEnd(new THHPlayer[0]);
@@ -243,47 +241,48 @@ namespace TouhouHeartstone
                 {
                     if (getOption().sortedPlayers != null && getOption().sortedPlayers.Length != players.Length)
                         logger?.log("Warning", "游戏参数玩家行动顺序长度与实际数量不匹配");
-                    List<THHPlayer> remainedList = new List<THHPlayer>(players);
-                    THHPlayer[] sortedPlayers = new THHPlayer[remainedList.Count];
-                    for (int i = 0; i < sortedPlayers.Length; i++)
+                    int playerCount = players.Count();
+                    foreach (var player in players)
                     {
-                        int index = randomInt(0, remainedList.Count - 1);
-                        sortedPlayers[i] = remainedList[index];
-                        remainedList.RemoveAt(index);
+                        player.setProp(PLAYER.ORDER, randomInt(1, playerCount--));
                     }
-
-                    this.sortedPlayers = sortedPlayers;
                 }
                 else
-                    this.sortedPlayers = getOption().sortedPlayers.Select(id => players.FirstOrDefault(p => p.id == id))
-                        .ToArray();
+                {
+                    int order = 1;
+                    foreach (var id in getOption().sortedPlayers)
+                    {
+                        players.FirstOrDefault(p => p.id == id).setProp(PLAYER.ORDER, order++);
+                    }
+                }
+                    
 
                 //创建主人公和技能卡
-                Card[] masterCards = sortedPlayers.Select(p => { return p.getMaster(); }).ToArray();
+                Card[] masterCards = getSortedPlayers().Select(p => { return p.getMaster(); }).ToArray();
                 foreach (Card card in masterCards)
                 {
                     await card.setCurrentLife(this, 30);
                 }
 
                 //洗牌，然后抽初始卡牌
-                for (int i = 0; i < sortedPlayers.Length; i++)
+                for (int i = 0; i < getSortedPlayers().Length; i++)
                 {
-                    if (sortedPlayers[i].getDeck().count < 1)
+                    if (getSortedPlayers()[i].getDeck().count < 1)
                         continue;
                     if (getOption().shuffle)
-                        sortedPlayers[i].getDeck().shuffle(this);
+                        getSortedPlayers()[i].getDeck().shuffle(this);
                     int count = i == 0 ? 3 : 4;
-                    var cards = sortedPlayers[i].getDeck().Skip(sortedPlayers[i].getDeck().count - count).Reverse()
+                    var cards = getSortedPlayers()[i].getDeck().Skip(getSortedPlayers()[i].getDeck().count - count).Reverse()
                         .ToArray();
-                    await sortedPlayers[i].getDeck().moveTo(this, cards, sortedPlayers[i].getInit());
+                    await getSortedPlayers()[i].getDeck().moveTo(this, cards, getSortedPlayers()[i].getInit());
                 }
 
                 logger.log("Debug", "游戏初始化，玩家行动顺序："
-                                    + string.Join("、", sortedPlayers.Select(p => p.ToString())) + "，"
+                                    + string.Join("、", getSortedPlayers().Select(p => p.ToString())) + "，"
                                     + "玩家英雄：" + string.Join("，",
-                                        sortedPlayers.Select(p => p.getMaster() + "(" + p.getSkill() + ")")) + "，"
+                                        getSortedPlayers().Select(p => p.getMaster() + "(" + p.getSkill() + ")")) + "，"
                                     + "初始卡牌：" + string.Join("；",
-                                        sortedPlayers.Select(p =>
+                                        getSortedPlayers().Select(p =>
                                             string.Join("、", p.getInit().Select(c => c.ToString())))));
             });
         }
@@ -292,7 +291,7 @@ namespace TouhouHeartstone
         {
         }
 
-        public THHPlayer[] sortedPlayers { get; private set; }
+        public THHPlayer[] getSortedPlayers() => players.OrderBy(player => player.getOrder()).ToArray();
 
         internal async Task start()
         {
@@ -301,12 +300,12 @@ namespace TouhouHeartstone
             await triggers.doEvent(new StartEventArg(), async arg =>
             {
                 logger.log("Debug", "游戏开始");
-                foreach (THHPlayer player in sortedPlayers)
+                foreach (THHPlayer player in getSortedPlayers())
                 {
                     await player.setMaxGem(this, getOption().startGem);
                     await player.getInit().moveTo(this, player.getInit()[0, player.getInit().count - 1],
                         player.getHand(), 0);
-                    if (player != sortedPlayers[0])
+                    if (player != getSortedPlayers()[0])
                     {
                         await player.getHand().add(this, createCard(getDefine<LuckyCoin>()));
                         logger.log("由于后手行动" + player + "获得一张幸运币");
@@ -332,7 +331,10 @@ namespace TouhouHeartstone
             }
         }
 
-        public THHPlayer currentPlayer { get; private set; }
+        public const string CURRENTPLAYER = "CurrentPlayer";
+
+        private void setCurrentPlayer(THHPlayer value) => setProp(CURRENTPLAYER, value);
+        public THHPlayer getCurrentPlayer() => getProp<THHPlayer>(CURRENTPLAYER);
 
         async Task turnStart(THHPlayer player)
         {
@@ -367,9 +369,9 @@ namespace TouhouHeartstone
 
         private void onTurnTimeout()
         {
-            logger.log("Debug", currentPlayer + "回合超时");
+            logger.log("Debug", getCurrentPlayer() + "回合超时");
             turnTimer = null;
-            answers.cancel(answers.getRequests(currentPlayer.id));
+            answers.cancel(answers.getRequests(getCurrentPlayer().id));
         }
 
         public class TurnStartEventArg : EventArg
@@ -417,7 +419,7 @@ namespace TouhouHeartstone
                 return;
             await triggers.doEvent(new TurnEndEventArg() {player = player}, arg =>
             {
-                logger.log("Debug", currentPlayer + "回合结束");
+                logger.log("Debug", getCurrentPlayer() + "回合结束");
 
                 List<Card> AllCharactor = new List<Card>();
                 AllCharactor.Add(player.getMaster());
@@ -774,5 +776,38 @@ namespace TouhouHeartstone
 
             return card;
         }
+        
+        // private async Task gameflow(CardEngine game, Action onInited = null)
+        // {
+        //     await init();
+        //     Task<Dictionary<int, IResponse>> task = answers.askAll(sortedPlayers.Select(p => p.id).ToArray(),
+        //         new InitReplaceRequest()
+        //         {
+        //         }, getOption().timeoutForInitReplace);
+        //     onInited?.Invoke();
+        //     Dictionary<int, IResponse> initReplaceResponses = await task;
+        //     if (!isRunning)
+        //         return;
+        //     foreach (var result in initReplaceResponses)
+        //     {
+        //         THHPlayer player = getPlayer(result.Key);
+        //         if (result.Value is InitReplaceResponse initReplace)
+        //             await player.initReplace(this, getCards(initReplace.cardsId));
+        //         else if (result.Value is SurrenderResponse surrender)
+        //             await this.surrender(player);
+        //     }
+        //
+        //     await start();
+        //     currentPlayer = sortedPlayers[0];
+        //     for (int i = 0; i < 100; i++)
+        //     {
+        //         await turnStart(currentPlayer);
+        //         await turnLoop(currentPlayer);
+        //         await turnEnd(currentPlayer);
+        //         currentPlayer = getPlayerForNextTurn(currentPlayer);
+        //     }
+        //
+        //     await gameEnd(new THHPlayer[0]);
+        // }
     }
 }

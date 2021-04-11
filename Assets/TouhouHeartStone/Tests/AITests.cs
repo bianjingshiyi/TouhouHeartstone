@@ -22,9 +22,9 @@ namespace Tests
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
             yield return new WaitForSeconds(.1f);
-            if (game.sortedPlayers[0] != player)
+            if (game.getSortedPlayers()[0] != player)
             {
-                game.sortedPlayers[0].cmdTurnEnd(game);
+                game.getSortedPlayers()[0].cmdTurnEnd(game);
                 yield return new WaitForSeconds(.1f);
             }
             var actions = ai.calcActions(game, player);

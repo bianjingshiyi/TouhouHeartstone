@@ -10,13 +10,13 @@ namespace TouhouHeartstone
     public class THHPlayer : Player
     {
         public Card getMaster() => getPile(PILE.MASTER)[0];
-
         public Card getSkill() => getPile(PILE.SKILL)[0];
         public Pile getDeck() => getPile(PILE.DECK);
         public Pile getInit() => getPile(PILE.INIT);
         public Pile getHand() => getPile(PILE.HAND);
         public Pile getField() => getPile(PILE.FIELD);
         public Pile getGrave() => getPile(PILE.GRAVE);
+        public int getOrder() => getProp<int>(PLAYER.ORDER);
 
         /// <summary>
         /// 正在使用的法术卡都会被置入亚空间

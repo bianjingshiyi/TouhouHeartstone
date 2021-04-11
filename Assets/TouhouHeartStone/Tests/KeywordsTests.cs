@@ -247,24 +247,24 @@ namespace Tests
             THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29)
             .Concat(Enumerable.Repeat(game.getDefine<ElusiveServant>(), 1)));
 
-            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == defaultPlayer);
             defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 0);
 
-            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<ElusiveServant>().cost && game.currentPlayer == elusivePlayer);
+            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<ElusiveServant>().cost && game.getCurrentPlayer() == elusivePlayer);
             elusivePlayer.cmdUse(game, elusivePlayer.getHand().First(c => c.define.id == ElusiveServant.ID), 0);
 
-            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<TestSpellCard>().cost && game.currentPlayer == defaultPlayer);
+            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<TestSpellCard>().cost && game.getCurrentPlayer() == defaultPlayer);
             defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == TestSpellCard.ID), 0, defaultPlayer.getField()[0]);
             Assert.AreEqual(6, defaultPlayer.getField()[0].getCurrentLife(game));//没有魔免的可以被法术指定
             defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == TestSpellCard.ID), 0, elusivePlayer.getField()[0]);
             Assert.AreEqual(3, elusivePlayer.getField()[0].getCurrentLife(game));//魔免无法被法术指定
 
-            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<TestDamageSkill>().cost && game.currentPlayer == elusivePlayer);
+            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<TestDamageSkill>().cost && game.getCurrentPlayer() == elusivePlayer);
             elusivePlayer.cmdUse(game, elusivePlayer.getSkill(), 0, defaultPlayer.getField()[0]);
             Assert.AreEqual(5, defaultPlayer.getField()[0].getCurrentLife(game));//没有魔免的可以被技能指定
             elusivePlayer.cmdTurnEnd(game);
 
-            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<TestDamageSkill>().cost && game.currentPlayer == elusivePlayer);
+            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<TestDamageSkill>().cost && game.getCurrentPlayer() == elusivePlayer);
             elusivePlayer.cmdUse(game, elusivePlayer.getSkill(), 0, elusivePlayer.getField()[0]);
             Assert.AreEqual(3, elusivePlayer.getField()[0].getCurrentLife(game));//魔免无法被技能指定
 
@@ -284,15 +284,15 @@ namespace Tests
             THHPlayer oppo = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<TestFreeze>(), 2)));
 
-            game.skipTurnUntil(() => you.getGem() >= game.getDefine<DefaultServant>().cost && game.currentPlayer == you);
+            game.skipTurnUntil(() => you.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == you);
             you.cmdUse(game, you.getHand().getCard<DefaultServant>(), 0);
             //玩家0拍白板一张
 
-            game.skipTurnUntil(() => oppo.getGem() >= game.getDefine<TestFreeze>().cost && game.currentPlayer == oppo);
+            game.skipTurnUntil(() => oppo.getGem() >= game.getDefine<TestFreeze>().cost && game.getCurrentPlayer() == oppo);
             oppo.cmdUse(game, oppo.getHand().First(c => c.define.id == TestFreeze.ID), 0, you.getField());
             //玩家1释放冰环
 
-            game.skipTurnUntil(() => you.getGem() >= game.getDefine<DefaultServant>().cost && game.currentPlayer == you);
+            game.skipTurnUntil(() => you.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == you);
             you.cmdAttack(game, you.getField()[0], oppo.getMaster());//被冻结的随从无法攻击
             you.cmdTurnEnd(game);//回合结束，随从解冻
 
@@ -319,15 +319,15 @@ namespace Tests
             THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<Priestess>(), 2)));
 
-            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == defaultPlayer);
             defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 0);
             //玩家0拍白板一张
 
-            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<Priestess>().cost && game.currentPlayer == elusivePlayer);
+            game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<Priestess>().cost && game.getCurrentPlayer() == elusivePlayer);
             elusivePlayer.cmdUse(game, elusivePlayer.getHand().First(c => c.define.id == Priestess.ID), 0);
             //玩家1拍女祭司
 
-            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.currentPlayer == defaultPlayer);
+            game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == defaultPlayer);
             defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 1);
 
             game.Dispose();
@@ -341,8 +341,8 @@ namespace Tests
         {
             for (int i = 0; i < x; i++)
             {
-                game.sortedPlayers[0].cmdTurnEnd(game);
-                game.sortedPlayers[1].cmdTurnEnd(game);
+                game.getSortedPlayers()[0].cmdTurnEnd(game);
+                game.getSortedPlayers()[1].cmdTurnEnd(game);
             }
         }
 
@@ -366,8 +366,8 @@ namespace Tests
             game.createPlayer(1, "玩家1", game.getDefine<Reimu>(), Enumerable.Repeat(game.getDefine<T1>() as CardDefine, 29)
             .Concat(Enumerable.Repeat(game.getDefine<T2>(), 1)));
             game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
+            game.getSortedPlayers()[0].cmdInitReplace(game);
+            game.getSortedPlayers()[1].cmdInitReplace(game);
             return game;
         }
 

@@ -456,7 +456,7 @@ namespace Game
                 master.onSelectableFalse.invokeBeforeAnim();
                 master.onSelectableFalse.invokeAfterAnim();
             }
-            if (card.getOwner() == player && game.currentPlayer == player)
+            if (card.getOwner() == player && game.getCurrentPlayer() == player)
             {
                 if (GetRelatedItem(card).animator.gameObject.activeSelf)
                 {
@@ -472,7 +472,7 @@ namespace Game
                     GetRelatedItem(card).onItemOff.invokeAfterAnim();
                 }
             }
-            if (card.getOwner() == player && game.currentPlayer == player && card.canAttack(game))
+            if (card.getOwner() == player && game.getCurrentPlayer() == player && card.canAttack(game))
             {
                 // master.HighlightController = Master.Highlight.Green;
                 master.onCanAttackTrue.invokeBeforeAnim();
@@ -481,7 +481,7 @@ namespace Game
                 master.onDrag.add(onDragMaster);
                 master.onDragEnd.add(onDragEndMaster);
             }
-            else if (game.currentPlayer == player)
+            else if (game.getCurrentPlayer() == player)
             {
                 // master.HighlightController = Master.Highlight.None;
                 master.onCanAttackFalse.invokeBeforeAnim();
@@ -507,7 +507,7 @@ namespace Game
             }
         }
 
-        public Item GetRelatedItem(Card card) => card.owner == game.currentPlayer ? ui.SelfItem : ui.EnemyItem;
+        public Item GetRelatedItem(Card card) => card.owner == game.getCurrentPlayer() ? ui.SelfItem : ui.EnemyItem;
 
 
         public bool tryGetItem(Card card, out Item item)
@@ -1193,7 +1193,7 @@ namespace Game
             //    servant.onSelectableFalse.invokeBeforeAnim();
             //    servant.onSelectableFalse.invokeAfterAnim();
             //}
-            if (player == card.getOwner() && game.currentPlayer == player && card.canAttack(game))
+            if (player == card.getOwner() && game.getCurrentPlayer() == player && card.canAttack(game))
             {
                 // servant.HighlightController = Servant.Highlight.Green;
                 servant.onCanAttackTrue.invokeBeforeAnim();

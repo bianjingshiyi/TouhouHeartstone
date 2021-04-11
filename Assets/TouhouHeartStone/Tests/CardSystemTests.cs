@@ -22,14 +22,14 @@ namespace Tests
             Enumerable.Repeat(Enumerable.Repeat(new TestServant_Buff(), 30).ToArray(), 2).ToArray(),
             new HearthstoneOption() { });
             game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
+            game.getSortedPlayers()[0].cmdInitReplace(game);
+            game.getSortedPlayers()[1].cmdInitReplace(game);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0);
 
-            Assert.AreEqual(2, game.sortedPlayers[0].getField()[0].getAttack(game));
-            Assert.AreEqual(2, game.sortedPlayers[0].getField()[0].getLife(game));
-            Assert.AreEqual(2, game.sortedPlayers[0].getField()[0].getCurrentLife(game));
+            Assert.AreEqual(2, game.getSortedPlayers()[0].getField()[0].getAttack(game));
+            Assert.AreEqual(2, game.getSortedPlayers()[0].getField()[0].getLife(game));
+            Assert.AreEqual(2, game.getSortedPlayers()[0].getField()[0].getCurrentLife(game));
         }
         /// <summary>
         /// 加攻Buff测试
@@ -184,12 +184,12 @@ namespace Tests
             game.createPlayer(0, "玩家0", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<MountainGaint>() as CardDefine, 30));
             game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<MountainGaint>() as CardDefine, 30));
 
-            game.skipTurnWhen(() => game.sortedPlayers[0].getHand().count < 10);
+            game.skipTurnWhen(() => game.getSortedPlayers()[0].getHand().count < 10);
 
-            Assert.AreEqual(3, game.sortedPlayers[0].getHand()[0].getCost(game));
-            int gemNow = game.sortedPlayers[0].getGem();
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
-            Assert.AreEqual(gemNow - 3, game.sortedPlayers[0].getGem());
+            Assert.AreEqual(3, game.getSortedPlayers()[0].getHand()[0].getCost(game));
+            int gemNow = game.getSortedPlayers()[0].getGem();
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0);
+            Assert.AreEqual(gemNow - 3, game.getSortedPlayers()[0].getGem());
         }
         class TestBuff : Buff
         {
@@ -247,7 +247,7 @@ namespace Tests
                 .Concat(Enumerable.Repeat(game.getDefine<SorcererApprentice>(), 1).Cast<CardDefine>()));
 
             game.skipTurnUntil(() =>
-                game.currentPlayer == game.players[0] &&
+                game.getCurrentPlayer() == game.players[0] &&
                 game.players[0].getGem() >= game.getDefine<SorcererApprentice>().cost &&
                 game.players[0].getHand().Any(c => c.define is SorcererApprentice));
             Assert.True(game.players[0].getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//火球术全是4费
@@ -301,7 +301,7 @@ namespace Tests
             {
                 timeoutForTurn = 1
             });
-            game.skipTurnUntil(() => game.currentPlayer == you);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you);
             var cards = you.getHand().randomTake(game, 3);
             var task = you.discover(game, cards);
             Assert.NotNull(game.answers.getRequest<DiscoverRequest>(you.id));
@@ -320,7 +320,7 @@ namespace Tests
             yield return new WaitForSeconds(1.1f);
             Assert.NotNull(turnEnd);
             Assert.NotNull(discoverResponse);
-            Assert.AreNotEqual(you, game.currentPlayer);
+            Assert.AreNotEqual(you, game.getCurrentPlayer());
             Assert.Null(game.answers.getRequest<DiscoverRequest>(you.id));
             Assert.True(task.IsCompleted);
             Assert.True(cards.Contains(task.Result));

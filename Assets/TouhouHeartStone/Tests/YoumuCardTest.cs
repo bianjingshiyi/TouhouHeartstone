@@ -31,7 +31,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(SlashOfPresentWorld.ID, 8)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<SlashOfPresentWorld>().cost * 2);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<SlashOfPresentWorld>().cost * 2);
             Card card = you.getHand().First();
             Assert.True(Youmu.isPreHeated(game, card));
             you.cmdUse(game, card);
@@ -89,9 +89,9 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(HalfPhantonSlam.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 1);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 1);
             oppo.cmdUse(game, oppo.getHand().First());//对手拍一张白板随从
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 2);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 2);
             you.getMaster().gainArmor(game, 5);
             you.cmdUse(game, you.getHand().getCard<HalfPhantonSlam>(), targets: oppo.getField()[0]);
             Assert.True(game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().infoDic.First().Value.damagedValue == you.getMaster().getArmor(game));
@@ -103,7 +103,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(NetherworldInhabitant.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 2);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 2);
             you.cmdUse(game, you.getHand().getCard<NetherworldInhabitant>());
             you.getField()[0].die(game);
             Assert.True(you.getHand().getCard<Ghost>() != null);
@@ -117,11 +117,11 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Roukanken.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 2);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 2);
             oppo.cmdUse(game, oppo.getHand().First(), 0);
             oppo.cmdUse(game, oppo.getHand().First(), 1);
             oppo.cmdTurnEnd(game);
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 4);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 4);
             you.getMaster().setAttack(game, 5);
             you.cmdUse(game, you.getHand().getCard<Roukanken>());//使用楼观剑
             Assert.IsInstanceOf<Roukanken>(you.getItem().define);
@@ -140,11 +140,11 @@ namespace Tests
                 new KeyValuePair<int, int>(Roukanken.ID, 3),
                 new KeyValuePair<int, int>(YoukaiSmith.ID, 3)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 2);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 2);
             oppo.cmdUse(game, oppo.getHand().First(), 0);
             oppo.cmdUse(game, oppo.getHand().First(), 1);
             oppo.cmdTurnEnd(game);
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 5);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 5);
             you.getMaster().setAttack(game, 5);
             you.cmdUse(game, you.getHand().getCard<Roukanken>());
             Assert.IsInstanceOf<Roukanken>(you.getItem().define);
@@ -161,11 +161,11 @@ namespace Tests
                 new KeyValuePair<int, int>(TestWeapon.ID, 1),
                 new KeyValuePair<int, int>(KonpakuYouki.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 2);//对手拍两个靶子
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 2);//对手拍两个靶子
             oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             oppo.cmdTurnEnd(game);
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<KonpakuYouki>().cost + game.getDefine<TestWeapon>().cost);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<KonpakuYouki>().cost + game.getDefine<TestWeapon>().cost);
             you.cmdUse(game, you.getHand().getCard<KonpakuYouki>());
             you.cmdUse(game, you.getHand().getCard<TestWeapon>());
             you.cmdAttack(game, you.getMaster(), oppo.getField()[0]);
@@ -259,7 +259,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(TwoHundredYojanaOneSlash.ID, 5)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 1);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 1);
             you.setGem(game, 10);
             int count = you.getHand().count;
             you.cmdUse(game, you.getHand().getCard<TwoHundredYojanaOneSlash>());
@@ -277,13 +277,13 @@ namespace Tests
                 new KeyValuePair<int, int>(TestWeapon.ID, 1),
                 new KeyValuePair<int, int>(CherryBlossomFlashing.ID, 1)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 5);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 5);
             for (int i = 0; i < 5; i++)
             {
                 oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
             }
             oppo.cmdTurnEnd(game);
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<TestWeapon>().cost + game.getDefine<CherryBlossomFlashing>().cost);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<TestWeapon>().cost + game.getDefine<CherryBlossomFlashing>().cost);
             you.cmdUse(game, you.getHand().getCard<TestWeapon>());
             for (int i = 0; i < oppo.getField().count; i++)
             {
@@ -304,7 +304,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(WheelOfPainOfTheLivingAndDead.ID, 5)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 4);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 4);
             you.getMaster().gainArmor(game, 30);
             Assert.AreEqual(30, you.getMaster().getArmor(game));
             you.cmdUse(game, you.getHand().getCard<WheelOfPainOfTheLivingAndDead>());
@@ -330,7 +330,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(ProcessingPhantoms.ID, 5)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 3);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 3);
             you.cmdUse(game, you.getHand().First());
             you.cmdTurnEnd(game);
             Assert.AreEqual(0, game.triggers.getRecordedEvents().OfType<THHPlayer.CreateTokenEventArg>().Count());

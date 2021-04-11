@@ -24,21 +24,21 @@ namespace Tests
                 Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
                 new HearthstoneOption() { });
             game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
+            game.getSortedPlayers()[0].cmdInitReplace(game);
+            game.getSortedPlayers()[1].cmdInitReplace(game);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].getField()[0], game.sortedPlayers[1].getMaster());
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].getSkill(), 0, game.sortedPlayers[1].getMaster());
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0);
+            game.getSortedPlayers()[0].cmdAttack(game, game.getSortedPlayers()[0].getField()[0], game.getSortedPlayers()[1].getMaster());
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdUse(game, game.getSortedPlayers()[1].getSkill(), 0, game.getSortedPlayers()[1].getMaster());
 
             THHCard.HealEventArg heal =
                 game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.HealEventArg) as THHCard.HealEventArg;
             Assert.AreEqual(1, heal.cards.Length);
             Assert.AreEqual(2, heal.value);
-            Assert.AreEqual(1, heal.infoDic[game.sortedPlayers[1].getMaster()].healedValue);
+            Assert.AreEqual(1, heal.infoDic[game.getSortedPlayers()[1].getMaster()].healedValue);
         }
 
         //拼点测试

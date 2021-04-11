@@ -52,7 +52,7 @@ namespace TouhouHeartstone
         {
             THHGame tgame = (THHGame)game;
             int result = card.getProp<int>(game, PROPERTY.ATTACK);
-            if (card.getOwner() == tgame.currentPlayer)
+            if (card.getOwner() == tgame.getCurrentPlayer())
             {
                 if (card.define is MasterCardDefine)
                 {
@@ -666,7 +666,7 @@ namespace TouhouHeartstone
 
         public static bool isUsable(this Card card, THHGame game, THHPlayer player, out string info)
         {
-            if (game.currentPlayer != player)//不是你的回合
+            if (game.getCurrentPlayer() != player)//不是你的回合
             {
                 info = NOT_YOUR_TURN;
                 return false;

@@ -120,7 +120,7 @@ namespace Tests
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<WildYoukaiRabbit>() as CardDefine, 1));
 
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 4);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 4);
             you.cmdUse(game, you.getHand().getCard<WildYoukaiRabbit>());
             Assert.AreEqual(1, you.getField()[0].getAttack(game));
             you.cmdUse(game, you.getSkill(), targets: oppo.getMaster());
@@ -307,10 +307,10 @@ namespace Tests
             THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 3).Concat(Enumerable.Repeat(game.getDefine<PeerlessPatriotsElixir>(), 4)));
 
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 4);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 4);
             you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             you.cmdUse(game, you.getHand().getCard<PeerlessPatriotsElixir>(), targets: you.getField()[0]);
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 5);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 5);
             you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             you.cmdUse(game, you.getHand().getCard<PeerlessPatriotsElixir>(), targets: you.getField()[0]);
             you.cmdUse(game, you.getHand().getCard<PeerlessPatriotsElixir>(), targets: you.getField()[0]);

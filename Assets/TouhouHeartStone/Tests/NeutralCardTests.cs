@@ -21,12 +21,12 @@ namespace Tests
                 Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
                 new HearthstoneOption() { });
             game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
+            game.getSortedPlayers()[0].cmdInitReplace(game);
+            game.getSortedPlayers()[1].cmdInitReplace(game);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
-            Assert.True(game.sortedPlayers[0].getField()[0].isCharge(game));
-            Assert.True(game.sortedPlayers[0].getField()[0].canAttack(game));
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0);
+            Assert.True(game.getSortedPlayers()[0].getField()[0].isCharge(game));
+            Assert.True(game.getSortedPlayers()[0].getField()[0].canAttack(game));
         }
 
         [Test]
@@ -37,16 +37,16 @@ namespace Tests
                 Enumerable.Repeat(Enumerable.Repeat(new HumanVillageGuard(), 30).ToArray(), 2).ToArray(),
                 new HearthstoneOption() { });
             game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
+            game.getSortedPlayers()[0].cmdInitReplace(game);
+            game.getSortedPlayers()[1].cmdInitReplace(game);
 
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
-            Assert.True(game.sortedPlayers[0].getField()[0].isTaunt(game));
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0);
+            Assert.True(game.getSortedPlayers()[0].getField()[0].isTaunt(game));
         }
 
         [Test]
@@ -57,16 +57,16 @@ namespace Tests
                 Enumerable.Repeat(Enumerable.Repeat(new RifleHunter(), 30).ToArray(), 2).ToArray(),
                 new HearthstoneOption() { });
             game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
+            game.getSortedPlayers()[0].cmdInitReplace(game);
+            game.getSortedPlayers()[1].cmdInitReplace(game);
 
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0, game.sortedPlayers[1].getMaster());
-            Assert.AreEqual(28, game.sortedPlayers[1].getMaster().getCurrentLife(game));
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0, game.getSortedPlayers()[1].getMaster());
+            Assert.AreEqual(28, game.getSortedPlayers()[1].getMaster().getCurrentLife(game));
         }
 
         [Test]
@@ -77,26 +77,26 @@ namespace Tests
                 Enumerable.Repeat(Enumerable.Repeat(new MissingSpecter(), 30).ToArray(), 2).ToArray(),
                 new HearthstoneOption() { });
             game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
+            game.getSortedPlayers()[0].cmdInitReplace(game);
+            game.getSortedPlayers()[1].cmdInitReplace(game);
 
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].getHand()[0], 0);
-            game.sortedPlayers[1].cmdTurnEnd(game);
-            game.sortedPlayers[0].cmdAttack(game, game.sortedPlayers[0].getField()[0], game.sortedPlayers[1].getField()[0]);
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdUse(game, game.getSortedPlayers()[1].getHand()[0], 0);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdAttack(game, game.getSortedPlayers()[0].getField()[0], game.getSortedPlayers()[1].getField()[0]);
 
-            Assert.AreEqual(1, game.sortedPlayers[0].getField().count);
-            Assert.AreEqual(1, game.sortedPlayers[1].getField().count);
+            Assert.AreEqual(1, game.getSortedPlayers()[0].getField().count);
+            Assert.AreEqual(1, game.getSortedPlayers()[1].getField().count);
         }
 
         [Test]
@@ -104,7 +104,7 @@ namespace Tests
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(MissingSpecter.ID, 30));
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= game.getDefine<MissingSpecter>().cost);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<MissingSpecter>().cost);
             you.cmdUse(game, you.getHand()[0], 0);
             Assert.IsInstanceOf<MissingSpecter>(you.getField()[0].define);
             (you.getField()[0].define.effects[0] as DeathRattle).onDisable(game, you.getField()[0], null); //类似沉默
@@ -126,32 +126,32 @@ namespace Tests
                 .Repeat(game.getDefine<DrizzleFairy>() as CardDefine, 29)
                 .Concat(Enumerable.Repeat(game.getDefine<FantasySeal>(), 1)));
             game.run();
-            game.sortedPlayers[0].cmdInitReplace(game);
-            game.sortedPlayers[1].cmdInitReplace(game);
+            game.getSortedPlayers()[0].cmdInitReplace(game);
+            game.getSortedPlayers()[1].cmdInitReplace(game);
 
             //第一回合
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[1], 0);
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[1], 0);
 
-            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
 
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].getHand()[1], 0);
+            game.getSortedPlayers()[1].cmdUse(game, game.getSortedPlayers()[1].getHand()[1], 0);
 
-            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
             //第二回合
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[1], 0);
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[1], 0);
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[1], 0);
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[1], 0);
 
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
             //第三回合，共计4个妖精
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[1], 0);
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[1], 0);
 
-            game.sortedPlayers[0].cmdTurnEnd(game);
-            game.sortedPlayers[1].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[1].cmdTurnEnd(game);
             //第四回合
-            game.sortedPlayers[0].cmdTurnEnd(game);
+            game.getSortedPlayers()[0].cmdTurnEnd(game);
 
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].getHand()[0], 0);
+            game.getSortedPlayers()[1].cmdUse(game, game.getSortedPlayers()[1].getHand()[0], 0);
 
             //对3个随从造成3点伤害
             THHCard.DamageEventArg damage =
@@ -159,7 +159,7 @@ namespace Tests
                     THHCard.DamageEventArg;
             Assert.AreEqual(3, damage.infoDic.Count);
             Assert.AreEqual(3, damage.infoDic.First().Value.damagedValue);
-            Assert.AreEqual(1, game.sortedPlayers[0].getField().count);
+            Assert.AreEqual(1, game.getSortedPlayers()[0].getField().count);
         }
 
         [Test]
@@ -178,15 +178,15 @@ namespace Tests
             //炎之妖精 战吼：对一个随机敌方随从造成1点伤害
             //那么我们要测试这个战吼内容
 
-            game.skipTurnWhen(() => game.sortedPlayers[0].getGem() < 1);
+            game.skipTurnWhen(() => game.getSortedPlayers()[0].getGem() < 1);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0); //第一个行动的玩家使用手上的第一张牌，反正满手都是炎之妖精随便用
-            Assert.IsInstanceOf<FlameFairy>(game.sortedPlayers[0].getField()[0].define); //预期场上拍了一个炎之妖精
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0); //第一个行动的玩家使用手上的第一张牌，反正满手都是炎之妖精随便用
+            Assert.IsInstanceOf<FlameFairy>(game.getSortedPlayers()[0].getField()[0].define); //预期场上拍了一个炎之妖精
             //不过因为对方场上没有随从，所以啥事也没发生。
-            game.sortedPlayers[0].cmdTurnEnd(game); //第一个行动的玩家回合结束
-            game.sortedPlayers[1].cmdUse(game, game.sortedPlayers[1].getHand()[0], 0);
-            Assert.IsInstanceOf<FlameFairy>(game.sortedPlayers[1].getField()[0].define); //第二个行动的玩家拍一个炎之妖精，这个时候应该触发战吼的
-            Assert.AreEqual(0, game.sortedPlayers[0].getField().count); //对面的妖精应该被打死了
+            game.getSortedPlayers()[0].cmdTurnEnd(game); //第一个行动的玩家回合结束
+            game.getSortedPlayers()[1].cmdUse(game, game.getSortedPlayers()[1].getHand()[0], 0);
+            Assert.IsInstanceOf<FlameFairy>(game.getSortedPlayers()[1].getField()[0].define); //第二个行动的玩家拍一个炎之妖精，这个时候应该触发战吼的
+            Assert.AreEqual(0, game.getSortedPlayers()[0].getField().count); //对面的妖精应该被打死了
             var damage =
                 game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DamageEventArg) as
                     THHCard.DamageEventArg; //这会产生一个伤害事件
@@ -209,10 +209,10 @@ namespace Tests
             game.createPlayer(1, "玩家1", game.getDefine<Reimu>(),
                 Enumerable.Repeat(game.getDefine<SunnyMilk>() as CardDefine, 30));
 
-            game.skipTurnWhen(() => game.sortedPlayers[0].getGem() < 2);
+            game.skipTurnWhen(() => game.getSortedPlayers()[0].getGem() < 2);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
-            Assert.True(game.sortedPlayers[0].getField()[0].isStealth(game));
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0);
+            Assert.True(game.getSortedPlayers()[0].getField()[0].isStealth(game));
         }
 
         [Test]
@@ -227,12 +227,12 @@ namespace Tests
             game.createPlayer(1, "玩家1", game.getDefine<Reimu>(), Enumerable
                 .Repeat(game.getDefine<LunaChild>() as CardDefine, 29)
                 .Concat(Enumerable.Repeat(game.getDefine<DefaultServant>(), 1)));
-            game.skipTurnWhen(() => game.sortedPlayers[0].getGem() < 3);
+            game.skipTurnWhen(() => game.getSortedPlayers()[0].getGem() < 3);
 
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0);
-            Assert.False(game.sortedPlayers[0].getField()[0].isStealth(game)); //default随从一开始没有潜行
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[1], 1, game.sortedPlayers[0].getField()[0]);
-            Assert.True(game.sortedPlayers[0].getField()[0].isStealth(game)); //露娜出场后default随从变为潜行状态
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0);
+            Assert.False(game.getSortedPlayers()[0].getField()[0].isStealth(game)); //default随从一开始没有潜行
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[1], 1, game.getSortedPlayers()[0].getField()[0]);
+            Assert.True(game.getSortedPlayers()[0].getField()[0].isStealth(game)); //露娜出场后default随从变为潜行状态
         }
 
         /*[Test]
@@ -269,13 +269,13 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<BeerFairy>() as CardDefine, 30));
             game.createPlayer(1, "玩家1", game.getDefine<Reimu>(),
                 Enumerable.Repeat(game.getDefine<BeerFairy>() as CardDefine, 30));
-            game.skipTurnWhen(() => game.sortedPlayers[0].getGem() < 4);
+            game.skipTurnWhen(() => game.getSortedPlayers()[0].getGem() < 4);
 
-            var s = game.sortedPlayers[0].getHand()[0];
-            game.sortedPlayers[0].cmdUse(game, s, 0);
-            Assert.True(game.sortedPlayers[0].getField().Contains(s));
-            game.sortedPlayers[0].cmdUse(game, game.sortedPlayers[0].getHand()[0], 0, game.sortedPlayers[0].getField()[0]);
-            Assert.True(game.sortedPlayers[0].getHand().Contains(s));
+            var s = game.getSortedPlayers()[0].getHand()[0];
+            game.getSortedPlayers()[0].cmdUse(game, s, 0);
+            Assert.True(game.getSortedPlayers()[0].getField().Contains(s));
+            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0, game.getSortedPlayers()[0].getField()[0]);
+            Assert.True(game.getSortedPlayers()[0].getHand().Contains(s));
             //TODO:落叶，这里就只有两个小熊猫相互测试，还不够。
             //还要测试手牌满了的情况下，小熊猫被挤死了
             /*game.skipTurnWhen(() => game.sortedPlayers[0].gem < 10);
@@ -292,7 +292,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Daiyousei_N.ID, 2)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 1);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 1);
             oppo.cmdUse(game, oppo.getHand().First());
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.getHand().getCard<Daiyousei_N>());
@@ -308,7 +308,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Cirno_N_YYM.ID, 2)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 1);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 1);
             oppo.cmdUse(game, oppo.getHand().First());
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.getHand().getCard<Cirno_N_YYM>(), targets: oppo.getField()[0]);
@@ -324,7 +324,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Cirno_N_HMX.ID, 2)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 3);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 3);
             for (int i = 0; i < 3; i++)
                 oppo.cmdUse(game, oppo.getHand().First());
             oppo.cmdTurnEnd(game);
@@ -375,7 +375,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Chen_N.ID, 2)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 2);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 2);
             oppo.cmdUse(game, oppo.getHand().First());
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.getHand().getCard<Chen_N>());
@@ -391,7 +391,7 @@ namespace Tests
                 new KeyValuePair<int, int>(Koakuma_N.ID, 2),
                 new KeyValuePair<int, int>(DoyouSpear.ID, 2)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 6);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 6);
             you.cmdUse(game, you.getHand().getCard<DoyouSpear>());
             Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>()
                 .LastOrDefault(c => c.to == you.getGrave());
@@ -419,7 +419,7 @@ namespace Tests
                 new KeyValuePair<int, int>(LilyWhite_N.ID, 5),
                 new KeyValuePair<int, int>(Doll_N.ID, 4)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 6);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 6);
             you.cmdUse(game, you.getHand().getCard<Doll_N>());
             you.cmdUse(game, you.getHand().getCard<Doll_N>());
             you.cmdUse(game, you.getHand().getCard<LilyWhite_N>());
@@ -436,7 +436,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(KonpakuYoumu_N.ID, 6)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 5);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 5);
             oppo.cmdUse(game, oppo.getHand().First());
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.getHand().getCard<KonpakuYoumu_N>());
@@ -453,7 +453,7 @@ namespace Tests
                 new KeyValuePair<int, int>(RemiliaScarlet_N.ID, 5),
                 new KeyValuePair<int, int>(Doll_N.ID, 4)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 6);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 6);
             var handBeforeUse = you.getHand().ToArray();
             you.cmdUse(game, you.getHand().getCard<RemiliaScarlet_N>());
             Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>()
@@ -471,7 +471,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(FlandreScarlet_N.ID, 8)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 6);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 6);
             oppo.cmdUse(game, oppo.getHand().First());
             Card card = oppo.getField()[0];
             oppo.cmdTurnEnd(game);
@@ -491,7 +491,7 @@ namespace Tests
                 new KeyValuePair<int, int>(IzayoiSakuya_N.ID, 5),
                 new KeyValuePair<int, int>(Doll_N.ID, 4)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 6);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 6);
             you.cmdUse(game, you.getHand().getCard<IzayoiSakuya_N>());
             Card card = game.triggers.getRecordedEvents().OfType<THHPlayer.DrawEventArg>().Last().card;
             Assert.True(you.getHand().Contains(card));
@@ -504,7 +504,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(YakumoRan_N.ID, 8)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 7);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 7);
             oppo.cmdUse(game, oppo.getHand().First());
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.getHand().getCard<YakumoRan_N>());
@@ -521,7 +521,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(SaigyoujiYuyuko_N.ID, 9)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 8);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 8);
             oppo.cmdUse(game, oppo.getHand().First());
             Card card = oppo.getField()[0];
             oppo.cmdTurnEnd(game);
@@ -571,12 +571,12 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(Rumia_N.ID, 6)
             );
-            game.skipTurnUntil(() => game.currentPlayer == oppo && oppo.getGem() >= 3);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 3);
             oppo.cmdUse(game, oppo.getHand().First(), 0); //敌方杂鱼A
             oppo.cmdUse(game, oppo.getHand().First(), 1); //敌方杂鱼B
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.getHand().getCard<Rumia_N>());
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 4);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 4);
             Assert.True(you.getField().getCard<Rumia_N>().canAttack(game));
             you.cmdAttack(game, you.getField().getCard<Rumia_N>(), target: oppo.getMaster()); //尝试指脸
             Card target = game.triggers.getRecordedEvents().OfType<THHCard.AttackEventArg>().Last().target;
@@ -592,7 +592,7 @@ namespace Tests
                 new KeyValuePair<int, int>(MerlinPrismriver_N.ID, 10),
                 new KeyValuePair<int, int>(LyricaPrismriver_N.ID, 10)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 6);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 6);
             you.cmdUse(game, you.getHand().First()); //从牌库或手牌召唤骚灵乐团...（一起召唤吗？）
             Assert.True(you.getField().Any(c => c.define is LunasaPrismriver_N));
             Assert.True(you.getField().Any(c => c.define is MerlinPrismriver_N));
@@ -606,7 +606,7 @@ namespace Tests
                 new KeyValuePair<int, int>(YakumoRan_N.ID, 2),
                 new KeyValuePair<int, int>(YakumoYukari_N.ID, 2)
             );
-            game.skipTurnUntil(() => game.currentPlayer == you && you.getGem() >= 1);
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 1);
             you.setGem(game, 10);
             you.cmdUse(game, you.getHand().getCard<YakumoRan_N>());
             Card chen = you.getField()[1];

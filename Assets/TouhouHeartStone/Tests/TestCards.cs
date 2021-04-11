@@ -466,7 +466,7 @@ namespace Tests
         {
             new THHEffectBefore<THHGame.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
             {
-                if(arg.player!=game.currentPlayer)
+                if(arg.player!=game.getCurrentPlayer())
                 return false;
                 return true;
             },(game,card,targets)=>

@@ -61,7 +61,7 @@ namespace TouhouHeartstone.Builtin
         {
             new THHEffectBefore<THHGame.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
             {
-                if(arg.player!=game.currentPlayer)//不是自己的回合
+                if(arg.player!=game.getCurrentPlayer())//不是自己的回合
                     return false;
                 return true;
             },(game,card,targets)=>
