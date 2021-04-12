@@ -3,7 +3,7 @@ using System;
 using System.Reflection;
 namespace TouhouHeartstone
 {
-    public abstract class SkillCardDefine : CardDefine
+    public abstract class SkillCardDefine : THHCardDefine
     {
         public override string type { get; set; } = DEFINE.SKILL;
         public abstract int cost { get; set; }

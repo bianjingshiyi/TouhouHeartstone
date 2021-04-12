@@ -1,13 +1,9 @@
 ﻿using TouhouCardEngine;
 namespace TouhouHeartstone
 {
-    public abstract class ServantCardDefine : CardDefine
+    public abstract class ServantCardDefine : THHCardDefine
     {
         public override string type { get; set; } = DEFINE.SERVANT;
-        /// <summary>
-        /// 是否是衍生物？
-        /// </summary>
-        public virtual bool isToken { get; set; } = false;
         /// <summary>
         /// 
         /// </summary>

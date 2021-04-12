@@ -2,7 +2,7 @@
 using System;
 namespace TouhouHeartstone
 {
-    public abstract class SpellCardDefine : CardDefine
+    public abstract class SpellCardDefine : THHCardDefine
     {
         public override string type { get; set; } = DEFINE.SPELL;
         public abstract int cost { get; set; }

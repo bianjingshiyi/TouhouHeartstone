@@ -2,7 +2,7 @@
 
 namespace TouhouHeartstone
 {
-    public abstract class MasterCardDefine : CardDefine
+    public abstract class MasterCardDefine : THHCardDefine
     {
         public override string type { get; set; } = DEFINE.MASTER;
         public abstract int life { get; set; }
