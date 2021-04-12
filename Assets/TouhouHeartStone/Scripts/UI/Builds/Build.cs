@@ -704,6 +704,14 @@ namespace UI
         [TranslateMsg]
         const string PILE_WRONG_GROUP = "只能选择角色对应的卡或中立卡";
 
+        [TranslateMsg]
+        const string DRAG_INSTEAD_CLICK = "请将卡片拖拽到卡组列表中组卡";
+
+        public void onClickHandCard()
+        {
+            if (isInDeckEditMode)
+                showMessage(lang._(DRAG_INSTEAD_CLICK));
+        }
         private void onReleaseItem()
         {
             var card = DragCard.BuildDeckListItem.card;

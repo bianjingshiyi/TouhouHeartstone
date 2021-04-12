@@ -8,7 +8,7 @@ using Game;
 
 namespace UI
 {
-    partial class BuildCardListItem : IBeginDragHandler, IDragHandler, IEndDragHandler
+    partial class BuildCardListItem : IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
     {
         [SerializeField]
         Vector2 _dragStartPosition;
@@ -43,7 +43,7 @@ namespace UI
         {
             if (_isDragging)
             {
-                //结束拖拽
+                // 结束拖拽
                 Build build = GetComponentInParent<Build>();
                 build.onReleaseCardItem(this, eventData);
             }
@@ -74,6 +74,16 @@ namespace UI
             Card.setCard(data.define, data.skin);
             setRemainText(data.useCount, data.maxCount);
             CardID = data.define.id;
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            // 提示要拖拽
+            var delta = eventData.pressPosition - eventData.position;
+            if (delta.sqrMagnitude < 25)
+            {
+                GetComponentInParent<Build>().onClickHandCard();
+            }
         }
     }
 
