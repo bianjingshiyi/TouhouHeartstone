@@ -111,11 +111,10 @@ namespace UI
                 cardVList.addItem();
         }
 
-        [Obsolete("Use SetList Instead")]
         public void SetContent(int index, BuildCardViewData d)
         {
             listData[index] = d;
-            SetList(listData);
+            cardVList.ReloadElementAt(index);
         }
 
         private void setItemArgs(int index, BuildCardListItem item)

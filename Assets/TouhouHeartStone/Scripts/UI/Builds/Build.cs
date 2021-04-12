@@ -595,8 +595,8 @@ namespace UI
             {
                 var card = displayedCardList[i];
                 displayedCardList[i].useCount = currentDeckCards.Where(id => id == card.define.id).Count();
+                BuildCardList.SetContent(i, displayedCardList[i]);
             }
-            BuildCardList.SetList(displayedCardList);
         }
 
         /// <summary>
@@ -610,9 +610,10 @@ namespace UI
                 if (card.define.id == cardID)
                 {
                     displayedCardList[i].useCount = count;
+                    BuildCardList.SetContent(i, displayedCardList[i]);
+
                 }
             }
-            BuildCardList.SetList(displayedCardList.ToArray());
         }
 
         void onDeckCardChange()
