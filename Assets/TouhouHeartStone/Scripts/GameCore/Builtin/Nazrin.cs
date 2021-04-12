@@ -79,13 +79,13 @@ namespace TouhouHeartstone.Builtin
         {
             new THHEffectBefore<HearthStoneRule.DrawEventArg>(PILE.ITEM, (game, card, arg) =>
             {
-                return arg.parent is HearthStoneRule.TurnStartEventArg;
+                return arg.parent is HearthStoneRule.TurnStartEventArg && (arg.player == arg.card.owner);
             },null,
             async (game, card, arg) =>
             {
+                //这是什么，把arg里的card换成选中的牌不就行了吗？
                 arg.isCanceled = true;
                 await card.getOwner().searchPile(game,card.getOwner().getDeck(),false,3);
-                await card.damage(game,card,1);
             }),
             
         };
@@ -155,12 +155,12 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            int i=0;
+            int i = 0;
             foreach(Card c in card.getOwner().getHand())
             {
                 i = c.getCost(game);
                 await c.setDefine(game, game.getDefine<Nazrin_06>());
-                await c.setCost(game, i);
+                await c.addModifier(game, new CostModifier(i-c.define.getCost()));
             }
         }
     }
@@ -172,7 +172,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x006;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 0;
+        public override int cost { get; set; } = 5;
         public override bool isToken { get; set; } = true;
 
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -186,6 +186,7 @@ namespace TouhouHeartstone.Builtin
             Card[] unqueCards = game.createCards(defines);
             var arg = await card.getOwner().searchPile(game, unqueCards);
             await card.getOwner().tryAddCardToHand(game, arg.choose);
+            await card.addBuff(game, new GeneratedBuff(ID, new CostModifier(-card.define.getCost())));
         }
     }
 
@@ -345,8 +346,7 @@ namespace TouhouHeartstone.Builtin
         {
             foreach(Card c in card.getOwner().getField())
             {
-                if(!c.getOwner().getHand().isFull)
-                    await card.getOwner().addCardToHand<LuckyCoin>(game);
+                await card.getOwner().addCardToHand<LuckyCoin>(game);
             }
         }
     }
