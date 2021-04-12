@@ -37,7 +37,7 @@ namespace Game
             get { return _ui; }
         }
         public THHGame game { get; private set; } = null;
-        public THHPlayer localPlayer { get; private set; } = null;
+        public Player localPlayer { get; private set; } = null;
         Task gameTask { get; set; } = null;
         LangManager lang => getManager<LangManager>();
 
@@ -305,7 +305,7 @@ namespace Game
         /// 显示游戏UI，并指定本地玩家
         /// </summary>
         /// <param name="localPlayer"></param>
-        private void displayGameUI(THHGame game, THHPlayer localPlayer)
+        private void displayGameUI(THHGame game, Player localPlayer)
         {
             _mainUI.Game.GameResultDialog.hide();
             //本地玩家用UI

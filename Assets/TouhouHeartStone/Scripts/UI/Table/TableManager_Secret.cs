@@ -1,5 +1,6 @@
 ﻿using UI;
 using System.Collections.Generic;
+using TouhouHeartstone;
 using Card = TouhouCardEngine.Card;
 namespace Game
 {

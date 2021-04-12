@@ -5,6 +5,8 @@ using UnityEngine.TestTools;
 using System.Linq;
 using TouhouHeartstone;
 using Game;
+using TouhouCardEngine;
+
 namespace Tests
 {
     public class AITests
@@ -13,7 +15,7 @@ namespace Tests
         public IEnumerator calcActionsTest_Turn1()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, HearthstoneOption.Default);
-            THHPlayer player = game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
+            Player player = game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
             game.createPlayer(2, "玩家2", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
             game.logger.log("Force Init");
             AI ai = new AI(game, player, false);
@@ -36,7 +38,7 @@ namespace Tests
         public IEnumerator run_InitReplaceTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, HearthstoneOption.Default);
-            THHPlayer player = game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
+            Player player = game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
             game.createPlayer(2, "玩家2", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
             AI ai = new AI(game, player);
             _ = game.run();

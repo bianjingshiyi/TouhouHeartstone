@@ -98,7 +98,7 @@ namespace TouhouHeartstone.Builtin
                                                                 },null,
                                                                 async(g,c,a)=>
                                                                 {
-                                                                    THHPlayer you = c.getOwner();
+                                                                    Player you = c.getOwner();
                                                                     await you.getHand().moveTo(g,c,you.getGrave());
                                                                 })));
             }, PileFlag.both | PileFlag.character,null,

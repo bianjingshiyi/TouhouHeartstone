@@ -242,9 +242,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
+            Player defaultPlayer = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<TestSpellCard>(), 2)));
-            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29)
+            Player elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29)
             .Concat(Enumerable.Repeat(game.getDefine<ElusiveServant>(), 1)));
 
             game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == defaultPlayer);
@@ -280,8 +280,8 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer you = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer oppo = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
+            Player you = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            Player oppo = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<TestFreeze>(), 2)));
 
             game.skipTurnUntil(() => you.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == you);
@@ -315,8 +315,8 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
+            Player defaultPlayer = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            Player elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<Priestess>(), 2)));
 
             game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == defaultPlayer);

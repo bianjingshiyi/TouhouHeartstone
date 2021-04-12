@@ -42,7 +42,7 @@ namespace TouhouHeartstone
                 pileList.Add(HEAD);
             return pileList.ToArray();
         }
-        public static Pile[] getPiles(this PileFlag flag, THHGame game, Player player)
+        public static Pile[] getPiles(this PileFlag flag, THHGame game, TouhouCardEngine.Player player)
         {
             List<Pile> pileList = new List<Pile>();
             if (flag.HasFlag(PileFlag.self))
@@ -56,7 +56,7 @@ namespace TouhouHeartstone
             }
             return pileList.ToArray();
         }
-        private static void addPileToList(Player player, PileFlag flag, List<Pile> pileList)
+        private static void addPileToList(TouhouCardEngine.Player player, PileFlag flag, List<Pile> pileList)
         {
             if (flag.HasFlag(PileFlag.master))
                 pileList.Add(player[MASTER]);

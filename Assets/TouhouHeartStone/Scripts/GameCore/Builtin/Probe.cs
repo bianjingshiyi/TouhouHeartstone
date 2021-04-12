@@ -73,7 +73,7 @@ namespace TouhouHeartstone.Builtin.Proble
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.owner as THHPlayer).getMaster().damage(game, card, 2);
+            await game.getOpponent(card.owner as Player).getMaster().damage(game, card, 2);
         }
     }
 

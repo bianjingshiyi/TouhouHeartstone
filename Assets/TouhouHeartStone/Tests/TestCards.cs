@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+
 // using UnityEditor.UIElements;
 
 namespace Tests
@@ -476,7 +477,7 @@ namespace Tests
             {
                 for(int i=0;i<6;i++)
                 {
-                    foreach (var character in game.getOpponent(card.owner as THHPlayer).getField().randomTake(game, 1))
+                    foreach (var character in game.getOpponent(card.owner as Player).getField().randomTake(game, 1))
                     {
                         await character.damage(game, card, 1);
                     }
@@ -782,7 +783,7 @@ namespace Tests
         {
             new DeathRattle(ID,(g,c,b,p)=>
             {
-                THHPlayer player = c.getOwner();
+                Player player = c.getOwner();
                 return player.reborn(g,c,player.getField(),p);
             })
         };
@@ -798,7 +799,7 @@ namespace Tests
         {
             new DeathRattle(ID,(g,c,b,p)=>
             {
-                THHPlayer player = c.getOwner();
+                Player player = c.getOwner();
                 player.createToken(g,g.getDefine<Nerubian>(),p);
                 return c.fieldToHand(g);
             })

@@ -33,7 +33,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.owner as THHPlayer).getMaster().damage(game, card, 2);
+            await game.getOpponent(card.owner as Player).getMaster().damage(game, card, 2);
         }
     }
     /// <summary>
@@ -126,8 +126,8 @@ namespace TouhouHeartstone.Builtin
                 }, async (g, c, a) =>
                 {
                     a.isCanceled = true; //取消攻击
-                    THHPlayer you = c.getOwner();
-                    THHPlayer oppo = a.card.getOwner();
+                    Player you = c.getOwner();
+                    Player oppo = a.card.getOwner();
                     await oppo.getField().moveTo(g, a.card, you.getField()); //交换控制权
                     
                 })

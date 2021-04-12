@@ -137,7 +137,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer oppo = game.getOpponent(card.getOwner());
+            Player oppo = game.getOpponent(card.getOwner());
             await oppo.getField().random(game).damage(game, card, 1);
         }
     }
@@ -289,7 +289,7 @@ namespace TouhouHeartstone.Builtin
             new THHEffectAfter<THHCard.DeathEventArg>(PILE.GRAVE, (game, card, arg) => { return true; },
                 (game, card, targets) => { return false; }, async (game, card, arg) =>
                 {
-                    THHPlayer opponent = game.getOpponent(card.owner as THHPlayer);
+                    Player opponent = game.getOpponent(card.owner as Player);
                     await opponent.setMaxGem(game, opponent.getMaxGem() + 1);
                     await opponent.setGem(game, opponent.getGem() + 1);
                 })
@@ -586,7 +586,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer player = card.getOwner();
+            Player player = card.getOwner();
             if (!player.getHand().isFull)
                 await player.getGrave().moveTo(game, player.getGrave().Where(c => c.isSpell()).random(game), player.getHand());
             // await card.getOwner().reborn(game, player.grave.Where(c => c.isSpell()).random(game), player.hand);
@@ -881,7 +881,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect((g1, c1) => { return bandAssemble(g1, c1.getOwner(), c1.pile.indexOf(c1)); })
         };
 
-        public static async Task bandAssemble(THHGame game, THHPlayer player, int position)
+        public static async Task bandAssemble(THHGame game, Player player, int position)
         {
             var lunasa = player.getField().FirstOrDefault(c => c.define.id == LunasaPrismriver_N.ID);
             if (lunasa == null)
@@ -1128,7 +1128,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer player = card.getOwner();
+            Player player = card.getOwner();
             var topCostCard = player.getGrave().OrderByDescending(c => c.getCost(game)).FirstOrDefault();
             if (topCostCard != null)
                 await player.getGrave().moveTo(game, topCostCard, player.getDeck(), game.randomInt(0, player.getDeck().count));
@@ -1161,7 +1161,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer player = card.getOwner();
+            Player player = card.getOwner();
             var lowCostCards = player.getDeck().OrderBy(c => c.getCost(game)).Take(3);
             foreach (var c in lowCostCards)
             {
@@ -1489,7 +1489,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer oppo = game.getOpponent(card.getOwner());
+            Player oppo = game.getOpponent(card.getOwner());
             if (oppo.getField().count >= 2)
             {
                 await card.getOwner().draw(game);

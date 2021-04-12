@@ -49,7 +49,7 @@ namespace TouhouHeartstone.Builtin
         }
         public static async Task tryMix(THHGame game, Card card)
         {
-            THHPlayer player = card.getOwner();
+            Player player = card.getOwner();
             var mixableCards = player.getHand().Where(c => getMixCards(game, card.define, c.define).Length > 0).ToArray();//检查手牌中有没有可以融合的牌
             if (mixableCards.Length > 0)
             {
@@ -61,7 +61,7 @@ namespace TouhouHeartstone.Builtin
         }
 
         //中立帕秋莉使用的方法
-        public static async Task tryMix(THHGame game, THHPlayer player, Card a, Card b)
+        public static async Task tryMix(THHGame game, Player player, Card a, Card b)
         {
             var mixedResults = getMixCards(game, a.define, b.define).Select(define => game.createCard(define)).ToArray();
             var mixedResult = await player.chooseOne(game, mixedResults, false, "收获");
@@ -351,7 +351,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            await game.getOpponent(card.owner as THHPlayer).getMaster().damage(game, card, 15);
+            await game.getOpponent(card.owner as Player).getMaster().damage(game, card, 15);
         }
     }
     /// <summary>
@@ -593,8 +593,8 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer player = card.getOwner();
-            THHPlayer opponent = game.getOpponent(player);
+            Player player = card.getOwner();
+            Player opponent = game.getOpponent(player);
             await opponent.getField().damage(game, card, player.getSpellDamage(game, 2));
             foreach (Card target in opponent.getField())
             {
@@ -621,7 +621,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(async (game,card)=>
             {
-                THHPlayer opponent = game.getOpponent(card.getOwner());
+                Player opponent = game.getOpponent(card.getOwner());
                 foreach(Card target in opponent.getField())
                 {
                     await target.addBuff(game,

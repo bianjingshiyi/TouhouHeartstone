@@ -49,9 +49,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
                 Enumerable.Repeat(game.getDefine<TestFreezeBrain>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
             var reveal = Sanae.revealDuel(you, game);
             Assert.True(reveal.IsCompleted);
@@ -85,7 +85,7 @@ namespace Tests
         [Test]
         public void GrayThaumaturgyTest()
         {
-            TestGameflow.createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo,
+            TestGameflow.createGame(out THHGame game, out Player you, out Player oppo,
                 Sanae.ID,
                 new KeyValuePair<int, int>(GrayThaumaturgy.ID, 3), new KeyValuePair<int, int>(StarRitual.ID, 4));
             game.skipUntilHasGem(you, 5);
@@ -138,7 +138,7 @@ namespace Tests
         [Test]
         public void BumperCropTest()
         {
-            TestGameflow.createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo,
+            TestGameflow.createGame(out THHGame game, out Player you, out Player oppo,
                 Sanae.ID,
                 new KeyValuePair<int, int>(BumperCrop.ID, 1));
             for (int i = 0; i < 3; i++)
@@ -282,9 +282,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<Sanae>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
                     .Concat(Enumerable.Repeat(game.getDefine<ManipulatedGaintFrog>(), 2)));
 
@@ -508,7 +508,7 @@ namespace Tests
         [Test]
         public void GodWindTest()
         {
-            TestGameflow.createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo,
+            TestGameflow.createGame(out THHGame game, out Player you, out Player oppo,
                 new KeyValuePair<int, int>(InvokeCard.ID, 2),
                 new KeyValuePair<int, int>(DefaultServant.ID, 5),
                 new KeyValuePair<int, int>(GodWind.ID, 1));
@@ -556,7 +556,7 @@ namespace Tests
         [Test]
         public void ForgottenRecrptionTest()
         {
-            TestGameflow.createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo,
+            TestGameflow.createGame(out THHGame game, out Player you, out Player oppo,
                 new KeyValuePair<int, int>(ForgottenRecrption.ID, 1),
                 new KeyValuePair<int, int>(MoriyaSuwako.ID, 1));
             game.skipUntilCanUse<MoriyaSuwako>(you);

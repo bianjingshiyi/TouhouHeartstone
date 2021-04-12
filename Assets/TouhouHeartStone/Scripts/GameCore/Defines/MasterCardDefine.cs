@@ -30,7 +30,7 @@ namespace TouhouHeartstone
                     skillID = generated.getProp<int>(nameof(skillID));
             }
         }
-        public override string isUsable(CardEngine engine, Player player, Card card)
+        public override string isUsable(CardEngine engine, TouhouCardEngine.Player player, Card card)
         {
             return null;
         }

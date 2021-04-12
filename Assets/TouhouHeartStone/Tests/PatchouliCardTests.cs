@@ -157,8 +157,8 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
+            Player defaultPlayer = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
+            Player elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<MetalFatigue>(), 2)));
 
             game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == defaultPlayer);
@@ -277,8 +277,8 @@ namespace Tests
         public void SilentSeleneTest()
         {
             THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption() { shuffle = false });
-            THHPlayer defaultPlayer = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<MissingSpecter>() as CardDefine, 30));
-            THHPlayer elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<SilentSelene>() as CardDefine, 28)
+            Player defaultPlayer = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<MissingSpecter>() as CardDefine, 30));
+            Player elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<SilentSelene>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<BestMagic>(), 2)));
 
             game.skipTurnUntil(() => game.getCurrentPlayer() == defaultPlayer && defaultPlayer.getGem() >= game.getDefine<MissingSpecter>().cost);

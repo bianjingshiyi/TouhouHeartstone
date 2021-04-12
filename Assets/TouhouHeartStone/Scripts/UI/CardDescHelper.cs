@@ -1,10 +1,12 @@
 ﻿using TouhouHeartstone;
 using System.Text.RegularExpressions;
+using TouhouCardEngine;
+
 namespace UI
 {
     public static class CardDescHelper
     {
-        public static string replace(string desc, THHGame game, THHPlayer player, TouhouCardEngine.Card card)
+        public static string replace(string desc, THHGame game, Player player, TouhouCardEngine.Card card)
         {
             string result = Regex.Replace(desc, @"{(?<obj>\w+):(?<name>.+)}", m =>
             {

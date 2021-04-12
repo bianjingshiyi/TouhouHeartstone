@@ -51,7 +51,7 @@ namespace Game
             set { _table = value; }
         }
         public THHGame game { get; private set; } = null;
-        public THHPlayer player { get; private set; } = null;
+        public Player player { get; private set; } = null;
         ActionEventCache eventCache { get; } = new ActionEventCache();
 
         LangManager lang => getManager<LangManager>();
@@ -179,7 +179,7 @@ namespace Game
         /// </summary>
         /// <param name="game"></param>
         /// <param name="player"></param>
-        public void setGame(THHGame game, THHPlayer player)
+        public void setGame(THHGame game, Player player)
         {
             ui.onClickNoWhere.set(onClickNoWhere);
             ui.InitReplaceDialog.hide();

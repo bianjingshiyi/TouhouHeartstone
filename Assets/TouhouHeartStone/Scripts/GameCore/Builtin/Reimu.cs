@@ -123,7 +123,7 @@ namespace TouhouHeartstone.Builtin
                 return true;
             },async (game,card,arg,targets)=>
             {
-                THHPlayer opponent = game.getOpponent(arg.player);
+                Player opponent = game.getOpponent(arg.player);
                 if(opponent.getField().count<4)
                     await opponent.getField().damage(game,card, arg.player.getSpellDamage(game,2));
                 else

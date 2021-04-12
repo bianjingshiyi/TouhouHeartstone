@@ -492,14 +492,14 @@ namespace Tests
             Assert.AreEqual(local.id, remoteGame.players[0].id);
             Assert.AreEqual(remote.id, remoteGame.players[1].id);
 
-            THHPlayer localPlayer = localGame.getPlayer(local.id);
+            Player localPlayer = localGame.getPlayer(local.id);
             Assert.AreEqual(0, localPlayer.id);
             yield return new WaitUntil(() => localGame.answers.getRequests(localPlayer.id).FirstOrDefault() is InitReplaceRequest);
             Assert.Greater(localPlayer.getInit().count, 0);
             localPlayer.cmdInitReplace(localGame);
             yield return new WaitUntil(() => localGame.answers.getResponse(localPlayer.id, localGame.answers.getRequests(localPlayer.id).FirstOrDefault()) is InitReplaceResponse);
 
-            THHPlayer remotePlayer = remoteGame.getPlayer(remote.id);
+            Player remotePlayer = remoteGame.getPlayer(remote.id);
             Assert.AreEqual(1, remotePlayer.id);
             yield return new WaitUntil(() => remoteGame.answers.getRequests(remotePlayer.id).FirstOrDefault() is InitReplaceRequest);
             Assert.Greater(remotePlayer.getInit().count, 0);
@@ -688,9 +688,9 @@ namespace Tests
             Assert.AreEqual(localGame.getSortedPlayers()[0].id, remoteGame.getSortedPlayers()[0].id);
             Assert.AreEqual(localGame.getSortedPlayers()[1].id, remoteGame.getSortedPlayers()[1].id);
             //交换手牌
-            THHPlayer localPlayer = localGameManager.localPlayer;
+            Player localPlayer = localGameManager.localPlayer;
             yield return localPlayer.cmdInitReplace(localGame, localPlayer.getInit()[0]).wait();
-            THHPlayer remotePlayer = remoteGameManager.localPlayer;
+            Player remotePlayer = remoteGameManager.localPlayer;
             yield return remotePlayer.cmdInitReplace(remoteGame, remotePlayer.getInit()[0, 1]).wait();
             do
             {
@@ -835,9 +835,9 @@ namespace Tests
             Assert.AreEqual(localGame.getSortedPlayers()[0].id, remoteGame.getSortedPlayers()[0].id);
             Assert.AreEqual(localGame.getSortedPlayers()[1].id, remoteGame.getSortedPlayers()[1].id);
             //交换手牌
-            THHPlayer localPlayer = localGameManager.localPlayer;
+            Player localPlayer = localGameManager.localPlayer;
             yield return localPlayer.cmdInitReplace(localGame, localPlayer.getInit()[0]).wait();
-            THHPlayer remotePlayer = remoteGameManager.localPlayer;
+            Player remotePlayer = remoteGameManager.localPlayer;
             yield return remotePlayer.cmdInitReplace(remoteGame, remotePlayer.getInit()[0, 1]).wait();
             //战斗至死
             do

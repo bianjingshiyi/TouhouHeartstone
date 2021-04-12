@@ -82,7 +82,7 @@ namespace TouhouHeartstone
                     keywords = generated.getProp<string[]>(nameof(keywords));
             }
         }
-        public override string isUsable(CardEngine engine, Player player, Card card)
+        public override string isUsable(CardEngine engine, TouhouCardEngine.Player player, Card card)
         {
             return null;
         }

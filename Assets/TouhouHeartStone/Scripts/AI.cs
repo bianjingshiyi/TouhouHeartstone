@@ -13,9 +13,9 @@ namespace Game
     public class AI
     {
         THHGame game { get; }
-        THHPlayer player { get; }
+        Player player { get; }
 
-        public AI(THHGame game, THHPlayer player, bool autoRun = true)
+        public AI(THHGame game, Player player, bool autoRun = true)
         {
             this.game = game;
             this.player = player;
@@ -64,7 +64,7 @@ namespace Game
             }
         }
 
-        public Response calcNextAction(THHGame game, THHPlayer player)
+        public Response calcNextAction(THHGame game, Player player)
         {
             try
             {
@@ -87,7 +87,7 @@ namespace Game
         /// <param name="game"></param>
         /// <param name="player"></param>
         /// <returns></returns>
-        public Dictionary<Response, float> calcActions(THHGame game, THHPlayer player)
+        public Dictionary<Response, float> calcActions(THHGame game, Player player)
         {
             Dictionary<Response, float> responseDic = new Dictionary<Response, float>();
             UseResponse use;
@@ -153,7 +153,7 @@ namespace Game
 
             if (player.getMaster().canAttack(game))
             {
-                THHPlayer opponent = game.getOpponent(player);
+                Player opponent = game.getOpponent(player);
                 if (player.getMaster().isAttackable(game, player, opponent.getMaster(), out _))
                 {
                     int value = player.getMaster().getAttack(game) > opponent.getMaster().getCurrentLife(game)
@@ -182,7 +182,7 @@ namespace Game
             {
                 if (!servant.canAttack(game))
                     continue;
-                THHPlayer opponent = game.getOpponent(player);
+                Player opponent = game.getOpponent(player);
                 if (servant.isAttackable(game, player, opponent.getMaster(), out _))
                 {
                     int value = servant.getAttack(game) > opponent.getMaster().getCurrentLife(game)
@@ -208,7 +208,7 @@ namespace Game
             return responseDic;
         }
 
-        float calcActionValue(Response response, THHGame game, THHPlayer player, THHPlayer opponent)
+        float calcActionValue(Response response, THHGame game, Player player, Player opponent)
         {
             float value = 0;
             if (response is UseResponse use)
@@ -234,7 +234,7 @@ namespace Game
             return value;
         }
 
-        bool calcNeutralValue(THHGame game, THHPlayer player, Card card, THHPlayer oppo, Card target, out float value)
+        bool calcNeutralValue(THHGame game, Player player, Card card, Player oppo, Card target, out float value)
         {
             switch (card.define)
             {
@@ -253,7 +253,7 @@ namespace Game
             }
         }
 
-        bool calcYoumuValue(THHGame game, THHPlayer player, Card card, THHPlayer oppo, Card target, out float value)
+        bool calcYoumuValue(THHGame game, Player player, Card card, Player oppo, Card target, out float value)
         {
             switch (card.define)
             {
@@ -302,7 +302,7 @@ namespace Game
             }
         }
 
-        bool calcPatchouliValue(THHGame game, THHPlayer player, Card card, THHPlayer opponent, Card target,
+        bool calcPatchouliValue(THHGame game, Player player, Card card, Player opponent, Card target,
             out float value)
         {
             switch (card.define)
@@ -405,7 +405,7 @@ namespace Game
             }
         }
 
-        bool calcReisenValue(THHGame game, THHPlayer player, Card card, THHPlayer opponent, Card target,
+        bool calcReisenValue(THHGame game, Player player, Card card, Player opponent, Card target,
             out float value)
         {
             switch (card.define)
@@ -456,7 +456,7 @@ namespace Game
             }
         }
 
-        bool calcSanaeValue(THHGame game, THHPlayer player, Card card, THHPlayer opponent, Card target,
+        bool calcSanaeValue(THHGame game, Player player, Card card, Player opponent, Card target,
             out float value)
         {
             switch (card.define)
@@ -523,7 +523,7 @@ namespace Game
             }
         }
 
-        bool calcBattlecryValue(THHGame game, THHPlayer player, Card card, THHPlayer opponent, Card target,
+        bool calcBattlecryValue(THHGame game, Player player, Card card, Player opponent, Card target,
             out float value)
         {
             value = calcServantValue(game, player, opponent, card);
@@ -669,7 +669,7 @@ namespace Game
         /// <param name="opponent"></param>
         /// <param name="servant"></param>
         /// <returns></returns>
-        float calcServantValue(THHGame game, THHPlayer player, THHPlayer opponent, Card servant)
+        float calcServantValue(THHGame game, Player player, Player opponent, Card servant)
         {
             var value = calcServantValue(servant.getAttack(game), servant.getCurrentLife(game));
             return player == servant.getOwner() ? value : -value;
@@ -683,7 +683,7 @@ namespace Game
         /// <param name="opponent"></param>
         /// <param name="servants"></param>
         /// <returns></returns>
-        float calcServantsValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> servants)
+        float calcServantsValue(THHGame game, Player player, Player opponent, IEnumerable<Card> servants)
         {
             return servants.Sum(s => calcServantValue(game, player, opponent, s));
         }
@@ -752,13 +752,13 @@ namespace Game
             return attack * life;
         }
 
-        float calcBuffAllValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
+        float calcBuffAllValue(THHGame game, Player player, Player opponent, IEnumerable<Card> targets,
             int attack, int life)
         {
             return targets.Sum(c => calcBuffValue(game, player, opponent, c, attack, life));
         }
 
-        float calcBuffValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int atk, int life)
+        float calcBuffValue(THHGame game, Player player, Player opponent, Card target, int atk, int life)
         {
             var atkBfr = target.getAttack(game);
             var lifeBfr = target.getCurrentLife(game);
@@ -792,7 +792,7 @@ namespace Game
         /// <param name="target"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        float calcDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int value)
+        float calcDamageValue(THHGame game, Player player, Player opponent, Card target, int value)
         {
             var atk = target.getAttack(game);
             var life = target.getCurrentLife(game);
@@ -801,13 +801,13 @@ namespace Game
             return _;
         }
 
-        float calcAOEDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
+        float calcAOEDamageValue(THHGame game, Player player, Player opponent, IEnumerable<Card> targets,
             int damage)
         {
             return targets.Sum(c => calcDamageValue(game, player, opponent, c, damage));
         }
 
-        float calcRandomDamageValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
+        float calcRandomDamageValue(THHGame game, Player player, Player opponent, IEnumerable<Card> targets,
             int damage)
         {
             float value = 0;
@@ -820,7 +820,7 @@ namespace Game
             return value;
         }
 
-        float calcRandomServantsValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
+        float calcRandomServantsValue(THHGame game, Player player, Player opponent, IEnumerable<Card> targets,
             int num)
         {
             float value = 0;
@@ -833,7 +833,7 @@ namespace Game
             return value;
         }
 
-        float calcRandomFreezeValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets)
+        float calcRandomFreezeValue(THHGame game, Player player, Player opponent, IEnumerable<Card> targets)
         {
             float value = 0;
             foreach (var target in targets)
@@ -845,14 +845,14 @@ namespace Game
             return value;
         }
 
-        float calcFreezeValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
+        float calcFreezeValue(THHGame game, Player player, Player opponent, Card target)
         {
             if (target == opponent.getMaster() || opponent.getField().Contains(target))
                 return target.getAttack(game);
             return -target.getAttack(game);
         }
 
-        float calcHealingValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target, int value)
+        float calcHealingValue(THHGame game, Player player, Player opponent, Card target, int value)
         {
             var life = target.getLife(game);
             var lifeBfr = target.getCurrentLife(game);
@@ -862,7 +862,7 @@ namespace Game
             return calcInstantIntPropChangeValue(isFriendly, target.isMaster(), atk, lifeBfr, atk, lifeAft);
         }
 
-        float calcRandomHealingValue(THHGame game, THHPlayer player, THHPlayer opponent, IEnumerable<Card> targets,
+        float calcRandomHealingValue(THHGame game, Player player, Player opponent, IEnumerable<Card> targets,
             int value)
         {
             float _ = 0;
@@ -880,7 +880,7 @@ namespace Game
             return (float) Math.Log(Math.Max(life, 0)) * 100;
         }
 
-        float calcStealthValue(THHGame game, THHPlayer player, THHPlayer opponent, Card target)
+        float calcStealthValue(THHGame game, Player player, Player opponent, Card target)
         {
             if (player.getField().Contains(target))
                 return target.getAttack(game) - target.getCurrentLife(game);
@@ -899,7 +899,7 @@ namespace Game
         /// <param name="opponent"></param>
         /// <param name="num"></param>
         /// <returns></returns>
-        float calcDrawCardsValue(THHGame game, THHPlayer player, THHPlayer opponent, int num)
+        float calcDrawCardsValue(THHGame game, Player player, Player opponent, int num)
         {
             return num;
         }

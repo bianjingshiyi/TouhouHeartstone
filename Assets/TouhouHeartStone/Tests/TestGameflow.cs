@@ -9,31 +9,31 @@ namespace Tests
 {
     public static class TestGameflow
     {
-        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, params KeyValuePair<int, int>[] yourDeck)
+        public static void createGame(out THHGame game, out Player you, out Player oppo, params KeyValuePair<int, int>[] yourDeck)
         {
             createGame(out game, out you, out oppo, new HearthstoneOption() { shuffle = false }, yourDeck);
         }
-        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, KeyValuePair<int, int>[] yourDeck, KeyValuePair<int, int>[] oppoDeck)
+        public static void createGame(out THHGame game, out Player you, out Player oppo, KeyValuePair<int, int>[] yourDeck, KeyValuePair<int, int>[] oppoDeck)
         {
             createGame(out game, out you, out oppo, new HearthstoneOption() { shuffle = false }, TestMaster.ID, yourDeck, TestMaster.ID, oppoDeck);
         }
-        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, int yourMaster)
+        public static void createGame(out THHGame game, out Player you, out Player oppo, int yourMaster)
         {
             createGame(out game, out you, out oppo, new HearthstoneOption() { shuffle = false }, yourMaster);
         }
-        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, HearthstoneOption option, params KeyValuePair<int, int>[] yourDeck)
+        public static void createGame(out THHGame game, out Player you, out Player oppo, HearthstoneOption option, params KeyValuePair<int, int>[] yourDeck)
         {
             createGame(out game, out you, out oppo, option, TestMaster.ID, yourDeck);
         }
-        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, HearthstoneOption option, int yourMaster, params KeyValuePair<int, int>[] yourDeck)
+        public static void createGame(out THHGame game, out Player you, out Player oppo, HearthstoneOption option, int yourMaster, params KeyValuePair<int, int>[] yourDeck)
         {
             createGame(out game, out you, out oppo, option, yourMaster, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
         }
-        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, int yourMaster, params KeyValuePair<int, int>[] yourDeck)
+        public static void createGame(out THHGame game, out Player you, out Player oppo, int yourMaster, params KeyValuePair<int, int>[] yourDeck)
         {
             createGame(out game, out you, out oppo, new HearthstoneOption() { shuffle = false }, yourMaster, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
         }
-        public static void createGame(out THHGame game, out THHPlayer you, out THHPlayer oppo, HearthstoneOption option,
+        public static void createGame(out THHGame game, out Player you, out Player oppo, HearthstoneOption option,
             int yourMaster, KeyValuePair<int, int>[] yourDeck,
             int oppoMaster, KeyValuePair<int, int>[] oppoDeck)
         {
@@ -56,7 +56,7 @@ namespace Tests
         /// <param name="oppoMaster"></param>
         /// <param name="oppoDeck"></param>
         /// <typeparam name="T"></typeparam>
-        public static void createGame<YourDeck,OppoDeck>(out THHGame game, out THHPlayer you, out THHPlayer oppo, HearthstoneOption option,
+        public static void createGame<YourDeck,OppoDeck>(out THHGame game, out Player you, out Player oppo, HearthstoneOption option,
             int yourMaster, KeyValuePair<int, int>[] yourDeck,
             int oppoMaster, KeyValuePair<int, int>[] oppoDeck) where YourDeck : CardDefine where OppoDeck : CardDefine
         {
@@ -67,7 +67,7 @@ namespace Tests
             oppo = game.createPlayer(2, "玩家2", game.getDefine<MasterCardDefine>(oppoMaster), oppoTrueDeck);
         }
 
-        public static void createGame<YourDeck, OppoDeck>(out THHGame game, out THHPlayer you, out THHPlayer oppo,
+        public static void createGame<YourDeck, OppoDeck>(out THHGame game, out Player you, out Player oppo,
             params KeyValuePair<int, int>[] yourDeck) where YourDeck : CardDefine where OppoDeck : CardDefine
         {
             createGame<YourDeck, OppoDeck>(out game, out you, out oppo, new HearthstoneOption() { shuffle = false }, TestMaster.ID, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
@@ -101,7 +101,7 @@ namespace Tests
             return yourTrueDeck;
         }
 
-        public static void createGameWithoutDeck(out THHGame game, out THHPlayer you, out THHPlayer oppo, HearthstoneOption option = null)
+        public static void createGameWithoutDeck(out THHGame game, out Player you, out Player oppo, HearthstoneOption option = null)
         {
             game = initGameWithoutPlayers(null, option);
             you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), null);

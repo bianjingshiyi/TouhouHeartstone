@@ -479,9 +479,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<PowrOverwhelming>(), 3)));
 
             game.skipUntilCanUse<DefaultServant>(you);
@@ -499,9 +499,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<TestHeal>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<Velen>(), 1)));
 
             game.skipUntilCanUse<Velen>(you);

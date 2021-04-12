@@ -29,9 +29,9 @@ namespace TouhouHeartstone
         {
             return card.define is SpellCardDefine;
         }
-        public static THHPlayer getOwner(this Card card)
+        public static Player getOwner(this Card card)
         {
-            return card.owner as THHPlayer;
+            return card.owner as Player;
         }
         public static int getCost(this Card card, IGame game)
         {
@@ -269,7 +269,7 @@ namespace TouhouHeartstone
         /// <param name="player"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public static bool isAttackable(this Card card, THHGame game, THHPlayer player, Card target, out string tip)
+        public static bool isAttackable(this Card card, THHGame game, Player player, Card target, out string tip)
         {
             if (target == player.getMaster() || player.getField().Contains(target))
             {
@@ -299,7 +299,7 @@ namespace TouhouHeartstone
             tip = null;
             return true;
         }
-        public static bool isForceAttackable(this Card card, THHGame game, THHPlayer player, Card target)
+        public static bool isForceAttackable(this Card card, THHGame game, Player player, Card target)
         {
             if (!(target.pile.name == PILE.FIELD || target.pile.name == PILE.MASTER))//不在战场上
                 return false;
@@ -664,7 +664,7 @@ namespace TouhouHeartstone
         [TranslateMsg]
         const string UNKNOWN_CARD = "这是一张未知的卡牌";
 
-        public static bool isUsable(this Card card, THHGame game, THHPlayer player, out string info)
+        public static bool isUsable(this Card card, THHGame game, Player player, out string info)
         {
             if (game.getCurrentPlayer() != player)//不是你的回合
             {
@@ -780,7 +780,7 @@ namespace TouhouHeartstone
             if (card.define.getActiveEffect() is ITargetEffect targetEffect)
             {
                 List<Card> targetList = new List<Card>();
-                foreach (THHPlayer player in game.players)
+                foreach (Player player in game.players)
                 {
                     if (card.isValidTarget(game, player.getMaster(), targetEffect, null))
                         targetList.Add(player.getMaster());
@@ -796,7 +796,7 @@ namespace TouhouHeartstone
             if (card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect triggerEffect)
             {
                 List<Card> targetList = new List<Card>();
-                foreach (THHPlayer player in game.players)
+                foreach (Player player in game.players)
                 {
                     if (card.isValidTarget(game, player.getMaster(), null, triggerEffect))
                         targetList.Add(player.getMaster());
@@ -896,7 +896,7 @@ namespace TouhouHeartstone
             }
         }
 
-        public static Task activeEffect(this Card card, THHGame game, THHPlayer player, Card[] targets)
+        public static Task activeEffect(this Card card, THHGame game, Player player, Card[] targets)
         {
             ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
             if (triggerEffect != null)
@@ -938,7 +938,7 @@ namespace TouhouHeartstone
                 }
             }
         }
-        public static async Task<AttackEventArg> tryAttack(this Card card, THHGame game, THHPlayer player, Card target)
+        public static async Task<AttackEventArg> tryAttack(this Card card, THHGame game, Player player, Card target)
         {
             if (!card.canAttack(game))
             {
@@ -953,7 +953,7 @@ namespace TouhouHeartstone
             await card.setAttackTimes(game, card.getAttackTimes(game) + 1);
             return await card.attack(game, target);
         }
-        public static Task<AttackEventArg> forceAttack(this Card card, THHGame game, THHPlayer player, Card target)
+        public static Task<AttackEventArg> forceAttack(this Card card, THHGame game, Player player, Card target)
         {
             if (!card.canForceAttack(game))
             {
@@ -1350,7 +1350,7 @@ namespace TouhouHeartstone
         }
         public static async Task<DeathEventArg> die(this IEnumerable<Card> cards, THHGame game)
         {
-            List<THHPlayer> remainPlayerList = new List<THHPlayer>(game.players);
+            List<Player> remainPlayerList = new List<Player>(game.players);
             var eventArg = await game.triggers.doEvent(new DeathEventArg() { infoDic = cards.ToDictionary(c => c, c => default(DeathEventArg.Info)) }, onDie);
             async Task onDie(DeathEventArg arg)
             {
@@ -1399,7 +1399,7 @@ namespace TouhouHeartstone
                 if (remainPlayerList.Count > 0)
                     await game.gameEnd(remainPlayerList.ToArray());
                 else
-                    await game.gameEnd(new THHPlayer[0]);
+                    await game.gameEnd(new Player[0]);
             }
             return eventArg;
         }
@@ -1419,7 +1419,7 @@ namespace TouhouHeartstone
 
             public class Info
             {
-                public THHPlayer player;
+                public Player player;
                 public int position;
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
@@ -1488,7 +1488,7 @@ namespace TouhouHeartstone
         }
         public static async Task fieldToHand(this IEnumerable<Card> cards, THHGame game)
         {
-            foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
+            foreach (IGrouping<Player, Card> g in cards.GroupBy(c => c.getOwner()))
             {
                 int restCount = g.Key.getHand().maxCount - g.Key.getHand().count;
                 if (restCount > 0)
@@ -1588,7 +1588,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static async Task graveToHand(this IEnumerable<Card> cards, THHGame game)
         {
-            foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
+            foreach (IGrouping<Player, Card> g in cards.GroupBy(c => c.getOwner()))
             {
                 int restCount = g.Key.getHand().maxCount - g.Key.getHand().count;
                 if (restCount > 0)
@@ -1626,7 +1626,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static async Task graveToDeck(this IEnumerable<Card> cards, THHGame game, bool random)
         {
-            foreach (IGrouping<THHPlayer, Card> g in cards.GroupBy(c => c.getOwner()))
+            foreach (IGrouping<Player, Card> g in cards.GroupBy(c => c.getOwner()))
             {
                 foreach (var card in g)
                 {
@@ -1655,7 +1655,7 @@ namespace TouhouHeartstone
             return game.triggers.doEvent(new SecretTriggerEventArg() { card = card }, async arg =>
             {
                 game.logger.log("触发陷阱" + card);
-                THHPlayer player = arg.card.getOwner();
+                Player player = arg.card.getOwner();
                 await player.getHead().moveTo(game, arg.card, player.getGrave());
             });
         }
@@ -1699,7 +1699,7 @@ namespace TouhouHeartstone
             return game.triggers.doEvent(new MissionCompleteArg() { card = card }, async arg =>
             {
                 game.logger.log("任务完成 : " + card);
-                THHPlayer player = arg.card.getOwner();
+                Player player = arg.card.getOwner();
                 await player.getHead().moveTo(game, arg.card, player.getGrave());
             });
         }
@@ -1751,7 +1751,7 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="targets">登场效果目标，可以为null</param>
         /// <returns></returns>
-        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, THHGame game, THHPlayer player, Card[] targets)
+        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, THHGame game, Player player, Card[] targets)
         {
 
             IActiveEffect activeEffect = card.define.getActiveEffect();
@@ -1777,7 +1777,7 @@ namespace TouhouHeartstone
         public class ComeOnStageArg : EventArg, IDescribableEventArg
         {
             public Card card;
-            public THHPlayer player;
+            public Player player;
             public Card[] targets;
 
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)

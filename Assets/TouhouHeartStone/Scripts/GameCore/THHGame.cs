@@ -57,19 +57,19 @@ namespace TouhouHeartstone
         /// <param name="master"></param>
         /// <param name="deck">注意，牌库的第一张是牌库的底端</param>
         /// <returns></returns>
-        public THHPlayer createPlayer(int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
+        public Player createPlayer(int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
         {
-            return rule.createPlayer(this, id, name, master.id, deck.Select(d=>d.id).ToArray()) as THHPlayer;
+            return rule.createPlayer(this, id, name, master.id, deck.Select(d=>d.id).ToArray()) as Player;
         }
 
-        public THHPlayer[] players
+        public Player[] players
         {
-            get { return base.players.Cast<THHPlayer>().ToArray(); }
+            get { return base.players.Cast<Player>().ToArray(); }
         }
 
-        public THHPlayer getPlayer(int id)
+        public Player getPlayer(int id)
         {
-            return rule.getPlayer(this, id) as THHPlayer;
+            return rule.getPlayer(this, id) as Player;
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="lastPlayer"></param>
         /// <returns></returns>
-        public THHPlayer getPlayerForNextTurn(THHPlayer lastPlayer)
+        public Player getPlayerForNextTurn(Player lastPlayer)
         {
             int index = Array.IndexOf(getSortedPlayers(), lastPlayer);
             if (index < 0)
@@ -93,12 +93,12 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public THHPlayer getOpponent(Player player)
+        public Player getOpponent(TouhouCardEngine.Player player)
         {
             return players.FirstOrDefault(p => p != player);
         }
 
-        public THHPlayer[] getAllPlayer()
+        public Player[] getAllPlayer()
         {
             return players;
         }
@@ -130,7 +130,7 @@ namespace TouhouHeartstone
         public Card[] findAllCardsInField(Func<Card, bool> filter)
         {
             List<Card> cardList = new List<Card>();
-            foreach (THHPlayer player in players)
+            foreach (Player player in players)
             {
                 if (filter == null || filter.Invoke(player.getMaster()))
                     cardList.Add(player.getMaster());
@@ -170,13 +170,13 @@ namespace TouhouHeartstone
             return e.ToArray();
         }
 
-        public Card[] getAllEnemies(THHPlayer player)
+        public Card[] getAllEnemies(Player player)
         {
-            THHPlayer opponent = getOpponent(player);
+            Player opponent = getOpponent(player);
             return opponent.getField().Concat(new Card[] {opponent.getMaster()}).ToArray();
         }
 
-        public Card[] getAllAllys(THHPlayer player)
+        public Card[] getAllAllys(Player player)
         {
             return player.getField().Concat(new Card[] {player.getMaster()}).ToArray();
         }
@@ -210,7 +210,7 @@ namespace TouhouHeartstone
                 return;
             foreach (var result in initReplaceResponses)
             {
-                THHPlayer player = getPlayer(result.Key);
+                Player player = getPlayer(result.Key);
                 if (result.Value is InitReplaceResponse initReplace)
                     await player.initReplace(this, getCards(initReplace.cardsId));
                 else if (result.Value is SurrenderResponse surrender)
@@ -227,7 +227,7 @@ namespace TouhouHeartstone
                 setCurrentPlayer(getPlayerForNextTurn(getCurrentPlayer()));
             }
 
-            await gameEnd(new THHPlayer[0]);
+            await gameEnd(new Player[0]);
         }
 
         internal async Task init()
@@ -287,7 +287,7 @@ namespace TouhouHeartstone
             });
         }
 
-        public THHPlayer[] getSortedPlayers() => players.OrderBy(player => player.getOrder()).ToArray();
+        public Player[] getSortedPlayers() => players.OrderBy(player => player.getOrder()).ToArray();
 
         internal async Task start()
         {
@@ -296,7 +296,7 @@ namespace TouhouHeartstone
             await triggers.doEvent(new HearthStoneRule.StartEventArg(), async arg =>
             {
                 logger.log("Debug", "游戏开始");
-                foreach (THHPlayer player in getSortedPlayers())
+                foreach (Player player in getSortedPlayers())
                 {
                     await player.setMaxGem(this, getOption().startGem);
                     await player.getInit().moveTo(this, player.getInit()[0, player.getInit().count - 1],
@@ -316,10 +316,10 @@ namespace TouhouHeartstone
             });
         }
 
-        private void setCurrentPlayer(THHPlayer value) => setProp(GAME.CURRENTPLAYER, value);
-        public THHPlayer getCurrentPlayer() => getProp<THHPlayer>(GAME.CURRENTPLAYER);
+        private void setCurrentPlayer(Player value) => setProp(GAME.CURRENTPLAYER, value);
+        public Player getCurrentPlayer() => getProp<Player>(GAME.CURRENTPLAYER);
 
-        async Task turnStart(THHPlayer player)
+        async Task turnStart(Player player)
         {
             if (!isRunning)
                 return;
@@ -357,7 +357,7 @@ namespace TouhouHeartstone
             answers.cancel(answers.getRequests(getCurrentPlayer().id));
         }
 
-        async Task turnLoop(THHPlayer player)
+        async Task turnLoop(Player player)
         {
             if (!isRunning)
                 return;
@@ -391,7 +391,7 @@ namespace TouhouHeartstone
             }
         }
 
-        public async Task turnEnd(THHPlayer player)
+        public async Task turnEnd(Player player)
         {
             if (!isRunning)
                 return;
@@ -436,7 +436,7 @@ namespace TouhouHeartstone
         public Task updateDeath()
         {
             List<Card> deathList = new List<Card>();
-            foreach (THHPlayer player in players)
+            foreach (Player player in players)
             {
                 if (player.getMaster().isDead(this))
                 {
@@ -465,18 +465,18 @@ namespace TouhouHeartstone
                 return Task.CompletedTask;
         }
 
-        internal Task surrender(THHPlayer player)
+        internal Task surrender(Player player)
         {
             logger.log(player + "投降");
             return player.getMaster().die(this);
         }
 
-        public async Task leave(THHPlayer player)
+        public async Task leave(Player player)
         {
             await player.getMaster().die(this);
         }
 
-        internal async Task gameEnd(THHPlayer[] winners)
+        internal async Task gameEnd(Player[] winners)
         {
             if (!isRunning)
                 return;
@@ -552,7 +552,7 @@ namespace TouhouHeartstone
             {
             }
 
-            public NotYourTurnException(Player player) : base("当前回合不是" + player + "的回合")
+            public NotYourTurnException(TouhouCardEngine.Player player) : base("当前回合不是" + player + "的回合")
             {
             }
 
@@ -578,7 +578,7 @@ namespace TouhouHeartstone
             {
             }
 
-            public AlreadyPreparedException(Player player) : base(player + "已经准备过了")
+            public AlreadyPreparedException(TouhouCardEngine.Player player) : base(player + "已经准备过了")
             {
             }
 
@@ -644,7 +644,7 @@ namespace TouhouHeartstone
 
         public HearthstoneOption getOption(CardEngine game) => game.option as HearthstoneOption;
         
-        public Player createPlayer(CardEngine game, int id, string name, int master, int[] deck)
+        public TouhouCardEngine.Player createPlayer(CardEngine game, int id, string name, int master, int[] deck)
         {
             if (game.getDefine(master) is MasterCardDefine masterCardDefine)
             {
@@ -668,11 +668,11 @@ namespace TouhouHeartstone
             return createPlayer(game,id,name,masterCardDefine,game.getDefines(deck));
         }
         
-        public Player createPlayer(CardEngine game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
+        public TouhouCardEngine.Player createPlayer(CardEngine game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
         {
             if (game.players.Any(p => p.id == id))
                 throw new ArgumentException("已经存在ID为" + id + "的玩家");
-            THHPlayer player = new THHPlayer(game, id, name);
+            Player player = new Player(id, name);
             player.addPile(new Pile(game, PILE.MASTER, 1));
             player.addPile(new Pile(game, PILE.SKILL, 1));
             player.addPile(new Pile(game, PILE.DECK));
@@ -694,7 +694,7 @@ namespace TouhouHeartstone
             return player;
         }
         
-        public Player getPlayer(CardEngine game, int id)
+        public TouhouCardEngine.Player getPlayer(CardEngine game, int id)
         {
             return game.players.FirstOrDefault(p => p.id == id);
         }
@@ -757,7 +757,7 @@ namespace TouhouHeartstone
 
         public class StartEventArg : EventArg
         {
-            public Dictionary<THHPlayer, StartInfo> startHandDic = new Dictionary<THHPlayer, StartInfo>();
+            public Dictionary<Player, StartInfo> startHandDic = new Dictionary<Player, StartInfo>();
 
             public class StartInfo
             {
@@ -768,29 +768,29 @@ namespace TouhouHeartstone
 
         public class TurnStartEventArg : EventArg
         {
-            public THHPlayer player;
+            public Player player;
         }
 
         public class TurnEndEventArg : EventArg
         {
-            public THHPlayer player;
+            public Player player;
         }
 
         public class GameEndEventArg : EventArg
         {
-            public THHPlayer[] winners;
+            public Player[] winners;
         }
 
         public class InitReplaceEventArg : EventArg
         {
-            public THHPlayer player;
+            public Player player;
             public Card[] cards;
             public Card[] replacedCards;
         }
 
         public class SetMaxGemEventArg : EventArg, IDescribableEventArg
         {
-            public THHPlayer player;
+            public Player player;
             public int value;
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -823,7 +823,7 @@ namespace TouhouHeartstone
 
         public class BurnEventArg : EventArg, IDescribableEventArg
         {
-            public THHPlayer player;
+            public Player player;
             public Card card;
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -857,7 +857,7 @@ namespace TouhouHeartstone
         /// </summary>
         public class ChooseOneEventArg : EventArg, IDescribableEventArg
         {
-            public THHPlayer player;
+            public Player player;
             public IEnumerable<Card> options;
             public Card choose;
             public bool isShow = true;
@@ -902,7 +902,7 @@ namespace TouhouHeartstone
 
         public class UseEventArg : EventArg, IDescribableEventArg
         {
-            public THHPlayer player;
+            public Player player;
             public Card card;
             public int position;
             public int cost;
@@ -953,7 +953,7 @@ namespace TouhouHeartstone
 
         public class EnterFieldEventArg : EventArg, IDescribableEventArg
         {
-            public THHPlayer player;
+            public Player player;
             public Pile from;
             public Card card;
             public int position;
@@ -991,7 +991,7 @@ namespace TouhouHeartstone
 
         public class RebornEventArg : EventArg, IDescribableEventArg
         {
-            public THHPlayer player;
+            public Player player;
             public int position;
             public Card card;
             public Pile pile;
@@ -1029,7 +1029,7 @@ namespace TouhouHeartstone
 
         public class RevealArg : EventArg, IDescribableEventArg
         {
-            public THHPlayer player;
+            public Player player;
             public Card card;  //被揭示的牌
 
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)

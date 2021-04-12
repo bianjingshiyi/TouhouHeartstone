@@ -23,7 +23,7 @@ namespace TouhouHeartstone
                     cost = generated.getProp<int>(nameof(cost));
             }
         }
-        public override string isUsable(CardEngine engine, Player player, Card card)
+        public override string isUsable(CardEngine engine, TouhouCardEngine.Player player, Card card)
         {
             return null;
         }

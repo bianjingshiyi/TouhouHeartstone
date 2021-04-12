@@ -644,9 +644,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27)
                     .Concat(Enumerable.Repeat(game.getDefine<WriggleNightbug_N>(), 3)));
 
@@ -667,9 +667,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27)
                     .Concat(Enumerable.Repeat(game.getDefine<MystiaLorelei_N>(), 3)));
 
@@ -724,9 +724,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<LuckyCoin>() as CardDefine, 15)
                     .Concat(Enumerable.Repeat(game.getDefine<KamishirasawaKeine_Human_N>(), 1)));
 
@@ -745,9 +745,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29)
                     .Concat(Enumerable.Repeat(game.getDefine<HuziwaraNoMokou_N>(), 1)));
 

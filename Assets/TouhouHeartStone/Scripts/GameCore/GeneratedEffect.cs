@@ -42,23 +42,23 @@ namespace TouhouHeartstone
         {
             actionScript = script;
         }
-        public override bool checkCondition(CardEngine engine, Player player, Card card, object[] vars)
+        public override bool checkCondition(CardEngine engine, TouhouCardEngine.Player player, Card card, object[] vars)
         {
             throw new NotImplementedException();
         }
-        public override bool checkTargets(CardEngine engine, Player player, Card card, object[] targets)
+        public override bool checkTargets(CardEngine engine, TouhouCardEngine.Player player, Card card, object[] targets)
         {
             throw new NotImplementedException();
         }
-        public override Task execute(CardEngine engine, Player player, Card card, object[] vars, object[] targets)
+        public override Task execute(CardEngine engine, TouhouCardEngine.Player player, Card card, object[] vars, object[] targets)
         {
             throw new NotImplementedException();
         }
-        public override bool checkTarget(CardEngine engine, Player player, Card card, Card[] targetCards)
+        public override bool checkTarget(CardEngine engine, TouhouCardEngine.Player player, Card card, Card[] targetCards)
         {
             throw new NotImplementedException();
         }
-        public override void execute(CardEngine engine, Player player, Card card, Card[] targetCards)
+        public override void execute(CardEngine engine, TouhouCardEngine.Player player, Card card, Card[] targetCards)
         {
             throw new NotImplementedException();
         }

@@ -27,14 +27,14 @@ namespace UI
             get { return ui.getManager<TableManager>().game; }
         }
         [Obsolete]
-        public THHPlayer player
+        public Player player
         {
             get { return ui.getManager<TableManager>().player; }
         }
         //partial void onAwake()
         //{
         //}
-        public void setGame(THHGame game, THHPlayer player)
+        public void setGame(THHGame game, Player player)
         {
             InitReplaceDialog.hide();
             TurnTipImage.hide();
@@ -70,7 +70,7 @@ namespace UI
                 TurnEndButton.GetComponent<Image>().color = Color.gray;
             }
 
-            THHPlayer opponent = game.getOpponent(player);
+            Player opponent = game.getOpponent(player);
             if (opponent == null)
                 return;
         }

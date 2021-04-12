@@ -280,7 +280,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer player = card.getOwner();
+            Player player = card.getOwner();
             await player.getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
             Card[] servants = game.getOpponent(player).getField().OrderBy(c => c.getCurrentLife(game)).ToArray();
             foreach (Card target in servants)
@@ -460,7 +460,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     a1.action = async arg =>
                     {
-                        THHPlayer player = c1.getOwner();
+                        Player player = c1.getOwner();
                         await player.getItem().addBuff(g1,new GeneratedBuff(ID,new LifeModifier(c1.getLife(g1))));
                         await player.getHand().moveTo(g1,c1,player.getGrave());
                     };

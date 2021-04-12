@@ -24,7 +24,7 @@ namespace Game
             public int[] Deck;
             public int ID;
             public string Name;
-            public ReplayPlayer(THHPlayer p)
+            public ReplayPlayer(Player p)
             {
                 MasterCard = p.getMaster().define.id;
                 Deck = p.getDeck().Select(d => d.define.id).ToArray();

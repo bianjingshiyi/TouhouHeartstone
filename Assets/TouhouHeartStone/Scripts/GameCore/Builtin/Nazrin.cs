@@ -367,7 +367,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer player = card.getOwner();
+            Player player = card.getOwner();
             var lowCostCards = player.getDeck().OrderBy(c => c.getCost(game)).Take(2);
             foreach (var c in lowCostCards)
             {

@@ -1,6 +1,7 @@
 ﻿using Game;
 using TouhouHeartstone;
 using System;
+using TouhouCardEngine;
 using UI;
 namespace Game
 {
@@ -10,7 +11,7 @@ namespace Game
         {
             table.setMaster(table.ui.SelfMaster, table.player.getMaster());
             table.setSkill(table.ui.SelfSkill, table.player.getSkill());
-            THHPlayer opponent = table.game.getOpponent(table.player);
+            Player opponent = table.game.getOpponent(table.player);
             table.setMaster(table.ui.EnemyMaster, opponent.getMaster());
             table.setSkill(table.ui.EnemySkill, opponent.getSkill());
             return true;

@@ -25,9 +25,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<PowrOverwhelming>(), 3)));
 
             game.skipUntilCanUse<DefaultServant>(you);
@@ -48,9 +48,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<TestHeal>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<Velen>(), 1)));
 
             game.skipUntilCanUse<Velen>(you);
@@ -69,9 +69,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<XWave>(), 1)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
@@ -115,9 +115,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<WildYoukaiRabbit>() as CardDefine, 1));
 
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 4);
@@ -136,9 +136,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 10));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 7).Concat(Enumerable.Repeat(game.getDefine<MindShaker>(), 1)));
 
             game.skipUntilHasGem(oppo, 10);
@@ -169,9 +169,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<DisorderEye>(), 1)));
 
             game.skipUntilCanUse<DefaultServant>(oppo);
@@ -195,9 +195,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<TestFreezeBrain>(), 1)));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<VisionaryTuning>(), 1)));
 
 
@@ -225,9 +225,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<FieldUltraViolet>(), 1)));
 
             game.skipUntilHasGem(you, 3);
@@ -251,9 +251,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1).Concat(Enumerable.Repeat(game.getDefine<MindDropping>(), 1)));
             game.skipUntilCanUse<DefaultServant>(oppo);
             Card servant = oppo.getHand().getCard<DefaultServant>();
@@ -279,9 +279,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<FreezingTrap>() as CardDefine, 9).Concat(Enumerable.Repeat(game.getDefine<TewiInaba>(), 1)));
 
             game.skipUntilCanUse<TewiInaba>(you);
@@ -302,9 +302,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 1));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 3).Concat(Enumerable.Repeat(game.getDefine<PeerlessPatriotsElixir>(), 4)));
 
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 4);
@@ -324,9 +324,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<FreezingTrap>() as CardDefine, 9).Concat(Enumerable.Repeat(game.getDefine<LunaticGun>(), 1)));
 
             game.skipUntilCanUse<LunaticGun>(you);
@@ -357,9 +357,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<TestHeal>() as CardDefine, 29).Concat(Enumerable.Repeat(game.getDefine<Eirin_TheMaster>(), 1)));
 
             game.skipUntilCanUse<Eirin_TheMaster>(you);
@@ -431,9 +431,9 @@ namespace Tests
             {
                 shuffle = false
             });
-            THHPlayer oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            THHPlayer you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
+            Player you = game.createPlayer(1, "玩家1", game.getDefine<Reisen>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 27).Concat(Enumerable.Repeat(game.getDefine<FieldUltraRed>(), 3)));
 
             game.skipUntilHasGem(you, 10);

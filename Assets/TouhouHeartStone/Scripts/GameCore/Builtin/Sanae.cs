@@ -27,11 +27,11 @@ namespace TouhouHeartstone.Builtin
         /// <param name="game"></param>
         /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
         /// <returns></returns>
-        public static Task<RevealDuelArg> revealDuel(THHPlayer player, THHGame game, int define = 0)
+        public static Task<RevealDuelArg> revealDuel(Player player, THHGame game, int define = 0)
         {
             return game.triggers.doEvent(new RevealDuelArg() {player = player}, async arg =>
             {
-                THHPlayer oppo = game.getOpponent(player);
+                Player oppo = game.getOpponent(player);
                 arg.youCard = await player.Reveal(game, player.getDeck(), define);
                 arg.yourCardSnapshot = arg.youCard != null ? new CardSnapshot(game, arg.youCard) : null;
                 arg.oppoCard = await oppo.Reveal(game, oppo.getDeck(), define);
@@ -55,7 +55,7 @@ namespace TouhouHeartstone.Builtin
             /// <summary>
             /// 对决发起方
             /// </summary>
-            public THHPlayer player;
+            public Player player;
 
             /// <summary>
             /// 发起方揭示的牌
@@ -153,7 +153,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer you = card.getOwner();
+            Player you = card.getOwner();
             var duel = await Sanae.revealDuel(you, game);
             if (duel.result)
             {
@@ -282,7 +282,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer you = card.getOwner();
+            Player you = card.getOwner();
             var duel = await Sanae.revealDuel(you, game);
             await game.getOpponent(you).getField().damage(game, card, 2);
             if (duel.result)
@@ -307,7 +307,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
-                THHPlayer you = card.getOwner();
+                Player you = card.getOwner();
                 var duel = await Sanae.revealDuel(you, game, 2);
                 await target.getNearbyCards().damage(game, card, you.getSpellDamage(game, 4));
                 if (duel.result)
@@ -355,7 +355,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer you = card.getOwner();
+            Player you = card.getOwner();
             Card god = you.getDeck().Where(c => c.hasTag(game, TAG.GOD)).random(game);
             if (god != null)
             {
@@ -650,8 +650,8 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID, async (game, card, p) =>
             {
                 int index = game.randomInt(1, 4);
-                THHPlayer you = card.getOwner();
-                THHPlayer oppo = game.getOpponent(you);
+                Player you = card.getOwner();
+                Player oppo = game.getOpponent(you);
                 switch (index)
                 {
                     case 1:
@@ -823,8 +823,8 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            THHPlayer you = card.getOwner();
-            THHPlayer oppo = game.getOpponent(you);
+            Player you = card.getOwner();
+            Player oppo = game.getOpponent(you);
             //int index = 0;
 
             await you.getField().fieldToDeck(game, true);
