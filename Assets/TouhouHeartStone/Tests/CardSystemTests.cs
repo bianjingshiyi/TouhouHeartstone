@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -677,6 +678,16 @@ namespace Tests
 
             you.cmdTurnEnd(game);
             game.Dispose();
+        }
+
+        [Test]
+        public void CategoryFlagTest()
+        {
+            THHGame game = TestGameflow.initStandardGame();
+            Assert.AreEqual(0, game.getDefinesOf(CategoryFlag.item).Count());
+            Assert.AreEqual(7, game.getDefinesOf(CategoryFlag.master | CategoryFlag.allCharacters).Count());
+            Assert.AreEqual(2,game.getDefinesOf(CategoryFlag.item | CategoryFlag.youmu).Count());
+            Assert.AreEqual(0, game.getDefinesOf(CategoryFlag.item | CategoryFlag.allCharacters));
         }
     }
 }

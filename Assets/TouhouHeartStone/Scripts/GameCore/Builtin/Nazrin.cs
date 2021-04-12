@@ -10,7 +10,7 @@ namespace TouhouHeartstone.Builtin
 {
     public class Nazrin : MasterCardDefine
     {
-        public const int ID = 0x00800000 | CATEGORY.MASTER | 0x000;
+        public const int ID = CATEGORY.CHARACTER_NAZRIN | CATEGORY.MASTER | 0x000;
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = Nazrin_Skill.ID;

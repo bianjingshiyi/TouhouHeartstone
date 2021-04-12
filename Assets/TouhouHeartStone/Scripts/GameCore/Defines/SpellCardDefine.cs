@@ -6,8 +6,7 @@ namespace TouhouHeartstone
     {
         public override string type { get; set; } = DEFINE.SPELL;
         public abstract int cost { get; set; }
-        public virtual string[] keywords { get; set; } = new string[0];
-        public virtual bool isToken { get; set; } = false;
+        public virtual string[] keywords { get; set; } = new string[0]; 
         [Obsolete("使用KEYWORD.SECRET作为替代")]
         public virtual bool isSecret { get; set; } = false;
         public virtual string[] tags { get; set; } = new string[0];

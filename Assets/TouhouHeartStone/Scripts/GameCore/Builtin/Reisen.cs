@@ -12,7 +12,7 @@ namespace TouhouHeartstone.Builtin
 {
     public class Reisen : MasterCardDefine
     {
-        public const int ID = 0x00600000 | CATEGORY.MASTER | 0x000;
+        public const int ID = CATEGORY.CHARACTER_REISEN | CATEGORY.MASTER | 0x000;
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = LunaticShoot.ID;//英雄技能的ID

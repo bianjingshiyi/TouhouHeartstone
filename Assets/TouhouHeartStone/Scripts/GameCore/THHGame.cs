@@ -180,8 +180,11 @@ namespace TouhouHeartstone
         {
             return player.getField().Concat(new Card[] {player.getMaster()}).ToArray();
         }
-
-
+        
+        public IEnumerable<CardDefine> getDefinesOf(CategoryFlag flag)
+        {
+            return flag.getDefines(this);
+        }
 
         #endregion
 

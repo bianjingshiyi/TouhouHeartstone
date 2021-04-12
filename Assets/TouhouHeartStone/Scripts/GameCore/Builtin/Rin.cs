@@ -10,7 +10,7 @@ namespace TouhouHeartstone.Builtin
 {
     public class Rin : MasterCardDefine
     {
-        public const int ID = 0x00700000 | CATEGORY.MASTER | 0x000;
+        public const int ID = CATEGORY.CHARACTER_RIN | CATEGORY.MASTER | 0x000;
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = Nekomatarize.ID;

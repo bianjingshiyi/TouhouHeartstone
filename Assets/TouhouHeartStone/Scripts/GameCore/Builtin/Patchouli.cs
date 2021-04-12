@@ -9,7 +9,7 @@ namespace TouhouHeartstone.Builtin
 {
     public class Patchouli : MasterCardDefine
     {
-        public const int ID = 0x00400000 | CATEGORY.MASTER | 0x000;
+        public const int ID = CATEGORY.CHARACTER_PATCHOULI | CATEGORY.MASTER | 0x000;
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = SummerFire.ID;
@@ -901,7 +901,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Asthma : SpellCardDefine
     {
-        public const int ID = MultiCast.ID | CATEGORY.TOKEN | 0x000;
+        public const int ID = Patchouli.ID | CATEGORY.TOKEN | 0x000;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.AUTOCAST };
