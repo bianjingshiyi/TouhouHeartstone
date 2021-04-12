@@ -621,8 +621,66 @@ namespace TouhouHeartstone
 
 
             }
+
+
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="game">game</param>
+        /// <param name="define">设定随机池的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
+        /// <param name="isFull">是否是全随机池，false则为本角色牌+中立牌</param>
+        /// <returns></returns>
+        public static List<Card> getNormalRandomPool(this Player player,THHGame game, int define = 0, bool isFull = false)
+        {
+            int MasterID = player.getMaster().id;
+            List<Card> cards = new List<Card>();
+            IEnumerable<CardDefine> defines;
+            if (isFull)
+            {
+                switch (define)
+                {
+                    case 0:
+                        defines = game.getDefines().Where(c => (c is ServantCardDefine x ? !x.isToken : (c is SpellCardDefine y ? !y.isToken : (c is ItemCardDefine z ? !z.isToken : false))) && ((c.id >> 5) == (CATEGORY.CHARACTER_NAZRIN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_PATCHOULI >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_REISEN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_RIN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_SANAE >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_YOUMU >> 5))).ToList();
+                        return game.createCards(defines.ToArray()).ToList();
+                    case 1:
+                        defines = game.getDefines().Where(c => (c is SpellCardDefine y ? !y.isToken : false) && ((c.id >> 5) == (CATEGORY.CHARACTER_NAZRIN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_PATCHOULI >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_REISEN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_RIN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_SANAE >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_YOUMU >> 5))).ToList();
+                        return game.createCards(defines.ToArray()).ToList();
+                    case 2:
+                        defines = game.getDefines().Where(c => (c is ServantCardDefine y ? !y.isToken : false) && ((c.id >> 5) == (CATEGORY.CHARACTER_NAZRIN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_PATCHOULI >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_REISEN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_RIN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_SANAE >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_YOUMU >> 5))).ToList();
+                        return game.createCards(defines.ToArray()).ToList();
+                    case 3:
+                        defines = game.getDefines().Where(c => (c is ItemCardDefine y ? !y.isToken : false) && ((c.id >> 5) == (CATEGORY.CHARACTER_NAZRIN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_PATCHOULI >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_REISEN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_RIN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_SANAE >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_YOUMU >> 5))).ToList();
+                        return game.createCards(defines.ToArray()).ToList();
+                    default:
+                        return null;
+                }
+                
+            }
+            else
+            {
+                switch (define)
+                {
+                    case 0:
+                        defines = game.getDefines().Where(c => (c is ServantCardDefine x ? !x.isToken : (c is SpellCardDefine y ? !y.isToken : (c is ItemCardDefine z? !z.isToken: false))) && ( (c.id >> 5) == (MasterID >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5))).ToList();
+                        return game.createCards(defines.ToArray()).ToList();
+                    case 1:
+                        defines = game.getDefines().Where(c => (c is SpellCardDefine y ? !y.isToken : false) && ((c.id >> 5) == (MasterID >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5))).ToList();
+                        return game.createCards(defines.ToArray()).ToList();
+                    case 2:
+                        defines = game.getDefines().Where(c => (c is ServantCardDefine y ? !y.isToken : false) && ((c.id >> 5) == (MasterID >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5))).ToList();
+                        return game.createCards(defines.ToArray()).ToList();
+                    case 3:
+                        defines = game.getDefines().Where(c => (c is ItemCardDefine y ? !y.isToken : false) && ((c.id >> 5) == (MasterID >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5))).ToList();
+                        return game.createCards(defines.ToArray()).ToList();
+                    default:
+                        return null;
+                }
+            }
+
+            
+        }
 
         #region Command
         public static Task cmdInitReplace(this Player player,THHGame game, params Card[] cards)
@@ -968,5 +1026,7 @@ namespace TouhouHeartstone
                 };
             }
         }
+
+        
     }
 }

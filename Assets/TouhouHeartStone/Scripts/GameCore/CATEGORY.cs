@@ -24,6 +24,7 @@ namespace TouhouHeartstone
         public const int CHARACTER_SANAE = 0x00300000;
         public const int CHARACTER_PATCHOULI = 0x00400000;
         public const int CHARACTER_REISEN = 0x00600000;
+        public const int CHARACTER_NAZRIN = 0x00800000;
 
         public const int TOKEN = 0x00000800;
 

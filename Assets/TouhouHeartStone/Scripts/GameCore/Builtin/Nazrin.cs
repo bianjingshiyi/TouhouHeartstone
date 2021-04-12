@@ -84,8 +84,9 @@ namespace TouhouHeartstone.Builtin
             async (game, card, arg) =>
             {
                 //这是什么，把arg里的card换成选中的牌不就行了吗？
-                arg.isCanceled = true;
-                await card.getOwner().searchPile(game,card.getOwner().getDeck(),false,3);
+                var search = await card.getOwner().searchPile(game,card.getOwner().getDeck(),false,3);
+                arg.card = search.choose;
+                await card.damage(game,card,1);
             }),
             
         };
@@ -124,7 +125,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x004;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.MISSION }; 
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.MISSION ,KEYWORD.UNIQUE}; 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new MissionTrigger<HearthStoneRule.EnterFieldEventArg>((game,card,arg)=>
@@ -160,7 +161,7 @@ namespace TouhouHeartstone.Builtin
             {
                 i = c.getCost(game);
                 await c.setDefine(game, game.getDefine<Nazrin_06>());
-                await c.addModifier(game, new CostModifier(i - game.getDefine<Nazrin_06>().cost));
+                await c.addModifier(game, new CostModifier(i,true));
             }
         }
     }
@@ -172,7 +173,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x006;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 5;
+        public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
 
         public override IEffect[] effects { get; set; } = new IEffect[]
@@ -182,11 +183,12 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            CardDefine[] defines = game.getDefines().Where(c => c.hasKeyword(KEYWORD.UNIQUE) && c is ServantCardDefine s && !s.isToken).ToArray();
-            Card[] unqueCards = game.createCards(defines);
+            //CardDefine[] defines = game.getDefines().Where(c => c.hasKeyword(KEYWORD.UNIQUE) && c is ServantCardDefine s && !s.isToken).ToArray();
+            List<Card> unqueCards = card.getOwner().getNormalRandomPool(game, 2, true).Where(c => c.define.hasKeyword(KEYWORD.UNIQUE)).ToList();
             var arg = await card.getOwner().searchPile(game, unqueCards);
             await card.getOwner().tryAddCardToHand(game, arg.choose);
-            arg.choose.addBuff(game, new GeneratedBuff(ID, new CostModifier(-arg.choose.define.getCost())));
+            await arg.choose.addBuff(game, new GeneratedBuff(ID, new CostModifier(0,true)));
+           
         }
     }
 
@@ -207,8 +209,8 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
-            CardDefine[] defines = game.getDefines().Where(c => ((c.id >> 5) == (Nazrin.ID >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5)) && c is ServantCardDefine s && !s.isToken).ToArray();
-            Card[] servantCards = game.createCards(defines);
+            //CardDefine[] defines = game.getDefines().Where(c => ((c.id >> 5) == (Nazrin.ID >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5)) && c is ServantCardDefine s && !s.isToken).ToArray();
+            List<Card> servantCards = card.getOwner().getNormalRandomPool(game, 2);
             var arg1 = await card.getOwner().searchPile(game, servantCards,title: "探索地下洞穴");           
             await card.getOwner().tryAddCardToHand(game,arg1.choose);
             await arg1.choose.addBuff(game, new GeneratedBuff(ID, new CostModifier(5, true), new LifeModifier(5, true), new AttackModifier(5, true)));
@@ -389,9 +391,9 @@ namespace TouhouHeartstone.Builtin
         
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<HearthStoneRule.EnterFieldEventArg>(PILE.FIELD, (game, card, arg) =>
+            new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD, (game, card, arg) =>
             {
-                return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner();
+                return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner() && arg.card.isServant();
             },null,async(game,card,arg)=>
             {
                 await card.getOwner().createToken(game,game.getDefine<Nazrin_00>());
@@ -417,8 +419,8 @@ namespace TouhouHeartstone.Builtin
         {
             for(int i=0; i<3; i++)
             {
-                CardDefine[] defines = game.getDefines().Where(c => ((c.id >> 5) == (Nazrin.ID >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5)) && c is ServantCardDefine s && !s.isToken).ToArray();
-                Card[] servantCards = game.createCards(defines);
+                //CardDefine[] defines = game.getDefines().Where(c => ((c.id >> 5) == (Nazrin.ID >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5)) && c is ServantCardDefine s && !s.isToken).ToArray();
+                List<Card> servantCards = card.getOwner().getNormalRandomPool(game, 2);
                 var arg1 = await card.getOwner().searchPile(game, servantCards);
                 await card.getOwner().tryAddCardToHand(game, arg1.choose);               
             }
@@ -468,10 +470,13 @@ namespace TouhouHeartstone.Builtin
                 await card.getOwner().createToken(game,game.getDefine<Nazrin_00>());
                 await game.updateDeath();
                 
-            })
+            },PileFlag.both | PileFlag.field)
         };
     }
 
+    /// <summary>
+    /// 星
+    /// </summary>
     public class Nazrin_19 : ServantCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SERVANT | 0x019;
@@ -488,7 +493,7 @@ namespace TouhouHeartstone.Builtin
             },null,async(game,card,arg)=>
             {
                 await card.getOwner().tryAddCardToHand(game,arg.card);
-                await arg.card.addBuff(game, new GeneratedBuff(ID, new CostModifier(5), new AttackModifier(5), new LifeModifier(5)));
+                await arg.card.addBuff(game, new GeneratedBuff(ID, new CostModifier(5,true), new AttackModifier(5,true), new LifeModifier(5,true)));
             })
         };
     }
