@@ -160,7 +160,7 @@ namespace TouhouHeartstone.Builtin
             {
                 i = c.getCost(game);
                 await c.setDefine(game, game.getDefine<Nazrin_06>());
-                await c.addModifier(game, new CostModifier(i-c.define.getCost()));
+                await c.addModifier(game, new CostModifier(i - game.getDefine<Nazrin_06>().cost));
             }
         }
     }
@@ -186,7 +186,7 @@ namespace TouhouHeartstone.Builtin
             Card[] unqueCards = game.createCards(defines);
             var arg = await card.getOwner().searchPile(game, unqueCards);
             await card.getOwner().tryAddCardToHand(game, arg.choose);
-            await card.addBuff(game, new GeneratedBuff(ID, new CostModifier(-card.define.getCost())));
+            arg.choose.addBuff(game, new GeneratedBuff(ID, new CostModifier(-arg.choose.define.getCost())));
         }
     }
 
