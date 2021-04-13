@@ -398,39 +398,12 @@ namespace TouhouHeartstone
         }
 
         /// <summary>
-        /// 清理战场上死亡的随从
+        /// 死亡结算，清理战场上死亡的随从
         /// </summary>
         /// <returns></returns>
         public static Task updateDeath(this CardEngine game)
         {
-            List<Card> deathList = new List<Card>();
-            foreach (Player player in game.players)
-            {
-                if (player.getMaster().isDead(game))
-                {
-                    deathList.Add(player.getMaster());
-                }
-
-                if (player.getItem() != null && player.getItem().isDead(game))
-                {
-                    deathList.Add(player.getItem());
-                }
-
-                foreach (Card card in player.getField())
-                {
-                    if (card.isDead(game))
-                    {
-                        deathList.Add(card);
-                    }
-                }
-            }
-
-            if (deathList.Count > 0)
-            {
-                return deathList.die(game);
-            }
-            else
-                return Task.CompletedTask;
+            return game.getRule().updateDeath(game);
         }
 
         internal static Task surrender(this CardEngine game,Player player)
@@ -697,6 +670,42 @@ namespace TouhouHeartstone
             }
 
             return card;
+        }
+        
+        /// <summary>
+        /// 死亡结算，清理战场上死亡的随从
+        /// </summary>
+        /// <returns></returns>
+        public Task updateDeath(CardEngine game)
+        {
+            List<Card> deathList = new List<Card>();
+            foreach (Player player in game.players)
+            {
+                if (player.getMaster().isDead(game))
+                {
+                    deathList.Add(player.getMaster());
+                }
+
+                if (player.getItem() != null && player.getItem().isDead(game))
+                {
+                    deathList.Add(player.getItem());
+                }
+
+                foreach (Card card in player.getField())
+                {
+                    if (card.isDead(game))
+                    {
+                        deathList.Add(card);
+                    }
+                }
+            }
+
+            if (deathList.Count > 0)
+            {
+                return deathList.die(game);
+            }
+            else
+                return Task.CompletedTask;
         }
 
 

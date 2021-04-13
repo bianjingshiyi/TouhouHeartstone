@@ -60,8 +60,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
-                await target.addBuff(game, new GeneratedBuff(ID,
-                    new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.SHIELD)));
+                await target.addKeywords(game, KEYWORD.SHIELD);
             }, PileFlag.both | PileFlag.field)
         };
     }
@@ -326,7 +325,7 @@ namespace TouhouHeartstone.Builtin
             {
                 var arg1 = await card.getOwner().createToken(game, game.getDefine<Nazrin_00>());
                 await arg1.card.addBuff(game,
-                    new GeneratedBuff(ID, new AttackModifier(2),
+                    new GeneratedBuff(ID, new AttackModifier(1),
                         new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
             }
         }
@@ -456,7 +455,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 棒符【娜兹玲棒】 <b>唯一</b>每当你使用一张<b>唯一</b>仆从牌后，将其5/5的复制置入你的手牌并使其灵力值消耗变为(5)点。
+    /// 棒符【娜兹玲棒】 消灭一个随从并召唤一只老鼠
     /// </summary>
     public class Nazrin_18 : SpellCardDefine
     {
@@ -496,7 +495,7 @@ namespace TouhouHeartstone.Builtin
                            arg.card.hasKeyword(game, KEYWORD.UNIQUE) && arg.card.isServant();
                 }, null, async (game, card, arg) =>
                 {
-                    await card.getOwner().tryAddCardToHand(game, arg.card);
+                    await card.getOwner().tryAddCardToHand(game, game.createCard(arg.card.define));
                     await arg.card.addBuff(game,
                         new GeneratedBuff(ID, new CostModifier(5, true), new AttackModifier(5, true),
                             new LifeModifier(5, true)));

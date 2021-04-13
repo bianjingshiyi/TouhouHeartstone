@@ -452,13 +452,13 @@ namespace TouhouHeartstone
             Card card = game.createCard<T>();
             return player.getHand().add(game, card);
         }
-        public static Task addCardToHand(this Player player,CardDefine define, CardEngine game)
-        {
-            if (player.getHand().isFull)
-                return Task.CompletedTask;
-            Card card = game.createCard(define);
-            return player.getHand().add(game, card);
-        }
+        /// <summary>
+        /// Warning: 别对在牌堆中的牌使用这个方法
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
         public static async Task<bool> tryAddCardToHand(this Player player,CardEngine game, Card card)
         {
             if (player.getHand().isFull)
