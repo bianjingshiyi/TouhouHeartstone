@@ -156,6 +156,6 @@ namespace TouhouHeartstone
         nazrin = 0b_0000001000000000000,
         allCharacters =  neutral | sanae | patchouli | youmu | reisen | nazrin,
         allTypes = master | skill | servant | spell | item,
-        all = allCharacters | allTypes,
+        all = allCharacters | allTypes | token,
     }
 }

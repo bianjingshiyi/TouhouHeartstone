@@ -330,14 +330,14 @@ namespace TouhouHeartstone
             return game.triggers.doEvent(new HearthStoneRule.EnterFieldEventArg() { player = player, from = from, card = card, position = position }, onEnterField);
             async Task onEnterField(HearthStoneRule.EnterFieldEventArg arg)
             {
-                Player p = arg.player;
+                player = arg.player;
                 from = arg.from;
                 card = arg.card;
                 position = arg.position;
                 if (from != null)
-                    game.logger.log(p + "将" + arg.card + "从" + arg.from + "置入战场，位于" + arg.position);
+                    game.logger.log(player + "将" + arg.card + "从" + arg.from + "置入战场，位于" + arg.position);
                 else
-                    game.logger.log(p + "将" + arg.card + "置入战场，位于" + arg.position);
+                    game.logger.log(player + "将" + arg.card + "置入战场，位于" + arg.position);
                 if (card.define is ServantCardDefine servant)//设置随从状态
                 {
                     await card.setDead(game, false);
@@ -345,9 +345,9 @@ namespace TouhouHeartstone
                     await card.setReady(game, false);
                 }
                 if (from != null)
-                    await from.moveTo(game, arg.card, p.getField(), arg.position);//从某pile召唤随从
+                    await from.moveTo(game, arg.card, player.getField(), arg.position);//从某pile召唤随从
                 else
-                    await p.getField().insert(game, card, position);//虚空生成随从
+                    await player.getField().insert(game, card, position);//虚空生成随从
                 arg.attack = card.getAttack(game);
                 arg.life = card.getLife(game);
             }
@@ -626,7 +626,7 @@ namespace TouhouHeartstone
         }
 
         /// <summary>
-        /// 
+        /// TODO: 每当这个方法被使用，引擎会做大约100张卡，然后使用其中的几张（
         /// </summary>
         /// <param name="game">game</param>
         /// <param name="define">设定随机池的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
