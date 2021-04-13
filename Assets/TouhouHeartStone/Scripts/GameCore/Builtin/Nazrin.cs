@@ -180,8 +180,10 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             //CardDefine[] defines = game.getDefines().Where(c => c.hasKeyword(KEYWORD.UNIQUE) && c is ServantCardDefine s && !s.isToken).ToArray();
-            List<Card> unqueCards = card.getOwner().getNormalRandomPool(game, 2, true)
-                .Where(c => c.define.hasKeyword(KEYWORD.UNIQUE)).ToList();
+            List<Card> unqueCards = card.getOwner().getNormalRandomPool((g,d)=> 
+            {
+                return d is ServantCardDefine && d.hasKeyword(KEYWORD.UNIQUE);
+            },game, 3, true).ToList();
             var arg = await card.getOwner().searchPile(game, unqueCards);
             await card.getOwner().tryAddCardToHand(game, arg.choose);
             await arg.choose.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true)));
@@ -206,7 +208,10 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             //CardDefine[] defines = game.getDefines().Where(c => ((c.id >> 5) == (Nazrin.ID >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5)) && c is ServantCardDefine s && !s.isToken).ToArray();
-            List<Card> servantCards = card.getOwner().getNormalRandomPool(game, 2);
+            List<Card> servantCards = card.getOwner().getNormalRandomPool((g, d) =>
+            {
+                return d is ServantCardDefine;
+            },game, 3);
             var arg1 = await card.getOwner().searchPile(game, servantCards, title: "探索地下洞穴");
             await card.getOwner().tryAddCardToHand(game, arg1.choose);
             await arg1.choose.addBuff(game,
@@ -415,10 +420,13 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(THHGame game, Card card)
         {
+            List<Card> servantCards = new List<Card>();
             for (int i = 0; i < 3; i++)
             {
-                //CardDefine[] defines = game.getDefines().Where(c => ((c.id >> 5) == (Nazrin.ID >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5)) && c is ServantCardDefine s && !s.isToken).ToArray();
-                List<Card> servantCards = card.getOwner().getNormalRandomPool(game, 2);
+                servantCards = card.getOwner().getNormalRandomPool((g, d) =>
+                {
+                    return d is ServantCardDefine;
+                }, game, 3);
                 var arg1 = await card.getOwner().searchPile(game, servantCards);
                 await card.getOwner().tryAddCardToHand(game, arg1.choose);
             }

@@ -135,6 +135,8 @@ namespace TouhouHeartstone
 
             return catInRange && charInRange;
         }
+
+        
     }
     
     [Flags]

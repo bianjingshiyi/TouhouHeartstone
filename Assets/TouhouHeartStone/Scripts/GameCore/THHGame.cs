@@ -87,8 +87,11 @@ namespace TouhouHeartstone
 
         #endregion
 
-        #region Card
-
+        #region Card       
+        public THHCardDefine[] getTHHDefines()
+        {
+            return (THHCardDefine[])getDefines();
+        }
         public Card createCard(CardDefine define)
         {
             return rule.createCard(this, define);
@@ -165,8 +168,10 @@ namespace TouhouHeartstone
         
         public IEnumerable<CardDefine> getDefinesOf(CategoryFlag flag)
         {
-            return flag.getDefines(this);
+            return getDefines();
         }
+
+
 
         #endregion
 
