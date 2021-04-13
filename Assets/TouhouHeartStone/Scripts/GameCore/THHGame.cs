@@ -9,28 +9,10 @@ using TouhouHeartstone.Builtin;
 
 namespace TouhouHeartstone
 {
-    public class THHGame : CardEngine, IDisposable
+    public class THHGame : CardEngine
     {
         public static HearthStoneRule rule = new HearthStoneRule(null);
         public HearthstoneOption getOption() => this.option as HearthstoneOption;
-
-        public new TriggerManager triggers
-        {
-            get { return base.triggers as TriggerManager; }
-            set { base.triggers = value; }
-        }
-
-        public new AnswerManager answers
-        {
-            get { return base.answers as AnswerManager; }
-            set { base.answers = value; }
-        }
-
-        public new TimeManager time
-        {
-            get { return base.time as TimeManager; }
-            set { base.time = value; }
-        }
 
         public THHGame(params CardDefine[] defines) : base(HearthstoneOption.Default.randomSeed, defines)
         {
@@ -485,19 +467,11 @@ namespace TouhouHeartstone
                 return;
             logger.log("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
             await triggers.doEvent(new HearthStoneRule.GameEndEventArg() {winners = winners});
-            close();
-        }
-
-        public void close()
-        {
-            isRunning = false;
-            answers.cancelAll();
-            if (turnTimer != null)
+            if (turnTimer!=null)
             {
                 time.cancel(turnTimer);
-                turnTimer = null;
             }
-
+            close();
             onEnd?.Invoke();
         }
 
@@ -510,17 +484,6 @@ namespace TouhouHeartstone
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            close();
-            if (answers != null)
-                answers.Dispose();
-            if (triggers != null)
-                triggers.Dispose();
-            if (time != null)
-                time.Dispose();
-        }
     }
 
     [Serializable]
@@ -697,7 +660,7 @@ namespace TouhouHeartstone
             return player;
         }
         
-        public TouhouCardEngine.Player getPlayer(CardEngine game, int id)
+        public Player getPlayer(CardEngine game, int id)
         {
             return game.players.FirstOrDefault(p => p.id == id);
         }

@@ -284,7 +284,7 @@ namespace TouhouHeartstone
             if (count > 0)
                 cards = cards.randomTake(game, count);
             game.logger.log(player + "要从" + string.Join("，", cards) + "中选择一张卡片");
-            var task = game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title));
+            var task = game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title), float.MaxValue);
             await task;
             Card selected = cards.First(c => c.id == (task.Result as DiscoverResponse).cardId);
             game.logger.log(player + "选择" + selected);
@@ -297,7 +297,7 @@ namespace TouhouHeartstone
             //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
             var eventArg = await game.triggers.doEvent(new HearthStoneRule.ChooseOneEventArg() { player = player , options = options , choose = null , isShow = isShow }, async arg =>
             {
-                var task = game.answers.ask(player.id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
+                var task = game.answers.ask(player.id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title),float.MaxValue);
                 await task;
                 arg.choose = options.First(c => c.id == (task.Result as DiscoverResponse).cardId);
                 game.logger.log(player + "选择" + arg.choose);
@@ -315,7 +315,7 @@ namespace TouhouHeartstone
             //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
             var eventArg = await game.triggers.doEvent(new HearthStoneRule.SearchPileEventArg() { player = player, cards = cards, choose = null, isShow = isShow }, async arg =>
             {             
-                var task = game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title));
+                var task = game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title),float.MaxValue);
                 await task;
                 arg.choose = cards.First(c => c.id == (task.Result as DiscoverResponse).cardId);
                 game.logger.log(player + "选择" + arg.choose);
@@ -642,7 +642,17 @@ namespace TouhouHeartstone
                 switch (define)
                 {
                     case 0:
-                        defines = game.getDefines().Where(c => (c is ServantCardDefine x ? !x.isToken : (c is SpellCardDefine y ? !y.isToken : (c is ItemCardDefine z ? !z.isToken : false))) && ((c.id >> 5) == (CATEGORY.CHARACTER_NAZRIN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_PATCHOULI >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_REISEN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_RIN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_SANAE >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_YOUMU >> 5))).ToList();
+                        defines = game.getDefines().Where(c =>
+                            (c is ServantCardDefine x
+                                ? !x.isToken
+                                : (c is SpellCardDefine y ? !y.isToken : (c is ItemCardDefine z ? !z.isToken : false))
+                            ) && ((c.id >> 5) == (CATEGORY.CHARACTER_NAZRIN >> 5) ||
+                                  (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5) ||
+                                  (c.id >> 5) == (CATEGORY.CHARACTER_PATCHOULI >> 5) ||
+                                  (c.id >> 5) == (CATEGORY.CHARACTER_REISEN >> 5) ||
+                                  (c.id >> 5) == (CATEGORY.CHARACTER_RIN >> 5) ||
+                                  (c.id >> 5) == (CATEGORY.CHARACTER_SANAE >> 5) ||
+                                  (c.id >> 5) == (CATEGORY.CHARACTER_YOUMU >> 5))).ToList();
                         return game.createCards(defines.ToArray()).ToList();
                     case 1:
                         defines = game.getDefines().Where(c => (c is SpellCardDefine y ? !y.isToken : false) && ((c.id >> 5) == (CATEGORY.CHARACTER_NAZRIN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_NEUTRAL >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_PATCHOULI >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_REISEN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_RIN >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_SANAE >> 5) || (c.id >> 5) == (CATEGORY.CHARACTER_YOUMU >> 5))).ToList();
