@@ -180,13 +180,17 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(THHGame game, Card card)
         {
             //CardDefine[] defines = game.getDefines().Where(c => c.hasKeyword(KEYWORD.UNIQUE) && c is ServantCardDefine s && !s.isToken).ToArray();
-            List<Card> unqueCards = card.getOwner().getNormalRandomPool((g,d)=> 
-            {
-                return d is ServantCardDefine && d.hasKeyword(KEYWORD.UNIQUE);
-            },game, 3, true).ToList();
-            var arg = await card.getOwner().searchPile(game, unqueCards);
-            await card.getOwner().tryAddCardToHand(game, arg.choose);
-            await arg.choose.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true)));
+            // List<Card> unqueCards = card.getOwner().getNormalRandomPool((g,d)=> 
+            // {
+            //     return d is ServantCardDefine && d.hasKeyword(KEYWORD.UNIQUE);
+            // },game, 3, true).ToList();
+            // var arg = await card.getOwner().searchPile(game, unqueCards);
+            // await card.getOwner().tryAddCardToHand(game, arg.choose);
+            // await arg.choose.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true)));
+            CardDefine[] defines = game.getDefinesOf(CATEGORY.CHARACTER_ALL)
+                .Where(define => define.hasKeyword(KEYWORD.UNIQUE)).ToArray();
+            Card[] toDiscover = game.createCards(defines.randomTake(game, 3).ToArray());
+            // ~~~
         }
     }
 

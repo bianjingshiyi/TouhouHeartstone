@@ -642,17 +642,19 @@ namespace TouhouHeartstone
             IEnumerable<THHCardDefine> defines;
             if (isFull)
             {
-                defines = ((IEnumerable<THHCardDefine>)game.getDefinesOf(CategoryFlag.allCharacters)).Where(c => c.isToken = false && isInRange(game, c));
-                return game.createCards(defines.ToArray()).Take(count).ToList();
+                // defines = ((IEnumerable<THHCardDefine>)game.getDefinesOf(CategoryFlag.allCharacters)).Where(c => c.isToken = false && isInRange(game, c));
+                // return game.createCards(defines.ToArray()).Take(count).ToList();
             }
             else
             {
                 //这里应该是根据playerID来选择随机池
-                defines = ((IEnumerable<THHCardDefine>)game.getDefinesOf(CategoryFlag.allCharacters)).Where(c => c.isToken = false && isInRange(game, c));
-                return game.createCards(defines.ToArray()).Take(count).ToList();
+                // defines = ((IEnumerable<THHCardDefine>)game.getDefinesOf(CategoryFlag.allCharacters)).Where(c => c.isToken = false && isInRange(game, c));
+                // return game.createCards(defines.ToArray()).Take(count).ToList();
             }
 
-            
+            return null;
+
+
         }
 
         #region Command

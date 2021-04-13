@@ -33,6 +33,7 @@ namespace TouhouHeartstone
         {
             return id & CHARACTER_MASK;
         }
+
         /// <summary>
         /// 获取卡片的所属角色ID
         /// </summary>
@@ -42,6 +43,7 @@ namespace TouhouHeartstone
         {
             return getCharacterID(define.id);
         }
+
         /// <summary>
         /// 获取给出的所有卡片定义的所属角色ID
         /// </summary>
@@ -51,113 +53,26 @@ namespace TouhouHeartstone
         {
             return cards.GroupBy(c => c.getCharacterID()).Select(g => g.Key).ToArray();
         }
+
         public static int getCategory(int id)
         {
             return id & CATEGORY_MASK;
         }
+
         public static int getCategory(this CardDefine define)
         {
             return getCategory(define.id);
         }
 
-        public static IEnumerable<CardDefine> getDefines(this CategoryFlag flag, CardEngine game)
+        public static CardDefine[] getDefinesOf(this CardEngine game, params int[] characterID)
         {
-            return game.getDefines().Where(define => flag.contains(define.id));
+            return game.getDefines().Where(define => characterID.Contains(getCharacterID(define.id))).ToArray();
         }
 
-        private static bool contains(this CategoryFlag flag, int id)
+        public static int[] CHARACTER_ALL = new[]
         {
-            int category = getCategory(id);
-            int character = getCharacterID(id);
-            bool catInRange = false;
-            bool charInRange = false;
-            switch (category)
-            {
-                case MASTER:
-                    if (flag.HasFlag(CategoryFlag.master))
-                        catInRange = true;
-                    break;
-                case SKILL:
-                    if (flag.HasFlag(CategoryFlag.skill))
-                        catInRange = true;
-                    break;
-                case SPELL:
-                    if (flag.HasFlag(CategoryFlag.spell))
-                        catInRange = true;
-                    break;
-                case SERVANT:
-                    if (flag.HasFlag(CategoryFlag.servant))
-                        catInRange = true;
-                    break;
-                case ITEM:
-                    if (flag.HasFlag(CategoryFlag.item))
-                        catInRange = true;
-                    break;
-                case TOKEN:
-                    if (flag.HasFlag(CategoryFlag.token))
-                        catInRange = true;
-                    break;
-            }
-
-            switch (character)
-            {
-                case CHARACTER_NEUTRAL:
-                    if (flag.HasFlag(CategoryFlag.neutral))
-                        charInRange = true;
-                    break;
-                case CHARACTER_SANAE:
-                    if (flag.HasFlag(CategoryFlag.sanae))
-                        charInRange = true;
-                    break;
-                case CHARACTER_PATCHOULI:
-                    if (flag.HasFlag(CategoryFlag.patchouli))
-                        charInRange = true;
-                    break;
-                case CHARACTER_YOUMU:
-                    if (flag.HasFlag(CategoryFlag.youmu))
-                        charInRange = true;
-                    break;
-                case CHARACTER_RIN:
-                    if (flag.HasFlag(CategoryFlag.rin))
-                        charInRange = true;
-                    break;
-                case CHARACTER_NAZRIN:
-                    if (flag.HasFlag(CategoryFlag.nazrin))
-                        charInRange = true;
-                    break;
-                case CHARACTER_REISEN:
-                    if (flag.HasFlag(CategoryFlag.reisen))
-                    {
-                        charInRange = true;
-                    }
-                    break;
-            }
-
-            return catInRange && charInRange;
-        }
-
-        
-    }
-    
-    [Flags]
-    public enum CategoryFlag
-    {
-        none = 0b_000000000,
-        master = 0b_0000001,
-        skill = 0b_000000010,
-        servant = 0b_00000100,
-        spell = 0b_00000001000,
-        item = 0b_0000000010000,
-        token = 0b_0000000100000,
-        neutral = 0b_000001000000,
-        sanae = 0b_000000010000000,
-        patchouli = 0b_000100000000,
-        youmu = 0b_00000001000000000,
-        reisen = 0b_00000010000000000,
-        rin = 0b_000000000100000000000,
-        nazrin = 0b_0000001000000000000,
-        allCharacters =  neutral | sanae | patchouli | youmu | reisen | nazrin,
-        allTypes = master | skill | servant | spell | item,
-        all = allCharacters | allTypes | token,
+            CHARACTER_NEUTRAL, CHARACTER_RIN, CHARACTER_SANAE, CHARACTER_YOUMU, CHARACTER_NAZRIN, CHARACTER_REISEN,
+            CHARACTER_PATCHOULI
+        };
     }
 }
