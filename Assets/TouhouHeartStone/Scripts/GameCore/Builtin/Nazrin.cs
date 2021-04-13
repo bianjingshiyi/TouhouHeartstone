@@ -27,7 +27,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().createToken(game, game.getDefine<Nazrin_00>());
         }
@@ -150,7 +150,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             int i = 0;
             foreach (Card c in card.getOwner().getHand())
@@ -177,7 +177,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             CardDefine[] defines = game.getDefines().Where(c => c.hasKeyword(KEYWORD.UNIQUE) && c is ServantCardDefine s && !s.isToken).ToArray();
             List<Card> unqueCards = card.getOwner().getNormalRandomPool((g, d) =>
@@ -205,7 +205,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         { 
             List<Card> servantCards = card.getOwner().getNormalRandomPool((g, d) =>
             {
@@ -295,7 +295,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().tryEnterField(game, card.getOwner().getDeck(),
                 card.getOwner().getDeck().Where(c => c.getCost(game) <= 2 && c.isServant()).random(game),
@@ -320,7 +320,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             for (int i = 0; i < 2; i++)
             {
@@ -346,7 +346,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             foreach (Card c in card.getOwner().getField())
             {
@@ -369,7 +369,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             Player player = card.getOwner();
             var lowCostCards = player.getDeck().OrderBy(c => c.getCost(game)).Take(2);
@@ -417,7 +417,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             List<Card> servantCards = new List<Card>();
             for (int i = 0; i < 3; i++)
@@ -445,7 +445,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             foreach (Card c in card.getOwner().getField())
             {
