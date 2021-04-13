@@ -627,11 +627,12 @@ namespace TouhouHeartstone
         public delegate bool isInRange(THHGame game, CardDefine define);
 
         /// <summary>
-        /// TODO: 每当这个方法被使用，引擎会做大约100张卡，然后使用其中的几张（
+        /// 获取随机池，并从中选count张卡
         /// </summary>
-        /// <param name="game">game</param>
-        /// <param name="define">设定随机池的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
-        /// <param name="isFull">是否是全随机池，false则为本角色牌+中立牌</param>
+        /// <param name="isInRange">随机池范围</param>
+        /// <param name="game"></param>
+        /// <param name="count">从随机池中获取牌的数量，默认3</param>
+        /// <param name="isFull">是否获取全随机池,默认否(即随机池只包含本角色牌+中立牌)</param>
         /// <returns></returns>
         public static List<Card> getNormalRandomPool(this Player player,isInRange isInRange,THHGame game,int count = 3, bool isFull = false)
         {
@@ -642,19 +643,16 @@ namespace TouhouHeartstone
             IEnumerable<THHCardDefine> defines;
             if (isFull)
             {
-                // defines = ((IEnumerable<THHCardDefine>)game.getDefinesOf(CategoryFlag.allCharacters)).Where(c => c.isToken = false && isInRange(game, c));
-                // return game.createCards(defines.ToArray()).Take(count).ToList();
+                defines = ((IEnumerable<THHCardDefine>)game.getDefinesOf(CATEGORY.CHARACTER_ALL))
+                    .Where(define => !define.isToken && isInRange(game, define)).randomTake(game, count).ToArray();
+                return game.createCards(defines.ToArray()).ToList();
             }
             else
             {
-                //这里应该是根据playerID来选择随机池
-                // defines = ((IEnumerable<THHCardDefine>)game.getDefinesOf(CategoryFlag.allCharacters)).Where(c => c.isToken = false && isInRange(game, c));
-                // return game.createCards(defines.ToArray()).Take(count).ToList();
+                defines = ((IEnumerable<THHCardDefine>)game.getDefinesOf(new int[] {MasterID, CATEGORY.CHARACTER_NEUTRAL}))
+                    .Where(define => !define.isToken && isInRange(game, define)).randomTake(game, count).ToArray();
+                return game.createCards(defines.ToArray()).ToList();
             }
-
-            return null;
-
-
         }
 
         #region Command
