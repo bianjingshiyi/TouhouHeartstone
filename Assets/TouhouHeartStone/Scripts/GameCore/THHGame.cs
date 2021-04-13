@@ -44,11 +44,6 @@ namespace TouhouHeartstone
             return rule.createPlayer(this, id, name, master.id, deck.Select(d=>d.id).ToArray()) as Player;
         }
 
-        public Player[] players
-        {
-            get { return base.players.Cast<Player>().ToArray(); }
-        }
-
         public Player getPlayer(int id)
         {
             return rule.getPlayer(this, id) as Player;
@@ -78,11 +73,6 @@ namespace TouhouHeartstone
         public Player getOpponent(TouhouCardEngine.Player player)
         {
             return players.FirstOrDefault(p => p != player);
-        }
-
-        public Player[] getAllPlayer()
-        {
-            return players;
         }
 
         #endregion

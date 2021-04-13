@@ -901,7 +901,7 @@ namespace TouhouHeartstone.Builtin
     /// </summary>
     public class Asthma : SpellCardDefine
     {
-        public const int ID = Patchouli.ID | CATEGORY.TOKEN | 0x000;
+        public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x036;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.AUTOCAST };
