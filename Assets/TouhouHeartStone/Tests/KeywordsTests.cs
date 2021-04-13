@@ -238,7 +238,7 @@ namespace Tests
         [Test]
         public void ElusiveTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -276,7 +276,7 @@ namespace Tests
         [Test]
         public void freezeTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -311,7 +311,7 @@ namespace Tests
         [Test]
         public void poisiousTest_ServantEffect()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -337,7 +337,7 @@ namespace Tests
         /// </summary>
         /// <param name="game"></param>
         /// <param name="x"></param>
-        public void AfterXRound(THHGame game, int x)
+        public void AfterXRound(CardEngine game, int x)
         {
             for (int i = 0; i < x; i++)
             {
@@ -354,10 +354,10 @@ namespace Tests
         /// <param name="card1Count"></param>
         /// <param name="card2Count"></param>
         /// <returns></returns>
-        public THHGame GameInitWithoutPlayer<T1, T2>(int card1Count, int card2Count) where T1 : CardDefine where T2 : CardDefine
+        public CardEngine GameInitWithoutPlayer<T1, T2>(int card1Count, int card2Count) where T1 : CardDefine where T2 : CardDefine
         {
 
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });

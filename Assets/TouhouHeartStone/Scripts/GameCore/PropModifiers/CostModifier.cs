@@ -17,7 +17,7 @@ namespace TouhouHeartstone
         CheckConditionDelegate _onCheckCondition;
         public override bool checkCondition(IGame game, Card card)
         {
-            if (_onCheckCondition != null && !_onCheckCondition(game as THHGame, card))
+            if (_onCheckCondition != null && !_onCheckCondition(game as CardEngine, card))
                 return false;
             return base.checkCondition(game, card);
         }

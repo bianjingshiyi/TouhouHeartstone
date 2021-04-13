@@ -10,6 +10,7 @@ using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using System.Linq;
 using System.Threading.Tasks;
+using TouhouCardEngine;
 using UI;
 
 namespace Game
@@ -39,7 +40,7 @@ namespace Game
 
         private void onGameStart()
         {
-            gm.game.onPlayerResponse += onPlayerResponse;
+            // gm.game.onPlayerResponse += onPlayerResponse;
             rep = new Replay(gm.game);
             startTime = Time.time;
             UberDebug.LogChannel("Replay", $"Log Start!");
@@ -86,11 +87,11 @@ namespace Game
     public class ReplayPlayer
     {
         Replay replay;
-        THHGame game;
+        CardEngine game;
         float startTime;
         bool waitForTime = true;
 
-        public ReplayPlayer(Replay rep, THHGame game, bool wait = true)
+        public ReplayPlayer(Replay rep, CardEngine game, bool wait = true)
         {
             replay = rep;
             this.game = game;

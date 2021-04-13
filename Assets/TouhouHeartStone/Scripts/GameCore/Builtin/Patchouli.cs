@@ -34,20 +34,20 @@ namespace TouhouHeartstone.Builtin
                 list.Add(EARTH);
             return list.ToArray();
         }
-        public static CardDefine[] getElementCards(THHGame game)
+        public static CardDefine[] getElementCards(CardEngine game)
         {
             return game.getDefines().Where(c => getElements(c).Length == 1 && c is SpellCardDefine spell && !spell.isToken).ToArray();
         }
-        public static CardDefine[] getMixCards(THHGame game)
+        public static CardDefine[] getMixCards(CardEngine game)
         {
             return game.getDefines().Where(c => getElements(c).Length > 1).ToArray();
         }
-        public static CardDefine[] getMixCards(THHGame game, CardDefine a, CardDefine b)
+        public static CardDefine[] getMixCards(CardEngine game, CardDefine a, CardDefine b)
         {
             var elements = getElements(a).Concat(getElements(b)).Distinct().ToArray();
             return getMixCards(game).Where(c => elements.isSubset(getElements(c)) && c.id != a.id && c.id != b.id).ToArray();
         }
-        public static async Task tryMix(THHGame game, Card card)
+        public static async Task tryMix(CardEngine game, Card card)
         {
             Player player = card.getOwner();
             var mixableCards = player.getHand().Where(c => getMixCards(game, card.define, c.define).Length > 0).ToArray();//检查手牌中有没有可以融合的牌
@@ -61,7 +61,7 @@ namespace TouhouHeartstone.Builtin
         }
 
         //中立帕秋莉使用的方法
-        public static async Task tryMix(THHGame game, Player player, Card a, Card b)
+        public static async Task tryMix(CardEngine game, Player player, Card a, Card b)
         {
             var mixedResults = getMixCards(game, a.define, b.define).Select(define => game.createCard(define)).ToArray();
             var mixedResult = await player.chooseOne(game, mixedResults, false, "收获");
@@ -102,7 +102,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
                 new Halo(new GeneratedBuff(ID, new CostModifier(-5)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
@@ -271,7 +271,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[]{
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().createToken(game, game.getDefine<RockElement>(), card.getOwner().getField().count);
             await Patchouli.tryMix(game, card);
@@ -304,7 +304,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.getOwner()).getField().damage(game, card, card.getOwner().getSpellDamage(game, 3));
             await Patchouli.tryMix(game, card);
@@ -326,7 +326,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             var discovered = await card.getOwner().searchPile(game, card.getOwner().getGrave().Where(c => c.isSpell()), title: "选择一张墓地中的法术加入手牌");
             if (!card.getOwner().getHand().isFull)
@@ -349,7 +349,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.owner as Player).getMaster().damage(game, card, 15);
         }
@@ -367,7 +367,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.getOwner()).getField().silence(game);
             await game.getOpponent(card.getOwner()).getField().die(game);
@@ -388,7 +388,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static Task effect(THHGame game, Card card)
+        static Task effect(CardEngine game, Card card)
         {
             return card.getOwner().addRandomCardToHand(game, game.getDefines(new int[] { AutumnEdge.ID, SpringWind.ID, WinterElement.ID, SummerRed.ID, DoyouSpear.ID }));
         }
@@ -404,7 +404,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             //var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5, "查询图书");
             var discover = await card.getOwner().searchPile(game, card.getOwner().getDeck(), false, 5, "查询图书");
@@ -427,7 +427,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.addBuff(game, new GeneratedBuff(ID, new LifeModifier(card.getOwner().getHand().Where(c => c.isSpell()).Count())));
         }
@@ -443,7 +443,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             for (int i = 0; i < 2; i++)
             {
@@ -474,7 +474,7 @@ namespace TouhouHeartstone.Builtin
         {
             Trigger<HearthStoneRule.TurnEndEventArg> TurnEndTrigger { get; set; } = null;
             Buff buff = new GeneratedBuff(ID, new AttackModifier(2));
-            public async void onEnable(THHGame game, Card card)
+            public async void onEnable(CardEngine game, Card card)
             {
                 await card.addBuff(game, buff);
                 if (TurnEndTrigger == null)
@@ -539,7 +539,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.getOwner()).getField().random(game).damage(game, card, 2);
             await Patchouli.tryMix(game, card);
@@ -558,7 +558,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().createToken(game, game.getDefine<GemSpear>(), card.getOwner().getField().count);
             await Patchouli.tryMix(game, card);
@@ -591,7 +591,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             Player player = card.getOwner();
             Player opponent = game.getOpponent(player);
@@ -716,7 +716,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getAllEnemies(card.getOwner()).damageByRandom(game, card, card.getOwner().getSpellDamage(game, 7));
             await Patchouli.tryMix(game, card);
@@ -754,7 +754,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             for (int i = 0; i < 2; i++)
                 await card.getOwner().createToken(game, game.getDefine<LavaElement>());
@@ -794,7 +794,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().createToken(game, game.getOpponent(card.getOwner()).getField().count, game.getDefine<DustElement>());
             await Patchouli.tryMix(game, card);
@@ -828,7 +828,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getAllServants().silence(game);
             await card.getOwner().createToken(game, game.getDefine<FloodElement>());

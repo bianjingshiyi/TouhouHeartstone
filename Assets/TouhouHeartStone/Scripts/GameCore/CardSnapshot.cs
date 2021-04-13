@@ -8,7 +8,7 @@ namespace TouhouHeartstone
         public int cost { get; }
         public int attack { get; }
         public int life { get; }
-        public CardSnapshot(THHGame game, Card card)
+        public CardSnapshot(CardEngine game, Card card)
         {
             this.card = card;
             define = card.define;

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using TouhouHeartstone;
 using Game.Replays;
 using NitoriNetwork.Common;
+using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
 namespace Game
@@ -11,7 +12,7 @@ namespace Game
     {
         public Task startReplayGame(ReplayData replay)
         {
-            THHGame game = createGame(replay.option, replay.players.Select(p =>
+            CardEngine game = createGame(replay.option, replay.players.Select(p =>
             {
                 RoomPlayerInfo player = new RoomPlayerInfo();
                 player.RoomID = p.id;

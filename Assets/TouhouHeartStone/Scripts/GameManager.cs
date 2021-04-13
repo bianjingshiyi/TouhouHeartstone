@@ -36,7 +36,7 @@ namespace Game
         {
             get { return _ui; }
         }
-        public THHGame game { get; private set; } = null;
+        public CardEngine game { get; private set; } = null;
         public Player localPlayer { get; private set; } = null;
         Task gameTask { get; set; } = null;
         LangManager lang => getManager<LangManager>();
@@ -116,7 +116,7 @@ namespace Game
         public Task startLocalGame(RoomInfo room)
         {
             //创建游戏
-            THHGame game = createGame(room);
+            CardEngine game = createGame(room);
             //初始化本地玩家，AI，UI
             foreach (var player in game.players)
             {
@@ -155,7 +155,7 @@ namespace Game
         public Task startRemoteGame(ClientManager client, RoomInfo room, bool headless = false)
         {
             //创建游戏
-            THHGame game = createGame(room);
+            CardEngine game = createGame(room);
             //将游戏与网络连接
             game.answers.client = client;
             //初始化本地玩家与UI
@@ -173,7 +173,7 @@ namespace Game
         }
         public Task startReplayGame(Replay rep)
         {
-            THHGame game = createGame(rep.option, rep.players);
+            CardEngine game = createGame(rep.option, rep.players);
             new ReplayPlayer(rep, game);
             localPlayer = game.players.First();
             displayGameUI(game, localPlayer);
@@ -183,13 +183,13 @@ namespace Game
         public event Action onGameStart;
         #endregion
         #region 内部功能
-        THHGame createGame(RoomInfo room)
+        CardEngine createGame(RoomInfo room)
         {
             if (room._persistDataList.Count > room.runtimeDic.Count)
                 room.deserialize();
             return createGame(room.getOption(), room.playerList);
         }
-        THHGame createGame(HearthstoneOption option, IEnumerable<RoomPlayerInfo> playerList)
+        CardEngine createGame(HearthstoneOption option, IEnumerable<RoomPlayerInfo> playerList)
         {
 //             THHGame game = new THHGame(option, getManager<CardManager>().GetCardDefines())
 //             {
@@ -211,7 +211,7 @@ namespace Game
 //                 THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getDefine(deck[0]) as MasterCardDefine,
 //                     deck.Skip(1).Select(id => game.getDefine(id)));
 //             }
-            THHGame game = new THHGame()
+            CardEngine game = new CardEngine()
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
@@ -219,7 +219,6 @@ namespace Game
                 logger = new ULogger()
             };
             game.answers.game = game;
-            //TODO: 在GameManager中应该能更简单地修改玩家牌库
             game.init(new HearthStoneRule(getManager<CardManager>().GetCardDefines()),
                 option, playerList.ToArray());
 // #if UNITY_EDITOR
@@ -228,7 +227,7 @@ namespace Game
 // #endif
             return game;
         }
-        Task runGame(THHGame game, bool recordReplay = true)
+        Task runGame(CardEngine game, bool recordReplay = true)
         {
             this.game = game;
             if (recordReplay)
@@ -239,7 +238,7 @@ namespace Game
                     return playerData;
                 }).ToArray());
             onGameStart?.Invoke();
-            gameTask = game.run();
+            gameTask = game.runGame();
             return gameTask;
         }
         /// <summary>
@@ -283,7 +282,7 @@ namespace Game
         }
         public event Action onGameEnd;
         #endregion
-        private void checkDeckValid(THHGame game, int[] deck)
+        private void checkDeckValid(CardEngine game, int[] deck)
         {
             if (deck == null)
                 return;
@@ -305,7 +304,7 @@ namespace Game
         /// 显示游戏UI，并指定本地玩家
         /// </summary>
         /// <param name="localPlayer"></param>
-        private void displayGameUI(THHGame game, Player localPlayer)
+        private void displayGameUI(CardEngine game, Player localPlayer)
         {
             _mainUI.Game.GameResultDialog.hide();
             //本地玩家用UI

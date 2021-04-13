@@ -19,7 +19,7 @@ namespace Tests
         [Test]
         public void sanaeSkillTest()
         {
-            THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
+            CardEngine game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
                 Enumerable.Repeat(new Sanae(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
                 new HearthstoneOption() { });
@@ -45,7 +45,7 @@ namespace Tests
         [Test]
         public void RevealDuelTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -85,7 +85,7 @@ namespace Tests
         [Test]
         public void GrayThaumaturgyTest()
         {
-            TestGameflow.createGame(out THHGame game, out Player you, out Player oppo,
+            TestGameflow.createGame(out CardEngine game, out Player you, out Player oppo,
                 Sanae.ID,
                 new KeyValuePair<int, int>(GrayThaumaturgy.ID, 3), new KeyValuePair<int, int>(StarRitual.ID, 4));
             game.skipUntilHasGem(you, 5);
@@ -138,7 +138,7 @@ namespace Tests
         [Test]
         public void BumperCropTest()
         {
-            TestGameflow.createGame(out THHGame game, out Player you, out Player oppo,
+            TestGameflow.createGame(out CardEngine game, out Player you, out Player oppo,
                 Sanae.ID,
                 new KeyValuePair<int, int>(BumperCrop.ID, 1));
             for (int i = 0; i < 3; i++)
@@ -278,7 +278,7 @@ namespace Tests
         [Test]
         public void ManipulatedGaintFrogTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -508,7 +508,7 @@ namespace Tests
         [Test]
         public void GodWindTest()
         {
-            TestGameflow.createGame(out THHGame game, out Player you, out Player oppo,
+            TestGameflow.createGame(out CardEngine game, out Player you, out Player oppo,
                 new KeyValuePair<int, int>(InvokeCard.ID, 2),
                 new KeyValuePair<int, int>(DefaultServant.ID, 5),
                 new KeyValuePair<int, int>(GodWind.ID, 1));
@@ -556,7 +556,7 @@ namespace Tests
         [Test]
         public void ForgottenRecrptionTest()
         {
-            TestGameflow.createGame(out THHGame game, out Player you, out Player oppo,
+            TestGameflow.createGame(out CardEngine game, out Player you, out Player oppo,
                 new KeyValuePair<int, int>(ForgottenRecrption.ID, 1),
                 new KeyValuePair<int, int>(MoriyaSuwako.ID, 1));
             game.skipUntilCanUse<MoriyaSuwako>(you);

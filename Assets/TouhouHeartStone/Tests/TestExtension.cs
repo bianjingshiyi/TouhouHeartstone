@@ -7,7 +7,7 @@ namespace Tests
 {
     static class TestExtension
     {
-        public static void skipTurnWhen(this THHGame game, Func<bool> condition)
+        public static void skipTurnWhen(this CardEngine game, Func<bool> condition)
         {
             if (!game.isRunning)
             {
@@ -32,7 +32,7 @@ namespace Tests
                     throw new StackOverflowException();
             }
         }
-        public static void skipTurnUntil(this THHGame game, Func<bool> condition)
+        public static void skipTurnUntil(this CardEngine game, Func<bool> condition)
         {
             if (!game.isRunning)
             {
@@ -54,32 +54,32 @@ namespace Tests
                     throw new StackOverflowException();
             }
         }
-        public static void skipUntilYourTurn(this THHGame game, Player player)
+        public static void skipUntilYourTurn(this CardEngine game, Player player)
         {
             game.skipTurnUntil(() => game.getCurrentPlayer() == player);
         }
-        public static void skipUntilCanUse<T>(this THHGame game, Player you) where T : CardDefine
+        public static void skipUntilCanUse<T>(this CardEngine game, Player you) where T : CardDefine
         {
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<T>().getProp<int>(nameof(ServantCardDefine.cost)));
         }
-        public static void skipUntilHasGem(this THHGame game, Player you, int gem)
+        public static void skipUntilHasGem(this CardEngine game, Player you, int gem)
         {
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= gem);
         }
-        public static void skipUntilCanUse(this THHGame game, Player you, params CardDefine[] card)
+        public static void skipUntilCanUse(this CardEngine game, Player you, params CardDefine[] card)
         {
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= card.Sum(c => c.getCost()));
         }
-        public static void cmdUse<T>(this Player player, THHGame game, int position = 0, params Card[] targets) where T : CardDefine
+        public static void cmdUse<T>(this Player player, CardEngine game, int position = 0, params Card[] targets) where T : CardDefine
         {
             player.cmdUse(game, player.getHand().getCard<T>(), position, targets);
         }
-        public static void cmdUse<T>(this Player player, THHGame game, out Card servant,int position = 0, params Card[] targets) where T : ServantCardDefine
+        public static void cmdUse<T>(this Player player, CardEngine game, out Card servant,int position = 0, params Card[] targets) where T : ServantCardDefine
         {
             servant = player.getHand().getCard<T>();
             player.cmdUse(game, servant, position, targets);
         }
-        public static void cmdAttack<T>(this Player player, THHGame game, Card target) where T : CardDefine
+        public static void cmdAttack<T>(this Player player, CardEngine game, Card target) where T : CardDefine
         {
             player.cmdAttack(game, player.getField().getCard<T>(), target);
         }

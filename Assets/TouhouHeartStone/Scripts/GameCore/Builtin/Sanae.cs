@@ -27,7 +27,7 @@ namespace TouhouHeartstone.Builtin
         /// <param name="game"></param>
         /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
         /// <returns></returns>
-        public static Task<RevealDuelArg> revealDuel(Player player, THHGame game, int define = 0)
+        public static Task<RevealDuelArg> revealDuel(Player player, CardEngine game, int define = 0)
         {
             return game.triggers.doEvent(new RevealDuelArg() {player = player}, async arg =>
             {
@@ -151,7 +151,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             Player you = card.getOwner();
             var duel = await Sanae.revealDuel(you, game);
@@ -255,7 +255,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             for (int i = 0; i < 5; i++)
             {
@@ -280,7 +280,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             Player you = card.getOwner();
             var duel = await Sanae.revealDuel(you, game);
@@ -353,7 +353,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             Player you = card.getOwner();
             Card god = you.getDeck().Where(c => c.hasTag(game, TAG.GOD)).random(game);
@@ -491,7 +491,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             int count = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
                 .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == card.getOwner()).Count();
@@ -734,7 +734,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner()
                 .createToken(game, game.getOpponent(card.getOwner()).getField().count, game.getDefine<Frog>());
@@ -757,7 +757,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             //game.getOpponent(card.getOwner()).hand
             foreach (Card c in game.getOpponent(card.getOwner()).getHand())
@@ -787,7 +787,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             if (card.getOwner().getGrave().Any(c => c.define == game.getDefine<MoriyaSuwako>()))
             {
@@ -821,7 +821,7 @@ namespace TouhouHeartstone.Builtin
                 }))
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             Player you = card.getOwner();
             Player oppo = game.getOpponent(you);
@@ -914,7 +914,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner()
                 .addRandomCardToHand(game, game.getDefines(new int[] {Bomb1.ID, Bomb2.ID, Bomb3.ID, Bomb4.ID}));
@@ -963,7 +963,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.getOwner()).getField().random(game)
                 .damage(game, card, card.getOwner().getSpellDamage(game, 4));
@@ -982,7 +982,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getAllServants().damageByRandom(game, card, 6);
         }

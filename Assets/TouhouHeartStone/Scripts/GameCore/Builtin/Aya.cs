@@ -35,7 +35,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
                 new Halo(new GeneratedBuff(ID, new CostModifier(-1)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
@@ -136,7 +136,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
                 new Halo(new GeneratedBuff(ID, new CostModifier(-2)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
@@ -194,7 +194,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().draw(game, out var draw);
             Card drawCard = draw.card;
@@ -230,7 +230,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             int dam = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg TurnStart).
                         OfType<HearthStoneRule.UseEventArg>().
@@ -315,7 +315,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             int CurrentCost = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg TurnStart).
                                 OfType<HearthStoneRule.UseEventArg>().Last(u => u.player == card.getOwner()).cost;
@@ -370,7 +370,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             int cost = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg TurnStart).
                         OfType<HearthStoneRule.UseEventArg>().
@@ -397,7 +397,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             IEnumerable<Card> cards = game.createCards(game.getDefines().Where(e => (e.id >> 5) == (Aya.ID >> 5)).ToArray()).Where(q => q.isSpell());
 
@@ -492,7 +492,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().damage(game, card, 4);
             await game.getOpponent(card.getOwner()).getField().random(game).damage(game, card, 4);

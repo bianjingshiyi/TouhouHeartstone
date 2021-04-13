@@ -46,7 +46,7 @@ namespace Game
                 this.time = time;
             }
         }
-        public Replay(THHGame game)
+        public Replay(CardEngine game)
         {
             option = game.getOption();
             players = game.players.Select(p =>

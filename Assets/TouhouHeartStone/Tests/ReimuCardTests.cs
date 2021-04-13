@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using System.Linq;
+using TouhouCardEngine;
 using TouhouHeartstone;
 
 using TouhouHeartstone.Builtin;
@@ -14,7 +15,7 @@ namespace Tests
         [Test]
         public void reimuSkillTest()
         {
-            THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
+            CardEngine game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
                 Enumerable.Repeat(new Reimu(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
                 new HearthstoneOption() { });

@@ -53,7 +53,7 @@ namespace TouhouHeartstone.Builtin
         {
             return card.getProp<bool>(game, IS_PREHEATED);
         }
-        public static Task setPreHeated(THHGame game, Card card, bool value)
+        public static Task setPreHeated(CardEngine game, Card card, bool value)
         {
             return game.triggers.doEvent(new PreHeatEventArg() { card = card, value = value }, arg =>
             {
@@ -76,7 +76,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().gainArmor(game, 2);
         }
@@ -95,7 +95,7 @@ namespace TouhouHeartstone.Builtin
            new Youmu.SetPreHeatEffect(),
            new Youmu.RemovePreHeatEffect()
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             if (!Youmu.isPreHeated(game, card))
                 await card.getOwner().getMaster().addBuff(game,
@@ -120,7 +120,7 @@ namespace TouhouHeartstone.Builtin
            new Youmu.SetPreHeatEffect(),
            new Youmu.RemovePreHeatEffect()
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().draw(game, c => c.isItem(), out var drawEvent);
             if (drawEvent != null)
@@ -145,7 +145,7 @@ namespace TouhouHeartstone.Builtin
             new Youmu.SetPreHeatEffect(),
             new Youmu.RemovePreHeatEffect()
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().gainArmor(game, 6);
             if (!Youmu.isPreHeated(game, card))
@@ -259,7 +259,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().draw(game);
             if (card.getOwner().getMaster().getArmor(game) > 0)
@@ -278,7 +278,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             Player player = card.getOwner();
             await player.getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
@@ -302,7 +302,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[] {
            new NoTargetEffect(effect),
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().getMaster().getArmor(game)),
                 new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
@@ -321,7 +321,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().gainArmor(game, 5);
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(5),
@@ -366,7 +366,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getItem().addKeywords(game, KEYWORD.IMMUNITY);
             await card.getOwner().getItem().addBuff(game, new GeneratedBuff(ID,

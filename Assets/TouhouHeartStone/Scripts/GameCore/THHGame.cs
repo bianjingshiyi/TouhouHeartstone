@@ -10,16 +10,11 @@ using UnityEngine;
 
 namespace TouhouHeartstone
 {
-    public class THHGame : CardEngine
+    public static class THHGame
     {
-        public HearthstoneOption getOption() => this.option as HearthstoneOption;
+        public static HearthstoneOption getOption(this CardEngine game) => game.option as HearthstoneOption;
 
-        public THHGame() : base ()
-        {
-            
-        }
-
-        public HearthStoneRule getRule() => getRule() as HearthStoneRule;
+        public static HearthStoneRule getRule(this CardEngine game) => game.rule as HearthStoneRule;
 
         #region Player
 
@@ -31,14 +26,14 @@ namespace TouhouHeartstone
         /// <param name="master"></param>
         /// <param name="deck">注意，牌库的第一张是牌库的底端</param>
         /// <returns></returns>
-        public Player createPlayer(int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
+        public static Player createPlayer(this CardEngine game, int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
         {
-            return getRule().createPlayer(this, id, name, master.id, deck.Select(d=>d.id).ToArray()) as Player;
+            return game.getRule().createPlayer(game, id, name, master.id, deck.Select(d=>d.id).ToArray()) as Player;
         }
 
-        public Player getPlayer(int id)
+        public static Player getPlayer(this CardEngine game, int id)
         {
-            return getRule().getPlayer(this, id) as Player;
+            return getRule(game).getPlayer(game, id) as Player;
         }
 
         /// <summary>
@@ -46,15 +41,15 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="lastPlayer"></param>
         /// <returns></returns>
-        public Player getPlayerForNextTurn(Player lastPlayer)
+        public static Player getPlayerForNextTurn(this CardEngine game, Player lastPlayer)
         {
-            int index = Array.IndexOf(getSortedPlayers(), lastPlayer);
+            int index = Array.IndexOf(game.getSortedPlayers(), lastPlayer);
             if (index < 0)
                 throw new IndexOutOfRangeException(lastPlayer + "不在玩家行动队列中");
             index++;
-            if (index >= getSortedPlayers().Length)
+            if (index >= game.getSortedPlayers().Length)
                 index = 0;
-            return getSortedPlayers()[index];
+            return game.getSortedPlayers()[index];
         }
 
         /// <summary>
@@ -62,42 +57,42 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public Player getOpponent(TouhouCardEngine.Player player)
+        public static Player getOpponent(this CardEngine game, Player player)
         {
-            return players.FirstOrDefault(p => p != player);
+            return game.players.FirstOrDefault(p => p != player);
         }
 
         #endregion
 
         #region Card       
-        public THHCardDefine[] getTHHDefines()
+        public static THHCardDefine[] getTHHDefines(this CardEngine game)
         {
-            return (THHCardDefine[])getDefines();
+            return (THHCardDefine[])game.getDefines();
         }
-        public Card createCard(CardDefine define)
+        public static Card createCard(this CardEngine game, CardDefine define)
         {
-            return getRule().createCard(this, define);
-        }
-
-        public Card createCard<T>() where T : CardDefine
-        {
-            return createCard(getDefine<T>());
+            return getRule(game).createCard(game, define);
         }
 
-        public Card createCardByRandom(IEnumerable<CardDefine> defines)
+        public static Card createCard<T>(this CardEngine game) where T : CardDefine
         {
-            return createCard(defines.random(this));
+            return game.createCard(game.getDefine<T>());
         }
 
-        public Card[] createCards(CardDefine[] defines)
+        public static Card createCardByRandom(this CardEngine game, IEnumerable<CardDefine> defines)
         {
-            return defines.Select(d => createCard(d)).ToArray();
+            return game.createCard(defines.random(game));
         }
 
-        public Card[] findAllCardsInField(Func<Card, bool> filter)
+        public static Card[] createCards(this CardEngine game, CardDefine[] defines)
+        {
+            return defines.Select(d => game.createCard(d)).ToArray();
+        }
+
+        public static Card[] findAllCardsInField(this CardEngine game, Func<Card, bool> filter)
         {
             List<Card> cardList = new List<Card>();
-            foreach (Player player in players)
+            foreach (Player player in game.players)
             {
                 if (filter == null || filter.Invoke(player.getMaster()))
                     cardList.Add(player.getMaster());
@@ -111,10 +106,10 @@ namespace TouhouHeartstone
             return cardList.ToArray();
         }
 
-        public Card[] getAllCharacters()
+        public static Card[] getAllCharacters(this CardEngine game)
         {
             List<Card> cardList = new List<Card>();
-            foreach (var player in players)
+            foreach (var player in game.players)
             {
                 cardList.Add(player.getMaster());
                 cardList.AddRange(player.getField());
@@ -123,10 +118,10 @@ namespace TouhouHeartstone
             return cardList.ToArray();
         }
 
-        public Card[] getAllServants()
+        public static Card[] getAllServants(this CardEngine game)
         {
             IEnumerable<Card> e = null;
-            foreach (var player in players)
+            foreach (var player in game.players)
             {
                 if (e == null)
                     e = player.getField();
@@ -137,13 +132,13 @@ namespace TouhouHeartstone
             return e.ToArray();
         }
 
-        public Card[] getAllEnemies(Player player)
+        public static Card[] getAllEnemies(this CardEngine game, Player player)
         {
-            Player opponent = getOpponent(player);
+            Player opponent = game.getOpponent(player);
             return opponent.getField().Concat(new Card[] {opponent.getMaster()}).ToArray();
         }
 
-        public Card[] getAllAllys(Player player)
+        public static Card[] getAllAllys(this CardEngine game, Player player)
         {
             return player.getField().Concat(new Card[] {player.getMaster()}).ToArray();
         }
@@ -156,120 +151,120 @@ namespace TouhouHeartstone
         /// 运行游戏
         /// </summary>
         /// <returns>游戏运行的Task</returns>
-        public Task run(Action onInited = null)
+        public static Task runGame(this CardEngine game, Action onInited = null)
         {
-            isRunning = true;
-            return gameflow(onInited);
+            game.isRunning = true;
+            return game.gameflow(onInited);
         }
 
-        private async Task gameflow(Action onInited = null)
+        private static async Task gameflow(this CardEngine game, Action onInited = null)
         {
-            await init();
-            Task<Dictionary<int, IResponse>> task = answers.askAll(getSortedPlayers().Select(p => p.id).ToArray(),
+            await game.init();
+            Task<Dictionary<int, IResponse>> task = game.answers.askAll(game.getSortedPlayers().Select(p => p.id).ToArray(),
                 new InitReplaceRequest()
                 {
-                }, getOption().timeoutForInitReplace);
+                }, getOption(game).timeoutForInitReplace);
             onInited?.Invoke();
             Dictionary<int, IResponse> initReplaceResponses = await task;
-            if (!isRunning)
+            if (!game.isRunning)
                 return;
             foreach (var result in initReplaceResponses)
             {
-                Player player = getPlayer(result.Key);
+                Player player = game.getPlayer(result.Key);
                 if (result.Value is InitReplaceResponse initReplace)
-                    await player.initReplace(this, getCards(initReplace.cardsId));
+                    await player.initReplace(game, game.getCards(initReplace.cardsId));
                 else if (result.Value is SurrenderResponse surrender)
-                    await this.surrender(player);
+                    await game.surrender(player);
             }
 
-            await start();
-            setCurrentPlayer(getSortedPlayers()[0]);
+            await game.start();
+            game.setCurrentPlayer(game.getSortedPlayers()[0]);
             for (int i = 0; i < 100; i++)
             {
-                await turnStart(getCurrentPlayer());
-                await turnLoop(getCurrentPlayer());
-                await turnEnd(getCurrentPlayer());
-                setCurrentPlayer(getPlayerForNextTurn(getCurrentPlayer()));
+                await game.turnStart(game.getCurrentPlayer());
+                await game.turnLoop(game.getCurrentPlayer());
+                await game.turnEnd(game.getCurrentPlayer());
+                game.setCurrentPlayer(game.getPlayerForNextTurn(game.getCurrentPlayer()));
             }
 
-            await gameEnd(new Player[0]);
+            await game.gameEnd(new Player[0]);
         }
 
-        internal async Task init()
+        internal static async Task init(this CardEngine game)
         {
-            if (!isRunning)
+            if (!game.isRunning)
                 return;
-            await triggers.doEvent(new HearthStoneRule.InitEventArg(), async arg =>
+            await game.triggers.doEvent(new HearthStoneRule.InitEventArg(), async arg =>
             {
                 //决定玩家行动顺序
-                if (getOption().sortedPlayers == null || getOption().sortedPlayers.Length != players.Length)
+                if (game.getOption().sortedPlayers == null || game.getOption().sortedPlayers.Length != game.players.Length)
                 {
-                    if (getOption().sortedPlayers != null && getOption().sortedPlayers.Length != players.Length)
-                        logger?.log("Warning", "游戏参数玩家行动顺序长度与实际数量不匹配");
-                    int playerCount = players.Count();
-                    foreach (var player in players)
+                    if (game.getOption().sortedPlayers != null && getOption(game).sortedPlayers.Length != game.players.Length)
+                        game.logger?.log("Warning", "游戏参数玩家行动顺序长度与实际数量不匹配");
+                    int playerCount = game.players.Count();
+                    foreach (var player in game.players)
                     {
-                        player.setProp(PLAYER.ORDER, randomInt(1, playerCount--));
+                        player.setProp(PLAYER.ORDER, game.randomInt(1, playerCount--));
                     }
                 }
                 else
                 {
                     int order = 1;
-                    foreach (var id in getOption().sortedPlayers)
+                    foreach (var id in getOption(game).sortedPlayers)
                     {
-                        players.FirstOrDefault(p => p.id == id).setProp(PLAYER.ORDER, order++);
+                        game.players.FirstOrDefault(p => p.id == id).setProp(PLAYER.ORDER, order++);
                     }
                 }
                     
 
                 //创建主人公和技能卡
-                Card[] masterCards = getSortedPlayers().Select(p => { return p.getMaster(); }).ToArray();
+                Card[] masterCards = getSortedPlayers(game).Select(p => { return p.getMaster(); }).ToArray();
                 foreach (Card card in masterCards)
                 {
-                    await card.setCurrentLife(this, 30);
+                    await card.setCurrentLife(game, 30);
                 }
 
                 //洗牌，然后抽初始卡牌
-                for (int i = 0; i < getSortedPlayers().Length; i++)
+                for (int i = 0; i < getSortedPlayers(game).Length; i++)
                 {
-                    if (getSortedPlayers()[i].getDeck().count < 1)
+                    if (getSortedPlayers(game)[i].getDeck().count < 1)
                         continue;
-                    if (getOption().shuffle)
-                        getSortedPlayers()[i].getDeck().shuffle(this);
+                    if (getOption(game).shuffle)
+                        getSortedPlayers(game)[i].getDeck().shuffle(game);
                     int count = i == 0 ? 3 : 4;
-                    var cards = getSortedPlayers()[i].getDeck().Skip(getSortedPlayers()[i].getDeck().count - count).Reverse()
+                    var cards = getSortedPlayers(game)[i].getDeck().Skip(getSortedPlayers(game)[i].getDeck().count - count).Reverse()
                         .ToArray();
-                    await getSortedPlayers()[i].getDeck().moveTo(this, cards, getSortedPlayers()[i].getInit());
+                    await getSortedPlayers(game)[i].getDeck().moveTo(game, cards, game.getSortedPlayers()[i].getInit());
                 }
 
-                logger.log("Debug", "游戏初始化，玩家行动顺序："
-                                    + string.Join("、", getSortedPlayers().Select(p => p.ToString())) + "，"
-                                    + "玩家英雄：" + string.Join("，",
-                                        getSortedPlayers().Select(p => p.getMaster() + "(" + p.getSkill() + ")")) + "，"
-                                    + "初始卡牌：" + string.Join("；",
-                                        getSortedPlayers().Select(p =>
-                                            string.Join("、", p.getInit().Select(c => c.ToString())))));
+                game.logger.log("Debug", "游戏初始化，玩家行动顺序："
+                                         + string.Join("、", game.getSortedPlayers().Select(p => p.ToString())) + "，"
+                                         + "玩家英雄：" + string.Join("，",
+                                             getSortedPlayers(game).Select(p => p.getMaster() + "(" + p.getSkill() + ")")) + "，"
+                                         + "初始卡牌：" + string.Join("；",
+                                             getSortedPlayers(game).Select(p =>
+                                                 string.Join("、", p.getInit().Select(c => c.ToString())))));
             });
         }
 
-        public Player[] getSortedPlayers() => players.OrderBy(player => player.getOrder()).ToArray();
+        public static Player[] getSortedPlayers(this CardEngine game) => game.players.OrderBy(player => player.getOrder()).ToArray();
 
-        internal async Task start()
+        internal static async Task start(this CardEngine game)
         {
-            if (!isRunning)
+            if (!game.isRunning)
                 return;
-            await triggers.doEvent(new HearthStoneRule.StartEventArg(), async arg =>
+            await game.triggers.doEvent(new HearthStoneRule.StartEventArg(), async arg =>
             {
-                logger.log("Debug", "游戏开始");
-                foreach (Player player in getSortedPlayers())
+                game.logger.log("Debug", "游戏开始");
+                foreach (Player player in getSortedPlayers(game))
                 {
-                    await player.setMaxGem(this, getOption().startGem);
-                    await player.getInit().moveTo(this, player.getInit()[0, player.getInit().count - 1],
+                    await player.setMaxGem(game, getOption(game).startGem);
+                    await player.getInit().moveTo(game, player.getInit()[0, player.getInit().count - 1],
                         player.getHand(), 0);
-                    if (player != getSortedPlayers()[0])
+                    if (player != getSortedPlayers(game)[0])
                     {
-                        await player.getHand().add(this, createCard(getDefine<LuckyCoin>()));
-                        logger.log("由于后手行动" + player + "获得一张幸运币");
+                        await player.getHand().add(game, game.createCard(game.getDefine<LuckyCoin>()));
+                        game.logger.log("由于后手行动" + player + "获得一张幸运币");
                     }
 
                     arg.startHandDic.Add(player, new HearthStoneRule.StartEventArg.StartInfo()
@@ -281,141 +276,149 @@ namespace TouhouHeartstone
             });
         }
 
-        private void setCurrentPlayer(Player value) => setProp(GAME.CURRENTPLAYER, value);
-        public Player getCurrentPlayer() => getProp<Player>(GAME.CURRENTPLAYER);
+        private static void setCurrentPlayer(this CardEngine game,Player value) => game.setProp(GAME.CURRENTPLAYER, value);
+        public static Player getCurrentPlayer(this CardEngine game) => game.getProp<Player>(GAME.CURRENTPLAYER);
 
-        async Task turnStart(Player player)
+        async static Task turnStart(this CardEngine game,Player player)
         {
-            if (!isRunning)
+            if (!game.isRunning)
                 return;
-            await triggers.doEvent(new HearthStoneRule.TurnStartEventArg() {player = player}, async arg =>
+            await game.triggers.doEvent(new HearthStoneRule.TurnStartEventArg() {player = player}, async arg =>
             {
-                logger.log("Debug", arg.player + "的回合开始");
+                game.logger.log("Debug", arg.player + "的回合开始");
                 //玩家的最大能量加1但是不超过10，充满玩家的能量。
-                await arg.player.setMaxGem(this, arg.player.getMaxGem() + 1);
-                await arg.player.setGem(this, arg.player.getMaxGem());
+                await arg.player.setMaxGem(game, arg.player.getMaxGem() + 1);
+                await arg.player.setGem(game, arg.player.getMaxGem());
                 //抽一张牌
-                await arg.player.draw(this);
+                await arg.player.draw(game);
                 //重置技能
-                await player.getSkill().setUsed(this, false);
+                await player.getSkill().setUsed(game, false);
                 //使随从可以攻击
                 foreach (Card card in player.getField())
                 {
-                    await card.setReady(this, true);
-                    await card.setAttackTimes(this, 0);
+                    await card.setReady(game, true);
+                    await card.setAttackTimes(game, 0);
                 }
 
                 //使自己可以攻击
-                await player.getMaster().setAttackTimes(this, 0);
+                await player.getMaster().setAttackTimes(game, 0);
             });
             //倒计时75秒
-            turnTimer = time.startTimer(getOption().timeoutForTurn);
-            turnTimer.onExpired += onTurnTimeout;
+            game.setTurnTimer(game.time.startTimer(getOption(game).timeoutForTurn));
+            game.getTurnTimer().onExpired += () => game.onTurnTimeout();
         }
 
-        public ITimer turnTimer { get; set; } = null;
-
-        private void onTurnTimeout()
+        public static void setTurnTimer(this CardEngine game, ITimer value)
         {
-            logger.log("Debug", getCurrentPlayer() + "回合超时");
-            turnTimer = null;
-            answers.cancel(answers.getRequests(getCurrentPlayer().id));
+            game.setProp(GAME.TURNTIMER, value);
         }
 
-        async Task turnLoop(Player player)
+        public static ITimer getTurnTimer(this CardEngine game)
         {
-            if (!isRunning)
+            return game.getProp<ITimer>(GAME.TURNTIMER);
+        }
+
+        private static void onTurnTimeout(this CardEngine game)
+        {
+            game.logger.log("Debug", game.getCurrentPlayer() + "回合超时");
+            game.setTurnTimer(null);
+            game.answers.cancel(game.answers.getRequests(game.getCurrentPlayer().id));
+        }
+
+        async static Task turnLoop(this CardEngine game,Player player)
+        {
+            if (!game.isRunning)
                 return;
             for (int i = 0; i < 100; i++)
             {
-                if (!isRunning)
+                if (!game.isRunning)
                     return;
-                if (turnTimer == null) //超时，结束回合
+                if (game.getTurnTimer() == null) //超时，结束回合
                     return;
-                IResponse response = await answers.ask(player.id, new FreeActRequest(), getOption().timeoutForTurn * 2);
+                IResponse response = await game.answers.ask(player.id, new FreeActRequest(), getOption(game).timeoutForTurn * 2);
                 switch (response)
                 {
                     case UseResponse use:
-                        Card card = getCard(use.cardId);
-                        Card[] targets = getCards(use.targetsId);
-                        if (!await player.tryUse(this, card, use.position, targets))
-                            logger.log("Warning", "使用" + card + "失败");
+                        Card card = game.getCard(use.cardId);
+                        Card[] targets = game.getCards(use.targetsId);
+                        if (!await player.tryUse(game, card, use.position, targets))
+                            game.logger.log("Warning", "使用" + card + "失败");
                         break;
                     case AttackResponse attack:
-                        card = getCard(attack.cardId);
-                        Card target = getCard(attack.targetId);
-                        Task<THHCard.AttackEventArg> task = card.tryAttack(this, player, target);
+                        card = game.getCard(attack.cardId);
+                        Card target = game.getCard(attack.targetId);
+                        Task<THHCard.AttackEventArg> task = card.tryAttack(game, player, target);
                         await task;
                         break;
                     case TurnEndResponse _:
                         return;
                     case SurrenderResponse _:
-                        await surrender(player);
+                        await game.surrender(player);
                         return;
                 }
             }
         }
 
-        public async Task turnEnd(Player player)
+        public static async Task turnEnd(this CardEngine game,Player player)
         {
-            if (!isRunning)
+            if (!game.isRunning)
                 return;
-            await triggers.doEvent(new HearthStoneRule.TurnEndEventArg() {player = player}, arg =>
+            await game.triggers.doEvent(new HearthStoneRule.TurnEndEventArg() {player = player}, arg =>
             {
-                logger.log("Debug", getCurrentPlayer() + "回合结束");
+                game.logger.log("Debug", getCurrentPlayer(game) + "回合结束");
 
                 List<Card> AllCharactor = new List<Card>();
                 AllCharactor.Add(player.getMaster());
                 AllCharactor.AddRange(player.getField());
                 foreach (Card chara in AllCharactor)
                 {
-                    if (chara.isFreeze(this))
+                    if (chara.isFreeze(game))
                     {
                         //chara.setAttackTimes(chara.getAttackTimes(this) + 1);
-                        if ((chara.getMaxAttackTimes(this) - chara.getAttackTimes(this) >= 1) &&
-                            chara.define is ServantCardDefine && chara.isReady(this))
+                        if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
+                            chara.define is ServantCardDefine && chara.isReady(game))
                         {
-                            logger.log("被冻结的随从解除冰冻");
-                            chara.setFreeze(this, false);
+                            game.logger.log("被冻结的随从解除冰冻");
+                            chara.setFreeze(game, false);
                         }
-                        else if ((chara.getMaxAttackTimes(this) - chara.getAttackTimes(this) >= 1) &&
+                        else if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
                                  chara.define is MasterCardDefine)
                         {
-                            logger.log("被冻结的英雄解除冰冻");
-                            chara.setFreeze(this, false);
+                            game.logger.log("被冻结的英雄解除冰冻");
+                            chara.setFreeze(game, false);
                         }
                     }
                 }
 
-                answers.cancel(answers.getRequests(player.id));
+                game.answers.cancel(game.answers.getRequests(player.id));
                 return Task.CompletedTask;
             });
-            time.cancel(turnTimer);
-            turnTimer = null;
+            game.time.cancel(getTurnTimer(game));
+            setTurnTimer(game,null);
         }
 
         /// <summary>
         /// 清理战场上死亡的随从
         /// </summary>
         /// <returns></returns>
-        public Task updateDeath()
+        public static Task updateDeath(this CardEngine game)
         {
             List<Card> deathList = new List<Card>();
-            foreach (Player player in players)
+            foreach (Player player in game.players)
             {
-                if (player.getMaster().isDead(this))
+                if (player.getMaster().isDead(game))
                 {
                     deathList.Add(player.getMaster());
                 }
 
-                if (player.getItem() != null && player.getItem().isDead(this))
+                if (player.getItem() != null && player.getItem().isDead(game))
                 {
                     deathList.Add(player.getItem());
                 }
 
                 foreach (Card card in player.getField())
                 {
-                    if (card.isDead(this))
+                    if (card.isDead(game))
                     {
                         deathList.Add(card);
                     }
@@ -424,41 +427,41 @@ namespace TouhouHeartstone
 
             if (deathList.Count > 0)
             {
-                return deathList.die(this);
+                return deathList.die(game);
             }
             else
                 return Task.CompletedTask;
         }
 
-        internal Task surrender(Player player)
+        internal static Task surrender(this CardEngine game,Player player)
         {
-            logger.log(player + "投降");
-            return player.getMaster().die(this);
+            game.logger.log(player + "投降");
+            return player.getMaster().die(game);
         }
 
-        public async Task leave(Player player)
+        public async static Task leave(this CardEngine game,Player player)
         {
-            await player.getMaster().die(this);
+            await player.getMaster().die(game);
         }
 
-        internal async Task gameEnd(Player[] winners)
+        internal async static Task gameEnd(this CardEngine game,Player[] winners)
         {
-            if (!isRunning)
+            if (!game.isRunning)
                 return;
-            logger.log("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
-            await triggers.doEvent(new HearthStoneRule.GameEndEventArg() {winners = winners});
-            if (turnTimer!=null)
+            game.logger.log("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
+            await game.triggers.doEvent(new HearthStoneRule.GameEndEventArg() {winners = winners});
+            if (getTurnTimer(game)!=null)
             {
-                time.cancel(turnTimer);
+                game.time.cancel(getTurnTimer(game));
             }
-            close();
+            game.close();
             onEnd?.Invoke();
         }
 
-        public event Action<int, IResponse> onPlayerResponse;
-        public event Action onEnd;
+        public static event Action<int, IResponse> onPlayerResponse;
+        public static event Action onEnd;
 
-        public void logPlayerAction(int playerID, IResponse response)
+        public static void logPlayerAction(this CardEngine game,int playerID, IResponse response)
         {
             onPlayerResponse?.Invoke(playerID, response);
         }
@@ -572,7 +575,7 @@ namespace TouhouHeartstone
         {
         }
 
-        public override void onGameInit(CardEngine game, GameOption options, RoomPlayerInfo[] players)
+        public override async Task onGameInit(CardEngine game, GameOption options, RoomPlayerInfo[] players)
         {
             game.option = options;
             var option = getOption(game);
@@ -583,7 +586,7 @@ namespace TouhouHeartstone
             }
         }
 
-        public override void onGameRun(CardEngine game)
+        public override async Task onGameRun(CardEngine game)
         {
             throw new NotImplementedException();
         }

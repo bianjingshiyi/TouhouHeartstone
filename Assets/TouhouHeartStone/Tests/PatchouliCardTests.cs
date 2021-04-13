@@ -153,7 +153,7 @@ namespace Tests
         [Test]
         public void MetalFatigueTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -276,7 +276,7 @@ namespace Tests
         [Test]
         public void SilentSeleneTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption() { shuffle = false });
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption() { shuffle = false });
             Player defaultPlayer = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<MissingSpecter>() as CardDefine, 30));
             Player elusivePlayer = game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<SilentSelene>() as CardDefine, 28)
             .Concat(Enumerable.Repeat(game.getDefine<BestMagic>(), 2)));

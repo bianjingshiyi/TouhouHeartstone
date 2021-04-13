@@ -41,7 +41,7 @@ namespace TouhouHeartstone
         public static void setFatigue(this Player player,int value) => player.setProp(PLAYER.FATIGUE, value);
         public static int getFatigue(this Player player) => player.getProp<int>(PLAYER.FATIGUE);
 
-        internal static async Task initReplace(this Player player,THHGame game, params Card[] cards)
+        internal static async Task initReplace(this Player player,CardEngine game, params Card[] cards)
         {
             await game.triggers.doEvent(new HearthStoneRule.InitReplaceEventArg() { player = player, cards = cards }, onInitReplace);
             async Task onInitReplace(HearthStoneRule.InitReplaceEventArg arg)
@@ -82,7 +82,7 @@ namespace TouhouHeartstone
             });
         }
 
-        public static Task draw(this Player player,THHGame game, out HearthStoneRule.DrawEventArg drawEvent, out HearthStoneRule.BurnEventArg burnEvent, out HearthStoneRule.FatigueEventArg fatigueEvent)
+        public static Task draw(this Player player,CardEngine game, out HearthStoneRule.DrawEventArg drawEvent, out HearthStoneRule.BurnEventArg burnEvent, out HearthStoneRule.FatigueEventArg fatigueEvent)
         {
             if (player.getDeck().count < 1)//无牌可抽，疲劳！
             {
@@ -105,15 +105,15 @@ namespace TouhouHeartstone
                 return player.draw(game, player.getDeck().top, out drawEvent, out burnEvent);
             }
         }
-        public static Task draw(this Player player,THHGame game, out HearthStoneRule.DrawEventArg drawEvent)
+        public static Task draw(this Player player,CardEngine game, out HearthStoneRule.DrawEventArg drawEvent)
         {
             return player.draw(game, out drawEvent, out _, out _);
         }
-        public static Task draw(this Player player,THHGame game)
+        public static Task draw(this Player player,CardEngine game)
         {
             return player.draw(game, out _, out _, out _);
         }
-        public static Task draw(this Player player,THHGame game, Card card, out HearthStoneRule.DrawEventArg drawEvent, out HearthStoneRule.BurnEventArg burnEvent)
+        public static Task draw(this Player player,CardEngine game, Card card, out HearthStoneRule.DrawEventArg drawEvent, out HearthStoneRule.BurnEventArg burnEvent)
         {
             if (!player.getDeck().Contains(card))
             {
@@ -158,11 +158,11 @@ namespace TouhouHeartstone
                 });
             }
         }
-        public static Task draw(this Player player,THHGame game, Card card)
+        public static Task draw(this Player player,CardEngine game, Card card)
         {
             return player.draw(game, card, out _, out _);
         }
-        public static Task draw(this Player player,THHGame game, Card card, out HearthStoneRule.DrawEventArg drawEvent)
+        public static Task draw(this Player player,CardEngine game, Card card, out HearthStoneRule.DrawEventArg drawEvent)
         {
             return player.draw(game, card, out drawEvent, out _);
         }
@@ -172,7 +172,7 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public static Task draw(this Player player,THHGame game, Func<Card, bool> filter, out HearthStoneRule.DrawEventArg drawEvent)
+        public static Task draw(this Player player,CardEngine game, Func<Card, bool> filter, out HearthStoneRule.DrawEventArg drawEvent)
         {
             var cards = player.getDeck().Where(filter);
             if (cards.Count() > 0)
@@ -195,7 +195,7 @@ namespace TouhouHeartstone
         /// <param name="position">随从卡放置在场上的位置</param>
         /// <param name="targets">卡牌使用目标</param>
         /// <returns></returns>
-        public static async Task<bool> tryUse(this Player player,THHGame game, Card card, int position, params Card[] targets)
+        public static async Task<bool> tryUse(this Player player,CardEngine game, Card card, int position, params Card[] targets)
         {
             if (!card.isUsable(game, player, out _))
                 //卡牌不可用
@@ -252,7 +252,7 @@ namespace TouhouHeartstone
             await game.updateDeath();
             return true;
         }
-        public static async Task equip(this Player player,THHGame game, Card item)
+        public static async Task equip(this Player player,CardEngine game, Card item)
         {
             if (player[PILE.ITEM].isFull)
             {
@@ -264,7 +264,7 @@ namespace TouhouHeartstone
             await player.getHand().moveTo(game, item, player[PILE.ITEM]);
             game.logger.log(player + "装备" + item);
         }
-        public static Task destroyItem(this Player player,THHGame game)
+        public static Task destroyItem(this Player player,CardEngine game)
         {
             if (player[PILE.ITEM].count > 0 && player[PILE.ITEM][0] is Card item)
                 return item.die(game);
@@ -277,7 +277,7 @@ namespace TouhouHeartstone
         /// <param name="cards"></param>
         /// <param name="count">如果小于等于0，则全都可以挑</param>
         /// <returns></returns>
-        public static async Task<Card> discover(this Player player,THHGame game, IEnumerable<Card> cards, int count = 3, string title = null)
+        public static async Task<Card> discover(this Player player,CardEngine game, IEnumerable<Card> cards, int count = 3, string title = null)
         {
             if (cards.Count() < 1)
                 return null;
@@ -291,7 +291,7 @@ namespace TouhouHeartstone
             return selected;
         }
 
-        public static async Task<HearthStoneRule.ChooseOneEventArg> chooseOne(this Player player,THHGame game,IEnumerable<Card> options, bool isShow = true ,string title = "选择一项")
+        public static async Task<HearthStoneRule.ChooseOneEventArg> chooseOne(this Player player,CardEngine game,IEnumerable<Card> options, bool isShow = true ,string title = "选择一项")
         {
             game.logger.log(player + "从" + string.Join("，", options) + "中选择一项");
             //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
@@ -305,7 +305,7 @@ namespace TouhouHeartstone
             return eventArg;
         }
 
-        public static async Task<HearthStoneRule.SearchPileEventArg> searchPile(this Player player,THHGame game, IEnumerable<Card> cards, bool isShow = false,  int count = 3,string title = "选择一项")
+        public static async Task<HearthStoneRule.SearchPileEventArg> searchPile(this Player player,CardEngine game, IEnumerable<Card> cards, bool isShow = false,  int count = 3,string title = "选择一项")
         {
             game.logger.log(player + "从" + string.Join("，", cards) + "中选择一张");
             if (cards.Count() < 1)
@@ -323,7 +323,7 @@ namespace TouhouHeartstone
             return eventArg;
         }
 
-        public static Task<HearthStoneRule.EnterFieldEventArg> tryEnterField(this Player player,THHGame game, Pile from, Card card, int position)
+        public static Task<HearthStoneRule.EnterFieldEventArg> tryEnterField(this Player player,CardEngine game, Pile from, Card card, int position)
         {
             if (player.getField().isFull)//没位置了
                 return Task.FromResult(default(HearthStoneRule.EnterFieldEventArg));
@@ -352,7 +352,7 @@ namespace TouhouHeartstone
                 arg.life = card.getLife(game);
             }
         }
-        public static async Task<bool> tryEnterHead(this Player player,THHGame game, Pile from, Card card)
+        public static async Task<bool> tryEnterHead(this Player player,CardEngine game, Pile from, Card card)
         {
             if (player.getHead().isFull)
                 return false;
@@ -360,7 +360,7 @@ namespace TouhouHeartstone
             return true;
         }
 
-        public static Task<HearthStoneRule.CreateTokenEventArg> createToken(this Player player,THHGame game, CardDefine define, int position = -1)
+        public static Task<HearthStoneRule.CreateTokenEventArg> createToken(this Player player,CardEngine game, CardDefine define, int position = -1)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));
@@ -383,7 +383,7 @@ namespace TouhouHeartstone
                 await player.tryEnterField(game, null, arg.card, position);
             });
         }
-        public static async Task<HearthStoneRule.CreateTokenEventArg[]> createToken(this Player player,THHGame game, int count, CardDefine define, int position = -1)
+        public static async Task<HearthStoneRule.CreateTokenEventArg[]> createToken(this Player player,CardEngine game, int count, CardDefine define, int position = -1)
         {
             List<HearthStoneRule.CreateTokenEventArg> list = new List<HearthStoneRule.CreateTokenEventArg>();
             for (int i = 0; i < count; i++)
@@ -393,7 +393,7 @@ namespace TouhouHeartstone
             return list.ToArray();
         }
 
-        public static async Task<HearthStoneRule.RebornEventArg> reborn(this Player player,THHGame game, Card card, Pile pile, int position = -1)
+        public static async Task<HearthStoneRule.RebornEventArg> reborn(this Player player,CardEngine game, Card card, Pile pile, int position = -1)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));
@@ -427,7 +427,7 @@ namespace TouhouHeartstone
             return eventArg;
         }
 
-        public static int getSpellDamage(this Player player,THHGame game, int baseDamage)
+        public static int getSpellDamage(this Player player,CardEngine game, int baseDamage)
         {
             int result = baseDamage;
             foreach (var card in player.getField())
@@ -436,30 +436,30 @@ namespace TouhouHeartstone
             }
             return result;
         }
-        public static Task shuffleCardToDeck(this Player player,THHGame game, CardDefine define)
+        public static Task shuffleCardToDeck(this Player player,CardEngine game, CardDefine define)
         {
             Card card = game.createCard(define);
             return player.shuffleCardToDeck(game, card);
         }
-        public static Task shuffleCardToDeck(this Player player,THHGame game, Card card)
+        public static Task shuffleCardToDeck(this Player player,CardEngine game, Card card)
         {
             return player.getDeck().insert(game, card, game.randomInt(0, player.getDeck().count));
         }
-        public static Task addCardToHand<T>(this Player player,THHGame game) where T : CardDefine
+        public static Task addCardToHand<T>(this Player player,CardEngine game) where T : CardDefine
         {
             if (player.getHand().isFull)
                 return Task.CompletedTask;
             Card card = game.createCard<T>();
             return player.getHand().add(game, card);
         }
-        public static Task addCardToHand(this Player player,CardDefine define, THHGame game)
+        public static Task addCardToHand(this Player player,CardDefine define, CardEngine game)
         {
             if (player.getHand().isFull)
                 return Task.CompletedTask;
             Card card = game.createCard(define);
             return player.getHand().add(game, card);
         }
-        public static async Task<bool> tryAddCardToHand(this Player player,THHGame game, Card card)
+        public static async Task<bool> tryAddCardToHand(this Player player,CardEngine game, Card card)
         {
             if (player.getHand().isFull)
                 return false;
@@ -467,14 +467,14 @@ namespace TouhouHeartstone
             await player.getHand().add(game, card);
             return true;
         }
-        public static Task addRandomCardToHand(this Player player,THHGame game, IEnumerable<CardDefine> pool)
+        public static Task addRandomCardToHand(this Player player,CardEngine game, IEnumerable<CardDefine> pool)
         {
             if (player.getHand().isFull)//手牌满了
                 return Task.CompletedTask;
             Card card = game.createCardByRandom(pool);
             return player.getHand().add(game, card);
         }
-        public static Task randomDiscard(this Player player,THHGame game, int count = 1, Func<Card, bool> filter = null)
+        public static Task randomDiscard(this Player player,CardEngine game, int count = 1, Func<Card, bool> filter = null)
         {
             var cards = filter == null ? player.getHand() : player.getHand().Where(c => filter(c));
             if (cards.Count() < 1)
@@ -484,11 +484,11 @@ namespace TouhouHeartstone
             else
                 return player.discard(game, cards.randomTake(game, count));
         }
-        public static Task discard(this Player player,THHGame game, Card card)
+        public static Task discard(this Player player,CardEngine game, Card card)
         {
             return player.discard(game, new Card[] { card });
         }
-        public static Task discard(this Player player,THHGame game, IEnumerable<Card> cards)
+        public static Task discard(this Player player,CardEngine game, IEnumerable<Card> cards)
         {
             return game.triggers.doEvent(new HearthStoneRule.DiscardEventArg() { player = player, cards = cards.ToArray() }, arg =>
             {
@@ -511,7 +511,7 @@ namespace TouhouHeartstone
         /// <param name="filter"></param>
         /// <returns></returns>
         /// <remarks>但是其实并不会真的哪里都去找啦</remarks>
-        public static Card[] findCardsWherever(this Player player,THHGame game, Func<Card, bool> filter, PileFlag pile = PileFlag.self | PileFlag.field | PileFlag.hand | PileFlag.grave | PileFlag.deck)
+        public static Card[] findCardsWherever(this Player player,CardEngine game, Func<Card, bool> filter, PileFlag pile = PileFlag.self | PileFlag.field | PileFlag.hand | PileFlag.grave | PileFlag.deck)
         {
             if (filter == null)
                 throw new ArgumentNullException(nameof(filter));
@@ -533,7 +533,7 @@ namespace TouhouHeartstone
         /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
         /// <returns></returns>
 
-        public static async Task<Card> Reveal(this Player player,THHGame game, Pile cards, int define = 0)
+        public static async Task<Card> Reveal(this Player player,CardEngine game, Pile cards, int define = 0)
         {
             Card show = null;
 
@@ -623,8 +623,8 @@ namespace TouhouHeartstone
             }
         }
 
-        public delegate bool PoolRange(THHGame game , CardDefine define);
-        public delegate bool isInRange(THHGame game, CardDefine define);
+        public delegate bool PoolRange(CardEngine game , CardDefine define);
+        public delegate bool isInRange(CardEngine game, CardDefine define);
 
         /// <summary>
         /// 获取随机池，并从中选count张卡
@@ -634,7 +634,7 @@ namespace TouhouHeartstone
         /// <param name="count">从随机池中获取牌的数量，默认3</param>
         /// <param name="isFull">是否获取全随机池,默认否(即随机池只包含本角色牌+中立牌)</param>
         /// <returns></returns>
-        public static List<Card> getNormalRandomPool(this Player player,isInRange isInRange,THHGame game,int count = 3, bool isFull = false)
+        public static List<Card> getNormalRandomPool(this Player player,isInRange isInRange,CardEngine game,int count = 3, bool isFull = false)
         {
             
 
@@ -656,7 +656,7 @@ namespace TouhouHeartstone
         }
 
         #region Command
-        public static Task cmdInitReplace(this Player player,THHGame game, params Card[] cards)
+        public static Task cmdInitReplace(this Player player,CardEngine game, params Card[] cards)
         {
             InitReplaceResponse response = new InitReplaceResponse()
             {
@@ -666,7 +666,7 @@ namespace TouhouHeartstone
             game.logPlayerAction(player.id, response);
             return game.answers.answer(player.id, response);
         }
-        public static Task cmdUse(this Player player,THHGame game, Card card, int position = 0, params Card[] targets)
+        public static Task cmdUse(this Player player,CardEngine game, Card card, int position = 0, params Card[] targets)
         {
             var response = new UseResponse()
             {
@@ -677,13 +677,13 @@ namespace TouhouHeartstone
             game.logPlayerAction(player.id, response);
             return game.answers.answer(player.id, response);
         }
-        public static Task cmdTurnEnd(this Player player,THHGame game)
+        public static Task cmdTurnEnd(this Player player,CardEngine game)
         {
             var resp = new TurnEndResponse() { };
             game.logPlayerAction(player.id, resp);
             return game.answers.answer(player.id, resp);
         }
-        public static Task cmdAttack(this Player player,THHGame game, Card card, Card target)
+        public static Task cmdAttack(this Player player,CardEngine game, Card card, Card target)
         {
             var resp = new AttackResponse()
             {
@@ -693,12 +693,12 @@ namespace TouhouHeartstone
             game.logPlayerAction(player.id, resp);
             return game.answers.answer(player.id, resp);
         }
-        public static Task cmdSurrender(this Player player,THHGame game)
+        public static Task cmdSurrender(this Player player,CardEngine game)
         {
             game.logPlayerAction(player.id, new SurrenderResponse());
             return game.surrender(player);
         }
-        public static Task cmdDiscover(this Player player,THHGame game, int cardId)
+        public static Task cmdDiscover(this Player player,CardEngine game, int cardId)
         {
             var resp = new DiscoverResponse()
             {

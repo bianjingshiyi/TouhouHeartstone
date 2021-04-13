@@ -22,7 +22,7 @@ namespace UI
     partial class Table
     {
         [Obsolete]
-        public THHGame game
+        public CardEngine game
         {
             get { return ui.getManager<TableManager>().game; }
         }
@@ -34,7 +34,7 @@ namespace UI
         //partial void onAwake()
         //{
         //}
-        public void setGame(THHGame game, Player player)
+        public void setGame(CardEngine game, Player player)
         {
             InitReplaceDialog.hide();
             TurnTipImage.hide();

@@ -712,7 +712,7 @@ namespace Game
             {
                 //有玩家离开了
                 var roomPlayer = now.playerList.First(p => !updated.playerList.Exists(p2 => p2.RoomID == p.RoomID));
-                if (getManager<GameManager>().game is THHGame game)
+                if (getManager<GameManager>().game is CardEngine game)
                 {
                     game.getPlayer(roomPlayer.RoomID).cmdSurrender(game);
                 }

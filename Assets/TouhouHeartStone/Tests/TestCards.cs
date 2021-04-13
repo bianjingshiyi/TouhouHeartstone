@@ -573,14 +573,14 @@ namespace Tests
                 piles = pile.getPiles();
                 this.modifiers = modifiers;
             }
-            public override async Task onEnable(THHGame game, Card card, Buff buff)
+            public override async Task onEnable(CardEngine game, Card card, Buff buff)
             {
                 foreach (var modifier in modifiers)
                 {
                     await card.addModifier(game, modifier);
                 }
             }
-            public override async Task onDisable(THHGame game, Card card, Buff buff)
+            public override async Task onDisable(CardEngine game, Card card, Buff buff)
             {
                 foreach (var modifier in modifiers)
                 {

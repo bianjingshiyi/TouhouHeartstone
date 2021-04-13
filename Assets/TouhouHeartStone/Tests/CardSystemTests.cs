@@ -18,7 +18,7 @@ namespace Tests
         [Test]
         public void buffTest()
         {
-            THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
+            CardEngine game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
             Enumerable.Repeat(new TestMaster(), 2).ToArray(),
             Enumerable.Repeat(Enumerable.Repeat(new TestServant_Buff(), 30).ToArray(), 2).ToArray(),
             new HearthstoneOption() { });
@@ -128,7 +128,7 @@ namespace Tests
         [Test]
         public void haloAndSetBuffTest()
         {
-            THHGame game = new THHGame()
+            CardEngine game = new CardEngine()
             {
                 logger = new UnityLogger()
             };
@@ -152,7 +152,7 @@ namespace Tests
         [Test]
         public void removeBuffWhenInjureTest()
         {
-            THHGame game = new THHGame()
+            CardEngine game = new CardEngine()
             {
                 logger = new UnityLogger()
             };
@@ -178,7 +178,7 @@ namespace Tests
         [Test]
         public void mountainGaintTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -217,7 +217,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator fireBallTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -236,7 +236,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator sorcererApprenticeTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -476,7 +476,7 @@ namespace Tests
         [Test]
         public void PowrOverwhelmingTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -496,7 +496,7 @@ namespace Tests
         [Test]
         public void VelenTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });

@@ -50,7 +50,7 @@ namespace Game
             get { return _table; }
             set { _table = value; }
         }
-        public THHGame game { get; private set; } = null;
+        public CardEngine game { get; private set; } = null;
         public Player player { get; private set; } = null;
         ActionEventCache eventCache { get; } = new ActionEventCache();
 
@@ -128,14 +128,14 @@ namespace Game
             // patch: 我不知道怎么改AutoCompo所以先Patch一个
             var clock = ui.TurnEndButton.GetComponent<TurnEndClock>();
 
-            if (game.turnTimer != null)
+            if (game.getTurnTimer() != null)
             {
-                clock?.SetCountdown(game.turnTimer.remainedTime);
+                clock?.SetCountdown(game.getTurnTimer().remainedTime);
 
-                if (game.turnTimer.remainedTime <= 15)
+                if (game.getTurnTimer().remainedTime <= 15)
                 {
                     ui.TimeoutSlider.display();
-                    ui.TimeoutSlider.value = game.turnTimer.remainedTime / 15;
+                    ui.TimeoutSlider.value = game.getTurnTimer().remainedTime / 15;
                     ui.TimeoutSlider.fillRect.GetComponent<Image>().color = timeoutGradient.Evaluate(1 - ui.TimeoutSlider.value);
                 }
             }
@@ -179,7 +179,7 @@ namespace Game
         /// </summary>
         /// <param name="game"></param>
         /// <param name="player"></param>
-        public void setGame(THHGame game, Player player)
+        public void setGame(CardEngine game, Player player)
         {
             ui.onClickNoWhere.set(onClickNoWhere);
             ui.InitReplaceDialog.hide();

@@ -316,7 +316,7 @@ namespace Tests
             Debug.Log( "第一个是" + you.field[0].getAttack(game) + "/" + you.field[0].getLife(game) + "的" + you.field[0].define.id );
             Debug.Log( "第二个是" + you.field[1].getAttack(game) + "/" + you.field[1].getLife(game) + "的" + you.field[1].define.id );   
             */
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -351,7 +351,7 @@ namespace Tests
         [Test]
         public void ProbeSilentCardCounterTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -401,7 +401,7 @@ namespace Tests
         [Test]
         public void ProbeColludeWithTheEnemyTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -440,7 +440,7 @@ namespace Tests
         [Test]
         public void ProbeCorrosionTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -479,7 +479,7 @@ namespace Tests
         [Test]
         public void ProbeCirculationOfGossipTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -546,7 +546,7 @@ namespace Tests
         [Test]
         public void ProbeGeralt_IgniTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -570,7 +570,7 @@ namespace Tests
         [Test]
         public void ProbeFastReload()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -594,7 +594,7 @@ namespace Tests
         [Test]
         public void ProbeFencingCoachTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -620,7 +620,7 @@ namespace Tests
         [Test]
         public void ProbeMirrorTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -644,7 +644,7 @@ namespace Tests
         [Test]
         public void ProbePersevereTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });

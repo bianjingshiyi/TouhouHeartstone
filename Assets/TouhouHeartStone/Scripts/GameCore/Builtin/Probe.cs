@@ -71,7 +71,7 @@ namespace TouhouHeartstone.Builtin.Proble
         {
             new NoTargetEffect(effect)//这不是个指向性技能
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.owner as Player).getMaster().damage(game, card, 2);
         }
@@ -93,7 +93,7 @@ namespace TouhouHeartstone.Builtin.Proble
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().createToken(game, game.getDefine<Pylon>(), card.getOwner().getField().count);
         }
@@ -154,7 +154,7 @@ namespace TouhouHeartstone.Builtin.Proble
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             //双向法术这块必须整完！
             await game.getAllCharacters().damage(game, card, card.getOwner().getSpellDamage(game, 3));
@@ -177,7 +177,7 @@ namespace TouhouHeartstone.Builtin.Proble
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             //召唤水晶塔
             await card.getOwner().createToken(game, game.getDefine<Pylon>(), card.getOwner().getField().count);
@@ -215,7 +215,7 @@ namespace TouhouHeartstone.Builtin.Proble
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().createToken(game, game.getDefine<Vision>(), card.getOwner().getField().count);
         }
@@ -260,7 +260,7 @@ namespace TouhouHeartstone.Builtin.Proble
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             //遍历牌库寻找法力消耗最高的牌
             Card _card = card.getOwner().getDeck().top;
@@ -343,7 +343,7 @@ namespace TouhouHeartstone.Builtin.Proble
             new NoTargetEffect(effect),
             new Halo(new GeneratedBuff(ID,new AttackModifier(2)), PileFlag.self | PileFlag.field)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().createToken(game, game.getDefine<Pylon>(), card.pile.indexOf(card) + 1);
             await card.getOwner().createToken(game, game.getDefine<Pylon>(), card.pile.indexOf(card) - 1);
@@ -393,7 +393,7 @@ namespace TouhouHeartstone.Builtin.Proble
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             var discovered = await card.getOwner().discover(game, card.getOwner().getGrave().Where(c => c.isServant() && ((IList)c.getTags(game)).Contains(TAG.MACHINE)));
             var theReborned = (await card.getOwner().reborn(game, discovered, card.getOwner().getField())).card;
@@ -648,7 +648,7 @@ namespace TouhouHeartstone.Builtin.Proble
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             if (Probe.isJoinForce(card.getOwner().getField(), card))
             {
@@ -678,7 +678,7 @@ namespace TouhouHeartstone.Builtin.Proble
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.getOwner()).getField().damageByRandomCount(game, card, 3, 1);
             await card.getOwner().createToken(game, game.getDefine<KarasuTenguobot>());
@@ -704,7 +704,7 @@ namespace TouhouHeartstone.Builtin.Proble
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.getOwner()).getField().damageByRandomCount(game, card, 6, 2);
             await card.getOwner().createToken(game, game.getDefine<KarasuTenguobot>());
@@ -731,7 +731,7 @@ namespace TouhouHeartstone.Builtin.Proble
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             IEnumerable<Card> cards = game.getOpponent(card.getOwner()).getField();
             if (cards.Count() > 3)
@@ -812,7 +812,7 @@ namespace TouhouHeartstone.Builtin.Proble
             new NoTargetEffect(effect)
         };
 
-        static Task effect(THHGame game, Card card)
+        static Task effect(CardEngine game, Card card)
         {
             IEnumerable<Card> cards = game.getOpponent(card.getOwner()).getField();
 

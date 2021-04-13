@@ -29,7 +29,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().gainArmor(game, 1);
             await card.getOwner().getMaster().addBuff(game,
@@ -127,7 +127,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             foreach (Card c1 in card.getOwner().getField())
             {
@@ -152,7 +152,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             Card[] field = card.getOwner().getField().ToArray();
             await field.setDead(game, true);
@@ -185,7 +185,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -286,7 +286,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             var arg = await card.getOwner().searchPile(game,
                 card.getOwner().getGrave().Where(c => c.isServant() && c.hasDeathRattle(game)), 
@@ -368,7 +368,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -400,7 +400,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -424,7 +424,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             for (int i = 0; i < 3; i++)
             {

@@ -10,7 +10,7 @@ namespace Game.Replays
 {
     public class ReplaySystem
     {
-        public void startRecord(THHGame game, RoomPlayerData[] players)
+        public void startRecord(CardEngine game, RoomPlayerData[] players)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));
@@ -21,13 +21,13 @@ namespace Game.Replays
                 players = players,
                 responses = new List<IResponse>()
             };
-            game.onPlayerResponse += onPlayerResponse;
-            game.onEnd += onEnd;
+            // game.onPlayerResponse += onPlayerResponse;
+            // game.onEnd += onEnd;
         }
         public void stopRecord()
         {
-            game.onPlayerResponse -= onPlayerResponse;
-            game.onEnd -= onEnd;
+            // game.onPlayerResponse -= onPlayerResponse;
+            // game.onEnd -= onEnd;
             game = null;
         }
         public string getSaveDir()
@@ -63,7 +63,7 @@ namespace Game.Replays
         {
             stopRecord();
         }
-        THHGame game { get; set; } = null;
+        CardEngine game { get; set; } = null;
         public ReplayData replay { get; private set; } = null;
         #endregion
     }

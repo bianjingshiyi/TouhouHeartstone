@@ -31,7 +31,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)//这不是个指向性技能
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.owner as Player).getMaster().damage(game, card, 2);
         }
@@ -220,7 +220,7 @@ namespace TouhouHeartstone.Builtin
         {
            new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getSkill().addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true), new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PILE.SKILL, (g, c, a) =>
             {
@@ -286,7 +286,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.getOwner()).getMaster().damage(game, card, 3);
         }
@@ -343,7 +343,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)//这不是个指向性技能
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             if (card.getOwner().getSkill().isUsed(game))
             {
@@ -442,7 +442,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect)
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             Card topCard = card.getOwner().getDeck().top;
 
@@ -472,7 +472,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect(effect, name: "下次技能伤害翻倍")
         };
-        static async Task effect(THHGame game, Card card)
+        static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new THHEffectBefore<THHCard.DamageEventArg>(PILE.MASTER,
             (g, c, a) =>

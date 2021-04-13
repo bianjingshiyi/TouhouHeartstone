@@ -2,12 +2,13 @@
 using System.Linq;
 using TouhouCardEngine.Interfaces;
 using System;
+using TouhouCardEngine;
 
 namespace Game.Replays
 {
     public class ReplayDataPlayer
     {
-        public ReplayDataPlayer(THHGame game, ReplayData replay)
+        public ReplayDataPlayer(CardEngine game, ReplayData replay)
         {
             this.game = game;
             this.replay = replay;
@@ -36,7 +37,7 @@ namespace Game.Replays
             get { return currentResponseIndex >= replay.responses.Count; }
         }
         int currentResponseIndex { get; set; } = 0;
-        THHGame game { get; }
+        CardEngine game { get; }
         ReplayData replay { get; }
     }
 }

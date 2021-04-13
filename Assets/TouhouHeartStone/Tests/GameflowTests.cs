@@ -27,9 +27,9 @@ namespace Tests
         [UnityTest]
         public IEnumerator initTest()
         {
-            THHGame game = TestGameflow.initStandardGame();
+            CardEngine game = TestGameflow.initStandardGame();
 
-            _ = game.run();
+            game.run();
             yield return new WaitForSeconds(.1f);
 
             HearthStoneRule.InitEventArg init = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.InitEventArg) as HearthStoneRule.InitEventArg;
@@ -47,9 +47,9 @@ namespace Tests
         [UnityTest]
         public IEnumerator initReplaceTest()
         {
-            THHGame game = TestGameflow.initStandardGame();
+            CardEngine game = TestGameflow.initStandardGame();
 
-            _ = game.run();
+            game.run();
             yield return game.players[0].cmdInitReplace(game, game.players[0].getInit()[0]).wait();
             yield return game.players[1].cmdInitReplace(game, game.players[1].getInit()[0, 1]).wait();
             //替换手牌
@@ -85,9 +85,9 @@ namespace Tests
         [UnityTest]
         public IEnumerator initReplaceRefuseTest()
         {
-            THHGame game = TestGameflow.initStandardGame();
+            CardEngine game = TestGameflow.initStandardGame();
 
-            _ = game.run();
+            game.run();
             yield return new WaitForSeconds(.1f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -109,9 +109,9 @@ namespace Tests
         [UnityTest]
         public IEnumerator useTest()
         {
-            THHGame game = TestGameflow.initStandardGame();
+            CardEngine game = TestGameflow.initStandardGame();
 
-            _ = game.run();
+            game.run();
             yield return new WaitForSeconds(.1f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -140,7 +140,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator turnEndTest()
         {
-            THHGame game = TestGameflow.initStandardGame();
+            CardEngine game = TestGameflow.initStandardGame();
 
             game.run();
             game.players[0].cmdInitReplace(game);
@@ -198,9 +198,9 @@ namespace Tests
         [UnityTest]
         public IEnumerator burnTest()
         {
-            THHGame game = TestGameflow.initStandardGame();
+            CardEngine game = TestGameflow.initStandardGame();
 
-            _ = game.run();
+            game.run();
             yield return new WaitForSeconds(.1f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -260,9 +260,9 @@ namespace Tests
         [UnityTest]
         public IEnumerator attackTest()
         {
-            THHGame game = TestGameflow.initStandardGame();
+            CardEngine game = TestGameflow.initStandardGame();
 
-            _ = game.run();
+            game.run();
             yield return new WaitForSeconds(.2f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -306,8 +306,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator winTest()
         {
-            THHGame game = TestGameflow.initStandardGame();
-            _ = game.run();
+            CardEngine game = TestGameflow.initStandardGame();
+            game.run();
             yield return new WaitForSeconds(.1f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -332,11 +332,11 @@ namespace Tests
         [UnityTest]
         public IEnumerator closeTest()
         {
-            THHGame game = TestGameflow.initStandardGame(option: new HearthstoneOption()
+            CardEngine game = TestGameflow.initStandardGame(option: new HearthstoneOption()
             {
                 timeoutForInitReplace = 5
             });
-            Task task = game.run();
+            game.run();
             game.close();
             yield return new WaitForSeconds(5.5f);
 
@@ -345,7 +345,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator remoteGameflowTest()
         {
-            THHGame g1 = TestGameflow.initStandardGame(name: "客户端0", playersId: new int[] { 0, 1 }, option: new HearthstoneOption()
+            CardEngine g1 = TestGameflow.initStandardGame(name: "客户端0", playersId: new int[] { 0, 1 }, option: new HearthstoneOption()
             {
                 sortedPlayers = new int[] { 0, 1 }
             });
@@ -358,7 +358,7 @@ namespace Tests
             Task task = c1.join(Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString(), host.port);
             (g1.answers as AnswerManager).client = c1;
 
-            THHGame g2 = TestGameflow.initStandardGame(name: "客户端1", playersId: new int[] { 0, 1 }, option: new HearthstoneOption()
+            CardEngine g2 = TestGameflow.initStandardGame(name: "客户端1", playersId: new int[] { 0, 1 }, option: new HearthstoneOption()
             {
                 sortedPlayers = new int[] { 0, 1 }
             });
@@ -369,8 +369,8 @@ namespace Tests
             (g2.answers as AnswerManager).client = c2;
             yield return new WaitUntil(() => task.IsCompleted);
 
-            _ = g1.run();
-            _ = g2.run();
+            g1.run();
+            g2.run(); 
             yield return new WaitForSeconds(.5f);
             g1.players[0].cmdInitReplace(g1, g1.players[0].getInit()[0, 1]);
             yield return new WaitForSeconds(.5f);
@@ -399,7 +399,7 @@ namespace Tests
             //开房，打开Host，自己加入自己，房间应该有Option
             RoomInfo roomInfo = new RoomInfo();
             roomInfo.setOption(new HearthstoneOption());
-            THHGame localGame = null;
+            CardEngine localGame = null;
             local.onConnected += () =>
             {
                 //发送玩家信息
@@ -449,7 +449,7 @@ namespace Tests
 
             ClientManager remote = new GameObject(nameof(ClientManager)).AddComponent<ClientManager>();
             remote.logger = logger;
-            THHGame remoteGame = null;
+            CardEngine remoteGame = null;
             remote.onConnected += () =>
             {
                 //发送玩家信息
@@ -554,10 +554,10 @@ namespace Tests
         [UnityTest]
         public IEnumerator effectRegisterTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, HearthstoneOption.Default);
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, HearthstoneOption.Default);
             game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant_TurnEndEffect>(), 30));
             game.createPlayer(2, "玩家2", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant_TurnEndEffect>(), 30));
-            _ = game.run();
+            game.run();
             yield return new WaitForSeconds(.1f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -572,7 +572,7 @@ namespace Tests
         [Test]
         public void attackSelfTest()
         {
-            THHGame game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
+            CardEngine game = TestGameflow.initStandardGame(null, new int[] { 0, 1 },
             Enumerable.Repeat(new Reimu(), 2).ToArray(),
             Enumerable.Repeat(Enumerable.Repeat(new DefaultServant(), 30).ToArray(), 2).ToArray(),
             new HearthstoneOption() { });
@@ -597,7 +597,7 @@ namespace Tests
         [Test]
         public void SkillAndSpellCardTest()
         {
-            THHGame game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
             {
                 shuffle = false
             });
@@ -625,7 +625,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator surrenderTest()
         {
-            THHGame game = TestGameflow.initStandardGame();
+            CardEngine game = TestGameflow.initStandardGame();
             game.run();
             yield return game.players[0].cmdSurrender(game).wait();
             HearthStoneRule.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.GameEndEventArg) as HearthStoneRule.GameEndEventArg;
@@ -682,8 +682,8 @@ namespace Tests
             remoteClient.addInvokeTarget(remoteGameManager);
             remoteGameManager.client = remoteClient;
             yield return localClient.invokeHost(RPCHelper.GameStart()).wait();
-            THHGame localGame = localGameManager.game;
-            THHGame remoteGame = remoteGameManager.game;
+            CardEngine localGame = localGameManager.game;
+            CardEngine remoteGame = remoteGameManager.game;
             Assert.AreEqual(localGame.getOption().randomSeed, remoteGame.getOption().randomSeed);
             Assert.AreEqual(localGame.getSortedPlayers()[0].id, remoteGame.getSortedPlayers()[0].id);
             Assert.AreEqual(localGame.getSortedPlayers()[1].id, remoteGame.getSortedPlayers()[1].id);
@@ -827,8 +827,8 @@ namespace Tests
             remoteGameManager.client = remoteClient;
             yield return localClient.invokeHost(RPCHelper.GameStart()).wait();
 
-            THHGame localGame = localGameManager.game;
-            THHGame remoteGame = remoteGameManager.game;
+            CardEngine localGame = localGameManager.game;
+            CardEngine remoteGame = remoteGameManager.game;
             Assert.NotNull(localGame.getOption());
             Assert.NotNull(remoteGame.getOption());
             Assert.AreEqual(localGame.getOption().randomSeed, remoteGame.getOption().randomSeed);
