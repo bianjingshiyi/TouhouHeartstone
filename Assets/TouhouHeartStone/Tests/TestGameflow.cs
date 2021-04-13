@@ -135,7 +135,7 @@ namespace Tests
         {
             TaskExceptionHandler.register();
             ULogger logger = new ULogger(name) { blackList = new List<string>() { "Load" } };
-            THHGame game = new THHGame(option != null ? option : HearthstoneOption.Default, CardHelper.getCardDefines(logger))
+            THHGame game = new THHGame()
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
@@ -143,6 +143,7 @@ namespace Tests
                 logger = logger
             };
             game.answers.game = game;
+            game.init(new HearthStoneRule(CardHelper.getCardDefines(logger)), option, null);
             (game.triggers as TriggerManager).logger = game.logger;
             return game;
         }

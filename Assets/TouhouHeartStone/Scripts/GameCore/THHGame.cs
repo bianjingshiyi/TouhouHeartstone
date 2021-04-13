@@ -6,28 +6,20 @@ using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone.Builtin;
+using UnityEngine;
 
 namespace TouhouHeartstone
 {
     public class THHGame : CardEngine
     {
-        public static HearthStoneRule rule = new HearthStoneRule(null);
         public HearthstoneOption getOption() => this.option as HearthstoneOption;
-
-        public THHGame(params CardDefine[] defines) : base(HearthstoneOption.Default.randomSeed, defines)
-        {
-            option = HearthstoneOption.Default;
-        }
-
-        public THHGame(HearthstoneOption option, params CardDefine[] defines) : base(option.randomSeed, defines)
-        {
-            this.option = option;
-        }
 
         public THHGame() : base ()
         {
             
         }
+
+        public HearthStoneRule getRule() => getRule() as HearthStoneRule;
 
         #region Player
 
@@ -41,12 +33,12 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public Player createPlayer(int id, string name, MasterCardDefine master, IEnumerable<CardDefine> deck)
         {
-            return rule.createPlayer(this, id, name, master.id, deck.Select(d=>d.id).ToArray()) as Player;
+            return getRule().createPlayer(this, id, name, master.id, deck.Select(d=>d.id).ToArray()) as Player;
         }
 
         public Player getPlayer(int id)
         {
-            return rule.getPlayer(this, id) as Player;
+            return getRule().getPlayer(this, id) as Player;
         }
 
         /// <summary>
@@ -84,7 +76,7 @@ namespace TouhouHeartstone
         }
         public Card createCard(CardDefine define)
         {
-            return rule.createCard(this, define);
+            return getRule().createCard(this, define);
         }
 
         public Card createCard<T>() where T : CardDefine
