@@ -37,6 +37,10 @@ namespace Game
         {
             if (game.answers == null)
                 return;
+            if (!request.playersId.Contains(player.id))
+            {
+                return;
+            }
             await Task.Delay(1000);
             switch (request)
             {
