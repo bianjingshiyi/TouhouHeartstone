@@ -113,7 +113,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 宝塔搜寻队 <b>唯一</b> <b>委托</b>：召唤15个仆从。 <b>奖励</b>：毘沙门天的宝塔。
+    /// 宝塔搜寻队 
     /// </summary>
     public class Nazrin_04 : SpellCardDefine
     {
