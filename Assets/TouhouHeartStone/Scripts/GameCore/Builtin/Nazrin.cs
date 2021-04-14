@@ -88,6 +88,7 @@ namespace TouhouHeartstone.Builtin
                     var search = await card.getOwner().searchPile(game, card.getOwner().getDeck(), false, 3);
                     arg.card = search.choose;
                     await card.damage(game, card, 1);
+                    await game.updateDeath();
                 }),
         };
     }
@@ -197,8 +198,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x007;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override bool isToken { get; set; } = true;
-
+     
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)
@@ -233,7 +233,7 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectAfter<HearthStoneRule.EnterFieldEventArg>(PILE.FIELD,
-                (g, c, a) => { return a.player == c.getOwner() && a.card.getOwner() == c.getOwner(); }, null,
+                (g, c, a) => { return a.player == c.getOwner() && a.card.getOwner() == c.getOwner() && a.card != c; }, null,
                 async (g, c, a) => { await g.getAllEnemies(c.getOwner()).random(g).damage(g, c, 1); })
         };
     }
@@ -396,7 +396,7 @@ namespace TouhouHeartstone.Builtin
                 (game, card, arg) =>
                 {
                     return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner() &&
-                           arg.card.isServant();
+                           arg.card.isServant() && arg.card != card;
                 }, null,
                 async (game, card, arg) => { await card.getOwner().createToken(game, game.getDefine<Nazrin_00>()); })
         };
@@ -462,8 +462,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x018;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
-        public override bool isToken { get; set; } = true;
-
+        
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
@@ -492,7 +491,7 @@ namespace TouhouHeartstone.Builtin
                 (game, card, arg) =>
                 {
                     return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner() &&
-                           arg.card.hasKeyword(game, KEYWORD.UNIQUE) && arg.card.isServant();
+                           arg.card.hasKeyword(game, KEYWORD.UNIQUE) && arg.card.isServant() && arg.card != card;
                 }, null, async (game, card, arg) =>
                 {
                     await card.getOwner().tryAddCardToHand(game, game.createCard(arg.card.define));
