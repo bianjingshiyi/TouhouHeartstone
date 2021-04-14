@@ -494,8 +494,9 @@ namespace TouhouHeartstone.Builtin
                            arg.card.hasKeyword(game, KEYWORD.UNIQUE) && arg.card.isServant() && arg.card != card;
                 }, null, async (game, card, arg) =>
                 {
-                    await card.getOwner().tryAddCardToHand(game, game.createCard(arg.card.define));
-                    await arg.card.addBuff(game,
+                    var c = game.createCard(arg.card.define);
+                    await card.getOwner().tryAddCardToHand(game,c);
+                    await c.addBuff(game,
                         new GeneratedBuff(ID, new CostModifier(5, true), new AttackModifier(5, true),
                             new LifeModifier(5, true)));
                 })
