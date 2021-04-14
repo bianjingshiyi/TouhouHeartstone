@@ -24,7 +24,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect(effect)
+            new NoTargetEffect(effect, (game, card) => !card.getOwner().getField().isFull)
         };
 
         static async Task effect(CardEngine game, Card card)
@@ -61,7 +61,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
                 await target.addKeywords(game, KEYWORD.SHIELD);
-            }, PileFlag.both | PileFlag.field)
+            }, PileFlag.both|PileFlag.character)
         };
     }
 
