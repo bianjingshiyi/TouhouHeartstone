@@ -11,7 +11,7 @@ namespace Tests
         {
             if (!game.isRunning)
             {
-                game.run();
+                game.runGame();
             }
             if (!game.triggers.getRecordedEvents().Any(e => e is HearthStoneRule.StartEventArg))
             {
@@ -36,7 +36,7 @@ namespace Tests
         {
             if (!game.isRunning)
             {
-                game.run();
+                THHGame.runGame(game);
                 game.getSortedPlayers()[0].cmdInitReplace(game);
                 game.getSortedPlayers()[1].cmdInitReplace(game);
             }

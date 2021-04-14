@@ -19,7 +19,7 @@ namespace Tests
                 Enumerable.Repeat(new Reimu(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
                 new HearthstoneOption() { });
-            game.run();
+            game.runGame();
             game.getSortedPlayers()[0].cmdInitReplace(game);
             game.getSortedPlayers()[1].cmdInitReplace(game);
 

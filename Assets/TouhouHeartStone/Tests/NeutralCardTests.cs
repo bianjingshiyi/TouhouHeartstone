@@ -20,7 +20,7 @@ namespace Tests
                 Enumerable.Repeat(new Reimu(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new RashFairy(), 30).ToArray(), 2).ToArray(),
                 new HearthstoneOption() { });
-            game.run();
+            game.runGame();
             game.getSortedPlayers()[0].cmdInitReplace(game);
             game.getSortedPlayers()[1].cmdInitReplace(game);
 
@@ -36,7 +36,7 @@ namespace Tests
                 Enumerable.Repeat(new Reimu(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new HumanVillageGuard(), 30).ToArray(), 2).ToArray(),
                 new HearthstoneOption() { });
-            game.run();
+            game.runGame();
             game.getSortedPlayers()[0].cmdInitReplace(game);
             game.getSortedPlayers()[1].cmdInitReplace(game);
 
@@ -56,7 +56,7 @@ namespace Tests
                 Enumerable.Repeat(new Reimu(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new RifleHunter(), 30).ToArray(), 2).ToArray(),
                 new HearthstoneOption() { });
-            game.run();
+            game.runGame();
             game.getSortedPlayers()[0].cmdInitReplace(game);
             game.getSortedPlayers()[1].cmdInitReplace(game);
 
@@ -76,7 +76,7 @@ namespace Tests
                 Enumerable.Repeat(new Reimu(), 2).ToArray(),
                 Enumerable.Repeat(Enumerable.Repeat(new MissingSpecter(), 30).ToArray(), 2).ToArray(),
                 new HearthstoneOption() { });
-            game.run();
+            game.runGame();
             game.getSortedPlayers()[0].cmdInitReplace(game);
             game.getSortedPlayers()[1].cmdInitReplace(game);
 
@@ -125,7 +125,7 @@ namespace Tests
             game.createPlayer(1, "玩家1", game.getDefine<Reimu>(), Enumerable
                 .Repeat(game.getDefine<DrizzleFairy>() as CardDefine, 29)
                 .Concat(Enumerable.Repeat(game.getDefine<FantasySeal>(), 1)));
-            game.run();
+            game.runGame();
             game.getSortedPlayers()[0].cmdInitReplace(game);
             game.getSortedPlayers()[1].cmdInitReplace(game);
 
@@ -173,7 +173,7 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<FlameFairy>() as CardDefine, 30)); //创建两个玩家，给他们设置初始英雄，套牌
             game.createPlayer(1, "玩家1", game.getDefine<Reimu>(),
                 Enumerable.Repeat(game.getDefine<FlameFairy>() as CardDefine, 30));
-            game.run(); //运行游戏
+            game.runGame(); //运行游戏
 
             //炎之妖精 战吼：对一个随机敌方随从造成1点伤害
             //那么我们要测试这个战吼内容

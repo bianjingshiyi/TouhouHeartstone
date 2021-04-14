@@ -19,7 +19,7 @@ namespace Tests
             game.createPlayer(2, "玩家2", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
             game.logger.log("Force Init");
             AI ai = new AI(game, player, false);
-            game.run();
+            game.runGame();
             yield return new WaitForSeconds(.1f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -41,7 +41,7 @@ namespace Tests
             Player player = game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
             game.createPlayer(2, "玩家2", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant>(), 30));
             AI ai = new AI(game, player);
-            game.run();
+            game.runGame();
             yield return new WaitForSeconds(.1f);
             game.players[1].cmdInitReplace(game);
             yield return new WaitForSeconds(1f);

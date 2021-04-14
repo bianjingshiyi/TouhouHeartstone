@@ -4,6 +4,7 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
 using BJSYGameCore;
+using NitoriNetwork.Common;
 
 namespace Tests
 {
@@ -143,7 +144,7 @@ namespace Tests
                 logger = logger
             };
             game.answers.game = game;
-            game.init(new HearthStoneRule(CardHelper.getCardDefines(logger)), option, null);
+            game.init(new HearthStoneRule(CardHelper.getCardDefines(logger)), option, new RoomPlayerInfo[0]);
             (game.triggers as TriggerManager).logger = game.logger;
             return game;
         }

@@ -365,7 +365,7 @@ namespace Tests
             .Concat(Enumerable.Repeat(game.getDefine<T2>(), 1)));
             game.createPlayer(1, "玩家1", game.getDefine<Reimu>(), Enumerable.Repeat(game.getDefine<T1>() as CardDefine, 29)
             .Concat(Enumerable.Repeat(game.getDefine<T2>(), 1)));
-            game.run();
+            game.runGame();
             game.getSortedPlayers()[0].cmdInitReplace(game);
             game.getSortedPlayers()[1].cmdInitReplace(game);
             return game;

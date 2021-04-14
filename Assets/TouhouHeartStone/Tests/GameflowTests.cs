@@ -29,7 +29,7 @@ namespace Tests
         {
             CardEngine game = TestGameflow.initStandardGame();
 
-            game.run();
+            game.runGame();
             yield return new WaitForSeconds(.1f);
 
             HearthStoneRule.InitEventArg init = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.InitEventArg) as HearthStoneRule.InitEventArg;
@@ -49,7 +49,7 @@ namespace Tests
         {
             CardEngine game = TestGameflow.initStandardGame();
 
-            game.run();
+            game.runGame();
             yield return game.players[0].cmdInitReplace(game, game.players[0].getInit()[0]).wait();
             yield return game.players[1].cmdInitReplace(game, game.players[1].getInit()[0, 1]).wait();
             //替换手牌
@@ -87,7 +87,7 @@ namespace Tests
         {
             CardEngine game = TestGameflow.initStandardGame();
 
-            game.run();
+            game.runGame();
             yield return new WaitForSeconds(.1f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -111,7 +111,7 @@ namespace Tests
         {
             CardEngine game = TestGameflow.initStandardGame();
 
-            game.run();
+            game.runGame();
             yield return new WaitForSeconds(.1f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -142,7 +142,7 @@ namespace Tests
         {
             CardEngine game = TestGameflow.initStandardGame();
 
-            game.run();
+            game.runGame();
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
             game.getSortedPlayers()[0].cmdTurnEnd(game);
@@ -200,7 +200,7 @@ namespace Tests
         {
             CardEngine game = TestGameflow.initStandardGame();
 
-            game.run();
+            game.runGame();
             yield return new WaitForSeconds(.1f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -227,7 +227,7 @@ namespace Tests
                 sortedPlayers = new int[] { 1, 2 }
             });
 
-            game.run();
+            game.runGame();
             you.cmdInitReplace(game);
             oppo.cmdInitReplace(game);
             you.cmdTurnEnd(game);
@@ -262,7 +262,7 @@ namespace Tests
         {
             CardEngine game = TestGameflow.initStandardGame();
 
-            game.run();
+            game.runGame();
             yield return new WaitForSeconds(.2f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -307,7 +307,7 @@ namespace Tests
         public IEnumerator winTest()
         {
             CardEngine game = TestGameflow.initStandardGame();
-            game.run();
+            game.runGame();
             yield return new WaitForSeconds(.1f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -336,7 +336,7 @@ namespace Tests
             {
                 timeoutForInitReplace = 5
             });
-            game.run();
+            game.runGame();
             game.close();
             yield return new WaitForSeconds(5.5f);
 
@@ -369,8 +369,8 @@ namespace Tests
             (g2.answers as AnswerManager).client = c2;
             yield return new WaitUntil(() => task.IsCompleted);
 
-            g1.run();
-            g2.run(); 
+            g1.runGame();
+            g2.runGame(); 
             yield return new WaitForSeconds(.5f);
             g1.players[0].cmdInitReplace(g1, g1.players[0].getInit()[0, 1]);
             yield return new WaitForSeconds(.5f);
@@ -437,7 +437,7 @@ namespace Tests
                         {
                             localGame.createPlayer(playerInfo.RoomID, "玩家" + playerInfo.RoomID, localGame.getDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => localGame.getDefine(did)));
                         }
-                        localGame.run();
+                        localGame.runGame();
                     }
                 }
                 return Task.CompletedTask;
@@ -474,7 +474,7 @@ namespace Tests
                         {
                             remoteGame.createPlayer(playerInfo.RoomID, "玩家" + playerInfo.RoomID, remoteGame.getDefine<MasterCardDefine>(playerInfo.getDeck()[0]), playerInfo.getDeck().Skip(1).Select(did => remoteGame.getDefine(did)));
                         }
-                        remoteGame.run();
+                        remoteGame.runGame();
                     }
                 }
                 return Task.CompletedTask;
@@ -557,7 +557,7 @@ namespace Tests
             CardEngine game = TestGameflow.initGameWithoutPlayers(null, HearthstoneOption.Default);
             game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant_TurnEndEffect>(), 30));
             game.createPlayer(2, "玩家2", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<TestServant_TurnEndEffect>(), 30));
-            game.run();
+            game.runGame();
             yield return new WaitForSeconds(.1f);
             game.players[0].cmdInitReplace(game);
             game.players[1].cmdInitReplace(game);
@@ -576,7 +576,7 @@ namespace Tests
             Enumerable.Repeat(new Reimu(), 2).ToArray(),
             Enumerable.Repeat(Enumerable.Repeat(new DefaultServant(), 30).ToArray(), 2).ToArray(),
             new HearthstoneOption() { });
-            game.run();
+            game.runGame();
             game.getSortedPlayers()[0].cmdInitReplace(game);
             game.getSortedPlayers()[1].cmdInitReplace(game);
 
@@ -605,7 +605,7 @@ namespace Tests
             .Concat(Enumerable.Repeat(game.getDefine<DefaultServant>(), 2)));
             game.createPlayer(1, "玩家1", game.getDefine<TestMaster2>(), Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 29)
             .Concat(Enumerable.Repeat(game.getDefine<TestSpellCard>(), 1)));
-            game.run();
+            game.runGame();
             game.getSortedPlayers()[0].cmdInitReplace(game);
             game.getSortedPlayers()[1].cmdInitReplace(game);
 
@@ -626,7 +626,7 @@ namespace Tests
         public IEnumerator surrenderTest()
         {
             CardEngine game = TestGameflow.initStandardGame();
-            game.run();
+            game.runGame();
             yield return game.players[0].cmdSurrender(game).wait();
             HearthStoneRule.GameEndEventArg gameEnd = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.GameEndEventArg) as HearthStoneRule.GameEndEventArg;
             Assert.AreEqual(game.players[1], gameEnd.winners[0]);

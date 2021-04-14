@@ -238,7 +238,7 @@ namespace Game
                     return playerData;
                 }).ToArray());
             onGameStart?.Invoke();
-            gameTask = game.runGame();
+            gameTask = THHGame.runGame(game);
             return gameTask;
         }
         /// <summary>
