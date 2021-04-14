@@ -143,8 +143,6 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 2;
-        public override bool isToken { get; set; } = true;
-
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new NoTargetEffect(effect)

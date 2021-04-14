@@ -495,6 +495,12 @@ namespace Game
             {
                 if (spell.isToken)
                     return false;
+            }else if (c is ItemCardDefine item)
+            {
+                if (item.isToken)
+                {
+                    return false;
+                }
             }
             else if (c is GeneratedCardDefine generated)
             {
