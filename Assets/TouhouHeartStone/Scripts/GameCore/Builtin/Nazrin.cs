@@ -85,8 +85,8 @@ namespace TouhouHeartstone.Builtin
                 }, null,
                 async (game, card, arg) =>
                 {
-                    var search = await card.getOwner().searchPile(game, card.getOwner().getDeck(), false, 3);
-                    arg.card = search.choose;
+                    var selected = await card.getOwner().askSelect(game, card.getOwner().getDeck(), title: "广告招租");
+                    arg.card = selected;
                     await card.damage(game, card, 1);
                     await game.updateDeath();
                 }),
@@ -180,13 +180,15 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             CardDefine[] defines = game.getDefines().Where(c => c.hasKeyword(KEYWORD.UNIQUE) && c is ServantCardDefine s && !s.isToken).ToArray();
-            List<Card> unqueCards = card.getOwner().getNormalRandomPool((g, d) =>
-            {
-                return d is ServantCardDefine && d.hasKeyword(KEYWORD.UNIQUE);
-            }, game, 3, true).ToList();
-            var arg = await card.getOwner().searchPile(game, unqueCards);
-            await card.getOwner().tryAddCardToHand(game, arg.choose);
-            await arg.choose.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true)));
+            Card discovered = await card.getOwner().discover(game, defines, title: "广告招租");
+            await discovered.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true)));
+            // List<Card> unqueCards = card.getOwner().getNormalRandomPool((g, d) =>
+            // {
+            //     return d is ServantCardDefine && d.hasKeyword(KEYWORD.UNIQUE);
+            // }, game, 3, true).ToList();
+            // var arg = await card.getOwner().searchPile(game, unqueCards);
+            // await card.getOwner().tryAddCardToHand(game, arg.choose);
+            // await arg.choose.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true)));
         }
     }
 
@@ -205,16 +207,21 @@ namespace TouhouHeartstone.Builtin
         };
 
         static async Task effect(CardEngine game, Card card)
-        { 
-            List<Card> servantCards = card.getOwner().getNormalRandomPool((g, d) =>
-            {
-                return d is ServantCardDefine;
-            },game, 3);
-            var arg1 = await card.getOwner().searchPile(game, servantCards, title: "探索地下洞穴");
-            await card.getOwner().tryAddCardToHand(game, arg1.choose);
-            await arg1.choose.addBuff(game,
+        {
+            var discovered = await card.getOwner().discover(game,
+                game.getDefines().Where(define => define is ServantCardDefine s && !s.isToken));
+            await discovered.addBuff(game,
                 new GeneratedBuff(ID, new CostModifier(5, true), new LifeModifier(5, true),
                     new AttackModifier(5, true)));
+            // List<Card> servantCards = card.getOwner().getNormalRandomPool((g, d) =>
+            // {
+            //     return d is ServantCardDefine;
+            // },game, 3);
+            // var arg1 = await card.getOwner().searchPile(game, servantCards, title: "探索地下洞穴");
+            // await card.getOwner().tryAddCardToHand(game, arg1.choose);
+            // await arg1.choose.addBuff(game,
+            //     new GeneratedBuff(ID, new CostModifier(5, true), new LifeModifier(5, true),
+            //         new AttackModifier(5, true)));
         }
     }
 
@@ -418,16 +425,22 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            List<Card> servantCards = new List<Card>();
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 2; i++)
             {
-                servantCards = card.getOwner().getNormalRandomPool((g, d) =>
-                {
-                    return d is ServantCardDefine;
-                }, game, 3);
-                var arg1 = await card.getOwner().searchPile(game, servantCards);
-                await card.getOwner().tryAddCardToHand(game, arg1.choose);
+                await card.getOwner().discover(game,
+                    game.getDefines().Where(define => define is ServantCardDefine s && !s.isToken));
             }
+            
+            // List<Card> servantCards = new List<Card>();
+            // for (int i = 0; i < 3; i++)
+            // {
+            //     servantCards = card.getOwner().getNormalRandomPool((g, d) =>
+            //     {
+            //         return d is ServantCardDefine;
+            //     }, game, 3);
+            //     var arg1 = await card.getOwner().searchPile(game, servantCards);
+            //     await card.getOwner().tryAddCardToHand(game, arg1.choose);
+            // }
         }
     }
 

@@ -1224,25 +1224,22 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (g, c, t) =>
             {
-                int health = t.getCurrentLife(g);
-                List<Card> options = new List<Card>
-                    {g.createCard<GameOfLife_Rise_N>(), g.createCard<GameOfLife_Fall_N>()};
-                //Card choice = await c.getOwner().discover(g, options, 2, "选择一项");
-                var choice = await c.getOwner().chooseOne(g,options);
-                if (choice.choose.define == g.getDefine<GameOfLife_Rise_N>())
+                var choice = await c.getOwner().askSelect(g, new int[] {GameOfLife_Fall_N.ID, GameOfLife_Rise_N.ID});
+                switch (choice)
                 {
-                    if (health <= t.getLife(g) / 2)
-                    {
-                        await t.setCurrentLife(g, health * 2);
-                    }
-                    else
-                    {
-                        await t.setCurrentLife(g, t.getLife(g));
-                    }
-                }
-                else
-                {
-                    await t.setCurrentLife(g, health / 2);
+                    case GameOfLife_Rise_N.ID:
+                        if (t.getCurrentLife(g) <= t.getLife(g) / 2)
+                        {
+                            await t.setCurrentLife(g, t.getCurrentLife(g) * 2);
+                        }
+                        else
+                        {
+                            await t.setCurrentLife(g, t.getLife(g));
+                        }
+                        break;
+                    case GameOfLife_Fall_N.ID:
+                        await t.setCurrentLife(g, t.getCurrentLife(g) / 2);
+                        break;
                 }
             }, PileFlag.both | PileFlag.master)
         };
@@ -1299,12 +1296,8 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine g, Card c)
         {
-            List<Card> options = new List<Card>
-            {
-                g.createCard<ReturnOfImperishableNight_Eternity_N>(), g.createCard<EndOfImperishableNight_Instant_N>()
-            };
-            var choice = await c.getOwner().chooseOne(g, options,true,  "选择一项");
-            if (choice.choose.define == g.getDefine<ReturnOfImperishableNight_Eternity_N>())
+            var choice = await c.getOwner().askSelect(g, new []{ReturnOfImperishableNight_Eternity_N.ID, EndOfImperishableNight_Instant_N.ID},title: "选择一项");
+            if (choice == ReturnOfImperishableNight_Eternity_N.ID)
             {
                 await c.getOwner().getMaster().addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<HearthStoneRule.DrawEventArg>(
                     PILE.MASTER,

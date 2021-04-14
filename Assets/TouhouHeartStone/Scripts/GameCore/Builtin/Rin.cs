@@ -288,17 +288,13 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(CardEngine game, Card card)
         {
-            var arg = await card.getOwner().searchPile(game,
-                card.getOwner().getGrave().Where(c => c.isServant() && c.hasDeathRattle(game)), 
-                true,
-                3,
-                "尼科之咒！");
-            Card choice = arg.choose;
+            var choice = await card.getOwner().askSelect(game,
+                card.getOwner().getGrave().Where(c => c.isServant() && c.hasDeathRattle(game)),
+                title: "尼科之咒！");
             if (choice != null)
             {
-                if (!card.getOwner().getHand().isFull)
-                    await card.getOwner().getGrave().moveTo(game, choice, card.getOwner().getHand());
-                await choice.triggerDeathRattles(game);
+                choice.graveToHand(game);
+                choice.triggerDeathRattles(game);
             }
             
         }

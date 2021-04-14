@@ -277,7 +277,7 @@ namespace TouhouHeartstone
         /// <param name="cards">卡牌的ID，可以是游戏内的卡牌ID，也可以是卡牌定义的ID</param>
         /// <param name="count">如果小于等于0，则全都可以挑</param>
         /// <returns></returns>
-        public static async Task<int> askSelect(this Player player,CardEngine game, int[] cards, int count = 3, string title = null)
+        public static async Task<int> askSelect(this Player player,CardEngine game, int[] cards, int count = 3, string title = "选择一项")
         {
             if (cards.Count() < 1)
                 return -1;
@@ -322,11 +322,13 @@ namespace TouhouHeartstone
         /// <param name="count"></param>
         /// <param name="title"></param>
         /// <returns></returns>
-        public static async Task discover(this Player player, CardEngine game, IEnumerable<CardDefine> cardDefines, int count = 3,
+        public static async Task<Card> discover(this Player player, CardEngine game, IEnumerable<CardDefine> cardDefines, int count = 3,
             string title = null)
         {
             var selected = await askSelect(player, game, cardDefines.ToArray(), count, title);
-            addCardToHand(player, game, selected);
+            var discovered = game.createCard(selected);
+            tryAddCardToHand(player, game, discovered);
+            return discovered;
         }
 
         public static async Task<HearthStoneRule.ChooseOneEventArg> chooseOne(this Player player,CardEngine game,IEnumerable<Card> options, bool isShow = true ,string title = "选择一项")
