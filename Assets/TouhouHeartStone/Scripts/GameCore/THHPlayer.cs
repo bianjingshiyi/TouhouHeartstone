@@ -325,8 +325,8 @@ namespace TouhouHeartstone
         public static async Task discover(this Player player, CardEngine game, IEnumerable<CardDefine> cardDefines, int count = 3,
             string title = null)
         {
-            var id = await askSelect(player, game, cardDefines.Select(define => define.id).ToArray(), count, title);
-            addCardToHand(player, game, game.getDefine(id));
+            var selected = await askSelect(player, game, cardDefines.ToArray(), count, title);
+            addCardToHand(player, game, selected);
         }
 
         public static async Task<HearthStoneRule.ChooseOneEventArg> chooseOne(this Player player,CardEngine game,IEnumerable<Card> options, bool isShow = true ,string title = "选择一项")

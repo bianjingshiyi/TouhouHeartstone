@@ -50,22 +50,15 @@ namespace TouhouHeartstone.Builtin
         public static async Task tryMix(CardEngine game, Card card)
         {
             Player player = card.getOwner();
-            var mixableCards = player.getHand().Where(c => getMixCards(game, card.define, c.define).Length > 0).ToArray();//检查手牌中有没有可以融合的牌
-            if (mixableCards.Length > 0)
+            var mixableCards = player.getHand().Where(c => getMixCards(game, card.define, c.define).Length > 0);//检查手牌中有没有可以融合的牌
+            if (mixableCards.Count() > 0)
             {
-                var mixCard = await player.chooseOne(game, mixableCards,false, "加入原料");
-                var mixedResults = getMixCards(game, card.define, mixCard.choose.define).Select(define => game.createCard(define)).ToArray();
-                var mixedResult = await player.chooseOne(game, mixedResults, false, "收获");
-                await THHCard.setDefine(mixCard.choose, game, mixedResult.choose.define);
+                var mixCard = await player.askSelect(game, mixableCards, title: "加入原料");
+                var mixedResults = getMixCards(game, card.define, mixCard.define);
+                var mixedResult = await player.askSelect(game, mixedResults, title: "收获");
+                await mixCard.setDefine(game, mixedResult);
+                await mixCard.resetCard(game);
             }
-        }
-
-        //中立帕秋莉使用的方法
-        public static async Task tryMix(CardEngine game, Player player, Card a, Card b)
-        {
-            var mixedResults = getMixCards(game, a.define, b.define).Select(define => game.createCard(define)).ToArray();
-            var mixedResult = await player.chooseOne(game, mixedResults, false, "收获");
-            await player.tryAddCardToHand(game, mixedResult.choose);
         }
     }
     

@@ -642,15 +642,18 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect(async (g1, c1) =>
-            {
-                List<Card> elementCards = new List<Card>(g1.createCards(Patchouli.getElementCards(g1)));
-                var a = await c1.getOwner().chooseOne(g1, elementCards,isShow:false, title: "加入原料");
-                elementCards.Remove(a.choose);
-                var b = await c1.getOwner().chooseOne(g1, elementCards,isShow:false, title: "收获");
-                await Patchouli.tryMix(g1, c1.getOwner(), a.choose, b.choose);
-            })
+            new NoTargetEffect(effect)
         };
+
+        public static async Task effect(CardEngine game, Card card)
+        {
+            var elementCards = Patchouli.getElementCards(game);
+            var selectedCard1 = await card.getOwner().askSelect(game, elementCards, title: "加入原料");
+            var selectedCard2 = await card.getOwner()
+                .askSelect(game, elementCards.Where(define => define != selectedCard1), title: "加入原料");
+            var result = Patchouli.getMixCards(game, selectedCard1, selectedCard2);
+            await card.getOwner().discover(game, result, title: "收获");
+        }
     }
 
     /// <summary>
