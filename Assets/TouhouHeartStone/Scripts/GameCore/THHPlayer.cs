@@ -271,30 +271,69 @@ namespace TouhouHeartstone
             return Task.CompletedTask;
         }
         /// <summary>
-        /// 从给出的卡牌中发现一张牌，默认是从中挑三张
+        /// 向玩家发出一个选择请求，玩家从提供的卡牌中选择一张，返回玩家选择的结果
         /// </summary>
         /// <param name="game"></param>
-        /// <param name="cards"></param>
+        /// <param name="cards">卡牌的ID，可以是游戏内的卡牌ID，也可以是卡牌定义的ID</param>
         /// <param name="count">如果小于等于0，则全都可以挑</param>
         /// <returns></returns>
-        public static async Task<Card> discover(this Player player,CardEngine game, IEnumerable<Card> cards, int count = 3, string title = null)
+        public static async Task<int> askSelect(this Player player,CardEngine game, int[] cards, int count = 3, string title = null)
+        {
+            if (cards.Count() < 1)
+                return -1;
+            if (count > 0)
+                cards = cards.randomTake(game, count).ToArray();
+            game.logger.log(player + "要从卡牌或者定义ID" + string.Join("，", cards) + "中选择一个");
+            var res = await game.answers.ask(player.id, new DiscoverRequest(cards, title), float.MaxValue);
+            int selectedID = cards.First(id => id == (res as DiscoverResponse).cardId);
+            game.logger.log(player + "选择" + selectedID);
+            return selectedID;
+        }
+        public static async Task<Card> askSelect(this Player player,CardEngine game, IEnumerable<Card> cards, int count = 3, string title = null)
         {
             if (cards.Count() < 1)
                 return null;
             if (count > 0)
-                cards = cards.randomTake(game, count);
-            game.logger.log(player + "要从" + string.Join("，", cards) + "中选择一张卡片");
-            var task = game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title), float.MaxValue);
-            await task;
-            Card selected = cards.First(c => c.id == (task.Result as DiscoverResponse).cardId);
-            game.logger.log(player + "选择" + selected);
-            return selected;
+                cards = cards.randomTake(game, count).ToArray();
+            game.logger.log(player + "要从卡牌" + string.Join("，", cards) + "中选择一个");
+            var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c=>c.id).ToArray(), title), float.MaxValue);
+            Card selectedCard = cards.First(c => c.id == (res as DiscoverResponse).cardId);
+            game.logger.log(player + "选择" + selectedCard);
+            return selectedCard;
+        }
+        public static async Task<CardDefine> askSelect(this Player player,CardEngine game, IEnumerable<CardDefine> cards, int count = 3, string title = null)
+        {
+            if (cards.Count() < 1)
+                return null;
+            if (count > 0)
+                cards = cards.randomTake(game, count).ToArray();
+            game.logger.log(player + "要从卡牌定义" + string.Join("，", cards) + "中选择一个");
+            var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c=>c.id).ToArray(), title), float.MaxValue);
+            CardDefine selectedCard = cards.First(c => c.id == (res as DiscoverResponse).cardId);
+            game.logger.log(player + "选择" + selectedCard);
+            return selectedCard;
+        }
+        /// <summary>
+        /// 让玩家从提供的卡牌定义中选择一张，创建相应卡牌并置入手牌中
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="game"></param>
+        /// <param name="cards"></param>
+        /// <param name="count"></param>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public static async Task discover(this Player player, CardEngine game, IEnumerable<CardDefine> cardDefines, int count = 3,
+            string title = null)
+        {
+            var id = await askSelect(player, game, cardDefines.Select(define => define.id).ToArray(), count, title);
+            addCardToHand(player, game, game.getDefine(id));
         }
 
         public static async Task<HearthStoneRule.ChooseOneEventArg> chooseOne(this Player player,CardEngine game,IEnumerable<Card> options, bool isShow = true ,string title = "选择一项")
         {
             game.logger.log(player + "从" + string.Join("，", options) + "中选择一项");
             //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
+        
             var eventArg = await game.triggers.doEvent(new HearthStoneRule.ChooseOneEventArg() { player = player , options = options , choose = null , isShow = isShow }, async arg =>
             {
                 var task = game.answers.ask(player.id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title),float.MaxValue);
@@ -304,7 +343,7 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
-
+        
         public static async Task<HearthStoneRule.SearchPileEventArg> searchPile(this Player player,CardEngine game, IEnumerable<Card> cards, bool isShow = false,  int count = 3,string title = "选择一项")
         {
             game.logger.log(player + "从" + string.Join("，", cards) + "中选择一张");
@@ -450,6 +489,13 @@ namespace TouhouHeartstone
             if (player.getHand().isFull)
                 return Task.CompletedTask;
             Card card = game.createCard<T>();
+            return player.getHand().add(game, card);
+        }
+        public static Task addCardToHand(this Player player,CardEngine game, CardDefine cardDefine)
+        {
+            if (player.getHand().isFull)
+                return Task.CompletedTask;
+            Card card = game.createCard(cardDefine);
             return player.getHand().add(game, card);
         }
         /// <summary>

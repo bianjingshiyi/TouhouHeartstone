@@ -1618,17 +1618,35 @@ namespace Game
             ui.Discover.HoriCardList.clearItems();
             foreach (var cardId in cardIdArray)
             {
-                var card = game.getCard(cardId);
                 var item = ui.Discover.HoriCardList.addItem();
-                setCard(item.Card, card, true);
-                item.asButton.onClick.set(() =>
+                var card = game.getCard(cardId);
+                int id;
+                if (card != null)
                 {
-                    game.answers.answer(player.id, new DiscoverResponse()
+                    setCard(item.Card, card, true);
+                    item.asButton.onClick.set(() =>
                     {
-                        cardId = card.id
+                        game.answers.answer(player.id, new DiscoverResponse()
+                        {
+                            cardId = card.id
+                        });
+                        closeDiscoverDialog();
                     });
-                    closeDiscoverDialog();
-                });
+                }
+                else
+                {
+                    var cardDefine = game.getDefine(cardId);
+                    setCard(item.Card, cardDefine, cardDefine.getCost(), cardDefine.getAttack(), cardDefine.getLife(),
+                        true);
+                    item.asButton.onClick.set(() =>
+                    {
+                        game.answers.answer(player.id, new DiscoverResponse()
+                        {
+                            cardId = cardDefine.id
+                        });
+                        closeDiscoverDialog();
+                    });
+                }
             }
         }
         [TranslateMsg]

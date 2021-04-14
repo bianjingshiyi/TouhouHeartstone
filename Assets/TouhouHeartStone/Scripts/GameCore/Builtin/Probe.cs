@@ -395,9 +395,10 @@ namespace TouhouHeartstone.Builtin.Proble
         };
         static async Task effect(CardEngine game, Card card)
         {
-            var discovered = await card.getOwner().discover(game, card.getOwner().getGrave().Where(c => c.isServant() && ((IList)c.getTags(game)).Contains(TAG.MACHINE)));
-            var theReborned = (await card.getOwner().reborn(game, discovered, card.getOwner().getField())).card;
-            await theReborned.addBuff(game, new GeneratedBuff(ID, new AttackModifier(3, true), new LifeModifier(3, true)));
+            throw new NotImplementedException("Card compromised");
+            // var discovered = await card.getOwner().discover(game, card.getOwner().getGrave().Where(c => c.isServant() && ((IList)c.getTags(game)).Contains(TAG.MACHINE)));
+            // var theReborned = (await card.getOwner().reborn(game, discovered, card.getOwner().getField())).card;
+            // await theReborned.addBuff(game, new GeneratedBuff(ID, new AttackModifier(3, true), new LifeModifier(3, true)));
 
         }
     }

@@ -494,8 +494,9 @@ namespace Tests
         {
             new NoTargetEffect(async (game,card)=>
             {
-                var discovered = await card.getOwner().discover(game,card.getOwner().getHand());
-                await card.getOwner().getHand().add(game,game.createCard(discovered.define));
+                throw new NotImplementedException("Card compromised");
+                // var discovered = await card.getOwner().discover(game,card.getOwner().getHand());
+                // await card.getOwner().getHand().add(game,game.createCard(discovered.define));
             })
         };
     }
