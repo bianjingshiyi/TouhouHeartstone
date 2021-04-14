@@ -21,7 +21,8 @@ namespace TouhouHeartstone
                 foreach (Type type in assembly.GetTypes().Where(t =>
                     t.IsSubclassOf(typeof(CardDefine)) &&
                     !t.IsAbstract &&
-                    t != typeof(GeneratedCardDefine)))
+                    t != typeof(GeneratedCardDefine) && 
+                    t.GetCustomAttribute<IgnoreCardDefineAttribute>() == null))
                 {
                     if (namespaces != null && !namespaces.Contains(type.Namespace))
                     {
