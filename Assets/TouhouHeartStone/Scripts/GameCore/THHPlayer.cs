@@ -16,8 +16,6 @@ namespace TouhouHeartstone
         public static Pile getHand(this Player player) => player.getPile(PILE.HAND);
         public static Pile getField(this Player player) => player.getPile(PILE.FIELD);
         public static Pile getGrave(this Player player) => player.getPile(PILE.GRAVE);
-        public static int getOrder(this Player player) => player.getProp<int>(PLAYER.ORDER);
-
         /// <summary>
         /// 正在使用的法术卡都会被置入亚空间
         /// </summary>

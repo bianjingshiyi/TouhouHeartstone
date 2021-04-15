@@ -199,23 +199,20 @@ namespace TouhouHeartstone
                 //决定玩家行动顺序
                 if (game.getOption().sortedPlayers == null || game.getOption().sortedPlayers.Length != game.players.Length)
                 {
-                    if (game.getOption().sortedPlayers != null && getOption(game).sortedPlayers.Length != game.players.Length)
+                    if (game.getOption().sortedPlayers != null && game.getOption().sortedPlayers.Length != game.players.Length)
                         game.logger?.log("Warning", "游戏参数玩家行动顺序长度与实际数量不匹配");
-                    int playerCount = game.players.Count();
-                    foreach (var player in game.players)
+                    List<Player> remainedList = new List<Player>(game.players);
+                    Player[] sortedPlayers = new Player[remainedList.Count];
+                    for (int i = 0; i < sortedPlayers.Length; i++)
                     {
-                        player.setProp(PLAYER.ORDER, game.randomInt(1, playerCount--));
+                        int index = game.randomInt(0, remainedList.Count - 1);
+                        sortedPlayers[i] = remainedList[index];
+                        remainedList.RemoveAt(index);
                     }
+                    game.setProp(GAME.SORTEDPLAYER, sortedPlayers);
                 }
                 else
-                {
-                    int order = 1;
-                    foreach (var id in getOption(game).sortedPlayers)
-                    {
-                        game.players.FirstOrDefault(p => p.id == id).setProp(PLAYER.ORDER, order++);
-                    }
-                }
-                    
+                    game.setProp(GAME.SORTEDPLAYER,game.getOption().sortedPlayers.Select(id => game.players.FirstOrDefault(p => p.id == id)).ToArray());
 
                 //创建主人公和技能卡
                 Card[] masterCards = getSortedPlayers(game).Select(p => { return p.getMaster(); }).ToArray();
@@ -247,7 +244,7 @@ namespace TouhouHeartstone
             });
         }
 
-        public static Player[] getSortedPlayers(this CardEngine game) => game.players.OrderBy(player => player.getOrder()).ToArray();
+        public static Player[] getSortedPlayers(this CardEngine game) => game.getProp<Player[]>(GAME.SORTEDPLAYER);
 
         internal static async Task start(this CardEngine game)
         {
