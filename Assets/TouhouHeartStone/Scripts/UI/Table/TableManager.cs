@@ -1302,7 +1302,7 @@ namespace Game
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
         }
         [SerializeField]
-        BJSYGameCore.Timer _showCardTimer = new BJSYGameCore.Timer() { duration = 1 };
+        BJSYGameCore.Timer _showCardTimer = new BJSYGameCore.Timer() { duration = 0.25f };
         ServantItem _servant;
         PointerEventData _pointer;
         void onEnterServant(ServantItem servant, PointerEventData pointer)
