@@ -1059,29 +1059,30 @@ namespace TouhouHeartstone
 
     public class MissionTrigger<T> : THHEffectAfter<T> where T : IEventArg
     {
-        int times = 0;
         int aimCount;
         public MissionTrigger(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute , int aimCount) : base(PILE.HEAD, onCheckCondition, null, onExecute)
         {
-            this.aimCount = aimCount;
+            this.aimCount = aimCount;           
         }
 
         public override async Task onEnable(IGame game, ICard card, IBuff buff)
-        {
+        {          
             foreach (TriggerTime time in triggers)
             {
-                string effectName = getEffectName(game, card, buff, time);
+                await card.setProp<int>(game, nameof(card), 0);
+                string effectName = getEffectName(game, card, buff, time);               
                 Trigger<T> trigger = new Trigger<T>(async arg =>
                 {
                     if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
                     {
-                        times += 1;
+                        await card.setProp<int>(game, nameof(card), card.getProp<int>(game, nameof(card)) +1);
                     }
-                    if(times == aimCount)
+                    if(card.getProp<int>(game, nameof(card)) == aimCount)
                     {
                         await (card as Card).MissionComplete(game);
                         await (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
                     }
+                    
                 }, name: effectName);
                 await card.setProp(game, effectName, trigger);
                 game.logger.log("Effect", card + "注册效果" + effectName);

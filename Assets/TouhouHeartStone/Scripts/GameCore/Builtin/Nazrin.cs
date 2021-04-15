@@ -207,7 +207,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             var discovered = await card.getOwner().discover(game,
-                game.getDefines().Where(define => define is ServantCardDefine s && !s.isToken));
+                game.getDefinesOf(card.getOwner().getMaster().id,CATEGORY.CHARACTER_NEUTRAL).Where(define => define is ServantCardDefine s && !s.isToken));
             await discovered.addBuff(game,
                 new GeneratedBuff(ID, new CostModifier(5, true), new LifeModifier(5, true),
                     new AttackModifier(5, true)));
