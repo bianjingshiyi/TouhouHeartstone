@@ -184,9 +184,14 @@ namespace UI
         [TranslateMsg]
         const string TIP_OPPO_TURN = "对手的回合";
 
-        public void SetTurnTipText(bool self)
+        [SerializeField]
+        Sprite YourTurn;
+        [SerializeField]
+        Sprite OppoTurn;
+
+        public void SetTurnTipImage(bool self)
         {
-            TurnTipText.text = lang._(self ? TIP_TOUR_TURN : TIP_OPPO_TURN);
+            TurnTipImage.sprite = self ? YourTurn : OppoTurn;
         }
     }
 }

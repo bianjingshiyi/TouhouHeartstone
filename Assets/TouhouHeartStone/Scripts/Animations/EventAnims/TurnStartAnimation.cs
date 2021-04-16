@@ -17,12 +17,12 @@ namespace Game
                 table.ui.TurnTipImage.display();
                 if (eventArg.player == table.player)
                 {
-                    table.ui.SetTurnTipText(true);
+                    table.ui.SetTurnTipImage(true);
                     table.canControl = true;
                 }
                 else
                 {
-                    table.ui.SetTurnTipText(false);
+                    table.ui.SetTurnTipImage(false);
                     table.canControl = false;
                 }
                 table.ui.TurnTipImage.GetComponent<Animator>().Play("Display");
