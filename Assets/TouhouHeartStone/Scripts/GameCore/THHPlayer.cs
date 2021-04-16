@@ -281,36 +281,49 @@ namespace TouhouHeartstone
                 return -1;
             if (count > 0)
                 cards = cards.randomTake(game, count).ToArray();
-            game.logger.log(player + "要从卡牌或者定义ID" + string.Join("，", cards) + "中选择一个");
-            var res = await game.answers.ask(player.id, new DiscoverRequest(cards, title), float.MaxValue);
-            int selectedID = cards.First(id => id == (res as DiscoverResponse).cardId);
-            game.logger.log(player + "选择" + selectedID);
-            return selectedID;
+            var eventArg = await game.triggers.doEvent(new SelectEventArg()
+            {
+                player = player, options = cards
+            }, async arg =>
+            {
+                player = arg.player;
+                cards = arg.options;
+                game.logger.log(player + "要从卡牌或卡牌定义ID" + string.Join("，", cards) + "中选择一个");
+                var res = await game.answers.ask(player.id, new DiscoverRequest(cards, title), float.MaxValue);
+                int selectedID = cards.First(id => id == (res as DiscoverResponse).cardId);
+                game.logger.log(player + "选择" + selectedID);
+                arg.selected = selectedID;
+            });
+            return eventArg.selected;
         }
         public static async Task<Card> askSelect(this Player player,CardEngine game, IEnumerable<Card> cards, int count = 3, string title = null)
         {
-            if (cards.Count() < 1)
-                return null;
-            if (count > 0)
-                cards = cards.randomTake(game, count).ToArray();
-            game.logger.log(player + "要从卡牌" + string.Join("，", cards) + "中选择一个");
-            var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c=>c.id).ToArray(), title), float.MaxValue);
-            Card selectedCard = cards.First(c => c.id == (res as DiscoverResponse).cardId);
-            game.logger.log(player + "选择" + selectedCard);
+            var selectedId = await player.askSelect(game, cards.Select(c => c.id).ToArray(), count, title);
+            Card selectedCard = cards.First(c => c.id == selectedId);
             return selectedCard;
         }
         public static async Task<CardDefine> askSelect(this Player player,CardEngine game, IEnumerable<CardDefine> cards, int count = 3, string title = null)
         {
-            if (cards.Count() < 1)
-                return null;
-            if (count > 0)
-                cards = cards.randomTake(game, count).ToArray();
-            game.logger.log(player + "要从卡牌定义" + string.Join("，", cards) + "中选择一个");
-            var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c=>c.id).ToArray(), title), float.MaxValue);
-            CardDefine selectedCard = cards.First(c => c.id == (res as DiscoverResponse).cardId);
-            game.logger.log(player + "选择" + selectedCard);
+            var selectedId = await player.askSelect(game, cards.Select(c => c.id).ToArray(), count, title);
+            CardDefine selectedCard = cards.First(c => c.id == selectedId);
             return selectedCard;
         }
+        public class SelectEventArg : EventArg
+        {
+            /// <summary>
+            /// 进行选择的玩家
+            /// </summary>
+            public Player player;
+            /// <summary>
+            /// 玩家的选择
+            /// </summary>
+            public int selected;
+            /// <summary>
+            /// 提供的选择
+            /// </summary>
+            public int[] options;
+        }
+
         /// <summary>
         /// 让玩家从提供的卡牌定义中选择一张，创建相应卡牌并置入手牌中
         /// </summary>
@@ -323,10 +336,80 @@ namespace TouhouHeartstone
         public static async Task<Card> discover(this Player player, CardEngine game, IEnumerable<CardDefine> cardDefines, int count = 3,
             string title = null)
         {
-            var selected = await askSelect(player, game, cardDefines.ToArray(), count, title);
-            var discovered = game.createCard(selected);
-            tryAddCardToHand(player, game, discovered);
+            if (!cardDefines.Any())
+            {
+                return null;
+            }
+            Card discovered = null;
+            await game.triggers.doEvent(new DiscoverEventArg()
+            {
+                player = player
+            }, async arg =>
+            {
+                player = arg.player;
+                cardDefines = cardDefines.randomTake(game, count);
+                var selected = await askSelect(player, game, cardDefines, count, title);
+                discovered = game.createCard(selected);
+                tryAddCardToHand(player, game, discovered);
+                arg.discovered = discovered;
+                arg.defines = cardDefines.ToArray();
+            });
             return discovered;
+        }
+        
+        public class DiscoverEventArg : EventArg, IDescribableEventArg
+        {
+            /// <summary>
+            /// 发现的玩家
+            /// </summary>
+            public Player player;
+            /// <summary>
+            /// 发现的卡
+            /// </summary>
+            public Card discovered;
+            /// <summary>
+            /// 提供的选择
+            /// </summary>
+            public CardDefine[] defines;
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return viewer == player ? discovered : null;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return (game as CardEngine).createCards(defines);
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}玩家，{1}卡")]
+            const string TEMPLATE_SELF = "{0}发现{1}";
+
+            [MukioI18n.TranslateMsg("{0}玩家")]
+            const string TEMPLATE_OTHER = "{0}发现了一张牌";
+
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                if (!isCanceled)
+                {
+                    return viewer == player ? TEMPLATE_SELF : TEMPLATE_OTHER;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    discovered.getFormatString()
+                };
+            }
         }
 
         public static async Task<HearthStoneRule.ChooseOneEventArg> chooseOne(this Player player,CardEngine game,IEnumerable<Card> options, bool isShow = true ,string title = "选择一项")

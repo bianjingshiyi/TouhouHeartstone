@@ -1620,7 +1620,6 @@ namespace Game
             {
                 var item = ui.Discover.HoriCardList.addItem();
                 var card = game.getCard(cardId);
-                int id;
                 if (card != null)
                 {
                     setCard(item.Card, card, true);

@@ -1857,9 +1857,10 @@ namespace TouhouHeartstone.Builtin
                 }
             }
 
-            var choice = await card.getOwner().searchPile(game, usedCards,false, 3, "想起【......】");
-            Card copy = game.createCard(choice.choose.define);
-            await card.getOwner().tryAddCardToHand(game, copy);
+            await card.getOwner().discover(game, usedCards.Select(c => c.define), title: "想起【......】");
+            // var choice = await card.getOwner().searchPile(game, usedCards,false, 3, );
+            // Card copy = game.createCard(choice.choose.define);
+            // await card.getOwner().tryAddCardToHand(game, copy);
         }
     }
 

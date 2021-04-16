@@ -336,6 +336,7 @@ namespace Game
                 case THHCard.HealEventArg _:
                 case THHCard.SilenceEventArg _:
                 case THHCard.DeathEventArg _:
+                case THHPlayer.DiscoverEventArg _:
                 case THHCard.SecretTriggerEventArg _:
                     var item = ui.LogScrollView.LogList.addItem();
                     item.setProp("event", obj);
@@ -501,6 +502,9 @@ namespace Game
                     item.Image.sprite = getManager<TableManager>().getSkin(death.infoDic.First().Key).image;
                     item.BorderImage.sprite = death.infoDic.First().Key.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
+                case THHPlayer.DiscoverEventArg discover:
+                    item.Text.text = lang._(GAME_MANAGER_DISCOVER);
+                    break;
                 default:
                     break;
             }
@@ -529,6 +533,8 @@ namespace Game
         private const string GAME_MANAGER_BURN = "爆牌";
         [TranslateMsg]
         private const string GAME_MANAGER_DRAW = "抽牌";
+        [TranslateMsg]
+        private const string GAME_MANAGER_DISCOVER = "发现";
         private void onSaveReplayButtonClick()
         {
             _ = getManager<MainManager>().fileManager.saveFile(
