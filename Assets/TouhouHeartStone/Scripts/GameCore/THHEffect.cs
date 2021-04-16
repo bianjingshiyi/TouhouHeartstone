@@ -689,14 +689,15 @@ namespace TouhouHeartstone
     public class RemoveBuffAfterTimeUp<T> : THHEffectAfter<T> where T : IEventArg
     {
         public RemoveBuffAfterTimeUp(string pile, int buffId, int time) : base(pile, null, null, (game, card, arg) =>
-         {
-             if (time == 0)
+        {
+            card.getOwner().setProp(nameof(card), time);
+             if (card.getOwner().getProp<int>(nameof(card)) == 0)
              {
                  return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
              }
              else
              {
-                 time--;
+                card.getOwner().setProp<int>(nameof(card), card.getOwner().getProp<int>(nameof(card))-1);
                  return Task.CompletedTask;
              }
 
@@ -704,15 +705,16 @@ namespace TouhouHeartstone
         {
         }
         public RemoveBuffAfterTimeUp(string pile, CheckConditionDelegate onCheckCondition, int buffId, int time) : base(pile, onCheckCondition, null, (game, card, arg) =>
-         {
-             if (time == 0)
+        {
+            card.getOwner().setProp(nameof(card), time);
+            if (card.getOwner().getProp<int>(nameof(card)) == 0)
              {
                  return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
              }
              else
              {
-                 time--;
-                 return Task.CompletedTask;
+                card.getOwner().setProp<int>(nameof(card), card.getOwner().getProp<int>(nameof(card)) - 1);
+                return Task.CompletedTask;
              }
 
          })
