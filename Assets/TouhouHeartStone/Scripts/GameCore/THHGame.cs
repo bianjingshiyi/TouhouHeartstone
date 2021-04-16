@@ -420,11 +420,12 @@ namespace TouhouHeartstone
                 return;
             game.logger.log("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
             await game.triggers.doEvent(new HearthStoneRule.GameEndEventArg() {winners = winners});
+            game.close();
             if (getTurnTimer(game)!=null)
             {
                 game.time.cancel(getTurnTimer(game));
+                game.setTurnTimer(null);
             }
-            game.close();
             onEnd?.Invoke();
         }
 
