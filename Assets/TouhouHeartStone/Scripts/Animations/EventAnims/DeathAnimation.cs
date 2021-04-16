@@ -69,6 +69,7 @@ namespace Game
                     item.hide();
                 }
             }
+            table.setSkill(table.ui.SelfSkill, table.player.getSkill());
             return true;
         }
     }
