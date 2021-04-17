@@ -1068,27 +1068,28 @@ namespace TouhouHeartstone
         }
 
         public override async Task onEnable(IGame game, ICard card, IBuff buff)
-        {          
+        {
             foreach (TriggerTime time in triggers)
             {
-                await card.setProp(game, nameof(card), 0);
-                string effectName = getEffectName(game, card, buff, time);               
+                string effectName = getEffectName(game, card, buff, time);
+                string missionName = effectName.Concat("_Mission").ToString();
+
+                await card.setProp(game, missionName, 0);                        
                 Trigger<T> trigger = new Trigger<T>(async arg =>
                 {
                     if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
                     {
-                        await card.setProp<int>(game, nameof(card), card.getProp<int>(game, nameof(card)) +1);
+                        await card.setProp<int>(game, missionName, card.getProp<int>(game, missionName) +1);
                     }
-                    if(card.getProp<int>(game, nameof(card)) == aimCount)
+                    if (card.getProp<int>(game, missionName) == aimCount)
                     {
                         await (card as Card).MissionComplete(game);
                         await (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
-                    }
-                    
+                    }                    
                 }, name: effectName);
                 await card.setProp(game, effectName, trigger);
                 game.logger.log("Effect", card + "注册效果" + effectName);
-                game.triggers.registerBefore(trigger);
+                game.triggers.registerAfter(trigger);
             }
         }
 
@@ -1103,7 +1104,6 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
-
     }
     
     /// <summary>

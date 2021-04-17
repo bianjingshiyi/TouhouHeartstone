@@ -72,9 +72,11 @@ namespace Tests
             for (int i = 0; i < 15; i++)
             {
                 //这方法居然不能推进进度？？？
+
                 //you.createToken(game, game.getDefine<DefaultServant>());
                 //you.getField()[0].setDead(game, true);
                 //game.updateDeath();
+
                 if (!you.getHead().Any(c => c.define is DefaultServant))
                 {
                     you.addCardToHand<DefaultServant>(game);
@@ -88,6 +90,21 @@ namespace Tests
                 you.getField()[0].setDead(game, true);
                 game.updateDeath();
             }
+
+
+            //you.cmdTurnEnd(game);
+            //oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
+
+            //you.setGem(game, you.getMaxGem());
+            //you.addCardToHand<DefaultServant>(game);
+            //you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            //you.getField()[0].setDead(game, true);
+
+            //you.cmdTurnEnd(game);
+            //oppo.cmdTurnEnd(game);
+            //you.cmdUse(game, you.getSkill());
+            Assert.True(you.getHand().Any(c => c.define is Nazrin_05));
+
             Debug.Log("宝塔数量 ： " + you.getHand().Where(c => c.define is Nazrin_05).Count());
 
 
@@ -122,6 +139,7 @@ namespace Tests
             //宝藏测试
             game.skipUntilCanUse<Nazrin_06>(you);
             you.cmdUse(game, you.getHand().getCard<Nazrin_06>());
+
             DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
             int cardId = discoverRequest.cardIdArray[0];
             you.cmdDiscover(game, cardId);
