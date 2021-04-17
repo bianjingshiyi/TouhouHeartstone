@@ -4868,7 +4868,7 @@ MonoBehaviour:
   _showCardTimer:
     startTime: -1
     updateTime: -1
-    duration: 1
+    duration: 0.25
   _projectileList: []
   _tipTimer:
     startTime: -1

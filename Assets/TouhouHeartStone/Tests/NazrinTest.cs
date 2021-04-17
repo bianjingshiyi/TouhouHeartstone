@@ -81,7 +81,6 @@ namespace Tests
                 {
                     you.addCardToHand<DefaultServant>(game);
                 }
-
                 if (you.getGem() == 0)
                 {
                     you.setGem(game, you.getMaxGem());
@@ -89,6 +88,7 @@ namespace Tests
                 you.cmdUse(game, you.getHand().getCard<DefaultServant>());
                 you.getField()[0].setDead(game, true);
                 game.updateDeath();
+
             }
 
 
