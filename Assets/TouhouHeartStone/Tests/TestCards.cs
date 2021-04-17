@@ -888,4 +888,14 @@ namespace Tests
             })
         };
     }
+
+    public class UniqueServant : ServantCardDefine
+    {
+        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x32;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 0;
+        public override int attack { get; set; } = 1;
+        public override int life { get; set; } = 1;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+    }
 }

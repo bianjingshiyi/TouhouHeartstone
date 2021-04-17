@@ -1071,7 +1071,7 @@ namespace TouhouHeartstone
         {          
             foreach (TriggerTime time in triggers)
             {
-                await card.setProp<int>(game, nameof(card), 0);
+                await card.setProp(game, nameof(card), 0);
                 string effectName = getEffectName(game, card, buff, time);               
                 Trigger<T> trigger = new Trigger<T>(async arg =>
                 {
