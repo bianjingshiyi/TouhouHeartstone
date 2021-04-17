@@ -84,12 +84,12 @@ namespace TouhouHeartstone.Builtin
 
             public ICard getCard(IGame game, IPlayer viewer)
             {
-                return null;
+                return result ? youCard : oppoCard;
             }
 
             public ICard[] getTargets(IGame game, IPlayer viewer)
             {
-                return null;
+                return new []{youCard, oppoCard};
             }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
@@ -99,10 +99,10 @@ namespace TouhouHeartstone.Builtin
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是自己的卡，{2}是对手的卡，{3}是结果")]
-            const string TEMPLATE = "{0} 发动了对决，她揭示了:{1}。她的对手揭示了：{2}。结果是 {3}";
+            const string TEMPLATE = "{0}发动了对决，揭示了:{1}。 对手揭示了：{2}。 结果是 {3}";
 
             [MukioI18n.TranslateMsg("{0}是玩家")]
-            const string TEMPLATE_NULL = "{0} 揭示了个寂寞，输掉了对决。";
+            const string TEMPLATE_NULL = "{0}发动了对决 揭示了个寂寞，输掉了对决。";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return youCard != null ? TEMPLATE : TEMPLATE_NULL;
@@ -113,7 +113,7 @@ namespace TouhouHeartstone.Builtin
                     player.name,
                     youCard?.getFormatString(),
                     oppoCard?.getFormatString(),
-                    result
+                    result?"胜利":"失败"
                 };
             }
         }

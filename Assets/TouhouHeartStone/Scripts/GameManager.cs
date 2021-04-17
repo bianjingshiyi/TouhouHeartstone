@@ -337,6 +337,7 @@ namespace Game
                 case THHCard.SilenceEventArg _:
                 case THHCard.DeathEventArg _:
                 case THHPlayer.DiscoverEventArg _:
+                case Sanae.RevealDuelArg _:
                 case THHCard.SecretTriggerEventArg _:
                     var item = ui.LogScrollView.LogList.addItem();
                     item.setProp("event", obj);
@@ -505,6 +506,10 @@ namespace Game
                 case THHPlayer.DiscoverEventArg discover:
                     item.Text.text = lang._(GAME_MANAGER_DISCOVER);
                     break;
+                case Sanae.RevealDuelArg revealDuel:
+                    item.Text.text = lang._(GAME_MANAGER_REVEAL_DUEL);
+                    item.BorderImage.sprite = revealDuel.player == localPlayer ? item.selfsprite : item.opposprite;
+                    break;
                 default:
                     break;
             }
@@ -535,6 +540,8 @@ namespace Game
         private const string GAME_MANAGER_DRAW = "抽牌";
         [TranslateMsg]
         private const string GAME_MANAGER_DISCOVER = "发现";
+        [TranslateMsg]
+        private const string GAME_MANAGER_REVEAL_DUEL = "信仰对决";
         private void onSaveReplayButtonClick()
         {
             _ = getManager<MainManager>().fileManager.saveFile(
