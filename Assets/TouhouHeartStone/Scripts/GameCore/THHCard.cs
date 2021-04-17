@@ -652,9 +652,11 @@ namespace TouhouHeartstone
         [TranslateMsg]
         const string SERVANT_FIELD_FULL = "你无法将更多的仆从置入战场";
         [TranslateMsg]
-        const string NO_SPACE_FOR_TRAP = "你没有多余的位置挂载陷阱";
+        const string NO_SPACE_FOR_TRAP = "你的脑袋满头是包";
         [TranslateMsg]
         const string DUPLICATED_TRAP = "你已挂载了相同的陷阱";
+        [TranslateMsg]
+        const string ONLY_ONE_MISSION = "专注于你手头上的委托！";
         [TranslateMsg]
         const string SKILL_USED = "你已经使用过技能了";
         [TranslateMsg]
@@ -725,6 +727,21 @@ namespace TouhouHeartstone
                     {
                         game.logger.log(DUPLICATED_TRAP);
                         info = DUPLICATED_TRAP;
+                        return false;
+                    }
+                }
+                if (spell.hasKeyword(KEYWORD.MISSION))
+                {
+                    if(card.getOwner().getHead().count >= card.getOwner().getHead().maxCount)
+                    {
+                        game.logger.log(NO_SPACE_FOR_TRAP);
+                        info = NO_SPACE_FOR_TRAP;
+                        return false;
+                    }
+                    if(card.getOwner().getHead().Any(c => c.define.hasKeyword(KEYWORD.MISSION)))
+                    {
+                        game.logger.log(ONLY_ONE_MISSION);
+                        info = ONLY_ONE_MISSION;
                         return false;
                     }
                 }
