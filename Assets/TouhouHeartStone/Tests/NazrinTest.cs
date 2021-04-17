@@ -77,7 +77,7 @@ namespace Tests
                 //game.updateDeath();
                 if (!you.getHead().Any(c => c.define is DefaultServant))
                 {
-                    you.tryAddCardToHand(game, game.createCard<DefaultServant>());
+                    you.addCardToHand<DefaultServant>(game);
                 }
 
                 if (you.getGem() == 0)
@@ -100,7 +100,7 @@ namespace Tests
 
             while (!you.getHand().isFull)
             {
-                you.tryAddCardToHand(game, game.createCard<DefaultServant>());
+                you.addCardToHand<DefaultServant>(game);
             }
 
             foreach (Card c in you.getHand())
@@ -174,7 +174,8 @@ namespace Tests
             Assert.True(you.getHand().Any(c => c.define is Nazrin_10));
 
             //奶酪测试
-            you.tryAddCardToHand(game, game.createCard<Nazrin_10>());
+            you.addCardToHand<Nazrin_10>(game);
+            
             game.skipUntilCanUse<Nazrin_10>(you);
             you.cmdUse(game, you.getHand().getCard<Nazrin_10>(),targets: you.getMaster());
             game.skipUntilCanUse<Nazrin_10>(you);
@@ -206,7 +207,8 @@ namespace Tests
             game.skipUntilCanUse<Nazrin_19>(you);
 
             you.cmdUse(game, you.getHand().getCard<Nazrin_19>());
-            you.tryAddCardToHand(game, game.createCard<UniqueServant>());
+
+            you.addCardToHand<UniqueServant>(game);
             you.cmdUse(game, you.getHand().getCard<UniqueServant>());
 
             game.Dispose();
