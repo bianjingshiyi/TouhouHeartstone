@@ -230,7 +230,7 @@ namespace TouhouHeartstone
                         getSortedPlayers(game)[i].getDeck().shuffle(game);
                     int count = i == 0 ? 3 : 4;
                     var cards = getSortedPlayers(game)[i].getDeck().Where(c => c.hasKeyword(game, KEYWORD.MISSION)).randomTake(game, count).ToList();
-                    cards.AddRange(getSortedPlayers(game)[i].getDeck().Reverse().Take(count-cards.Count()));
+                    cards.AddRange(getSortedPlayers(game)[i].getDeck().Except(cards).Reverse().Take(count-cards.Count()));
                     cards.Reverse();
                     // var cards = getSortedPlayers(game)[i].getDeck().Skip(getSortedPlayers(game)[i].getDeck().count - count).Reverse()
                     //     .ToArray();
