@@ -567,7 +567,7 @@ namespace TouhouHeartstone
                             await arg.card.removeBuff(game, getBuffDic(game, card, buff)[arg.card]);
                             getBuffDic(game, card, buff).Remove(arg.card);
                         }
-                            
+
                     }
                     return;
                 }));
@@ -691,33 +691,33 @@ namespace TouhouHeartstone
         public RemoveBuffAfterTimeUp(string pile, int buffId, int time) : base(pile, null, null, (game, card, arg) =>
         {
             card.getOwner().setProp(nameof(card), time);
-             if (card.getOwner().getProp<int>(nameof(card)) == 0)
-             {
-                 return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-             }
-             else
-             {
-                card.getOwner().setProp<int>(nameof(card), card.getOwner().getProp<int>(nameof(card))-1);
-                 return Task.CompletedTask;
-             }
+            if (card.getOwner().getProp<int>(nameof(card)) == 0)
+            {
+                return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+            }
+            else
+            {
+                card.getOwner().setProp<int>(nameof(card), card.getOwner().getProp<int>(nameof(card)) - 1);
+                return Task.CompletedTask;
+            }
 
-         })
+        })
         {
         }
         public RemoveBuffAfterTimeUp(string pile, CheckConditionDelegate onCheckCondition, int buffId, int time) : base(pile, onCheckCondition, null, (game, card, arg) =>
         {
             card.getOwner().setProp(nameof(card), time);
             if (card.getOwner().getProp<int>(nameof(card)) == 0)
-             {
-                 return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-             }
-             else
-             {
+            {
+                return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+            }
+            else
+            {
                 card.getOwner().setProp<int>(nameof(card), card.getOwner().getProp<int>(nameof(card)) - 1);
                 return Task.CompletedTask;
-             }
+            }
 
-         })
+        })
         {
         }
     }
@@ -1062,9 +1062,9 @@ namespace TouhouHeartstone
     public class MissionTrigger<T> : THHEffectAfter<T> where T : IEventArg
     {
         int aimCount;
-        public MissionTrigger(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute , int aimCount) : base(PILE.HEAD, onCheckCondition, null, onExecute)
+        public MissionTrigger(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute, int aimCount) : base(PILE.HEAD, onCheckCondition, null, onExecute)
         {
-            this.aimCount = aimCount;           
+            this.aimCount = aimCount;
         }
 
         public override async Task onEnable(IGame game, ICard card, IBuff buff)
@@ -1105,7 +1105,7 @@ namespace TouhouHeartstone
             return Task.CompletedTask;
         }
     }
-    
+
     /// <summary>
     /// 
     /// </summary>
@@ -1147,8 +1147,8 @@ namespace TouhouHeartstone
                 {
                     modifier.setValue(game, card, fixer(game, card, buff, default));
                 }
-                
-                Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(modifier,buff));
+
+                Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(modifier, buff));
                 if (trigger == null)
                 {
                     trigger = new Trigger<T>(async arg =>
@@ -1159,15 +1159,15 @@ namespace TouhouHeartstone
                             m.setValue(game, card, fixer(game, card, buff, arg));
                         }
                     });
-                    await card.setProp(game, getTriggerName(modifier,buff), trigger);
+                    await card.setProp(game, getTriggerName(modifier, buff), trigger);
                 }
                 game.triggers.registerAfter(trigger);
             }
 
-            public async void onDisable(CardEngine game, Card card,Buff buff, string modifierName)
+            public async void onDisable(CardEngine game, Card card, Buff buff, string modifierName)
             {
                 var modifier = card.getProp<PropModifier<Prop>>(game, modifierName);
-                if (modifier!=null)
+                if (modifier != null)
                 {
                     card.removeModifier(game, modifier);
                 }
@@ -1207,7 +1207,7 @@ namespace TouhouHeartstone
             }
             foreach (var fixer in fixers)
             {
-                fixer.onEnable(game, card,null, getModifierName(this.modifier, null));
+                fixer.onEnable(game, card, null, getModifierName(this.modifier, null));
             }
         }
 
@@ -1216,16 +1216,16 @@ namespace TouhouHeartstone
             card.removeModifier(game, modifier);
             foreach (var fixer in fixers)
             {
-                fixer.onDisable(game, card,null, getModifierName(modifier, null));
+                fixer.onDisable(game, card, null, getModifierName(modifier, null));
             }
         }
-        
+
         private string getModifierName(PropModifier<Prop> modifier, Buff buff)
         {
             return nameof(EventTriggeredModifierFixer<Prop>) + modifier.GetType().Name + (buff != null ? buff.instanceID.ToString() : "");
         }
     }
 
-    
+
 
 }

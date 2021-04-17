@@ -338,6 +338,7 @@ namespace TouhouHeartstone
                 IResponse response = await game.answers.ask(player.id, new FreeActRequest(), getOption(game).timeoutForTurn * 2);
                 switch (response)
                 {
+                    //自由输入
                     case UseResponse use:
                         Card card = game.getCard(use.cardId);
                         Card[] targets = game.getCards(use.targetsId);
@@ -715,6 +716,10 @@ namespace TouhouHeartstone
                 return Task.CompletedTask;
         }
 
+        public override Task onPlayerCommand(CardEngine game, Player player, ICommand command)
+        {
+            throw new NotImplementedException();
+        }
 
         public class InitEventArg : EventArg
         {
