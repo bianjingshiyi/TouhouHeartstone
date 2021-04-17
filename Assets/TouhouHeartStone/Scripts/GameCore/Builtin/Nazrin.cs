@@ -178,7 +178,8 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             CardDefine[] defines = game.getDefines().Where(c => c.hasKeyword(KEYWORD.UNIQUE) && c is ServantCardDefine s && !s.isToken).ToArray();
-            Card discovered = await card.getOwner().discover(game, defines, title: "广告招租");
+            var arg = await card.getOwner().discover(game, defines, title: "广告招租");
+            var discovered = arg.discovered;
             await discovered.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true)));
             // List<Card> unqueCards = card.getOwner().getNormalRandomPool((g, d) =>
             // {
@@ -206,9 +207,9 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            var discovered = await card.getOwner().discover(game,
+            var arg = await card.getOwner().discover(game,
                 game.getDefinesOf(card.getOwner().getMaster().id,CATEGORY.CHARACTER_NEUTRAL).Where(define => define is ServantCardDefine s && !s.isToken));
-            await discovered.addBuff(game,
+            await arg.discovered.addBuff(game,
                 new GeneratedBuff(ID, new CostModifier(5, true), new LifeModifier(5, true),
                     new AttackModifier(5, true)));
             // List<Card> servantCards = card.getOwner().getNormalRandomPool((g, d) =>
@@ -423,7 +424,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 3; i++)
             {
                 await card.getOwner().discover(game,
                     game.getDefines().Where(define => define is ServantCardDefine s && !s.isToken));
@@ -505,8 +506,7 @@ namespace TouhouHeartstone.Builtin
                            arg.card.hasKeyword(game, KEYWORD.UNIQUE) && arg.card.isServant() && arg.card != card;
                 }, null, async (game, card, arg) =>
                 {
-                    var c = game.createCard(arg.card.define);
-                    await card.getOwner().tryAddCardToHand(game,c);
+                    var c = await card.getOwner().addCardToHand(game, arg.card.define);
                     await c.addBuff(game,
                         new GeneratedBuff(ID, new CostModifier(5, true), new AttackModifier(5, true),
                             new LifeModifier(5, true)));

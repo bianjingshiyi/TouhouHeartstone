@@ -191,12 +191,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new DeathRattle(ID,(g1,c1,p)=>
+            new DeathRattle(ID,async (game,card,p)=>
             {
-                Card ghost = g1.createCard<Ghost>();
-                ghost.addBuff(g1, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
-                c1.getOwner().tryAddCardToHand(g1,ghost);
-                return Task.CompletedTask;
+                var ghost = await card.getOwner().addCardToHand<Ghost>(game);
+                await ghost.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
             })
         };
     }

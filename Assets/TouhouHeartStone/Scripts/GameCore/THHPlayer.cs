@@ -333,15 +333,14 @@ namespace TouhouHeartstone
         /// <param name="count"></param>
         /// <param name="title"></param>
         /// <returns></returns>
-        public static async Task<Card> discover(this Player player, CardEngine game, IEnumerable<CardDefine> cardDefines, int count = 3,
+        public static async Task<DiscoverEventArg> discover(this Player player, CardEngine game, IEnumerable<CardDefine> cardDefines, int count = 3,
             string title = null)
         {
             if (!cardDefines.Any())
             {
                 return null;
             }
-            Card discovered = null;
-            await game.triggers.doEvent(new DiscoverEventArg()
+            var eventArg = await game.triggers.doEvent(new DiscoverEventArg()
             {
                 player = player
             }, async arg =>
@@ -349,12 +348,10 @@ namespace TouhouHeartstone
                 player = arg.player;
                 cardDefines = cardDefines.randomTake(game, count);
                 var selected = await askSelect(player, game, cardDefines, count, title);
-                discovered = game.createCard(selected);
-                tryAddCardToHand(player, game, discovered);
-                arg.discovered = discovered;
+                arg.discovered = await player.addCardToHand(game, selected);
                 arg.defines = cardDefines.ToArray();
             });
-            return discovered;
+            return eventArg;
         }
         
         public class DiscoverEventArg : EventArg, IDescribableEventArg
@@ -567,41 +564,21 @@ namespace TouhouHeartstone
         {
             return player.getDeck().insert(game, card, game.randomInt(0, player.getDeck().count));
         }
-        public static Task addCardToHand<T>(this Player player,CardEngine game) where T : CardDefine
+        public static Task<Card> addCardToHand<T>(this Player player, CardEngine game) where T : CardDefine
         {
-            if (player.getHand().isFull)
-                return Task.CompletedTask;
-            Card card = game.createCard<T>();
-            return player.getHand().add(game, card);
+            return player.addCardToHand(game, game.getDefine<T>());
         }
-        public static Task addCardToHand(this Player player,CardEngine game, CardDefine cardDefine)
+        public async static Task<Card> addCardToHand(this Player player,CardEngine game, CardDefine cardDefine)
         {
             if (player.getHand().isFull)
-                return Task.CompletedTask;
+                return null;
             Card card = game.createCard(cardDefine);
-            return player.getHand().add(game, card);
-        }
-        /// <summary>
-        /// Warning: 别对在牌堆中的牌使用这个方法
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="game"></param>
-        /// <param name="card"></param>
-        /// <returns></returns>
-        public static async Task<bool> tryAddCardToHand(this Player player,CardEngine game, Card card)
-        {
-            if (player.getHand().isFull)
-                return false;
-            game.logger.log("将" + card + "置入" + player + "的手牌");
             await player.getHand().add(game, card);
-            return true;
+            return card;
         }
-        public static Task addRandomCardToHand(this Player player,CardEngine game, IEnumerable<CardDefine> pool)
+        public static Task<Card> addRandomCardToHand(this Player player,CardEngine game, IEnumerable<CardDefine> pool)
         {
-            if (player.getHand().isFull)//手牌满了
-                return Task.CompletedTask;
-            Card card = game.createCardByRandom(pool);
-            return player.getHand().add(game, card);
+            return player.addCardToHand(game, pool.random(game));
         }
         public static Task randomDiscard(this Player player,CardEngine game, int count = 1, Func<Card, bool> filter = null)
         {
