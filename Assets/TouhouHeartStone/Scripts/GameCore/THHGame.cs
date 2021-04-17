@@ -423,14 +423,8 @@ namespace TouhouHeartstone
             if (!game.isRunning)
                 return;
             game.logger.logTrace("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
-            await game.triggers.doEvent(new HearthStoneRule.GameEndEventArg() {winners = winners});
             game.close();
-            if (getTurnTimer(game)!=null)
-            {
-                game.time.cancel(getTurnTimer(game));
-                game.setTurnTimer(null);
-            }
-            onEnd?.Invoke();
+            await game.triggers.doEvent(new HearthStoneRule.GameEndEventArg() {winners = winners});
         }
 
         public static event Action<int, IResponse> onPlayerResponse;
@@ -719,6 +713,19 @@ namespace TouhouHeartstone
         public override Task onPlayerCommand(CardEngine game, Player player, ICommand command)
         {
             throw new NotImplementedException();
+        }
+
+        public override Task onGameClose(CardEngine game)
+        {
+            game.isRunning = false;
+            if (game.getTurnTimer()!=null)
+            {
+                game.time.cancel(game.getTurnTimer());
+                game.setTurnTimer(null);
+            }
+            game.answers.cancelAll();
+            // THHGame.onEnd?.Invoke();
+            return Task.CompletedTask;
         }
 
         public class InitEventArg : EventArg
