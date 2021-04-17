@@ -200,7 +200,7 @@ namespace TouhouHeartstone
                 if (game.getOption().sortedPlayers == null || game.getOption().sortedPlayers.Length != game.players.Length)
                 {
                     if (game.getOption().sortedPlayers != null && game.getOption().sortedPlayers.Length != game.players.Length)
-                        game.logger?.log("Warning", "游戏参数玩家行动顺序长度与实际数量不匹配");
+                        game.logger?.logWarn("游戏参数玩家行动顺序长度与实际数量不匹配");
                     List<Player> remainedList = new List<Player>(game.players);
                     Player[] sortedPlayers = new Player[remainedList.Count];
                     for (int i = 0; i < sortedPlayers.Length; i++)
@@ -237,7 +237,7 @@ namespace TouhouHeartstone
                     await getSortedPlayers(game)[i].getDeck().moveTo(game, cards, game.getSortedPlayers()[i].getInit());
                 }
 
-                game.logger.log("Debug", "游戏初始化，玩家行动顺序："
+                game.logger.logTrace("游戏初始化，玩家行动顺序："
                                          + string.Join("、", game.getSortedPlayers().Select(p => p.ToString())) + "，"
                                          + "玩家英雄：" + string.Join("，",
                                              getSortedPlayers(game).Select(p => p.getMaster() + "(" + p.getSkill() + ")")) + "，"
@@ -255,7 +255,7 @@ namespace TouhouHeartstone
                 return;
             await game.triggers.doEvent(new HearthStoneRule.StartEventArg(), async arg =>
             {
-                game.logger.log("Debug", "游戏开始");
+                game.logger.logTrace("游戏开始");
                 foreach (Player player in getSortedPlayers(game))
                 {
                     await player.setMaxGem(game, getOption(game).startGem);
@@ -264,7 +264,7 @@ namespace TouhouHeartstone
                     if (player != getSortedPlayers(game)[0])
                     {
                         await player.getHand().add(game, game.createCard(game.getDefine<LuckyCoin>()));
-                        game.logger.log("由于后手行动" + player + "获得一张幸运币");
+                        game.logger.logTrace("由于后手行动" + player + "获得一张幸运币");
                     }
 
                     arg.startHandDic.Add(player, new HearthStoneRule.StartEventArg.StartInfo()
@@ -285,7 +285,7 @@ namespace TouhouHeartstone
                 return;
             await game.triggers.doEvent(new HearthStoneRule.TurnStartEventArg() {player = player}, async arg =>
             {
-                game.logger.log("Debug", arg.player + "的回合开始");
+                game.logger.logTrace(arg.player + "的回合开始");
                 //玩家的最大能量加1但是不超过10，充满玩家的能量。
                 await arg.player.setMaxGem(game, arg.player.getMaxGem() + 1);
                 await arg.player.setGem(game, arg.player.getMaxGem());
@@ -320,7 +320,7 @@ namespace TouhouHeartstone
 
         private static void onTurnTimeout(this CardEngine game)
         {
-            game.logger.log("Debug", game.getCurrentPlayer() + "回合超时");
+            game.logger.logTrace(game.getCurrentPlayer() + "回合超时");
             game.setTurnTimer(null);
             game.answers.cancel(game.answers.getRequests(game.getCurrentPlayer().id));
         }
@@ -365,7 +365,7 @@ namespace TouhouHeartstone
                 return;
             await game.triggers.doEvent(new HearthStoneRule.TurnEndEventArg() {player = player}, arg =>
             {
-                game.logger.log("Debug", getCurrentPlayer(game) + "回合结束");
+                game.logger.logTrace("Debug", getCurrentPlayer(game) + "回合结束");
 
                 List<Card> AllCharactor = new List<Card>();
                 AllCharactor.Add(player.getMaster());
@@ -378,13 +378,13 @@ namespace TouhouHeartstone
                         if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
                             chara.define is ServantCardDefine && chara.isReady(game))
                         {
-                            game.logger.log("被冻结的随从解除冰冻");
+                            game.logger.logTrace("被冻结的随从解除冰冻");
                             chara.setFreeze(game, false);
                         }
                         else if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
                                  chara.define is MasterCardDefine)
                         {
-                            game.logger.log("被冻结的英雄解除冰冻");
+                            game.logger.logTrace("被冻结的英雄解除冰冻");
                             chara.setFreeze(game, false);
                         }
                     }
@@ -408,7 +408,7 @@ namespace TouhouHeartstone
 
         internal static Task surrender(this CardEngine game,Player player)
         {
-            game.logger.log(player + "投降");
+            game.logger.logTrace(player + "投降");
             return player.getMaster().die(game);
         }
 
@@ -421,7 +421,7 @@ namespace TouhouHeartstone
         {
             if (!game.isRunning)
                 return;
-            game.logger.log("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
+            game.logger.logTrace("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
             await game.triggers.doEvent(new HearthStoneRule.GameEndEventArg() {winners = winners});
             game.close();
             if (getTurnTimer(game)!=null)

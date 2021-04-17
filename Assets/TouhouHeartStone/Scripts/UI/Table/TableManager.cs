@@ -593,7 +593,7 @@ namespace Game
                 else
                     cardHandDic[card] = null;
             }
-            UberDebug.LogChannel("UI", "创建手牌UI：" + card);
+            UberDebug.LogTraceChannel("UI", "创建手牌UI：" + card);
             HandListItem item;
             if (card.getOwner() == player)
             {

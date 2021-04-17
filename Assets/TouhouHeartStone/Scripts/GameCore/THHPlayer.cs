@@ -45,7 +45,7 @@ namespace TouhouHeartstone
             async Task onInitReplace(HearthStoneRule.InitReplaceEventArg arg)
             {
                 arg.replacedCards = await arg.player.getInit().replaceByRandom(game, arg.cards, arg.player.getDeck());
-                game.logger.log(arg.player + "替换卡牌：" + string.Join("，", arg.cards.Select(c => c.ToString())) + "=>"
+                game.logger.logTrace(arg.player + "替换卡牌：" + string.Join("，", arg.cards.Select(c => c.ToString())) + "=>"
                     + string.Join("，", arg.replacedCards.Select(c => c.ToString())));
             }
         }
@@ -59,7 +59,7 @@ namespace TouhouHeartstone
                     arg.player.setProp(PLAYER.GEM, 0);
                 if (arg.player.getGem() > 10)
                     arg.player.setProp(PLAYER.GEM, 10);
-                game.logger.log(arg.player + "的法力水晶变为" + arg.player.getGem());
+                game.logger.logTrace(arg.player + "的法力水晶变为" + arg.player.getGem());
                 return Task.CompletedTask;
             });
         }
@@ -75,7 +75,7 @@ namespace TouhouHeartstone
                     arg.player.setProp(PLAYER.MAXGEM, 10);
                 if (arg.player.getGem() > arg.player.getMaxGem())
                     arg.player.setProp(PLAYER.MAXGEM, 0);
-                game.logger.log(arg.player + "的法力水晶上限变为" + arg.player.getMaxGem());
+                game.logger.logTrace(arg.player + "的法力水晶上限变为" + arg.player.getMaxGem());
                 return Task.CompletedTask;
             });
         }
@@ -92,7 +92,7 @@ namespace TouhouHeartstone
                 {
                     Player p = arg.player;
                     p.setFatigue(p.getFatigue() + 1);
-                    game.logger.log(p + "已经没有卡牌了，当前疲劳值：" + p.getFatigue());
+                    game.logger.logTrace(p + "已经没有卡牌了，当前疲劳值：" + p.getFatigue());
                     var damage = await p.getMaster().damage(game, null, p.getFatigue());
                     await game.updateDeath();
                 }
@@ -127,7 +127,7 @@ namespace TouhouHeartstone
                 {
                     card = arg.card;
                     arg.player.getDeck().moveTo(game, card, arg.player.getGrave(), arg.player.getGrave().count);
-                    game.logger.log(arg.player + "的手牌已经满了，" + card + "被送入墓地");
+                    game.logger.logTrace(arg.player + "的手牌已经满了，" + card + "被送入墓地");
                     return Task.CompletedTask;
                 });
             }
@@ -142,7 +142,7 @@ namespace TouhouHeartstone
                     if (card.define is SpellCardDefine spell && card.define.hasKeyword(KEYWORD.AUTOCAST))
                     {
                         await p.getDeck().moveTo(game, card, p.getWarp());
-                        game.logger.log("debug");
+                        game.logger.logTrace("debug");
                         await card.activeEffect(game, p, new Card[0]);
                         await p.getWarp().moveTo(game, card, p.getGrave());
                         await game.updateDeath();
@@ -151,7 +151,7 @@ namespace TouhouHeartstone
                     else
                     {
                         await p.getDeck().moveTo(game, card, p.getHand(), p.getHand().count);
-                        game.logger.log(p + "抽" + card);
+                        game.logger.logTrace(p + "抽" + card);
                     }
                 });
             }
@@ -212,7 +212,7 @@ namespace TouhouHeartstone
                  Player p = arg.player;
                  card = arg.card;
                  targets = arg.targets;
-                 game.logger.log(p + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
+                 game.logger.logTrace(p + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
                  if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
                  {
                      await player.tryEnterField(game, p.getHand(), arg.card, arg.position);//随从卡，将卡置入战场
@@ -254,13 +254,13 @@ namespace TouhouHeartstone
         {
             if (player[PILE.ITEM].isFull)
             {
-                game.logger.log("由于" + player + "的道具栏已满，摧毁当前道具");
+                game.logger.logTrace("由于" + player + "的道具栏已满，摧毁当前道具");
                 await player.destroyItem(game);
             }
             await item.setAttack(game, item.getAttack(game));
             await item.setCurrentLife(game, item.getLife(game));
             await player.getHand().moveTo(game, item, player[PILE.ITEM]);
-            game.logger.log(player + "装备" + item);
+            game.logger.logTrace(player + "装备" + item);
         }
         public static Task destroyItem(this Player player,CardEngine game)
         {
@@ -288,10 +288,10 @@ namespace TouhouHeartstone
             {
                 player = arg.player;
                 cards = arg.options;
-                game.logger.log(player + "要从卡牌或卡牌定义ID" + string.Join("，", cards) + "中选择一个");
+                game.logger.logTrace(player + "要从卡牌或卡牌定义ID" + string.Join("，", cards) + "中选择一个");
                 var res = await game.answers.ask(player.id, new DiscoverRequest(cards, title), float.MaxValue);
                 int selectedID = cards.First(id => id == (res as DiscoverResponse).cardId);
-                game.logger.log(player + "选择" + selectedID);
+                game.logger.logTrace(player + "选择" + selectedID);
                 arg.selected = selectedID;
             });
             return eventArg.selected;
@@ -411,7 +411,7 @@ namespace TouhouHeartstone
 
         public static async Task<HearthStoneRule.ChooseOneEventArg> chooseOne(this Player player,CardEngine game,IEnumerable<Card> options, bool isShow = true ,string title = "选择一项")
         {
-            game.logger.log(player + "从" + string.Join("，", options) + "中选择一项");
+            game.logger.logTrace(player + "从" + string.Join("，", options) + "中选择一项");
             //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
         
             var eventArg = await game.triggers.doEvent(new HearthStoneRule.ChooseOneEventArg() { player = player , options = options , choose = null , isShow = isShow }, async arg =>
@@ -419,14 +419,14 @@ namespace TouhouHeartstone
                 var task = game.answers.ask(player.id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title),float.MaxValue);
                 await task;
                 arg.choose = options.First(c => c.id == (task.Result as DiscoverResponse).cardId);
-                game.logger.log(player + "选择" + arg.choose);
+                game.logger.logTrace(player + "选择" + arg.choose);
             });
             return eventArg;
         }
         
         public static async Task<HearthStoneRule.SearchPileEventArg> searchPile(this Player player,CardEngine game, IEnumerable<Card> cards, bool isShow = false,  int count = 3,string title = "选择一项")
         {
-            game.logger.log(player + "从" + string.Join("，", cards) + "中选择一张");
+            game.logger.logTrace(player + "从" + string.Join("，", cards) + "中选择一张");
             if (cards.Count() < 1)
                 return null;
             if (count > 0)
@@ -437,7 +437,7 @@ namespace TouhouHeartstone
                 var task = game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title),float.MaxValue);
                 await task;
                 arg.choose = cards.First(c => c.id == (task.Result as DiscoverResponse).cardId);
-                game.logger.log(player + "选择" + arg.choose);
+                game.logger.logTrace(player + "选择" + arg.choose);
             });
             return eventArg;
         }
@@ -454,9 +454,9 @@ namespace TouhouHeartstone
                 card = arg.card;
                 position = arg.position;
                 if (from != null)
-                    game.logger.log(player + "将" + arg.card + "从" + arg.from + "置入战场，位于" + arg.position);
+                    game.logger.logTrace(player + "将" + arg.card + "从" + arg.from + "置入战场，位于" + arg.position);
                 else
-                    game.logger.log(player + "将" + arg.card + "置入战场，位于" + arg.position);
+                    game.logger.logTrace(player + "将" + arg.card + "置入战场，位于" + arg.position);
                 if (card.define is ServantCardDefine servant)//设置随从状态
                 {
                     await card.setDead(game, false);
@@ -497,7 +497,7 @@ namespace TouhouHeartstone
                 position = arg.position;
                 if (player.getField().count >= player.getField().maxCount)
                     return;
-                game.logger.log(player + "召唤" + define.GetType().Name + "位于" + position);
+                game.logger.logTrace(player + "召唤" + define.GetType().Name + "位于" + position);
                 arg.card = game.createCard(define);
                 await player.tryEnterField(game, null, arg.card, position);
             });
@@ -531,7 +531,7 @@ namespace TouhouHeartstone
             {
                 if (pile.count >= pile.maxCount)
                     return;
-                game.logger.log(arg.player + "复活" + arg.card.define.GetType().Name + "位于" + position);
+                game.logger.logTrace(arg.player + "复活" + arg.card.define.GetType().Name + "位于" + position);
                 await arg.player.tryEnterField(game,arg.player.getGrave(),arg.card,arg.position);
                 //亡语随从在墓地与场上移动时不会进行效果的激活与禁用
                 foreach (IPassiveEffect effect in arg.card.define.effects.OfType<DeathRattle>())
@@ -651,7 +651,7 @@ namespace TouhouHeartstone
                         show = cards.random(game);
                         await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
                         {
-                            game.logger.log("揭示了{card:" + show.define.id + "}");
+                            game.logger.logTrace("揭示了{card:" + show.define.id + "}");
                         });
                         return show;
                     }
@@ -659,7 +659,7 @@ namespace TouhouHeartstone
                     {
                         await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, async arg =>
                         {
-                            game.logger.log("揭示了null");
+                            game.logger.logTrace("揭示了null");
                         });
                         return show;
                     }
@@ -669,7 +669,7 @@ namespace TouhouHeartstone
                         show = cards.Where(c => c.isSpell()).random(game);
                         await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
                         {
-                            game.logger.log("揭示了{card:" + show.define.id + "}");
+                            game.logger.logTrace("揭示了{card:" + show.define.id + "}");
                         });
                         return show;
 
@@ -678,7 +678,7 @@ namespace TouhouHeartstone
                     {
                         await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, async arg =>
                         {
-                            game.logger.log("揭示了null");
+                            game.logger.logTrace("揭示了null");
                         });
                         return show;
                     }
@@ -688,7 +688,7 @@ namespace TouhouHeartstone
                         show = cards.Where(c => c.isServant()).random(game);
                         await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
                         {
-                            game.logger.log("揭示了{card:" + show.define.id + "}");
+                            game.logger.logTrace("揭示了{card:" + show.define.id + "}");
                         });
                         return show;
 
@@ -697,7 +697,7 @@ namespace TouhouHeartstone
                     {
                         await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, async arg =>
                         {
-                            game.logger.log("揭示了null");
+                            game.logger.logTrace("揭示了null");
                         });
                         return show;
                     }
@@ -707,7 +707,7 @@ namespace TouhouHeartstone
                         show = cards.Where(c => c.isItem()).random(game);
                         await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
                         {
-                            game.logger.log("揭示了{card:" + show.define.id + "}");
+                            game.logger.logTrace("揭示了{card:" + show.define.id + "}");
                         });
                         return show;
 
@@ -716,12 +716,12 @@ namespace TouhouHeartstone
                     {
                         await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, async arg =>
                         {
-                            game.logger.log("揭示了null");
+                            game.logger.logTrace("揭示了null");
                         });
                         return show;
                     }
                 default:
-                    game.logger.log("揭示失败：类别不对");
+                    game.logger.logTrace("揭示失败：类别不对");
                     return null;
 
 

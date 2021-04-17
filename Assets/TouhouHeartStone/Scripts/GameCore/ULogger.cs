@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UberLogger;
 
 namespace TouhouHeartstone
 {
@@ -18,10 +19,12 @@ namespace TouhouHeartstone
 
         public List<string> blackList { get; set; } = new List<string>();
 
+        [StackTraceIgnore]
         public void log(string msg)
         {
             log("Debug", msg);
         }
+        [StackTraceIgnore]
         public void log(string channel, string msg)
         {
             if (!enable)
@@ -38,11 +41,13 @@ namespace TouhouHeartstone
                 UberDebug.LogChannel(channel, (string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
         }
 
+        [StackTraceIgnore]
         public void logWarn(string msg)
         {
             logWarn(null, msg);
         }
 
+        [StackTraceIgnore]
         public void logWarn(string channel, string msg)
         {
             if (!enable)
@@ -55,11 +60,13 @@ namespace TouhouHeartstone
                 UberDebug.LogWarningChannel(channel, (string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
         }
 
+        [StackTraceIgnore]
         public void logError(string msg)
         {
             logError(null, msg);
         }
 
+        [StackTraceIgnore]
         public void logError(string channel, string msg)
         {
             if (!enable)
@@ -72,11 +79,13 @@ namespace TouhouHeartstone
                 UberDebug.LogErrorChannel(channel, (string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
         }
 
+        [StackTraceIgnore]
         public void logTrace(string msg)
         {
             logTrace(null, msg);
         }
 
+        [StackTraceIgnore]
         public void logTrace(string channel, string msg)
         {
             if (!enable)
