@@ -1024,7 +1024,7 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0} {1}是卡")]
-            const string TEMPLATE = "{0}攻击{1}";
+            const string TEMPLATE = "{0} 攻击 {1}";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return TEMPLATE;
@@ -1198,9 +1198,9 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是卡，{1}是伤害值")]
-            const string TEMPLATE_RECV = "{0}受到{1}点伤害";
+            const string TEMPLATE_RECV = "{0} 受到 {1} 点伤害";
             [MukioI18n.TranslateMsg("{0}{1}是卡，{2}是伤害值")]
-            const string TEMPLATE_ATK = "{0}对{1}造成{2}点伤害";
+            const string TEMPLATE_ATK = "{0} 对 {1} 造成 {2} 点伤害";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 if (infoDic.Count == 1)
@@ -1322,7 +1322,7 @@ namespace TouhouHeartstone
                 return string.Join("，", infoDic.Select(p => "治疗" + p.Key.getFormatString() + p.Value.healedValue + "点生命值"));
             }
             [MukioI18n.TranslateMsg("{0}是卡，{1}是治疗量")]
-            const string TEMPLATE = "治疗{0}{1}点生命值";
+            const string TEMPLATE = "治疗 {0} {1} 点生命值";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 if (infoDic.Count() == 1)
@@ -1433,7 +1433,7 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是卡牌列表")]
-            const string TEMPLATE = "{0}死亡";
+            const string TEMPLATE = "{0} 死亡";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return TEMPLATE;

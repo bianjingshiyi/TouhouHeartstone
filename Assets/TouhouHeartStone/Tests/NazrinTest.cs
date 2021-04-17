@@ -73,21 +73,21 @@ namespace Tests
             {
                 //这方法居然不能推进进度？？？
 
-                //you.createToken(game, game.getDefine<DefaultServant>());
-                //you.getField()[0].setDead(game, true);
-                //game.updateDeath();
-
-                if (!you.getHead().Any(c => c.define is DefaultServant))
-                {
-                    you.addCardToHand<DefaultServant>(game);
-                }
-                if (you.getGem() == 0)
-                {
-                    you.setGem(game, you.getMaxGem());
-                }
-                you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+                you.createToken(game, game.getDefine<DefaultServant>());
                 you.getField()[0].setDead(game, true);
                 game.updateDeath();
+
+                //if (!you.getHead().Any(c => c.define is DefaultServant))
+                //{
+                //    you.addCardToHand<DefaultServant>(game);
+                //}
+                //if (you.getGem() == 0)
+                //{
+                //    you.setGem(game, you.getMaxGem());
+                //}
+                //you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+                //you.getField()[0].setDead(game, true);
+                //game.updateDeath();
 
             }
 
@@ -139,6 +139,8 @@ namespace Tests
             //宝藏测试
             game.skipUntilCanUse<Nazrin_06>(you);
             you.cmdUse(game, you.getHand().getCard<Nazrin_06>());
+
+            
 
             DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
             int cardId = discoverRequest.cardIdArray[0];

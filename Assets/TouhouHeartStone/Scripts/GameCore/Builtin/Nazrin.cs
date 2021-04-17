@@ -168,7 +168,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x006;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 0;
+        public override int cost { get; set; } = 5;
         public override bool isToken { get; set; } = true;
 
         public override IEffect[] effects { get; set; } = new IEffect[]
