@@ -428,7 +428,7 @@ namespace TouhouHeartstone.Builtin
             for (int i = 0; i < 3; i++)
             {
                 await card.getOwner().discover(game,
-                    game.getDefines().Where(define => define is ServantCardDefine s && !s.isToken));
+                    game.getDefinesOf(card.getOwner().getMaster().id, CATEGORY.CHARACTER_NEUTRAL).Where(define => define is ServantCardDefine s && !s.isToken));
             }
             
             // List<Card> servantCards = new List<Card>();
