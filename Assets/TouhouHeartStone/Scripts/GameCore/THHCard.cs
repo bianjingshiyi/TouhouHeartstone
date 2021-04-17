@@ -1057,6 +1057,10 @@ namespace TouhouHeartstone
         }
         public static Task<DamageEventArg> damage(CardEngine game, Dictionary<Card, DamageEventArg.Info> damageInfoDic)
         {
+            if (!damageInfoDic.Any())
+            {
+                return default;
+            }
             return game.triggers.doEvent(new DamageEventArg() { infoDic = damageInfoDic }, async arg =>
             {
                 damageInfoDic = arg.infoDic;
