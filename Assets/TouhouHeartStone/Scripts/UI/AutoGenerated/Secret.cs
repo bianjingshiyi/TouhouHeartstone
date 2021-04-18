@@ -11,49 +11,57 @@
 namespace UI
 {
     using System;
-    using UnityEngine;
+    using UI;
+    using BJSYGameCore;
     using UnityEngine.UI;
     using BJSYGameCore.UI;
-    
-    public partial class Secret : UIObject
+
+    public partial class Secret:UIObject
     {
-        protected override void Awake()
+        public void autoInit()
         {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
+            _Card = transform.Find(PATH_CARD).GetComponent<Card>();
+            _image = transform.Find(PATH_IMAGE).GetComponent<Image>();
+            _missionImage = transform.Find(PATH_MISSIONIMAGE).GetComponent<Image>();
         }
-        public void autoBind()
-        {
-            this._image = this.transform.Find("image").GetComponent<Image>();
-            this._Card = this.transform.Find("Card").GetComponent<Card>();
-        }
-        [SerializeField()]
-        private Image _image;
-        public Image image
-        {
-            get
-            {
-                if ((this._image == null))
-                {
-                    this._image = this.transform.Find("image").GetComponent<Image>();
-                }
-                return this._image;
-            }
-        }
-        [SerializeField()]
-        private Card _Card;
+        public Card _Card;
+        public const string PATH_CARD = "Card";
         public Card Card
         {
             get
             {
-                if ((this._Card == null))
+                if ((_Card == null))
                 {
-                    this._Card = this.transform.Find("Card").GetComponent<Card>();
+                    _Card = transform.Find(PATH_CARD).GetComponent<Card>();
                 }
-                return this._Card;
+                return _Card;
             }
         }
-        partial void onAwake();
+        public Image _image;
+        public const string PATH_IMAGE = "Sercet";
+        public Image Image
+        {
+            get
+            {
+                if ((_image == null))
+                {
+                    _image = transform.Find(PATH_IMAGE).GetComponent<Image>();
+                }
+                return _image;
+            }
+        }
+        public Image _missionImage;
+        public const string PATH_MISSIONIMAGE = "Mission";
+        public Image MissionImage
+        {
+            get
+            {
+                if ((_missionImage == null))
+                {
+                    _missionImage = transform.Find(PATH_MISSIONIMAGE).GetComponent<Image>();
+                }
+                return _missionImage;
+            }
+        }
     }
 }

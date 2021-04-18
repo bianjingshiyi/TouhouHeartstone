@@ -300,6 +300,11 @@ namespace Game
             {
                 secret = table.createSecret(card);
             }
+            if (card.define.hasKeyword(KEYWORD.MISSION))
+            {
+                secret.Image.gameObject.SetActive(false);
+                secret.MissionImage.gameObject.SetActive(true);
+            }
             if (!SimpleAnimHelper.update(table, ref _anim, secret.onEnter, secret.animator, time))
                 return false;
             return true;
