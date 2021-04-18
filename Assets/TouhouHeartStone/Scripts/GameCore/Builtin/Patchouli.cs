@@ -876,16 +876,15 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new NoTargetEffect(async (g1,c1)=>
+            new NoTargetEffect(async (game,card)=>
             {
-                Card card = c1.getOwner().getHand().Where(c=>c.isSpell()&&c.getCost(g1)>0).random(g1);
-                if(card!=null)
-                    await card.addBuff(g1, new GeneratedBuff(ID, new CostModifier(-2)));
-                c1.getOwner().setProp(nameof(Asthma),c1.getOwner().getProp<int>(nameof(Asthma))+1);
-                Card asthma = g1.createCard<Asthma>();
-                await asthma.setProp(g1,"damage",c1.getOwner().getProp<int>(nameof(Asthma)));
-                await c1.getOwner().shuffleCardToDeck(g1, asthma);
-                await c1.getOwner().addCardToHand<MultiCast>(g1);
+                Card target = card.getOwner().getHand().Where(c=>c.isSpell()&&c.getCost(game)>0).random(game);
+                if(target!=null)
+                    await target.addBuff(game, new GeneratedBuff(ID, new CostModifier(-2)));
+                card.getOwner().setProp(nameof(Asthma),card.getOwner().getProp<int>(nameof(Asthma))+1);
+                Card asthma = await card.owner.shuffleCardToDeck<Asthma>(game);
+                await asthma.setProp(game,"damage",card.getOwner().getProp<int>(nameof(Asthma)));
+                await card.getOwner().addCardToHand<MultiCast>(game);
             })
         };
     }

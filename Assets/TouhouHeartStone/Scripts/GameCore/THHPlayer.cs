@@ -555,14 +555,15 @@ namespace TouhouHeartstone
             }
             return result;
         }
-        public static Task shuffleCardToDeck(this Player player,CardEngine game, CardDefine define)
+        public static async Task<Card> shuffleCardToDeck(this Player player,CardEngine game, CardDefine define)
         {
             Card card = game.createCard(define);
-            return player.shuffleCardToDeck(game, card);
+            await player.getDeck().insert(game, card, game.randomInt(0, player.getDeck().count));
+            return card;
         }
-        public static Task shuffleCardToDeck(this Player player,CardEngine game, Card card)
+        public static Task<Card> shuffleCardToDeck<T>(this Player player,CardEngine game) where T : CardDefine
         {
-            return player.getDeck().insert(game, card, game.randomInt(0, player.getDeck().count));
+            return shuffleCardToDeck(player, game, game.getDefine<T>());
         }
         public static Task<Card> addCardToHand<T>(this Player player, CardEngine game) where T : CardDefine
         {
@@ -580,21 +581,21 @@ namespace TouhouHeartstone
         {
             return player.addCardToHand(game, pool.random(game));
         }
-        public static Task randomDiscard(this Player player,CardEngine game, int count = 1, Func<Card, bool> filter = null)
+        public static Task<HearthStoneRule.DiscardEventArg> randomDiscard(this Player player,CardEngine game, int count = 1, Func<Card, bool> filter = null)
         {
             var cards = filter == null ? player.getHand() : player.getHand().Where(c => filter(c));
             if (cards.Count() < 1)
-                return Task.CompletedTask;
+                return default;
             else if (cards.Count() <= count)
                 return player.discard(game, cards);
             else
                 return player.discard(game, cards.randomTake(game, count));
         }
-        public static Task discard(this Player player,CardEngine game, Card card)
+        public static Task<HearthStoneRule.DiscardEventArg> discard(this Player player,CardEngine game, Card card)
         {
             return player.discard(game, new Card[] { card });
         }
-        public static Task discard(this Player player,CardEngine game, IEnumerable<Card> cards)
+        public static Task<HearthStoneRule.DiscardEventArg> discard(this Player player,CardEngine game, IEnumerable<Card> cards)
         {
             return game.triggers.doEvent(new HearthStoneRule.DiscardEventArg() { player = player, cards = cards.ToArray() }, arg =>
             {
@@ -638,7 +639,6 @@ namespace TouhouHeartstone
         /// <param name="cards">被展示卡的来源</param>
         /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
         /// <returns></returns>
-
         public static async Task<Card> Reveal(this Player player,CardEngine game, Pile cards, int define = 0)
         {
             Card show = null;
