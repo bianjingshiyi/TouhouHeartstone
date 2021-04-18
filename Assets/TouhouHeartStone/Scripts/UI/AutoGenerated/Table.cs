@@ -581,7 +581,7 @@ namespace UI
             }
         }
         public GameObject _Waiting;
-        public const string PATH_Waiting = "Waiting";
+        public const string PATH_Waiting = "Fields/Waiting";
         public GameObject Waiting
         {
             get
@@ -594,7 +594,7 @@ namespace UI
             }
         }
         public RectTransform _WaitingRectTransform;
-        public const string PATH_WaitingRectTransform = "Waiting";
+        public const string PATH_WaitingRectTransform = "Fields/Waiting";
         public RectTransform WaitingRectTransform
         {
             get
@@ -607,7 +607,7 @@ namespace UI
             }
         }
         public Image _WaitingImage;
-        public const string PATH_WaitingImage = "Waiting";
+        public const string PATH_WaitingImage = "Fields/Waiting";
         public Image WaitingImage
         {
             get
