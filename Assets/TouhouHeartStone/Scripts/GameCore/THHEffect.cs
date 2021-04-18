@@ -690,30 +690,32 @@ namespace TouhouHeartstone
     {
         public RemoveBuffAfterTimeUp(string pile, int buffId, int time) : base(pile, null, null, (game, card, arg) =>
         {
+            string buffName = buffId.ToString().Concat("_timer").ToString();
             card.getOwner().setProp(nameof(card), time);
-            if (card.getOwner().getProp<int>(nameof(card)) == 0)
-            {
-                return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-            }
-            else
-            {
-                card.getOwner().setProp<int>(nameof(card), card.getOwner().getProp<int>(nameof(card)) - 1);
-                return Task.CompletedTask;
-            }
+             if (card.getOwner().getProp<int>(buffName) == 0)
+             {
+                 return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+             }
+             else
+             {
+                card.getOwner().setProp<int>(buffName, card.getOwner().getProp<int>(buffName) -1);
+                 return Task.CompletedTask;
+             }
 
         })
         {
         }
         public RemoveBuffAfterTimeUp(string pile, CheckConditionDelegate onCheckCondition, int buffId, int time) : base(pile, onCheckCondition, null, (game, card, arg) =>
         {
-            card.getOwner().setProp(nameof(card), time);
-            if (card.getOwner().getProp<int>(nameof(card)) == 0)
+            string buffName = buffId.ToString().Concat("_timer").ToString();
+            card.getOwner().setProp(buffName, time);
+            if (card.getOwner().getProp<int>(buffName) == 0)
             {
                 return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
             }
             else
             {
-                card.getOwner().setProp<int>(nameof(card), card.getOwner().getProp<int>(nameof(card)) - 1);
+                card.getOwner().setProp<int>(buffName, card.getOwner().getProp<int>(buffName) - 1);
                 return Task.CompletedTask;
             }
 
