@@ -708,14 +708,20 @@ namespace TouhouHeartstone
         public RemoveBuffAfterTimeUp(string pile, CheckConditionDelegate onCheckCondition, int buffId, int time) : base(pile, onCheckCondition, null, (game, card, arg) =>
         {
             string buffName = buffId.ToString().Concat("_timer").ToString();
-            card.getOwner().setProp(buffName, time);
+            //string buffName = "TestBuff";
             if (card.getOwner().getProp<int>(buffName) == 0)
             {
+                card.getOwner().setProp(buffName, time+1);
+            }
+           
+            if (card.getOwner().getProp<int>(buffName) == 1)
+            {
+                card.getOwner().setProp(buffName, -1);
                 return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
             }
             else
             {
-                card.getOwner().setProp<int>(buffName, card.getOwner().getProp<int>(buffName) - 1);
+                card.getOwner().setProp<int>(buffName, card.getOwner().getProp<int>(buffName) - 1);               
                 return Task.CompletedTask;
             }
 

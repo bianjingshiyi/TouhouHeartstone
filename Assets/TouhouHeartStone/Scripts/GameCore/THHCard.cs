@@ -576,7 +576,7 @@ namespace TouhouHeartstone
             }
 
             [MukioI18n.TranslateMsg("{0}是卡牌列表")]
-            const string TEMPLATE = "{0}被封印";
+            const string TEMPLATE = "{0} 被封印";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 return TEMPLATE;
@@ -648,11 +648,11 @@ namespace TouhouHeartstone
         [TranslateMsg]
         const string ONLY_SKILL_OR_HAND = "你只能使用技能或手牌";
         [TranslateMsg]
-        const string NOT_ENOUGH_SPIRIT = "你没有足够的灵力值";
+        const string NOT_ENOUGH_SPIRIT = "灵力值不足";
         [TranslateMsg]
-        const string SERVANT_FIELD_FULL = "你无法将更多的仆从置入战场";
+        const string SERVANT_FIELD_FULL = "位置已满";
         [TranslateMsg]
-        const string NO_SPACE_FOR_TRAP = "你的脑袋满头是包";
+        const string NO_SPACE_FOR_TRAP = "你满头是包";
         [TranslateMsg]
         const string DUPLICATED_TRAP = "你已挂载了相同的陷阱";
         [TranslateMsg]

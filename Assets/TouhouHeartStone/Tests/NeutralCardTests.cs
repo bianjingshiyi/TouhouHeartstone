@@ -8,6 +8,7 @@ using TouhouCardEngine;
 using TouhouHeartstone.Builtin;
 using System.Collections.Generic;
 using UnityEngine.XR;
+using UnityEngine;
 
 namespace Tests
 {
@@ -835,14 +836,37 @@ namespace Tests
             int cardId2 = discoverRequest2.cardIdArray[0];
             you.cmdDiscover(game, cardId2);
 
-            you.cmdTurnEnd(game);
-            oppo.cmdTurnEnd(game);
+            //Debug.Log("you 倒计时： " + you.getProp<int>("TestBuff"));
+            //Debug.Log("oppo 倒计时： " + oppo.getProp<int>("TestBuff"));
 
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
 
+            //Debug.Log("you 倒计时： " + you.getProp<int>("TestBuff"));
+            //Debug.Log("oppo 倒计时： " + oppo.getProp<int>("TestBuff"));
+
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
+
+            //Debug.Log("you 倒计时： " + you.getProp<int>("TestBuff"));
+            //Debug.Log("oppo 倒计时： " + oppo.getProp<int>("TestBuff"));
+
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+
+            //Debug.Log("you 倒计时： " + you.getProp<int>("TestBuff"));
+            //Debug.Log("oppo 倒计时： " + oppo.getProp<int>("TestBuff"));
+
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+
+            //Debug.Log("you 倒计时： " + you.getProp<int>("TestBuff"));
+            //Debug.Log("oppo 倒计时： " + oppo.getProp<int>("TestBuff"));
+
+            var arg = you.draw(game);
+            if(!arg.IsCanceled)
+                Debug.Log("永夜完结！");
+
             game.Dispose();
         }
 
