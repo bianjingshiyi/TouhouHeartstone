@@ -66,6 +66,8 @@ namespace Game
         [CardDefineID]
         [SerializeField]
         int[] _deck = new int[31];
+
+        [SerializeField] bool _dummyAI = true;
         public int[] deck
         {
             get { return _deck; }
@@ -126,7 +128,11 @@ namespace Game
                     displayGameUI(game, localPlayer);
                 }
                 else
-                    new AI(game, player); //AI玩家用AI
+                {
+#if UNITY_EDITOR
+                    new AI(game, player, dummy: _dummyAI); //AI玩家用AI
+#endif
+                }
             }
             mode = GameMode.local;
             //开始游戏
@@ -206,7 +212,7 @@ namespace Game
 // #if UNITY_EDITOR
 //                 //检查卡组合法性
 //                 if (_useTestDeck)
-//                     deck = _testDeck.toIdArray();
+                     // deck = _testDeck.toIdArray();
 // #endif
 //                 THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getDefine(deck[0]) as MasterCardDefine,
 //                     deck.Skip(1).Select(id => game.getDefine(id)));
@@ -219,12 +225,18 @@ namespace Game
                 logger = new ULogger()
             };
             game.answers.game = game;
+#if UNITY_EDITOR
+            if (_useTestDeck)
+            {
+                deck = _testDeck.toIdArray();
+                foreach (var player in playerList)
+                {
+                    player.setDeck(deck);
+                }
+            }
+#endif
             game.init(new HearthStoneRule(getManager<CardManager>().GetCardDefines()),
                 option, playerList.ToArray());
-// #if UNITY_EDITOR
-//             if (_useTestDeck)
-//                 deck = _testDeck.toIdArray();
-// #endif
             return game;
         }
         Task runGame(CardEngine game, bool recordReplay = true)

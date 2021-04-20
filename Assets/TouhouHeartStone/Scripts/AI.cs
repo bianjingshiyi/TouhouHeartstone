@@ -15,22 +15,73 @@ namespace Game
         CardEngine game { get; }
         Player player { get; }
 
-        public AI(CardEngine game, Player player, bool autoRun = true)
+        private bool dummy { get; }
+
+        public AI(CardEngine game, Player player, bool autoRun = true, bool dummy = false)
         {
             this.game = game;
             this.player = player;
+            this.dummy = dummy;
             if (autoRun)
                 run(game);
         }
 
         public void run(CardEngine game)
         {
-            game.answers.onRequest += Answers_onRequest;
+            if (dummy)
+            {
+                game.answers.onRequest += Answers_onRequest_dummy;
+            }
+            else
+            {
+                game.answers.onRequest += Answers_onRequest;
+            }
         }
 
         public void stop(CardEngine game)
         {
-            game.answers.onRequest -= Answers_onRequest;
+            if (dummy)
+            {
+                game.answers.onRequest -= Answers_onRequest_dummy;
+            }
+            else
+            {
+                game.answers.onRequest -= Answers_onRequest;
+            }
+        }
+        
+        private async void Answers_onRequest_dummy(IRequest request)
+        {
+            if (game.answers == null)
+                return;
+            if (!request.playersId.Contains(player.id))
+            {
+                return;
+            }
+            await Task.Delay(1000);
+            switch (request)
+            {
+                case InitReplaceRequest _:
+                    IResponse resp = new InitReplaceResponse()
+                    {
+                        cardsId = new int[0]
+                    };
+                    game.logPlayerAction(player.id, resp);
+                    _ = game.answers.answer(player.id, resp);
+                    break;
+                case FreeActRequest _:
+                    resp = new TurnEndResponse();
+                    _ = game.answers.answer(player.id, resp);
+                    break;
+                case DiscoverRequest discover:
+                    resp = discover.getDefaultResponse(game, player.id);
+                    game.logPlayerAction(player.id, resp);
+                    _ = game.answers.answer(player.id, resp);
+                    break;
+                default:
+                    UberDebug.LogChannel("AI", "AI未处理的询问：" + request);
+                    break;
+            }
         }
 
         private async void Answers_onRequest(IRequest request)
