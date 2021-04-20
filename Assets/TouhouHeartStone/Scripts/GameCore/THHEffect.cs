@@ -686,28 +686,17 @@ namespace TouhouHeartstone
         }
     }
 
+    
     public class RemoveBuffAfterTimeUp<T> : THHEffectAfter<T> where T : IEventArg
     {
-        public RemoveBuffAfterTimeUp(string pile, int buffId, int time) : base(pile, null, null, (game, card, arg) =>
-        {
-            string buffName = buffId.ToString().Concat("_timer").ToString();
-            card.getOwner().setProp(nameof(card), time);
-             if (card.getOwner().getProp<int>(buffName) == 0)
-             {
-                 return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-             }
-             else
-             {
-                card.getOwner().setProp<int>(buffName, card.getOwner().getProp<int>(buffName) -1);
-                 return Task.CompletedTask;
-             }
-
-        })
-        {
-        }
+        
         public RemoveBuffAfterTimeUp(string pile, CheckConditionDelegate onCheckCondition, int buffId, int time) : base(pile, onCheckCondition, null, (game, card, arg) =>
         {
-            string buffName = buffId.ToString().Concat("_timer").ToString();
+            //计数器的计数器，用来区分同类型不同buff的
+            string buffCount =buffId.ToString();
+            //这名字我已经不忍直视了。。
+            string buffName ="ID_" + buffId.ToString().Concat("_" + card.getOwner().getProp<int>(buffCount).ToString().Concat("_timer").ToString()).ToString();
+            card.getOwner().setProp<int>(buffCount, card.getOwner().getProp<int>(buffCount) + 1);
             //string buffName = "TestBuff";
             if (card.getOwner().getProp<int>(buffName) == 0)
             {

@@ -805,23 +805,23 @@ namespace Tests
         public void Kaguya_NTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(HouraisanKaguya_N.ID, 2)
+                new KeyValuePair<int, int>(HouraisanKaguya_N.ID, 5)
             );
             //清空手牌
-            game.skipUntilHasGem(you, 10);
-            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
-            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
-            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
-            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
-            you.cmdUse(game, you.getHand().getCard<DefaultServant>());
-            you.cmdTurnEnd(game);
+            //game.skipUntilHasGem(you, 10);
+            //you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            //you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            //you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            //you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            //you.cmdUse(game, you.getHand().getCard<DefaultServant>());
+            //you.cmdTurnEnd(game);
 
-            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
-            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
-            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
-            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
-            oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
-            oppo.cmdTurnEnd(game);
+            //oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
+            //oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
+            //oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
+            //oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
+            //oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>());
+            //oppo.cmdTurnEnd(game);
 
             game.skipUntilCanUse<HouraisanKaguya_N>(you);
             you.cmdUse(game, you.getHand().getCard<HouraisanKaguya_N>());
@@ -866,6 +866,42 @@ namespace Tests
             var arg = you.draw(game);
             if(!arg.IsCanceled)
                 Debug.Log("永夜完结！");
+
+            you.cmdUse(game, you.getHand().getCard<HouraisanKaguya_N>());
+            DiscoverRequest discoverRequest3 = game.answers.getRequest<DiscoverRequest>(you.id);
+            int cardId3 = discoverRequest3.cardIdArray[0];
+            you.cmdDiscover(game, cardId3);
+
+            //Debug.Log("you 倒计时： " + you.getProp<int>("TestBuff"));
+            //Debug.Log("oppo 倒计时： " + oppo.getProp<int>("TestBuff"));
+
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+
+            //Debug.Log("you 倒计时： " + you.getProp<int>("TestBuff"));
+            //Debug.Log("oppo 倒计时： " + oppo.getProp<int>("TestBuff"));
+
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+
+            //Debug.Log("you 倒计时： " + you.getProp<int>("TestBuff"));
+            //Debug.Log("oppo 倒计时： " + oppo.getProp<int>("TestBuff"));
+
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+
+            //Debug.Log("you 倒计时： " + you.getProp<int>("TestBuff"));
+            //Debug.Log("oppo 倒计时： " + oppo.getProp<int>("TestBuff"));
+
+            you.cmdTurnEnd(game);
+            oppo.cmdTurnEnd(game);
+
+            //Debug.Log("you 倒计时： " + you.getProp<int>("TestBuff"));
+            //Debug.Log("oppo 倒计时： " + oppo.getProp<int>("TestBuff"));
+
+            var arg2 = you.draw(game);
+            if (!arg2.IsCanceled)
+                Debug.Log("永夜真的完结！");
 
             game.Dispose();
         }
