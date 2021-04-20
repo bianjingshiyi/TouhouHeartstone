@@ -26,6 +26,27 @@ namespace UI
             }
             return false;
         }
+
+        public bool UpdateSercret()
+        {
+            for(int Start=0;Start<getPArray().Length;Start++)
+            {
+                if (getPArray()[Start].childCount==0)
+                {
+                    for(int end = Start+1; end < getPArray().Length; end++)
+                    {
+                        if (getPArray()[end].childCount > 0)
+                        {
+                            getPArray()[end].GetChild(0).SetParent(getPArray()[Start],false);
+                            break;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+
         public void clearSecret()
         {
             foreach (var p in getPArray())

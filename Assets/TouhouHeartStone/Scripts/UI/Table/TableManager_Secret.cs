@@ -26,7 +26,9 @@ namespace Game
             if (cardSecretDic.TryGetValue(card, out var secret))
             {
                 cardSecretDic.Remove(card);
-                Destroy(secret.gameObject);
+                DestroyImmediate(secret.gameObject);
+                ui.EnemyMaster.Head.UpdateSercret();
+                ui.SelfMaster.Head.UpdateSercret();
                 return true;
             }
             return false;
