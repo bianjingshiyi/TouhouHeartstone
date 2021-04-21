@@ -67,7 +67,7 @@ namespace Game
         [SerializeField]
         int[] _deck = new int[31];
 
-        [SerializeField] bool _dummyAI = true;
+        [SerializeField] bool _dummyAI = false;
         public int[] deck
         {
             get { return _deck; }
@@ -131,6 +131,8 @@ namespace Game
                 {
 #if UNITY_EDITOR
                     new AI(game, player, dummy: _dummyAI); //AI玩家用AI
+#else
+                    new AI(game, player);
 #endif
                 }
             }
