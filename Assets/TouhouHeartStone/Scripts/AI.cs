@@ -28,26 +28,12 @@ namespace Game
 
         public void run(CardEngine game)
         {
-            if (dummy)
-            {
-                game.answers.onRequest += Answers_onRequest_dummy;
-            }
-            else
-            {
-                game.answers.onRequest += Answers_onRequest;
-            }
+            game.answers.onRequest += Answers_onRequest;
         }
 
         public void stop(CardEngine game)
         {
-            if (dummy)
-            {
-                game.answers.onRequest -= Answers_onRequest_dummy;
-            }
-            else
-            {
-                game.answers.onRequest -= Answers_onRequest;
-            }
+            game.answers.onRequest -= Answers_onRequest;
         }
         
         private async void Answers_onRequest_dummy(IRequest request)
@@ -104,7 +90,7 @@ namespace Game
                     _ = game.answers.answer(player.id, resp);
                     break;
                 case FreeActRequest _:
-                    resp = calcNextAction(game, player);
+                    resp = dummy ? new TurnEndResponse() : calcNextAction(game, player);
                     game.logPlayerAction(player.id, resp);
                     _ = game.answers.answer(player.id, resp);
                     break;

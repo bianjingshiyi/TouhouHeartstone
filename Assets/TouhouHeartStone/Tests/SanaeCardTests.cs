@@ -95,13 +95,13 @@ namespace Tests
             Assert.AreEqual(18, oppo.getMaster().getCurrentLife(game));
             you.cmdUse<StarRitual>(game);
             Assert.AreEqual(22,oppo.getMaster().getCurrentLife(game));
-            game.turnEnd(you);
+            you.cmdTurnEnd(game);
             game.skipUntilHasGem(you, 5);
             you.getMaster().damage(game, null, 20);
             Assert.AreEqual(10, you.getMaster().getCurrentLife(game));
             you.cmdUse(game, you.getHand().getCard<GrayThaumaturgy>(), targets: you.getMaster());
             Assert.AreEqual(18, you.getMaster().getCurrentLife(game));
-            game.turnEnd(you);
+            you.cmdTurnEnd(game);
             game.skipUntilYourTurn(you);
             you.cmdUse<StarRitual>(game);
             Assert.AreEqual(18, you.getMaster().getCurrentLife(game));

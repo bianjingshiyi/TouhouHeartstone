@@ -1418,9 +1418,9 @@ namespace TouhouHeartstone
             if (remainPlayerList.Count != game.players.Length)
             {
                 if (remainPlayerList.Count > 0)
-                    await game.gameEnd(remainPlayerList.ToArray());
+                    await game.getRule().gameEnd(game, remainPlayerList.ToArray()); //TODO: 把这个方法移动到HearthStoneRule之后记得把getRule删了
                 else
-                    await game.gameEnd(new Player[0]);
+                    await game.getRule().gameEnd(game, new Player[0]);//TODO: 把这个方法移动到HearthStoneRule之后记得把getRule删了
             }
             return eventArg;
         }
