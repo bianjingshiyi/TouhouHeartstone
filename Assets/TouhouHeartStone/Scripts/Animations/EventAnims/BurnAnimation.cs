@@ -10,6 +10,10 @@ namespace Game
         Card _card;
         public override bool update(TableManager table, HearthStoneRule.BurnEventArg eventArg, float time)
         {
+            if (eventArg.isCanceled)
+            {
+                return true;
+            }
             if (!_timer.isStarted)
             {
                 if (eventArg.player == table.player)
