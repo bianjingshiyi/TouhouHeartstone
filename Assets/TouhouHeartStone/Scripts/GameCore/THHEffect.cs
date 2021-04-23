@@ -686,36 +686,71 @@ namespace TouhouHeartstone
         }
     }
 
-    
+    /// <summary>
+    /// 在事件发生time次后，移除这个效果对应卡牌的对应于buffID的buff(如果buff存在的话
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class RemoveBuffAfterTimeUp<T> : THHEffectAfter<T> where T : IEventArg
     {
-        
-        public RemoveBuffAfterTimeUp(string pile, CheckConditionDelegate onCheckCondition, int buffId, int time) : base(pile, onCheckCondition, null, (game, card, arg) =>
+        private int time { get; }
+        private int buffID { get; }
+        public override async Task onEnable(IGame game, ICard card, IBuff buff)
         {
-            //计数器的计数器，用来区分同类型不同buff的
-            string buffCount =buffId.ToString();
-            //这名字我已经不忍直视了。。
-            string buffName ="ID_" + buffId.ToString().Concat("_" + card.getOwner().getProp<int>(buffCount).ToString().Concat("_timer").ToString()).ToString();
-            card.getOwner().setProp<int>(buffCount, card.getOwner().getProp<int>(buffCount) + 1);
-            //string buffName = "TestBuff";
-            if (card.getOwner().getProp<int>(buffName) == 0)
+            string timerName = nameof(RemoveBuffAfterTimeUp<T>) + " buffID=<" + buffID + ">" + " remaining times";
+            if ((card as Card).getOwner().getProp<int>(timerName) != 0)
             {
-                card.getOwner().setProp(buffName, time+1);
-            }
-           
-            if (card.getOwner().getProp<int>(buffName) == 1)
-            {
-                card.getOwner().setProp(buffName, -1);
-                return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+                //当有一个对应相同buffID的效果正在运行时，仅重置timer，取最大值，不再次注册触发器
+                (card as Card).getOwner().setProp(timerName, Math.Max(time, (card as Card).getOwner().getProp<int>(timerName)));
             }
             else
             {
-                card.getOwner().setProp<int>(buffName, card.getOwner().getProp<int>(buffName) - 1);               
-                return Task.CompletedTask;
+                (card as Card).getOwner().setProp(timerName, time);
+                base.onEnable(game, card, buff);
             }
+        }
 
+        public override Task onDisable(IGame game, ICard card, IBuff buff)
+        {
+            string timerName = nameof(RemoveBuffAfterTimeUp<T>) + " buffID=<" + buffID + ">" + " remaining times";
+            (card as Card).getOwner().setProp(timerName, 0);
+            return base.onDisable(game, card, buff);
+        }
+
+        public RemoveBuffAfterTimeUp(string pile, CheckConditionDelegate onCheckCondition, int buffId, int time) : base(pile, onCheckCondition, null, (game, card, arg) =>
+        {
+            string timerName = nameof(RemoveBuffAfterTimeUp<T>) + " buffID=<" + buffId + ">" + " remaining times";
+            card.getOwner().setProp<int>(timerName, card.getOwner().getProp<int>(timerName) - 1);
+            if (card.getOwner().getProp<int>(timerName) == 0)
+            {
+                return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+            }
+            return Task.CompletedTask;
+
+            // //计数器的计数器，用来区分同类型不同buff的
+            // string buffCount =buffId.ToString();
+            // //这名字我已经不忍直视了。。
+            // string buffName ="ID_" + buffId.ToString().Concat("_" + card.getOwner().getProp<int>(buffCount).ToString().Concat("_timer").ToString()).ToString();
+            // card.getOwner().setProp<int>(buffCount, card.getOwner().getProp<int>(buffCount) + 1);
+            // //string buffName = "TestBuff";
+            // if (card.getOwner().getProp<int>(buffName) == 0)
+            // {
+            //     card.getOwner().setProp(buffName, time+1);
+            // }
+            //
+            // if (card.getOwner().getProp<int>(buffName) == 1)
+            // {
+            //     card.getOwner().setProp(buffName, -1);
+            //     return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+            // }
+            // else
+            // {
+            //     card.getOwner().setProp<int>(buffName, card.getOwner().getProp<int>(buffName) - 1);               
+            //     return Task.CompletedTask;
+            // }
         })
         {
+            this.time = time;
+            this.buffID = buffId;
         }
     }
     /// <summary>
