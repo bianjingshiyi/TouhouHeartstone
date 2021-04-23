@@ -44,14 +44,11 @@ namespace TouhouHeartstone
         {
             return card.setProp(game, nameof(ServantCardDefine.cost), value);
         }
-        public static int getCost(this CardDefine card)
-        {
-            return card.getProp<int>(nameof(ServantCardDefine.cost));
-        }
+        
         public static int getAttack(this Card card, IGame game)
         {
             CardEngine tgame = (CardEngine)game;
-            int result = card.getProp<int>(game, PROPERTY.ATTACK);
+            int result = card.getProp<int>(game, DEFINE.ATTACK);
             if (card.getOwner() == tgame.getCurrentPlayer())
             {
                 if (card.define is MasterCardDefine)
@@ -64,26 +61,16 @@ namespace TouhouHeartstone
                 return 0;
             return result;
         }
-        public static int getAttack(this CardDefine card)
-        {
-            int result = card.getProp<int>(PROPERTY.ATTACK);
-            if (result < 0)
-                return 0;
-            return result;
-
-        }
+        
         public static Task<IPropChangeEventArg> setAttack(this Card card, IGame game, int value)
         {
-            return card.setProp(game, PROPERTY.ATTACK, value);
+            return card.setProp(game, DEFINE.ATTACK, value);
         }
         public static int getLife(this Card card, IGame game)
         {
             return card.getProp<int>(game, nameof(ServantCardDefine.life));
         }
-        public static int getLife(this CardDefine card)
-        {
-            return card.getProp<int>(nameof(ServantCardDefine.life));
-        }
+        
         public static Task<IPropChangeEventArg> setLife(this Card card, IGame game, int value)
         {
             return card.setProp(game, nameof(ServantCardDefine.life), value);
@@ -123,7 +110,7 @@ namespace TouhouHeartstone
         }
         public static int getArmor(this Card card, IGame game)
         {
-            return card.getProp<int>(game, PROPERTY.ARMOR);
+            return card.getProp<int>(game, CARD.ARMOR);
         }
         public static Task<SetArmorEventArg> gainArmor(this Card card, CardEngine game, int value)
         {
@@ -141,7 +128,7 @@ namespace TouhouHeartstone
                 value = arg.value;
                 if (value < 0)
                     value = 0;
-                card.setProp(game, PROPERTY.ARMOR, value);
+                card.setProp(game, CARD.ARMOR, value);
                 return Task.CompletedTask;
             });
         }
@@ -181,11 +168,11 @@ namespace TouhouHeartstone
         }
         public static int getCurrentLife(this Card card, IGame game)
         {
-            return card.getProp<int>(game, PROPERTY.CURRENT_LIFE);
+            return card.getProp<int>(game, CARD.CURRENT_LIFE);
         }
         public static Task<IPropChangeEventArg> setCurrentLife(this Card card, IGame game, int value)
         {
-            return card.setProp(game, PROPERTY.CURRENT_LIFE, value);
+            return card.setProp(game, CARD.CURRENT_LIFE, value);
         }
         public static bool isReady(this Card card, IGame game)
         {
@@ -462,7 +449,7 @@ namespace TouhouHeartstone
                     await card.setProp(game, keyword, false);
                 }
             }
-            var result = await card.setProp(game, PROPERTY.KEYWORDS, keywords);
+            var result = await card.setProp(game, DEFINE.KEYWORDS, keywords);
             foreach (var keyword in card.getKeywords(game))
             {
                 await card.setProp(game, keyword, true);
@@ -471,7 +458,7 @@ namespace TouhouHeartstone
         }
         public static string[] getKeywords(this Card card, IGame game)
         {
-            return card.getProp<string[]>(game, PROPERTY.KEYWORDS);
+            return card.getProp<string[]>(game, DEFINE.KEYWORDS);
         }
         public static bool hasKeyword(this Card card, IGame game, string keyword)
         {
@@ -482,13 +469,7 @@ namespace TouhouHeartstone
             }
             return keywords.Contains(keyword);
         }
-        public static bool hasKeyword(this CardDefine define, string keyword)
-        {
-            string[] keywords = define.getProp<string[]>(PROPERTY.KEYWORDS);
-            if (keywords == null)
-                return false;
-            return keywords.Contains(keyword);
-        }
+
         public static Task<IPropChangeEventArg> addKeywords(this Card card, IGame game, params string[] keywords)
         {
             string[] oldKeywords = card.getKeywords(game);
@@ -544,7 +525,7 @@ namespace TouhouHeartstone
                 cards = arg.cards;
                 foreach (var card in cards)
                 {
-                    await card.setProp(game, PROPERTY.SILENCE, true);
+                    await card.setProp(game, CARD.SILENCE, true);
                     await card.removeBuff(game, card.getBuffs());
                     foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
                     {
@@ -592,12 +573,12 @@ namespace TouhouHeartstone
         }
         public static bool isSilenced(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, PROPERTY.SILENCE);
+            return card.getProp<bool>(game, CARD.SILENCE);
         }
 
         public static bool hasDeathRattle(this Card card, IGame game)
         {
-            if (card.define.effects.OfType<DeathRattle>().Count() > 0 && !card.getProp<bool>(game, PROPERTY.SILENCE))
+            if (card.define.effects.OfType<DeathRattle>().Count() > 0 && !card.getProp<bool>(game, CARD.SILENCE))
             {
                 return true;
             }
@@ -616,13 +597,6 @@ namespace TouhouHeartstone
         public static bool hasTag(this Card card, IGame game, string tag)
         {
             string[] tags = card.getProp<string[]>(game, nameof(ServantCardDefine.tags));
-            if (tags == null)
-                return false;
-            return tags.Contains(tag);
-        }
-        public static bool hasTag(this CardDefine define, string tag)
-        {
-            string[] tags = define.getProp<string[]>(nameof(ServantCardDefine.tags));
             if (tags == null)
                 return false;
             return tags.Contains(tag);
@@ -879,7 +853,7 @@ namespace TouhouHeartstone
                 await card.setTags(game, servant.tags);
                 await card.setReady(game, false);
                 await card.setAttackTimes(game, 0);
-                await card.setProp(game, PROPERTY.SILENCE, false);
+                await card.setProp(game, CARD.SILENCE, false);
             }
             else if (card.define is SpellCardDefine spell)
             {
@@ -890,7 +864,7 @@ namespace TouhouHeartstone
                         continue;
                     await card.setProp(game, keyword, true);
                 }
-                await card.setProp(game, PROPERTY.KEYWORDS, spell.keywords);
+                await card.setProp(game, DEFINE.KEYWORDS, spell.keywords);
                 await card.setProp(game, nameof(SpellCardDefine.tags), spell.tags);
             }
             else if (card.define is SkillCardDefine skill)

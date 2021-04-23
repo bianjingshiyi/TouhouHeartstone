@@ -3,10 +3,10 @@ namespace TouhouHeartstone
 {
     public class AttackModifier : IntPropModifier
     {
-        public AttackModifier(int value) : base(PROPERTY.ATTACK, value)
+        public AttackModifier(int value) : base(DEFINE.ATTACK, value)
         {
         }
-        public AttackModifier(int value, bool isSet) : base(PROPERTY.ATTACK, value, isSet)
+        public AttackModifier(int value, bool isSet) : base(DEFINE.ATTACK, value, isSet)
         {
         }
         protected AttackModifier(IntPropModifier origin) : base(origin)

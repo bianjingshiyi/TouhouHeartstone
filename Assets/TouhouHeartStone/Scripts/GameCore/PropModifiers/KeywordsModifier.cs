@@ -11,7 +11,7 @@ namespace TouhouHeartstone
             add, remove, set
         }
         public ModifyType modifyType { get; }
-        public KeywordsModifier(ModifyType modifyType, params string[] keywords) : base(PROPERTY.KEYWORDS, keywords)
+        public KeywordsModifier(ModifyType modifyType, params string[] keywords) : base(DEFINE.KEYWORDS, keywords)
         {
             this.modifyType = modifyType;
             this.keywords = keywords;

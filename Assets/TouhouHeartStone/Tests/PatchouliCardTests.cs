@@ -466,7 +466,7 @@ namespace Tests
             you.cmdUse(game, you.getHand().getCard<WaterElf>(), targets: you.getField()[0]);
             Assert.True(you.getField()[0].getCurrentLife(game) == 13);
             Assert.True(you.getField()[0].hasKeyword(game, KEYWORD.TAUNT));
-            var keywords = you.getField()[0].getProp(game, PROPERTY.KEYWORDS);
+            var keywords = you.getField()[0].getProp(game, DEFINE.KEYWORDS);
             Debug.Log(keywords.GetType());
             Assert.True(keywords is Array);
             Assert.True(keywords is IEnumerable);

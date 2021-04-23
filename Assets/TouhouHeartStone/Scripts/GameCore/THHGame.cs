@@ -406,7 +406,7 @@ namespace TouhouHeartstone
                     card.setProp(game, keyword, true);
                 }
 
-                card.setProp(game, PROPERTY.KEYWORDS, servant.keywords);
+                card.setProp(game, DEFINE.KEYWORDS, servant.keywords);
                 card.setProp(game, nameof(ServantCardDefine.tags), servant.tags);
             }
             else if (define is SpellCardDefine spell)
@@ -419,7 +419,7 @@ namespace TouhouHeartstone
                     card.setProp(game, keyword, true);
                 }
 
-                card.setProp(game, PROPERTY.KEYWORDS, spell.keywords);
+                card.setProp(game, DEFINE.KEYWORDS, spell.keywords);
                 card.setProp(game, nameof(SpellCardDefine.tags), spell.tags);
             }
             else if (define is SkillCardDefine skill)

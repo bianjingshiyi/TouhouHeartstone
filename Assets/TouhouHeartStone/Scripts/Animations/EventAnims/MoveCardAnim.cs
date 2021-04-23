@@ -211,7 +211,7 @@ namespace Game
                                     //关闭沉默开关
                                     if (eventArg.card.isSilenced(table.game))
                                     {
-                                        eventArg.card.setProp(table.game, PROPERTY.SILENCE, false);
+                                        eventArg.card.setProp(table.game, CARD.SILENCE, false);
                                     }
                                     if (!table.tryGetHand(eventArg.card, out var hand))
                                     {
@@ -248,7 +248,7 @@ namespace Game
                                     //关闭沉默开关
                                     if (eventArg.card.isSilenced(table.game))
                                     {
-                                        eventArg.card.setProp(table.game, PROPERTY.SILENCE, false);
+                                        eventArg.card.setProp(table.game, CARD.SILENCE, false);
                                     }
                                     //创建卡牌
                                     if (_card == null)

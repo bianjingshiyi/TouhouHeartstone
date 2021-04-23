@@ -1,12 +1,9 @@
 ﻿namespace TouhouHeartstone
 {
-    public static class PROPERTY
+    public static class CARD
     {
-        public const string COST = "cost";
-        public const string ATTACK = "attack";
         public const string CURRENT_LIFE = "currentLife";
         public const string ARMOR = "armor";
-        public const string KEYWORDS = "keywords";
         public const string SILENCE = "silence";
     }
 }

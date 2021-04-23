@@ -17,7 +17,7 @@ namespace Game
             if (table.tryGetServant(eventArg.card, out var servant))
             {
                 animator = servant.attackPropNumber.asAnimator;
-                if (eventArg.propName == PROPERTY.ATTACK && eventArg.value is int attack)
+                if (eventArg.propName == DEFINE.ATTACK && eventArg.value is int attack)
                 {
                     servant.attackPropNumber.text.text = attack.ToString();
                     if (eventArg.card.getAttack(table.game) > eventArg.card.define.getAttack())
@@ -29,7 +29,7 @@ namespace Game
                         simpleAnim = servant.attackPropNumber.WhiteText;
                     }
                 }
-                else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.value is int currentLife)
+                else if (eventArg.propName == CARD.CURRENT_LIFE && eventArg.value is int currentLife)
                 {
                     animator = servant.lifePropNumber.asAnimator;
                     servant.lifePropNumber.text.text = currentLife.ToString();
@@ -48,7 +48,7 @@ namespace Game
                         simpleAnim = servant.lifePropNumber.WhiteText;
                     }
                 }
-                else if (eventArg.propName == PROPERTY.KEYWORDS)
+                else if (eventArg.propName == DEFINE.KEYWORDS)
                 {
                     if (eventArg.value is string[] keywords)
                     {
@@ -66,7 +66,7 @@ namespace Game
                         //servant.freezeImage.hide();
                     }
                 }
-                else if (eventArg.propName == PROPERTY.SILENCE && eventArg.beforeValue is bool beforeSilence && eventArg.value is bool silence)
+                else if (eventArg.propName == CARD.SILENCE && eventArg.beforeValue is bool beforeSilence && eventArg.value is bool silence)
                 {
 
                 }
@@ -75,17 +75,17 @@ namespace Game
             else if (table.tryGetMaster(eventArg.card, out var master))
             {
                 animator = master.LifePropNumber.animator;
-                if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
+                if (eventArg.propName == DEFINE.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
                 {
                     animator = master.AttackPropNumber.animator;
                     master.AttackPropNumber.text.text = attack.ToString();
                 }
-                else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
+                else if (eventArg.propName == CARD.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
                 {
 
                     master.LifePropNumber.text.text = currentLife.ToString();
                 }
-                else if (eventArg.propName == PROPERTY.KEYWORDS)
+                else if (eventArg.propName == DEFINE.KEYWORDS)
                 {
                     if (eventArg.value is string[] keywords)
                     {
@@ -103,7 +103,7 @@ namespace Game
                         //master.FreezeImage.hide();
                     }
                 }
-                else if (eventArg.propName == PROPERTY.SILENCE && eventArg.beforeValue is bool beforeSilence && eventArg.value is bool silence)
+                else if (eventArg.propName == CARD.SILENCE && eventArg.beforeValue is bool beforeSilence && eventArg.value is bool silence)
                 {
 
                 }
@@ -126,11 +126,11 @@ namespace Game
             else if (table.tryGetItem(eventArg.card, out var item))
             {
                 animator = item.DurabilityPropNumber.animator;
-                if (eventArg.propName == PROPERTY.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
+                if (eventArg.propName == DEFINE.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
                 {
                     item.AttackPropNumber.text.text = attack.ToString();
                 }
-                else if (eventArg.propName == PROPERTY.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
+                else if (eventArg.propName == CARD.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
                 {
 
                     item.DurabilityPropNumber.text.text = currentLife.ToString();
@@ -154,7 +154,7 @@ namespace Game
             else if(table.tryGetHand(eventArg.card,out var hand))
             {
                 animator = hand.Card.getCostPropNum(eventArg.card).asAnimator;
-                if (eventArg.propName == PROPERTY.COST && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
+                if (eventArg.propName == DEFINE.COST && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
                 {
                     hand.Card.getCostPropNum(eventArg.card).text.text = eventArg.card.getCost(table.game).ToString();
                 }
