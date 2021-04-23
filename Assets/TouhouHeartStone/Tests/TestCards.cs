@@ -607,7 +607,7 @@ namespace Tests
         public override int life { get; set; } = 7;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
+            new THHEffectBefore<THHCard.DamageEventArg>(PileFlag.field,
                 (g, c, a) =>
                 {
                     return a.infoDic.Any(p=>p.Value.source.getOwner() == c.getOwner() && (p.Value.source.isSkill() || p.Value.source.isSpell()));
@@ -620,7 +620,7 @@ namespace Tests
                     }
                     return Task.CompletedTask;
                 }),
-            new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
+            new THHEffectBefore<THHCard.HealEventArg>(PileFlag.field,
                 (g, c, a) =>
                 {
                     return a.source.getOwner() == c.getOwner() && a.source.isSpell();
@@ -824,7 +824,7 @@ namespace Tests
             new LambdaSingleTargetEffect((g,c,t)=>
             {
                 return t.addBuff(g,new GeneratedBuff(ID, new AttackModifier(3)));
-            }, PileFlag.field | PileFlag.both)
+            }, PileFlag.field | PileFlag.both),
         };
     }
     /// <summary>
@@ -860,7 +860,7 @@ namespace Tests
             {
                 await c1.getOwner().createToken(g1,g1.getDefine<DefaultServant>());
                 await c1.getOwner().createToken(g1,g1.getDefine<DefaultServant>());
-            }), 
+            }),
             new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PILE.FIELD, (g, c, a) =>
             {
                 return a.player == c.getOwner() && c.pile.name == PILE.FIELD;

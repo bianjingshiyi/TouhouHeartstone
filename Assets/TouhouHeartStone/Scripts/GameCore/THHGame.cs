@@ -137,12 +137,12 @@ namespace TouhouHeartstone
         public static Card[] getAllEnemies(this CardEngine game, Player player)
         {
             Player opponent = game.getOpponent(player);
-            return opponent.getField().Concat(new Card[] {opponent.getMaster()}).ToArray();
+            return opponent.getField().Concat(new Card[] { opponent.getMaster() }).ToArray();
         }
 
         public static Card[] getAllAllys(this CardEngine game, Player player)
         {
-            return player.getField().Concat(new Card[] {player.getMaster()}).ToArray();
+            return player.getField().Concat(new Card[] { player.getMaster() }).ToArray();
         }
 
         #endregion
@@ -573,7 +573,7 @@ namespace TouhouHeartstone
         {
             if (!game.isRunning)
                 return;
-            await game.triggers.doEvent(new HearthStoneRule.TurnStartEventArg() {player = player}, async arg =>
+            await game.triggers.doEvent(new HearthStoneRule.TurnStartEventArg() { player = player }, async arg =>
             {
                 game.logger.logTrace(arg.player + "的回合开始");
                 //玩家的最大能量加1但是不超过10，充满玩家的能量。
@@ -593,6 +593,7 @@ namespace TouhouHeartstone
                 //使自己可以攻击
                 await player.getMaster().setAttackTimes(game, 0);
             });
+            await game.updateDeath();
             //倒计时75秒
             setTurnTimer(game, game.time.startTimer(getOption(game).timeoutForTurn));
             getTurnTimer(game).onExpired += () => onTurnTimeout(game);
@@ -655,36 +656,36 @@ namespace TouhouHeartstone
         {
             if (!game.isRunning)
                 return;
-            await game.triggers.doEvent(new HearthStoneRule.TurnEndEventArg() {player = player}, arg =>
-            {
-                game.logger.logTrace("Debug", getCurrentPlayer(game) + "回合结束");
+            await game.triggers.doEvent(new HearthStoneRule.TurnEndEventArg() { player = player }, arg =>
+              {
+                  game.logger.logTrace("Debug", getCurrentPlayer(game) + "回合结束");
 
-                List<Card> AllCharactor = new List<Card>();
-                AllCharactor.Add(player.getMaster());
-                AllCharactor.AddRange(player.getField());
-                foreach (Card chara in AllCharactor)
-                {
-                    if (chara.isFreeze(game))
-                    {
-                        //chara.setAttackTimes(chara.getAttackTimes(this) + 1);
-                        if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
-                            chara.define is ServantCardDefine && chara.isReady(game))
-                        {
-                            game.logger.logTrace("被冻结的随从解除冰冻");
-                            chara.setFreeze(game, false);
-                        }
-                        else if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
-                                 chara.define is MasterCardDefine)
-                        {
-                            game.logger.logTrace("被冻结的英雄解除冰冻");
-                            chara.setFreeze(game, false);
-                        }
-                    }
-                }
+                  List<Card> AllCharactor = new List<Card>();
+                  AllCharactor.Add(player.getMaster());
+                  AllCharactor.AddRange(player.getField());
+                  foreach (Card chara in AllCharactor)
+                  {
+                      if (chara.isFreeze(game))
+                      {
+                          //chara.setAttackTimes(chara.getAttackTimes(this) + 1);
+                          if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
+                                chara.define is ServantCardDefine && chara.isReady(game))
+                          {
+                              game.logger.logTrace("被冻结的随从解除冰冻");
+                              chara.setFreeze(game, false);
+                          }
+                          else if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
+                                   chara.define is MasterCardDefine)
+                          {
+                              game.logger.logTrace("被冻结的英雄解除冰冻");
+                              chara.setFreeze(game, false);
+                          }
+                      }
+                  }
 
-                game.answers.cancel(game.answers.getRequests(player.id));
-                return Task.CompletedTask;
-            });
+                  game.answers.cancel(game.answers.getRequests(player.id));
+                  return Task.CompletedTask;
+              });
             game.time.cancel(getTurnTimer(game));
             setTurnTimer(game, null);
         }
@@ -695,9 +696,9 @@ namespace TouhouHeartstone
                 return;
             game.logger.logTrace("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
             game.close();
-            await game.triggers.doEvent(new HearthStoneRule.GameEndEventArg() {winners = winners});
+            await game.triggers.doEvent(new HearthStoneRule.GameEndEventArg() { winners = winners });
         }
-        
+
         /// <summary>
         /// 死亡结算，清理战场上死亡的随从
         /// </summary>

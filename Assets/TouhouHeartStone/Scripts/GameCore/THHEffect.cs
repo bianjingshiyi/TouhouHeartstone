@@ -19,31 +19,31 @@ namespace TouhouHeartstone
             return triggers.Select(t => t.getEventName(manager)).ToArray();
         }
         public string[] piles { get; }
-        public delegate bool CheckConditionDelegate(CardEngine game, Card card, object[] vars);
+        public delegate bool CheckConditionDelegate(CardEngine game, Card card, Buff buff, object[] vars);
         CheckConditionDelegate onCheckCondition { get; }
-        bool ITriggerEffect.checkCondition(IGame game, ICard card, object[] vars)
+        bool ITriggerEffect.checkCondition(IGame game, ICard card, IBuff buff, object[] vars)
         {
             if (onCheckCondition != null)
-                return onCheckCondition.Invoke(game as CardEngine, card as Card, vars);
+                return onCheckCondition.Invoke(game as CardEngine, card as Card, buff as Buff, vars);
             else
                 return true;
         }
-        public delegate bool CheckTargetDelegate(CardEngine game, Card card, object[] targets);
+        public delegate bool CheckTargetDelegate(CardEngine game, Card card, Buff buff, object[] targets);
         CheckTargetDelegate onCheckTarget { get; }
-        bool ITriggerEffect.checkTargets(IGame game, ICard card, object[] vars, object[] targets)
+        bool ITriggerEffect.checkTargets(IGame game, ICard card, IBuff buff, object[] vars, object[] targets)
         {
             if (onCheckTarget != null)
-                return onCheckTarget.Invoke(game as CardEngine, card as Card, targets);
+                return onCheckTarget.Invoke(game as CardEngine, card as Card, buff as Buff, targets);
             else
                 return true;
         }
-        public delegate Task ExecuteDelegate(CardEngine game, Card card, object[] vars, object[] targets);
+        public delegate Task ExecuteDelegate(CardEngine game, Card card, Buff buff, object[] vars, object[] targets);
         ExecuteDelegate onExecute { get; }
         public bool enabled { get; set; }
-        Task ITriggerEffect.execute(IGame game, ICard card, object[] vars, object[] targets)
+        Task ITriggerEffect.execute(IGame game, ICard card, IBuff buff, object[] vars, object[] targets)
         {
             if (onExecute != null)
-                return onExecute.Invoke(game as CardEngine, card as Card, vars, targets);
+                return onExecute.Invoke(game as CardEngine, card as Card, buff as Buff, vars, targets);
             else
                 return Task.CompletedTask;
         }
@@ -56,8 +56,9 @@ namespace TouhouHeartstone
             this.onCheckTarget = onCheckTarget;
             this.onExecute = onExecute;
         }
-        public THHEffect(TriggerTime[] triggers, string[] piles, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute)
+        public THHEffect(TriggerTime[] triggers, string[] piles, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute, string name = null)
         {
+            _name = name;
             this.triggers = triggers;
             this.piles = piles;
             this.onCheckCondition = onCheckCondition;
@@ -71,8 +72,8 @@ namespace TouhouHeartstone
                 string effectName = getEffectName(game, card, buff, time);
                 Trigger trigger = new Trigger(args =>
                 {
-                    if ((this as ITriggerEffect).checkCondition(game, card, args))
-                        return (this as ITriggerEffect).execute(game, card, args, new object[0]);
+                    if ((this as ITriggerEffect).checkCondition(game, card, buff, args))
+                        return (this as ITriggerEffect).execute(game, card, buff, args, new object[0]);
                     else
                         return Task.CompletedTask;
                 }, name: effectName);
@@ -81,15 +82,6 @@ namespace TouhouHeartstone
                 game.triggers.register(time.getEventName(game.triggers), trigger);
             }
         }
-
-        protected string getEffectName(IGame game, ICard card, IBuff buff, TriggerTime time)
-        {
-            string name = string.IsNullOrEmpty(_name) ? "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers) : _name;
-            if (buff != null)
-                name += buff.instanceID;
-            return name;
-        }
-
         public virtual Task onDisable(IGame game, ICard card, IBuff buff)
         {
             foreach (TriggerTime time in triggers)
@@ -101,6 +93,14 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
+        protected string getEffectName(IGame game, ICard card, IBuff buff, TriggerTime time)
+        {
+            return string.IsNullOrEmpty(_name) ?
+                (buff != null ? buff.instanceID.ToString() : string.Empty) +
+                "Effect" + Array.IndexOf(card.define.effects, this) +
+                time.getEventName(game.triggers)
+                : _name;
+        }
         public override string ToString()
         {
             return string.IsNullOrEmpty(_name) ? base.ToString() : _name;
@@ -108,35 +108,58 @@ namespace TouhouHeartstone
     }
     public class THHEffectBefore<T> : THHEffect where T : IEventArg
     {
-        public new delegate bool CheckConditionDelegate(CardEngine game, Card card, T eventArg);
-        public new delegate Task ExecuteDelegate(CardEngine game, Card card, T eventArg);
+        public new delegate bool CheckConditionDelegate(CardEngine game, Card card, Buff buff, T eventArg);
+        public new delegate Task ExecuteDelegate(CardEngine game, Card card, Buff buff, T eventArg);
+        public delegate bool CheckConditionNoBuffDelegate(CardEngine game, Card card, T eventArg);
+        public delegate bool CheckTargetNoBuffDelegate(CardEngine game, Card card, object[] targets);
+        public delegate Task ExecuteNoBuffDelegate(CardEngine game, Card card, T eventArg);
+        [Obsolete("请使用以PileFlag参数开头的构造函数作为替代")]
         public THHEffectBefore(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute, string name = null) :
-        base(new Before<T>(), pile, (game, card, vars) =>
+        base(new Before<T>(), pile, (game, card, buff, vars) =>
         {
             if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
-                return onCheckCondition.Invoke(game, card, t);
+                return onCheckCondition(game, card, buff, t);
             else
                 return true;
-        }, onCheckTarget, (game, card, vars, targets) =>
+        }, onCheckTarget, (game, card, buff, vars, targets) =>
         {
             if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
-                return onExecute.Invoke(game, card, t);
+                return onExecute(game, card, buff, t);
             else
                 return Task.CompletedTask;
         }, name)
         {
         }
         public THHEffectBefore(PileFlag pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
-        base(new TriggerTime[] { new Before<T>() }, pile.getPiles(), (game, card, vars) =>
+        base(new TriggerTime[] { new Before<T>() }, pile.getPiles(), (game, card, buff, vars) =>
         {
             if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
-                return onCheckCondition.Invoke(game, card, t);
+                return onCheckCondition(game, card, buff, t);
             else
                 return true;
-        }, onCheckTarget, (game, card, vars, targets) =>
+        }, onCheckTarget, (game, card, buff, vars, targets) =>
         {
             if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
-                return onExecute.Invoke(game, card, t);
+                return onExecute(game, card, buff, t);
+            else
+                return Task.CompletedTask;
+        })
+        {
+        }
+        public THHEffectBefore(PileFlag pile, CheckConditionNoBuffDelegate onCheckCondition, CheckTargetNoBuffDelegate onCheckTarget, ExecuteNoBuffDelegate onExecute) :
+        base(new TriggerTime[] { new Before<T>() }, pile.getPiles(), (game, card, buff, vars) =>
+        {
+            if (onCheckCondition != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                return onCheckCondition(game, card, t);
+            else
+                return true;
+        }, (game, card, buff, targets) =>
+        {
+            return onCheckTarget != null ? onCheckTarget(game, card, targets) : true;
+        }, (game, card, buff, vars, targets) =>
+        {
+            if (onExecute != null && vars != null && vars.Length > 0 && vars[0] is T t)
+                return onExecute(game, card, t);
             else
                 return Task.CompletedTask;
         })
@@ -149,8 +172,8 @@ namespace TouhouHeartstone
                 string effectName = getEffectName(game, card, buff, time);
                 Trigger<T> trigger = new Trigger<T>(arg =>
                 {
-                    if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
-                        return (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
+                    if ((this as ITriggerEffect).checkCondition(game, card, buff, new object[] { arg }))
+                        return (this as ITriggerEffect).execute(game, card, buff, new object[] { arg }, new object[0]);
                     else
                         return Task.CompletedTask;
                 }, name: effectName);
@@ -173,21 +196,41 @@ namespace TouhouHeartstone
     }
     public class THHEffect<T> : THHEffect where T : IEventArg
     {
-        public new delegate bool CheckConditionDelegate(CardEngine game, Card card, T eventArg);
-        public new delegate Task ExecuteDelegate(CardEngine game, Card card, T eventArg, object[] targets);
+        public new delegate bool CheckConditionDelegate(CardEngine game, Card card, Buff buff, T eventArg);
+        public new delegate Task ExecuteDelegate(CardEngine game, Card card, Buff buff, T eventArg, object[] targets);
+        public delegate bool CheckConditionNoBuffDelegate(CardEngine game, Card card, T eventArg);
+        public delegate bool CheckTargetNoBuffDelegate(CardEngine game, Card card, object[] targets);
+        public delegate Task ExecuteNoBuffDelegate(CardEngine game, Card card, T eventArg, object[] targets);
+        [Obsolete("请使用以PileFlag参数开头的构造函数作为替代")]
         public THHEffect(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
-            base(new On<T>(), pile, (game, card, vars) =>
+            base(new On<T>(), pile, (game, card, buff, vars) =>
             {
                 if (onCheckCondition != null)
-                    return onCheckCondition.Invoke(game, card, (T)vars[0]);
+                    return onCheckCondition.Invoke(game, card, buff, (T)vars[0]);
                 else
                     return true;
-            }, onCheckTarget, (game, card, vars, targets) =>
+            }, onCheckTarget, (game, card, buff, vars, targets) =>
             {
                 if (onExecute != null && vars.Length > 0 && vars[0] is T t)
-                    return onExecute.Invoke(game, card, t, targets);
+                    return onExecute.Invoke(game, card, buff, t, targets);
                 else
                     return Task.CompletedTask;
+            })
+        {
+        }
+        public THHEffect(string pile, CheckConditionNoBuffDelegate onCheckCondition, CheckTargetNoBuffDelegate onCheckTarget, ExecuteNoBuffDelegate onExecute) :
+            base(new On<T>(), pile, (game, card, buff, vars) =>
+            {
+                if (onCheckCondition != null)
+                    return onCheckCondition(game, card, (T)vars[0]);
+                else
+                    return true;
+            }, (game, card, buff, targets) =>
+            {
+                return onCheckTarget != null ? onCheckTarget(game, card, targets) : true;
+            }, (game, card, buff, vars, targets) =>
+            {
+                return onExecute != null && vars.Length > 0 && vars[0] is T t ? onExecute(game, card, t, targets) : Task.CompletedTask;
             })
         {
         }
@@ -198,14 +241,15 @@ namespace TouhouHeartstone
         public delegate bool CheckConditionBuffedDelegate(CardEngine game, Card card, Buff buff, T eventArg);
         public new delegate Task ExecuteDelegate(CardEngine game, Card card, T eventArg);
         public delegate Task ExecuteBuffedDelegate(CardEngine game, Card card, Buff buff, T eventArg);
+        [Obsolete("请使用以PileFlag参数开头的构造函数作为替代")]
         public THHEffectAfter(string pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute, string name = null) :
-        base(new After<T>(), pile, (game, card, vars) =>
+        base(new After<T>(), pile, (game, card, buff, vars) =>
         {
             if (onCheckCondition != null && vars != null && vars.Length > 0 && vars.OfType<T>().FirstOrDefault() is T t)
                 return onCheckCondition.Invoke(game, card, t);
             else
                 return true;
-        }, onCheckTarget, (game, card, vars, targets) =>
+        }, onCheckTarget, (game, card, buff, vars, targets) =>
         {
             if (onExecute != null && vars != null && vars.Length > 0 && vars.OfType<T>().FirstOrDefault() is T t)
                 return onExecute.Invoke(game, card, t);
@@ -214,36 +258,34 @@ namespace TouhouHeartstone
         }, name)
         {
         }
-        public THHEffectAfter(PileFlag pile, CheckConditionDelegate onCheckCondition, CheckTargetDelegate onCheckTarget, ExecuteDelegate onExecute) :
-        base(new TriggerTime[] { new After<T>() }, pile.getPiles(), (game, card, vars) =>
+        public THHEffectAfter(PileFlag pile, CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute, string name = null) :
+        base(new TriggerTime[] { new After<T>() }, pile.getPiles(), (game, card, buff, vars) =>
         {
             if (onCheckCondition != null && vars != null && vars.Length > 0 && vars.OfType<T>().FirstOrDefault() is T t)
                 return onCheckCondition.Invoke(game, card, t);
             else
                 return true;
-        }, onCheckTarget, (game, card, vars, targets) =>
+        }, null, (game, card, buff, vars, targets) =>
         {
             if (onExecute != null && vars != null && vars.Length > 0 && vars.OfType<T>().FirstOrDefault() is T t)
                 return onExecute.Invoke(game, card, t);
             else
                 return Task.CompletedTask;
-        })
+        }, name)
         {
         }
         public THHEffectAfter(PileFlag pile, CheckConditionBuffedDelegate onCheckCondition, ExecuteBuffedDelegate onExecute) :
-        base(new TriggerTime[] { new After<T>() }, pile.getPiles(), (game, card, vars) =>
+        base(new TriggerTime[] { new After<T>() }, pile.getPiles(), (game, card, buff, vars) =>
         {
             if (onCheckCondition != null && vars != null && vars.Length > 1 &&
-                vars.OfType<Buff>().FirstOrDefault() is Buff buff &&
                 vars.OfType<T>().FirstOrDefault() is T t)
                 return onCheckCondition(game, card, buff, t);
             else
                 return true;
-        }, (game, card, vars) => true,
-        (game, card, vars, targets) =>
+        }, (game, card, buff, vars) => true,
+        (game, card, buff, vars, targets) =>
         {
             if (onExecute != null && vars != null && vars.Length > 1 &&
-                vars.OfType<Buff>().FirstOrDefault() is Buff buff &&
                 vars.OfType<T>().FirstOrDefault() is T t)
                 return onExecute(game, card, buff, t);
             else
@@ -258,8 +300,8 @@ namespace TouhouHeartstone
                 string effectName = getEffectName(game, card, buff, time);
                 Trigger<T> trigger = new Trigger<T>(arg =>
                 {
-                    if ((this as ITriggerEffect).checkCondition(game, card, new object[] { buff, arg }))
-                        return (this as ITriggerEffect).execute(game, card, new object[] { buff, arg, }, new object[0]);
+                    if ((this as ITriggerEffect).checkCondition(game, card, buff, new object[] { arg }))
+                        return (this as ITriggerEffect).execute(game, card, buff, new object[] { arg, }, new object[0]);
                     else
                         return Task.CompletedTask;
                 }, name: effectName);
@@ -645,25 +687,25 @@ namespace TouhouHeartstone
     }
     public class AddBuffAfter<T> : THHEffectAfter<T> where T : IEventArg
     {
-        public AddBuffAfter(string pile, CheckConditionDelegate onCheckCondition, Buff originBuff) : base(pile, onCheckCondition, null, (g, c, a) =>
+        public AddBuffAfter(PileFlag pile, CheckConditionDelegate onCheckCondition, Buff originBuff) : base(pile, onCheckCondition, (g, c, a) =>
         {
             return c.addBuff(g, originBuff.clone());
         })
         {
         }
-        public AddBuffAfter(string pile, CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(pile, onCheckCondition, null, onExecute)
+        public AddBuffAfter(PileFlag pile, CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(pile, onCheckCondition, onExecute)
         {
         }
     }
     public class RemoveBuffBefore<T> : THHEffectBefore<T> where T : IEventArg
     {
-        public RemoveBuffBefore(string pile, int buffId) : base(pile, null, null, (game, card, arg) =>
+        public RemoveBuffBefore(PileFlag pile, int buffId) : base(pile, null, null, (game, card, arg) =>
         {
             return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
         })
         {
         }
-        public RemoveBuffBefore(string pile, CheckConditionDelegate onCheckCondition, int buffId) : base(pile, onCheckCondition, null, (game, card, arg) =>
+        public RemoveBuffBefore(PileFlag pile, CheckConditionDelegate onCheckCondition, int buffId) : base(pile, onCheckCondition, null, (game, card, buff, arg) =>
         {
             return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
         })
@@ -672,86 +714,98 @@ namespace TouhouHeartstone
     }
     public class RemoveBuffAfter<T> : THHEffectAfter<T> where T : IEventArg
     {
-        public RemoveBuffAfter(string pile, int buffId) : base(pile, null, null, (game, card, arg) =>
+        public RemoveBuffAfter(PileFlag pile, int buffId) : base(pile, null, (game, card, arg) =>
         {
             return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
         }, "移除Buff")
         {
         }
-        public RemoveBuffAfter(string pile, CheckConditionDelegate onCheckCondition, int buffId) : base(pile, onCheckCondition, null, (game, card, arg) =>
+        public RemoveBuffAfter(PileFlag pile, CheckConditionDelegate onCheckCondition, int buffId) : base(pile, onCheckCondition, (game, card, arg) =>
         {
             return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
         }, "移除Buff")
         {
         }
     }
-
     /// <summary>
-    /// 在事件发生time次后，移除这个效果对应卡牌的对应于buffID的buff(如果buff存在的话
+    /// 在触发一定次数之后删除Buff
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class RemoveBuffAfterTimeUp<T> : THHEffectAfter<T> where T : IEventArg
+    public class RemoveBuffAfterTimeUp<T> : PassiveEffect where T : IEventArg
     {
-        private int time { get; }
-        private int buffID { get; }
-        public override async Task onEnable(IGame game, ICard card, IBuff buff)
+        //public RemoveBuffAfterTimeUp(string pile, int buffId, int time) : base(pile, null, null, (game, card, arg) =>
+        //{
+        //    string buffName = buffId.ToString().Concat("_timer").ToString();
+        //    card.getOwner().setProp(nameof(card), time);
+        //    if (card.getOwner().getProp<int>(buffName) == 0)
+        //    {
+        //        return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+        //    }
+        //    else
+        //    {
+        //        card.getOwner().setProp<int>(buffName, card.getOwner().getProp<int>(buffName) - 1);
+        //        return Task.CompletedTask;
+        //    }
+        //})
+        //{
+        //}
+        //public RemoveBuffAfterTimeUp(PileFlag pile, CheckConditionBuffedDelegate onCheckCondition, int buffId, int time) : base(pile, onCheckCondition, (game, card, buff, arg) =>
+        //{
+        //    string propName = nameof(RemoveBuffAfterTimeUp<T>) +
+        //        (buff != null ? buff.instanceID.ToString() : string.Empty) +
+        //        "Timer" + buffId;
+        //    if (!card.getOwner().hasProp(propName))
+        //        card.getOwner().setProp(propName, time);
+        //    card.getOwner().setProp(propName, card.getOwner().getProp<int>(propName) - 1);
+        //    if (card.getOwner().getProp<int>(propName) <= 0)
+        //        return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
+        //    return Task.CompletedTask;
+        //})
+        //{
+        //}
+        public RemoveBuffAfterTimeUp(PileFlag pile, int time, CheckConditionDelegate onCheckCondition = null)
         {
-            string timerName = nameof(RemoveBuffAfterTimeUp<T>) + " buffID=<" + buffID + ">" + " remaining times";
-            if ((card as Card).getOwner().getProp<int>(timerName) != 0)
-            {
-                //当有一个对应相同buffID的效果正在运行时，仅重置timer，取最大值，不再次注册触发器
-                (card as Card).getOwner().setProp(timerName, Math.Max(time, (card as Card).getOwner().getProp<int>(timerName)));
-            }
-            else
-            {
-                (card as Card).getOwner().setProp(timerName, time);
-                base.onEnable(game, card, buff);
-            }
-        }
-
-        public override Task onDisable(IGame game, ICard card, IBuff buff)
-        {
+            piles = pile.getPiles();
+            this.time = time;
+            this.onCheckCondition = onCheckCondition;
             string timerName = nameof(RemoveBuffAfterTimeUp<T>) + " buffID=<" + buffID + ">" + " remaining times";
             (card as Card).getOwner().setProp(timerName, 0);
             return base.onDisable(game, card, buff);
         }
-
-        public RemoveBuffAfterTimeUp(string pile, CheckConditionDelegate onCheckCondition, int buffId, int time) : base(pile, onCheckCondition, null, (game, card, arg) =>
+        public override Task onEnable(CardEngine game, Card card, Buff buff)
         {
-            string timerName = nameof(RemoveBuffAfterTimeUp<T>) + " buffID=<" + buffId + ">" + " remaining times";
-            card.getOwner().setProp<int>(timerName, card.getOwner().getProp<int>(timerName) - 1);
-            if (card.getOwner().getProp<int>(timerName) == 0)
+            //重置计数
+            card.setProp(game, buff.instanceID + nameof(RemoveBuffAfterTimeUp<T>) + "Counter", 0);
+            //注册触发器
+            card.setProp(game, buff.instanceID + nameof(RemoveBuffAfterTimeUp<T>) + "Trigger", new Trigger<T>(async t =>
             {
-                return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-            }
+                //检查条件
+                if (onCheckCondition != null && !onCheckCondition(game, card, buff, t))
+                    return;
+                //累加计数器
+                await card.setProp(game, buff.instanceID + nameof(RemoveBuffAfterTimeUp<T>) + "Counter",
+                    card.getProp<int>(game, buff.instanceID + nameof(RemoveBuffAfterTimeUp<T>) + "Counter") + 1);
+                //到达指定次数删除Buff
+                if (card.getProp<int>(game, buff.instanceID + nameof(RemoveBuffAfterTimeUp<T>) + "Counter") >= time)
+                    await card.removeBuff(game, buff);
+            }));
+            game.triggers.registerAfter(card.getProp<Trigger<T>>(game, buff.instanceID + nameof(RemoveBuffAfterTimeUp<T>) + "Trigger"));
             return Task.CompletedTask;
-
-            // //计数器的计数器，用来区分同类型不同buff的
-            // string buffCount =buffId.ToString();
-            // //这名字我已经不忍直视了。。
-            // string buffName ="ID_" + buffId.ToString().Concat("_" + card.getOwner().getProp<int>(buffCount).ToString().Concat("_timer").ToString()).ToString();
-            // card.getOwner().setProp<int>(buffCount, card.getOwner().getProp<int>(buffCount) + 1);
-            // //string buffName = "TestBuff";
-            // if (card.getOwner().getProp<int>(buffName) == 0)
-            // {
-            //     card.getOwner().setProp(buffName, time+1);
-            // }
-            //
-            // if (card.getOwner().getProp<int>(buffName) == 1)
-            // {
-            //     card.getOwner().setProp(buffName, -1);
-            //     return card.removeBuff(game, card.getBuffs().Where(b => b.id == buffId));
-            // }
-            // else
-            // {
-            //     card.getOwner().setProp<int>(buffName, card.getOwner().getProp<int>(buffName) - 1);               
-            //     return Task.CompletedTask;
-            // }
-        })
-        {
-            this.time = time;
-            this.buffID = buffId;
         }
+        public override Task onDisable(CardEngine game, Card card, Buff buff)
+        {
+            //重置计数
+            string propName = buff.instanceID + nameof(RemoveBuffAfterTimeUp<T>) + "Counter";
+            card.setProp(game, propName, 0);
+            //注销触发器
+            game.triggers.removeAfter(card.getProp<Trigger<T>>(game, buff.instanceID + nameof(RemoveBuffAfterTimeUp<T>) + "Trigger"));
+            card.setProp(game, buff.instanceID + nameof(RemoveBuffAfterTimeUp<T>) + "Trigger", default(Trigger<T>));
+            return Task.CompletedTask;
+        }
+        public override string[] piles { get; }
+        int time { get; }
+        CheckConditionDelegate onCheckCondition { get; }
+        public delegate bool CheckConditionDelegate(CardEngine game, Card card, Buff buff, T eventArg);
     }
     /// <summary>
     /// 
@@ -839,27 +893,23 @@ namespace TouhouHeartstone
 
     public class BeforeYourTurnEnd : THHEffectBefore<HearthStoneRule.TurnEndEventArg>
     {
-        public BeforeYourTurnEnd(ExecuteDelegate onExecute) : base(PILE.FIELD, (game, card, arg) =>
+        public BeforeYourTurnEnd(ExecuteDelegate onExecute) : base(PileFlag.field, (game, card, buff, arg) =>
         {
             return arg.player == card.getOwner();
-        }, null, async (game, card, arg) =>
+        }, null, (game, card, buff, arg) =>
         {
-            if (onExecute != null)
-            {
-                await onExecute.Invoke(game, card, arg);
-                await game.updateDeath();
-            }
+            return onExecute != null ? onExecute(game, card, buff, arg) : Task.CompletedTask;
         })
         {
         }
     }
     public class BeforeTurnStart : THHEffectBefore<HearthStoneRule.TurnStartEventArg>
     {
-        public BeforeTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PILE.FIELD, onCheckCondition, null, async (game, card, arg) =>
+        public BeforeTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PileFlag.field, onCheckCondition, null, async (game, card, buff, arg) =>
          {
              if (onExecute != null)
              {
-                 await onExecute.Invoke(game, card, arg);
+                 await onExecute(game, card, buff, arg);
                  await game.updateDeath();
              }
          })
@@ -868,11 +918,11 @@ namespace TouhouHeartstone
     }
     public class AfterTurnStart : THHEffectAfter<HearthStoneRule.TurnStartEventArg>
     {
-        public AfterTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PILE.FIELD, onCheckCondition, null, async (game, card, arg) =>
+        public AfterTurnStart(ExecuteDelegate onExecute, CheckConditionDelegate onCheckCondition = null) : base(PileFlag.field, onCheckCondition, async (game, card, arg) =>
         {
             if (onExecute != null)
             {
-                await onExecute.Invoke(game, card, arg);
+                await onExecute(game, card, arg);
                 await game.updateDeath();
             }
         })
@@ -1020,7 +1070,7 @@ namespace TouhouHeartstone
 
     public class SecretTriggerBefore<T> : THHEffectBefore<T> where T : IEventArg
     {
-        public SecretTriggerBefore(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(PILE.HEAD, onCheckCondition, null, onExecute)
+        public SecretTriggerBefore(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(PileFlag.head, onCheckCondition, null, onExecute)
         {
         }
         public override async Task onEnable(IGame game, ICard card, IBuff buff)
@@ -1030,10 +1080,10 @@ namespace TouhouHeartstone
                 string effectName = getEffectName(game, card, buff, time);
                 Trigger<T> trigger = new Trigger<T>(async arg =>
                 {
-                    if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
+                    if ((this as ITriggerEffect).checkCondition(game, card, buff, new object[] { arg }))
                     {
                         await (card as Card).TriggerSecret(game);
-                        await (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
+                        await (this as ITriggerEffect).execute(game, card, buff, new object[] { arg }, new object[0]);
                     }
                 }, name: effectName);
                 await card.setProp(game, effectName, trigger);
@@ -1055,7 +1105,7 @@ namespace TouhouHeartstone
     }
     public class SecrettTriggerAfter<T> : THHEffectBefore<T> where T : IEventArg
     {
-        public SecrettTriggerAfter(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(PILE.HEAD, onCheckCondition, null, onExecute)
+        public SecrettTriggerAfter(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute) : base(PileFlag.head, onCheckCondition, null, onExecute)
         {
         }
         public override async Task onEnable(IGame game, ICard card, IBuff buff)
@@ -1065,10 +1115,10 @@ namespace TouhouHeartstone
                 string effectName = "Effect" + Array.IndexOf(card.define.effects, this) + time.getEventName(game.triggers);
                 Trigger<T> trigger = new Trigger<T>(arg =>
                 {
-                    if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
+                    if ((this as ITriggerEffect).checkCondition(game, card, buff, new object[] { arg }))
                     {
                         (card as Card).TriggerSecret(game);
-                        return (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
+                        return (this as ITriggerEffect).execute(game, card, buff, new object[] { arg }, new object[0]);
                     }
                     else
                         return Task.CompletedTask;
@@ -1094,7 +1144,7 @@ namespace TouhouHeartstone
     public class MissionTrigger<T> : THHEffectAfter<T> where T : IEventArg
     {
         int aimCount;
-        public MissionTrigger(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute, int aimCount) : base(PILE.HEAD, onCheckCondition, null, onExecute)
+        public MissionTrigger(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute, int aimCount) : base(PileFlag.head, onCheckCondition, onExecute)
         {
             this.aimCount = aimCount;
         }
@@ -1106,18 +1156,18 @@ namespace TouhouHeartstone
                 string effectName = getEffectName(game, card, buff, time);
                 string missionName = effectName.Concat("_Mission").ToString();
 
-                await card.setProp(game, missionName, 0);                        
+                await card.setProp(game, missionName, 0);
                 Trigger<T> trigger = new Trigger<T>(async arg =>
                 {
-                    if ((this as ITriggerEffect).checkCondition(game, card, new object[] { arg }))
+                    if ((this as ITriggerEffect).checkCondition(game, card, buff, new object[] { arg }))
                     {
-                        await card.setProp<int>(game, missionName, card.getProp<int>(game, missionName) +1);
+                        await card.setProp<int>(game, missionName, card.getProp<int>(game, missionName) + 1);
                     }
                     if (card.getProp<int>(game, missionName) == aimCount)
                     {
                         await (card as Card).MissionComplete(game);
-                        await (this as ITriggerEffect).execute(game, card, new object[] { arg }, new object[0]);
-                    }                    
+                        await (this as ITriggerEffect).execute(game, card, buff, new object[] { arg }, new object[0]);
+                    }
                 }, name: effectName);
                 await card.setProp(game, effectName, trigger);
                 game.logger.log("Effect", card + "注册效果" + effectName);
