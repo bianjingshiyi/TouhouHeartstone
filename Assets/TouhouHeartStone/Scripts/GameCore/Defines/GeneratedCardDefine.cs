@@ -10,27 +10,27 @@ namespace TouhouHeartstone
     {
         public override int id { get; set; } = 0;
         Dictionary<string, object> dicProp { get; } = new Dictionary<string, object>();
-        public override void setProp<T>(string propName, T value)
-        {
-            if (propName == nameof(CardDefine.id))
-                id = (int)(object)value;
-            dicProp[propName] = value;
-        }
-        public override T getProp<T>(string propName)
-        {
-            if (dicProp.ContainsKey(propName) && dicProp[propName] is T)
-                return (T)dicProp[propName];
-            else
-                return default;
-        }
-        public string[] getPropNames()
-        {
-            return dicProp.Keys.ToArray();
-        }
-        public bool hasProp(string propName)
-        {
-            return dicProp.ContainsKey(propName);
-        }
+        // public override void setProp<T>(string propName, T value)
+        // {
+        //     if (propName == nameof(CardDefine.id))
+        //         id = (int)(object)value;
+        //     dicProp[propName] = value;
+        // }
+        // public override T getProp<T>(string propName)
+        // {
+        //     if (dicProp.ContainsKey(propName) && dicProp[propName] is T)
+        //         return (T)dicProp[propName];
+        //     else
+        //         return default;
+        // }
+        // public string[] getPropNames()
+        // {
+        //     return dicProp.Keys.ToArray();
+        // }
+        // public bool hasProp(string propName)
+        // {
+        //     return dicProp.ContainsKey(propName);
+        // }
         public override string type { get; set; }
         public override string isUsable(CardEngine engine, TouhouCardEngine.Player player, Card card)
         {
