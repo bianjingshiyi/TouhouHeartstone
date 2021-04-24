@@ -44,13 +44,13 @@ namespace Tests
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
+            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,(game,card,buff,arg)=>
             {
                 return true;
-            },(game,card,targets)=>
+            },(game,card,buff,targets)=>
             {
                 return true;
-            },(game,card,arg)=>
+            },(game,card,buff,arg)=>
             {
                 card.setProp(game, "TestResult", true);
                 return Task.CompletedTask;
@@ -465,15 +465,15 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
+            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,(game,card,buff,arg)=>
             {
                 if(arg.player!=game.getCurrentPlayer())
                 return false;
                 return true;
-            },(game,card,targets)=>
+            },(game,card,buff,targets)=>
             {
                 return false;
-            },async(game,card,arg)=>
+            },async(game,card,buff,arg)=>
             {
                 for(int i=0;i<6;i++)
                 {
@@ -521,10 +521,10 @@ namespace Tests
             new LambdaSingleTargetEffect((g,c,t)=>
             {
                 return t.addBuff(g,new GeneratedBuff(ID,
-                    new THHEffectBefore<HearthStoneRule.TurnStartEventArg>(PILE.FIELD,(g1,c1,a1)=>
+                    new THHEffectBefore<HearthStoneRule.TurnStartEventArg>(PILE.FIELD,(g1,c1,b1,a1)=>
                     {
                         return a1.player == c.getOwner();
-                    },null,async (g1,c1,a1)=>
+                    },null,async (g1,c1,b1,a1)=>
                     {
                         await c1.setDead(g,true);
                         await g1.updateDeath();
@@ -649,12 +649,12 @@ namespace Tests
                 await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(4),new LifeModifier(4)));
                 await target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(
                     PILE.FIELD,
-                    (g1, c1, a1) =>
+                    (g1, c1,b1, a1) =>
                     {
                         return a1.player == c1.getOwner();
                     },
                     null,
-                    async (g1,c1,a1) =>
+                    async (g1,c1,b1,a1) =>
                     {
                     //起效部分，效果是消灭随从
                     await c1.setDead(game, true);
@@ -677,10 +677,10 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
+            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,b,a)=>
             {
                 return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
-            },async(g,c,a)=>
+            },async(g,c,b,a)=>
             {
                  await a.card.fieldToHand(g);
                  await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
@@ -699,10 +699,10 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
+            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,b,a)=>
             {
                 return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
-            },async(g,c,a)=>
+            },async(g,c,b,a)=>
             {
                  await a.card.setDead(g,true);
                  await g.updateDeath();//死亡结算
@@ -882,7 +882,7 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new BeforeYourTurnEnd(async(game,card,arg)=>
+            new BeforeYourTurnEnd(async(game,card,buff,arg)=>
             {
                  await card.getOwner().createToken(game, game.getDefine<DefaultServant>());
             })
