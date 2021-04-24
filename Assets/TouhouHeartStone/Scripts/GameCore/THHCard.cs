@@ -209,6 +209,11 @@ namespace TouhouHeartstone
                 return false;
             if (card.getAttack(game) <= 0)//没有攻击力
                 return false;
+            if (card.pile == null)
+            {
+                UberDebug.LogError($"卡片{card}的牌堆是空的，这很不正常");
+                return false;
+            }
             if (card.pile.name == PILE.FIELD)
             {
                 //随从限定
