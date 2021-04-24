@@ -42,7 +42,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     return !c1.isSkill();
                 }),
-                new RemoveBuffBefore<HearthStoneRule.UseEventArg>(PILE.MASTER, (g, c, a) =>
+                new RemoveBuffBefore<HearthStoneRule.UseEventArg>(PileFlag.master, (g, c,b, a) =>
                 {
                     return a.player == card.getOwner() && !a.card.isSkill();
                 }, ID)));
@@ -143,7 +143,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     return !c1.isSkill();
                 }),
-                new RemoveBuffBefore<HearthStoneRule.UseEventArg>(PILE.MASTER, (g, c, a) =>
+                new RemoveBuffBefore<HearthStoneRule.UseEventArg>(PileFlag.master, (g, c,b, a) =>
                 {
                     return a.player == card.getOwner() && !a.card.isSkill();
                 }, ID)));
@@ -163,7 +163,7 @@ namespace TouhouHeartstone.Builtin
         //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<HearthStoneRule.UseEventArg>(PILE.FIELD, (g, c, a) =>
+            new THHEffectBefore<HearthStoneRule.UseEventArg>(PileFlag.field, (g, c, a) =>
                                                                     {
                                                                         return c.getOwner() == a.player && a.card.isSkill();
                                                                     },null,
@@ -206,12 +206,12 @@ namespace TouhouHeartstone.Builtin
                                                                                                                                    {
                                                                                                                                        await effect(g, c);
                                                                                                                                    }),
-                                                                                                                                   new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PILE.MASTER,
+                                                                                                                                   new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PileFlag.master,
                                                                                                                                    (g, c, a) =>
                                                                                                                                    {
                                                                                                                                        return a.card == drawCard;
                                                                                                                                    }, ID),
-                                                                                                                                   new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
+                                                                                                                                   new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
         }
     }
 

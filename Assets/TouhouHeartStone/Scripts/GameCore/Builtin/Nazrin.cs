@@ -78,7 +78,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<HearthStoneRule.DrawEventArg>(PILE.ITEM,
+            new THHEffectBefore<HearthStoneRule.DrawEventArg>(PileFlag.item,
                 (game, card, arg) =>
                 {
                     return arg.parent is HearthStoneRule.TurnStartEventArg && (arg.player == card.owner);

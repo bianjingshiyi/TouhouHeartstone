@@ -102,11 +102,11 @@ namespace TouhouHeartstone.Builtin
                  {
                      return c1.isSpell();
                  }),
-                new RemoveBuffBefore<HearthStoneRule.UseEventArg>(PILE.MASTER, (g, c, a) =>
+                new RemoveBuffBefore<HearthStoneRule.UseEventArg>(PileFlag.master, (g, c,b, a) =>
                 {
                     return a.player == card.getOwner() && a.card.isSpell();
                 }, ID),
-                new RemoveBuffBefore<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, (g2, c2, a2) =>
+                new RemoveBuffBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.master, (g2, c2, b2, a2) =>
                 {
                     return a2.player == card.getOwner();
                 }, ID)));
@@ -125,11 +125,11 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new AddBuffAfter<HearthStoneRule.UseEventArg>(PILE.HAND,(g,c,a)=>
+            new AddBuffAfter<HearthStoneRule.UseEventArg>(PileFlag.hand,(g,c,a)=>
             {
                 return a.player == c.getOwner() && a.card.isSpell() && !c.containBuff(ID);
             },new GeneratedBuff(ID,new CostModifier(-2),
-                new RemoveBuffBefore<HearthStoneRule.TurnEndEventArg>(PILE.HAND,ID)))
+                new RemoveBuffBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.hand,ID)))
         };
     }
     /// <summary>
@@ -151,10 +151,10 @@ namespace TouhouHeartstone.Builtin
                 return c1.getOwner().addRandomCardToHand(g1,g1.getDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
 
             }),
-            new ItemTrigggerEffectBefore<HearthStoneRule.TurnEndEventArg>((g1,c1,a1)=>
+            new ItemTrigggerEffectBefore<HearthStoneRule.TurnEndEventArg>((g1,c1,b1,a1)=>
             {
                 return a1.player==c1.getOwner();
-            },(g2,c2,a2)=>
+            },(g2,c2,b2,a2)=>
             {
                 return c2.getOwner().addRandomCardToHand(g2,g2.getDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
             })
@@ -217,7 +217,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await card.getOwner().getMaster().addBuff(game,new GeneratedBuff(ID,
                     new DamageReduceModifier(3),
-                    new RemoveBuffBefore<HearthStoneRule.TurnStartEventArg>(PILE.MASTER,(g,c,a)=>
+                    new RemoveBuffBefore<HearthStoneRule.TurnStartEventArg>(PileFlag.field,(g,c,b,a)=>
                     {
                         return a.player == card.getOwner();
                     },ID)));
@@ -225,7 +225,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     await servant.addBuff(game,new GeneratedBuff(ID,
                         new DamageReduceModifier(3),
-                        new RemoveBuffBefore<HearthStoneRule.TurnStartEventArg>(PILE.FIELD,(g,c,a)=>
+                        new RemoveBuffBefore<HearthStoneRule.TurnStartEventArg>(PileFlag.field,(g,c,b,a)=>
                         {
                             return a.player == card.getOwner();
                         },ID)));
@@ -619,8 +619,8 @@ namespace TouhouHeartstone.Builtin
                 {
                     await target.addBuff(game,
                         new GeneratedBuff(ID,new AttackModifier(-3),
-                        new RemoveBuffBefore<HearthStoneRule.TurnStartEventArg>(PILE.FIELD,
-                        (g,c,a)=>{ return a.player == card.getOwner(); }, ID)));
+                        new RemoveBuffBefore<HearthStoneRule.TurnStartEventArg>(PileFlag.field,
+                        (g,c,b,a)=>{ return a.player == card.getOwner(); }, ID)));
                     if(target.getAttack(game)<=0)
                         await target.setDead(game,true);
                 }
@@ -768,7 +768,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
         public override IEffect[] effects { get; set; } = new IEffect[]{
-            new BeforeYourTurnEnd(async(game,card,arg)=>
+            new BeforeYourTurnEnd(async(game,card,buff,arg)=>
             {
                 await game.getAllEnemies(card.getOwner()).random(game).damage(game, card, 2);
             })
@@ -857,7 +857,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<HearthStoneRule.TurnStartEventArg>(PILE.FIELD,(g1,c1,a1)=>
+            new THHEffectBefore<HearthStoneRule.TurnStartEventArg>(PileFlag.field,(g1,c1,a1)=>
             {
                 return a1.player==c1.getOwner();
             },null,(g1,c1,a1)=>

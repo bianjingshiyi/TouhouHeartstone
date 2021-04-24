@@ -286,7 +286,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.DeathEventArg>(PILE.GRAVE, (game, card, arg) => { return true; },
+            new THHEffectAfter<THHCard.DeathEventArg>(PileFlag.grave, (game, card, arg) => { return true; },
                 async (game, card, arg) =>
                 {
                     Player opponent = game.getOpponent(card.owner as Player);
@@ -764,7 +764,7 @@ namespace TouhouHeartstone.Builtin
             await card.getOwner().draw(game, out var draw);
             var drawed = draw.card;
             await drawed.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true),
-                new RemoveBuffBefore<HearthStoneRule.TurnEndEventArg>(PILE.HAND, ID)));
+                new RemoveBuffBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.hand, ID)));
         }
     }
 
@@ -856,8 +856,8 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHCard.AttackEventArg>(PILE.FIELD, (g, c, a) => { return a.card == c; }, null,
-                (g, c, a) =>
+            new THHEffectBefore<THHCard.AttackEventArg>(PileFlag.field, (g, c,b, a) => { return a.card == c; }, null,
+                (g, c,b, a) =>
                 {
                     var oppo = g.getOpponent(c.getOwner());
                     Card[] targets = (new Card[] {oppo.getMaster()}).Concat(oppo.getField()).ToArray();
@@ -1050,7 +1050,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (g, c, t) =>
             {
                 await t.addBuff(g, new GeneratedBuff(ID, new AttackModifier(1, true),
-                    new RemoveBuffAfter<HearthStoneRule.TurnStartEventArg>(PILE.FIELD,
+                    new RemoveBuffAfter<HearthStoneRule.TurnStartEventArg>(PileFlag.field,
                         (g1, c1, a) => { return a.player == c.getOwner(); }, ID)));
             }, PileFlag.both | PileFlag.field)
         };
@@ -1300,18 +1300,18 @@ namespace TouhouHeartstone.Builtin
             if (choice == ReturnOfImperishableNight_Eternity_N.ID)
             {
                 await c.getOwner().getMaster().addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<HearthStoneRule.DrawEventArg>(
-                    PILE.MASTER,
-                    (g1, c1, a1) => { return a1.player == c1.getOwner(); },
+                    PileFlag.master,
+                    (g1, c1,b1,a1) => { return a1.player == c1.getOwner(); },
                     null,
-                    async (g1, c1, a1) => { a1.isCanceled = true; }
+                    async (g1, c1,b1, a1) => { a1.isCanceled = true; }
                 ), new RemoveBuffAfterTimeUp<HearthStoneRule.TurnEndEventArg>(PileFlag.master, 2,
                     (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); })));
 
                 await g.getOpponent(c.getOwner()).getMaster().addBuff(g, new GeneratedBuff(ID,
-                    new THHEffectBefore<HearthStoneRule.DrawEventArg>(PILE.MASTER,
-                        (g1, c1, a1) => { return a1.player == c1.getOwner(); },
+                    new THHEffectBefore<HearthStoneRule.DrawEventArg>(PileFlag.master,
+                        (g1, c1,b1, a1) => { return a1.player == c1.getOwner(); },
                         null,
-                        async (g1, c1, a1) => { a1.isCanceled = true; }
+                        async (g1, c1,b1, a1) => { a1.isCanceled = true; }
                     ), new RemoveBuffAfterTimeUp<HearthStoneRule.TurnEndEventArg>(PileFlag.master, 2,
                         (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); })));
             }
@@ -1930,7 +1930,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new BeforeYourTurnEnd((game, card, arg) =>
+            new BeforeYourTurnEnd((game, card,buff, arg) =>
             {
                 var targets = game.getAllCharacters().ToList();
                 targets.Remove(card);

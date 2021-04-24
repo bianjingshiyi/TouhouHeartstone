@@ -768,9 +768,7 @@ namespace TouhouHeartstone
             piles = pile.getPiles();
             this.time = time;
             this.onCheckCondition = onCheckCondition;
-            string timerName = nameof(RemoveBuffAfterTimeUp<T>) + " buffID=<" + buffID + ">" + " remaining times";
-            (card as Card).getOwner().setProp(timerName, 0);
-            return base.onDisable(game, card, buff);
+            
         }
         public override Task onEnable(CardEngine game, Card card, Buff buff)
         {

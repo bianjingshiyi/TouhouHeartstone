@@ -48,10 +48,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
+            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,b,a)=>
             {
                 return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
-            },async(g,c,a)=>
+            },async(g,c,b,a)=>
             {
                  a.isCanceled = true;   //取消攻击
                  await a.card.damage(g,a.card,a.card.getAttack(g));
@@ -94,10 +94,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new SecretTriggerBefore<HearthStoneRule.UseEventArg>((g,c,a)=>
+            new SecretTriggerBefore<HearthStoneRule.UseEventArg>((g,c,b,a)=>
             {
                 return a.card.getOwner() != c.getOwner() && a.card.isServant();
-            },(g,c,a)=>
+            },(g,c,b,a)=>
             {
                 a.isCanceled = true;
                 return Task.CompletedTask;
@@ -119,11 +119,11 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new SecretTriggerBefore<THHCard.AttackEventArg>(
-                (g, c, a) =>
+                (g, c,b, a) =>
                 {
                     return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g) && a.card.isServant() &&
                            a.card.getAttack(g) <= 2 && c.getOwner().getField().count < 7;
-                }, async (g, c, a) =>
+                }, async (g, c,b, a) =>
                 {
                     a.isCanceled = true; //取消攻击
                     Player you = c.getOwner();
@@ -146,10 +146,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,a)=>
+            new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,b,a)=>
             {
                 return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g) && c.getOwner().getField().count<=4;
-            },async(g,c,a)=>
+            },async(g,c,b,a)=>
             {
                  List<Card> tokens = new List<Card>();
                 for(int i=0 ; i<3; i++)
@@ -193,10 +193,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new SecretTriggerBefore<HearthStoneRule.UseEventArg>((g,c,a)=>
+            new SecretTriggerBefore<HearthStoneRule.UseEventArg>((g,c,b,a)=>
             {
                 return a.card.getOwner() != c.getOwner()  && a.card.isSpell() && a.card.define.getActiveEffect() is ITargetEffect &&  a.card.getAvaliableTargets(g).Where(target => !target.Equals(a.targets)) != null;
-            },(g,c,a)=>
+            },(g,c,b,a)=>
             {
                 Card[] range = a.card.getAvaliableTargets(g);
                 Card newTarget = range.Where(target => !target.Equals(a.targets)).random(g);
@@ -222,7 +222,7 @@ namespace TouhouHeartstone.Builtin
         };
         static async Task effect(CardEngine game, Card card)
         {
-            await card.getOwner().getSkill().addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true), new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PILE.SKILL, (g, c, a) =>
+            await card.getOwner().getSkill().addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true), new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PileFlag.skill, (g, c, a) =>
             {
                 return a.player == c.getOwner() && a.card.isSkill();
             }, ID)));
@@ -306,7 +306,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHCard.DamageEventArg>(PILE.FIELD,
+            new THHEffectBefore<THHCard.DamageEventArg>(PileFlag.field,
                 (g, c, a) =>
                 {
                     return a.infoDic.Any(p=>p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill()) ;
@@ -319,7 +319,7 @@ namespace TouhouHeartstone.Builtin
                     }
                     return Task.CompletedTask;
                 }),
-            new THHEffectBefore<THHCard.HealEventArg>(PILE.FIELD,
+            new THHEffectBefore<THHCard.HealEventArg>(PileFlag.field,
                 (g, c, a) =>
                 {
                     return a.source.getOwner() == c.getOwner();
@@ -475,10 +475,10 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new THHEffectBefore<THHCard.DamageEventArg>(PILE.MASTER,
-            (g, c, a) =>
+            (g, c,b, a) =>
             {
                 return a.infoDic.Any(p => p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill());
-            }, null, (g, c, a) =>
+            }, null, (g, c,b, a) =>
             {
                 foreach (var p in a.infoDic)
                 {
@@ -487,7 +487,7 @@ namespace TouhouHeartstone.Builtin
                 }
                 return Task.CompletedTask;
             }, "技能伤害翻倍"),
-            new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PILE.MASTER, (g, c, a) =>
+            new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PileFlag.master, (g, c, a) =>
             {
                 return a.player == c.getOwner() && a.card.isSkill();
             }, ID)));

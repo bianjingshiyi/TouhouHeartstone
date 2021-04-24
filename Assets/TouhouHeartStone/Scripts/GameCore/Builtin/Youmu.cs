@@ -19,7 +19,7 @@ namespace TouhouHeartstone.Builtin
         /// </summary>
         public class SetPreHeatEffect : THHEffectBefore<HearthStoneRule.TurnEndEventArg>
         {
-            public SetPreHeatEffect() : base(PILE.HAND, (g1, c1, a1) =>
+            public SetPreHeatEffect() : base(PileFlag.hand, (g1, c1, a1) =>
             {
                 return c1.getOwner() == a1.player && c1.getOwner().getMaxGem() >= c1.getCost(g1) && !isPreHeated(g1, c1);
             }, null, (g, c, a) =>
@@ -100,11 +100,11 @@ namespace TouhouHeartstone.Builtin
             if (!Youmu.isPreHeated(game, card))
                 await card.getOwner().getMaster().addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(2),
-                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
+                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
             else
                 await card.getOwner().getMaster().addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(3),
-                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
+                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
         }
     }
     /// <summary>
@@ -151,12 +151,12 @@ namespace TouhouHeartstone.Builtin
             if (!Youmu.isPreHeated(game, card))
             {
                 await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
-                    new BeforeTurnStart(async (g, c, a) =>
+                    new BeforeTurnStart(async (g, c,b, a) =>
                     {
                         await c.loseArmor(g, 3);
                         await c.removeBuff(game, ID);
 
-                    }, (g, c, a) =>
+                    }, (g, c,b, a) =>
                     {
                         return a.player == c.getOwner();
                     })));
@@ -279,7 +279,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             Player player = card.getOwner();
-            await player.getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
+            await player.getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
             Card[] servants = game.getOpponent(player).getField().OrderBy(c => c.getCurrentLife(game)).ToArray();
             foreach (Card target in servants)
             {
@@ -303,7 +303,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().getMaster().getArmor(game)),
-                new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
+                new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
             await card.getOwner().getMaster().loseArmor(game, card.getOwner().getMaster().getArmor(game));
         }
     }
@@ -323,7 +323,7 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().getMaster().gainArmor(game, 5);
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(5),
-                new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
+                new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
         }
     }
     /// <summary>
@@ -339,7 +339,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHCard.AttackEventArg>(PILE.FIELD,(g,c,a)=>
+            new THHEffectBefore<THHCard.AttackEventArg>(PileFlag.field,(g,c,a)=>
             {
                 return a.card == c.getOwner().getMaster();
             },null,async(g,c,a)=>
@@ -368,14 +368,14 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().getItem().addKeywords(game, KEYWORD.IMMUNITY);
             await card.getOwner().getItem().addBuff(game, new GeneratedBuff(ID,
-                new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.ITEM,(g,c,a)=> 
+                new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.item,(g,c,a)=> 
                 {
                     return a.player == c.getOwner();
                 },null,async(g,c,a)=> 
                 {
                     await c.removeKeywords(g, KEYWORD.IMMUNITY);
                 }),
-                new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.ITEM,(g,c,a)=> 
+                new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.item,(g,c,a)=> 
                 {
                     return a.player == c.getOwner();
                 },ID)));
@@ -394,7 +394,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new BeforeYourTurnEnd(async(game,card,arg)=>
+            new BeforeYourTurnEnd(async(game,card,buff,arg)=>
             {
                 if(card.getOwner().getMaster().getArmor(game)>0)
                     await card.getOwner().createToken(game, game.getDefine<Ghost>());
@@ -449,12 +449,12 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<HearthStoneRule.UseEventArg>(PILE.HAND,
-                (g1,c1,a1)=>
+            new THHEffectBefore<HearthStoneRule.UseEventArg>(PileFlag.field,
+                (g1,c1,b1,a1)=>
                 {
                     return a1.card == c1 && c1.getOwner().getItem() != null;
                 },null,
-                async (g1,c1,a1)=>
+                async (g1,c1,b1,a1)=>
                 {
                     a1.action = async arg =>
                     {

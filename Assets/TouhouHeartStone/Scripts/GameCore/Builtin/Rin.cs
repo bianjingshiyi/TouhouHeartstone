@@ -34,7 +34,7 @@ namespace TouhouHeartstone.Builtin
             await card.getOwner().getMaster().gainArmor(game, 1);
             await card.getOwner().getMaster().addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(1),
-                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
+                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
         }
     }
 
@@ -269,7 +269,7 @@ namespace TouhouHeartstone.Builtin
                             }
                             return Task.CompletedTask;
                         }),
-                        new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
+                        new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
             })
         };
     }
@@ -404,7 +404,7 @@ namespace TouhouHeartstone.Builtin
             };
             await card.getOwner().getMaster().addBuff(game,
                     new GeneratedBuff(ID, new AttackModifier(3),
-                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER, ID)));
+                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
         }
     }
 
