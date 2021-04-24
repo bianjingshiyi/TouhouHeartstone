@@ -204,9 +204,9 @@ namespace TouhouHeartstone.Builtin
                             await target.heal(game, card, 4);
                             await target.removeBuff(game, ID);
                         }),
-                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,
+                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.field,
                         (g, c, a) => { return a.player == card.getOwner(); }, ID),
-                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PILE.MASTER,
+                    new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master,
                         (g, c, a) => { return a.player == card.getOwner(); }, ID)));
             })
         };
@@ -765,7 +765,7 @@ namespace TouhouHeartstone.Builtin
                 if (c.isServant())
                     await c.addBuff(game,
                         new GeneratedBuff(ID, new CostModifier(5),
-                            new RemoveBuffAfter<HearthStoneRule.TurnStartEventArg>(PILE.HAND,
+                            new RemoveBuffAfter<HearthStoneRule.TurnStartEventArg>(PileFlag.hand,
                                 (g, c1, a) => { return a.player == card.getOwner(); }, ID)));
             }
         }

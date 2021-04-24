@@ -892,7 +892,7 @@ namespace TouhouHeartstone
             }
         }
 
-        public static Task activeEffect(this Card card, CardEngine game, Player player, Card[] targets)
+        public static Task activeEffect(this Card card, CardEngine game,Player player, Card[] targets)
         {
             ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
             if (triggerEffect != null)

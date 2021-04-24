@@ -59,15 +59,15 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,(game,card,arg)=>
+            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,(game,card,buff,arg)=>
             {
                 if(arg.player!=game.getCurrentPlayer())//不是自己的回合
                     return false;
                 return true;
-            },(game,card,targets)=>
+            },(game,card,buff,targets)=>
             {
                 return false;
-            },async (game,card,arg)=>
+            },async (game,card,buff,arg)=>
             {
                 await THHCard.heal(arg.player.getField(),game,card,1);
             })
