@@ -741,7 +741,7 @@ namespace TouhouHeartstone
                 }
                 if (skill.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect effect)
                 {
-                    if (!effect.checkCondition(game, card, new object[]
+                    if (!effect.checkCondition(game, card,null, new object[]
                     {
                         new HearthStoneRule.ActiveEventArg(player,card,new object[0])
                     }))
@@ -833,7 +833,7 @@ namespace TouhouHeartstone
                 return false;
             if (targetEffect != null && !targetEffect.checkTargets(game, card, null, new object[] { target }))
                 return false;
-            if (triggerEffect != null && triggerEffect.checkTargets(game, card, null, new object[] { target }))
+            if (triggerEffect != null && triggerEffect.checkTargets(game, card,null, null, new object[] { target }))
                 return false;
             return true;
         }
@@ -897,7 +897,7 @@ namespace TouhouHeartstone
             ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
             if (triggerEffect != null)
             {
-                return triggerEffect.execute(game, card, new object[] { new HearthStoneRule.ActiveEventArg(player, card, targets) }, targets);
+                return triggerEffect.execute(game, card,null, new object[] { new HearthStoneRule.ActiveEventArg(player, card, targets) }, targets);
             }
             IActiveEffect activeEffect = card.define.getActiveEffect();
             if (activeEffect != null)

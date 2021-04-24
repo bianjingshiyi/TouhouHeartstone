@@ -174,9 +174,9 @@ namespace TouhouHeartstone.Builtin
         class ItemTrigggerEffectBefore<T> : THHEffectBefore<T> where T : IEventArg
         {
             public ItemTrigggerEffectBefore(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute)
-                : base(PILE.ITEM, onCheckCondition, null, async (g, c, a) =>
+                : base(PILE.ITEM, onCheckCondition, null, async (g, c,b, a) =>
                 {
-                    await onExecute?.Invoke(g, c, a);
+                    await onExecute?.Invoke(g, c,b, a);
                     await c.damage(g, c, 1);
                     await g.updateDeath();
                 })
