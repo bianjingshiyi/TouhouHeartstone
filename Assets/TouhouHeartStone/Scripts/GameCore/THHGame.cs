@@ -735,7 +735,7 @@ namespace TouhouHeartstone
                 return Task.CompletedTask;
         }
 
-        public override async Task onPlayerCommand(CardEngine game, Player player, ICommand command)
+        public override async Task onPlayerCommand(CardEngine game, Player player, CardEngine.CommandEventArg command)
         {
             throw new NotImplementedException();
             
