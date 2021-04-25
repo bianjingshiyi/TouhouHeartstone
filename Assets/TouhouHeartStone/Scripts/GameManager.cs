@@ -501,7 +501,7 @@ namespace Game
                     item.BorderImage.sprite = heal.infoDic.First().Key.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.SilenceEventArg silence:
-                    item.IconImage.sprite = item.healIcon;
+                    item.IconImage.sprite = item.silenceIcon;
                     item.Text.text = lang._(GAME_MANAGER_SILENCE);
                     item.Image.sprite = getManager<TableManager>().getSkin(silence.cards[0]).image;
                     item.BorderImage.color = silence.cards[0].getOwner() == localPlayer ? item.selfColor : item.oppoColor;
