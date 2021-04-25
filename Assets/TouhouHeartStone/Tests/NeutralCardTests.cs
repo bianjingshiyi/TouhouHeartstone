@@ -1078,7 +1078,7 @@ namespace Tests
             you.cmdUse<MizuhashiParsee>(game, out var s);
             Assert.AreEqual(2, s.getAttack(game));
             game.skipUntilCanUse<MizuhashiParsee>(you);
-            def.setAttack(game, 3);
+            throw new NotImplementedException("Test compromised");// def.setAttack(game, 3);
             you.cmdUse<MizuhashiParsee>(game, out s);
             Assert.AreEqual(4, s.getAttack(game));
             game.Dispose();

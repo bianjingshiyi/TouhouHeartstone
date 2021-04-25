@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using System.Linq;
@@ -122,7 +123,7 @@ namespace Tests
             oppo.cmdUse(game, oppo.getHand().First(), 1);
             oppo.cmdTurnEnd(game);
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 4);
-            you.getMaster().setAttack(game, 5);
+            throw new NotImplementedException("Test compromised");// you.getMaster().setAttack(game, 5);
             you.cmdUse(game, you.getHand().getCard<Roukanken>());//使用楼观剑
             Assert.IsInstanceOf<Roukanken>(you.getItem().define);
             you.cmdAttack(game, you.getMaster(), target: oppo.getField()[0]);
@@ -145,7 +146,7 @@ namespace Tests
             oppo.cmdUse(game, oppo.getHand().First(), 1);
             oppo.cmdTurnEnd(game);
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 5);
-            you.getMaster().setAttack(game, 5);
+            throw new NotImplementedException("Test compromised");// you.getMaster().setAttack(game, 5);
             you.cmdUse(game, you.getHand().getCard<Roukanken>());
             Assert.IsInstanceOf<Roukanken>(you.getItem().define);
             you.cmdUse(game, you.getHand().getCard<YoukaiSmith>());

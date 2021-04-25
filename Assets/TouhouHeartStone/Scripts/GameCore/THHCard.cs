@@ -35,15 +35,15 @@ namespace TouhouHeartstone
         }
         public static int getCost(this Card card, IGame game)
         {
-            int result = card.getProp<int>(game, nameof(ServantCardDefine.cost));
+            int result = card.getProp<int>(game, DEFINE.COST);
             if (result < 0)
                 return 0;
             return result;
         }
-        public static Task<IPropChangeEventArg> setCost(this Card card, IGame game, int value)
-        {
-            return card.setProp(game, nameof(ServantCardDefine.cost), value);
-        }
+        // public static Task<IPropChangeEventArg> setCost(this Card card, IGame game, int value)
+        // {
+        //     return card.setProp(game, nameof(ServantCardDefine.cost), value);
+        // }
         
         public static int getAttack(this Card card, IGame game)
         {
@@ -62,19 +62,20 @@ namespace TouhouHeartstone
             return result;
         }
         
-        public static Task<IPropChangeEventArg> setAttack(this Card card, IGame game, int value)
-        {
-            return card.setProp(game, DEFINE.ATTACK, value);
-        }
+        // public static Task<IPropChangeEventArg> setAttack(this Card card, IGame game, int value)
+        // {
+        //     return card.setProp(game, DEFINE.ATTACK, value);
+        // }
         public static int getLife(this Card card, IGame game)
         {
-            return card.getProp<int>(game, nameof(ServantCardDefine.life));
+            return card.getProp<int>(game, DEFINE.LIFE);
         }
         
-        public static Task<IPropChangeEventArg> setLife(this Card card, IGame game, int value)
-        {
-            return card.setProp(game, nameof(ServantCardDefine.life), value);
-        }
+        // public static Task<IPropChangeEventArg> setLife(this Card card, IGame game, int value)
+        // {
+        //     return card.setProp(game, nameof(ServantCardDefine.life), value);
+        // }
+        
         /// <summary>
         /// 一个随从/物品/英雄是否已经死了？除了生命值小于等于0以外，还有一个isDead的属性来控制卡片是否在死亡结算当中。
         /// </summary>
@@ -86,7 +87,7 @@ namespace TouhouHeartstone
                 return true;
             if (card.getLife(game) <= 0)
                 return true;
-            if (card.getProp<bool>(game, nameof(THHCard.isDead)))
+            if (card.getProp<bool>(game, CARD.ISDEAD))
                 return true;
             return false;
         }
@@ -97,14 +98,14 @@ namespace TouhouHeartstone
         /// <param name="value"></param>
         public static Task<IPropChangeEventArg> setDead(this Card card, IGame game, bool value)
         {
-            return card.setProp(game, nameof(THHCard.isDead), value);
+            return card.setProp(game, CARD.ISDEAD, value);
         }
         public static async Task<IPropChangeEventArg[]> setDead(this IEnumerable<Card> cards, IGame game, bool value)
         {
             List<IPropChangeEventArg> argList = new List<IPropChangeEventArg>();
             foreach (var card in cards)
             {
-                argList.Add(await card.setProp(game, nameof(THHCard.isDead), value));
+                argList.Add(await card.setProp(game, CARD.ISDEAD, value));
             }
             return argList.ToArray();
         }
@@ -176,19 +177,19 @@ namespace TouhouHeartstone
         }
         public static bool isReady(this Card card, IGame game)
         {
-            return card.getProp<bool>(game, "isReady");
+            return card.getProp<bool>(game, CARD.ISREADY);
         }
         public static Task<IPropChangeEventArg> setReady(this Card card, IGame game, bool value)
         {
-            return card.setProp(game, "isReady", value);
+            return card.setProp(game, CARD.ISREADY, value);
         }
         public static int getAttackTimes(this Card card, IGame game)
         {
-            return card.getProp<int>(game, "attackTimes");
+            return card.getProp<int>(game, CARD.ATTACK_TIMES);
         }
         public static Task<IPropChangeEventArg> setAttackTimes(this Card card, IGame game, int value)
         {
-            return card.setProp(game, "attackTimes", value);
+            return card.setProp(game, CARD.ATTACK_TIMES, value);
         }
         public static int getMaxAttackTimes(this Card card, IGame game)
         {
@@ -852,7 +853,7 @@ namespace TouhouHeartstone
             {
                 await card.setDead(game, false);
                 await card.setCurrentLife(game, servant.life);
-                await card.setCost(game, servant.cost);
+                // await card.setCost(game, servant.cost);
                 await card.setSpellDamage(game, servant.spellDamage);
                 await card.setKeywords(game, servant.keywords);
                 await card.setTags(game, servant.tags);
@@ -862,7 +863,7 @@ namespace TouhouHeartstone
             }
             else if (card.define is SpellCardDefine spell)
             {
-                await card.setCost(game, spell.cost);
+                // await card.setCost(game, spell.cost);
                 foreach (var keyword in spell.keywords)
                 {
                     if (string.IsNullOrEmpty(keyword))
@@ -874,13 +875,13 @@ namespace TouhouHeartstone
             }
             else if (card.define is SkillCardDefine skill)
             {
-                await card.setCost(game, skill.cost);
+                // await card.setCost(game, skill.cost);
             }
             else if (card.define is ItemCardDefine item)
             {
-                await card.setCost(game, item.cost);
-                await card.setAttack(game, item.attack);
-                await card.setLife(game, item.life);
+                // await card.setCost(game, item.cost);
+                // await card.setAttack(game, item.attack);
+                // await card.setLife(game, item.life);
             }
 
         }

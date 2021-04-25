@@ -58,6 +58,19 @@ namespace TouhouHeartstone
                     }
                 }
             }
+            //把内置数据放入卡牌定义的动态词典中
+            foreach (var define in cardList)
+            {
+                if (define is THHCardDefine d)
+                {
+                    d.setProp(DEFINE.COST, d.cost);
+                    d.setProp(DEFINE.LIFE, d.life);
+                    d.setProp(DEFINE.ATTACK, d.attack);
+                    d.setProp(DEFINE.TAGS, d.tags);
+                    d.setProp(DEFINE.KEYWORDS, d.keywords);
+                    d.setProp(DEFINE.ISTOKEN, d.isToken);
+                }
+            }
             return cardList.ToArray();
         }
     }

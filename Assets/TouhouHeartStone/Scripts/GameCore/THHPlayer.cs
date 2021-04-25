@@ -257,7 +257,7 @@ namespace TouhouHeartstone
                 game.logger.logTrace("由于" + player + "的道具栏已满，摧毁当前道具");
                 await player.destroyItem(game);
             }
-            await item.setAttack(game, item.getAttack(game));
+            // await item.setAttack(game, item.getAttack(game));
             await item.setCurrentLife(game, item.getLife(game));
             await player.getHand().moveTo(game, item, player[PILE.ITEM]);
             game.logger.logTrace(player + "装备" + item);

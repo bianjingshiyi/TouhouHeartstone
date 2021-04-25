@@ -5,5 +5,8 @@
         public const string CURRENT_LIFE = "currentLife";
         public const string ARMOR = "armor";
         public const string SILENCE = "silence";
+        public const string ISDEAD = "isDead";
+        public const string ISREADY = "isReady";
+        public const string ATTACK_TIMES = "attackTimes";
     }
 }

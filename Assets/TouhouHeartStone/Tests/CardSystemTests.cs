@@ -107,7 +107,7 @@ namespace Tests
         public void subAttackBuffApplyAndRevertTest()
         {
             Card card = new Card(0);
-            card.setAttack(null, 2);
+            throw new NotImplementedException("Test compromised");// card.setAttack(null, 2);
             TestBuff[] buffs = new TestBuff[3];
             for (int i = 0; i < buffs.Length; i++)
             {
@@ -133,7 +133,7 @@ namespace Tests
                 logger = new UnityLogger()
             };
             Card card = new Card(0);
-            card.setLife(game, 1);
+            throw new NotImplementedException("Test compromised");// card.setLife(game, 1);
             card.setCurrentLife(game, 1);
             TestBuff haloBuff = new TestBuff(new LifeModifier(1));
             _ = card.addBuff(game, haloBuff);
@@ -157,7 +157,7 @@ namespace Tests
                 logger = new UnityLogger()
             };
             Card card = new Card(0);
-            card.setLife(game, 5);
+            throw new NotImplementedException("Test compromised");// card.setLife(game, 5);
             card.setCurrentLife(game, 5);
             TestBuff buff = new TestBuff(new LifeModifier(3, true));
             _ = card.addBuff(game, buff);

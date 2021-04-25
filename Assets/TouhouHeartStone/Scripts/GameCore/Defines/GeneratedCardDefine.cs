@@ -6,7 +6,7 @@ using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 namespace TouhouHeartstone
 {
-    public class GeneratedCardDefine : THHCardDefine
+    public class GeneratedCardDefine : CardDefine
     {
         public override int id { get; set; } = 0;
         Dictionary<string, object> dicProp { get; } = new Dictionary<string, object>();

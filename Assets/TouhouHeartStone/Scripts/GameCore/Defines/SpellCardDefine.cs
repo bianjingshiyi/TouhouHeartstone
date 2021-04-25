@@ -5,32 +5,6 @@ namespace TouhouHeartstone
     public abstract class SpellCardDefine : THHCardDefine
     {
         public override string type { get; set; } = DEFINE.SPELL;
-        public abstract int cost { get; set; }
-        public virtual string[] keywords { get; set; } = new string[0]; 
-        [Obsolete("使用KEYWORD.SECRET作为替代")]
-        public virtual bool isSecret { get; set; } = false;
-        public virtual string[] tags { get; set; } = new string[0];
-        public override T getProp<T>(string propName)
-        {
-            if (propName == nameof(cost))
-                return (T)(object)cost;
-            if (propName == nameof(tags))
-                return (T)(object)tags;
-            if (propName == nameof(keywords))
-                return (T)(object)keywords;
-            else
-                return base.getProp<T>(propName);
-        }
-        public override void merge(CardDefine newVersion)
-        {
-            if (newVersion.type != type)
-                UberDebug.LogWarning(newVersion + "的类型与" + this + "不同，可能是一次非法的数据合并！");
-            if (newVersion is GeneratedCardDefine generated)
-            {
-                if (generated.hasProp(nameof(cost)))
-                    cost = generated.getProp<int>(nameof(cost));
-            }
-        }
         public override string isUsable(CardEngine engine, TouhouCardEngine.Player player, Card card)
         {
             return null;

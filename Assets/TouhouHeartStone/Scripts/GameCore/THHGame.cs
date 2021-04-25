@@ -71,11 +71,6 @@ namespace TouhouHeartstone
             return (THHCardDefine[]) game.getDefines();
         }
 
-        public static Card createCard(this CardEngine game, CardDefine define)
-        {
-            return getRule(game).createCard(game, define);
-        }
-
         public static Card createCard<T>(this CardEngine game) where T : CardDefine
         {
             return game.createCard(game.getDefine<T>());
@@ -369,9 +364,9 @@ namespace TouhouHeartstone
             player.addPile(new Pile(game, PILE.WARP));
             player.addPile(new Pile(game, PILE.HEAD, maxCount: 5));
             player.addPile(new Pile(game, PILE.ITEM, 1));
-            player[PILE.MASTER].add(game, createCard(game, master));
-            player[PILE.SKILL].add(game, createCard(game, game.getDefine(master.skillID)));
-            player[PILE.DECK].add(game, deck.Select(d => createCard(game, d)));
+            player[PILE.MASTER].add(game, game.createCard(master));
+            player[PILE.SKILL].add(game, game.createCard(game.getDefine(master.skillID)));
+            player[PILE.DECK].add(game, deck.Select(d => game.createCard(d)));
             player.setIsPrepared(false);
             player.setGem(game, 0);
             player.setMaxGem(game, 0);
@@ -383,57 +378,6 @@ namespace TouhouHeartstone
         public Player getPlayer(CardEngine game, int id)
         {
             return game.players.FirstOrDefault(p => p.id == id);
-        }
-
-        public Card createCard(CardEngine game, CardDefine define)
-        {
-            Card card = game.issueCard(define);
-            if (define is MasterCardDefine master)
-            {
-                card.setLife(game, master.life);
-            }
-            else if (define is ServantCardDefine servant)
-            {
-                card.setCost(game, servant.cost);
-                card.setAttack(game, servant.attack);
-                card.setLife(game, servant.life);
-                card.setSpellDamage(game, servant.spellDamage);
-
-                foreach (string keyword in servant.keywords)
-                {
-                    if (string.IsNullOrEmpty(keyword))
-                        continue;
-                    card.setProp(game, keyword, true);
-                }
-
-                card.setProp(game, DEFINE.KEYWORDS, servant.keywords);
-                card.setProp(game, nameof(ServantCardDefine.tags), servant.tags);
-            }
-            else if (define is SpellCardDefine spell)
-            {
-                card.setCost(game, spell.cost);
-                foreach (var keyword in spell.keywords)
-                {
-                    if (string.IsNullOrEmpty(keyword))
-                        continue;
-                    card.setProp(game, keyword, true);
-                }
-
-                card.setProp(game, DEFINE.KEYWORDS, spell.keywords);
-                card.setProp(game, nameof(SpellCardDefine.tags), spell.tags);
-            }
-            else if (define is SkillCardDefine skill)
-            {
-                card.setCost(game, skill.cost);
-            }
-            else if (define is ItemCardDefine item)
-            {
-                card.setCost(game, item.cost);
-                card.setAttack(game, item.attack);
-                card.setLife(game, item.life);
-            }
-
-            return card;
         }
 
         #region Gameflow
