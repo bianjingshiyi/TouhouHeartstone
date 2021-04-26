@@ -1299,20 +1299,41 @@ namespace TouhouHeartstone.Builtin
             var choice = await c.getOwner().askSelect(g, new[] { ReturnOfImperishableNight_Eternity_N.ID, EndOfImperishableNight_Instant_N.ID }, title: "选择一项");
             if (choice == ReturnOfImperishableNight_Eternity_N.ID)
             {
-                await c.getOwner().getMaster().addBuff(g, new GeneratedBuff(ID, new THHEffectBefore<HearthStoneRule.DrawEventArg>(
-                    PileFlag.master,
-                    (g1, c1,b1,a1) => { return a1.player == c1.getOwner(); },
-                    null,
-                    async (g1, c1,b1, a1) => { a1.isCanceled = true; }
-                ), new RemoveBuffAfterTimeUp<HearthStoneRule.TurnEndEventArg>(PileFlag.master, 2,
-                    (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); })));
+                await c.getOwner().getMaster().addBuff(g, new GeneratedBuff(ID, 
+                    new THHEffectBefore<HearthStoneRule.DrawEventArg>(
+                        PileFlag.master,
+                       (g1, c1,b1,a1) => { return a1.player == c1.getOwner(); },
+                       null,
+                       async (g1, c1,b1, a1) => { a1.isCanceled = true; }),
+                    new THHEffectBefore<HearthStoneRule.BurnEventArg>(
+                       PileFlag.master,
+                       (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); },
+                       null,
+                       async (g1, c1, b1, a1) => { a1.isCanceled = true; }),
+                    new THHEffectBefore<HearthStoneRule.FatigueEventArg>(
+                        PileFlag.master,
+                        (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); },
+                        null,
+                        async (g1, c1, b1, a1) => { a1.isCanceled = true; }),
+                    new RemoveBuffAfterTimeUp<HearthStoneRule.TurnEndEventArg>(PileFlag.master, 2,
+                       (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); })));
 
                 await g.getOpponent(c.getOwner()).getMaster().addBuff(g, new GeneratedBuff(ID,
                     new THHEffectBefore<HearthStoneRule.DrawEventArg>(PileFlag.master,
                         (g1, c1,b1, a1) => { return a1.player == c1.getOwner(); },
                         null,
-                        async (g1, c1,b1, a1) => { a1.isCanceled = true; }
-                    ), new RemoveBuffAfterTimeUp<HearthStoneRule.TurnEndEventArg>(PileFlag.master, 2,
+                        async (g1, c1,b1, a1) => { a1.isCanceled = true; }),
+                    new THHEffectBefore<HearthStoneRule.BurnEventArg>(
+                        PileFlag.master,
+                        (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); },
+                        null,
+                        async (g1, c1, b1, a1) => { a1.isCanceled = true; }),
+                    new THHEffectBefore<HearthStoneRule.FatigueEventArg>(
+                        PileFlag.master,
+                        (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); },
+                        null,
+                        async (g1, c1, b1, a1) => { a1.isCanceled = true; }),
+                    new RemoveBuffAfterTimeUp<HearthStoneRule.TurnEndEventArg>(PileFlag.master, 2,
                         (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); })));
             }
             else
