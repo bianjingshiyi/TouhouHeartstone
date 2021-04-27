@@ -35,7 +35,7 @@ namespace Game
         {
             game.answers.onRequest -= Answers_onRequest;
         }
-        
+
         private async void Answers_onRequest_dummy(IRequest request)
         {
             if (game.answers == null)
@@ -44,6 +44,7 @@ namespace Game
             {
                 return;
             }
+
             await Task.Delay(1000);
             switch (request)
             {
@@ -61,6 +62,15 @@ namespace Game
                     break;
                 case DiscoverRequest discover:
                     resp = discover.getDefaultResponse(game, player.id);
+
+                    //////////////////////////////////////////////////////////////////////////////////////////////////
+                    int eirin = discover.cardIdArray.FirstOrDefault(id => game.getCard(id).define is GameOfLife_Rise_N);
+                    if (eirin != 0)
+                    {
+                        resp = new DiscoverResponse() {cardId = eirin};
+                    }
+                    //////////////////////////////////////////////////////////////////////////////////////////////////
+
                     game.logPlayerAction(player.id, resp);
                     _ = game.answers.answer(player.id, resp);
                     break;
@@ -78,6 +88,7 @@ namespace Game
             {
                 return;
             }
+
             await Task.Delay(1000);
             switch (request)
             {
@@ -200,7 +211,8 @@ namespace Game
                     int value = player.getMaster().getAttack(game) > opponent.getMaster().getCurrentLife(game)
                         ? opponent.getMaster().getLife(game)
                         : player.getMaster().getAttack(game);
-                    responseDic.Add(new AttackResponse() {cardId = player.getMaster().id, targetId = opponent.getMaster().id},
+                    responseDic.Add(
+                        new AttackResponse() {cardId = player.getMaster().id, targetId = opponent.getMaster().id},
                         value);
                 }
 
@@ -229,7 +241,8 @@ namespace Game
                     int value = servant.getAttack(game) > opponent.getMaster().getCurrentLife(game)
                         ? opponent.getMaster().getLife(game)
                         : servant.getAttack(game);
-                    responseDic.Add(new AttackResponse() {cardId = servant.id, targetId = opponent.getMaster().id}, value);
+                    responseDic.Add(new AttackResponse() {cardId = servant.id, targetId = opponent.getMaster().id},
+                        value);
                 }
 
                 foreach (var target in opponent.getField())
@@ -267,6 +280,8 @@ namespace Game
                 if (calcBattlecryValue(game, player, card, opponent, target, out value))
                     return value;
                 if (calcSanaeValue(game, player, card, opponent, target, out value))
+                    return value;
+                if (calcNazrinValue(game, player, card, opponent, target, out value))
                     return value;
                 else
                     value = card.getCost(game);
@@ -310,7 +325,9 @@ namespace Game
                     value = Youmu.isPreHeated(game, card) ? 3 : 2;
                     return true;
                 case FantasyOfEnteringEnlightenment _:
-                    value = Youmu.isPreHeated(game, card) ? calcBuffValue(game, player, oppo, player.getMaster(), 0, 6) : 0;
+                    value = Youmu.isPreHeated(game, card)
+                        ? calcBuffValue(game, player, oppo, player.getMaster(), 0, 6)
+                        : 0;
                     return true;
                 case HalfPhantonSlam _:
                     value = calcDamageValue(game, player, oppo, target, player.getMaster().getArmor(game));
@@ -410,7 +427,8 @@ namespace Game
                         calcServantValue(game, player, opponent, target) - 1;
                     return true;
                 case PhlogisticRain _:
-                    value = calcRandomDamageValue(game, player, opponent, opponent.getField().Append(opponent.getMaster()), 1) *
+                    value = calcRandomDamageValue(game, player, opponent,
+                                opponent.getField().Append(opponent.getMaster()), 1) *
                             6;
                     return true;
                 case StElmoPillar _:
@@ -425,7 +443,8 @@ namespace Game
                     return true;
                 case ForestBlaze _:
                     value = calcBuffAllValue(game, player, opponent, player.getField(), 2, 2) +
-                            calcRandomDamageValue(game, player, opponent, opponent.getField(), 1) * player.getField().count;
+                            calcRandomDamageValue(game, player, opponent, opponent.getField(), 1) *
+                            player.getField().count;
                     return true;
                 case WaterElf _:
                     value = calcHealingValue(game, player, opponent, target,
@@ -540,7 +559,8 @@ namespace Game
                     value = calcRandomDamageValue(game, player, opponent, opponent.getField(), 4);
                     return true;
                 case Bomb4 _:
-                    value = 6 * calcRandomDamageValue(game, player, opponent, opponent.getField().Concat(player.getField()), 1);
+                    value = 6 * calcRandomDamageValue(game, player, opponent,
+                        opponent.getField().Concat(player.getField()), 1);
                     return true;
                 case GodSummon _:
                     value = 1;
@@ -570,6 +590,10 @@ namespace Game
             value = calcServantValue(game, player, opponent, card);
             switch (card.define)
             {
+                case YagokoroEirin_N _:
+                    value += calcHealingValue(game, player, opponent, target,
+                        Math.Min(target.getCurrentLife(game), 15));
+                    return true;
                 case RifleHunter _:
                     value += calcDamageValue(game, player, opponent, target, 2);
                     return true;
@@ -691,6 +715,46 @@ namespace Game
             }
         }
 
+        bool calcNazrinValue(CardEngine game, Player player, Card card, Player opponent, Card target,
+            out float value)
+        {
+            switch (card.define)
+            {
+                case Nazrin_01 _:
+                    value = calcShieldValue(game, player, opponent, target);
+                    return true;
+                case Nazrin_04 _:
+                    value = 100;
+                    return true;
+                case Nazrin_05 _:
+                    value = 3 * player.getHand().count;
+                    return true;
+                case Nazrin_10 _:
+                    value = calcHealingValue(game, player, opponent, target, 4) +
+                        (target.getLife(game) - target.getCurrentLife(game)) > 4
+                            ? 0
+                            : calcServantValue(1, 1);
+                    return true;
+                case Nazrin_13 _:
+                    value = player.getField().count - 3;
+                    return true;
+                case Nazrin_17 _:
+                    value = calcBuffAllValue(game, player, opponent, player.getField(), 2, 0);
+                    return true;
+                case Nazrin_18 _:
+                    value = -calcServantValue(game, player, opponent, target) + calcServantValue(1, 1);
+                    return true;
+                default:
+                    value = 0;
+                    return false;
+            }
+        }
+
+        float calcShieldValue(CardEngine game, Player you, Player oppo, Card target)
+        {
+            return calcServantValue(game, you, oppo, target) - target.getCurrentLife(game);
+        }
+
         /// <summary>
         /// AI估算随从价值的基础公式
         /// </summary>
@@ -760,6 +824,7 @@ namespace Game
             {
                 return value;
             }
+
             return -value;
         }
 
@@ -869,6 +934,7 @@ namespace Game
             {
                 value += calcServantValue(game, player, opponent, target);
             }
+
             value /= targets.Count();
             value *= num;
             return value;
