@@ -731,9 +731,9 @@ namespace Game
                     return true;
                 case Nazrin_10 _:
                     value = calcHealingValue(game, player, opponent, target, 4) +
-                        (target.getLife(game) - target.getCurrentLife(game)) > 4
+                        ((target.getLife(game) - target.getCurrentLife(game)) > 4
                             ? 0
-                            : calcServantValue(1, 1);
+                            : calcSummonValue(player, 1, 1));
                     return true;
                 case Nazrin_13 _:
                     value = player.getField().count - 3;
@@ -753,6 +753,15 @@ namespace Game
         float calcShieldValue(CardEngine game, Player you, Player oppo, Card target)
         {
             return calcServantValue(game, you, oppo, target) - target.getCurrentLife(game);
+        }
+
+        float calcSummonValue(Player player, int attack, int life)
+        {
+            if (player.getField().isFull)
+            {
+                return 0;
+            }
+            return calcServantValue(attack, life);
         }
 
         /// <summary>
