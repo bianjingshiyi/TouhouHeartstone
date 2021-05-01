@@ -55,8 +55,8 @@ namespace Game
                 if (table.tryGetServant(card, out var servant))//尝试获取死亡的随从的随从UI
                 {
                     servant.onDeath.invokeAfterAnim();
-                    table.ui.SelfFieldList.removeItemImmediate(servant);//从自己的场上移除随从UI
-                    table.ui.EnemyFieldList.removeItemImmediate(servant);//从敌人的场上移除随从UI
+                    table.ui.SelfFieldList.removeItem(servant,true);//从自己的场上移除随从UI
+                    table.ui.EnemyFieldList.removeItem(servant,true);//从敌人的场上移除随从UI
                 }
                 else if (table.tryGetMaster(card, out var master))
                 {
