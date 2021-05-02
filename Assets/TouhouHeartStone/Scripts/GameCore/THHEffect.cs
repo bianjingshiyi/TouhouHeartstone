@@ -885,7 +885,7 @@ namespace TouhouHeartstone
             Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
             game.logger.log("Effect", card + "注销亡语" + triggerName);
             game.triggers.removeAfter(trigger);
-            return card.setProp<Trigger<THHCard.DamageEventArg>>(game, triggerName, null);
+            return card.setProp(game, triggerName, null);
         }
     }
 
@@ -1159,7 +1159,7 @@ namespace TouhouHeartstone
                 {
                     if ((this as ITriggerEffect).checkCondition(game, card, buff, new object[] { arg }))
                     {
-                        await card.setProp<int>(game, missionName, card.getProp<int>(game, missionName) + 1);
+                        await card.setProp(game, missionName, card.getProp<int>(game, missionName) + 1);
                     }
                     if (card.getProp<int>(game, missionName) == aimCount)
                     {

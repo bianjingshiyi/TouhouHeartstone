@@ -501,10 +501,10 @@ namespace TouhouHeartstone.Builtin
             Card card4 = game.createCard<GodMiracleOfRevolution>();
             List<Card> options = new List<Card> {card1, card2, card3, card4};
 
-            await card1.setProp<int>(game, "count1", count + 3);
-            await card2.setProp<int>(game, "count2", count + 1);
-            await card3.setProp<int>(game, "count3", count + 6);
-            await card4.setProp<int>(game, "count4", count + 2);
+            await card1.setProp(game, "count1", count + 3);
+            await card2.setProp(game, "count2", count + 1);
+            await card3.setProp(game, "count3", count + 6);
+            await card4.setProp(game, "count4", count + 2);
 
             
             var arg = await card.getOwner().chooseOne(game, options, title:  "见证神迹！");

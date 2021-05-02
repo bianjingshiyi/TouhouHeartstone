@@ -449,12 +449,12 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<HearthStoneRule.UseEventArg>(PileFlag.field,
-                (g1,c1,b1,a1)=>
+            new THHEffectBefore<HearthStoneRule.UseEventArg>(PileFlag.hand,
+                (g1,c1,a1)=>
                 {
                     return a1.card == c1 && c1.getOwner().getItem() != null;
                 },null,
-                async (g1,c1,b1,a1)=>
+                async (g1,c1,a1)=>
                 {
                     a1.action = async arg =>
                     {
