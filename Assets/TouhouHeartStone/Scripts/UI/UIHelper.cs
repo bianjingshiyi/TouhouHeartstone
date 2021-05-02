@@ -5,6 +5,8 @@ using System;
 using UnityEngine;
 using UICard = UI.Card;
 using Card = TouhouCardEngine.Card;
+using System.Linq;
+using BJSYGameCore;
 namespace Game
 {
     static class UIHelper
@@ -20,7 +22,7 @@ namespace Game
             ui.itemCardFace.image.sprite = skin.image;
             ui.servantCardFace.nameText.text = skin.name;
             ui.servantCardFace.subNameText.text = skin.subname;
-            ui.servantCardFace.raceNameText.text = ""; // todo: 设置种族
+            ui.servantCardFace.raceNameText.text = (card as ServantCardDefine).tags.FirstOrDefault();
             ui.spellCardFace.nameText.text = skin.name;
             ui.itemCardFace.nameText.text = skin.name;
             ui.servantCardFace.descText.text = skin.desc;

@@ -510,7 +510,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u8FD9\u662F\u79CD\u65CF"
+  m_text: "\u79CD\u65CF"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7ff19f2fba55f2046a67667a8a9c4eb8, type: 2}
   m_sharedMaterial: {fileID: 9008980009797439040, guid: 7ff19f2fba55f2046a67667a8a9c4eb8,
@@ -520,8 +520,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4280229663
-  m_fontColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
+    rgba: 4279845988
+  m_fontColor: {r: 0.3921569, g: 0.26666668, b: 0.098039225, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -538,8 +538,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

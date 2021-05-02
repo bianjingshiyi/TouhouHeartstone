@@ -1027,9 +1027,7 @@ namespace Game
                 //ui.servantCardFace.Charactertype = card.define.getCharacterID();
                 ui.servantCardFace.image.sprite = skin.image;
                 ui.servantCardFace.nameText.text = skin.name;
-                ui.servantCardFace.raceNameText.text = lang._(card.getTags(game).FirstOrDefault());
-                //Debug.Log("这里是卡牌种族" + card.getTags(game).FirstOrDefault().ToString() + lang._(card.getTags(game).FirstOrDefault().ToString()));
-                //lang._(card.define.getProp<String[]>(DEFINE.TAGS).FirstOrDefault());
+                ui.servantCardFace.raceNameText.text = lang._((card.define as ServantCardDefine).tags.FirstOrDefault());
                 ui.servantCardFace.subNameText.text = skin.subname;
                 ui.servantCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
                 ui.servantCardFace.costPropNumber.text.text = card.getCost(game).ToString();
