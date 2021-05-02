@@ -16,13 +16,13 @@ namespace Game
             ui.servantCardFace.costPropNumber.text.text = card.getCost().ToString();
             ui.spellCardFace.costPropNumber.text.text = card.getCost().ToString();
             ui.itemCardFace.costPropNumber.text.text = card.getCost().ToString();
-
             ui.servantCardFace.image.sprite = skin.image;
             ui.spellCardFace.image.sprite = skin.image;
             ui.itemCardFace.image.sprite = skin.image;
             ui.servantCardFace.nameText.text = skin.name;
             ui.servantCardFace.subNameText.text = skin.subname;
-            ui.servantCardFace.raceNameText.text = (card as ServantCardDefine).tags.FirstOrDefault();
+            LangManager Lang = ui.ui.getManager<LangManager>();
+            ui.servantCardFace.raceNameText.text = Lang._((card as ServantCardDefine).tags.FirstOrDefault());
             ui.spellCardFace.nameText.text = skin.name;
             ui.itemCardFace.nameText.text = skin.name;
             ui.servantCardFace.descText.text = skin.desc;
