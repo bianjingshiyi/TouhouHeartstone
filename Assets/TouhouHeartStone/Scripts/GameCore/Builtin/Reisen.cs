@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -275,7 +276,7 @@ namespace TouhouHeartstone.Builtin
     }
     /// <summary>
     /// 幻象震爆
-    /// 1,对敌方英雄打3
+    /// 
     /// </summary>
     public class MindExplosion : SpellCardDefine
     {

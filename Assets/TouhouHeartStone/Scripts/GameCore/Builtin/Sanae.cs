@@ -212,34 +212,7 @@ namespace TouhouHeartstone.Builtin
         };
     }
 
-    /// <summary>
-    /// 商业繁荣祈愿
-    /// 信仰对决（随从牌） 对目标随从造成3点伤害；获胜时再治愈你的英雄4点生命值。
-    /// </summary>
-    //[IgnoreCardDefine]
-    //public class CharmOfGoodCommerce : SpellCardDefine
-    //{
-    //    public const int ID = Sanae.ID | CATEGORY.SPELL | 0x003;
-    //    public override int id { get; set; } = ID;
-    //    public override int cost { get; set; } = 2;
-    //    public override string[] keywords { get; set; } = new string[] {KEYWORD._RevealDuel};
-
-    //    public override IEffect[] effects { get; set; } = new IEffect[]
-    //    {
-    //        new LambdaSingleTargetEffect(async (game, card, target) =>
-    //        {
-    //            THHPlayer you = card.getOwner();
-    //            var duel = await Sanae.revealDuel(you, game, 2);
-    //            if (duel.result)
-    //            {
-    //                await you.master.heal(game, card, 4);
-    //            }
-
-    //            await target.damage(game, card, 3);
-    //        }, PileFlag.both | PileFlag.field)
-    //    };
-    //}
-
+ 
     /// <summary>
     /// 五谷丰穰
     /// 治愈5点生命值，分配到所有友方角色身上。
@@ -373,33 +346,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
-    ///// <summary>
-    ///// 神明招来 盾
-    ///// 召唤手牌中的一张随机神明随从牌的复制，并使其获得圣盾和嘲讽。
-    ///// </summary>
-    //public class GodSummon_Shield : SpellCardDefine
-    //{
-    //    public const int ID = Sanae.ID | CATEGORY.SPELL | 0x009;
-    //    public override int id { get; set; } = ID;
-    //    public override int cost { get; set; } = 6;
-    //    public override IEffect[] effects { get; set; } = new IEffect[]
-    //    {
-    //        new NoTargetEffect(effect)
-    //    };
-
-    //    static async Task effect(THHGame game, Card card)
-    //    {
-    //        THHPlayer you = card.getOwner();
-    //        Card god = you.hand.Where(c => c.hasTag(game, TAG.GOD)).random(game);
-    //        if(god != null)
-    //        {
-    //            var servant = await you.createToken(game, god.define);
-    //            await servant.card.addKeywords(game, KEYWORD.SHIELD,KEYWORD.TAUNT);
-    //            //await servant.card.addBuff(game, new GeneratedBuff(ID, new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.SHIELD), new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.TAUNT)));
-    //        }
-
-    //    }
-    //}
+    
 
     /// <summary>
     /// 被操纵的巨蛙
@@ -499,7 +446,10 @@ namespace TouhouHeartstone.Builtin
             Card card2 = game.createCard<GodMiracleOfOnbashira>();
             Card card3 = game.createCard<GodMiracleOfWar>();
             Card card4 = game.createCard<GodMiracleOfRevolution>();
-            List<Card> options = new List<Card> {card1, card2, card3, card4};
+            CardDefine[] options = game.getDefines().Where(c => c is GodMiracleOfRain ||
+                                                                c is GodMiracleOfOnbashira ||
+                                                                c is GodMiracleOfWar ||
+                                                                c is GodMiracleOfRevolution).ToArray();
 
             await card1.setProp(game, "count1", count + 3);
             await card2.setProp(game, "count2", count + 1);
@@ -508,20 +458,20 @@ namespace TouhouHeartstone.Builtin
 
             
             var arg = await card.getOwner().chooseOne(game, options, title:  "见证神迹！");
-            Card choice = arg.choose;
+            CardDefine choice = arg.choose;
 
-            if (choice.define == game.getDefine<GodMiracleOfRain>())
+            if (choice == game.getDefine<GodMiracleOfRain>())
             {
                 await game.getOpponent(card.getOwner()).getField().damage(game, card, 3 + count);
             }
-            else if (choice.define == game.getDefine<GodMiracleOfOnbashira>())
+            else if (choice == game.getDefine<GodMiracleOfOnbashira>())
             {
                 for (int i = 0; i < count + 1; i++)
                 {
                     await card.getOwner().createToken(game, game.getDefine<Onbashira>());
                 }
             }
-            else if (choice.define == game.getDefine<GodMiracleOfWar>())
+            else if (choice == game.getDefine<GodMiracleOfWar>())
             {
                 await game.getOpponent(card.getOwner()).getMaster().damage(game, card, 6 + count);
             }
@@ -639,14 +589,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            //new THHEffectAfter<Sanae.RevealDuelArg>(PILE.HAND,
-            //    (game, card, arg) =>
-            //    {
-            //        return arg.player == card.getOwner();
-            //    },null,async(game,card,arg)=>
-            //    {
-            //        await card.addBuff(game,new GeneratedBuff(ID,new CostModifier(-1)));
-            //    }),
+            
             new DeathRattle(ID, async (game, card, p) =>
             {
                 int index = game.randomInt(1, 4);

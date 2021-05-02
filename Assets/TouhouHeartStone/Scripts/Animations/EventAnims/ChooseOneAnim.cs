@@ -20,7 +20,7 @@ public class ChooseOneAnim : EventAnimation<HearthStoneRule.ChooseOneEventArg>
             table.ui.Waiting.SetActive(false);
         if (_ChooseOne == null && eventArg.choose != null && eventArg.isShow)
         {
-            _ChooseOne = table.createInvokeCard(eventArg.choose, table.ui.LeftDisplayImage.rectTransform.position, table.cardPrefab.rectTransform.rect.height*table.ui.SelfHandList.rectTransform.localScale.y * 1.2f, eventArg.isShow);
+            _ChooseOne = table.createInvokeCard(table.game.createCard(eventArg.choose), table.ui.LeftDisplayImage.rectTransform.position, table.cardPrefab.rectTransform.rect.height*table.ui.SelfHandList.rectTransform.localScale.y * 1.2f, eventArg.isShow);
             _ChooseOne.asAnimator.SetBool("isFaceUp", eventArg.isShow);
         }
         if (!SimpleAnimHelper.update(table, ref _anim, _ChooseOne.ShowAnim, _ChooseOne.animator, time))

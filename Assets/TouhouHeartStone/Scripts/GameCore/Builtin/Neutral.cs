@@ -648,11 +648,11 @@ namespace TouhouHeartstone.Builtin
         public static async Task effect(CardEngine game, Card card)
         {
             var elementCards = Patchouli.getElementCards(game);
-            var selectedCard1 = await card.getOwner().askSelect(game, elementCards, title: "加入原料");
+            var selectedCard1 = await card.getOwner().chooseOne(game, elementCards, title: "投入魔法");
             var selectedCard2 = await card.getOwner()
-                .askSelect(game, elementCards.Where(define => define != selectedCard1), title: "加入原料");
-            var result = Patchouli.getMixCards(game, selectedCard1, selectedCard2);
-            await card.getOwner().discover(game, result, title: "收获");
+                .chooseOne(game, elementCards.Where(define => define != selectedCard1.choose), title: "投入魔法");
+            var result = Patchouli.getMixCards(game, selectedCard1.choose, selectedCard2.choose);
+            await card.getOwner().discover(game, result, title: "元素融合");
         }
     }
 
@@ -1224,8 +1224,10 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (g, c, t) =>
             {
-                var choice = await c.getOwner().askSelect(g, new int[] {GameOfLife_Fall_N.ID, GameOfLife_Rise_N.ID});
-                switch (choice)
+                CardDefine[] options = g.getDefines().Where(c1 => c1 is GameOfLife_Rise_N ||
+                                                                c1 is GameOfLife_Fall_N ).ToArray();
+                var choice = await c.getOwner().chooseOne(g,options);
+                switch (choice.choose.id)
                 {
                     case GameOfLife_Rise_N.ID:
                         if (t.getCurrentLife(g) <= t.getLife(g) / 2)
@@ -1296,8 +1298,10 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine g, Card c)
         {
-            var choice = await c.getOwner().askSelect(g, new[] { ReturnOfImperishableNight_Eternity_N.ID, EndOfImperishableNight_Instant_N.ID }, title: "选择一项");
-            if (choice == ReturnOfImperishableNight_Eternity_N.ID)
+            CardDefine[] options = g.getDefines().Where(c1 => c1 is ReturnOfImperishableNight_Eternity_N ||
+                                                                c1 is EndOfImperishableNight_Instant_N).ToArray();
+            var choice = await c.getOwner().chooseOne(g, options, title: "选择一项");
+            if (choice.choose is ReturnOfImperishableNight_Eternity_N)
             {
                 await c.getOwner().getMaster().addBuff(g, new GeneratedBuff(ID, 
                     new THHEffectBefore<HearthStoneRule.DrawEventArg>(
@@ -1876,9 +1880,7 @@ namespace TouhouHeartstone.Builtin
             }
 
             await card.getOwner().discover(game, usedCards.Select(c => c.define), title: "想起【......】");
-            // var choice = await card.getOwner().searchPile(game, usedCards,false, 3, );
-            // Card copy = game.createCard(choice.choose.define);
-            // await card.getOwner().tryAddCardToHand(game, copy);
+            
         }
     }
 

@@ -842,13 +842,13 @@ namespace TouhouHeartstone
         public class ChooseOneEventArg : EventArg, IDescribableEventArg
         {
             public Player player;
-            public IEnumerable<Card> options;
-            public Card choose;
+            public IEnumerable<CardDefine> options;
+            public CardDefine choose;
             public bool isShow = true;
 
             public ICard getCard(IGame game, IPlayer viewer)
             {
-                return choose;
+                return null;
             }
 
             public ICard[] getTargets(IGame game, IPlayer viewer)
@@ -880,7 +880,7 @@ namespace TouhouHeartstone
                 return new object[]
                 {
                     player.name,
-                    choose?.getFormatString()
+                    choose.GetType().Name
                 };
             }
         }

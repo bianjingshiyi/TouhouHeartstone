@@ -85,8 +85,8 @@ namespace TouhouHeartstone.Builtin
                 }, null,
                 async (game, card, arg) =>
                 {
-                    var selected = await card.getOwner().askSelect(game, card.getOwner().getDeck(), title: "广告招租");
-                    arg.card = selected;
+                    var selected = await card.getOwner().searchPile(game, card.getOwner().getDeck(), title: "抽它！");
+                    arg.card = selected.choose;
                     await card.damage(game, card, 1);
                     await game.updateDeath();
                 }),

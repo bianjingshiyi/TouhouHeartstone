@@ -47,19 +47,82 @@ namespace TouhouHeartstone.Builtin
             var elements = getElements(a).Concat(getElements(b)).Distinct().ToArray();
             return getMixCards(game).Where(c => elements.isSubset(getElements(c)) && c.id != a.id && c.id != b.id).ToArray();
         }
-        public static async Task tryMix(CardEngine game, Card card)
+
+
+        public static async Task<ElementMixArg> tryMix(CardEngine game, Card card)
         {
             Player player = card.getOwner();
-            var mixableCards = player.getHand().Where(c => getMixCards(game, card.define, c.define).Length > 0);//检查手牌中有没有可以融合的牌
-            if (mixableCards.Count() > 0)
+            var mixableCards = player.getHand().Where(c => getMixCards(game, card.define, c.define).Length > 0);
+            if (mixableCards.Count() < 0)
             {
-                var mixCard = await player.askSelect(game, mixableCards, title: "加入原料");
+                return null;
+            }
+            var eventArg = await game.triggers.doEvent(new ElementMixArg()
+            {
+                player = player,
+            },async args =>
+            {
+                Card mixCard = await player.askSelect(game, mixableCards, title: "投入魔法");
                 var mixedResults = getMixCards(game, card.define, mixCard.define);
-                var mixedResult = await player.askSelect(game, mixedResults, title: "收获");
+                var mixedResult = await player.askSelect(game, mixedResults, title: "元素融合");
                 await mixCard.setDefine(game, mixedResult);
                 await mixCard.resetCard(game);
+            });
+
+            return eventArg;
+        }
+
+
+        public class ElementMixArg : EventArg, IDescribableEventArg
+        {
+            public Player player;
+            public CardDefine define1;
+            public CardDefine define2;
+            public Card results;
+
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return viewer == player ? results : null;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return results;
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}玩家，{1}卡，{2}卡，{3}卡")]
+            const string TEMPLATE_SELF = "{0} 将 {1} 与 {2} 融合,获得{3}";
+
+            [MukioI18n.TranslateMsg("{0} 玩家")]
+            const string TEMPLATE_OTHER = "{0} 执行了元素融合";
+
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                if (!isCanceled)
+                {
+                    return viewer == player ? TEMPLATE_SELF : TEMPLATE_OTHER;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    define1.GetType().Name,
+                    define2.GetType().Name,
+                    results.getFormatString()
+                };
             }
         }
+
     }
     
     /// <summary>
@@ -400,7 +463,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             //var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5, "查询图书");
-            var discover = await card.getOwner().searchPile(game, card.getOwner().getDeck(), false, 5, "查询图书");
+            var discover = await card.getOwner().searchPile(game, card.getOwner().getDeck(), false, 5, "书海里寻找智慧");
             await card.getOwner().draw(game, discover.choose);
 
         }
@@ -440,7 +503,7 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 2; i++)
             {
-                var discovered = await card.getOwner().searchPile(game, card.getOwner().getDeck(),false, 5, "搜寻知识");
+                var discovered = await card.getOwner().searchPile(game, card.getOwner().getDeck(),false, 5, "知识中寻求方法");
                 await card.getOwner().draw(game, discovered.choose);
             }
         }
