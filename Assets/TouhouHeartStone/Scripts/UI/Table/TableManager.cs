@@ -1049,7 +1049,7 @@ namespace Game
                 ui.servantCardFace.image.sprite = skin.image;
                 ui.servantCardFace.nameText.text = skin.name;
                 if ((card.define as ServantCardDefine).tags.FirstOrDefault() != null)
-                    ui.servantCardFace.raceNameText.text = lang._(TranslateTagDic[card.getTags(game).FirstOrDefault()]);
+                    ui.servantCardFace.raceNameText.text = lang._(TranslateTagDic[(card.define as ServantCardDefine).tags.FirstOrDefault()]);
                 else
                     ui.servantCardFace.raceNameText.text = null;
                 ui.servantCardFace.subNameText.text = skin.subname;
