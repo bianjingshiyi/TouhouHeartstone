@@ -22,8 +22,13 @@ namespace Game
             ui.servantCardFace.nameText.text = skin.name;
             ui.servantCardFace.subNameText.text = skin.subname;
             LangManager Lang = ui.ui.getManager<LangManager>();
-            if(card is ServantCardDefine)
-                ui.servantCardFace.raceNameText.text = Lang._((card as ServantCardDefine).tags.FirstOrDefault());
+            if (card is ServantCardDefine) 
+            {
+                if ((card as ServantCardDefine).tags.FirstOrDefault() != null)
+                    ui.servantCardFace.raceNameText.text = Lang._(ui.ui.getManager<TableManager>().TranslateTagDic[(card as ServantCardDefine).tags.FirstOrDefault()]);
+                else
+                    ui.servantCardFace.raceNameText.text = null;
+            }
             ui.spellCardFace.nameText.text = skin.name;
             ui.itemCardFace.nameText.text = skin.name;
             ui.servantCardFace.descText.text = skin.desc;

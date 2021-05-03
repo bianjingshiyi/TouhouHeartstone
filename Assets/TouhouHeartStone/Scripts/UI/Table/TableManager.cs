@@ -13,6 +13,7 @@ using UnityEngine.UI;
 using Card = TouhouCardEngine.Card;
 using UCard = UI.Card;
 using BJSYGameCore.UI;
+using TouhouHeartstone.Builtin;
 using MukioI18n;
 
 namespace Game
@@ -1011,6 +1012,26 @@ namespace Game
             return ui;
         }
 
+        private Dictionary<String, String> _TranslateTagDic;
+        public Dictionary<String, String> TranslateTagDic
+        {
+            get
+            {
+                if (_TranslateTagDic == null) 
+                { 
+                    _TranslateTagDic = new Dictionary<string, string>();
+                    var T = typeof(TranslateTags);
+                    FieldInfo[] fields = T.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance);
+                    for(int i=0;i<fields.Length;i++)
+                    {
+                        _TranslateTagDic.Add(fields[i].Name,fields[i].GetValue(null).ToString());
+                        //Debug.Log("这里是字典结果" + fields[i].Name + fields[i].GetValue(null).ToString());
+                    }
+                }
+                return _TranslateTagDic;
+            }
+            set { _TranslateTagDic = value; }
+        }
         /// <summary>
         /// 设置卡片UI
         /// </summary>
@@ -1027,7 +1048,10 @@ namespace Game
                 //ui.servantCardFace.Charactertype = card.define.getCharacterID();
                 ui.servantCardFace.image.sprite = skin.image;
                 ui.servantCardFace.nameText.text = skin.name;
-                ui.servantCardFace.raceNameText.text = lang._((card.define as ServantCardDefine).tags.FirstOrDefault());
+                if ((card.define as ServantCardDefine).tags.FirstOrDefault() != null)
+                    ui.servantCardFace.raceNameText.text = lang._(TranslateTagDic[card.getTags(game).FirstOrDefault()]);
+                else
+                    ui.servantCardFace.raceNameText.text = null;
                 ui.servantCardFace.subNameText.text = skin.subname;
                 ui.servantCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
                 ui.servantCardFace.costPropNumber.text.text = card.getCost(game).ToString();
@@ -1064,7 +1088,10 @@ namespace Game
                 ui.type = CATEGORY.SERVANT;
                 ui.servantCardFace.image.sprite = skin.image;
                 ui.servantCardFace.nameText.text = skin.name;
-                ui.servantCardFace.raceNameText.text = lang._((define as ServantCardDefine).tags.FirstOrDefault());
+                if ((define as ServantCardDefine).tags.FirstOrDefault() != null)
+                    ui.servantCardFace.raceNameText.text = lang._(TranslateTagDic[(define as ServantCardDefine).tags.FirstOrDefault()]);
+                else
+                    ui.servantCardFace.raceNameText.text = null;
                 ui.servantCardFace.subNameText.text = skin.subname;
                 ui.servantCardFace.descText.text = skin.desc;
                 ui.servantCardFace.costPropNumber.text.text = cost.ToString();

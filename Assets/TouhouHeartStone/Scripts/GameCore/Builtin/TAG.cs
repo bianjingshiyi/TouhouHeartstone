@@ -1,22 +1,35 @@
 ﻿using MukioI18n;
+using System;
+using System.Collections.Generic;
 
 namespace TouhouHeartstone.Builtin
 {
     class TAG
     {
+        public const string FAIRY = "Fairy";
+        public const string MACHINE = "Machine";
+        public const string DEMON = "Demon";
+        public const string ELEMENT = "Element";
+        public const string BEAST = "Beast";
+        public const string BUG = "Bug";
+        public const string GOD = "God";
+    }
+
+    public static class TranslateTags
+    {
         [TranslateMsg]
-        public const string FAIRY = "妖精";
+        public const string Fairy = "妖精";
         [TranslateMsg]
-        public const string MACHINE = "机械";
+        public const string Machine = "机械";
         [TranslateMsg]
-        public const string DEMON = "恶魔";
+        public const string Demon = "恶魔";
         [TranslateMsg]
-        public const string ELEMENT = "元素";
+        public const string Element = "元素";
         [TranslateMsg]
-        public const string BEAST = "野兽";
+        public const string Beast = "野兽";
         [TranslateMsg]
-        public const string BUG = "昆虫";
+        public const string Bug = "昆虫";
         [TranslateMsg]
-        public const string GOD = "神明";
+        public const string God = "神明";
     }
 }
