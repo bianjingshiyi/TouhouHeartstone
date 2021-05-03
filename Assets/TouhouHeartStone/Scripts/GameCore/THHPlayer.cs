@@ -345,9 +345,11 @@ namespace TouhouHeartstone
             var eventArg = await game.triggers.doEvent(new DiscoverEventArg()
             {
                 player = player,
-                isShow = isShow
+                isShow = isShow,
+                defines = cardDefines.ToArray()
             }, async arg =>
             {
+                cardDefines = arg.defines;
                 player = arg.player;
                 cardDefines = cardDefines.randomTake(game, count);
                 var selected = await askSelect(player, game, cardDefines, count, title);
@@ -363,6 +365,7 @@ namespace TouhouHeartstone
             /// 发现的玩家
             /// </summary>
             public Player player;
+
             /// <summary>
             /// 发现的卡
             /// </summary>

@@ -311,10 +311,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.AttackEventArg>(PILE.FIELD, (g, c, a) =>
+            new THHEffectAfter<THHCard.AttackEventArg>(PileFlag.field, (g, c, a) =>
                     {
                          return a.card == c.getOwner().getMaster();
-                    }, null, async (g, c, a) =>
+                    },async (g, c, a) =>
                     {
                          await c.getOwner().draw(g,c.getOwner().getDeck().Where(c1=>c1.isServant()).random(g));
                     })
@@ -334,10 +334,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.DeathEventArg>(PILE.FIELD,(g,c,a)=>
+            new THHEffectAfter<THHCard.DeathEventArg>(PileFlag.field,(g,c,a)=>
             {
                 return !a.infoDic.Any(c1 => c1.Key == c);
-            }, null, async (g, c, a) =>
+            },async (g, c, a) =>
             {
                 foreach(var death in a.infoDic)
                 {
@@ -369,10 +369,11 @@ namespace TouhouHeartstone.Builtin
                 var reborn = await card.getOwner().reborn(game, card.getOwner().getGrave().Where(c => c.hasDeathRattle(game) && c.isServant()).random(game), card.getOwner().getField());
                 if (reborn != null)
                 {
-                    await reborn.card.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<HearthStoneRule.TurnStartEventArg>(PILE.FIELD, (g, c, a) =>
+                    await reborn.card.addBuff(game, new GeneratedBuff(ID, 
+                        new THHEffectAfter<HearthStoneRule.TurnStartEventArg>(PileFlag.field, (g, c, a) =>
                     {
                         return a.player == c.getOwner() && c.pile.name == PILE.FIELD;
-                    }, null, async (g, c, a) =>
+                    }, async (g, c, a) =>
                     {
                         await c.setDead(g, true);
                         await g.updateDeath();

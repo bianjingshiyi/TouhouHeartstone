@@ -22,7 +22,7 @@ namespace TouhouHeartstone.Builtin
             public SetPreHeatEffect() : base(PileFlag.hand, (g1, c1, a1) =>
             {
                 return c1.getOwner() == a1.player && c1.getOwner().getMaxGem() >= c1.getCost(g1) && !isPreHeated(g1, c1);
-            }, null, (g, c, a) =>
+            }, null, (g, c, a, targets) =>
             {
                 return setPreHeated(g, c, true);
             })
@@ -36,7 +36,7 @@ namespace TouhouHeartstone.Builtin
             (g1, c1, a1) =>
             {
                 return a1.card == c1 && (a1.to == a1.card.getOwner().getGrave()|| a1.to == c1.getOwner().getDeck());
-            }, null, (g1, c1, a1) =>
+            }, null, (g1, c1, a1, targets) =>
             {
                 return setPreHeated(g1, c1, false);
             })
@@ -151,7 +151,7 @@ namespace TouhouHeartstone.Builtin
             if (!Youmu.isPreHeated(game, card))
             {
                 await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
-                    new BeforeTurnStart(async (g, c,b, a) =>
+                    new BeforeTurnStart(PileFlag.field, async (g, c,b, a) =>
                     {
                         await c.loseArmor(g, 3);
                         await c.removeBuff(game, ID);
@@ -228,10 +228,10 @@ namespace TouhouHeartstone.Builtin
             {
                 if(Youmu.isPreHeated(game,card))
                 {
-                    return card.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<THHCard.AttackEventArg>(PILE.ITEM,(g,c,a)=>
+                    return card.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<THHCard.AttackEventArg>(PileFlag.item,(g,c,b,a)=>
                     {
                         return a.card == c.getOwner().getMaster();
-                    },null,(g,c,a)=>
+                    },(g,c,b,a)=>
                     {
                         if(a.target.isDead(g))
                         {
@@ -339,10 +339,10 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<THHCard.AttackEventArg>(PileFlag.field,(g,c,a)=>
+            new THHEffectBefore<THHCard.AttackEventArg>(PileFlag.field,(g,c,b,a)=>
             {
                 return a.card == c.getOwner().getMaster();
-            },null,async(g,c,a)=>
+            },async(g,c,b,a)=>
             {
                 if(c.getOwner().getItem() != null)
                     await c.getOwner().getItem().addBuff(g, new GeneratedBuff(ID, new AttackModifier(1)));
@@ -368,14 +368,14 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().getItem().addKeywords(game, KEYWORD.IMMUNITY);
             await card.getOwner().getItem().addBuff(game, new GeneratedBuff(ID,
-                new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.item,(g,c,a)=> 
+                new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.item,(g,c,b,a)=> 
                 {
                     return a.player == c.getOwner();
-                },null,async(g,c,a)=> 
+                },async(g,c,b,a)=> 
                 {
                     await c.removeKeywords(g, KEYWORD.IMMUNITY);
                 }),
-                new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.item,(g,c,a)=> 
+                new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.item,(g,c,b,a)=> 
                 {
                     return a.player == c.getOwner();
                 },ID)));
@@ -394,7 +394,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new BeforeYourTurnEnd(async(game,card,buff,arg)=>
+            new BeforeYourTurnEnd(PileFlag.field, async(game,card,buff,arg)=>
             {
                 if(card.getOwner().getMaster().getArmor(game)>0)
                     await card.getOwner().createToken(game, game.getDefine<Ghost>());
@@ -450,11 +450,11 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectBefore<HearthStoneRule.UseEventArg>(PileFlag.hand,
-                (g1,c1,a1)=>
+                (g1,c1,b1,a1)=>
                 {
                     return a1.card == c1 && c1.getOwner().getItem() != null;
-                },null,
-                async (g1,c1,a1)=>
+                },
+                async (g1,c1,b1,a1)=>
                 {
                     a1.action = async arg =>
                     {

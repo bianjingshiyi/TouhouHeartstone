@@ -59,14 +59,11 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,(game,card,buff,arg)=>
+            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.field,(game,card,buff,arg)=>
             {
                 if(arg.player!=game.getCurrentPlayer())//不是自己的回合
                     return false;
                 return true;
-            },(game,card,buff,targets)=>
-            {
-                return false;
             },async (game,card,buff,arg)=>
             {
                 await THHCard.heal(arg.player.getField(),game,card,1);
@@ -115,7 +112,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
+            new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>

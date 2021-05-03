@@ -79,11 +79,11 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new THHEffectBefore<HearthStoneRule.DrawEventArg>(PileFlag.item,
-                (game, card, arg) =>
+                (game, card,buff, arg) =>
                 {
                     return arg.parent is HearthStoneRule.TurnStartEventArg && (arg.player == card.owner);
-                }, null,
-                async (game, card, arg) =>
+                },
+                async (game, card,buff, arg) =>
                 {
                     var selected = await card.getOwner().searchPile(game, card.getOwner().getDeck(), title: "抽它！");
                     arg.card = selected.choose;
@@ -107,9 +107,9 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<HearthStoneRule.TurnStartEventArg>(PILE.FIELD,
-                (g, c, a) => { return a.player == c.getOwner(); }, null,
-                async (g, c, a) => { await c.getOwner().addCardToHand<LuckyCoin>(g); })
+            new THHEffectAfter<HearthStoneRule.TurnStartEventArg>(PileFlag.field,
+                (g, c,buff, a) => { return a.player == c.getOwner(); },
+                async (g, c,buff, a) => { await c.getOwner().addCardToHand<LuckyCoin>(g); })
         };
     }
 
@@ -126,10 +126,10 @@ namespace TouhouHeartstone.Builtin
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
             new MissionTrigger<HearthStoneRule.EnterFieldEventArg>(
-                (game, card, arg) =>
+                (game, card,buff, arg) =>
                 {
                     return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner();
-                }, async (game, card, arg) => { await card.getOwner().addCardToHand<Nazrin_05>(game); }, 15)
+                }, async (game, card,buff, arg) => { await card.getOwner().addCardToHand<Nazrin_05>(game); }, 15)
         };
     }
 
@@ -239,9 +239,9 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<HearthStoneRule.EnterFieldEventArg>(PILE.FIELD,
-                (g, c, a) => { return a.player == c.getOwner() && a.card.getOwner() == c.getOwner() && a.card != c; }, null,
-                async (g, c, a) => { await g.getAllEnemies(c.getOwner()).random(g).damage(g, c, 1); })
+            new THHEffectAfter<HearthStoneRule.EnterFieldEventArg>(PileFlag.field,
+                (g, c,buff, a) => { return a.player == c.getOwner() && a.card.getOwner() == c.getOwner() && a.card != c; },
+                async (g, c,buff, a) => { await g.getAllEnemies(c.getOwner()).random(g).damage(g, c, 1); })
         };
     }
 
@@ -399,13 +399,13 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD,
-                (game, card, arg) =>
+            new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field,
+                (game, card,buff, arg) =>
                 {
                     return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner() &&
                            arg.card.isServant() && arg.card != card;
-                }, null,
-                async (game, card, arg) => { await card.getOwner().createToken(game, game.getDefine<Nazrin_00>()); })
+                },
+                async (game, card,buff, arg) => { await card.getOwner().createToken(game, game.getDefine<Nazrin_00>()); })
         };
     }
 
@@ -500,12 +500,12 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD,
-                (game, card, arg) =>
+            new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field,
+                (game, card, buff, arg) =>
                 {
                     return arg.player == card.getOwner() && arg.card.getOwner() == card.getOwner() &&
                            arg.card.hasKeyword(game, KEYWORD.UNIQUE) && arg.card.isServant() && arg.card != card;
-                }, null, async (game, card, arg) =>
+                }, async (game, card,buff, arg) =>
                 {
                     var c = await card.getOwner().addCardToHand(game, arg.card.define);
                     await c.addBuff(game,

@@ -169,7 +169,7 @@ namespace TouhouHeartstone.Builtin
             else
             {
                 you.getMaster().addBuff(game, new GeneratedBuff(ID,
-                    new AfterTurnStart(async (g, c, a) =>
+                    new AfterTurnStart(PileFlag.field, async (g, c, a) =>
                     {
                         await you.addCardToHand<StarRitual>(game);
                         await you.getMaster().removeBuff(game, ID);
@@ -195,19 +195,19 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
                 await target.heal(game, card, 8);
-                await target.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<HearthStoneRule.UseEventArg>(PILE.FIELD,
+                await target.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field,
                         (g, c, a) =>
                         {
                             return a.player == card.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
-                        }, null, async (g, c, a) =>
+                        },async (g, c, a) =>
                         {
                             await target.heal(game, card, 4);
                             await target.removeBuff(game, ID);
                         }),
                     new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.field,
-                        (g, c, a) => { return a.player == card.getOwner(); }, ID),
+                        (g, c,b, a) => { return a.player == card.getOwner(); }, ID),
                     new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master,
-                        (g, c, a) => { return a.player == card.getOwner(); }, ID)));
+                        (g, c,b, a) => { return a.player == card.getOwner(); }, ID)));
             })
         };
     }
@@ -304,8 +304,8 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<THHCard.HealEventArg>(PILE.FIELD,
-                (game, card, arg) => { return arg != null && arg.cards.Any(e => e == card); }, null,
+            new THHEffectAfter<THHCard.HealEventArg>(PileFlag.field,
+                (game, card, arg) => { return arg != null && arg.cards.Any(e => e == card); },
                 async (game, card, arg) => { await card.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1))); })
         };
     }
@@ -334,8 +334,8 @@ namespace TouhouHeartstone.Builtin
             {
                 await you.tryEnterField(game, you.getDeck(), god, you.getField().count);
                 await god.addKeywords(game, KEYWORD.RUSH);
-                await god.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,
-                    (g, c, a) => { return a.player == c.getOwner(); }, null, async (g, c, a) =>
+                await god.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.field,
+                    (g, c, a) => { return a.player == c.getOwner(); }, async (g, c, a) =>
                     {
                         //int index = game.randomInt(0, c.getOwner().deck.count);
                         //await god.resetCard(game);
@@ -709,7 +709,7 @@ namespace TouhouHeartstone.Builtin
                     await c.addBuff(game,
                         new GeneratedBuff(ID, new CostModifier(5),
                             new RemoveBuffAfter<HearthStoneRule.TurnStartEventArg>(PileFlag.hand,
-                                (g, c1, a) => { return a.player == card.getOwner(); }, ID)));
+                                (g, c1,b, a) => { return a.player == card.getOwner(); }, ID)));
             }
         }
     }
@@ -811,8 +811,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PILE.FIELD, (g, c, a) => { return a.player == c.getOwner(); },
-                null,
+            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.field, (g, c, a) => { return a.player == c.getOwner(); },
                 async (g, c, a) =>
                 {
                     var duel = await Sanae.revealDuel(c.getOwner(), g);

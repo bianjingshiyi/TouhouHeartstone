@@ -224,8 +224,8 @@ namespace TouhouHeartstone.Builtin
         };
         class ItemTrigggerEffectAfter<T> : THHEffectAfter<T> where T : IEventArg
         {
-            public ItemTrigggerEffectAfter(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute)
-                : base(PILE.ITEM, onCheckCondition, null, async (g, c, a) =>
+            public ItemTrigggerEffectAfter(CheckConditionNoBuffDelegate onCheckCondition, ExecuteNoBuffNoTargetDelegate onExecute)
+                : base(PileFlag.item, onCheckCondition, async (g, c, a) =>
                 {
                     await onExecute?.Invoke(g, c, a);
                     await c.damage(g, c, 1);
@@ -236,8 +236,8 @@ namespace TouhouHeartstone.Builtin
         }
         class ItemTrigggerEffectBefore<T> : THHEffectBefore<T> where T : IEventArg
         {
-            public ItemTrigggerEffectBefore(CheckConditionDelegate onCheckCondition, ExecuteDelegate onExecute)
-                : base(PILE.ITEM, onCheckCondition, null, async (g, c,b, a) =>
+            public ItemTrigggerEffectBefore(CheckConditionDelegate onCheckCondition, ExecuteNoTargetDelegate onExecute)
+                : base(PileFlag.item, onCheckCondition, async (g, c,b, a) =>
                 {
                     await onExecute?.Invoke(g, c,b, a);
                     await c.damage(g, c, 1);
@@ -831,7 +831,7 @@ namespace TouhouHeartstone.Builtin
         public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
         public override IEffect[] effects { get; set; } = new IEffect[]{
-            new BeforeYourTurnEnd(async(game,card,buff,arg)=>
+            new BeforeYourTurnEnd(PileFlag.field, async(game,card,buff,arg)=>
             {
                 await game.getAllEnemies(card.getOwner()).random(game).damage(game, card, 2);
             })
@@ -923,7 +923,7 @@ namespace TouhouHeartstone.Builtin
             new THHEffectBefore<HearthStoneRule.TurnStartEventArg>(PileFlag.field,(g1,c1,a1)=>
             {
                 return a1.player==c1.getOwner();
-            },null,(g1,c1,a1)=>
+            },(g1,c1,a1)=>
             {
                 return c1.getOwner().randomDiscard(g1,1,c2=>c2.isSpell());
             })

@@ -44,13 +44,13 @@ namespace Tests
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,(game,card,buff,arg)=>
+            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.field,(game,card,buff,arg)=>
             {
                 return true;
             },(game,card,buff,targets)=>
             {
                 return true;
-            },(game,card,buff,arg)=>
+            },(game,card,buff,arg, targets)=>
             {
                 card.setProp(game, "TestResult", true);
                 return Task.CompletedTask;
@@ -77,7 +77,7 @@ namespace Tests
         public override int life { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE, (game,card,arg)=>
+            new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none, (game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -98,7 +98,7 @@ namespace Tests
         public override int life { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE, (game,card,arg)=>
+            new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none, (game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -250,7 +250,7 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.SKILL,(game,card,arg)=>
+            new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.skill,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -277,7 +277,7 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
+            new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -335,7 +335,7 @@ namespace Tests
         public override int cost { get; set; } = 0;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
+            new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -465,7 +465,7 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PILE.FIELD,(game,card,buff,arg)=>
+            new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.field,(game,card,buff,arg)=>
             {
                 if(arg.player!=game.getCurrentPlayer())
                 return false;
@@ -473,7 +473,7 @@ namespace Tests
             },(game,card,buff,targets)=>
             {
                 return false;
-            },async(game,card,buff,arg)=>
+            },async(game,card,buff,arg, targets)=>
             {
                 for(int i=0;i<6;i++)
                 {
@@ -521,10 +521,10 @@ namespace Tests
             new LambdaSingleTargetEffect((g,c,t)=>
             {
                 return t.addBuff(g,new GeneratedBuff(ID,
-                    new THHEffectBefore<HearthStoneRule.TurnStartEventArg>(PILE.FIELD,(g1,c1,b1,a1)=>
+                    new THHEffectBefore<HearthStoneRule.TurnStartEventArg>(PileFlag.field,(g1,c1,b1,a1)=>
                     {
                         return a1.player == c.getOwner();
-                    },null,async (g1,c1,b1,a1)=>
+                    },null,async (g1,c1,b1,a1, t1)=>
                     {
                         await c1.setDead(g,true);
                         await g1.updateDeath();
@@ -611,7 +611,7 @@ namespace Tests
                 (g, c, a) =>
                 {
                     return a.infoDic.Any(p=>p.Value.source.getOwner() == c.getOwner() && (p.Value.source.isSkill() || p.Value.source.isSpell()));
-                },null,(g,c,a)=>
+                },null,(g,c,a, t)=>
                 {
                     foreach (var p in a.infoDic)
                     {
@@ -624,7 +624,7 @@ namespace Tests
                 (g, c, a) =>
                 {
                     return a.source.getOwner() == c.getOwner() && a.source.isSpell();
-                },null,(g,c,a)=>
+                },null,(g,c,a, targets)=>
                 {
                     a.value *= 2;
                     return Task.CompletedTask;
@@ -648,13 +648,13 @@ namespace Tests
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(4),new LifeModifier(4)));
                 await target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(
-                    PILE.FIELD,
+                    PileFlag.field,
                     (g1, c1,b1, a1) =>
                     {
                         return a1.player == c1.getOwner();
                     },
                     null,
-                    async (g1,c1,b1,a1) =>
+                    async (g1,c1,b1,a1, targets) =>
                     {
                     //起效部分，效果是消灭随从
                     await c1.setDead(game, true);
@@ -680,7 +680,7 @@ namespace Tests
             new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,b,a)=>
             {
                 return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
-            },async(g,c,b,a)=>
+            },async(g,c,b,a, targets)=>
             {
                  await a.card.fieldToHand(g);
                  await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
@@ -702,7 +702,7 @@ namespace Tests
             new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,b,a)=>
             {
                 return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
-            },async(g,c,b,a)=>
+            },async(g,c,b,a, targets)=>
             {
                  await a.card.setDead(g,true);
                  await g.updateDeath();//死亡结算
@@ -861,10 +861,10 @@ namespace Tests
                 await c1.getOwner().createToken(g1,g1.getDefine<DefaultServant>());
                 await c1.getOwner().createToken(g1,g1.getDefine<DefaultServant>());
             }),
-            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PILE.FIELD, (g, c, a) =>
+            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.field, (g, c, a) =>
             {
                 return a.player == c.getOwner() && c.pile.name == PILE.FIELD;
-            }, null, async (g, c, a) =>
+            }, null, async (g, c, a, targets) =>
             {
                 await c.setDead(g, true);
                 await g.updateDeath();
@@ -882,7 +882,7 @@ namespace Tests
         public override string[] keywords { get; set; } = new string[0];
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new BeforeYourTurnEnd(async(game,card,buff,arg)=>
+            new BeforeYourTurnEnd(PileFlag.field, async(game,card,buff,arg, targets)=>
             {
                  await card.getOwner().createToken(game, game.getDefine<DefaultServant>());
             })

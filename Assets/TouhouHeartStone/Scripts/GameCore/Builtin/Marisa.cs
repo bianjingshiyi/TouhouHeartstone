@@ -28,7 +28,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 5;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
+            new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -64,7 +64,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
+            new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -125,7 +125,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
+            new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
@@ -154,7 +154,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffect<HearthStoneRule.ActiveEventArg>(PILE.NONE,(game,card,arg)=>
+            new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
                 return true;
             },(game,card,targets)=>
