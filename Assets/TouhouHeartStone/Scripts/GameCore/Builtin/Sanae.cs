@@ -396,10 +396,10 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0),
+            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0),null,
                 new EventTriggeredModifierFixer<int>.ModifierFixer<HearthStoneRule.TurnEndEventArg>(
                     (game, card, buff, arg) => card.getOwner() == arg.player,
-                    (game, card, buff, arg) => 0, false),
+                    (game, card, buff, arg) => 0, null,false),
                 new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(
                     (game, card, buff, arg) => card.getOwner() == arg.player,
                     (game, card, buff, arg) =>
@@ -611,7 +611,7 @@ namespace TouhouHeartstone.Builtin
                         break;
                 }
             }),
-            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0), 
+            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0), null,
                 new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(
                     (game, card, buff, arg) => card.owner == arg.player,
                     (game, card, buff, arg) =>
@@ -754,7 +754,7 @@ namespace TouhouHeartstone.Builtin
         {
             
             new NoTargetEffect(effect),
-            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0), 
+            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0), null,
                 new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(
                     (game, card, buff, arg) => card.owner == arg.player,
                     (game, card, buff, arg) =>

@@ -425,16 +425,16 @@ namespace TouhouHeartstone.Builtin
                 //     {
                 //         return c.getOwner().master.getArmor(g);
                 //     }))
-            new EventTriggeredModifierFixer<int>(PileFlag.field, new AttackModifier(0),
+            new EventTriggeredModifierFixer<int>(PileFlag.field, new AttackModifier(0), "Attack",
                 new EventTriggeredModifierFixer<int>.ModifierFixer<THHCard.SetArmorEventArg>(null,(game, card, buff, arg) =>
                 {
                     return card.getOwner().getMaster().getArmor(game);
-                })),
-            new EventTriggeredModifierFixer<int>(PileFlag.field, new LifeModifier(0),
+                }, identifier: "Attack")),
+            new EventTriggeredModifierFixer<int>(PileFlag.field, new LifeModifier(0), "Life",
                 new EventTriggeredModifierFixer<int>.ModifierFixer<THHCard.SetArmorEventArg>(null,(game, card, buff, arg) =>
                 {
                     return card.getOwner().getMaster().getArmor(game);
-                })),
+                }, identifier: "Life")),
         };
     }
     /// <summary>

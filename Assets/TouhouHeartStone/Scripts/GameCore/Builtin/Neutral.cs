@@ -1811,7 +1811,7 @@ namespace TouhouHeartstone.Builtin
             //             var oppoField = (game as THHGame).getOpponent(card.getOwner()).field;
             //             return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
             //         })),
-            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0),
+            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0), null,
                 new EventTriggeredModifierFixer<int>.ModifierFixer<Card.PropChangeEventArg>(
                     (game, card, buff, arg) => { return arg.propName == nameof(ServantCardDefine.attack); },
                     (game, card, buff, arg) =>

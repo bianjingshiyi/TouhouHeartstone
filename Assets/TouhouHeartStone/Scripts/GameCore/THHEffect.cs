@@ -1271,6 +1271,7 @@ namespace TouhouHeartstone
         public override string[] piles { get; }
         PropModifier<Prop> modifier { get; }
         IModifierFixer[] fixers { get; }
+        private string identifier { get; }
 
         public interface IModifierFixer : ITriggerEffect
         {
@@ -1280,10 +1281,18 @@ namespace TouhouHeartstone
         {
             public delegate Prop ModifierFixerDelegate(CardEngine game, Card card, Buff buff, T arg);
 
-            public ModifierFixer(CheckConditionDelegate onCheckCondition, ModifierFixerDelegate fixer, bool isUpdatedOnEnable = true) : 
+            private string identifier { get; }
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="onCheckCondition"></param>
+            /// <param name="fixer">该方法返回的值会在事件发生后替换原有Modifier的值</param>
+            /// <param name="identifier"></param>
+            /// <param name="isUpdatedOnEnable">是否在效果激活时进行修正</param>
+            public ModifierFixer(CheckConditionDelegate onCheckCondition, ModifierFixerDelegate fixer, string identifier = null, bool isUpdatedOnEnable = true) : 
                 base(PileFlag.none, onCheckCondition, (game, card, buff, arg) =>
                 {
-                    var modifier = card.getProp<PropModifier<Prop>>(game, getModifierName(game, card, buff));
+                    var modifier = card.getProp<PropModifier<Prop>>(game, getModifierName(game, card, buff, identifier));
                     if (modifier != null)
                     {
                         return modifier.setValue(game, card, fixer(game, card, buff, arg));
@@ -1291,11 +1300,12 @@ namespace TouhouHeartstone
                     return Task.CompletedTask;
                 })
             {
+                this.identifier = identifier;
                 if (isUpdatedOnEnable)
                 {
                     onRegisterTrigger += (game, card, buff) =>
                     {
-                        var modifier = card.getProp<PropModifier<Prop>>(game, getModifierName(game, card, buff));
+                        var modifier = card.getProp<PropModifier<Prop>>(game, getModifierName(game, card, buff, identifier));
                         if (modifier != null)
                         {
                             modifier.setValue(game, card as Card,
@@ -1304,22 +1314,40 @@ namespace TouhouHeartstone
                     };
                 }
             }
+
+            protected override string getEffectName(IGame game, ICard card, IBuff buff, TriggerTime time)
+            {
+                return string.IsNullOrEmpty(_name)
+                    ? (buff != null ? buff.instanceID.ToString() : string.Empty) +
+                      "ModifierFixer" + identifier + time.getEventName(game.triggers)
+                    : _name;
+            }
         }
 
-        public EventTriggeredModifierFixer(PileFlag piles, PropModifier<Prop> modifier, params IModifierFixer[] fixers)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="piles"></param>
+        /// <param name="modifier"></param>
+        /// <param name="identifier">对应一张卡牌定义中出现多个该类效果的情况，切记在ModifierFixer构造时也需附上相同的identifier
+        /// （见半幽灵
+        /// </param>
+        /// <param name="fixers">EventTriggeredModifierFixer.ModifierFixer<T> T : IEventArg</param>
+        public EventTriggeredModifierFixer(PileFlag piles, PropModifier<Prop> modifier, string identifier, params IModifierFixer[] fixers)
         {
             this.piles = piles.getPiles();
             this.modifier = modifier;
             this.fixers = fixers;
+            this.identifier = identifier;
         }
 
         public override async Task onEnable(CardEngine game, Card card, Buff buff)
         {
-            PropModifier<Prop> modifier = card.getProp<PropModifier<Prop>>(game, getModifierName(game, card, buff));
+            PropModifier<Prop> modifier = card.getProp<PropModifier<Prop>>(game, getModifierName(game, card, buff, identifier));
             if (modifier == null)
             {
                 modifier = this.modifier.clone() as PropModifier<Prop>;
-                await card.setProp(game, getModifierName(game, card, buff), modifier);
+                await card.setProp(game, getModifierName(game, card, buff, identifier), modifier);
             }
 
             if (!card.getModifiers().Contains(modifier))
@@ -1336,16 +1364,16 @@ namespace TouhouHeartstone
         public override async Task onDisable(CardEngine game, Card card, Buff buff)
         {
             card.removeModifier(game, modifier);
-            await card.setProp(game, getModifierName(game, card, buff), null);
+            await card.setProp(game, getModifierName(game, card, buff, identifier), null);
             foreach (var fixer in fixers)
             {
                 fixer.onDisable(game, card, buff);
             }
         }
 
-        public static string getModifierName(IGame game, ICard card, IBuff buff)
+        public static string getModifierName(IGame game, ICard card, IBuff buff, string identifier)
         {
-            return nameof(EventTriggeredModifierFixer<Prop>) +
+            return nameof(EventTriggeredModifierFixer<Prop>) + identifier +
                    (buff != null ? buff.instanceID.ToString() : "");
         }
     }
