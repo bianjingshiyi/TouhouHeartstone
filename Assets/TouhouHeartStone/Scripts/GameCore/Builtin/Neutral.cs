@@ -648,9 +648,9 @@ namespace TouhouHeartstone.Builtin
         public static async Task effect(CardEngine game, Card card)
         {
             var elementCards = Patchouli.getElementCards(game);
-            var selectedCard1 = await card.getOwner().chooseOne(game, elementCards, title: "投入魔法");
+            var selectedCard1 = await card.getOwner().chooseOne(game, elementCards,isShow: false, title: "投入魔法");
             var selectedCard2 = await card.getOwner()
-                .chooseOne(game, elementCards.Where(define => define != selectedCard1.choose), title: "投入魔法");
+                .chooseOne(game, elementCards.Where(define => define != selectedCard1.choose), isShow: false, title: "投入魔法");
             var result = Patchouli.getMixCards(game, selectedCard1.choose, selectedCard2.choose);
             await card.getOwner().discover(game, result, title: "元素融合");
         }
