@@ -19,7 +19,7 @@ namespace Game
         public override bool update(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
         {
             UIObject sourceActor;
-            if (eventArg.card.define is ServantCardDefine)
+            if (eventArg.card.isServant())
             {
                 if (eventArg.player == table.player)
                 {
@@ -96,7 +96,7 @@ namespace Game
                     table.ui.ServantPlaceHolder.hide();
                 }
             }
-            else if (eventArg.card.define is SpellCardDefine)
+            else if (eventArg.card.isSpell())
             {
                 if (eventArg.player == table.player)
                 {
@@ -155,6 +155,12 @@ namespace Game
                         table.ui.SelfHandList.removeItem(hand);
                     }
                     table.setMaster(table.ui.SelfMaster, table.player.getMaster());
+                    if (table.tryGetItem(eventArg.card, out var item))
+                    {
+                        item.AttackPropNumber.text.text = eventArg.card.getAttack(table.game).ToString();
+                        item.DurabilityPropNumber.text.text = eventArg.card.getCurrentLife(table.game).ToString();
+                        table.setItem(item, eventArg.card);
+                    }
                     if (tryTargetedAnim(table, table.ui.SelfItem, eventArg, time))
                         return false;
                 }
