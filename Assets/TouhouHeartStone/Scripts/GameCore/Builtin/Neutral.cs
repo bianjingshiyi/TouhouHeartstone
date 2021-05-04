@@ -1819,7 +1819,7 @@ namespace TouhouHeartstone.Builtin
                         var oppoField = (game as CardEngine).getOpponent(card.getOwner()).getField();
                         return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
                     }), new EventTriggeredModifierFixer<int>.ModifierFixer<Pile.MoveCardEventArg>(
-                    (game, card, Buff, arg) => arg.from.name == PILE.FIELD || arg.to.name == PILE.FIELD,
+                    (game, card, buff, arg) => arg.from?.name == PILE.FIELD || arg.to?.name == PILE.FIELD,
                     (game, card, buff, arg) =>
                     {
                         var oppoField = (game as CardEngine).getOpponent(card.getOwner()).getField();

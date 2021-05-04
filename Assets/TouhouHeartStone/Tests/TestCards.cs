@@ -680,7 +680,7 @@ namespace Tests
             new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,b,a)=>
             {
                 return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
-            },async(g,c,b,a, targets)=>
+            },async(g,c,b,a)=>
             {
                  await a.card.fieldToHand(g);
                  await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
@@ -702,7 +702,7 @@ namespace Tests
             new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,b,a)=>
             {
                 return a.card.getOwner() != c.getOwner() && a.card.canAttackTest(g);
-            },async(g,c,b,a, targets)=>
+            },async(g,c,b,a)=>
             {
                  await a.card.setDead(g,true);
                  await g.updateDeath();//死亡结算

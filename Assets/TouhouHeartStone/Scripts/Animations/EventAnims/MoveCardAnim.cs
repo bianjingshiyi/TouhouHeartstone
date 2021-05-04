@@ -34,7 +34,7 @@ namespace Game
                 }
                 return true;
             }
-            switch (eventArg.from.name)
+            switch (eventArg.from?.name)
             {
                 case PILE.INIT:
                     if (eventArg.to.name == PILE.HAND)

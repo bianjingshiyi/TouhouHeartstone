@@ -11,29 +11,29 @@ namespace TouhouHeartstone
     {
         public static bool isItem(this Card card)
         {
-            return card.define is ItemCardDefine;
+            return card.define.type == DEFINE.ITEM;
         }
         public static bool isSkill(this Card card)
         {
-            return card.define is SkillCardDefine;
+            return card.define.type == DEFINE.SKILL;
         }
         public static bool isServant(this Card card)
         {
-            return card.define is ServantCardDefine;
+            return card.define.type == DEFINE.SERVANT;
         }
         public static bool isMaster(this Card card)
         {
-            return card.define is MasterCardDefine;
+            return card.define.type == DEFINE.MASTER;
         }
         public static bool isSpell(this Card card)
         {
-            return card.define is SpellCardDefine;
+            return card.define.type == DEFINE.SPELL;
         }
         public static Player getOwner(this Card card)
         {
-            return card.owner as Player;
+            return card.owner;
         }
-        public static int getCost(this Card card, IGame game)
+        public static int getCost(this Card card, CardEngine game)
         {
             int result = card.getProp<int>(game, DEFINE.COST);
             if (result < 0)
@@ -45,11 +45,10 @@ namespace TouhouHeartstone
         //     return card.setProp(game, nameof(ServantCardDefine.cost), value);
         // }
         
-        public static int getAttack(this Card card, IGame game)
+        public static int getAttack(this Card card, CardEngine game)
         {
-            CardEngine tgame = (CardEngine)game;
             int result = card.getProp<int>(game, DEFINE.ATTACK);
-            if (card.getOwner() == tgame.getCurrentPlayer())
+            if (card.getOwner() == game.getCurrentPlayer())
             {
                 if (card.define is MasterCardDefine)
                 {
@@ -100,7 +99,7 @@ namespace TouhouHeartstone
         {
             return card.setProp(game, CARD.ISDEAD, value);
         }
-        public static async Task<IPropChangeEventArg[]> setDead(this IEnumerable<Card> cards, IGame game, bool value)
+        public static async Task<IPropChangeEventArg[]> setDead(this IEnumerable<Card> cards, CardEngine game, bool value)
         {
             List<IPropChangeEventArg> argList = new List<IPropChangeEventArg>();
             foreach (var card in cards)
@@ -109,7 +108,7 @@ namespace TouhouHeartstone
             }
             return argList.ToArray();
         }
-        public static int getArmor(this Card card, IGame game)
+        public static int getArmor(this Card card, CardEngine game)
         {
             return card.getProp<int>(game, CARD.ARMOR);
         }
@@ -1247,7 +1246,7 @@ namespace TouhouHeartstone
             }
         }
 
-        public static bool isDamage(this Card card, IGame game)
+        public static bool isDamage(this Card card, CardEngine game)
         {
             if (card.getCurrentLife(game) < card.getLife(game))
             {

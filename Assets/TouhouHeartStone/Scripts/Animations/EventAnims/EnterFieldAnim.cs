@@ -11,7 +11,7 @@ namespace Game
         {
             if (eventArg.from != null)
             {
-                if (eventArg.from.name == PILE.HAND)
+                if (eventArg.from?.name == PILE.HAND)
                 {
                     table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));//移除手牌
                 }
