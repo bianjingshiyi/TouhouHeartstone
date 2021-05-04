@@ -84,7 +84,7 @@ namespace TouhouHeartstone
             this.onExecute = onExecute;
         }
 
-        protected Action onRegisterTrigger = null;
+        protected Action<IGame, ICard, IBuff> onRegisterTrigger = null;
 
         public async Task onEnable(IGame game, ICard card, IBuff buff)
         {
@@ -94,12 +94,12 @@ namespace TouhouHeartstone
                 Trigger trigger = new Trigger(args => triggerAction(game, card, buff, args), name: effectName);
                 await card.setProp(null, effectName, trigger);
                 game.logger.log("Effect", card + "注册效果" + effectName);
-                onRegisterTrigger?.Invoke();
+                onRegisterTrigger?.Invoke(game, card, buff);
                 game.triggers.register(time.getEventName(game.triggers), trigger);
             }
         }
 
-        protected Action onUnRegisterTrigger = null;
+        protected Action<IGame, ICard, IBuff> onUnRegisterTrigger = null;
 
         public Task onDisable(IGame game, ICard card, IBuff buff)
         {
@@ -108,7 +108,7 @@ namespace TouhouHeartstone
                 string effectName = getEffectName(game, card, buff, time);
                 Trigger trigger = card.getProp<Trigger>(game, effectName);
                 game.logger.log("Effect", card + "注销效果" + effectName);
-                onUnRegisterTrigger?.Invoke();
+                onUnRegisterTrigger?.Invoke(game, card, buff);
                 game.triggers.remove(time.getEventName(game.triggers), trigger);
                 card.setProp(null, effectName, null);
             }
@@ -1272,79 +1272,37 @@ namespace TouhouHeartstone
         PropModifier<Prop> modifier { get; }
         IModifierFixer[] fixers { get; }
 
-        public interface IModifierFixer
+        public interface IModifierFixer : ITriggerEffect
         {
-            void onEnable(CardEngine game, Card card, Buff buff, string modifierName);
-            void onDisable(CardEngine game, Card card, Buff buff, string modifierName);
         }
 
-        public class ModifierFixer<T> : IModifierFixer where T : IEventArg
+        public class ModifierFixer<T> : THHEffectAfter<T>, IModifierFixer where T : IEventArg
         {
-            public Func<IGame, Card, Buff, T, Prop> fixer;
-            public Func<IGame, Card, Buff, T, bool> onCheckCondition;
-            public bool isUpdatedOnEnable;
+            public delegate Prop ModifierFixerDelegate(CardEngine game, Card card, Buff buff, T arg);
 
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="onCheckCondition"></param>
-            /// <param name="fixer">使用fixer返回的值更新Modifier</param>
-            /// <param name="isUpdatedOnEnable">如果fixer需要使用到事件，设成false</param>
-            public ModifierFixer(Func<IGame, Card, Buff, T, bool> onCheckCondition,
-                Func<IGame, Card, Buff, T, Prop> fixer, bool isUpdatedOnEnable = true)
+            public ModifierFixer(CheckConditionDelegate onCheckCondition, ModifierFixerDelegate fixer, bool isUpdatedOnEnable = true) : 
+                base(PileFlag.none, onCheckCondition, (game, card, buff, arg) =>
+                {
+                    var modifier = card.getProp<PropModifier<Prop>>(game, getModifierName(game, card, buff));
+                    if (modifier != null)
+                    {
+                        return modifier.setValue(game, card, fixer(game, card, buff, arg));
+                    }
+                    return Task.CompletedTask;
+                })
             {
-                this.fixer = fixer;
-                this.isUpdatedOnEnable = isUpdatedOnEnable;
-            }
-
-            public async void onEnable(CardEngine game, Card card, Buff buff, string modifierName)
-            {
-                var modifier = card.getProp<PropModifier<Prop>>(game, modifierName);
                 if (isUpdatedOnEnable)
                 {
-                    modifier.setValue(game, card, fixer(game, card, buff, default));
-                }
-
-                Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(modifier, buff));
-                if (trigger == null)
-                {
-                    trigger = new Trigger<T>(async arg =>
+                    onRegisterTrigger += (game, card, buff) =>
                     {
-                        if (onCheckCondition == null || onCheckCondition(game, card, buff, arg))
+                        var modifier = card.getProp<PropModifier<Prop>>(game, getModifierName(game, card, buff));
+                        if (modifier != null)
                         {
-                            var m = card.getProp<PropModifier<Prop>>(game, modifierName);
-                            m.setValue(game, card, fixer(game, card, buff, arg));
+                            modifier.setValue(game, card as Card,
+                                fixer(game as CardEngine, card as Card, buff as Buff, default));
                         }
-                    });
-                    await card.setProp(game, getTriggerName(modifier, buff), trigger);
+                    };
                 }
-
-                game.triggers.registerAfter(trigger);
-            }
-
-            public async void onDisable(CardEngine game, Card card, Buff buff, string modifierName)
-            {
-                var modifier = card.getProp<PropModifier<Prop>>(game, modifierName);
-                if (modifier != null)
-                {
-                    card.removeModifier(game, modifier);
-                }
-
-                Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(modifier, buff));
-                if (trigger != null)
-                    game.triggers.removeAfter(trigger);
-            }
-
-            private string getModifierName(PropModifier<Prop> modifier, Buff buff)
-            {
-                return nameof(EventTriggeredModifierFixer<T>) + modifier.GetType().Name +
-                       (buff != null ? buff.instanceID.ToString() : "");
-            }
-
-            private static string getTriggerName(PropModifier<Prop> modifier, Buff buff)
-            {
-                return nameof(EventTriggeredModifierFixer<T>.ModifierFixer<T>) + modifier.GetType() + "Trigger" +
-                       (buff != null ? buff.instanceID.ToString() : "");
             }
         }
 
@@ -1357,11 +1315,11 @@ namespace TouhouHeartstone
 
         public override async Task onEnable(CardEngine game, Card card, Buff buff)
         {
-            PropModifier<Prop> modifier = card.getProp<PropModifier<Prop>>(game, getModifierName(this.modifier, buff));
+            PropModifier<Prop> modifier = card.getProp<PropModifier<Prop>>(game, getModifierName(game, card, buff));
             if (modifier == null)
             {
                 modifier = this.modifier.clone() as PropModifier<Prop>;
-                await card.setProp(game, getModifierName(this.modifier, buff), modifier);
+                await card.setProp(game, getModifierName(game, card, buff), modifier);
             }
 
             if (!card.getModifiers().Contains(modifier))
@@ -1371,22 +1329,23 @@ namespace TouhouHeartstone
 
             foreach (var fixer in fixers)
             {
-                fixer.onEnable(game, card, null, getModifierName(this.modifier, null));
+                fixer.onEnable(game, card, buff);
             }
         }
 
         public override async Task onDisable(CardEngine game, Card card, Buff buff)
         {
             card.removeModifier(game, modifier);
+            await card.setProp(game, getModifierName(game, card, buff), null);
             foreach (var fixer in fixers)
             {
-                fixer.onDisable(game, card, null, getModifierName(modifier, null));
+                fixer.onDisable(game, card, buff);
             }
         }
 
-        private string getModifierName(PropModifier<Prop> modifier, Buff buff)
+        public static string getModifierName(IGame game, ICard card, IBuff buff)
         {
-            return nameof(EventTriggeredModifierFixer<Prop>) + modifier.GetType().Name +
+            return nameof(EventTriggeredModifierFixer<Prop>) +
                    (buff != null ? buff.instanceID.ToString() : "");
         }
     }

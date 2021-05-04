@@ -611,14 +611,15 @@ namespace TouhouHeartstone.Builtin
                         break;
                 }
             }),
-            new IntPropFixer<Sanae.RevealDuelArg>(PileFlag.hand, new IntPropFixer<Sanae.RevealDuelArg>.ModifierFixer(
-                new CostModifier(0), (g, c, b, a) =>
-                {
-                    int v = g.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
-                        .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == c.getOwner()).Count();
-                    g.logger.log(c + "的花费=>" + v);
-                    return -v;
-                }))
+            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0), 
+                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(
+                    (game, card, buff, arg) => card.owner == arg.player,
+                    (game, card, buff, arg) =>
+                    {
+                        int v = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
+                            .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == card.getOwner()).Count();
+                        return -v;
+                    }))
         };
     }
 
@@ -753,15 +754,15 @@ namespace TouhouHeartstone.Builtin
         {
             
             new NoTargetEffect(effect),
-            
-            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0),
-                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(null, (g, c, b, a) =>
-                {
-                    int v = g.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
-                        .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == c.getOwner()).Count();
-                    g.logger.log(c + "的花费=>" + v);
-                    return -v;
-                }))
+            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0), 
+                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(
+                    (game, card, buff, arg) => card.owner == arg.player,
+                    (game, card, buff, arg) =>
+                    {
+                        int v = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
+                            .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == card.getOwner()).Count();
+                        return -v;
+                    }))
         };
 
         static async Task effect(CardEngine game, Card card)

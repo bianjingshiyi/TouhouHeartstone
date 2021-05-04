@@ -334,6 +334,22 @@ namespace Tests
             Assert.AreEqual(9, you.getHand().getCard<OrochiOfAncientTimes>().getCost(game));
             game.Dispose();
         }
+        
+        [Test]
+        public void LittleShrineOrochiOfAncientTimesTest()
+        {
+            TestGameflow.createGame<OrochiOfAncientTimes, LittleShrine>(out var game, out var you, out var oppo,
+                new HearthstoneOption { shuffle = false },
+                Sanae.ID, new[] { new KeyValuePair<int, int>(StarRitual.ID, 1) },
+                Sanae.ID, new KeyValuePair<int, int>[0]);
+            game.skipUntilCanUse<LittleShrine>(oppo);
+            oppo.cmdUse<LittleShrine>(game, out Card enemServant);
+            oppo.cmdTurnEnd(game);
+            var orochi = you.getHand().getCard<OrochiOfAncientTimes>();
+            Assert.AreEqual(orochi.define.getCost(), orochi.getCost(game));
+
+            game.Dispose();
+        }
 
         [Test]
         public void YasakaKanakoTest()
