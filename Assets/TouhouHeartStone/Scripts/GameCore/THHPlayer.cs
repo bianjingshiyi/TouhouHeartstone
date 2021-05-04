@@ -270,47 +270,6 @@ namespace TouhouHeartstone
         }
 
 
-        /// <summary>
-        /// 向玩家发出一个选择请求，玩家从提供的卡牌中选择一张，返回玩家选择的结果
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="cards">卡牌的ID，可以是游戏内的卡牌ID，也可以是卡牌定义的ID</param>
-        /// <param name="count">如果小于等于0，则全都可以挑</param>
-        /// <returns></returns>
-        public static async Task<int> askSelect(this Player player, CardEngine game, int[] cards, int count = 3, string title = "选择一项")
-        {
-            if (cards.Count() < 1)
-                return -1;
-            if (count > 0)
-                cards = cards.randomTake(game, count).ToArray();
-            var eventArg = await game.triggers.doEvent(new SelectEventArg()
-            {
-                player = player,
-                options = cards
-            }, async arg =>
-            {
-                player = arg.player;
-                cards = arg.options;
-                game.logger.logTrace(player + "要从卡牌或卡牌定义ID" + string.Join("，", cards) + "中选择一个");
-                var res = await game.answers.ask(player.id, new DiscoverRequest(cards, title), float.MaxValue);
-                int selectedID = cards.First(id => id == (res as DiscoverResponse).cardId);
-                game.logger.logTrace(player + "选择" + selectedID);
-                arg.selected = selectedID;
-            });
-            return eventArg.selected;
-        }
-        public static async Task<Card> askSelect(this Player player, CardEngine game, IEnumerable<Card> cards, int count = 3, string title = null)
-        {
-            var selectedId = await player.askSelect(game, cards.Select(c => c.id).ToArray(), count, title);
-            Card selectedCard = cards.First(c => c.id == selectedId);
-            return selectedCard;
-        }
-        public static async Task<CardDefine> askSelect(this Player player, CardEngine game, IEnumerable<CardDefine> cards, int count = 3, string title = null)
-        {
-            var selectedId = await player.askSelect(game, cards.Select(c => c.id).ToArray(), count, title);
-            CardDefine selectedCard = cards.First(c => c.id == selectedId);
-            return selectedCard;
-        }
         public class SelectEventArg : EventArg
         {
             /// <summary>
@@ -352,7 +311,7 @@ namespace TouhouHeartstone
                 cardDefines = arg.defines;
                 player = arg.player;
                 cardDefines = cardDefines.randomTake(game, count);
-                var selected = await askSelect(player, game, cardDefines, count, title);
+                var selected = await game.askSelect(player, cardDefines, count, title);
                 arg.discovered = await player.addCardToHand(game, selected);
                 arg.defines = cardDefines.ToArray();
             });
@@ -430,7 +389,7 @@ namespace TouhouHeartstone
 
             var eventArg = await game.triggers.doEvent(new HearthStoneRule.ChooseOneEventArg() { player = player, options = options, choose = null, isShow = isShow }, async arg =>
             {                
-                var selected = await askSelect(player, game, options,options.Count(), title);
+                var selected = await game.askSelect(player,options, options.Count(), title);
                 arg.choose = selected;
             });
             return eventArg;
@@ -446,7 +405,7 @@ namespace TouhouHeartstone
             //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
             var eventArg = await game.triggers.doEvent(new HearthStoneRule.SearchPileEventArg() { player = player, cards = cards, choose = null, isShow = isShow }, async arg =>
             {
-                var selected = await askSelect(player, game, cards, count, title);
+                var selected = await game.askSelect(player, cards, count, title);
                 arg.choose = selected;
             });
             return eventArg;

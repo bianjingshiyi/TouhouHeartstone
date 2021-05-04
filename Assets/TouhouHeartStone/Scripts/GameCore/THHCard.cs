@@ -60,20 +60,22 @@ namespace TouhouHeartstone
                 return 0;
             return result;
         }
-        
-        // public static Task<IPropChangeEventArg> setAttack(this Card card, IGame game, int value)
-        // {
-        //     return card.setProp(game, DEFINE.ATTACK, value);
-        // }
+
+        [Obsolete("Use buff or modifier instead")]
+        public static Task<IPropChangeEventArg> setAttack(this Card card, IGame game, int value)
+        {
+            return card.setProp(game, DEFINE.ATTACK, value);
+        }
         public static int getLife(this Card card, IGame game)
         {
             return card.getProp<int>(game, DEFINE.LIFE);
         }
         
-        // public static Task<IPropChangeEventArg> setLife(this Card card, IGame game, int value)
-        // {
-        //     return card.setProp(game, nameof(ServantCardDefine.life), value);
-        // }
+        [Obsolete("Use buff or modifier instead")]
+        public static Task<IPropChangeEventArg> setLife(this Card card, IGame game, int value)
+        {
+            return card.setProp(game, nameof(ServantCardDefine.life), value);
+        }
         
         /// <summary>
         /// 一个随从/物品/英雄是否已经死了？除了生命值小于等于0以外，还有一个isDead的属性来控制卡片是否在死亡结算当中。

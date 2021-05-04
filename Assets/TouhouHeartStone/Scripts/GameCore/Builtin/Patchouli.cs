@@ -62,9 +62,9 @@ namespace TouhouHeartstone.Builtin
                 player = player,
             },async args =>
             {
-                Card mixCard = await player.askSelect(game, mixableCards, title: "投入魔法");
+                Card mixCard = await game.askSelect(player, mixableCards, title: "投入魔法");
                 var mixedResults = getMixCards(game, card.define, mixCard.define);
-                var mixedResult = await player.askSelect(game, mixedResults, title: "元素融合");
+                var mixedResult = await game.askSelect(player, mixedResults, title: "元素融合");
                 await mixCard.setDefine(game, mixedResult);
                 await mixCard.resetCard(game);
             });

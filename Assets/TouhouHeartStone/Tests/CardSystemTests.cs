@@ -107,7 +107,7 @@ namespace Tests
         public void subAttackBuffApplyAndRevertTest()
         {
             Card card = new Card(0);
-            throw new NotImplementedException("Test compromised");// card.setAttack(null, 2);
+            card.setAttack(null, 2);
             TestBuff[] buffs = new TestBuff[3];
             for (int i = 0; i < buffs.Length; i++)
             {
@@ -133,7 +133,7 @@ namespace Tests
                 logger = new UnityLogger()
             };
             Card card = new Card(0);
-            throw new NotImplementedException("Test compromised");// card.setLife(game, 1);
+            card.setLife(game, 1);
             card.setCurrentLife(game, 1);
             TestBuff haloBuff = new TestBuff(new LifeModifier(1));
             _ = card.addBuff(game, haloBuff);
@@ -157,7 +157,7 @@ namespace Tests
                 logger = new UnityLogger()
             };
             Card card = new Card(0);
-            throw new NotImplementedException("Test compromised");// card.setLife(game, 5);
+            card.setLife(game, 5);
             card.setCurrentLife(game, 5);
             TestBuff buff = new TestBuff(new LifeModifier(3, true));
             _ = card.addBuff(game, buff);
@@ -274,65 +274,62 @@ namespace Tests
             Assert.AreEqual(TestMaster.ID, CATEGORY.getCharacterID(TestSkill.ID));
         }
         /// <summary>
-        /// TODO: Compromised
+        /// 
         /// </summary>
         /// <returns></returns>
         [UnityTest]
         public IEnumerator discoverTest()
         {
-            throw new NotImplementedException("Test compromised");            
-            // TestGameflow.createGame(out var game, out var you, out var oppo);
-            // var cards = you.getDeck().randomTake(game, 3);
-            // var task = you.discover(game, cards);
-            // yield return new WaitForSeconds(.5f);
-            // you.cmdDiscover(game, cards.First().id);
-            // Assert.True(task.IsCompleted);
-            // Assert.AreEqual(cards.First(), task.Result);
-            // game.Dispose();
+            TestGameflow.createGame(out var game, out var you, out var oppo);
+            var cards = you.getDeck().randomTake(game, 3);
+            var task = game.askSelect(you, cards);
+            yield return new WaitForSeconds(.5f);
+            you.cmdDiscover(game, cards.First().id);
+            Assert.True(task.IsCompleted);
+            Assert.AreEqual(cards.First(), task.Result);
+            game.Dispose();
         }
         [UnityTest]
         public IEnumerator discoverTest_Cancel()
         {
-            throw new NotImplementedException("Test compromised");
-            // TestGameflow.createGame(out var game, out var you, out var oppo);
-            // var cards = you.getDeck().randomTake(game, 3);
-            // var task = you.discover(game, cards);
-            // yield return new WaitForSeconds(.5f);
-            // game.answers.cancelAll();
-            // yield return task.wait();
-            // Assert.True(cards.Contains(task.Result));
+            TestGameflow.createGame(out var game, out var you, out var oppo);
+            var cards = you.getDeck().randomTake(game, 3);
+            var task = game.askSelect(you, cards);
+            yield return new WaitForSeconds(.5f);
+            game.answers.cancelAll();
+            yield return task.wait();
+            Assert.True(cards.Contains(task.Result));
         }
         [UnityTest]
         public IEnumerator discoverTest_TurnEnd()
         {
-            throw new NotImplementedException("Test compromised");
-            // TestGameflow.createGame(out var game, out var you, out var _, new HearthstoneOption()
-            // {
-            //     timeoutForTurn = 1
-            // });
-            // game.skipTurnUntil(() => game.getCurrentPlayer() == you);
-            // var cards = you.getHand().randomTake(game, 3);
-            // var task = you.discover(game, cards);
-            // Assert.NotNull(game.answers.getRequest<DiscoverRequest>(you.id));
-            // HearthStoneRule.TurnEndEventArg turnEnd = null;
-            // game.triggers.onEventBefore += obj =>
-            // {
-            //     if (obj is HearthStoneRule.TurnEndEventArg)
-            //         turnEnd = obj as HearthStoneRule.TurnEndEventArg;
-            // };
-            // DiscoverResponse discoverResponse = null;
-            // game.answers.onResponse += response =>
-            // {
-            //     if (response is DiscoverResponse)
-            //         discoverResponse = response as DiscoverResponse;
-            // };
-            // yield return new WaitForSeconds(1.1f);
-            // Assert.NotNull(turnEnd);
-            // Assert.NotNull(discoverResponse);
-            // Assert.AreNotEqual(you, game.getCurrentPlayer());
-            // Assert.Null(game.answers.getRequest<DiscoverRequest>(you.id));
-            // Assert.True(task.IsCompleted);
-            // Assert.True(cards.Contains(task.Result));
+            TestGameflow.createGame(out var game, out var you, out var _, new HearthstoneOption()
+            {
+                timeoutForTurn = 1
+            });
+            game.skipTurnUntil(() => game.getCurrentPlayer() == you);
+            var cards = you.getHand().randomTake(game, 3);
+            var task = game.askSelect(you, cards);
+            Assert.NotNull(game.answers.getRequest<DiscoverRequest>(you.id));
+            HearthStoneRule.TurnEndEventArg turnEnd = null;
+            game.triggers.onEventBefore += obj =>
+            {
+                if (obj is HearthStoneRule.TurnEndEventArg)
+                    turnEnd = obj as HearthStoneRule.TurnEndEventArg;
+            };
+            DiscoverResponse discoverResponse = null;
+            game.answers.onResponse += response =>
+            {
+                if (response is DiscoverResponse)
+                    discoverResponse = response as DiscoverResponse;
+            };
+            yield return new WaitForSeconds(1.1f);
+            Assert.NotNull(turnEnd);
+            Assert.NotNull(discoverResponse);
+            Assert.AreNotEqual(you, game.getCurrentPlayer());
+            Assert.Null(game.answers.getRequest<DiscoverRequest>(you.id));
+            Assert.True(task.IsCompleted);
+            Assert.True(cards.Contains(task.Result));
         }
         [Test]
         public void corruptionTest()

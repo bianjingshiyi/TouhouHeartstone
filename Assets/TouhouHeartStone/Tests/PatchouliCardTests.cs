@@ -400,7 +400,7 @@ namespace Tests
             {
                 oppo.cmdUse(game, oppo.getHand().getCard<DefaultServant>(), i);
             }
-            throw new NotImplementedException("Test compromised");// oppo.getField()[0].setAttack(game, 5);
+            oppo.getField()[0].setAttack(game, 5);
             oppo.cmdTurnEnd(game);
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 6);
             you.cmdUse(game, you.getHand().getCard<MercuryPoison>());

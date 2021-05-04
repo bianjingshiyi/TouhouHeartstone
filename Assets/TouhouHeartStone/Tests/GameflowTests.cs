@@ -301,7 +301,7 @@ namespace Tests
             game.skipTurnUntil(() => game.getCurrentPlayer() == oppo && oppo.getGem() >= 1);
             oppo.cmdUse(game, oppo.getHand().First());//对手拍一张白板随从
             oppo.cmdTurnEnd(game);
-            throw new NotImplementedException("Test compromised");// you.getMaster().setAttack(game, 5);
+            you.getMaster().setAttack(game, 5);
             you.cmdAttack(game, you.getMaster(), oppo.getField()[0]);
             Assert.AreEqual(2, oppo.getField()[0].getCurrentLife(game));
         }
