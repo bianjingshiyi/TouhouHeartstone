@@ -483,35 +483,37 @@ namespace TouhouHeartstone
             return list.ToArray();
         }
 
-        public static async Task<HearthStoneRule.RebornEventArg> reborn(this Player player, CardEngine game, Card card, Pile pile, int position = -1)
+        /// <summary>
+        /// 复生，墓地到场上
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<HearthStoneRule.RebornEventArg> reborn(this Player player, CardEngine game, Card card, int position = -1)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));
-            if (pile.count >= pile.maxCount)
-                return null;
             if (position < 0)
-                position = pile.count;
+                position = player.getField().count;
             if (card == null)
                 return null;
             if (card.pile.name != PILE.GRAVE)
             {
                 return null;
             }
-            HearthStoneRule.RebornEventArg eventArg = new HearthStoneRule.RebornEventArg() { player = player, card = card, pile = pile, position = position };
-            await game.triggers.doEvent(eventArg, async arg =>
+            HearthStoneRule.RebornEventArg eventArg = new HearthStoneRule.RebornEventArg() { player = player, card = card, position = position };
+            eventArg = await game.triggers.doEvent(eventArg, async arg =>
             {
-                if (pile.count >= pile.maxCount)
-                    return;
                 game.logger.logTrace(arg.player + "复活" + arg.card.define.GetType().Name + "位于" + position);
                 await arg.player.tryEnterField(game, arg.player.getGrave(), arg.card, arg.position);
                 //亡语随从在墓地与场上移动时不会进行效果的激活与禁用
                 foreach (IPassiveEffect effect in arg.card.define.effects.OfType<DeathRattle>())
                 {
-                    if (effect.piles.Contains(pile.name))
-                    {
-                        await effect.onDisable(game, card, null);
-                        await effect.onEnable(game, card, null);
-                    }
+                    await effect.onDisable(game, card, null);
+                    await effect.onEnable(game, card, null);
                 }
             });
             return eventArg;

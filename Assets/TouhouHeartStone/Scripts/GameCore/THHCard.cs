@@ -74,7 +74,7 @@ namespace TouhouHeartstone
         [Obsolete("Use buff or modifier instead")]
         public static Task<IPropChangeEventArg> setLife(this Card card, IGame game, int value)
         {
-            return card.setProp(game, nameof(ServantCardDefine.life), value);
+            return card.setProp(game, DEFINE.LIFE, value);
         }
         
         /// <summary>
@@ -216,7 +216,7 @@ namespace TouhouHeartstone
                 UberDebug.LogError($"卡片{card}的牌堆是空的，这很不正常");
                 return false;
             }
-            if (card.pile.name == PILE.FIELD)
+            if (card.pile?.name == PILE.FIELD)
             {
                 //随从限定
                 if (!card.isReady(game)//还没准备好

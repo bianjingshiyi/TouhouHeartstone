@@ -159,7 +159,7 @@ namespace TouhouHeartstone.Builtin
             await game.updateDeath();
             foreach (var c in field)
             {
-                await card.getOwner().reborn(game, c, c.getOwner().getField());
+                await card.getOwner().reborn(game, c);
             }
             // int count = card.getOwner().field.count;
             // for (int i = 0; i < count; i++)
@@ -189,7 +189,7 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 3; i++)
             {
-                await card.getOwner().reborn(game, card.getOwner().getGrave().Where(c => c.getCost(game) <= 3 && c.isServant()).random(game), card.getOwner().getField());
+                await card.getOwner().reborn(game, card.getOwner().getGrave().Where(c => c.getCost(game) <= 3 && c.isServant()).random(game));
                 //card.getOwner().grave.Where(c => c.getCost(game) <= 3 && c.isServant()).random(game);
             };
         }
@@ -366,7 +366,7 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 3; i++)
             {
-                var reborn = await card.getOwner().reborn(game, card.getOwner().getGrave().Where(c => c.hasDeathRattle(game) && c.isServant()).random(game), card.getOwner().getField());
+                var reborn = await card.getOwner().reborn(game, card.getOwner().getGrave().Where(c => c.hasDeathRattle(game) && c.isServant()).random(game));
                 if (reborn != null)
                 {
                     await reborn.card.addBuff(game, new GeneratedBuff(ID, 

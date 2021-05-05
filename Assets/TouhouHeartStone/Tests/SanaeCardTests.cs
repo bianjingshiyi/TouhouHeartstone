@@ -63,7 +63,7 @@ namespace Tests
         /// 星之仪式测试
         /// 信仰对决 将一张全新的“星之仪式”置入手牌；获胜时改为抽一张法力值消耗最高的牌
         /// </summary>
-        [Test]
+        [Test, Obsolete]
         public void StarRitualTest()
         {
             TestGameflow.createGame<FireBall, DefaultServant>(out var game, out var you, out var oppo,
@@ -380,8 +380,8 @@ namespace Tests
                 int id = discoverRequest.cardIdArray[i];
                 int handCount = you.getHand().count;
                 you.cmdDiscover(game, id);
-                Card card = game.getCard(id);
-                switch (card.define)
+                CardDefine card = game.getDefine(id);
+                switch (card)
                 {
                     case GodMiracleOfRain _:
                         foreach (var servant in oppo.getField())
@@ -407,7 +407,7 @@ namespace Tests
             }
         }
 
-        [Test]
+        [Test, Obsolete]
         public void MoriyaSuwakoTest()
         {
             TestGameflow.createGame<StarRitual, SorcererApprentice>(out var game, out var you, out var oppo,

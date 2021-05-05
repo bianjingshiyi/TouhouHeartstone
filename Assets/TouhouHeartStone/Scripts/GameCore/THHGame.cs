@@ -1042,7 +1042,6 @@ namespace TouhouHeartstone
             public Player player;
             public int position;
             public Card card;
-            public Pile pile;
 
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {

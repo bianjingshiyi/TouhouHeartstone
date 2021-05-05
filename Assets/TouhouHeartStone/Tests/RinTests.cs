@@ -66,7 +66,7 @@ namespace Tests
             you.cmdUse<GhostFire>(game, out var s);
             s.setDead(game, true);
             game.updateDeath();
-            Assert.AreEqual(27, oppo.getMaster().getCurrentLife(game));
+            Assert.AreEqual(28, oppo.getMaster().getCurrentLife(game));
             game.Dispose();
         }
 
@@ -109,6 +109,30 @@ namespace Tests
 
             Assert.AreEqual(2, you.getField().count);
             Assert.True(you.getField()[0].define is DefaultServant);
+            game.Dispose();
+        }
+        
+        [Test]
+        public void RekindlingOfDeadAshesPassiveEffectTest()
+        {
+            TestGameflow.createGame<CorpseTruck, DefaultServant>(out var game, out var you, out var oppo,
+                new KeyValuePair<int, int>(RekindlingOfDeadAshes.ID, 2));
+            for (int i = 0; i < 2; i++)
+            {
+                game.skipUntilCanUse<CorpseTruck>(you);
+                you.cmdUse<CorpseTruck>(game, out var servant);
+            }
+            you.getMaster().addModifier(game, new AttackModifier(1));
+            you.cmdAttack(game, you.getMaster(), oppo.getMaster());
+            game.skipUntilCanUse<RekindlingOfDeadAshes>(you);
+            you.cmdUse<RekindlingOfDeadAshes>(game);
+            game.skipUntilCanUse<RekindlingOfDeadAshes>(you);
+            you.cmdUse<RekindlingOfDeadAshes>(game);
+            int count = you.getHand().count;
+            you.cmdAttack(game, you.getMaster(), oppo.getMaster());
+            Assert.AreEqual((count + 2 > 10) ? 10 : count + 2, you.getHand().count);
+
+            Assert.AreEqual(2, you.getField().count);
             game.Dispose();
         }
 

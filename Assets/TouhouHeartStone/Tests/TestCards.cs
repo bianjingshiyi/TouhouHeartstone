@@ -785,7 +785,7 @@ namespace Tests
             new DeathRattle(ID,(g,c,b,p)=>
             {
                 Player player = c.getOwner();
-                return player.reborn(g,c,player.getField(),p);
+                return player.reborn(g,c,p);
             })
         };
     }
