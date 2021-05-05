@@ -1417,7 +1417,7 @@ namespace TouhouHeartstone.Builtin
 
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.hand,
+            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.field,
                 (game, card, arg) => { return arg.player == card.getOwner(); },
                 async (game, card, arg) => { await game.getOpponent(card.getOwner()).addCardToHand<Neutral_73>(game); })
         };
