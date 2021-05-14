@@ -518,8 +518,9 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
-
-        public static int getSpellDamage(this Player player, CardEngine game, int baseDamage)
+        [ActionNodeMethod("GetSpellDamage")]
+        [return: ActionNodeParam("Damage")]
+        public static int getSpellDamage([ActionNodeParam("Player")] this Player player, CardEngine game, [ActionNodeParam("BaseDamage")] int baseDamage)
         {
             int result = baseDamage;
             foreach (var card in player.getField())
@@ -967,6 +968,9 @@ namespace TouhouHeartstone
                 this.player = player;
                 this.card = card;
                 this.targets = targets;
+                setVar("Player", player);
+                setVar("Card", card);
+                setVar("Targets", targets);
             }
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -979,7 +983,7 @@ namespace TouhouHeartstone
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡，{2}是目标列表")]
@@ -1003,6 +1007,14 @@ namespace TouhouHeartstone
                     string.Join(", ", targets.Select(t => t is Card c ? c.getFormatString() : t.ToString()))
                 };
             }
+            [ActionNodeMethod("GetTarget")]
+            [return: ActionNodeParam("Target")]
+            public static Card getTarget(ActiveEventArg eventArg, [ActionNodeParam("TargetName", true)] string targetName)
+            {
+                if (targetName == "Target")
+                    return (Card)eventArg.targets[0];
+                throw new NotImplementedException();
+            }
         }
 
         public class CreateTokenEventArg : EventArg, IDescribableEventArg
@@ -1025,7 +1037,7 @@ namespace TouhouHeartstone
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
@@ -1061,7 +1073,7 @@ namespace TouhouHeartstone
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡牌列表")]

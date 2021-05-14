@@ -199,26 +199,26 @@ namespace Game
         }
         CardEngine createGame(HearthstoneOption option, IEnumerable<RoomPlayerInfo> playerList)
         {
-//             THHGame game = new THHGame(option, getManager<CardManager>().GetCardDefines())
-//             {
-//                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
-//                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
-//                 time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
-//                 logger = new ULogger()
-//             };
-//             game.answers.game = game;
-//             foreach (var info in playerList)
-//             {
-//                 var deck = info.getDeck();
-//                 checkDeckValid(game, deck);
-// #if UNITY_EDITOR
-//                 //检查卡组合法性
-//                 if (_useTestDeck)
-                     // deck = _testDeck.toIdArray();
-// #endif
-//                 THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getDefine(deck[0]) as MasterCardDefine,
-//                     deck.Skip(1).Select(id => game.getDefine(id)));
-//             }
+            //             THHGame game = new THHGame(option, getManager<CardManager>().GetCardDefines())
+            //             {
+            //                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
+            //                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
+            //                 time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
+            //                 logger = new ULogger()
+            //             };
+            //             game.answers.game = game;
+            //             foreach (var info in playerList)
+            //             {
+            //                 var deck = info.getDeck();
+            //                 checkDeckValid(game, deck);
+            // #if UNITY_EDITOR
+            //                 //检查卡组合法性
+            //                 if (_useTestDeck)
+            // deck = _testDeck.toIdArray();
+            // #endif
+            //                 THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getDefine(deck[0]) as MasterCardDefine,
+            //                     deck.Skip(1).Select(id => game.getDefine(id)));
+            //             }
             CardEngine game = new CardEngine()
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
@@ -237,7 +237,7 @@ namespace Game
                 }
             }
 #endif
-            game.init(new HearthStoneRule(getManager<CardManager>().GetCardDefines()),
+            game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly }, new HearthStoneRule(getManager<CardManager>().GetCardDefines()),
                 option, playerList.ToArray());
             return game;
         }

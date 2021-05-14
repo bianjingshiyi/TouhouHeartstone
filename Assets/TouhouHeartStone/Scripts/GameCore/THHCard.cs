@@ -44,7 +44,7 @@ namespace TouhouHeartstone
         // {
         //     return card.setProp(game, nameof(ServantCardDefine.cost), value);
         // }
-        
+
         public static int getAttack(this Card card, CardEngine game)
         {
             int result = card.getProp<int>(game, DEFINE.ATTACK);
@@ -70,13 +70,13 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(game, DEFINE.LIFE);
         }
-        
+
         [Obsolete("Use buff or modifier instead")]
         public static Task<IPropChangeEventArg> setLife(this Card card, IGame game, int value)
         {
             return card.setProp(game, DEFINE.LIFE, value);
         }
-        
+
         /// <summary>
         /// 一个随从/物品/英雄是否已经死了？除了生命值小于等于0以外，还有一个isDead的属性来控制卡片是否在死亡结算当中。
         /// </summary>
@@ -539,7 +539,7 @@ namespace TouhouHeartstone
                         await effect.onDisable(game, card, null);
                     }
                     await card.setKeywords(game, new string[0]);
-                    
+
                 }
             });
         }
@@ -713,13 +713,13 @@ namespace TouhouHeartstone
                 }
                 if (spell.hasKeyword(KEYWORD.MISSION))
                 {
-                    if(card.getOwner().getHead().count >= card.getOwner().getHead().maxCount)
+                    if (card.getOwner().getHead().count >= card.getOwner().getHead().maxCount)
                     {
                         game.logger.log(NO_SPACE_FOR_TRAP);
                         info = NO_SPACE_FOR_TRAP;
                         return false;
                     }
-                    if(card.getOwner().getHead().Any(c => c.define.hasKeyword(KEYWORD.MISSION)))
+                    if (card.getOwner().getHead().Any(c => c.define.hasKeyword(KEYWORD.MISSION)))
                     {
                         game.logger.log(ONLY_ONE_MISSION);
                         info = ONLY_ONE_MISSION;
@@ -743,7 +743,7 @@ namespace TouhouHeartstone
                 }
                 if (skill.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect effect)
                 {
-                    if (!effect.checkCondition(game, card,null, new object[]
+                    if (!effect.checkCondition(game, card, null, new object[]
                     {
                         new HearthStoneRule.ActiveEventArg(player,card,new object[0])
                     }))
@@ -780,11 +780,11 @@ namespace TouhouHeartstone
                 List<Card> targetList = new List<Card>();
                 foreach (Player player in game.players)
                 {
-                    if (card.isValidTarget(game, player.getMaster(), targetEffect, null))
+                    if (card.isValidTarget(game, player.getMaster(), targetEffect, null, null))
                         targetList.Add(player.getMaster());
                     foreach (Card servant in player.getField())
                     {
-                        if (card.isValidTarget(game, servant, targetEffect, null))
+                        if (card.isValidTarget(game, servant, targetEffect, null, null))
                             targetList.Add(servant);
                     }
                 }
@@ -796,16 +796,30 @@ namespace TouhouHeartstone
                 List<Card> targetList = new List<Card>();
                 foreach (Player player in game.players)
                 {
-                    if (card.isValidTarget(game, player.getMaster(), null, triggerEffect))
+                    if (card.isValidTarget(game, player.getMaster(), null, triggerEffect, null))
                         targetList.Add(player.getMaster());
                     foreach (Card servant in player.getField())
                     {
-                        if (card.isValidTarget(game, servant, null, triggerEffect))
+                        if (card.isValidTarget(game, servant, null, triggerEffect, null))
                             targetList.Add(servant);
                     }
                 }
                 targets = targetList.ToArray();
                 return true;
+            }
+            if (card.define.effects.OfType<GeneratedEffect>().FirstOrDefault() is GeneratedEffect generatedEffect)
+            {
+                List<Card> targetList = new List<Card>();
+                foreach (Player player in game.players)
+                {
+                    if (card.isValidTarget(game, player.getMaster(), null, null, generatedEffect))
+                        targetList.Add(player.getMaster());
+                    foreach (Card servant in player.getField())
+                    {
+                        if (card.isValidTarget(game, servant, null, null, generatedEffect))
+                            targetList.Add(servant);
+                    }
+                }
             }
             targets = null;
             return false;
@@ -825,17 +839,23 @@ namespace TouhouHeartstone
         {
             ITargetEffect targetEffect = card.define.getActiveEffect() as ITargetEffect;
             ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
-            return isValidTarget(card, game, target, targetEffect, triggerEffect);
+            GeneratedEffect generatedEffect = card.define.effects.OfType<GeneratedEffect>().First();
+            return isValidTarget(card, game, target, targetEffect, triggerEffect, generatedEffect);
         }
-        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect)
+        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedEffect generatedEffect)
         {
+            //目标不可作为效果目标
             if (target.isStealth(game) && target.getOwner() != card.getOwner())
                 return false;
-            if (targetEffect == null && triggerEffect == null)
+            //没有任何效果
+            if (targetEffect == null && triggerEffect == null && generatedEffect == null)
                 return false;
+            //存在效果且不符合目标条件
             if (targetEffect != null && !targetEffect.checkTargets(game, card, null, new object[] { target }))
                 return false;
-            if (triggerEffect != null && triggerEffect.checkTargets(game, card,null, null, new object[] { target }))
+            if (triggerEffect != null && triggerEffect.checkTargets(game, card, null, null, new object[] { target }))
+                return false;
+            if (generatedEffect != null && !generatedEffect.checkTarget(game, card, null, new HearthStoneRule.ActiveEventArg(card.owner, card, new object[] { target })).Result)
                 return false;
             return true;
         }
@@ -893,18 +913,35 @@ namespace TouhouHeartstone
                 await resetCard(card, game);
             }
         }
-
-        public static Task activeEffect(this Card card, CardEngine game,Player player, Card[] targets)
+        /// <summary>
+        /// 发动一张卡的主动效果
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="targets"></param>
+        /// <returns></returns>
+        public static Task activeEffect(this Card card, CardEngine game, Player player, Card[] targets)
         {
             ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
             if (triggerEffect != null)
             {
-                return triggerEffect.execute(game, card,null, new object[] { new HearthStoneRule.ActiveEventArg(player, card, targets) }, targets);
+                return triggerEffect.execute(game, card, null, new object[] { new HearthStoneRule.ActiveEventArg(player, card, targets) }, targets);
             }
             IActiveEffect activeEffect = card.define.getActiveEffect();
             if (activeEffect != null)
             {
                 return activeEffect.execute(game, card, new object[] { new HearthStoneRule.ActiveEventArg(player, card, targets) }, targets);
+            }
+            if (card.isServant() || card.isItem() || card.isMaster())
+            {
+                var effect = card.define.effects.OfType<GeneratedEffect>().FirstOrDefault(e => e.tags.Contains(KEYWORD.BATTLECRY));
+                return effect.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
+            }
+            else if (card.isSpell() || card.isSkill())
+            {
+                var effect = card.define.effects.OfType<GeneratedEffect>().FirstOrDefault();
+                return effect.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
             }
             return Task.CompletedTask;
         }
@@ -1029,13 +1066,15 @@ namespace TouhouHeartstone
             }
             object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
             {
-                return new object[] { 
+                return new object[] {
                     card.getFormatString(),
                     target.getFormatString()
                 };
             }
         }
-        public static Task<DamageEventArg> damage(this Card card, CardEngine game, Card source, int value)
+        [ActionNodeMethod("Damage")]
+        [return: ActionNodeParam("DamageEvent")]
+        public static Task<DamageEventArg> damage([ActionNodeParam("Card")] this Card card, CardEngine game, [ActionNodeParam("DamageSource")] Card source, [ActionNodeParam("Amount")] int value)
         {
             try
             {
@@ -1471,8 +1510,8 @@ namespace TouhouHeartstone
             }
 
             var oppo = game.getOpponent(card.getOwner());
-            var allEnem = oppo.getField().ToList().Append(oppo.getMaster()).Where(c=>!c.isStealth(game)).ToList();
-            if (allEnem.Any(c=>c.hasKeyword(game,KEYWORD.TAUNT)))
+            var allEnem = oppo.getField().ToList().Append(oppo.getMaster()).Where(c => !c.isStealth(game)).ToList();
+            if (allEnem.Any(c => c.hasKeyword(game, KEYWORD.TAUNT)))
             {
                 targets.AddRange(allEnem.Where(c => c.hasKeyword(game, KEYWORD.TAUNT)));
             }
@@ -1480,7 +1519,7 @@ namespace TouhouHeartstone
             {
                 targets.AddRange(allEnem);
             }
-            
+
             return targets;
         }
 
@@ -1518,7 +1557,7 @@ namespace TouhouHeartstone
         /// <param name="isYourDeck"></param>
         /// <param name="random">若为 false, 将移动到牌堆顶</param>
         /// <returns></returns>
-        public static Task fieldToDeck(this Card card,CardEngine game, bool random)
+        public static Task fieldToDeck(this Card card, CardEngine game, bool random)
         {
             return fieldToDeck(new Card[] { card }, game, random);
         }
@@ -1530,9 +1569,9 @@ namespace TouhouHeartstone
         /// <param name="isYourDeck"></param>
         /// <param name="random">若为 false, 将移动到牌堆顶</param>
         /// <returns></returns>
-        public static async Task fieldToDeck(this IEnumerable<Card> cards,CardEngine game, bool random)
+        public static async Task fieldToDeck(this IEnumerable<Card> cards, CardEngine game, bool random)
         {
-            foreach (var g in cards.GroupBy(c=>c.getOwner()))
+            foreach (var g in cards.GroupBy(c => c.getOwner()))
             {
                 // 场上随从没死 = 没重置，所以这里手动重置
                 g.resetCard(game);
@@ -1606,7 +1645,7 @@ namespace TouhouHeartstone
                 }
             }
         }
-        
+
         /// <summary>
         /// 墓地回牌库
         /// </summary>
@@ -1696,7 +1735,7 @@ namespace TouhouHeartstone
         /// <param name="card"></param>
         /// <param name="game"></param>
         /// <returns></returns>
-        public static Task<MissionCompleteArg> MissionComplete(this Card card,IGame game)
+        public static Task<MissionCompleteArg> MissionComplete(this Card card, IGame game)
         {
             return game.triggers.doEvent(new MissionCompleteArg() { card = card }, async arg =>
             {
@@ -1761,16 +1800,16 @@ namespace TouhouHeartstone
             {
                 var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card, player = player, targets = targets }, async arg =>
                 {
-                     await card.activeEffect(game, player, targets);//执行随从效果
-                     if (targets != null &&
-                        targets.Length > 0)
-                     {
-                         game.logger.log("触发战吼" + card + ",目标是" + targets[0]);
-                     }
-                     else
-                     {
-                         game.logger.log("触发战吼" + card);
-                     }
+                    await card.activeEffect(game, player, targets);//执行随从效果
+                    if (targets != null &&
+                       targets.Length > 0)
+                    {
+                        game.logger.log("触发战吼" + card + ",目标是" + targets[0]);
+                    }
+                    else
+                    {
+                        game.logger.log("触发战吼" + card);
+                    }
                 });
                 return eventArg;
             }
@@ -1816,7 +1855,7 @@ namespace TouhouHeartstone
             }
         }
 
-        
+
 
     }
 }

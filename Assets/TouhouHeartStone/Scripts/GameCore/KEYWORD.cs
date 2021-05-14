@@ -80,10 +80,12 @@
         /// </summary>
         public const string _RevealDuel = "_revealDuel";
         /// <summary>
+        /// 宣言
+        /// </summary>
+        public const string BATTLECRY = "battleCry";
+        /// <summary>
         /// 遗言
         /// </summary>
         public const string _DeathRattle = "_deathRattle";
-
-
     }
 }

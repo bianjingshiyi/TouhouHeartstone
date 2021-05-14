@@ -68,7 +68,7 @@ namespace TouhouHeartstone
 
         public static THHCardDefine[] getTHHDefines(this CardEngine game)
         {
-            return (THHCardDefine[]) game.getDefines();
+            return (THHCardDefine[])game.getDefines();
         }
 
         public static Card createCard<T>(this CardEngine game) where T : CardDefine
@@ -348,7 +348,7 @@ namespace TouhouHeartstone
         {
         }
 
-        public override async Task onGameInit(CardEngine game, GameOption options, RoomPlayerInfo[] players)
+        public override Task onGameInit(CardEngine game, GameOption options, RoomPlayerInfo[] players)
         {
             game.option = options;
             var option = getOption(game);
@@ -357,6 +357,7 @@ namespace TouhouHeartstone
                 var deck = playerInfo.getProp<int[]>("deck");
                 createPlayer(game, playerInfo.RoomID, playerInfo.name, deck[0], deck.Skip(1).ToArray());
             }
+            return Task.CompletedTask;
         }
 
         public override Task onGameRun(CardEngine game)
@@ -731,7 +732,7 @@ namespace TouhouHeartstone
         public override async Task onPlayerCommand(CardEngine game, Player player, CardEngine.CommandEventArg command)
         {
             throw new NotImplementedException();
-            
+
             IResponse response =
                 await game.answers.ask(player.id, new FreeActRequest(), getOption(game).timeoutForTurn * 2);
             switch (response)
@@ -880,7 +881,7 @@ namespace TouhouHeartstone
 
             object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
             {
-                return new object[] {player.name, card.getFormatString()};
+                return new object[] { player.name, card.getFormatString() };
             }
         }
 

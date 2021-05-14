@@ -444,11 +444,118 @@ namespace Tests
         public override int cost { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new LambdaSingleTargetEffect((game,card,target)=>
+            new GeneratedEffect(new ActionNode()
             {
-                target.damage(game, card, card.getOwner().getSpellDamage(game, 6));
-                return Task.CompletedTask;
+                defineName = "GetTarget",
+                consts = new object[] { "Target" },
+                outputs = new ActionVarRef[]
+                {
+                    new ActionVarRef()
+                    {
+                        index = 0,
+                        varName = "@GetTarget1_0"
+                    }
+                },
+                next = new ActionNode()
+                {
+                    defineName = "GetVariable",
+                    consts = new object[] { "Card" },
+                    outputs = new ActionVarRef[]
+                    {
+                        new ActionVarRef()
+                        {
+                            index = 0,
+                            varName = "@GetVariable2_0"
+                        }
+                    },
+                    next = new ActionNode()
+                    {
+                        defineName = "GetOwner",
+                        inputs = new ActionVarRef[]
+                        {
+                            new ActionVarRef()
+                            {
+                                index = 0,
+                                varName = "@GetVariable2_0"
+                            }
+                        },
+                        outputs = new ActionVarRef[]
+                        {
+                            new ActionVarRef()
+                            {
+                                index = 0,
+                                varName = "@GetOwner3_0"
+                            }
+                        },
+                        next = new ActionNode()
+                        {
+                            defineName = "IntegerConst",
+                            consts = new object[] { 6 },
+                            outputs = new ActionVarRef[]
+                            {
+                                new ActionVarRef()
+                                {
+                                    index = 0,
+                                    varName = "@IntegerConst4_0"
+                                }
+                            },
+                            next = new ActionNode()
+                            {
+                                defineName = "GetSpellDamage",
+                                inputs = new ActionVarRef[]
+                                {
+                                    new ActionVarRef()
+                                    {
+                                        index = 0,
+                                        varName = "@GetOwner3_0"
+                                    },
+                                    new ActionVarRef()
+                                    {
+                                        index = 1,
+                                        varName = "@IntegerConst4_0"
+                                    }
+                                },
+                                outputs = new ActionVarRef[]
+                                {
+                                    new ActionVarRef()
+                                    {
+                                        index = 0,
+                                        varName = "@GetSpellDamage5_0"
+                                    }
+                                },
+                                next = new ActionNode()
+                                {
+                                    defineName = "Damage",
+                                    inputs = new ActionVarRef[]
+                                    {
+                                        new ActionVarRef()
+                                        {
+                                            index = 0,
+                                            varName = "@GetTarget1_0"
+                                        },
+                                        new ActionVarRef()
+                                        {
+                                            index = 1,
+                                            varName = "@GetVariable2_0"
+                                        },
+                                        new ActionVarRef()
+                                        {
+                                            index = 2,
+                                            varName = "@GetSpellDamage5_0"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             })
+            //,
+            //new LambdaSingleTargetEffect((game,card,target)=>
+            //{
+            //    target.damage(game, card, card.getOwner().getSpellDamage(game, 6));
+            //    return Task.CompletedTask;
+            //})
         };
     }
     /// <summary>

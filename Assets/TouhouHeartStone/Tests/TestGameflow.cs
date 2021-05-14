@@ -5,6 +5,7 @@ using TouhouHeartstone;
 using UnityEngine;
 using BJSYGameCore;
 using NitoriNetwork.Common;
+using System.Reflection;
 
 namespace Tests
 {
@@ -44,7 +45,7 @@ namespace Tests
             you = game.createPlayer(1, "玩家1", game.getDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
             oppo = game.createPlayer(2, "玩家2", game.getDefine<MasterCardDefine>(oppoMaster), oppoTrueDeck);
         }
-        
+
         /// <summary>
         /// 使用模板分别填充你和对手的牌库
         /// </summary>
@@ -57,7 +58,7 @@ namespace Tests
         /// <param name="oppoMaster"></param>
         /// <param name="oppoDeck"></param>
         /// <typeparam name="T"></typeparam>
-        public static void createGame<YourDeck,OppoDeck>(out CardEngine game, out Player you, out Player oppo, HearthstoneOption option,
+        public static void createGame<YourDeck, OppoDeck>(out CardEngine game, out Player you, out Player oppo, HearthstoneOption option,
             int yourMaster, KeyValuePair<int, int>[] yourDeck,
             int oppoMaster, KeyValuePair<int, int>[] oppoDeck) where YourDeck : CardDefine where OppoDeck : CardDefine
         {
@@ -73,12 +74,12 @@ namespace Tests
         {
             createGame<YourDeck, OppoDeck>(out game, out you, out oppo, new HearthstoneOption() { shuffle = false }, TestMaster.ID, yourDeck, TestMaster.ID, new KeyValuePair<int, int>[0]);
         }
-        
+
         private static IEnumerable<CardDefine> createDeck(CardEngine game, KeyValuePair<int, int>[] yourDeck)
         {
             return createDeck<DefaultServant>(game, yourDeck);
         }
-        
+
         /// <summary>
         /// 使用模板填充牌库
         /// </summary>
@@ -144,8 +145,8 @@ namespace Tests
                 logger = logger
             };
             game.answers.game = game;
-            game.init(new HearthStoneRule(CardHelper.getCardDefines(logger)), option, new RoomPlayerInfo[0]);
             (game.triggers as TriggerManager).logger = game.logger;
+            game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly }, new HearthStoneRule(CardHelper.getCardDefines(logger)), option, new RoomPlayerInfo[0]).Wait();
             return game;
         }
     }
