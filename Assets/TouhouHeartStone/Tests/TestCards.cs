@@ -446,108 +446,43 @@ namespace Tests
         {
             new GeneratedEffect(new ActionNode()
             {
-                defineName = "GetTarget",
-                consts = new object[] { "Target" },
-                outputs = new ActionVarRef[]
+                defineName = "Damage",
+                inputs = new ActionValueRef[]
                 {
-                    new ActionVarRef()
+                    new ActionValueRef(new ActionNode()
                     {
-                        index = 0,
-                        varName = "@GetTarget1_0"
-                    }
-                },
-                next = new ActionNode()
-                {
-                    defineName = "GetVariable",
-                    consts = new object[] { "Card" },
-                    outputs = new ActionVarRef[]
+                        defineName = "GetTarget",
+                        consts = new object[] { "Target" }
+                    }),
+                    new ActionValueRef(new ActionNode()
                     {
-                        new ActionVarRef()
-                        {
-                            index = 0,
-                            varName = "@GetVariable2_0"
-                        }
-                    },
-                    next = new ActionNode()
+                        defineName = "GetVariable",
+                        consts = new object[] { "Card" }
+                    }),
+                    new ActionValueRef(new ActionNode()
                     {
-                        defineName = "GetOwner",
-                        inputs = new ActionVarRef[]
+                        defineName = "GetSpellDamage",
+                        inputs = new ActionValueRef[]
                         {
-                            new ActionVarRef()
+                            new ActionValueRef(new ActionNode()
                             {
-                                index = 0,
-                                varName = "@GetVariable2_0"
-                            }
-                        },
-                        outputs = new ActionVarRef[]
-                        {
-                            new ActionVarRef()
-                            {
-                                index = 0,
-                                varName = "@GetOwner3_0"
-                            }
-                        },
-                        next = new ActionNode()
-                        {
-                            defineName = "IntegerConst",
-                            consts = new object[] { 6 },
-                            outputs = new ActionVarRef[]
-                            {
-                                new ActionVarRef()
+                                defineName = "GetOwner",
+                                inputs = new ActionValueRef[]
                                 {
-                                    index = 0,
-                                    varName = "@IntegerConst4_0"
+                                    new ActionValueRef(new ActionNode()
+                                    {
+                                        defineName = "GetVariable",
+                                        consts = new object[] { "Card" }
+                                    })
                                 }
-                            },
-                            next = new ActionNode()
+                            }),
+                            new ActionValueRef(new ActionNode()
                             {
-                                defineName = "GetSpellDamage",
-                                inputs = new ActionVarRef[]
-                                {
-                                    new ActionVarRef()
-                                    {
-                                        index = 0,
-                                        varName = "@GetOwner3_0"
-                                    },
-                                    new ActionVarRef()
-                                    {
-                                        index = 1,
-                                        varName = "@IntegerConst4_0"
-                                    }
-                                },
-                                outputs = new ActionVarRef[]
-                                {
-                                    new ActionVarRef()
-                                    {
-                                        index = 0,
-                                        varName = "@GetSpellDamage5_0"
-                                    }
-                                },
-                                next = new ActionNode()
-                                {
-                                    defineName = "Damage",
-                                    inputs = new ActionVarRef[]
-                                    {
-                                        new ActionVarRef()
-                                        {
-                                            index = 0,
-                                            varName = "@GetTarget1_0"
-                                        },
-                                        new ActionVarRef()
-                                        {
-                                            index = 1,
-                                            varName = "@GetVariable2_0"
-                                        },
-                                        new ActionVarRef()
-                                        {
-                                            index = 2,
-                                            varName = "@GetSpellDamage5_0"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                                defineName = "IntegerConst",
+                                consts = new object[] { 6 }
+                            })
+                        },
+                    })
                 }
             })
             //,
