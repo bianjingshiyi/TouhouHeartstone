@@ -839,7 +839,7 @@ namespace TouhouHeartstone
         {
             ITargetEffect targetEffect = card.define.getActiveEffect() as ITargetEffect;
             ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
-            GeneratedEffect generatedEffect = card.define.effects.OfType<GeneratedEffect>().First();
+            GeneratedEffect generatedEffect = card.define.effects.OfType<GeneratedEffect>().FirstOrDefault();
             return isValidTarget(card, game, target, targetEffect, triggerEffect, generatedEffect);
         }
         private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedEffect generatedEffect)
