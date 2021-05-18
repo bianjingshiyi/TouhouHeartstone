@@ -317,6 +317,7 @@ namespace Tests
         public override int life { get; set; } = 8;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
+            //new GeneratedEffect(new ActionNode(),)
             new IntPropFixer<Pile.MoveCardEventArg>(PileFlag.hand,new IntPropFixer<Pile.MoveCardEventArg>.ModifierFixer(new CostModifier(0),(g,c,b,a)=>
             {
                 int v = -c.getOwner().getHand().Where(c1=>c1!=c).Count();
@@ -444,47 +445,22 @@ namespace Tests
         public override int cost { get; set; } = 4;
         public override IEffect[] effects { get; set; } = new IEffect[]
         {
-            new GeneratedEffect(new ActionNode()
+            new GeneratedEffect(null, new TargetChecker[]
             {
-                defineName = "Damage",
-                inputs = new ActionValueRef[]
+                new TargetChecker("Character", null, "必须以角色为目标")
+            }, new ActionNode("Damage", new ActionValueRef[]
+            {
+                new ActionValueRef(new ActionNode("GetTarget", new object[] { "Target" })),
+                new ActionValueRef(new ActionNode("GetVariable", new object[] { "Card" })),
+                new ActionValueRef(new ActionNode("GetSpellDamage", new ActionValueRef[]
                 {
-                    new ActionValueRef(new ActionNode()
+                    new ActionValueRef(new ActionNode("GetOwner", new ActionValueRef[]
                     {
-                        defineName = "GetTarget",
-                        consts = new object[] { "Target" }
-                    }),
-                    new ActionValueRef(new ActionNode()
-                    {
-                        defineName = "GetVariable",
-                        consts = new object[] { "Card" }
-                    }),
-                    new ActionValueRef(new ActionNode()
-                    {
-                        defineName = "GetSpellDamage",
-                        inputs = new ActionValueRef[]
-                        {
-                            new ActionValueRef(new ActionNode()
-                            {
-                                defineName = "GetOwner",
-                                inputs = new ActionValueRef[]
-                                {
-                                    new ActionValueRef(new ActionNode()
-                                    {
-                                        defineName = "GetVariable",
-                                        consts = new object[] { "Card" }
-                                    })
-                                }
-                            }),
-                            new ActionValueRef(new ActionNode()
-                            {
-                                defineName = "IntegerConst",
-                                consts = new object[] { 6 }
-                            })
-                        },
-                    })
-                }
-            })
+                        new ActionValueRef(new ActionNode("GetVariable", new object[] { "Card" }))
+                    })),
+                    new ActionValueRef(new ActionNode("IntegerConst", new object[] { 6 }))
+                }))
+            }), new string[0])
             //,
             //new LambdaSingleTargetEffect((game,card,target)=>
             //{

@@ -935,7 +935,7 @@ namespace TouhouHeartstone
             }
             if (card.isServant() || card.isItem() || card.isMaster())
             {
-                var effect = card.define.effects.OfType<GeneratedEffect>().FirstOrDefault(e => e.tags.Contains(KEYWORD.BATTLECRY));
+                var effect = card.define.effects.OfType<GeneratedEffect>().FirstOrDefault(e => e.tagList.Contains(KEYWORD.BATTLECRY)); ;
                 return effect.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
             }
             else if (card.isSpell() || card.isSkill())
