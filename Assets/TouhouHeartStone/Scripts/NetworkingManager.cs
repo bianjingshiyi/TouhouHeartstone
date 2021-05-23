@@ -320,11 +320,10 @@ namespace Game
         public void quitRoom()
         {
             logic.QuitRoom();
+            displayPanel();
 
             // ui.RoomButton.interactable = false;
             // ui.RoomButton.image.color = Color.gray;
-            Client_onQuitRoom();
-            flushRooms();
         }
 
         private void Logic_onGameStart()
@@ -580,10 +579,6 @@ namespace Game
             setRoomPanel(logic.CurrentRoom);
         }
 
-        private void Client_onQuitRoom()
-        {
-            displayPanel();
-        }
         #endregion
         #region UI事件处理
         [TranslateMsg]
