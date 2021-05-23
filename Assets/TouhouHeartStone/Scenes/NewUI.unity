@@ -3700,6 +3700,7 @@ MonoBehaviour:
     - id: 8277
       count: 30
   _deck: 00004000012000000120000001200000012000000120000002200000022000000220000002200000022000000220000002200000032000000320000003200000032000000320000003200000122040001220400007304000073040001220400006200000062000000620000006200000062000000620000006200000
+  _dummyAI: 0
   _mode: 0
   _client: {fileID: 0}
 --- !u!4 &1441166624
@@ -5273,13 +5274,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _accountServerBaseUri: https://serv.igsk.fun
   _testAccountServerBaseUri: https://test.serv.igsk.fun
-  _host: {fileID: 0}
-  _client: {fileID: 0}
-  _LANRoomList: []
-  _LANUpdateTimer:
-    startTime: -1
-    updateTime: -1
-    duration: 5
   _port: 9050
 --- !u!4 &1750958372
 Transform:
@@ -8891,6 +8885,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7072975925692672795, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 166.69922
       objectReference: {fileID: 0}
     - target: {fileID: 7072975925786958678, guid: 83c0b33294cc7ac4295dbe5157864e9d,
         type: 3}

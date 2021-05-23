@@ -636,6 +636,7 @@ namespace Tests
             yield break;
         }
         [UnityTest]
+        [Obsolete]
         public IEnumerator LANGameTest()
         {
             ULogger logger = new ULogger();
@@ -746,6 +747,7 @@ namespace Tests
             Object.Destroy(host.gameObject);
         }
         [UnityTest]
+        [Obsolete]
         public IEnumerator serverGameTest()
         {
             ULogger logger = new ULogger();

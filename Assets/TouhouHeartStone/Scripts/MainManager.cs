@@ -24,7 +24,9 @@ namespace Game
         [SerializeField]
         UnityEvent onLoadingFinish;
         Main mainUI => ui.getObject<Main>();
-        RoomInfo currentRoomInfo = new RoomInfo();
+
+        RoomData currentRoomData;
+
         protected override void onAwake()
         {
             base.onAwake();
@@ -34,14 +36,14 @@ namespace Game
             main.MainMenu.lANButton.onClick.set(() =>
             {
                 main.display(main.NetworkingPage);
-                _ = network.displayPanelForLAN();
+                network.displayPanelForLAN();
             });
             main.MainMenu.serverButton.onClick.set(() =>
             {
-                if (network.client.account != null)
+                if (network.logic.Logined)
                 {
                     main.display(main.NetworkingPage);
-                    _ = network.displayPanelForLobby();
+                    network.displayPanelForLobby();
                 }
                 else
                 {
@@ -114,7 +116,7 @@ namespace Game
                         _getNewVersionTask.Dispose();
                         _getNewVersionTask = null;
                     }
-                    if (SematicTagVersion.Parse(getCurrentVersion()) < SematicTagVersion.Parse(latestVersion.Version) && !string.IsNullOrEmpty(latestVersion.FullPackageUrl))
+                    if (SematicTagVersion.Parse(getCurrentVersion()) < SematicTagVersion.Parse(latestVersion.Version))
                     {
                         var pf = PlatformCompability.Current;
                         string downloadURL = null;
@@ -125,7 +127,7 @@ namespace Game
                                 downloadURL = pf.Is64Bit ? latestVersion.Win64?.PackageUrl : latestVersion.Win32?.PackageUrl;
                                 break;
                             case RuntimePlatform.Android:
-                                downloadURL = latestVersion.Android != null ? latestVersion.FullPackageUrl : latestVersion.Android?.PackageUrl;
+                                downloadURL = latestVersion.Android?.PackageUrl;
                                 break;
                             case RuntimePlatform.LinuxPlayer:
                             case RuntimePlatform.LinuxEditor:
@@ -165,62 +167,70 @@ namespace Game
         private void showLocalRoom()
         {
             Main main = ui.getObject<Main>();
+            _ = network.logic.CreateLocalRoom();
+            currentRoomData = network.logic.CurrentRoom;
+            currentRoomData.maxPlayerCount = 2; // 炉石两个人
 
-            currentRoomInfo = new RoomInfo();
-            var selfPlayer = new RoomPlayerInfo() { name = lang._(MMANGGE_MYSELF) };
-            currentRoomInfo.playerList.Add(selfPlayer);
             HearthstoneOption option = new HearthstoneOption();
             var rand = new byte[4];
             System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
             option.randomSeed = BitConverter.ToInt32(rand, 0);
-            currentRoomInfo.setOption(option);
+            currentRoomData.setOption(option);
 
             main.RoomPanel.ResetEvents();
             main.RoomPanel.SetMode(RoomPanel.Mode.Local);
-            main.RoomPanel.SetSelfID(selfPlayer.PlayerID);
+            main.RoomPanel.SetSelfID(network.logic.localPlayer.id);
             main.RoomPanel.SetRightText("");
-            main.RoomPanel.SetInfo(currentRoomInfo);
+            main.RoomPanel.SetInfo(currentRoomData);
 
             main.display(main.RoomPanel);
             main.RoomPanel.OnStartClick += () =>
             {
-                game.startLocalGame(currentRoomInfo);
+                game.startLocalGame(currentRoomData);
             };
             main.RoomPanel.OnQuitClick += () =>
             {
+                currentRoomData = null;
+                network.quitRoom();
+
                 main.display(main.MainMenu);
             };
-            main.RoomPanel.OnRoomInfoUpdate += (info) =>
+            main.RoomPanel.OnRoomPropUpdate += (name, obj) =>
             {
-                currentRoomInfo = info;
-                main.RoomPanel.SetInfo(currentRoomInfo);
+                currentRoomData.setProp(name, obj);
+                main.RoomPanel.SetInfo(currentRoomData);
             };
             main.RoomPanel.OnPlayerRemove += (id) =>
             {
-                for (int i = 0; i < currentRoomInfo.playerList.Count; i++)
+                for (int i = 0; i < currentRoomData.playerDataList.Count; i++)
                 {
-                    if (currentRoomInfo.playerList[i].PlayerID == id)
+                    if (currentRoomData.playerDataList[i].id == id)
                     {
-                        currentRoomInfo.playerList.RemoveAt(i--);
+                        currentRoomData.playerDataList.RemoveAt(i--);
                     }
                 }
-                main.RoomPanel.SetInfo(currentRoomInfo);
+                main.RoomPanel.SetInfo(currentRoomData);
             };
-            main.RoomPanel.OnAIPlayerAdd += (player) =>
+            main.RoomPanel.OnAIPlayerAdd += () =>
             {
-                currentRoomInfo.playerList.Add(player);
-                main.RoomPanel.SetInfo(currentRoomInfo);
+                network.logic.AddAIPlayer();
+                main.RoomPanel.SetInfo(currentRoomData);
             };
             main.RoomPanel.OnSetPlayerDeck += (id, deck) =>
             {
-                for (int i = 0; i < currentRoomInfo.playerList.Count; i++)
+                for (int i = 0; i < currentRoomData.playerDataList.Count; i++)
                 {
-                    if (currentRoomInfo.playerList[i].PlayerID == id)
+                    var player = currentRoomData.playerDataList[i];
+                    if (player.id == id)
                     {
-                        currentRoomInfo.playerList[i].setDeck(deck);
+                        currentRoomData.playerDataList[i].setDeck(deck);
+                        if (player.type == RoomPlayerType.ai)
+                        {
+                            player.setReady(true);
+                        }
                     }
                 }
-                main.RoomPanel.SetInfo(currentRoomInfo);
+                main.RoomPanel.SetInfo(currentRoomData);
             };
         }
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)

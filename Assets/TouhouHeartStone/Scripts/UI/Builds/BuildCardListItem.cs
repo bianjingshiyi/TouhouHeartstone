@@ -143,7 +143,7 @@ namespace UI
                 // todo: 不一定是窗口大小改变造成的这个组件大小改变
                 // 但是直接用OnDimensionChange方法会造成性能问题
                 // 需要优化。
-                CardVList.checkGameWndChange();
+                CardVList.checkViewPortChange();
             }
         }
     }

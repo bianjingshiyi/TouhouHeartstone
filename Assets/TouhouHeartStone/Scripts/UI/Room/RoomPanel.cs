@@ -15,7 +15,9 @@ namespace UI
 {
     partial class RoomPanel
     {
-        RoomInfo roomInfo = new RoomInfo();
+
+        RoomData roomData;
+
         DeckManager deckManager => this.findInstance<DeckManager>();
         CardManager cardManager => this.findInstance<CardManager>();
 
@@ -59,38 +61,42 @@ namespace UI
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    roomInfo.getOption().randomSeed = 0;
-                    OnRoomInfoUpdate?.Invoke(roomInfo);
+                    var option = roomData.getOption();
+                    option.randomSeed = 0;
+                    notifyRoomSettingChange(option);
                     return;
                 }
 
                 if (int.TryParse(value, out int i))
                 {
-                    roomInfo.getOption().randomSeed = i;
-                    OnRoomInfoUpdate?.Invoke(roomInfo);
+                    var option = roomData.getOption();
+                    option.randomSeed = i;
+                    notifyRoomSettingChange(option);
                 }
                 else
                 {
-                    RandomSeedContainerGameOptionItemText.InputField.text = roomInfo.getOption().randomSeed.ToString();
+                    RandomSeedContainerGameOptionItemText.InputField.text = roomData.getOption().randomSeed.ToString();
                 }
             });
 
             ShuffleContainerGameOptionItemToggle.Toggle.onValueChanged.set(value =>
             {
-                roomInfo.getOption().shuffle = value;
-                OnRoomInfoUpdate?.Invoke(roomInfo);
+                var option = roomData.getOption();
+                option.shuffle = value;
+                notifyRoomSettingChange(option);
             });
 
             InitReplacementContainerGameOptionItemText.InputField.onEndEdit.set(value =>
             {
                 if (int.TryParse(value, out int i) && 5 < i)
                 {
-                    roomInfo.getOption().timeoutForInitReplace = i;
-                    OnRoomInfoUpdate?.Invoke(roomInfo);
+                    var option = roomData.getOption();
+                    option.timeoutForInitReplace = i;
+                    notifyRoomSettingChange(option);
                 }
                 else
                 {
-                    InitReplacementContainerGameOptionItemText.InputField.text = roomInfo.getOption().timeoutForInitReplace.ToString();
+                    InitReplacementContainerGameOptionItemText.InputField.text = roomData.getOption().timeoutForInitReplace.ToString();
                 }
             });
 
@@ -98,23 +104,24 @@ namespace UI
             {
                 if (int.TryParse(value, out int i) && 5 < i)
                 {
-                    roomInfo.getOption().timeoutForTurn = i;
-                    OnRoomInfoUpdate?.Invoke(roomInfo);
+                    var option = roomData.getOption();
+                    option.timeoutForTurn = i;
+                    notifyRoomSettingChange(option);
                 }
                 else
                 {
-                    TurnTimeContainerGameOptionItemText.InputField.text = roomInfo.getOption().timeoutForTurn.ToString();
+                    TurnTimeContainerGameOptionItemText.InputField.text = roomData.getOption().timeoutForTurn.ToString();
                 }
             });
 
             IsSortedToggleGameOptionItemToggle.Toggle.onValueChanged.set((value) =>
             {
                 Debug.Log("更新房间设定" + value);
-                roomInfo.setOption(new HearthstoneOption(roomInfo.getOption())
+                var option = new HearthstoneOption(roomData.getOption())
                 {
-                    sortedPlayers = value ? roomInfo.playerList.Select(p => p.RoomID).ToArray() : null
-                });
-                OnRoomInfoUpdate?.Invoke(roomInfo);
+                    sortedPlayers = value ? roomData.playerDataList.Select(p => p.id).ToArray() : null
+                };
+                notifyRoomSettingChange(option);
             });
 
             StartButtonButtonBlack.asButton.onClick.set(() =>
@@ -210,23 +217,19 @@ namespace UI
             };
         }
 
-        RoomPlayerInfo aiPlayer = null;
-
-        /// <summary>
-        /// 设置房间信息
-        /// </summary>
-        /// <param name="room"></param>
-        public void SetInfo(RoomInfo room)
+        RoomPlayerData aiPlayerData;
+        
+        public void SetInfo(RoomData room)
         {
-            roomInfo = room;
+            roomData = room;
 
-            RoomPlayerInfo selfPlayer = null;
+            RoomPlayerData selfPlayer = null;
 
             RoomPlayerList.clearItems();
-            foreach (var player in room.playerList)
+            foreach (var player in room.playerDataList)
             {
                 // 顺便获取自己的引用
-                if (player.PlayerID == selfPlayerID)
+                if (player.id == selfPlayerID)
                     selfPlayer = player;
 
                 var item = RoomPlayerList.addItem();
@@ -234,32 +237,30 @@ namespace UI
                 item.OnPlayerViewDeck += viewDeck;
 
                 // 仅当自己是主机且此玩家不是自己时，设置为可以移除
-                item.SetRemoveable(isHost && selfPlayerID != player.PlayerID);
+                item.SetRemoveable(isHost && selfPlayerID != player.id);
                 item.OnPlayerRemove += (id) =>
                 {
-                    if (id == aiPlayer?.PlayerID)
-                        aiPlayer = null;
+                    if (id == aiPlayerData?.id)
+                        aiPlayerData = null;
                     OnPlayerRemove?.Invoke(id);
                 };
 
-                if (aiPlayer != null && player.PlayerID == aiPlayer.PlayerID)
+                if (player.type == RoomPlayerType.ai)
                 {
+                    aiPlayerData = player;
+
                     item.SetMode(RoomPlayerListItem.PlayerListMode.AIPlayer);
                     item.OnSetAIDeck += () =>
                     {
                         showDeckSelectionPanel((deckID) =>
                         {
-                            // AI 玩家直接在这里设置为准备好
-                            // 底下的 OnSetPlayerDeck 会触发变更事件的。
-                            aiPlayer.ready = true;
-
                             var deck = deckManager.GetDeck(deckID);
                             var skin = cardManager.getSkin(deck.MasterID);
 
                             var list = deckManager.GetDeckCards(deckID).Select(k => (int)k.Value).ToList();
                             list.Insert(0, deck.MasterID); // polyfill: 转换为传统的，第一张卡是master的格式
 
-                            OnSetPlayerDeck?.Invoke(aiPlayer.PlayerID, list.ToArray());
+                            OnSetPlayerDeck?.Invoke(player.id, list.ToArray());
                         });
                     };
                 }
@@ -271,18 +272,17 @@ namespace UI
 
             if (selfPlayer == null)
             {
-                Debug.LogWarning($"SelfPlayer是空的。PlayerID：{selfPlayerID}, players: {room.playerList.Select(e => e.PlayerID.ToString())}");
+                Debug.LogWarning($"SelfPlayer是空的。PlayerID：{selfPlayerID}, players: {room.playerDataList.Select(e => e.id.ToString())}");
             }
 
-            if (currentMode == Mode.Local && aiPlayer == null)
+            if (currentMode == Mode.Local && aiPlayerData == null)
             {
                 var item = RoomPlayerList.addItem();
                 item.SetMode(RoomPlayerListItem.PlayerListMode.AddAI);
 
                 item.OnAddAIPlayer += () =>
                 {
-                    aiPlayer = new RoomPlayerInfo() { RoomID = 1, name = "AI" };
-                    OnAIPlayerAdd?.Invoke(aiPlayer);
+                    OnAIPlayerAdd?.Invoke();
                 };
             }
 
@@ -305,20 +305,21 @@ namespace UI
             if (isHost)
             {
                 // 判断是否可以开始游戏
-                bool startable = room.playerList.Count > 1;
+                bool startable = room.playerDataList.Count == room.maxPlayerCount;
 
-                foreach (var item in room.playerList)
+                foreach (var item in room.playerDataList)
                 {
-                    if (item.PlayerID == selfPlayerID)
+                    if (item.id == selfPlayerID)
                     {
                         // 主机检查卡组是否满
-                        if (!item.tryGetDeck(out int[] deck) || deck.Length < 30)
+                        var decks = item.getDeck();
+                        if (decks == null || decks.Length < 30)
                             startable = false;
                     }
                     else
                     {
                         // 其他检查是否准备好
-                        startable &= item.ready;
+                        startable &= item.getReady();
                     }
                 }
 
@@ -327,10 +328,17 @@ namespace UI
             else
             {
                 // 判断准备状态
-                StartButtonButtonBlack.Text.text = selfPlayer.ready ? lang._(STR_REQUEST_PREPRAE) : lang._(STR_PREPARE);
-                StartButtonButtonBlack.asButton.setSelectable(selfPlayer.tryGetDeck(out var deck) && deck != null && deck.Length == 31);
+                var deck = selfPlayer.getDeck();
+                StartButtonButtonBlack.Text.text = selfPlayer.getReady() ? lang._(STR_REQUEST_PREPRAE) : lang._(STR_PREPARE);
+                StartButtonButtonBlack.asButton.setSelectable(deck != null && deck.Length == 31);
             }
         }
+
+        void notifyRoomSettingChange(GameOption option)
+        {
+            OnRoomPropUpdate?.Invoke(RoomDataPropName.OPTION_GAMEOPTION, option);
+        }
+
         [TranslateMsg]
         private const String STR_REQUEST_PREPRAE = "取消准备";
 
@@ -354,7 +362,7 @@ namespace UI
         /// <summary>
         /// 房间信息更新（主要是设置）更新后触发
         /// </summary>
-        public event Action<RoomInfo> OnRoomInfoUpdate;
+        public event Action<string, object> OnRoomPropUpdate;
         /// <summary>
         /// 点击删除玩家按钮后触发
         /// </summary>
@@ -362,7 +370,7 @@ namespace UI
         /// <summary>
         /// 添加了AI玩家
         /// </summary>
-        public event Action<RoomPlayerInfo> OnAIPlayerAdd;
+        public event Action OnAIPlayerAdd;
         /// <summary>
         /// 玩家牌组改变
         /// </summary>
@@ -374,11 +382,11 @@ namespace UI
 
         public void ResetEvents()
         {
-            aiPlayer = null;
+            aiPlayerData = null;
 
             OnStartClick = null;
             OnQuitClick = null;
-            OnRoomInfoUpdate = null;
+            OnRoomPropUpdate = null;
             OnPlayerRemove = null;
             OnAIPlayerAdd = null;
             OnSetPlayerDeck = null;
@@ -386,18 +394,15 @@ namespace UI
         }
     }
 
-
-
     partial class RoomPlayerListItem
     {
         partial void onAwake()
         {
-            RemoveButtonBlack.asButton.onClick.AddListener(() => OnPlayerRemove?.Invoke(playerInfo.PlayerID));
+            RemoveButtonBlack.asButton.onClick.AddListener(() => OnPlayerRemove?.Invoke(playerData.id));
             ViewButtonBlack.asButton.onClick.AddListener(() =>
             {
-                int[] deck;
-                bool exists = playerInfo.tryGetProp<int[]>(RoomPlayerInfoName.DECK_INTARRAY, out deck);
-                if (exists)
+                int[] deck = playerData.getDeck();
+                if (deck != null)
                     OnPlayerViewDeck?.Invoke(deck);
             });
             asButton.onClick.AddListener(() =>
@@ -410,12 +415,13 @@ namespace UI
                 OnSetAIDeck?.Invoke();
             });
         }
-
+        [Obsolete]
         RoomPlayerInfo playerInfo;
         /// <summary>
         /// 设置当前的玩家信息
         /// </summary>
         /// <param name="info"></param>
+        [Obsolete]
         public void SetPlayerInfo(RoomPlayerInfo info)
         {
             playerInfo = info;
@@ -426,6 +432,22 @@ namespace UI
 
             CheckIconImage.gameObject.SetActive(info.ready);
             CharacterText.text = exists ? this.findInstance<CardManager>().getSkin(deck[0]).name : "";
+        }
+
+        RoomPlayerData playerData;
+        /// <summary>
+        /// 设置当前的玩家信息
+        /// </summary>
+        /// <param name="data"></param>
+        public void SetPlayerInfo(RoomPlayerData data)
+        {
+            playerData = data;
+            NameText.text = data.name;
+
+            int[] deck = data.getDeck();
+
+            CheckIconImage.gameObject.SetActive(data.getReady());
+            CharacterText.text = deck != null ? this.findInstance<CardManager>().getSkin(deck[0]).name : "";
         }
 
         /// <summary>

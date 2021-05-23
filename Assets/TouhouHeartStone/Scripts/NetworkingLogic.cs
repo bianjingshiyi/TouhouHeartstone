@@ -1,0 +1,348 @@
+﻿using TouhouCardEngine;
+using NitoriNetwork.Common;
+using System.Threading.Tasks;
+using TouhouHeartstone;
+using System;
+using TouhouCardEngine.Interfaces;
+using UnityEngine;
+
+namespace Game
+{
+    public class NetworkingLogic: IClient
+    {
+        /// <summary>
+        /// 服务器的客户端
+        /// </summary>
+        public ServerClient ServerClient { get; private set; }
+        /// <summary>
+        /// 本地联网游戏逻辑
+        /// </summary>
+        ClientLogic localLanLogic;
+
+        public NetworkingLogic(string serverUri, string version, string localPlayerName, int[] ports = null)
+        {
+            ServerClient = new ServerClient(serverUri, version, System.IO.Path.Combine(Application.persistentDataPath, "token"));
+            localLanLogic = new ClientLogic(localPlayerName, ports, ServerClient, new ULogger("LAN"));
+
+            localLanLogic.onRoomListChange += LocalLanLogic_onRoomListChange;
+            localLanLogic.onGameStart += onGameStartEvtHandler;
+            localLanLogic.OnPlayerDataChange += roomPlayerDataChangeEvtHandler;
+            localLanLogic.OnRoomDataChange += roomDataChangeEvtHandler;
+            localLanLogic.OnReceiveData += roomReceiveEvtHandler;
+        }
+
+        public event Func<int, object, Task> onReceive;
+
+        int IClient.id => localLanLogic.localPlayer.id;
+
+        Task<T> IClient.send<T>(T obj)
+        {
+            return localLanLogic.curNetwork.Send<T>(obj);
+        }
+
+        #region 事件代理
+        public event Action<LobbyRoomDataList> onRoomListChange;
+        private void LocalLanLogic_onRoomListChange(LobbyRoomDataList obj)
+        {
+            onRoomListChange?.Invoke(obj);
+        }
+
+        public event Action<RoomPlayerData[]> OnPlayerDataChange;
+        private void roomPlayerDataChangeEvtHandler(RoomPlayerData[] obj)
+        {
+            OnPlayerDataChange?.Invoke(obj);
+        }
+
+        public event Action<RoomData> OnRoomDataChange;
+        private void roomDataChangeEvtHandler(RoomData obj)
+        {
+            OnRoomDataChange?.Invoke(obj);
+        }
+
+        private Task roomReceiveEvtHandler(int clientID, object obj)
+        {
+            return onReceive?.Invoke(clientID, obj);
+        }
+
+        public event Action onGameStart;
+        private void onGameStartEvtHandler()
+        {
+            onGameStart?.Invoke();
+        }
+        #endregion
+
+        /// <summary>
+        /// 加入一个房间
+        /// </summary>
+        /// <param name="roomID"></param>
+        /// <returns></returns>
+        public async Task JoinRoom(string roomID)
+        {
+            await localLanLogic.joinRoom(roomID);
+            isClient = true;
+        }
+
+        /// <summary>
+        /// 加入一个房间
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <param name="port"></param>
+        /// <returns></returns>
+        public async Task JoinRoom(string addr, int port)
+        {
+            await localLanLogic.joinRoom(addr, port);
+        }
+
+        /// <summary>
+        /// 当前房间
+        /// </summary>
+        public RoomData CurrentRoom => localLanLogic.room;
+        /// <summary>
+        /// 是客户端吗？
+        /// </summary>
+        public bool isClient { get; private set; }
+        /// <summary>
+        /// 当前是否在一个房间里面
+        /// </summary>
+        public bool RoomIsValid => CurrentRoom != null;
+        /// <summary>
+        /// 网络端口
+        /// </summary>
+        public int Port => localLanLogic.port;
+
+        /// <summary>
+        /// 创建一个远程房间
+        /// </summary>
+        /// <returns></returns>
+        public async Task CreateRoom()
+        {
+            await localLanLogic.createOnlineRoom();
+            isClient = false;
+        }
+
+        /// <summary>
+        /// 创建一个本地房间
+        /// </summary>
+        /// <returns></returns>
+        public async Task CreateLocalRoom()
+        {
+            await localLanLogic.createLocalRoom();
+        }
+
+        /// <summary>
+        /// 游戏结束，退出并清理房间
+        /// </summary>
+        public void ClearRoom()
+        {
+            localLanLogic.quitRoom();
+            if (!isClient)
+            {
+                if (localLanLogic.curNetwork is LANNetworking lan)
+                {
+                    // 如果是房主，要销毁（关闭）对应的房间
+                    lan.DestroyRoom();
+                }
+            }
+        }
+
+        public void QuitRoom()
+        {
+            localLanLogic.quitRoom();
+        }
+
+        /// <summary>
+        /// 开始游戏
+        /// </summary>
+        /// <returns></returns>
+        public Task StartGame()
+        {
+            return localLanLogic.curNetwork.GameStart();
+        }
+
+        /// <summary>
+        /// 请求重载房间列表
+        /// </summary>
+        public void ReloadRoomList()
+        {
+            localLanLogic.refreshRoomList();
+        }
+
+        public RoomPlayerData GetSelfInfo()
+        {
+            return localLanLogic.getLocalPlayerData();
+        }
+
+        public RoomPlayerData localPlayer => localLanLogic.localPlayer;
+
+        /// <summary>
+        /// 周期事件
+        /// </summary>
+        public void update()
+        {
+            localLanLogic.update();
+        }
+
+        public void SwitchMode(bool isLAN)
+        {
+            localLanLogic.SwitchMode(isLAN);
+        }
+
+        #region RoomMethod
+
+        public Task AddAIPlayer()
+        {
+            return localLanLogic.addAIPlayer();
+        }
+
+        public Task SetRoomProp(string name, object val)
+        {
+            return localLanLogic.curNetwork.SetRoomProp(name, val);
+        }
+
+        public void RemovePlayer(int uid)
+        {
+            // todo: 移除一个玩家
+        }
+
+        public Task SetPlayerProp(string name, object val)
+        {
+            return localLanLogic.curNetwork.SetPlayerProp(name, val);
+        }
+
+        #endregion
+
+        #region ServerClient
+        /// <summary>
+        /// 当前登录的用户信息
+        /// </summary>
+        public PublicBasicUserInfo UserInfo => userInfo;
+        PublicBasicUserInfo userInfo;
+        bool isGuest = false;
+
+        /// <summary>
+        /// 判断是否登录（非游客）
+        /// </summary>
+        public bool AccountIsValid => userInfo != null && !isGuest;
+
+        public bool Logined => userInfo != null;
+
+        /// <summary>
+        /// 尝试使用之前登录的用户信息自动登录，如果不成功则尝试使用游客身份登录。
+        /// </summary>
+        public void AutoLogin()
+        {
+            try
+            {
+                userInfo = ServerClient.GetUserInfo();
+
+                // 更新Session，防止Session太旧没更新导致无法连接服务器
+                ServerClient.GetSession();
+                isGuest = false;
+            }
+            catch (NetClientException e1)
+            {
+                UnityEngine.Debug.Log($"自动登录失败，{ e1 }，尝试使用游客身份登录.");
+
+                try
+                {
+                    ServerClient.GuestLogin();
+                    userInfo = ServerClient.GetUserInfo();
+                    // 游客不需要手动更新Session，因为在登录的时候默认换取的是Session
+                    isGuest = true;
+                }
+                catch (NetClientException e2)
+                {
+                    UnityEngine.Debug.Log($"游客身份登录失败，{ e2 }.");
+                    userInfo = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取许可协议等内容
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> GetEULAAndPrivacyPolicy()
+        {
+            var eula = await ServerClient.GetEULAAsync();
+            var pp = await ServerClient.GetPrivacyPolicyAsync();
+            return eula + "\n" + pp;
+        }
+        /// <summary>
+        /// 从服务器登出，在服务器返回消息之后返回。
+        /// </summary>
+        /// <returns></returns>
+        public async Task logout()
+        {
+            if (ServerClient == null)
+                return;
+            await ServerClient.LogoutAsync();
+            userInfo = null;
+        }
+
+        /// <summary>
+        /// 登录指定服务器，在收到服务器的回应之后返回。
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="port"></param>
+        /// <param name="account"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public async Task<bool> login(string account, string password, string captcha)
+        {
+            bool success = await ServerClient.LoginAsync(account, password, captcha);
+            if (success)
+            {
+                userInfo = await ServerClient.GetUserInfoAsync();
+            }
+            else
+            {
+                userInfo = null;
+            }
+            return success;
+        }
+
+        /// <summary>
+        /// 注册账号，在服务器回应之后返回。
+        /// </summary>
+        /// <param name="account"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public Task register(AccountInfo account, string captcha)
+        {
+            return ServerClient.RegisterAsync(
+                account.userName,
+                account.mail,
+                account.password,
+                account.nickName,
+                account.invite,
+                captcha
+            );
+        }
+        public Task<byte[]> getCaptchaImage()
+        {
+            return ServerClient.GetCaptchaImageAsync();
+        }
+        public string GetUserName(int uid)
+        {
+            return ServerClient.GetUserInfo(uid).Name;
+        }
+        #endregion
+
+    }
+
+    public static class RoomDataPropName
+    {
+        public const string OPTION_GAMEOPTION = "option";
+        public static HearthstoneOption getOption(this RoomData room)
+        {
+            if (room.tryGetProp<HearthstoneOption>(OPTION_GAMEOPTION, out HearthstoneOption data))
+                return data;
+            return new HearthstoneOption();
+        }
+        public static void setOption(this RoomData room, HearthstoneOption value)
+        {
+            room.setProp(OPTION_GAMEOPTION, value);
+        }
+    }
+}

@@ -115,6 +115,7 @@ namespace Game
             }
         }
         #region 外部接口
+        [Obsolete]
         public Task startLocalGame(RoomInfo room)
         {
             //创建游戏
@@ -140,27 +141,66 @@ namespace Game
             //开始游戏
             return runGame(game);
         }
+        public Task startLocalGame(RoomData room)
+        {
+            //创建游戏
+            CardEngine game = createGame(room);
+            //初始化本地玩家，AI，UI
+            foreach (var player in game.players)
+            {
+                if (player.id == room.playerDataList[0].id) // 暂时的
+                {
+                    localPlayer = player;
+                    displayGameUI(game, localPlayer);
+                }
+                else
+                {
+#if UNITY_EDITOR
+                    new AI(game, player, dummy: _dummyAI); //AI玩家用AI
+#else
+                    new AI(game, player);
+#endif
+                }
+            }
+            mode = GameMode.local;
+            //开始游戏
+            return runGame(game);
+        }
+
+        [Obsolete("Use nwLogic", true)]
         [SerializeField]
         ClientManager _client;
+
+        [Obsolete("Use nwLogic", true)]
         public ClientManager client
         {
             get { return _client; }
             set { _client = value; }
         }
+
+        [SerializeField]
+        NetworkingLogic _nwLogic;
+
+        public NetworkingLogic nwLogic
+        {
+            get { return _nwLogic; }
+            set { _nwLogic = value; }
+        }
+
         /// <summary>
         /// [RPC] 开始远程游戏
         /// </summary>
         /// <param name="room"></param>
-        public void startRemoteGame(RoomInfo room)
+        public void startRemoteGame(RoomData room)
         {
             bool headless = _mainUI == null;
             startRemoteGame(room, headless);
         }
-        public Task startRemoteGame(RoomInfo room, bool headless)
+        public Task startRemoteGame(RoomData room, bool headless)
         {
-            return startRemoteGame(client, room, headless);
+            return startRemoteGame(nwLogic, room, headless);
         }
-        public Task startRemoteGame(ClientManager client, RoomInfo room, bool headless = false)
+        public Task startRemoteGame(IClient client, RoomData room, bool headless = false)
         {
             //创建游戏
             CardEngine game = createGame(room);
@@ -191,13 +231,18 @@ namespace Game
         public event Action onGameStart;
         #endregion
         #region 内部功能
+        [Obsolete]
         CardEngine createGame(RoomInfo room)
         {
             if (room._persistDataList.Count > room.runtimeDic.Count)
                 room.deserialize();
             return createGame(room.getOption(), room.playerList);
         }
-        CardEngine createGame(HearthstoneOption option, IEnumerable<RoomPlayerInfo> playerList)
+        CardEngine createGame(RoomData room)
+        {
+            return createGame(room.getOption(), room.playerDataList);
+        }
+        CardEngine createGame(HearthstoneOption option, IEnumerable<IRoomPlayer> playerList)
         {
             //             THHGame game = new THHGame(option, getManager<CardManager>().GetCardDefines())
             //             {
@@ -241,6 +286,7 @@ namespace Game
                 option, playerList.ToArray());
             return game;
         }
+
         Task runGame(CardEngine game, bool recordReplay = true)
         {
             this.game = game;

@@ -800,7 +800,7 @@ namespace UI
         }
 
         NetworkingManager nwManager => ui.getManager<NetworkingManager>();
-        ClientManager client => nwManager.client;
+        NetworkingLogic client => nwManager.logic;
 
         async Task UploadDeck()
         {

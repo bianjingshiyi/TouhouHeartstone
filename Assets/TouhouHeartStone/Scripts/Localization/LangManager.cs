@@ -121,6 +121,8 @@ namespace Game
         private void loadAll()
         {
             var defaultCulture = new CultureInfo(defaultLang);
+            // 设置当前的默认语言
+            CurrentCulture = defaultCulture;
 
             foreach (var lang in langs)
             {
@@ -134,8 +136,7 @@ namespace Game
 
                 loadLang(lang);
             }
-            // 设置当前的默认语言
-            CurrentCulture = defaultCulture;
+
         }
 
         private void loadLang(string lang)

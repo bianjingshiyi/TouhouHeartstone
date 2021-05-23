@@ -348,14 +348,14 @@ namespace TouhouHeartstone
         {
         }
 
-        public override Task onGameInit(CardEngine game, GameOption options, RoomPlayerInfo[] players)
+        public override Task onGameInit(CardEngine game, GameOption options, IRoomPlayer[] players)
         {
             game.option = options;
             var option = getOption(game);
             foreach (var playerInfo in players)
             {
                 var deck = playerInfo.getProp<int[]>("deck");
-                createPlayer(game, playerInfo.RoomID, playerInfo.name, deck[0], deck.Skip(1).ToArray());
+                createPlayer(game, playerInfo.ID, playerInfo.Name, deck[0], deck.Skip(1).ToArray());
             }
             return Task.CompletedTask;
         }
