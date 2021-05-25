@@ -11,7 +11,19 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = StrangeHalfbody.ID;
-        public override IEffect[] effects { get; set; } = new Effect[0];
+
+        private IEffect[] effects1 = new Effect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         public const string PREHEAT = "preheat";
         public const string IS_PREHEATED = "isPreheated";
         /// <summary>
@@ -72,10 +84,22 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SKILL | 0x001;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().gainArmor(game, 2);
@@ -90,11 +114,23 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
            new NoTargetEffect(effect),
            new Youmu.SetPreHeatEffect(),
            new Youmu.RemovePreHeatEffect()
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             if (!Youmu.isPreHeated(game, card))
@@ -115,11 +151,23 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x003;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
            new NoTargetEffect(effect),
            new Youmu.SetPreHeatEffect(),
            new Youmu.RemovePreHeatEffect()
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().draw(game, c => c.isItem(), out var drawEvent);
@@ -140,11 +188,23 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new NoTargetEffect(effect),
             new Youmu.SetPreHeatEffect(),
             new Youmu.RemovePreHeatEffect()
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().gainArmor(game, 6);
@@ -171,12 +231,23 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x005;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.damage(game,card,card.getOwner().getMaster().getArmor(game));
             },PileFlag.both | PileFlag.field)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 121 冥界住人 亡语：将一个1/1的幽灵置入你的手牌 并使其获得+1+1
@@ -189,7 +260,8 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new DeathRattle(ID,async (game,card,p)=>
             {
@@ -197,6 +269,16 @@ namespace TouhouHeartstone.Builtin
                 await ghost.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 111 衍生物 幽灵
@@ -220,7 +302,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new Youmu.SetPreHeatEffect(),
             new Youmu.RemovePreHeatEffect(),
@@ -244,6 +327,16 @@ namespace TouhouHeartstone.Builtin
                     return Task.CompletedTask;
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 2 二百由旬一闪 抽一张牌，如果你拥有护甲，则再抽一张牌
@@ -254,9 +347,21 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
            new NoTargetEffect(effect),
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().draw(game);
@@ -273,9 +378,21 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
            new NoTargetEffect(effect),
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             Player player = card.getOwner();
@@ -297,9 +414,21 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
            new NoTargetEffect(effect),
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().getMaster().getArmor(game)),
@@ -315,10 +444,22 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x012;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().gainArmor(game, 5);
@@ -337,7 +478,8 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
         public override string[] keywords { get; set; } = new string[0];
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectBefore<THHCard.AttackEventArg>(PileFlag.field,(g,c,b,a)=>
             {
@@ -348,6 +490,16 @@ namespace TouhouHeartstone.Builtin
                     await c.getOwner().getItem().addBuff(g, new GeneratedBuff(ID, new AttackModifier(1)));
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 332 妖怪铁匠 战吼：使你的武器在本回合内获得免疫。
@@ -360,10 +512,22 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[0];
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getItem().addKeywords(game, KEYWORD.IMMUNITY);
@@ -392,7 +556,8 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 3;
         public override string[] keywords { get; set; } = new string[0];
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new BeforeYourTurnEnd(PileFlag.field, async(game,card,buff,arg)=>
             {
@@ -400,6 +565,16 @@ namespace TouhouHeartstone.Builtin
                     await card.getOwner().createToken(game, game.getDefine<Ghost>());
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 404 半幽灵 具有等同于护甲值的额外属性值
@@ -412,7 +587,8 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 4;
         public override string[] keywords { get; set; } = new string[0];
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             // new IntPropFixer<THHCard.SetArmorEventArg>(PileFlag.field,
                 // new IntPropFixer<THHCard.SetArmorEventArg>.ModifierFixer(
@@ -436,6 +612,16 @@ namespace TouhouHeartstone.Builtin
                     return card.getOwner().getMaster().getArmor(game);
                 }, identifier: "Life")),
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 232 白楼剑 如果你已经装备另外一个道具，则不装备此道具，改为使其获得此道具的耐久度。
@@ -447,7 +633,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectBefore<HearthStoneRule.UseEventArg>(PileFlag.hand,
                 (g1,c1,b1,a1)=>
@@ -466,6 +653,15 @@ namespace TouhouHeartstone.Builtin
                 })
         };
 
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 }
 

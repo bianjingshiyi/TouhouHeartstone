@@ -17,7 +17,18 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = SpareFilm.ID; //英雄技能的ID
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     [IgnoreCardDefine]
@@ -31,10 +42,20 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1; //技能花费
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
 
         static async Task effect(CardEngine game, Card card)
         {
@@ -62,8 +83,7 @@ namespace TouhouHeartstone.Builtin
 
         public override string[] tags { get; set; } = new string[] {TAG.BEAST}; //种族标签
 
-        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new DeathRattle(ID,
                 async (g, c, p) =>
@@ -71,6 +91,18 @@ namespace TouhouHeartstone.Builtin
                     await c.getOwner().getHand().random(g).addBuff(g, new GeneratedBuff(ID, new CostModifier(-1)));
                 })
         };
+
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     [IgnoreCardDefine]
@@ -85,7 +117,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1; //花费
         public override string[] keywords { get; set; } = new string[] {KEYWORD._RETURNHEAD}; //关键词标签：
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
                 {
@@ -116,6 +148,16 @@ namespace TouhouHeartstone.Builtin
                     }
                 })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     [IgnoreCardDefine]
@@ -129,10 +171,20 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
 
         static async Task effect(CardEngine game, Card card)
         {
@@ -156,8 +208,7 @@ namespace TouhouHeartstone.Builtin
 
         public override string[] tags { get; set; } = new string[] {TAG.BEAST}; //种族标签
 
-        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectBefore<HearthStoneRule.UseEventArg>(PileFlag.field,
                 (g, c,b, a) => { return c.getOwner() == a.player && a.card.isSkill(); },
@@ -170,6 +221,18 @@ namespace TouhouHeartstone.Builtin
                     };
                 })
         };
+
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     [IgnoreCardDefine]
@@ -183,10 +246,20 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
 
         static async Task effect(CardEngine game, Card card)
         {
@@ -213,10 +286,20 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
 
         static async Task effect(CardEngine game, Card card)
         {
@@ -241,7 +324,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
@@ -260,6 +343,16 @@ namespace TouhouHeartstone.Builtin
                 }
             }, PileFlag.both | PileFlag.character)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     [IgnoreCardDefine]
@@ -276,7 +369,7 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 4;
         public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE}; //关键词标签：
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectAfter<HearthStoneRule.DrawEventArg>(PileFlag.item,
                 (g, c,b, a) => { return a.player == g.getOpponent(c.getOwner()); }, async (g, c,b, a) =>
@@ -285,6 +378,16 @@ namespace TouhouHeartstone.Builtin
                     await c.damage(g, c, 1);
                 })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     [IgnoreCardDefine]
@@ -305,10 +408,20 @@ namespace TouhouHeartstone.Builtin
         //public override string[] tags { get; set; } = new string[] { TAG.BEAST };//种族标签
         public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE}; //关键词标签：
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
 
         static async Task effect(CardEngine game, Card card)
         {
@@ -338,8 +451,7 @@ namespace TouhouHeartstone.Builtin
 
         public override int life { get; set; } = 2;
 
-        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectAfter<THHCard.AttackEventArg>(PileFlag.master,
                 (g, c,b, a) => { return a.card == c.getOwner().getMaster(); },
@@ -348,6 +460,18 @@ namespace TouhouHeartstone.Builtin
                     await c.getOwner().getHand().random(g).addBuff(g, new GeneratedBuff(ID, new CostModifier(-1)));
                 })
         };
+
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     [IgnoreCardDefine]
@@ -361,10 +485,20 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
 
         static async Task effect(CardEngine game, Card card)
         {
@@ -390,10 +524,20 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
 
         static async Task effect(CardEngine game, Card card)
         {
@@ -432,7 +576,7 @@ namespace TouhouHeartstone.Builtin
         //public override string[] tags { get; set; } = new string[] { TAG.BEAST };//种族标签
         public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE}; //关键词标签：
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field,
                 (g, c,b, a) => { return a.player == c.getOwner() && a.card.isSkill(); },
@@ -446,6 +590,16 @@ namespace TouhouHeartstone.Builtin
                 }
             )
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     [IgnoreCardDefine]
@@ -458,7 +612,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
@@ -475,6 +629,16 @@ namespace TouhouHeartstone.Builtin
                 }
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     [IgnoreCardDefine]
@@ -487,10 +651,20 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
 
         static async Task effect(CardEngine game, Card card)
         {
@@ -515,8 +689,7 @@ namespace TouhouHeartstone.Builtin
 
         public override int life { get; set; } = 2;
 
-        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
-        public override IEffect[] effects { get; set; } = new IEffect[]
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field,
                 (g, c, b, a) => { return a.player == g.getOpponent(c.getOwner()) && a.card.isServant(); },
@@ -526,6 +699,18 @@ namespace TouhouHeartstone.Builtin
                     await c.getOwner().createToken(g, g.getDefine<Aya17>(), c.pile.indexOf(c) + 1);
                 })
         };
+
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };//关键词标签：
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     [IgnoreCardDefine]

@@ -12,14 +12,26 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = 1000;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = TotematicCall.ID;
-        public override IEffect[] effects { get; set; } = new Effect[0];
+
+        private IEffect[] effects1 = new Effect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class TotematicCall : SkillCardDefine
     {
         public const int ID = Reimu.ID | CATEGORY.SKILL | 0x000;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect((game,card)=>
             {
@@ -48,6 +60,16 @@ namespace TouhouHeartstone.Builtin
                 return !card.getOwner().getField().isFull;
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class HealTotem : ServantCardDefine
     {
@@ -57,7 +79,8 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 2;
         public override bool isToken { get; set; } = true;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.field,(game,card,buff,arg)=>
             {
@@ -69,6 +92,16 @@ namespace TouhouHeartstone.Builtin
                 await THHCard.heal(arg.player.getField(),game,card,1);
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class FireTotem : ServantCardDefine
     {
@@ -78,7 +111,18 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override bool isToken { get; set; } = true;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class ManaTotem : ServantCardDefine
     {
@@ -89,7 +133,18 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 2;
         public override int spellDamage { get; set; } = 1;
         public override bool isToken { get; set; } = true;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class TauntTotem : ServantCardDefine
     {
@@ -100,7 +155,18 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
         public override bool isToken { get; set; } = true;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 梦想封印 灵梦普通法术 3费 随机对3个敌方随从造成2点伤害。
@@ -110,7 +176,8 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Reimu.ID | CATEGORY.SPELL | 0x005;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
@@ -127,5 +194,15 @@ namespace TouhouHeartstone.Builtin
                     await opponent.getField().randomTake(game,3).damage(game,card, arg.player.getSpellDamage(game,2));
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 }

@@ -17,14 +17,36 @@ namespace Tests
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = TestSkill.ID;
-        public override IEffect[] effects { get; set; } = new LambdaSingleTargetEffect[0];
+
+        private IEffect[] effects1 = new LambdaSingleTargetEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     class TestSkill : SkillCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SKILL | 0x000;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new LambdaSingleTargetEffect[0];
+
+        private IEffect[] effects1 = new LambdaSingleTargetEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     class TestServant : ServantCardDefine
     {
@@ -33,7 +55,18 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new LambdaSingleTargetEffect[0];
+
+        private IEffect[] effects1 = new LambdaSingleTargetEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     class TestServant_TurnEndEffect : ServantCardDefine
     {
@@ -42,7 +75,8 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.field,(game,card,buff,arg)=>
             {
@@ -56,6 +90,16 @@ namespace Tests
                 return Task.CompletedTask;
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     class TestServant_ZeroAttack : ServantCardDefine
     {
@@ -64,9 +108,20 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 4;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     class TestServant_Reverse : ServantCardDefine
     {
@@ -75,7 +130,8 @@ namespace Tests
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none, (game,card,arg)=>
             {
@@ -88,6 +144,16 @@ namespace Tests
                 return Task.CompletedTask;
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     class TestServant_Buff : ServantCardDefine
     {
@@ -96,7 +162,8 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none, (game,card,arg)=>
             {
@@ -109,6 +176,17 @@ namespace Tests
                 return card.addBuff(game,new TestBuff());
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         class TestBuff : Buff
         {
             public const int ID = 0x001;
@@ -139,7 +217,18 @@ namespace Tests
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[0];
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 一个会圣盾的随从
@@ -153,7 +242,18 @@ namespace Tests
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[0];
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 会潜行的随从
@@ -167,7 +267,18 @@ namespace Tests
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[0];
         public override string[] keywords { get; set; } = new string[] { KEYWORD.STEALTH };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
 
         //public override IEffect[] effects { get; set; } = new IEffect[]
         //{
@@ -199,7 +310,18 @@ namespace Tests
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[] { };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.DRAIN };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     /// <summary>
@@ -214,7 +336,18 @@ namespace Tests
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[] { };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     /// <summary>
@@ -229,7 +362,18 @@ namespace Tests
         public override int life { get; set; } = 3;
         public override string[] tags { get; set; } = new string[] { };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.ELUSIVE };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     /// <summary>
@@ -241,14 +385,26 @@ namespace Tests
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = TestDamageSkill.ID;
-        public override IEffect[] effects { get; set; } = new LambdaSingleTargetEffect[0];
+
+        private IEffect[] effects1 = new LambdaSingleTargetEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     class TestDamageSkill : SkillCardDefine
     {
         public const int ID = 0x0011000D;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.skill,(game,card,arg)=>
             {
@@ -265,6 +421,15 @@ namespace Tests
             })
         };
 
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     /// <summary>
@@ -275,7 +440,8 @@ namespace Tests
         public const int ID = 0x0011000E;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
@@ -291,6 +457,16 @@ namespace Tests
                     await target.damage(game, card, arg.player.getSpellDamage(game,1));
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     /// <summary>
@@ -305,7 +481,18 @@ namespace Tests
         public override int life { get; set; } = 7;
         public override string[] tags { get; set; } = new string[0];
         public override string[] keywords { get; set; } = new string[0];
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     public class MountainGaint : ServantCardDefine
@@ -315,7 +502,8 @@ namespace Tests
         public override int cost { get; set; } = 12;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new GeneratedEffect(new string[]{ PILE.HAND },new ActionNode("SetProperty",new ActionValueRef[]//添加属性修改器并设置修改器的数值为改卡拥有者手牌除去自己的数量
             {
@@ -409,6 +597,16 @@ namespace Tests
             //    return v;
             //}))
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 冰环法术
@@ -418,7 +616,8 @@ namespace Tests
         public const int ID = 0x0011000F;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
@@ -434,6 +633,16 @@ namespace Tests
                 }
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 巫师学徒
@@ -445,13 +654,24 @@ namespace Tests
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new Halo(new GeneratedBuff(ID, new CostModifier(-1)), PileFlag.self | PileFlag.hand,filter:(game,card)=>
             {
                 return card.define is SpellCardDefine;
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
         //class Halo : PassiveEffect
         //{
         //    public override string[] piles { get; } = new string[] { PileName.FIELD };
@@ -527,7 +747,8 @@ namespace Tests
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x012;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new GeneratedEffect(null, new TargetChecker[]
             {
@@ -552,6 +773,16 @@ namespace Tests
             //    return Task.CompletedTask;
             //})
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 剧毒女祭师
@@ -565,7 +796,8 @@ namespace Tests
         public override int life { get; set; } = 1;
         public override string[] tags { get; set; } = new string[] { };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.POISONOUS };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.field,(game,card,buff,arg)=>
             {
@@ -586,13 +818,24 @@ namespace Tests
                 }
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class DiscoverCopy : SpellCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x013;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(async (game,card)=>
             {
@@ -601,6 +844,16 @@ namespace Tests
                 // await card.getOwner().getHand().add(game,game.createCard(discovered.define));
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class TestWeapon : ItemCardDefine
     {
@@ -618,7 +871,8 @@ namespace Tests
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x015;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect((g,c,t)=>
             {
@@ -636,6 +890,16 @@ namespace Tests
                 return t.getOwner() != c.getOwner();
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     /// <summary>
@@ -647,7 +911,8 @@ namespace Tests
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x016;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect((g, c, t) =>
             {
@@ -655,6 +920,16 @@ namespace Tests
                 return Task.CompletedTask;
             },PileFlag.both | PileFlag.character)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class Lightspawn : ServantCardDefine
     {
@@ -663,10 +938,22 @@ namespace Tests
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 5;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new PropModifyPassiveEffect(PileFlag.field, new PropHook<int>(DEFINE.ATTACK,CARD.CURRENT_LIFE))
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         class PropModifyPassiveEffect : PassiveEffect
         {
             public override string[] piles { get; }
@@ -707,7 +994,8 @@ namespace Tests
         public override int cost { get; set; } = 7;
         public override int attack { get; set; } = 7;
         public override int life { get; set; } = 7;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectBefore<THHCard.DamageEventArg>(PileFlag.field,
                 (g, c, a) =>
@@ -732,6 +1020,16 @@ namespace Tests
                     return Task.CompletedTask;
                 })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
 
@@ -744,7 +1042,8 @@ namespace Tests
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x018;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
@@ -766,6 +1065,16 @@ namespace Tests
                     )));
             },PileFlag.self | PileFlag.field)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 测试用奥秘
@@ -777,7 +1086,8 @@ namespace Tests
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,b,a)=>
             {
@@ -788,6 +1098,16 @@ namespace Tests
                  await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 测试用奥秘
@@ -799,7 +1119,8 @@ namespace Tests
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new SecretTriggerBefore<THHCard.AttackEventArg>((g,c,b,a)=>
             {
@@ -810,6 +1131,16 @@ namespace Tests
                  await g.updateDeath();//死亡结算
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class ChargeServant : ServantCardDefine
     {
@@ -831,13 +1162,24 @@ namespace Tests
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
               new LambdaSingleTargetEffect((g, c, t) =>
                 {
                     return t.heal(g,c,3);
                 },PileFlag.both | PileFlag.character)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     /// <summary>
@@ -849,13 +1191,24 @@ namespace Tests
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x023;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect(async(g, c, t) =>
             {
                 await THHCard.setDefine(t, g,g.getDefine<RushServant>());//没有羊
             },PileFlag.both | PileFlag.field)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class EnemyOnlyBattleCry : ServantCardDefine
     {
@@ -864,13 +1217,24 @@ namespace Tests
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect((g,c,t)=>
             {
                 return t.damage(g,c,1);
             }, PileFlag.oppo | PileFlag.character)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 恐惧战马 411 亡语：将这张牌从墓地置入战场。
@@ -882,7 +1246,8 @@ namespace Tests
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new DeathRattle(ID,(g,c,b,p)=>
             {
@@ -890,6 +1255,16 @@ namespace Tests
                 return player.reborn(g,c,p);
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class Anubarak : ServantCardDefine
     {
@@ -898,7 +1273,8 @@ namespace Tests
         public override int cost { get; set; } = 9;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 4;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new DeathRattle(ID,(g,c,b,p)=>
             {
@@ -907,6 +1283,16 @@ namespace Tests
                 return c.fieldToHand(g);
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class Nerubian : ServantCardDefine
     {
@@ -921,13 +1307,24 @@ namespace Tests
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x28;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect((g,c,t)=>
             {
                 return t.addBuff(g,new GeneratedBuff(ID, new AttackModifier(3)));
             }, PileFlag.field | PileFlag.both),
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 祈求牌，不触发任何效果，只是提供一次祈求。
@@ -937,13 +1334,24 @@ namespace Tests
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x29;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect((g,c)=>
             {
                 return Sanae.revealDuel(c.getOwner(),g);
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     /// <summary>
@@ -956,7 +1364,8 @@ namespace Tests
         public override int cost { get; set; } = 0;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new DeathRattle(ID,async(g1,c1,p)=>
             {
@@ -972,6 +1381,16 @@ namespace Tests
                 await g.updateDeath();
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     public class EndTurn1Spawn : ServantCardDefine
@@ -982,13 +1401,24 @@ namespace Tests
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[0];
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new BeforeYourTurnEnd(PileFlag.field, async(game,card,buff,arg, targets)=>
             {
                  await card.getOwner().createToken(game, game.getDefine<DefaultServant>());
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 
     public class UniqueServant : ServantCardDefine

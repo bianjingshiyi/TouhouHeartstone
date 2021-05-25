@@ -534,7 +534,7 @@ namespace TouhouHeartstone
                 {
                     await card.setProp(game, CARD.SILENCE, true);
                     await card.removeBuff(game, card.getBuffs());
-                    foreach (var effect in card.define.effects.OfType<IPassiveEffect>())
+                    foreach (var effect in card.define.getEffects().OfType<IPassiveEffect>())
                     {
                         await effect.onDisable(game, card, null);
                     }
@@ -585,7 +585,7 @@ namespace TouhouHeartstone
 
         public static bool hasDeathRattle(this Card card, IGame game)
         {
-            if (card.define.effects.OfType<DeathRattle>().Count() > 0 && !card.getProp<bool>(game, CARD.SILENCE))
+            if (card.define.getEffects().OfType<DeathRattle>().Count() > 0 && !card.getProp<bool>(game, CARD.SILENCE))
             {
                 return true;
             }
@@ -807,7 +807,7 @@ namespace TouhouHeartstone
                 targets = targetList.ToArray();
                 return true;
             }
-            if (card.define.effects.OfType<GeneratedEffect>().FirstOrDefault() is GeneratedEffect generatedEffect)
+            if (card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault() is GeneratedEffect generatedEffect)
             {
                 List<Card> targetList = new List<Card>();
                 foreach (Player player in game.players)
@@ -839,7 +839,7 @@ namespace TouhouHeartstone
         {
             ITargetEffect targetEffect = card.define.getActiveEffect() as ITargetEffect;
             ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
-            GeneratedEffect generatedEffect = card.define.effects.OfType<GeneratedEffect>().FirstOrDefault();
+            GeneratedEffect generatedEffect = card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault();
             return isValidTarget(card, game, target, targetEffect, triggerEffect, generatedEffect);
         }
         private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedEffect generatedEffect)
@@ -935,12 +935,12 @@ namespace TouhouHeartstone
             }
             if (card.isServant() || card.isItem() || card.isMaster())
             {
-                var effect = card.define.effects.OfType<GeneratedEffect>().FirstOrDefault(e => e.tagList.Contains(KEYWORD.BATTLECRY)); ;
+                var effect = card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault(e => e.tagList.Contains(KEYWORD.BATTLECRY)); ;
                 return effect.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
             }
             else if (card.isSpell() || card.isSkill())
             {
-                var effect = card.define.effects.OfType<GeneratedEffect>().FirstOrDefault();
+                var effect = card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault();
                 return effect.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
             }
             return Task.CompletedTask;
@@ -948,7 +948,7 @@ namespace TouhouHeartstone
         public static async Task triggerDeathRattles(this Card card, CardEngine game)
         {
             //首先触发本体亡语
-            foreach (var deathRattle in card.define.effects.OfType<DeathRattle>())
+            foreach (var deathRattle in card.define.getEffects().OfType<DeathRattle>())
             {
                 await deathRattle.execute(game, card, null, new DeathEventArg()
                 {

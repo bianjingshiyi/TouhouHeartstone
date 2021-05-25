@@ -1,7 +1,14 @@
-﻿using UI;
+﻿using System;
+using UI;
 
 namespace Controllers
 {
+    [Serializable]
+    public class CardPoolInfo
+    {
+        public string cardPoolName;
+        public string imageResPath;
+    }
     public class GameCtrl : IController<MainCtrl>
     {
         public GameCtrl(IController<MainCtrl> parent, UI.Game ui)

@@ -13,7 +13,19 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = SummerFire.ID;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         public const string METAL = "Metal";
         public const string WOOD = "Wood";
         public const string WATER = "Water";
@@ -133,13 +145,24 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CATEGORY.SKILL | 0x001;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect((game,card,target)=>
             {
                 return target.damage(game, card, 1);
             },PileFlag.both | PileFlag.character)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 3 秘藏魔法 本回合内你使用的下一张法术牌花费-5
@@ -154,10 +177,22 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x002;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
@@ -186,7 +221,8 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 7;
         public override int life { get; set; } = 7;
         public override string[] keywords { get; set; } = new string[0];
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new AddBuffAfter<HearthStoneRule.UseEventArg>(PileFlag.hand,(g,c,a)=>
             {
@@ -194,6 +230,16 @@ namespace TouhouHeartstone.Builtin
             },new GeneratedBuff(ID,new CostModifier(-2),
                 new RemoveBuffBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.hand,ID)))
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 4 贤者之石 05 每当回合结束，随机将一张花费大于0的元素法术置入你的手牌，耐久-1。战吼：将一张随机元素法术置入你的手牌。
@@ -206,7 +252,8 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 5;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect((g1,c1)=>
             {
@@ -222,6 +269,17 @@ namespace TouhouHeartstone.Builtin
                 return c2.getOwner().addRandomCardToHand(g2,g2.getDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         class ItemTrigggerEffectAfter<T> : THHEffectAfter<T> where T : IEventArg
         {
             public ItemTrigggerEffectAfter(CheckConditionNoBuffDelegate onCheckCondition, ExecuteNoBuffNoTargetDelegate onExecute)
@@ -256,7 +314,8 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override string[] tags { get; set; } = new string[] { Patchouli.FIRE };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
@@ -264,6 +323,16 @@ namespace TouhouHeartstone.Builtin
                 await Patchouli.tryMix(game,card);
             },PileFlag.both | PileFlag.character)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 5 水精公主 元素法术，使所有友方角色获得减伤+3直到你的下个回合开始
@@ -274,7 +343,8 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override string[] tags { get; set; } = new string[] { Patchouli.WATER };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(async (game,card)=>
             {
@@ -296,6 +366,16 @@ namespace TouhouHeartstone.Builtin
                 await Patchouli.tryMix(game,card);
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 5 风灵角笛 元素法术，使目标随从获得+3/+6
@@ -306,7 +386,8 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override string[] tags { get; set; } = new string[] { Patchouli.WOOD };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect(async(game,card,target)=>
             {
@@ -314,6 +395,16 @@ namespace TouhouHeartstone.Builtin
                 await Patchouli.tryMix(game,card);
             }, PileFlag.both | PileFlag.field)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 5 巨石震怒 元素法术，召唤一个3/9具有嘲讽且无法攻击的巨石
@@ -324,9 +415,21 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override string[] tags { get; set; } = new string[] { Patchouli.EARTH };
-        public override IEffect[] effects { get; set; } = new IEffect[]{
+
+        private IEffect[] effects1 = new IEffect[]{
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().createToken(game, game.getDefine<RockElement>(), card.getOwner().getField().count);
@@ -356,10 +459,22 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override string[] tags { get; set; } = new string[] { Patchouli.METAL };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.getOwner()).getField().damage(game, card, card.getOwner().getSpellDamage(game, 3));
@@ -378,10 +493,22 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 6;
         public override string[] tags { get; set; } = new string[] { TAG.DEMON };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             var discovered = await card.getOwner().searchPile(game, card.getOwner().getGrave().Where(c => c.isSpell()), title: "选择一张墓地中的法术加入手牌");
@@ -401,10 +528,22 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 12;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.owner as Player).getMaster().damage(game, card, 15);
@@ -419,10 +558,22 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 12;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.getOwner()).getField().silence(game);
@@ -440,10 +591,22 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
         public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static Task effect(CardEngine game, Card card)
         {
             return card.getOwner().addRandomCardToHand(game, game.getDefines(new int[] { AutumnEdge.ID, SpringWind.ID, WinterElement.ID, SummerRed.ID, DoyouSpear.ID }));
@@ -457,9 +620,21 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x016;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             //var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5, "查询图书");
@@ -479,10 +654,22 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await card.addBuff(game, new GeneratedBuff(ID, new LifeModifier(card.getOwner().getHand().Where(c => c.isSpell()).Count())));
@@ -496,9 +683,21 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x018;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             for (int i = 0; i < 2; i++)
@@ -518,14 +717,26 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.FIRE };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
 
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 new BuffFixer().onEnable(game,target);
                 await Patchouli.tryMix(game,card);
             },PileFlag.both | PileFlag.field)
-        };//TODO:这个Buff，不需要这么复杂。
+        };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         class BuffFixer
         {
             Trigger<HearthStoneRule.TurnEndEventArg> TurnEndTrigger { get; set; } = null;
@@ -556,13 +767,24 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.WATER };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.setFreeze(game, true);
                 await Patchouli.tryMix(game,card);
             },PileFlag.both | PileFlag.field)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 0 木符【春之风】 使目标随从获得生命值+2
@@ -574,13 +796,24 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.WOOD };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new LambdaSingleTargetEffect(async(game,card,target)=>
             {
                 await target.addBuff(game,new GeneratedBuff(ID,new LifeModifier(2)));
                 await Patchouli.tryMix(game,card);
             },PileFlag.both | PileFlag.field)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 0 金符【秋之刃】 随机对一个敌方随从造成2点伤害
@@ -592,9 +825,21 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.METAL };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.getOwner()).getField().random(game).damage(game, card, 2);
@@ -611,9 +856,21 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.EARTH };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().createToken(game, game.getDefine<GemSpear>(), card.getOwner().getField().count);
@@ -632,7 +889,18 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 4 金木符【元素收割者】 对所有敌方随从造成2点伤害，每消灭一个敌方随从使一个随机友方随从获得+1/1
@@ -644,9 +912,21 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.METAL, Patchouli.WOOD };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             Player player = card.getOwner();
@@ -673,7 +953,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.WATER, Patchouli.METAL };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(async (game,card)=>
             {
@@ -690,6 +971,16 @@ namespace TouhouHeartstone.Builtin
                 await Patchouli.tryMix(game, card);
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 6 木火符【森林大火】 使所有友方随从获得+2/2，你每控制一个随从便对一个敌方随从造成1点伤害
@@ -701,7 +992,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.FIRE, Patchouli.WOOD };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 foreach(Card buffcard in card.getOwner().getField())
@@ -712,6 +1004,16 @@ namespace TouhouHeartstone.Builtin
                 await Patchouli.tryMix(game, card);
             },PileFlag.oppo | PileFlag.field)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 4 木土符【抽芽行尸】 使目标随从获得亡语：召唤一个目标随从的复制并使其获得+3+3
@@ -723,7 +1025,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.EARTH, Patchouli.WOOD };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 await target.addKeywords(game,KEYWORD._DeathRattle);
@@ -737,6 +1040,16 @@ namespace TouhouHeartstone.Builtin
                 await Patchouli.tryMix(game, card);
             },PileFlag.both | PileFlag.field)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 6 水木符【水精灵】 使目标随从获得+3/6和嘲讽，并回复其所有生命值
@@ -748,7 +1061,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.WATER, Patchouli.WOOD };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
@@ -758,6 +1072,16 @@ namespace TouhouHeartstone.Builtin
                 await Patchouli.tryMix(game, card);
             }, PileFlag.both | PileFlag.field)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 4 水火符【燃素之雨】 造成7点伤害，随机分配给所有敌方角色
@@ -769,9 +1093,21 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.WATER, Patchouli.FIRE };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await game.getAllEnemies(card.getOwner()).damageByRandom(game, card, card.getOwner().getSpellDamage(game, 7));
@@ -788,7 +1124,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.METAL, Patchouli.FIRE };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
@@ -796,6 +1133,16 @@ namespace TouhouHeartstone.Builtin
                 await Patchouli.tryMix(game, card);
             }, PileFlag.both | PileFlag.field)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 6 火土符【环状熔岩带】 召唤2个2/2具有嘲讽并能在回合结束对随机敌方角色造成2点伤害的熔岩元素。
@@ -807,9 +1154,21 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.FIRE, Patchouli.EARTH };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             for (int i = 0; i < 2; i++)
@@ -830,12 +1189,23 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
-        public override IEffect[] effects { get; set; } = new IEffect[]{
+
+        private IEffect[] effects1 = new IEffect[]{
             new BeforeYourTurnEnd(PileFlag.field, async(game,card,buff,arg)=>
             {
                 await game.getAllEnemies(card.getOwner()).random(game).damage(game, card, 2);
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 6 土金符【淡黄阵风】 每有一个敌方随从，便召唤一个3/1具有突袭的沙尘元素
@@ -847,9 +1217,21 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.METAL, Patchouli.EARTH };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().createToken(game, game.getOpponent(card.getOwner()).getField().count, game.getDefine<DustElement>());
@@ -869,7 +1251,18 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 土水符【诺亚洪水】 沉默所有随从，然后召唤1个2/2并具有嘲讽的洪水元素
@@ -881,9 +1274,21 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.EARTH, Patchouli.WATER };
-        public override IEffect[] effects { get; set; } = new IEffect[] {
+
+        private IEffect[] effects1 = new IEffect[] {
             new NoTargetEffect(effect)
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+
         static async Task effect(CardEngine game, Card card)
         {
             await game.getAllServants().silence(game);
@@ -904,7 +1309,18 @@ namespace TouhouHeartstone.Builtin
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 454 噬法触手 突袭，当你的回合开始时随机弃一张法术牌
@@ -918,7 +1334,8 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 4;
         public override string[] tags { get; set; } = new string[] { TAG.DEMON };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectBefore<HearthStoneRule.TurnStartEventArg>(PileFlag.field,(g1,c1,a1)=>
             {
@@ -928,6 +1345,16 @@ namespace TouhouHeartstone.Builtin
                 return c1.getOwner().randomDiscard(g1,1,c2=>c2.isSpell());
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 多重施法 1 随机使一张手牌中的法术牌花费-2，将一张伤害递增的“哮喘”洗入牌库，将另一张“多重施法”置入你的手牌。
@@ -937,7 +1364,8 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x035;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect(async (game,card)=>
             {
@@ -950,6 +1378,16 @@ namespace TouhouHeartstone.Builtin
                 await card.getOwner().addCardToHand<MultiCast>(game);
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 哮喘 1 抽到自动释放，对你的英雄造成{card:damage}点伤害
@@ -961,12 +1399,23 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.AUTOCAST };
         public override bool isToken { get; set; } = true;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new NoTargetEffect((g1,c1)=>
             {
                 return c1.getOwner().getMaster().damage(g1,c1,c1.getProp<int>(g1,"damage"));
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
 }

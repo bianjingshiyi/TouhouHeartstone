@@ -9,14 +9,36 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = StartdustBullet.ID;
-        public override IEffect[] effects { get; set; } = new Effect[0];
+
+        private IEffect[] effects1 = new Effect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class StartdustBullet : SkillCardDefine
     {
         public const int ID = Marisa.ID | CATEGORY.SKILL | 0x000;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[0];
+
+        private IEffect[] effects1 = new IEffect[0];
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 极限火花 造成7点伤害。
@@ -26,7 +48,8 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Marisa.ID | CATEGORY.SPELL | 0x000;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
@@ -42,6 +65,16 @@ namespace TouhouHeartstone.Builtin
                     await target.damage(game,card, arg.player.getSpellDamage(game,7));
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 迷你八卦炉 我也不知道是什么，反正很厉害就对了。
@@ -62,7 +95,8 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Marisa.ID | CATEGORY.SPELL | 0x002;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
@@ -78,6 +112,16 @@ namespace TouhouHeartstone.Builtin
                 }
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 法术剽窃 发现一张你的对手墓地中的法术牌，将其置入你的手牌并使其花费变为0。
@@ -87,7 +131,8 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Marisa.ID | CATEGORY.SPELL | 0x003;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             //new THHEffect<THHPlayer.ActiveEventArg>(PileName.NONE,(game,player,card,arg)=>
             //{
@@ -103,6 +148,16 @@ namespace TouhouHeartstone.Builtin
             //    }
             //})
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 魔法扫帚 如果你具有法术强度，则攻击力+1
@@ -123,7 +178,8 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Marisa.ID | CATEGORY.SPELL | 0x005;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
@@ -143,6 +199,16 @@ namespace TouhouHeartstone.Builtin
                 }
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     /// <summary>
     /// 魔理沙的大帽子 使一个随从+1/1并获得法术强度+1
@@ -152,7 +218,8 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Marisa.ID | CATEGORY.SPELL | 0x006;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override IEffect[] effects { get; set; } = new IEffect[]
+
+        private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectOn<HearthStoneRule.ActiveEventArg>(PileFlag.none,(game,card,arg)=>
             {
@@ -170,6 +237,16 @@ namespace TouhouHeartstone.Builtin
                 }
             })
         };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
     }
     public class MarisasBigHatBuff : Buff
     {

@@ -128,7 +128,7 @@ namespace TouhouHeartstone
         {
             return string.IsNullOrEmpty(_name)
                 ? (buff != null ? buff.instanceID.ToString() : string.Empty) +
-                  "Effect" + Array.IndexOf(card.define.effects, this) +
+                  "Effect" + Array.IndexOf(card.define.getEffects(), this) +
                   time.getEventName(game.triggers)
                 : _name;
         }

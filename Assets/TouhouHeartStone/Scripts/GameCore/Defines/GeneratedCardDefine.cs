@@ -36,11 +36,11 @@ namespace TouhouHeartstone
         {
             throw new NotImplementedException();
         }
-        public override IEffect[] effects
-        {
-            get { return getProp<Effect[]>(nameof(CardDefine.effects)); }
-            set { setProp(nameof(CardDefine.effects), value); }
-        }
+
+        public override IEffect[] getEffects()
+        { return getProp<Effect[]>(nameof(CardDefine.Geteffects())); }
+        public override void setEffects(IEffect[] value)
+        { setProp(nameof(CardDefine.Geteffects()), value); }
         public override void merge(CardDefine newVersion)
         {
             if (newVersion.type != type)
