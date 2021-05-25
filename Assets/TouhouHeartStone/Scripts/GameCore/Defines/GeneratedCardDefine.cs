@@ -8,8 +8,9 @@ namespace TouhouHeartstone
 {
     public class GeneratedCardDefine : CardDefine
     {
-        public override int id { get; set; } = 0;
-        Dictionary<string, object> dicProp { get; } = new Dictionary<string, object>();
+        public GeneratedCardDefine(int id, string type, Dictionary<string, object> props, GeneratedEffect[] effects) : base(id, type, props, effects)
+        {
+        }
         // public override void setProp<T>(string propName, T value)
         // {
         //     if (propName == nameof(CardDefine.id))
@@ -31,16 +32,6 @@ namespace TouhouHeartstone
         // {
         //     return dicProp.ContainsKey(propName);
         // }
-        public override string type { get; set; }
-        public override string isUsable(CardEngine engine, TouhouCardEngine.Player player, Card card)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IEffect[] getEffects()
-        { return getProp<Effect[]>(nameof(CardDefine.Geteffects())); }
-        public override void setEffects(IEffect[] value)
-        { setProp(nameof(CardDefine.Geteffects()), value); }
         public override void merge(CardDefine newVersion)
         {
             if (newVersion.type != type)

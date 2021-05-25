@@ -1,14 +1,14 @@
 ﻿using TouhouCardEngine;
 using System;
+using System.Collections.Generic;
+
 namespace TouhouHeartstone
 {
     [Obsolete("请勿直接使用内置属性")]
     public abstract class ItemCardDefine : THHCardDefine
     {
-        public override string type { get; set; } = DEFINE.ITEM;
-        public override string isUsable(CardEngine engine, TouhouCardEngine.Player player, Card card)
+        public ItemCardDefine() : base(DEFINE.ITEM)
         {
-            throw new NotImplementedException();
         }
     }
 }

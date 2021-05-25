@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TouhouCardEngine;
 
 namespace TouhouHeartstone
@@ -6,6 +7,10 @@ namespace TouhouHeartstone
     [Obsolete("请勿直接使用内置属性")]
     public abstract class THHCardDefine : CardDefine
     {
+        protected THHCardDefine(string type) : base(0, type, null, null)
+        {
+        }
+
         /// <summary>
         /// 是否是衍生物？
         /// </summary>

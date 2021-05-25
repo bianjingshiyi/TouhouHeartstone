@@ -219,9 +219,7 @@ namespace Game
                         continue;
                     }
 
-                    var card = new GeneratedCardDefine();
-                    card.id = datarow.ReadCol<int>("ID");
-                    card.type = datarow.ReadCol<string>("Type");
+                    var card = new CardDefine(datarow.ReadCol<int>("ID"), datarow.ReadCol<string>("Type"));
                     card.setProp(nameof(ServantCardDefine.cost), datarow.ReadCol("Cost", 0));
                     card.setProp(DEFINE.ATTACK, datarow.ReadCol("Attack", 0));
                     card.setProp(nameof(ServantCardDefine.life), datarow.ReadCol("Life", 0));
@@ -495,7 +493,8 @@ namespace Game
             {
                 if (spell.isToken)
                     return false;
-            }else if (c is ItemCardDefine item)
+            }
+            else if (c is ItemCardDefine item)
             {
                 if (item.isToken)
                 {
