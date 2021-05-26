@@ -26,8 +26,8 @@ namespace Game
             public string Name;
             public ReplayPlayer(Player p)
             {
-                MasterCard = p.getMaster().define.id;
-                Deck = p.getDeck().Select(d => d.define.id).ToArray();
+                MasterCard = p.getMaster().define.defineNumber;
+                Deck = p.getDeck().Select(d => d.define.defineNumber).ToArray();
                 ID = p.id;
                 Name = p.name;
             }
@@ -52,7 +52,7 @@ namespace Game
             players = game.players.Select(p =>
             {
                 var player = new RoomPlayerInfo() { RoomID = p.id, name = p.name };
-                player.setDeck(new int[] { p.getMaster().define.id }.Concat(p.getDeck().Select(c => c.define.id)).ToArray());
+                player.setDeck(new int[] { p.getMaster().define.defineNumber }.Concat(p.getDeck().Select(c => c.define.defineNumber)).ToArray());
                 return player;
             }).ToArray();
         }

@@ -73,7 +73,7 @@ namespace UI
             Card.isFaceup = true; // Animator默认状态是false，重置之后得还原
             Card.setCard(data.define, data.skin);
             setRemainText(data.useCount, data.maxCount);
-            CardID = data.define.id;
+            CardID = data.define.defineNumber;
         }
 
         public void OnPointerClick(PointerEventData eventData)

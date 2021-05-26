@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
+using UI;
 
 namespace Controllers
 {
-    partial class EditorCtrl
+    partial class EditorCtrl : IController<MainCtrl>
     {
         /// <summary>
         /// 读取所有卡池文件中的卡池信息。
@@ -73,7 +75,14 @@ namespace Controllers
         /// <returns></returns>
         public Task saveCardPoolAsync(string cardPoolPath, CardPoolInfo info, CardDefine[] cardDefines)
         {
-            throw new NotImplementedException();
+            return app.fileManager.saveFile(DIRNAME + "/" + cardPoolPath, new string[]
+            {
+                info.toJson(),
+                cardDefines.toJson()
+            });
         }
+        public IAppManager app { get; }
+        public MainCtrl main { get; }
+        const string DIRNAME = "Cards";
     }
 }

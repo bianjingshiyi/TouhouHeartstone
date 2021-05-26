@@ -66,12 +66,12 @@ namespace Game
             List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies, namespaces, logger));
             foreach (CardDefine card in cardList)
             {
-                if (defineDic.ContainsKey(card.id))
+                if (defineDic.ContainsKey(card.defineNumber))
                 {
-                    Debug.LogWarning("存在重复ID的卡片" + defineDic[card.id] + "和" + card);
+                    Debug.LogWarning("存在重复ID的卡片" + defineDic[card.defineNumber] + "和" + card);
                     continue;
                 }
-                defineDic.Add(card.id, card);
+                defineDic.Add(card.defineNumber, card);
             }
             cardList.Clear();
             //加载外置卡片
@@ -122,7 +122,7 @@ namespace Game
                     CardDefine[] cards = await loadCards(path);
                     foreach (var card in cards)
                     {
-                        CardDefine older = defineDic.FirstOrDefault(p => p.Value.id == card.id).Value;
+                        CardDefine older = defineDic.FirstOrDefault(p => p.Value.defineNumber == card.defineNumber).Value;
                         if (older != null)
                         {
                             older.merge(card);
@@ -140,12 +140,12 @@ namespace Game
             }
             foreach (CardDefine card in cardList)
             {
-                if (defineDic.ContainsKey(card.id))
+                if (defineDic.ContainsKey(card.defineNumber))
                 {
-                    Debug.LogWarning("存在重复ID的卡片" + defineDic[card.id] + "和" + card);
+                    Debug.LogWarning("存在重复ID的卡片" + defineDic[card.defineNumber] + "和" + card);
                     continue;
                 }
-                defineDic.Add(card.id, card);
+                defineDic.Add(card.defineNumber, card);
             }
             cardList.Clear();
             //加载内置皮肤
@@ -422,7 +422,7 @@ namespace Game
         }
         public CardSkinData getSkin(TouhouCardEngine.Card card)
         {
-            return getSkin(card.define.id);
+            return getSkin(card.define.defineNumber);
         }
         /// <summary>
         /// 根据id获取卡片皮肤
@@ -476,7 +476,7 @@ namespace Game
         }
         public bool isStandardCard(CardDefine c)
         {
-            if (c.id == 0)//非法卡片
+            if (c.defineNumber == 0)//非法卡片
                 return false;
             if (c.GetType().Assembly != typeof(THHGame).Assembly)//非游戏用卡片
                 return false;

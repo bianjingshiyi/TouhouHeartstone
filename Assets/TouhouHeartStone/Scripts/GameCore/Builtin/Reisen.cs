@@ -12,7 +12,7 @@ namespace TouhouHeartstone.Builtin
     public class Reisen : MasterCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_REISEN | CATEGORY.MASTER | 0x000;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = LunaticShoot.ID; //英雄技能的ID
 
@@ -36,7 +36,7 @@ namespace TouhouHeartstone.Builtin
     public class LunaticShoot : SkillCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SKILL | 0x000;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2; //技能花费
 
         private IEffect[] effects1 = new IEffect[]
@@ -67,7 +67,7 @@ namespace TouhouHeartstone.Builtin
     public class XWave : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x001;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] {KEYWORD.SECRET};
 
@@ -99,7 +99,7 @@ namespace TouhouHeartstone.Builtin
     public class WildYoukaiRabbit : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x002;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
@@ -130,7 +130,7 @@ namespace TouhouHeartstone.Builtin
     public class MindStopper : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x003;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] {KEYWORD.SECRET};
 
@@ -162,7 +162,7 @@ namespace TouhouHeartstone.Builtin
     public class MindShaker : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x004;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] {KEYWORD.SECRET};
 
@@ -200,7 +200,7 @@ namespace TouhouHeartstone.Builtin
     public class DisorderEye : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x005;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] {KEYWORD.SECRET};
 
@@ -249,7 +249,7 @@ namespace TouhouHeartstone.Builtin
     public class AfterImage : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x006;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 2;
@@ -264,7 +264,7 @@ namespace TouhouHeartstone.Builtin
     public class VisionaryTuning : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x007;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] {KEYWORD.SECRET};
 
@@ -304,7 +304,7 @@ namespace TouhouHeartstone.Builtin
     public class FieldUltraViolet : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x008;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -341,7 +341,7 @@ namespace TouhouHeartstone.Builtin
     public class PeerlessPatriotsElixir : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x009;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -391,7 +391,7 @@ namespace TouhouHeartstone.Builtin
     public class MindExplosion : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x010;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -422,7 +422,7 @@ namespace TouhouHeartstone.Builtin
     public class Eirin_TheMaster : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x011;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 8;
@@ -470,7 +470,7 @@ namespace TouhouHeartstone.Builtin
     public class MindDropping : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x012;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 0;
 
         private IEffect[] effects1 = new IEffect[]
@@ -514,7 +514,7 @@ namespace TouhouHeartstone.Builtin
     public class LunaticShoot_MindDropping : SkillCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SKILL | 0x013;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2; //技能花费
 
         private IEffect[] effects1 = new IEffect[]
@@ -541,7 +541,7 @@ namespace TouhouHeartstone.Builtin
     public class MedicineSellman : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x014;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 4;
@@ -570,7 +570,7 @@ namespace TouhouHeartstone.Builtin
     public class DefectedAgent : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x015;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 3;
@@ -601,7 +601,7 @@ namespace TouhouHeartstone.Builtin
     public class TewiInaba : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x016;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
@@ -648,7 +648,7 @@ namespace TouhouHeartstone.Builtin
     public class FieldUltraRed : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x017;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -696,7 +696,7 @@ namespace TouhouHeartstone.Builtin
     public class LunaticGun : ItemCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.ITEM | 0x018;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
@@ -731,7 +731,7 @@ namespace TouhouHeartstone.Builtin
     public class DisbeliefAspect : SpellCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x019;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new IEffect[]
@@ -766,7 +766,7 @@ namespace TouhouHeartstone.Builtin
     public class AfterImage_Main : ServantCardDefine
     {
         public const int ID = Reisen.ID | CATEGORY.SERVANT | 0x020;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 2;

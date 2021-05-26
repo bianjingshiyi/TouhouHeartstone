@@ -40,7 +40,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static int getCharacterID(this CardDefine define)
         {
-            return getCharacterID(define.id);
+            return getCharacterID(define.defineNumber);
         }
 
         /// <summary>
@@ -60,12 +60,12 @@ namespace TouhouHeartstone
 
         public static int getCategory(this CardDefine define)
         {
-            return getCategory(define.id);
+            return getCategory(define.defineNumber);
         }
 
         public static CardDefine[] getDefinesOf(this CardEngine game, params int[] characterID)
         {
-            return game.getDefines().Where(define => characterID.Contains(getCharacterID(define.id))).ToArray();
+            return game.getDefines().Where(define => characterID.Contains(getCharacterID(define.defineNumber))).ToArray();
         }
 
         public static int[] CHARACTER_ALL = new[]

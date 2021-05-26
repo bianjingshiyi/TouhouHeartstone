@@ -17,16 +17,12 @@ namespace UI
     {
         FileManager fileManager { get; }
     }
-    public interface IController
+    public interface IController<TMainCtrl>
     {
         IAppManager app { get; }
-    }
-    public interface IController<TMainCtrl> : IController where TMainCtrl : IController
-    {
         TMainCtrl main { get; }
-        IController parent { get; }
     }
-    public partial class MainCtrl : IController
+    public partial class MainCtrl
     {
         public MainCtrl(IAppManager appManager)
         {
@@ -42,45 +38,35 @@ namespace UI
             {
                 Scene scene = SceneManager.GetSceneAt(i);
                 if (scene.name == "NewUI")
-                    lobbySceneCtrl = new LobbySceneCtrl(this, scene);
+                    lobbySceneCtrl = new LobbySceneCtrl(app, this, scene);
             }
         }
 
         public ReplaySystem replays { get; } = new ReplaySystem();
 
         public LobbySceneCtrl lobbySceneCtrl { get; private set; }
-        public IController parent
-        {
-            get { return this; }
-        }
         public IAppManager app { get; }
     }
     public class LobbySceneCtrl : IController<MainCtrl>
     {
-        public LobbySceneCtrl(MainCtrl parent, Scene scene)
+        public LobbySceneCtrl(IAppManager app, MainCtrl main, Scene scene)
         {
-            main = parent;
-            mainMenuCtrl = new MainMenuCtrl(this, scene.findInstanceAt<Transform>("Canvas/Main/MainMenu").gameObject.GetComponent<MainMenu>());
-            replaySelectCtrl = new ReplaySelectPanelCtrl(this, scene.findInstanceAt<Transform>("Canvas/Main/Replay").gameObject.GetComponent<ReplaySelectPanel>());
+            this.app = app;
+            this.main = main;
+            mainMenuCtrl = new MainMenuCtrl(app, main, scene.findInstanceAt<Transform>("Canvas/Main/MainMenu").gameObject.GetComponent<MainMenu>());
+            replaySelectCtrl = new ReplaySelectPanelCtrl(app, main, scene.findInstanceAt<Transform>("Canvas/Main/Replay").gameObject.GetComponent<ReplaySelectPanel>());
         }
-
-        public IController parent
-        {
-            get { return main; }
-        }
-
-        public IAppManager app => parent.app;
-
+        public IAppManager app { get; }
         public MainCtrl main { get; }
         public MainMenuCtrl mainMenuCtrl { get; }
         public ReplaySelectPanelCtrl replaySelectCtrl { get; }
     }
     public class MainMenuCtrl : IController<MainCtrl>
     {
-        public MainMenuCtrl(LobbySceneCtrl parent, MainMenu ui)
+        public MainMenuCtrl(IAppManager app, MainCtrl main, MainMenu ui)
         {
-            _parent = parent;
-            main = parent.main;
+            this.app = app;
+            this.main = main;
             _ui = ui;
             _ui.onReplayButtonClick += onReplayButtonClick;
         }
@@ -91,34 +77,29 @@ namespace UI
         private async void onReplayButtonClick()
         {
             _ui.gameObject.SetActive(false);
-            await _parent.replaySelectCtrl.displayAsync();
+            await main.lobbySceneCtrl.replaySelectCtrl.displayAsync();
         }
-
         public MainCtrl main { get; }
-        public IController parent => _parent;
-        public IAppManager app => parent.app;
-        LobbySceneCtrl _parent;
+        public IAppManager app { get; }
         MainMenu _ui;
     }
     public partial class ReplaySelectPanelCtrl : IController<MainCtrl>
     {
-        public ReplaySelectPanelCtrl(LobbySceneCtrl parent, ReplaySelectPanel ui)
+        public ReplaySelectPanelCtrl(IAppManager app, MainCtrl main, ReplaySelectPanel ui)
         {
-            _parent = parent;
-            main = parent.main;
+            this.app = app;
+            this.main = main;
             _ui = ui;
             _ui.onAwake();
             _ui.onPlayButtonClick += onPlayButtonClick;
             _ui.onReplayListClick += onReplayListClick;
             _ui.onBackButtonClick += onReturnButtonClick;
         }
-
         private void onReturnButtonClick(ReplaySelectPanel ui)
         {
             ui.gameObject.SetActive(false);
-            _parent.mainMenuCtrl.display();
+            main.lobbySceneCtrl.mainMenuCtrl.display();
         }
-
         public async Task displayAsync()
         {
             //读取Replay文件头
@@ -155,7 +136,6 @@ namespace UI
             hide();
             _ = (app as MainManager).getManager<GameManager>().startReplayGame(replay);
         }
-
         private void onReplayListClick(ReplaySelectPanel ui, int index)
         {
             _selectIndex = index;
@@ -164,15 +144,10 @@ namespace UI
                 selectIndex = index
             });
         }
-
         public MainCtrl main { get; }
-
-        public IController parent => _parent;
-
-        public IAppManager app => parent.app;
+        public IAppManager app { get; }
         string[] _paths;
         int _selectIndex = -1;
-        LobbySceneCtrl _parent;
         ReplaySelectPanel _ui;
     }
     partial class ReplaySelectPanel : UIObject

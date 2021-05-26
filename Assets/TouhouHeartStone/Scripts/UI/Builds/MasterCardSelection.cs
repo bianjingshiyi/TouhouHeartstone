@@ -50,7 +50,7 @@ namespace UI
 
         public void SetItems(IEnumerable<CardDefine> cards)
         {
-            SetItems(cards.Select(c => c.id));
+            SetItems(cards.Select(c => c.defineNumber));
         }
 
         public event Action<int> OnSelect;

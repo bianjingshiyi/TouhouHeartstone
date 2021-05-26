@@ -9,7 +9,7 @@ namespace TouhouHeartstone.Builtin
     public class Reimu : MasterCardDefine
     {
         public const int ID = 0x00100000 | CATEGORY.MASTER | 0x000;
-        public override int id { get; set; } = 1000;
+        public override int defineNumber { get; set; } = 1000;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = TotematicCall.ID;
 
@@ -28,7 +28,7 @@ namespace TouhouHeartstone.Builtin
     public class TotematicCall : SkillCardDefine
     {
         public const int ID = Reimu.ID | CATEGORY.SKILL | 0x000;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new IEffect[]
@@ -74,7 +74,7 @@ namespace TouhouHeartstone.Builtin
     public class HealTotem : ServantCardDefine
     {
         public const int ID = Reimu.ID | CATEGORY.SERVANT | 0x001;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 2;
@@ -106,7 +106,7 @@ namespace TouhouHeartstone.Builtin
     public class FireTotem : ServantCardDefine
     {
         public const int ID = Reimu.ID | CATEGORY.SERVANT | 0x002;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -127,7 +127,7 @@ namespace TouhouHeartstone.Builtin
     public class ManaTotem : ServantCardDefine
     {
         public const int ID = Reimu.ID | CATEGORY.SERVANT | 0x003;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 2;
@@ -149,7 +149,7 @@ namespace TouhouHeartstone.Builtin
     public class TauntTotem : ServantCardDefine
     {
         public const int ID = Reimu.ID | CATEGORY.SERVANT | 0x004;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 2;
@@ -174,7 +174,7 @@ namespace TouhouHeartstone.Builtin
     public class FantasySeal : SpellCardDefine
     {
         public const int ID = Reimu.ID | CATEGORY.SPELL | 0x005;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
         private IEffect[] effects1 = new IEffect[]

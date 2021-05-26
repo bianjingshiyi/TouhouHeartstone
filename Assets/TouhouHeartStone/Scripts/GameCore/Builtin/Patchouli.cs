@@ -10,7 +10,7 @@ namespace TouhouHeartstone.Builtin
     public class Patchouli : MasterCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_PATCHOULI | CATEGORY.MASTER | 0x000;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = SummerFire.ID;
 
@@ -57,7 +57,7 @@ namespace TouhouHeartstone.Builtin
         public static CardDefine[] getMixCards(CardEngine game, CardDefine a, CardDefine b)
         {
             var elements = getElements(a).Concat(getElements(b)).Distinct().ToArray();
-            return getMixCards(game).Where(c => elements.isSubset(getElements(c)) && c.id != a.id && c.id != b.id).ToArray();
+            return getMixCards(game).Where(c => elements.isSubset(getElements(c)) && c.defineNumber != a.defineNumber && c.defineNumber != b.defineNumber).ToArray();
         }
 
 
@@ -143,7 +143,7 @@ namespace TouhouHeartstone.Builtin
     public class SummerFire : SkillCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SKILL | 0x001;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new IEffect[]
@@ -175,7 +175,7 @@ namespace TouhouHeartstone.Builtin
     public class BestMagic : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x002;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
         private IEffect[] effects1 = new IEffect[]
@@ -216,7 +216,7 @@ namespace TouhouHeartstone.Builtin
     public class MegaReaver : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x005;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 7;
         public override int attack { get; set; } = 7;
         public override int life { get; set; } = 7;
@@ -247,7 +247,7 @@ namespace TouhouHeartstone.Builtin
     public class PhilosopherStone : ItemCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.ITEM | 0x006;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 5;
@@ -311,7 +311,7 @@ namespace TouhouHeartstone.Builtin
     public class AgniShine : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x007;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override string[] tags { get; set; } = new string[] { Patchouli.FIRE };
 
@@ -340,7 +340,7 @@ namespace TouhouHeartstone.Builtin
     public class PrincessUndine : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x008;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override string[] tags { get; set; } = new string[] { Patchouli.WATER };
 
@@ -383,7 +383,7 @@ namespace TouhouHeartstone.Builtin
     public class SylphyHorn : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x009;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override string[] tags { get; set; } = new string[] { Patchouli.WOOD };
 
@@ -412,7 +412,7 @@ namespace TouhouHeartstone.Builtin
     public class TrilithonShake : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x010;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override string[] tags { get; set; } = new string[] { Patchouli.EARTH };
 
@@ -442,7 +442,7 @@ namespace TouhouHeartstone.Builtin
     public class RockElement : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x657;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 9;
@@ -456,7 +456,7 @@ namespace TouhouHeartstone.Builtin
     public class MetalFatigue : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x011;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override string[] tags { get; set; } = new string[] { Patchouli.METAL };
 
@@ -487,7 +487,7 @@ namespace TouhouHeartstone.Builtin
     public class Koakuma : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x012;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 6;
@@ -525,7 +525,7 @@ namespace TouhouHeartstone.Builtin
     public class RoyalFlare : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x013;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 12;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
 
@@ -555,7 +555,7 @@ namespace TouhouHeartstone.Builtin
     public class SilentSelene : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x014;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 12;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
 
@@ -586,7 +586,7 @@ namespace TouhouHeartstone.Builtin
     public class ElementSprite : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x015;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -618,7 +618,7 @@ namespace TouhouHeartstone.Builtin
     public class TheGreatLibrary : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x016;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new IEffect[] {
@@ -649,7 +649,7 @@ namespace TouhouHeartstone.Builtin
     public class LibraryProtector : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x017;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 1;
@@ -681,7 +681,7 @@ namespace TouhouHeartstone.Builtin
     public class ArcaneKnowledge : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x018;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 4;
 
         private IEffect[] effects1 = new IEffect[] {
@@ -713,7 +713,7 @@ namespace TouhouHeartstone.Builtin
     public class SummerRed : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x019;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.FIRE };
@@ -763,7 +763,7 @@ namespace TouhouHeartstone.Builtin
     public class WinterElement : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x020;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.WATER };
@@ -792,7 +792,7 @@ namespace TouhouHeartstone.Builtin
     public class SpringWind : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x021;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.WOOD };
@@ -821,7 +821,7 @@ namespace TouhouHeartstone.Builtin
     public class AutumnEdge : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x022;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.METAL };
@@ -852,7 +852,7 @@ namespace TouhouHeartstone.Builtin
     public class DoyouSpear : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x023;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.EARTH };
@@ -883,7 +883,7 @@ namespace TouhouHeartstone.Builtin
     public class GemSpear : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x658;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { TAG.ELEMENT };
         public override int cost { get; set; } = 1;
@@ -908,7 +908,7 @@ namespace TouhouHeartstone.Builtin
     public class ElementalHarvester : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x024;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.METAL, Patchouli.WOOD };
@@ -949,7 +949,7 @@ namespace TouhouHeartstone.Builtin
     public class MercuryPoison : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x025;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.WATER, Patchouli.METAL };
@@ -988,7 +988,7 @@ namespace TouhouHeartstone.Builtin
     public class ForestBlaze : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x026;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.FIRE, Patchouli.WOOD };
@@ -1021,7 +1021,7 @@ namespace TouhouHeartstone.Builtin
     public class BurgeoningRise : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x027;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.EARTH, Patchouli.WOOD };
@@ -1057,7 +1057,7 @@ namespace TouhouHeartstone.Builtin
     public class WaterElf : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x028;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.WATER, Patchouli.WOOD };
@@ -1089,7 +1089,7 @@ namespace TouhouHeartstone.Builtin
     public class PhlogisticRain : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x029;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.WATER, Patchouli.FIRE };
@@ -1120,7 +1120,7 @@ namespace TouhouHeartstone.Builtin
     public class StElmoPillar : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x030;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.METAL, Patchouli.FIRE };
@@ -1150,7 +1150,7 @@ namespace TouhouHeartstone.Builtin
     public class LavaCromlech : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x031;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.FIRE, Patchouli.EARTH };
@@ -1182,7 +1182,7 @@ namespace TouhouHeartstone.Builtin
     public class LavaElement : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x659;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
@@ -1213,7 +1213,7 @@ namespace TouhouHeartstone.Builtin
     public class GingerGust : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x032;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.METAL, Patchouli.EARTH };
@@ -1244,7 +1244,7 @@ namespace TouhouHeartstone.Builtin
     public class DustElement : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x660;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 1;
@@ -1270,7 +1270,7 @@ namespace TouhouHeartstone.Builtin
     public class NoachianDeluge : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x033;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
         public override string[] tags { get; set; } = new string[] { Patchouli.EARTH, Patchouli.WATER };
@@ -1302,7 +1302,7 @@ namespace TouhouHeartstone.Builtin
     public class FloodElement : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x661;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
@@ -1328,7 +1328,7 @@ namespace TouhouHeartstone.Builtin
     public class BiteTentacle : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x034;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 5;
         public override int life { get; set; } = 4;
@@ -1362,7 +1362,7 @@ namespace TouhouHeartstone.Builtin
     public class MultiCast : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x035;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -1395,7 +1395,7 @@ namespace TouhouHeartstone.Builtin
     public class Asthma : SpellCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SPELL | 0x036;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.AUTOCAST };
         public override bool isToken { get; set; } = true;

@@ -8,7 +8,7 @@ namespace TouhouHeartstone.Builtin
     public class Youmu : MasterCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_YOUMU | CATEGORY.MASTER | 0x000;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = StrangeHalfbody.ID;
 
@@ -82,7 +82,7 @@ namespace TouhouHeartstone.Builtin
     public class StrangeHalfbody : SkillCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SKILL | 0x001;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new IEffect[]
@@ -111,7 +111,7 @@ namespace TouhouHeartstone.Builtin
     public class SlashOfPresentWorld : SpellCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x002;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
 
@@ -149,7 +149,7 @@ namespace TouhouHeartstone.Builtin
     public class Meditation : SpellCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x003;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[] {
@@ -185,7 +185,7 @@ namespace TouhouHeartstone.Builtin
     public class FantasyOfEnteringEnlightenment : SpellCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x004;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
 
@@ -229,7 +229,7 @@ namespace TouhouHeartstone.Builtin
     public class HalfPhantonSlam : SpellCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x005;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[] {
@@ -255,7 +255,7 @@ namespace TouhouHeartstone.Builtin
     public class NetherworldInhabitant : ServantCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SERVANT | 0x006;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
@@ -286,7 +286,7 @@ namespace TouhouHeartstone.Builtin
     public class Ghost : ServantCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SERVANT | 0x007;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -298,7 +298,7 @@ namespace TouhouHeartstone.Builtin
     public class Roukanken : ItemCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.ITEM | 0x008;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
@@ -344,7 +344,7 @@ namespace TouhouHeartstone.Builtin
     public class TwoHundredYojanaOneSlash : SpellCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x009;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
 
@@ -375,7 +375,7 @@ namespace TouhouHeartstone.Builtin
     public class CherryBlossomFlashing : SpellCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x010;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
 
@@ -411,7 +411,7 @@ namespace TouhouHeartstone.Builtin
     public class WheelOfPainOfTheLivingAndDead : SpellCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x011;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
 
@@ -442,7 +442,7 @@ namespace TouhouHeartstone.Builtin
     public class FiveSignsOfTheDyingDeva : SpellCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x012;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 5;
 
         private IEffect[] effects1 = new IEffect[]
@@ -473,7 +473,7 @@ namespace TouhouHeartstone.Builtin
     public class KonpakuYouki : ServantCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SERVANT | 0x013;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
@@ -507,7 +507,7 @@ namespace TouhouHeartstone.Builtin
     public class YoukaiSmith : ServantCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SERVANT | 0x014;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
@@ -551,7 +551,7 @@ namespace TouhouHeartstone.Builtin
     public class ProcessingPhantoms : ServantCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SERVANT | 0x015;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 3;
@@ -582,7 +582,7 @@ namespace TouhouHeartstone.Builtin
     public class HalfPhantom : ServantCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SERVANT | 0x016;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 4;
@@ -629,7 +629,7 @@ namespace TouhouHeartstone.Builtin
     public class Hakurouken : ItemCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.ITEM | 0x017;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;

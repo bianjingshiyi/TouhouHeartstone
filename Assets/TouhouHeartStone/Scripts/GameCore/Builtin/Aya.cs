@@ -14,7 +14,7 @@ namespace TouhouHeartstone.Builtin
     public class Aya : MasterCardDefine
     {
         public const int ID = 0x00a00000 | CATEGORY.MASTER | 0x000;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = SpareFilm.ID; //英雄技能的ID
 
@@ -39,7 +39,7 @@ namespace TouhouHeartstone.Builtin
     public class SpareFilm : SkillCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SKILL | 0x000;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1; //技能花费
 
         private IEffect[] effects1 = new IEffect[]
@@ -75,7 +75,7 @@ namespace TouhouHeartstone.Builtin
     public class Crow : ServantCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SERVANT | 0x001;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2; //随从的攻击力
         public override int life { get; set; } = 1; //随从的血量上限
@@ -113,7 +113,7 @@ namespace TouhouHeartstone.Builtin
     public class NewspaperDistribution : SpellCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SPELL | 0x002;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1; //花费
         public override string[] keywords { get; set; } = new string[] {KEYWORD._RETURNHEAD}; //关键词标签：
 
@@ -168,7 +168,7 @@ namespace TouhouHeartstone.Builtin
     public class Scoop : SpellCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SPELL | 0x003;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -200,7 +200,7 @@ namespace TouhouHeartstone.Builtin
     public class LittleAya : ServantCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SERVANT | 0x004;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2; //随从的攻击力
         public override int life { get; set; } = 3; //随从的血量上限
@@ -243,7 +243,7 @@ namespace TouhouHeartstone.Builtin
     public class BunbunmaruNews : SpellCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SPELL | 0x005;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new IEffect[]
@@ -283,7 +283,7 @@ namespace TouhouHeartstone.Builtin
     public class MapleFansWind : SpellCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SPELL | 0x006;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new IEffect[]
@@ -321,7 +321,7 @@ namespace TouhouHeartstone.Builtin
     public class WindGodFan : SpellCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SPELL | 0x007;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new IEffect[]
@@ -363,7 +363,7 @@ namespace TouhouHeartstone.Builtin
     public class ReporterCamera : ItemCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.ITEM | 0x008;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 4;
@@ -398,7 +398,7 @@ namespace TouhouHeartstone.Builtin
     public class HimekaidouHatate : ServantCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SERVANT | 0x009;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2; //随从的攻击力
         public override int life { get; set; } = 3; //随从的血量上限
@@ -445,7 +445,7 @@ namespace TouhouHeartstone.Builtin
     public class Bunkachou : ItemCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.ITEM | 0x010;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
 
@@ -482,7 +482,7 @@ namespace TouhouHeartstone.Builtin
     public class WindGodGirl : SpellCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SPELL | 0x011;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
         private IEffect[] effects1 = new IEffect[]
@@ -521,7 +521,7 @@ namespace TouhouHeartstone.Builtin
     public class LeafHiding : SpellCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SPELL | 0x012;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
         private IEffect[] effects1 = new IEffect[]
@@ -566,7 +566,7 @@ namespace TouhouHeartstone.Builtin
     public class Aya13 : ServantCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SERVANT | 0x013;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 4; //随从的攻击力
         public override int life { get; set; } = 4; //随从的血量上限
@@ -609,7 +609,7 @@ namespace TouhouHeartstone.Builtin
     public class Aya14 : SpellCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SPELL | 0x014;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
         private IEffect[] effects1 = new IEffect[]
@@ -648,7 +648,7 @@ namespace TouhouHeartstone.Builtin
     public class Aya15 : SpellCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SPELL | 0x015;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
         private IEffect[] effects1 = new IEffect[]
@@ -683,7 +683,7 @@ namespace TouhouHeartstone.Builtin
     public class Aya16 : ServantCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SERVANT | 0x016;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
 
@@ -720,7 +720,7 @@ namespace TouhouHeartstone.Builtin
     public class Aya17 : ServantCardDefine
     {
         public const int ID = Aya.ID | CATEGORY.SERVANT | 0x017;
-        public override int id { get; set; } = ID;
+        public override int defineNumber { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2; //随从的攻击力
         public override int life { get; set; } = 2; //随从的血量上限

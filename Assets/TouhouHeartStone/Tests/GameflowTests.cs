@@ -36,9 +36,9 @@ namespace Tests
 
             HearthStoneRule.InitEventArg init = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.InitEventArg) as HearthStoneRule.InitEventArg;
             Assert.NotNull(init);
-            Assert.AreEqual(TestMaster.ID, game.players[0].getMaster().define.id);
+            Assert.AreEqual(TestMaster.ID, game.players[0].getMaster().define.defineNumber);
             Assert.AreEqual(30, game.players[0].getMaster().getCurrentLife(game));
-            Assert.AreEqual(TestMaster.ID, game.players[1].getMaster().define.id);
+            Assert.AreEqual(TestMaster.ID, game.players[1].getMaster().define.defineNumber);
             Assert.AreEqual(30, game.players[1].getMaster().getCurrentLife(game));
             Assert.AreEqual(2, game.getSortedPlayers().Length);
             bool isFirstPlayer = game.getPlayerIndex(game.getSortedPlayers()[0]) == 0;
@@ -127,7 +127,7 @@ namespace Tests
             Assert.NotNull(use);
             Assert.AreEqual(game.getSortedPlayers()[0], use.player);
             Assert.AreEqual(game.getSortedPlayers()[0].getField()[0], use.card);
-            Assert.AreEqual(TestServant.ID, use.card.define.id);
+            Assert.AreEqual(TestServant.ID, use.card.define.defineNumber);
             Assert.AreEqual(0, use.position);
             Assert.AreEqual(0, use.targets.Length);
             HearthStoneRule.SetGemEventArg setGem = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.SetGemEventArg) as HearthStoneRule.SetGemEventArg;
@@ -135,7 +135,7 @@ namespace Tests
             HearthStoneRule.EnterFieldEventArg summon = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.EnterFieldEventArg) as HearthStoneRule.EnterFieldEventArg;
             Assert.NotNull(summon);
             Assert.AreEqual(game.getSortedPlayers()[0], summon.player);
-            Assert.AreEqual(TestServant.ID, summon.card.define.id);
+            Assert.AreEqual(TestServant.ID, summon.card.define.defineNumber);
             Assert.AreEqual(0, summon.position);
             game.Dispose();
         }
