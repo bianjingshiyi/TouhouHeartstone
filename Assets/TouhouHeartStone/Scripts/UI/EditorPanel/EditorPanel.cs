@@ -51,17 +51,18 @@ namespace UI
 
         private void Start()
         {
-            Dictionary<string,CardPoolInfo> initDic = EditorCtrl.getCardPoolsInfoAsync().Result;
-            
+            UpdateDeckList(EditorCtrl.getCardPoolsInfoAsync().Result);
         }
 
         private void UpdateDeckList(Dictionary<string, CardPoolInfo> now)
         {
-            deckList.clearItems();
+            fileList.clearItems();
             foreach (var i in now.Values) 
             {
-                //FileItem.
-                deckList.addChild((RectTransform)Instantiate(FileItem).transform);
+                FileItem item = fileList.addItem();
+                item.nameText.text = i.cardPoolName;
+                item.iconImage.sprite = (Sprite)Resources.Load(i.imageResPath);
+                item.dateText.text = null;
             }
         }
     }

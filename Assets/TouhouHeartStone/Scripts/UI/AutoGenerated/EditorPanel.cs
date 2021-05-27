@@ -31,7 +31,6 @@ namespace UI
             _headImageButton.onClick.AddListener(EadImageButtonClickCallback);
             _headImage = transform.Find(PATH_HEADIMAGE).GetComponent<Image>();
             _cardPoolEditViewImage = transform.Find(PATH_CARDPOOLEDITVIEWIMAGE).GetComponent<Image>();
-            _deckList = transform.Find(PATH_DECKLIST).GetComponent<DeckList>();
             _titleText = transform.Find(PATH_TITLETEXT).GetComponent<Text>();
             _buildCardListItem = transform.Find(PATH_BUILDCARDLISTITEM).GetComponent<BuildCardListItem>();
             _scrollbarVertical = transform.Find(PATH_SCROLLBARVERTICAL).GetComponent<ScrollbarVertical>();
@@ -40,6 +39,7 @@ namespace UI
             _dropdownCostDropdownLight = transform.Find(PATH_DROPDOWNCOSTDROPDOWNLIGHT).GetComponent<DropdownLight>();
             _dropdownTypeDropdownLight = transform.Find(PATH_DROPDOWNTYPEDROPDOWNLIGHT).GetComponent<DropdownLight>();
             _backButtonBlack = transform.Find(PATH_BACKBUTTONBLACK).GetComponent<ButtonBlack>();
+            _fileList = transform.Find(PATH_FILELIST).GetComponent<FileList>();
         }
         public void autoClear()
         {
@@ -149,19 +149,6 @@ namespace UI
                 return _cardPoolEditViewImage;
             }
         }
-        public DeckList _deckList;
-        public const string PATH_DECKLIST = "CardPoolListPanel/CardPoolListView/DeckList/Viewport/DeckList";
-        public DeckList deckList
-        {
-            get
-            {
-                if ((_deckList == null))
-                {
-                    _deckList = transform.Find(PATH_DECKLIST).GetComponent<DeckList>();
-                }
-                return _deckList;
-            }
-        }
         public Text _titleText;
         public const string PATH_TITLETEXT = "TitleBar/Title";
         public Text titleText
@@ -264,6 +251,19 @@ namespace UI
                     _backButtonBlack = transform.Find(PATH_BACKBUTTONBLACK).GetComponent<ButtonBlack>();
                 }
                 return _backButtonBlack;
+            }
+        }
+        public FileList _fileList;
+        public const string PATH_FILELIST = "CardPoolListPanel/CardPoolListView/DeckList/Viewport/FileList";
+        public FileList fileList
+        {
+            get
+            {
+                if ((_fileList == null))
+                {
+                    _fileList = transform.Find(PATH_FILELIST).GetComponent<FileList>();
+                }
+                return _fileList;
             }
         }
     }
