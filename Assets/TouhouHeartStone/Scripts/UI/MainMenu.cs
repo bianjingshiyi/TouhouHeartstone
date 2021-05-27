@@ -41,7 +41,7 @@ namespace UI
             });
             editorButton.onClick.AddListener(() =>
             {
-                main.display();
+                main.display(main.EditorPanel);
             });
         }
     }

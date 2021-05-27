@@ -34,7 +34,23 @@ namespace UI
             this._SettingPage = this.transform.Find("SettingPage").GetComponent<SettingPage>();
             this._Loading = this.transform.Find("Loading").GetComponent<Loading>();
             this._Dialog = this.transform.Find("Dialog").GetComponent<Dialog>();
+            this._editorPanel = this.transform.Find("EditorPanel").GetComponent<EditorPanel>();
         }
+
+        [SerializeField()]
+        private EditorPanel _editorPanel;
+        public EditorPanel EditorPanel
+        {
+            get
+            {
+                if ((this._editorPanel == null))
+                {
+                    this._editorPanel = this.transform.Find("EditorPanel").GetComponent<EditorPanel>();
+                }
+                return this._editorPanel;
+            }
+        }
+
         [SerializeField()]
         private Game _Game;
         public Game Game
@@ -163,7 +179,9 @@ namespace UI
                     this.RoomPanel,
                     this.SettingPage,
                     this.Loading,
-                    this.Dialog};
+                    this.Dialog,
+                    this.EditorPanel        
+            };
         }
         partial void onAwake();
     }
