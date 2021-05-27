@@ -17,52 +17,68 @@ namespace UI
     using UnityEngine.UI;
     using UI;
     using BJSYGameCore;
-    
+
     public partial class EditorPanel : UIObject
     {
         public void autoInit()
         {
-            _titleBarImage = transform.Find(PATH_TITLEBARIMAGE).GetComponent<Image>();
-            _titleText = transform.Find(PATH_TITLETEXT).GetComponent<Text>();
+            _deleteButton = transform.Find(PATH_DELETEBUTTON).GetComponent<Button>();
+            _deleteButton.onClick.AddListener(EleteButtonClickCallback);
+            _buildItemBuildDeckListItem = transform.Find(PATH_BUILDITEMBUILDDECKLISTITEM).GetComponent<BuildDeckListItem>();
             _backButton = transform.Find(PATH_BACKBUTTON).GetComponent<Button>();
             _backButton.onClick.AddListener(AckButtonClickCallback);
-            _backButtonBlack = transform.Find(PATH_BACKBUTTONBLACK).GetComponent<ButtonBlack>();
-            _cardPoolListViewImage = transform.Find(PATH_CARDPOOLLISTVIEWIMAGE).GetComponent<Image>();
-            _text = transform.Find(PATH_TEXT).GetComponent<Text>();
-            _cardPoolScrollViewImage = transform.Find(PATH_CARDPOOLSCROLLVIEWIMAGE).GetComponent<Image>();
-            _scrollbarVerticalImage = transform.Find(PATH_SCROLLBARVERTICALIMAGE).GetComponent<Image>();
-            _filterPanel = transform.Find(PATH_FILTERPANEL).GetComponent<FilterPanel>();
+            _headImageButton = transform.Find(PATH_HEADIMAGEBUTTON).GetComponent<Button>();
+            _headImageButton.onClick.AddListener(EadImageButtonClickCallback);
+            _headImage = transform.Find(PATH_HEADIMAGE).GetComponent<Image>();
+            _cardPoolEditViewImage = transform.Find(PATH_CARDPOOLEDITVIEWIMAGE).GetComponent<Image>();
+            _deckList = transform.Find(PATH_DECKLIST).GetComponent<DeckList>();
+            _titleText = transform.Find(PATH_TITLETEXT).GetComponent<Text>();
+            _buildCardListItem = transform.Find(PATH_BUILDCARDLISTITEM).GetComponent<BuildCardListItem>();
             _scrollbarVertical = transform.Find(PATH_SCROLLBARVERTICAL).GetComponent<ScrollbarVertical>();
-            _loadingImage = transform.Find(PATH_LOADINGIMAGE).GetComponent<Image>();
+            _dropdownSortDropdownLight = transform.Find(PATH_DROPDOWNSORTDROPDOWNLIGHT).GetComponent<DropdownLight>();
+            _dropdownCharacterDropdownLight = transform.Find(PATH_DROPDOWNCHARACTERDROPDOWNLIGHT).GetComponent<DropdownLight>();
+            _dropdownCostDropdownLight = transform.Find(PATH_DROPDOWNCOSTDROPDOWNLIGHT).GetComponent<DropdownLight>();
+            _dropdownTypeDropdownLight = transform.Find(PATH_DROPDOWNTYPEDROPDOWNLIGHT).GetComponent<DropdownLight>();
+            _backButtonBlack = transform.Find(PATH_BACKBUTTONBLACK).GetComponent<ButtonBlack>();
         }
         public void autoClear()
         {
+            _deleteButton.onClick.RemoveListener(EleteButtonClickCallback);
             _backButton.onClick.RemoveListener(AckButtonClickCallback);
+            _headImageButton.onClick.RemoveListener(EadImageButtonClickCallback);
         }
-        public Image _titleBarImage;
-        public const string PATH_TITLEBARIMAGE = "TitleBar";
-        public Image titleBarImage
+        public Button _deleteButton;
+        public const string PATH_DELETEBUTTON = "CardPoolListPanel/CardPoolEditView/Upper/EditingDeck/ImageMask/Delete";
+        public Button deleteButton
         {
             get
             {
-                if ((_titleBarImage == null))
+                if ((_deleteButton == null))
                 {
-                    _titleBarImage = transform.Find(PATH_TITLEBARIMAGE).GetComponent<Image>();
+                    _deleteButton = transform.Find(PATH_DELETEBUTTON).GetComponent<Button>();
                 }
-                return _titleBarImage;
+                return _deleteButton;
             }
         }
-        public Text _titleText;
-        public const string PATH_TITLETEXT = "TitleBar/Title";
-        public Text titleText
+        public event Action<EditorPanel> onEleteButtonClick;
+        private void EleteButtonClickCallback()
+        {
+            if ((onEleteButtonClick != null))
+            {
+                onEleteButtonClick(this);
+            }
+        }
+        public BuildDeckListItem _buildItemBuildDeckListItem;
+        public const string PATH_BUILDITEMBUILDDECKLISTITEM = "CardPoolListPanel/CardPoolEditView/DeckView/Viewport/BuildDeckList/BuildItem";
+        public BuildDeckListItem buildItemBuildDeckListItem
         {
             get
             {
-                if ((_titleText == null))
+                if ((_buildItemBuildDeckListItem == null))
                 {
-                    _titleText = transform.Find(PATH_TITLETEXT).GetComponent<Text>();
+                    _buildItemBuildDeckListItem = transform.Find(PATH_BUILDITEMBUILDDECKLISTITEM).GetComponent<BuildDeckListItem>();
                 }
-                return _titleText;
+                return _buildItemBuildDeckListItem;
             }
         }
         public Button _backButton;
@@ -86,82 +102,90 @@ namespace UI
                 onAckButtonClick(this);
             }
         }
-        public ButtonBlack _backButtonBlack;
-        public const string PATH_BACKBUTTONBLACK = "TitleBar/Back";
-        public ButtonBlack backButtonBlack
+        public Button _headImageButton;
+        public const string PATH_HEADIMAGEBUTTON = "CardPoolListPanel/CardPoolEditView/Upper/EditingDeck/ImageMask/HeadImage";
+        public Button headImageButton
         {
             get
             {
-                if ((_backButtonBlack == null))
+                if ((_headImageButton == null))
                 {
-                    _backButtonBlack = transform.Find(PATH_BACKBUTTONBLACK).GetComponent<ButtonBlack>();
+                    _headImageButton = transform.Find(PATH_HEADIMAGEBUTTON).GetComponent<Button>();
                 }
-                return _backButtonBlack;
+                return _headImageButton;
             }
         }
-        public Image _cardPoolListViewImage;
-        public const string PATH_CARDPOOLLISTVIEWIMAGE = "CardPoolListPanel/CardPoolListView";
-        public Image cardPoolListViewImage
+        public event Action<EditorPanel> onEadImageButtonClick;
+        private void EadImageButtonClickCallback()
         {
-            get
+            if ((onEadImageButtonClick != null))
             {
-                if ((_cardPoolListViewImage == null))
-                {
-                    _cardPoolListViewImage = transform.Find(PATH_CARDPOOLLISTVIEWIMAGE).GetComponent<Image>();
-                }
-                return _cardPoolListViewImage;
+                onEadImageButtonClick(this);
             }
         }
-        public Text _text;
-        public const string PATH_TEXT = "CardPoolListPanel/CardPoolListView/Text";
-        public Text text
+        public Image _headImage;
+        public const string PATH_HEADIMAGE = "CardPoolListPanel/CardPoolEditView/Upper/EditingDeck/ImageMask/HeadImage";
+        public Image headImage
         {
             get
             {
-                if ((_text == null))
+                if ((_headImage == null))
                 {
-                    _text = transform.Find(PATH_TEXT).GetComponent<Text>();
+                    _headImage = transform.Find(PATH_HEADIMAGE).GetComponent<Image>();
                 }
-                return _text;
+                return _headImage;
             }
         }
-        public Image _cardPoolScrollViewImage;
-        public const string PATH_CARDPOOLSCROLLVIEWIMAGE = "CardListPanel/CardPoolScrollView";
-        public Image cardPoolScrollViewImage
+        public Image _cardPoolEditViewImage;
+        public const string PATH_CARDPOOLEDITVIEWIMAGE = "CardPoolListPanel/CardPoolEditView";
+        public Image cardPoolEditViewImage
         {
             get
             {
-                if ((_cardPoolScrollViewImage == null))
+                if ((_cardPoolEditViewImage == null))
                 {
-                    _cardPoolScrollViewImage = transform.Find(PATH_CARDPOOLSCROLLVIEWIMAGE).GetComponent<Image>();
+                    _cardPoolEditViewImage = transform.Find(PATH_CARDPOOLEDITVIEWIMAGE).GetComponent<Image>();
                 }
-                return _cardPoolScrollViewImage;
+                return _cardPoolEditViewImage;
             }
         }
-        public Image _scrollbarVerticalImage;
-        public const string PATH_SCROLLBARVERTICALIMAGE = "CardListPanel/CardPoolScrollView/ScrollbarVertical";
-        public Image scrollbarVerticalImage
+        public DeckList _deckList;
+        public const string PATH_DECKLIST = "CardPoolListPanel/CardPoolListView/DeckList/Viewport/DeckList";
+        public DeckList deckList
         {
             get
             {
-                if ((_scrollbarVerticalImage == null))
+                if ((_deckList == null))
                 {
-                    _scrollbarVerticalImage = transform.Find(PATH_SCROLLBARVERTICALIMAGE).GetComponent<Image>();
+                    _deckList = transform.Find(PATH_DECKLIST).GetComponent<DeckList>();
                 }
-                return _scrollbarVerticalImage;
+                return _deckList;
             }
         }
-        public FilterPanel _filterPanel;
-        public const string PATH_FILTERPANEL = "CardListPanel/FilterPanel";
-        public FilterPanel filterPanel
+        public Text _titleText;
+        public const string PATH_TITLETEXT = "TitleBar/Title";
+        public Text titleText
         {
             get
             {
-                if ((_filterPanel == null))
+                if ((_titleText == null))
                 {
-                    _filterPanel = transform.Find(PATH_FILTERPANEL).GetComponent<FilterPanel>();
+                    _titleText = transform.Find(PATH_TITLETEXT).GetComponent<Text>();
                 }
-                return _filterPanel;
+                return _titleText;
+            }
+        }
+        public BuildCardListItem _buildCardListItem;
+        public const string PATH_BUILDCARDLISTITEM = "CardListPanel/CardPoolScrollView/Viewport/BuildCardList/BuildCardListItem";
+        public BuildCardListItem buildCardListItem
+        {
+            get
+            {
+                if ((_buildCardListItem == null))
+                {
+                    _buildCardListItem = transform.Find(PATH_BUILDCARDLISTITEM).GetComponent<BuildCardListItem>();
+                }
+                return _buildCardListItem;
             }
         }
         public ScrollbarVertical _scrollbarVertical;
@@ -177,17 +201,69 @@ namespace UI
                 return _scrollbarVertical;
             }
         }
-        public Image _loadingImage;
-        public const string PATH_LOADINGIMAGE = "Loading";
-        public Image loadingImage
+        public DropdownLight _dropdownSortDropdownLight;
+        public const string PATH_DROPDOWNSORTDROPDOWNLIGHT = "CardListPanel/FilterPanel/Sort/DropdownSort";
+        public DropdownLight dropdownSortDropdownLight
         {
             get
             {
-                if ((_loadingImage == null))
+                if ((_dropdownSortDropdownLight == null))
                 {
-                    _loadingImage = transform.Find(PATH_LOADINGIMAGE).GetComponent<Image>();
+                    _dropdownSortDropdownLight = transform.Find(PATH_DROPDOWNSORTDROPDOWNLIGHT).GetComponent<DropdownLight>();
                 }
-                return _loadingImage;
+                return _dropdownSortDropdownLight;
+            }
+        }
+        public DropdownLight _dropdownCharacterDropdownLight;
+        public const string PATH_DROPDOWNCHARACTERDROPDOWNLIGHT = "CardListPanel/FilterPanel/Character/DropdownCharacter";
+        public DropdownLight dropdownCharacterDropdownLight
+        {
+            get
+            {
+                if ((_dropdownCharacterDropdownLight == null))
+                {
+                    _dropdownCharacterDropdownLight = transform.Find(PATH_DROPDOWNCHARACTERDROPDOWNLIGHT).GetComponent<DropdownLight>();
+                }
+                return _dropdownCharacterDropdownLight;
+            }
+        }
+        public DropdownLight _dropdownCostDropdownLight;
+        public const string PATH_DROPDOWNCOSTDROPDOWNLIGHT = "CardListPanel/FilterPanel/Cost/DropdownCost";
+        public DropdownLight dropdownCostDropdownLight
+        {
+            get
+            {
+                if ((_dropdownCostDropdownLight == null))
+                {
+                    _dropdownCostDropdownLight = transform.Find(PATH_DROPDOWNCOSTDROPDOWNLIGHT).GetComponent<DropdownLight>();
+                }
+                return _dropdownCostDropdownLight;
+            }
+        }
+        public DropdownLight _dropdownTypeDropdownLight;
+        public const string PATH_DROPDOWNTYPEDROPDOWNLIGHT = "CardListPanel/FilterPanel/Type/DropdownType";
+        public DropdownLight dropdownTypeDropdownLight
+        {
+            get
+            {
+                if ((_dropdownTypeDropdownLight == null))
+                {
+                    _dropdownTypeDropdownLight = transform.Find(PATH_DROPDOWNTYPEDROPDOWNLIGHT).GetComponent<DropdownLight>();
+                }
+                return _dropdownTypeDropdownLight;
+            }
+        }
+        public ButtonBlack _backButtonBlack;
+        public const string PATH_BACKBUTTONBLACK = "TitleBar/Back";
+        public ButtonBlack backButtonBlack
+        {
+            get
+            {
+                if ((_backButtonBlack == null))
+                {
+                    _backButtonBlack = transform.Find(PATH_BACKBUTTONBLACK).GetComponent<ButtonBlack>();
+                }
+                return _backButtonBlack;
             }
         }
     }
