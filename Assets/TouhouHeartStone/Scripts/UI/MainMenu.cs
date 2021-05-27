@@ -39,6 +39,10 @@ namespace UI
                 // 等之后有空再改
                 newsPanel.gameObject.SetActive(true);
             });
+            editorButton.onClick.AddListener(() =>
+            {
+                main.display();
+            });
         }
     }
 
