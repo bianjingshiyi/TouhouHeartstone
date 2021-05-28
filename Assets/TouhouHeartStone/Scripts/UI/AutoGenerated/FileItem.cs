@@ -15,14 +15,35 @@ namespace UI
     using UnityEngine.UI;
     using BJSYGameCore.UI;
     using BJSYGameCore;
+    using UI;
     
     public partial class FileItem : UIObject
     {
         public void autoInit()
         {
+            _delectButtonIconGlass = transform.Find(PATH_DELECTBUTTONICONGLASS).GetComponent<ButtonIconGlass>();
             _iconImage = transform.Find(PATH_ICONIMAGE).GetComponent<Image>();
             _nameText = transform.Find(PATH_NAMETEXT).GetComponent<Text>();
             _dateText = transform.Find(PATH_DATETEXT).GetComponent<Text>();
+            _asButton = transform.Find(PATH_ASBUTTON).GetComponent<Button>();
+            _asButton.onClick.AddListener(clickCallback);
+        }
+        public void autoClear()
+        {
+            _asButton.onClick.RemoveListener(clickCallback);
+        }
+        public ButtonIconGlass _delectButtonIconGlass;
+        public const string PATH_DELECTBUTTONICONGLASS = "Delect";
+        public ButtonIconGlass delectButtonIconGlass
+        {
+            get
+            {
+                if ((_delectButtonIconGlass == null))
+                {
+                    _delectButtonIconGlass = transform.Find(PATH_DELECTBUTTONICONGLASS).GetComponent<ButtonIconGlass>();
+                }
+                return _delectButtonIconGlass;
+            }
         }
         public Image _iconImage;
         public const string PATH_ICONIMAGE = "Icon";
@@ -61,6 +82,27 @@ namespace UI
                     _dateText = transform.Find(PATH_DATETEXT).GetComponent<Text>();
                 }
                 return _dateText;
+            }
+        }
+        public Button _asButton;
+        public const string PATH_ASBUTTON = "";
+        public Button asButton
+        {
+            get
+            {
+                if ((_asButton == null))
+                {
+                    _asButton = transform.Find(PATH_ASBUTTON).GetComponent<Button>();
+                }
+                return _asButton;
+            }
+        }
+        public event Action<FileItem> onClick;
+        private void clickCallback()
+        {
+            if ((onClick != null))
+            {
+                onClick(this);
             }
         }
     }

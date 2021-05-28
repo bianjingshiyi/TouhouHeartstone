@@ -63,7 +63,15 @@ namespace UI
                 item.nameText.text = i.cardPoolName;
                 item.iconImage.sprite = (Sprite)Resources.Load(i.imageResPath);
                 item.dateText.text = null;
+                item.onDeckRemove += OnFileItemRemove;
             }
+        }
+
+        private void OnFileItemRemove(int id)
+        {
+            //这里需要一个删除对应文件方法
+
+            UpdateDeckList(EditorCtrl.getCardPoolsInfoAsync().Result);
         }
     }
 }
