@@ -1,5 +1,6 @@
 ﻿using System;
 using UI;
+using BJSYGameCore;
 
 namespace Controllers
 {

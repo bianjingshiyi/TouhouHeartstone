@@ -6,6 +6,7 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using UI;
+using BJSYGameCore;
 
 namespace Controllers
 {
@@ -15,28 +16,34 @@ namespace Controllers
         /// 读取所有卡池文件中的卡池信息。
         /// </summary>
         /// <returns>包含卡池文件相对路径和卡池信息键值对的字典</returns>
-        public Task<Dictionary<string, CardPoolInfo>> getCardPoolsInfoAsync()
+        public async Task<Dictionary<string, CardPoolInfo>> getCardPoolsInfoAsync()
         {
             Dictionary<string, CardPoolInfo> dict = new Dictionary<string, CardPoolInfo>();
-            //TODO:在实现卡池保存为JSON文件后接入文件读取。
-            //现在先提供一些测试用的数据。
+            //测试用数据
             dict.Add("Builtin.ddcp", new CardPoolInfo()
             {
                 cardPoolName = "Test",
                 imageResPath = "Textures/Patchouli/AgniShine.jpg"
             });
-            return Task.FromResult(dict);
+            var files = app.fileManager.getFiles(DIRNAME, "*.ddcp", true);
+            var lines = await app.fileManager.readTextFiles(files);
+            for (int i = 0; i < files.Length; i++)
+            {
+                dict.Add(files[i], JsonHelper.fromJson<CardPoolInfo>(lines[i][0]));
+            }
+            return dict;
         }
         /// <summary>
         /// 读取卡池文件中的所有卡牌
         /// </summary>
         /// <param name="cardPoolPath">卡池文件相对路径</param>
         /// <returns></returns>
-        public Task<CardDefine[]> readCardPoolAsync(string cardPoolPath)
+        /// <exception cref="IOException">当读取文件失败的时候抛出这个异常</exception>
+        public async Task<CardDefine[]> readCardPoolAsync(string cardPoolPath)
         {
             if (cardPoolPath == "Builtin.ddcp")
             {
-                return Task.FromResult(new CardDefine[]
+                return new CardDefine[]
                 {
                     //火神之光
                     new CardDefine(AgniShine.ID, DEFINE.SPELL, new Dictionary<string, object>()
@@ -62,9 +69,17 @@ namespace Controllers
                             }))
                         }), new string[0])
                     })
-                });
+                };
             }
-            throw new NotImplementedException();
+            var lines = await app.fileManager.readTextFile(DIRNAME + "/" + cardPoolPath, 1);
+            if (lines.Length > 0)
+            {
+                string json = lines[0];
+                var cardDefines = JsonHelper.fromJson<CardDefine[]>(json);
+                return cardDefines;
+            }
+            else
+                throw new IOException("无法读取文件" + cardPoolPath);
         }
         /// <summary>
         /// 将卡池保存到相对路径下

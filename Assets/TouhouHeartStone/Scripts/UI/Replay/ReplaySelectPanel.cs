@@ -13,16 +13,7 @@ using Game;
 
 namespace UI
 {
-    public interface IAppManager
-    {
-        FileManager fileManager { get; }
-    }
-    public interface IController<TMainCtrl>
-    {
-        IAppManager app { get; }
-        TMainCtrl main { get; }
-    }
-    public partial class MainCtrl
+    public partial class MainCtrl : IController<MainCtrl>
     {
         public MainCtrl(IAppManager appManager)
         {
@@ -46,6 +37,7 @@ namespace UI
 
         public LobbySceneCtrl lobbySceneCtrl { get; private set; }
         public IAppManager app { get; }
+        public MainCtrl main => this;
     }
     public class LobbySceneCtrl : IController<MainCtrl>
     {
@@ -104,7 +96,7 @@ namespace UI
         {
             //读取Replay文件头
             _paths = app.fileManager.getFiles(main.replays.getSaveDir(), "*." + main.replays.getSaveFileExtension(), true);
-            string[][] fileHeads = await app.fileManager.readTextFilesHead(_paths);
+            string[][] fileHeads = await app.fileManager.readTextFiles(_paths);
             //转化为显示数据并刷新显示
             ReplayItemViewData[] viewDatas = new ReplayItemViewData[fileHeads.Length];
             for (int i = 0; i < fileHeads.Length; i++)
@@ -130,7 +122,7 @@ namespace UI
         private async void onPlayButtonClick(ReplaySelectPanel ui)
         {
             string path = _paths[_selectIndex];
-            var content = await app.fileManager.readTextFileHead(path, 1, 1);
+            var content = await app.fileManager.readTextFile(path, 1, 1);
             string json = content[0];
             ReplayData replay = BsonSerializer.Deserialize<ReplayData>(json);
             hide();

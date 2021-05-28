@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using TouhouCardEngine;
 
@@ -15,6 +16,10 @@ namespace Controllers
             string json = obj.ToJson();
             ConventionRegistry.Remove(nameof(FieldOnlyClassMapConvention));
             return json;
+        }
+        public static T fromJson<T>(string json)
+        {
+            return BsonSerializer.Deserialize<T>(json);
         }
     }
 }

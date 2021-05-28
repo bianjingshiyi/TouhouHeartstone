@@ -1,5 +1,5 @@
 ﻿using UI;
-
+using BJSYGameCore;
 namespace Controllers
 {
     public class ReplayPlayerCtrl : IController<MainCtrl>
