@@ -19,10 +19,12 @@ namespace Game
         /// </summary>
         ClientLogic localLanLogic;
 
-        public NetworkingLogic(string serverUri, string version, string localPlayerName, int[] ports = null)
+        public NetworkingLogic(string serverUri, string version, int[] ports = null)
         {
+            Debug.Log("Init server uri: " + serverUri);
+
             ServerClient = new ServerClient(serverUri, version, System.IO.Path.Combine(Application.persistentDataPath, "token"));
-            localLanLogic = new ClientLogic(localPlayerName, ports, ServerClient, new ULogger("LAN"));
+            localLanLogic = new ClientLogic("Player.", ports, ServerClient, new ULogger("LAN"));
 
             localLanLogic.onRoomListChange += LocalLanLogic_onRoomListChange;
             localLanLogic.onGameStart += onGameStartEvtHandler;
@@ -229,30 +231,30 @@ namespace Game
         /// <summary>
         /// 尝试使用之前登录的用户信息自动登录，如果不成功则尝试使用游客身份登录。
         /// </summary>
-        public void AutoLogin()
+        public async Task AutoLogin()
         {
             try
             {
-                userInfo = ServerClient.GetUserInfo();
+                userInfo = await ServerClient.GetUserInfoAsync();
 
                 // 更新Session，防止Session太旧没更新导致无法连接服务器
-                ServerClient.GetSession();
+                await ServerClient.GetSessionAsync();
                 isGuest = false;
             }
             catch (NetClientException e1)
             {
-                UnityEngine.Debug.Log($"自动登录失败，{ e1 }，尝试使用游客身份登录.");
+                Debug.Log($"自动登录失败，{ e1 }，尝试使用游客身份登录.");
 
                 try
                 {
-                    ServerClient.GuestLogin();
-                    userInfo = ServerClient.GetUserInfo();
+                    await ServerClient.GuestLoginAsync();
+                    userInfo = await ServerClient.GetUserInfoAsync();
                     // 游客不需要手动更新Session，因为在登录的时候默认换取的是Session
                     isGuest = true;
                 }
                 catch (NetClientException e2)
                 {
-                    UnityEngine.Debug.Log($"游客身份登录失败，{ e2 }.");
+                    Debug.Log($"游客身份登录失败，{ e2 }.");
                     userInfo = null;
                 }
             }

@@ -69,7 +69,7 @@ namespace Game
                 if (_logic == null)
                 {
                     var version = CustomBuilder.BuildInformation.Instance.Version;
-                    _logic = new NetworkingLogic(serverBaseUri, version, lang._(NETMANAGER_HOMEMASTER), _ports);
+                    _logic = new NetworkingLogic(serverBaseUri, version, _ports);
                 }
 
                 return _logic;
@@ -214,13 +214,19 @@ namespace Game
 
         protected void Start()
         {
-            logic.AutoLogin();
-            _ = updateAccountPanel();
+            _ = startSequence();
         }
         protected void Update()
         {
             logic.update();
         }
+
+        async Task startSequence()
+        {
+            await logic.AutoLogin();
+            updateAccountPanel();
+        }
+
         #region Logic
         public async Task<Sprite> getCaptchaImage()
         {
@@ -255,6 +261,24 @@ namespace Game
 
         bool isHost => !logic.isClient;
 
+        [TranslateMsg]
+        const string CANNOT_CREATE_ROOM = "无法创建房间";
+
+        [TranslateMsg]
+        const string CANNOT_JOIN_ROOM = "无法加入房间";
+
+        UIDialog dialog => getManager<UIManager>().getObject<UIDialog>();
+
+        void showCreateRoomException(Exception e)
+        {
+            dialog.ShowConfirm(lang._(CANNOT_CREATE_ROOM), e.Message, null);
+        }
+
+        void showJoinRoomException(Exception e)
+        {
+            dialog.ShowConfirm(lang._(CANNOT_JOIN_ROOM), e.Message, null);
+        }
+
         /// <summary>
         /// 创建一个房间
         /// </summary>
@@ -262,29 +286,25 @@ namespace Game
         public async Task createRoom()
         {
             hideAllOtherPage();
+            toggleLoadingPanel(true);
+
             try
             {
                 await logic.CreateRoom();
 
                 roomPanel.SetSelfID(logic.GetSelfInfo().id);
                 displayRoomPanel();
-            } 
+            }
             catch (Exception e)
             {
-                getManager<UIManager>().getObject<UIDialog>().ShowConfirm("错误", "无法创建房间\r\n" + e.Message, null);
+                showCreateRoomException(e);
                 Debug.LogException(e);
             }
             finally
             {
                 toggleLoadingPanel(false);
             }
-
-            // ui.RoomButton.interactable = true;
-            // ui.RoomButton.image.color = Color.white;
         }
-
-        [TranslateMsg]
-        private const String NETMANAGER_HOMEMASTER = "房主";
 
         public void flushRooms()
         {
@@ -297,33 +317,56 @@ namespace Game
         public async Task joinRoom(string roomID)
         {
             hideAllOtherPage();
-            roomPanel.SetSelfID(logic.GetSelfInfo().id);
-
-            await logic.JoinRoom(roomID);
-
-            displayRoomPanel();
+            toggleLoadingPanel(true);
+            try
+            {
+                roomPanel.SetSelfID(logic.GetSelfInfo().id);
+                await logic.JoinRoom(roomID);
+                displayRoomPanel();
+            }
+            catch (Exception e)
+            {
+                showJoinRoomException(e);
+                Debug.LogException(e);
+            }
+            finally
+            {
+                toggleLoadingPanel(false);
+            }
         }
 
         public async Task joinRoom(string addr, int port)
         {
             hideAllOtherPage();
-            roomPanel.SetSelfID(logic.GetSelfInfo().id);
+            toggleLoadingPanel(true);
 
-            await logic.JoinRoom(addr, port);
-
-            displayRoomPanel();
+            try
+            {
+                roomPanel.SetSelfID(logic.GetSelfInfo().id);
+                await logic.JoinRoom(addr, port);
+                displayRoomPanel();
+            }
+            catch (Exception e)
+            {
+                showJoinRoomException(e);
+                Debug.LogException(e);
+            }
+            finally
+            {
+                toggleLoadingPanel(false);
+            }
         }
 
         [TranslateMsg]
         private const String NETMANAGER_PLAYER2 = "玩家2";
 
+        [TranslateMsg]
+        const string INVALID_ADDRESS = "输入的地址格式有误";
+
         public void quitRoom()
         {
             logic.QuitRoom();
             displayPanel();
-
-            // ui.RoomButton.interactable = false;
-            // ui.RoomButton.image.color = Color.gray;
         }
 
         private void Logic_onGameStart()
@@ -333,7 +376,7 @@ namespace Game
 
         #endregion
         #region UI
-        async Task updateAccountPanel()
+        void updateAccountPanel()
         {
             var playerInfoPanel = getManager<UIManager>().findInstance<PlayerInfoPanel>();
             try
@@ -380,17 +423,7 @@ namespace Game
             lanPanel.CreateRoomButtonButtonBlack.asButton.interactable = !logic.RoomIsValid;
             lanPanel.CreateRoomButtonButtonBlack.asButton.onClick.set(async () =>
             {
-                lanPanel.LoadingPanelImage.gameObject.SetActive(true);
-                try
-                {
-                    lanPanel.LoadingPanelImage.gameObject.SetActive(true);
-                    await createRoom();
-                }
-                catch (NetClientException e)
-                {
-                    lanPanel.LoadingPanelImage.gameObject.SetActive(false);
-                    getManager<UIManager>().getObject<UIDialog>().ShowConfirm("错误", e.Message, null);
-                }
+                await createRoom();
             });
             lanPanel.ReturnBtnButtonBlack.asButton.onClick.AddListener(() =>
             {
@@ -398,12 +431,17 @@ namespace Game
             });
 
             lanPanel.IP_FieldImage.gameObject.SetActive(!isServerMode);
-            lanPanel.ConnectButtonButtonBlack.asButton.onClick.set(() =>
+            lanPanel.ConnectButtonButtonBlack.asButton.onClick.set(async () =>
             {
-                addrParser(lanPanel.IPInputField.text, _ports[0], out string address, out int port);
-                _ = joinRoom(address, port);
-
-                // getManager<UIManager>().getObject<Dialog>().display("输入的地址格式有误", null);
+                try
+                {
+                    addrParser(lanPanel.IPInputField.text, _ports[0], out string address, out int port);
+                    await joinRoom(address, port);
+                } 
+                catch (UriFormatException)
+                {
+                    dialog.ShowConfirm(lang._(StringTable.ERROR), lang._(INVALID_ADDRESS), null);
+                }
             });
             lanPanel.NameText.text = null;
             lanPanel.IPText.text = null;
@@ -484,9 +522,9 @@ namespace Game
                     lanPanel.DescText.text = lang._(NETMANAGER_DESCRIBE);
                 }
             });
-            item.ButtonButtonBlack.asButton.onClick.set(() =>
+            item.ButtonButtonBlack.asButton.onClick.set(async () =>
             {
-                _ = joinRoom(obj.RoomID);
+                await joinRoom(obj.RoomID);
             });
             item.ButtonButtonBlack.asButton.interactable = obj.PlayerCount < obj.MaxPlayerCount;
 
@@ -677,7 +715,7 @@ namespace Game
                         panel.RememberAccountUIToggle.asToggle.isOn, panel.UserName,
                         panel.RememberPasswordUIToggle.asToggle.isOn, panel.Password);
                     panel.hide();
-                    await updateAccountPanel();
+                    updateAccountPanel();
                 }
                 else
                 {
