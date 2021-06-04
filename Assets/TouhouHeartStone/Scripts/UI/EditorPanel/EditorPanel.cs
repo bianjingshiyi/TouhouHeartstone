@@ -1,20 +1,6 @@
-﻿using System.Collections;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using TouhouCardEngine;
-using TouhouHeartstone;
-using System.Reflection;
 using Game;
-using TouhouHeartstone.Builtin;
-using System;
-using BJSYGameCore.UI;
-using System.IO.Compression;
-using System.IO;
-using MukioI18n;
-using NitoriNetwork.Common;
-using System.Threading.Tasks;
 using Controllers;
 
 namespace UI
@@ -28,7 +14,7 @@ namespace UI
 
         EditorCtrl EditorCtrl
         {
-            get 
+            get
             {
                 if (_EditorCtrl == null) _EditorCtrl = new EditorCtrl();
                 return _EditorCtrl;
@@ -57,7 +43,7 @@ namespace UI
         private void UpdateDeckList(Dictionary<string, CardPoolInfo> now)
         {
             fileList.clearItems();
-            foreach (var i in now.Values) 
+            foreach (var i in now.Values)
             {
                 FileItem item = fileList.addItem();
                 item.nameText.text = i.cardPoolName;

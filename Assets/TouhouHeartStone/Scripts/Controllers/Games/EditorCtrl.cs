@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using TouhouCardEngine;
@@ -10,7 +9,7 @@ using BJSYGameCore;
 
 namespace Controllers
 {
-    partial class EditorCtrl : IController<MainCtrl>
+    public partial class EditorCtrl : IController<MainCtrl>
     {
         /// <summary>
         /// 读取所有卡池文件中的卡池信息。

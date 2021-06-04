@@ -4,6 +4,7 @@ namespace Game
 {
     class StringTable
     {
+        #region 通用
         [TranslateMsg("所有按钮上通用的确认")]
         public const string CONFIRM = "确认";
         [TranslateMsg("所有按钮通用的是")]
@@ -20,5 +21,14 @@ namespace Game
         public const string HINT_TITLE = "提示";
         [TranslateMsg("在发现界面提示玩家选择一张卡牌")]
         public const string HINT_SELECT_A_CARD = "选择一张卡牌";
+        [TranslateMsg("所有按钮通用的删除")]
+        public const string DELETE = "删除";
+        #endregion
+        #region 编辑器
+        [TranslateMsg("编辑器错误提示")]
+        public const string EDITOR_ERROR_INVALID_TYPE_CONNECT = "相互连接的输入输出类型必须可以相互转化";
+        [TranslateMsg("编辑器错误提示")]
+        public const string EDITOR_ERROR_OUTPUT_CONNECT_INPUT = "值输出只能与值输入相互连接";
+        #endregion
     }
 }
