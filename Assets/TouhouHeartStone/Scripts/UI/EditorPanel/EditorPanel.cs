@@ -2,62 +2,52 @@
 using UnityEngine;
 using Game;
 using Controllers;
+using BJSYGameCore;
+using System.IO;
 
 namespace UI
 {
     public partial class EditorPanel
     {
+        //protected override void Awake()
+        //{
+        //    base.Awake();
+        //    backButtonBlack.asButton.onClick.AddListener(onBackBtnClick);
+        //}
 
-        LangManager lang => ui.getManager<LangManager>();
+        //void onBackBtnClick()
+        //{
+        //    Main main = GetComponentInParent<Main>();
+        //    main.display(main.MainMenu);
+        //}
 
-        private EditorCtrl _EditorCtrl;
+        //private void Start()
+        //{
+        //    UpdateDeckList(EditorCtrl.getCardPoolsInfoAsync().Result);
+        //}
+        //public void setImage(string imageResPath)
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+        //private void UpdateDeckList(Dictionary<string, CardPoolInfo> now)
+        //{
+        //    fileList.clearItems();
+        //    foreach (var i in now.Values)
+        //    {
+        //        FileItem item = fileList.addItem();
+        //        item.nameText.text = i.cardPoolName;
+        //        item.iconImage.sprite = await ui.getManager<THHResourceManager>().loadTexture(i.imageResPath, Path.GetDirectoryName(path));
+        //        //(Sprite)Resources.Load(i.imageResPath);
+        //        item.dateText.text = null;
+        //        item.onDeckRemove += OnFileItemRemove;
+        //    }
+        //}
 
-        EditorCtrl EditorCtrl
-        {
-            get
-            {
-                if (_EditorCtrl == null) _EditorCtrl = new EditorCtrl();
-                return _EditorCtrl;
-            }
-        }
+        //private void OnFileItemRemove(int id)
+        //{
+        //    //这里需要一个删除对应文件方法
 
-        public GameObject FileItem;
-
-        protected override void Awake()
-        {
-            base.Awake();
-            backButtonBlack.asButton.onClick.AddListener(onBackBtnClick);
-        }
-
-        void onBackBtnClick()
-        {
-            Main main = GetComponentInParent<Main>();
-            main.display(main.MainMenu);
-        }
-
-        private void Start()
-        {
-            UpdateDeckList(EditorCtrl.getCardPoolsInfoAsync().Result);
-        }
-
-        private void UpdateDeckList(Dictionary<string, CardPoolInfo> now)
-        {
-            fileList.clearItems();
-            foreach (var i in now.Values)
-            {
-                FileItem item = fileList.addItem();
-                item.nameText.text = i.cardPoolName;
-                item.iconImage.sprite = (Sprite)Resources.Load(i.imageResPath);
-                item.dateText.text = null;
-                item.onDeckRemove += OnFileItemRemove;
-            }
-        }
-
-        private void OnFileItemRemove(int id)
-        {
-            //这里需要一个删除对应文件方法
-
-            UpdateDeckList(EditorCtrl.getCardPoolsInfoAsync().Result);
-        }
+        //    UpdateDeckList(EditorCtrl.getCardPoolsInfoAsync().Result);
+        //}
     }
 }

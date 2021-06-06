@@ -11,6 +11,17 @@ namespace Controllers
 {
     public partial class EditorCtrl : IController<MainCtrl>
     {
+        public EditorCtrl(IAppManager app, MainCtrl main, EditorPanel compo)
+        {
+            this.app = app;
+            this.main = main;
+            _compo = compo;
+            _compo.onAckButtonClick += onClickBackButton;
+        }
+        public async void onStart()
+        {
+            UpdateDeckList(await getCardPoolsInfoAsync());
+        }
         /// <summary>
         /// 读取所有卡池文件中的卡池信息。
         /// </summary>
@@ -95,8 +106,33 @@ namespace Controllers
                 cardDefines.toJson()
             });
         }
+        private void UpdateDeckList(Dictionary<string, CardPoolInfo> now)
+        {
+            _compo.fileList.clearItems();
+            foreach (var i in now.Values)
+            {
+                FileItem item = _compo.fileList.addItem();
+                item.nameText.text = i.cardPoolName;
+                //item.iconImage.sprite = ;
+                item.dateText.text = null;
+                item.onDeckRemove += OnFileItemRemove;
+            }
+        }
+        #region UI回调
+        void onClickBackButton(EditorPanel ui)
+        {
+            Main main = ui.GetComponentInParent<Main>();
+            main.display(main.MainMenu);
+        }
+        private async void OnFileItemRemove(int id)
+        {
+            //这里需要一个删除对应文件方法
+            UpdateDeckList(await getCardPoolsInfoAsync());
+        }
+        #endregion
         public IAppManager app { get; }
         public MainCtrl main { get; }
+        EditorPanel _compo;
         const string DIRNAME = "Cards";
     }
 }

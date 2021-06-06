@@ -14,7 +14,5 @@ namespace UI
         {
             delectButtonIconGlass.asButton.onClick.AddListener(() => { onDeckRemove?.Invoke(id); });
         }
-
-
     }
 }
