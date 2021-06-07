@@ -7,6 +7,10 @@ using System.IO;
 
 namespace UI
 {
+    public partial class CardEditorPanel
+    {
+
+    }
     public partial class EditorPanel
     {
         //protected override void Awake()
