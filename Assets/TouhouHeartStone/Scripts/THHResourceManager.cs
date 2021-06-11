@@ -228,7 +228,7 @@ namespace BJSYGameCore
             try
             {
                 texture.LoadImage(bytes);
-            } 
+            }
             catch (ArgumentNullException)
             {
                 // 不知道为啥会炸，先来个dirtyfix再说

@@ -19,7 +19,8 @@ namespace Game
         public NetworkingManager network => getManager<NetworkingManager>();
         public GameManager game => getManager<GameManager>();
         public FileManager fileManager => new FileManager();
-        LangManager lang => getManager<LangManager>();
+        public LangManager lang => getManager<LangManager>();
+        public ILanguageManager langManager => getManager<LangManager>();
         MainCtrl _mainCtrl;
         [SerializeField]
         UnityEvent onLoadingFinish;

@@ -25,6 +25,14 @@ namespace Game
         public const string DELETE = "删除";
         #endregion
         #region 编辑器
+        [TranslateMsg("编辑器中动作节点图里输出节点的名字")]
+        public const string EDITOR_NODE_NAME_OUTPUT = "输出节点";
+        [TranslateMsg("编辑器中动作节点图里触发器节点的名字")]
+        public const string EDITOR_NODE_NAME_TRIGGER = "触发器";
+        [TranslateMsg("编辑器中目标检查器节点中目标类型编辑框的标注名称")]
+        public const string EDITOR_VALUE_NAME_TARGET_TYPE = "目标类型";
+        [TranslateMsg("编辑器中目标检查器节点中错误提示编辑框的标注名称")]
+        public const string EDITOR_VALUE_NAME_INVALID_MSG = "错误提示";
         [TranslateMsg("编辑器错误提示")]
         public const string EDITOR_ERROR_INVALID_TYPE_CONNECT = "相互连接的输入输出类型必须可以相互转化";
         [TranslateMsg("编辑器错误提示")]

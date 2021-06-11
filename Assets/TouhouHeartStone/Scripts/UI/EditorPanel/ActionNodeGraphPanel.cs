@@ -29,6 +29,18 @@ namespace UI
             throw new NotImplementedException();
         }
         /// <summary>
+        /// 在指定位置上创建一个触发器节点。
+        /// </summary>
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
+        /// <param name="eventName"></param>
+        /// <param name="targetCheckerCount"></param>
+        /// <returns></returns>
+        public ActionNodeItem createTriggerNode(float posX, float posY, string eventName, int targetCheckerCount)
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
         /// 将节点的指定输出连接到目标节点的输入上
         /// </summary>
         /// <param name="node"></param>
@@ -84,6 +96,10 @@ namespace UI
         {
             throw new NotImplementedException();
         }
+        public void setReturnButtonActive(bool value)
+        {
+            throw new NotImplementedException();
+        }
         /// <summary>
         /// 当点击背景，参数为点击的x坐标与y坐标。
         /// </summary>
@@ -108,9 +124,41 @@ namespace UI
         /// 当节点的常量值输入改变，参数为被改变的节点，常量值索引和改变的值
         /// </summary>
         public event Action<ActionNodeItem, int, object> onActionNodeValueChange;
+        /// <summary>
+        /// 当触发器节点的事件名称改变，参数为更改后的事件名称
+        /// </summary>
+        public event Action<string> onChangeTriggerEventName;
+        /// <summary>
+        /// 当点击触发器节点的编辑条件按钮
+        /// </summary>
+        public event Action onClickTriggerEditConditionButton;
+        /// <summary>
+        /// 当点击触发器节点的添加目标按钮
+        /// </summary>
+        public event Action onClickAddTargetCheckerButton;
+        /// <summary>
+        /// 当点击触发器节点的编辑目标按钮，参数为点击的按钮的索引
+        /// </summary>
+        public event Action<int> onClickEditTargetCheckerButton;
+        /// <summary>
+        /// 当点击触发器节点的删除目标按钮，参数为点击的按钮的索引
+        /// </summary>
+        public event Action<int> onClickRemoveTargetCheckerButton;
+        /// <summary>
+        /// 当点击返回之前编辑的动作图按钮
+        /// </summary>
+        public event Action onClickReturnButton;
     }
     partial class ActionNodeItem
     {
+        public void addTargetCheckerItem()
+        {
+            throw new NotImplementedException();
+        }
+        public void removeTargetCheckerItemAt(int index)
+        {
+            throw new NotImplementedException();
+        }
         /// <summary>
         /// 获取位置
         /// </summary>

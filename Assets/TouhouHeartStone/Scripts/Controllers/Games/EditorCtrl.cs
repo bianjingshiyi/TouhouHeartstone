@@ -9,24 +9,6 @@ using BJSYGameCore;
 
 namespace Controllers
 {
-    public partial class CardEditorCtrl : IController<MainCtrl>
-    {
-        public CardEditorCtrl(IAppManager app, MainCtrl main, CardEditorPanel compo)
-        {
-            this.app = app;
-            this.main = main;
-            _compo = compo;
-        }
-        /// <summary>
-        /// 打开一张卡片进行编辑
-        /// </summary>
-        public void displayCard(CardDefine cardDefine, CardSkinData cardSkin)
-        {
-        }
-        public IAppManager app { get; }
-        public MainCtrl main { get; }
-        CardEditorPanel _compo;
-    }
     public partial class EditorCtrl : IController<MainCtrl>
     {
         public EditorCtrl(IAppManager app, MainCtrl main, EditorPanel compo)

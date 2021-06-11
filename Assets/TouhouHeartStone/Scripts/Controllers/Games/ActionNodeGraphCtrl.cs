@@ -18,9 +18,7 @@ namespace Controllers
         {
             this.app = app;
             this.main = main;
-        }
-        public void init()
-        {
+            _compo = compo;
             _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly });
             _backgroundMenuOptions = _actionDefineDict.Keys.ToArray();
             _compo.onClickBackground += onClickBackground;
@@ -29,19 +27,127 @@ namespace Controllers
             _compo.onConnectNodes += onConnectNodes;
             _compo.onLongPressActionNode += onLongPressActionNode;
             _compo.onActionNodeValueChange += onActionNodeValueChange;
+            _compo.onChangeTriggerEventName += onChangeTriggerEventName;
+            _compo.onClickTriggerEditConditionButton += onClickTriggerEditConditionButton;
+            _compo.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
+            _compo.onClickEditTargetCheckerButton += onClickEditTargetCheckerButton;
+            _compo.onClickRemoveTargetCheckerButton += onClickRemoveTargetCheckerButton;
+            _compo.onClickReturnButton += onClickReturnButton;
         }
-        public void openActionGraph(string entryName, ActionNode actionNode, ActionNodeGraphInfo graphInfo)
+        /// <summary>
+        /// 打开一个没有事件参数且没有输出的动作节点
+        /// </summary>
+        /// <param name="entryName"></param>
+        /// <param name="actionNode"></param>
+        /// <param name="graphInfo"></param>
+        public void openActionGraph(string entryName, ActionNode actionNode, ActionNodeGraphInfo[] graphInfos)
+        {
+            _editObjectStack.Clear();
+            _graphInfos = graphInfos;
+            openActionGraph(entryName, actionNode);
+        }
+        /// <summary>
+        /// 打开一个触发器的动作节点图
+        /// </summary>
+        /// <param name="trigger"></param>
+        /// <param name="graphInfos"></param>
+        public void openTriggerGraph(TriggerGraph trigger, ActionNodeGraphInfo[] graphInfos)
+        {
+            _editObjectStack.Clear();
+            _graphInfos = graphInfos;
+            openTriggerGraph(trigger, graphInfos);
+        }
+        #endregion
+        #region 私有方法
+        void openActionGraph(string entryName, ActionNode actionNode)
         {
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
             _compo.clearGraph();
-            _entryNodeItem = _compo.createNode(graphInfo.entryInfo.posX, graphInfo.entryInfo.posY, entryName, new string[0], new ActionNodeValueInfo[0], new string[] { null });
-            _entryNextActionNode = actionNode;
+            ActionNodeGraphInfo graphInfo = _graphInfos.First(g => g.rootActionNodeId == actionNode.id);
+            _entryName = entryName;
+            _entryNodeItem = _compo.createNode(graphInfo.entryInfo.posX, graphInfo.entryInfo.posY, _entryName,
+                new string[0],
+                new ActionNodeValueInfo[0],
+                new string[] { string.Empty });
+            _rootActionNode = actionNode;
+            _valueRef = null;
+            _targetChecker = null;
+            _trigger = null;
             var actionNodeItem = createGraph4ActionNode(actionNode, graphInfo);
             _compo.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
         }
-        #endregion
-        #region 私有方法
+        /// <summary>
+        /// 打开一个有输出的值引用动作节点
+        /// </summary>
+        /// <param name="entryName"></param>
+        /// <param name="valueRef"></param>
+        /// <param name="graphInfo"></param>
+        void openValueRefGraph(ActionValueRef valueRef)
+        {
+            _actionNodeList.Clear();
+            _actionNodeItemList.Clear();
+            _compo.clearGraph();
+            _entryName = null;
+            _rootActionNode = null;
+            _valueRef = valueRef;
+            _targetChecker = null;
+            _trigger = null;
+            ActionNodeGraphInfo graphInfo = _graphInfos.First(g => g.rootActionNodeId == valueRef.action.id);
+            var actionNodeItem = createGraph4ActionNode(valueRef.action, graphInfo);
+            _outputNodeItem = _compo.createNode(graphInfo.outputInfo.posX, graphInfo.outputInfo.posY, app.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
+                new string[] { string.Empty },
+                new ActionNodeValueInfo[0],
+                new string[0]);
+            _compo.connectNode(actionNodeItem, valueRef.index + 1, _outputNodeItem, 0);
+        }
+        void openTargetCheckerGraph(TargetChecker targetChecker)
+        {
+            _actionNodeList.Clear();
+            _actionNodeItemList.Clear();
+            _compo.clearGraph();
+            _entryName = null;
+            _rootActionNode = null;
+            _valueRef = null;
+            _targetChecker = targetChecker;
+            _trigger = null;
+            ActionNodeGraphInfo graphInfo = _graphInfos.First(g => g.rootActionNodeId == targetChecker.condition.action.id);
+            var actionNodeItem = createGraph4ActionNode(targetChecker.condition.action, graphInfo);
+            _outputNodeItem = _compo.createNode(graphInfo.outputInfo.posX, graphInfo.outputInfo.posY, app.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
+                new string[] { string.Empty },
+                new ActionNodeValueInfo[]
+                {
+                    new ActionNodeValueInfo()
+                    {
+                        name = app.langManager.getString(StringTable.EDITOR_VALUE_NAME_TARGET_TYPE),
+                        type = ActionNodeValueType.text,
+                        value = _targetChecker.targetType
+                    },
+                    new ActionNodeValueInfo()
+                    {
+                        name = app.langManager.getString(StringTable.EDITOR_VALUE_NAME_INVALID_MSG),
+                        type = ActionNodeValueType.text,
+                        value = _targetChecker.invalidMsg
+                    }
+                },
+                new string[0]);
+            _compo.connectNode(actionNodeItem, valueRef.index + 1, _outputNodeItem, 0);
+        }
+        void openTriggerGraph(TriggerGraph trigger)
+        {
+            _actionNodeList.Clear();
+            _actionNodeItemList.Clear();
+            _compo.clearGraph();
+            _entryName = null;
+            _rootActionNode = null;
+            _valueRef = null;
+            _targetChecker = null;
+            _trigger = trigger;
+            ActionNodeGraphInfo graphInfo = _graphInfos.First(g => g.rootActionNodeId == trigger.action.id);
+            var actionNodeItem = createGraph4ActionNode(trigger.action, graphInfo);
+            _entryNodeItem = _compo.createTriggerNode(graphInfo.entryInfo.posX, graphInfo.entryInfo.posY, _trigger.eventName, _trigger.targetCheckerList.Count);
+            _compo.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
+        }
         /// <summary>
         /// 为动作节点以及其所有子节点创建动作节点图
         /// </summary>
@@ -112,6 +218,35 @@ namespace Controllers
             int index = _actionNodeItemList.IndexOf(actionNodeItem);
             return _actionNodeList[index];
         }
+        /// <summary>
+        /// 将当前正在编辑的对象入栈
+        /// </summary>
+        void pushCurEditObjectToStack()
+        {
+            if (_trigger != null)
+                _editObjectStack.Push(new DisplayInfo() { entryName = null, editObject = _trigger });
+            else if (_targetChecker != null)
+                _editObjectStack.Push(new DisplayInfo() { entryName = null, editObject = _targetChecker });
+            else if (_valueRef != null)
+                _editObjectStack.Push(new DisplayInfo() { entryName = null, editObject = _valueRef });
+            else
+                _editObjectStack.Push(new DisplayInfo() { entryName = _entryName, editObject = _rootActionNode });
+            _compo.setReturnButtonActive(true);
+        }
+        void popPrevEditObjectFromStackAndOpen()
+        {
+            DisplayInfo info = _editObjectStack.Pop();
+            if (_editObjectStack.Count < 1)
+                _compo.setReturnButtonActive(false);
+            if (info.editObject is TriggerGraph trigger)
+                openTriggerGraph(trigger);
+            else if (info.editObject is TargetChecker targetChecker)
+                openTargetCheckerGraph(targetChecker);
+            else if (info.editObject is ActionValueRef valueRef)
+                openValueRefGraph(valueRef);
+            else if (info.editObject is ActionNode actionNode)
+                openActionGraph(info.entryName, actionNode);
+        }
         string getActionNodeName(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点名称的翻译，但是暂时先不这么做。
@@ -120,7 +255,13 @@ namespace Controllers
         string[] getActionNodeInputNames(ActionDefine actionDefine)
         {
             //TODO:这里应该考虑动作节点输入的翻译，但是暂时先不这么做。
-            return actionDefine.inputs.Select(i => i.name).ToArray();
+            string[] inputNames = new string[actionDefine.inputs.Length + 1];
+            inputNames[0] = string.Empty;
+            for (int i = 0; i < actionDefine.inputs.Length; i++)
+            {
+                inputNames[i + 1] = actionDefine.inputs[i].name;
+            }
+            return inputNames;
         }
         ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
         {
@@ -243,17 +384,64 @@ namespace Controllers
         /// <param name="inputIndex"></param>
         void onConnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
         {
-            ActionNode outputActionNode = outputActionNodeItem != _entryNodeItem ? getActionNode(outputActionNodeItem) : null;
-            ActionNode inputActionNode = getActionNode(inputActionNodeItem);
-            if (outputActionNodeItem != _entryNodeItem)
+            if (outputActionNodeItem == _entryNodeItem)
             {
+                ActionNode inputActionNode = getActionNode(inputActionNodeItem);
+                //入口节点更加特殊，它只有一个分支需要检查
+                if (rootActionNode != null)
+                {
+                    rootActionNode = null;
+                    _compo.unconnectNode(_entryNodeItem, 0, getActionNodeItem(rootActionNode), 0);
+                }
+                //如果输入已经和其他节点输出连接了的话，先断开连接
+                ActionValueRef outputValueRef = inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
+                if (outputValueRef != null)
+                {
+                    var actionNode = outputValueRef.action;
+                    actionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
+                    var actionNodeItem = getActionNodeItem(actionNode);
+                    _compo.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
+                }
+                //检查合法性
+                //入口节点只有一个输出节点
+                if (outputIndex != 0 || inputIndex != 0)
+                {
+                    //值输出只能与值输入相互连接
+                    _compo.showErrorTip(app.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                    return;
+                }
+                rootActionNode = inputActionNode;
+            }
+            else if (inputActionNodeItem == _outputNodeItem)
+            {
+                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+                //出口节点也只有一个参数
+                if (rootActionNode != null)
+                {
+                    rootActionNode = null;
+                    _compo.unconnectNode(getActionNodeItem(rootActionNode), valueRef.index + 1, _outputNodeItem, 0);
+                }
+                //检查合法性
+                //输出值节点只有一个输出节点
+                if (outputIndex == 0)
+                {
+                    //值输出只能与值输入相互连接
+                    _compo.showErrorTip(app.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                    return;
+                }
+                rootActionNode = outputActionNode;
+                valueRef.index = outputIndex - 1;
+            }
+            else
+            {
+                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+                ActionNode inputActionNode = getActionNode(inputActionNodeItem);
                 //为了避免逻辑上的问题，目前节点图规定一个节点只能有一个输出。
                 //当你尝试将输出已经连接的节点连接到另外一个节点的时候，自动断开当前连接再连接到新的节点上。
                 for (int i = 0; i < _actionNodeList.Count; i++)
                 {
                     var actionNode = _actionNodeList[i];
                     //断开和分支动作的连接
-
                     int branchNodeIndex = Array.IndexOf(outputActionNode.branches, actionNode);
                     if (branchNodeIndex >= 0)
                     {
@@ -270,28 +458,15 @@ namespace Controllers
                         _compo.unconnectNode(outputActionNodeItem, actionNode.inputs[valueRefIndex].index, actionNodeItem, actionNode.branches.Length + valueRefIndex);
                     }
                 }
-            }
-            else
-            {
-                //入口节点更加特殊，它只有一个分支需要检查
-                if (_entryNextActionNode != null)
+                //如果输入已经和其他节点输出连接了的话，先断开连接
+                ActionValueRef outputValueRef = inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
+                if (outputValueRef != null)
                 {
-                    _entryNextActionNode = null;
-                    _compo.unconnectNode(_entryNodeItem, 0, getActionNodeItem(_entryNextActionNode), 0);
+                    var actionNode = outputValueRef.action;
+                    actionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
+                    var actionNodeItem = getActionNodeItem(actionNode);
+                    _compo.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
                 }
-            }
-            //如果输入已经和其他节点输出连接了的话，先断开连接
-            ActionValueRef outputValueRef = inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
-            if (outputValueRef != null)
-            {
-                var actionNode = outputValueRef.action;
-                actionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
-                var actionNodeItem = getActionNodeItem(actionNode);
-                _compo.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
-            }
-            //入口节点的链接方式和普通的节点不一样
-            if (outputActionNodeItem != _entryNodeItem)
-            {
                 //检查合法性
                 var inputActionDefine = _actionDefineDict[inputActionNode.defineName];
                 var inputValueDefine = inputActionDefine.inputs[inputIndex - 1];
@@ -300,28 +475,16 @@ namespace Controllers
                 if ((outputIndex < outputActionNode.branches.Length) != (inputIndex == 0))
                 {
                     //值输出只能与值输入相互连接
-                    _compo.showErrorTip(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT);
+                    _compo.showErrorTip(app.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
                     return;
                 }
                 if (!inputValueDefine.type.IsAssignableFrom(outputValueDefine.type) && !outputValueDefine.type.IsAssignableFrom(inputValueDefine.type))
                 {
                     //相互连接的输入输出类型必须可以相互转化
-                    _compo.showErrorTip(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT);
+                    _compo.showErrorTip(app.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
                     return;
                 }
                 inputActionNode.inputs[inputIndex - 1] = new ActionValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length);
-            }
-            else
-            {
-                //检查合法性
-                //入口节点只有一个输出节点
-                if (outputIndex != 0 || inputIndex != 0)
-                {
-                    //值输出只能与值输入相互连接
-                    _compo.showErrorTip(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT);
-                    return;
-                }
-                _entryNextActionNode = inputActionNode;
             }
             _compo.connectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
         }
@@ -334,11 +497,14 @@ namespace Controllers
             //入口节点不能通过长按编辑
             if (actionNodeItem == _entryNodeItem)
                 return;
+            //出口节点也不行
+            if (actionNodeItem == _outputNodeItem)
+                return;
             _curActionNode = getActionNode(actionNodeItem);
             actionNodeItem.getPos(out float posX, out float posY);
             _compo.openMenu(posX, posY, new string[]
             {
-                StringTable.DELETE,//删除
+                app.langManager.getString(StringTable.DELETE),//删除
             });
         }
         /// <summary>
@@ -349,8 +515,67 @@ namespace Controllers
         /// <param name="value"></param>
         void onActionNodeValueChange(ActionNodeItem actionNodeItem, int constIndex, object value)
         {
-            var actionNode = getActionNode(actionNodeItem);
-            actionNode.consts[constIndex] = value;
+            if (_targetChecker != null && actionNodeItem == _outputNodeItem)
+            {
+                if (constIndex == 0)
+                    _targetChecker.targetType = (string)value;
+                else if (constIndex == 1)
+                    _targetChecker.invalidMsg = (string)value;
+            }
+            else
+            {
+                var actionNode = getActionNode(actionNodeItem);
+                actionNode.consts[constIndex] = value;
+            }
+        }
+        /// <summary>
+        /// 当用户更改触发器的事件名称，将事件名称改为更改值
+        /// </summary>
+        /// <param name="eventName"></param>
+        void onChangeTriggerEventName(string eventName)
+        {
+            _trigger.eventName = eventName;
+        }
+        /// <summary>
+        /// 当用户点击编辑条件按钮，将当前的编辑信息入栈，打开条件编辑
+        /// </summary>
+        void onClickTriggerEditConditionButton()
+        {
+            pushCurEditObjectToStack();
+            openValueRefGraph(_trigger.condition);
+        }
+        /// <summary>
+        /// 当用户点击新增目标按钮，为当前触发器新建目标检查器，然后在UI列表中新增项目
+        /// </summary>
+        void onClickAddTargetCheckerButton()
+        {
+            _trigger.targetCheckerList.Add(new TargetChecker(string.Empty, new ActionValueRef(null, 0), string.Empty));
+            _entryNodeItem.addTargetCheckerItem();
+        }
+        /// <summary>
+        /// 当用户点击编辑目标按钮，将当前的编辑信息入栈，打开目标编辑
+        /// </summary>
+        /// <param name="index"></param>
+        void onClickEditTargetCheckerButton(int index)
+        {
+            pushCurEditObjectToStack();
+            openTargetCheckerGraph(_trigger.targetCheckerList[index]);
+        }
+        /// <summary>
+        /// 当用户点击删除目标按钮，为当前触发器删除目标检查器，然后在UI列表中也删除对应索引项目
+        /// </summary>
+        /// <param name="index"></param>
+        void onClickRemoveTargetCheckerButton(int index)
+        {
+            _trigger.targetCheckerList.RemoveAt(index);
+            _entryNodeItem.removeTargetCheckerItemAt(index);
+        }
+        /// <summary>
+        /// 当用户点击返回按钮，出栈之前的显示信息并重新打开之前的编辑界面
+        /// </summary>
+        void onClickReturnButton()
+        {
+            popPrevEditObjectFromStackAndOpen();
         }
         #endregion
         #endregion
@@ -361,16 +586,59 @@ namespace Controllers
         string[] _backgroundMenuOptions;
         float _curPosX;
         float _curPosY;
-        List<ActionNode> _actionNodeList = new List<ActionNode>();
-        List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
+        readonly List<ActionNode> _actionNodeList = new List<ActionNode>();
+        readonly List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
+        ActionNodeGraphInfo[] _graphInfos;
+        string _entryName;
         ActionNodeItem _entryNodeItem;
-        ActionNode _entryNextActionNode;
+        ActionNodeItem _outputNodeItem;
+        ActionNode rootActionNode
+        {
+            get
+            {
+                if (_trigger != null)
+                    return _trigger.action;
+                if (valueRef != null)
+                    return valueRef.action;
+                return _rootActionNode;
+            }
+            set
+            {
+                if (_trigger != null)
+                    _trigger.action = value;
+                else if (valueRef != null)
+                    valueRef.action = value;
+                else
+                    _rootActionNode = value;
+            }
+        }
+        ActionNode _rootActionNode;
+        ActionValueRef valueRef
+        {
+            get
+            {
+                if (_targetChecker != null)
+                    return _targetChecker.condition;
+                return _valueRef;
+            }
+        }
+        ActionValueRef _valueRef;
+        TargetChecker _targetChecker;
+        TriggerGraph _trigger;
         ActionNode _curActionNode;
+        readonly Stack<DisplayInfo> _editObjectStack = new Stack<DisplayInfo>();
+        class DisplayInfo
+        {
+            public string entryName;
+            public object editObject;
+        }
     }
     [Serializable]
     class ActionNodeGraphInfo
     {
+        public int rootActionNodeId;
         public ActionNodeGraphNodeInfo entryInfo;
+        public ActionNodeGraphNodeInfo outputInfo;
         public Dictionary<int, ActionNodeGraphNodeInfo> actionInfoDict;
     }
     [Serializable]

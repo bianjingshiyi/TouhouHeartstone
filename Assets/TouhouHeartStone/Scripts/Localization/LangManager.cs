@@ -12,9 +12,28 @@ namespace Game
     /// <summary>
     /// 语言管理器
     /// </summary>
-    public partial class LangManager : Manager, ITranslationProvider
+    public partial class LangManager : Manager, ITranslationProvider, ILanguageManager
     {
         #region 公共成员
+        public string[] getLanguages()
+        {
+            return langs;
+        }
+
+        public string getDefaultLanguage()
+        {
+            return defaultLang;
+        }
+
+        public string getLanguage()
+        {
+            return CurrentCulture.Name;
+        }
+
+        public void setLanguage(string cultureName)
+        {
+            CurrentCulture = new CultureInfo(cultureName);
+        }
         /// <summary>
         /// 加载初始语言
         /// </summary>
@@ -67,7 +86,6 @@ namespace Game
         /// </summary>
         [SerializeField]
         string folderPath = "i18n";
-
         /// <summary>
         /// 载入的语言
         /// </summary>
@@ -133,10 +151,8 @@ namespace Game
                     i18n.AddEmpty(defaultCulture);
                     continue;
                 }
-
                 loadLang(lang);
             }
-
         }
 
         private void loadLang(string lang)
@@ -197,7 +213,6 @@ namespace Game
         {
             return i18n._pn(context, text, pluralText, n, args);
         }
-
         public event Action OnLanguageChange
         {
             add
