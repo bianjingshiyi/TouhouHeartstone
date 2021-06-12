@@ -10,15 +10,13 @@
 
 namespace UI
 {
-    using UnityEngine;
-    using BJSYGameCore.UI;
-    using BJSYGameCore.AutoCompo;
     using System;
+    using UnityEngine;
     using UnityEngine.UI;
-    using UI;
+    using BJSYGameCore.UI;
     using BJSYGameCore;
 
-    public partial class EditorPanel : UIObject
+    public partial class EditorPanel:UIObject
     {
         public void autoInit()
         {
@@ -40,6 +38,14 @@ namespace UI
             _dropdownTypeDropdownLight = transform.Find(PATH_DROPDOWNTYPEDROPDOWNLIGHT).GetComponent<DropdownLight>();
             _backButtonBlack = transform.Find(PATH_BACKBUTTONBLACK).GetComponent<ButtonBlack>();
             _fileList = transform.Find(PATH_FILELIST).GetComponent<FileList>();
+            _buildCardList = transform.Find(PATH_BUILDCARDLIST).GetComponent<BuildCardList>();
+            _buildDeckList = transform.Find(PATH_BUILDDECKLIST).GetComponent<BuildDeckList>();
+            _cardPoolListViewImage = transform.Find(PATH_CARDPOOLLISTVIEWIMAGE).GetComponent<Image>();
+            _backButtonBlackIcon = transform.Find(PATH_BACKBUTTONBLACKICON).GetComponent<ButtonBlackIcon>();
+            _saveButtonBlackIcon = transform.Find(PATH_SAVEBUTTONBLACKICON).GetComponent<ButtonBlackIcon>();
+            _deleteButtonIconGlass = transform.Find(PATH_DELETEBUTTONICONGLASS).GetComponent<ButtonIconGlass>();
+            _text = transform.Find(PATH_TEXT).GetComponent<Text>();
+            _filterPanel = transform.Find(PATH_FILTERPANEL).GetComponent<FilterPanel>();
         }
         public void autoClear()
         {
@@ -264,6 +270,110 @@ namespace UI
                     _fileList = transform.Find(PATH_FILELIST).GetComponent<FileList>();
                 }
                 return _fileList;
+            }
+        }
+        public BuildCardList _buildCardList;
+        public const string PATH_BUILDCARDLIST = "CardListPanel/CardPoolScrollView/Viewport/BuildCardList";
+        public BuildCardList buildCardList
+        {
+            get
+            {
+                if ((_buildCardList == null))
+                {
+                    _buildCardList = transform.Find(PATH_BUILDCARDLIST).GetComponent<BuildCardList>();
+                }
+                return _buildCardList;
+            }
+        }
+        public BuildDeckList _buildDeckList;
+        public const string PATH_BUILDDECKLIST = "CardPoolListPanel/CardPoolEditView/DeckView/Viewport/BuildDeckList";
+        public BuildDeckList buildDeckList
+        {
+            get
+            {
+                if ((_buildDeckList == null))
+                {
+                    _buildDeckList = transform.Find(PATH_BUILDDECKLIST).GetComponent<BuildDeckList>();
+                }
+                return _buildDeckList;
+            }
+        }
+        public Image _cardPoolListViewImage;
+        public const string PATH_CARDPOOLLISTVIEWIMAGE = "CardPoolListPanel/CardPoolListView";
+        public Image cardPoolListViewImage
+        {
+            get
+            {
+                if ((_cardPoolListViewImage == null))
+                {
+                    _cardPoolListViewImage = transform.Find(PATH_CARDPOOLLISTVIEWIMAGE).GetComponent<Image>();
+                }
+                return _cardPoolListViewImage;
+            }
+        }
+        public ButtonBlackIcon _backButtonBlackIcon;
+        public const string PATH_BACKBUTTONBLACKICON = "CardPoolListPanel/CardPoolEditView/Upper/Back";
+        public ButtonBlackIcon backButtonBlackIcon
+        {
+            get
+            {
+                if ((_backButtonBlackIcon == null))
+                {
+                    _backButtonBlackIcon = transform.Find(PATH_BACKBUTTONBLACKICON).GetComponent<ButtonBlackIcon>();
+                }
+                return _backButtonBlackIcon;
+            }
+        }
+        public ButtonBlackIcon _saveButtonBlackIcon;
+        public const string PATH_SAVEBUTTONBLACKICON = "CardPoolListPanel/CardPoolEditView/Upper/Save";
+        public ButtonBlackIcon saveButtonBlackIcon
+        {
+            get
+            {
+                if ((_saveButtonBlackIcon == null))
+                {
+                    _saveButtonBlackIcon = transform.Find(PATH_SAVEBUTTONBLACKICON).GetComponent<ButtonBlackIcon>();
+                }
+                return _saveButtonBlackIcon;
+            }
+        }
+        public ButtonIconGlass _deleteButtonIconGlass;
+        public const string PATH_DELETEBUTTONICONGLASS = "CardPoolListPanel/CardPoolEditView/Upper/EditingDeck/ImageMask/Delete";
+        public ButtonIconGlass deleteButtonIconGlass
+        {
+            get
+            {
+                if ((_deleteButtonIconGlass == null))
+                {
+                    _deleteButtonIconGlass = transform.Find(PATH_DELETEBUTTONICONGLASS).GetComponent<ButtonIconGlass>();
+                }
+                return _deleteButtonIconGlass;
+            }
+        }
+        public Text _text;
+        public const string PATH_TEXT = "CardPoolListPanel/CardPoolEditView/Upper/EditingDeck/ImageMask/DeckName/Text";
+        public Text text
+        {
+            get
+            {
+                if ((_text == null))
+                {
+                    _text = transform.Find(PATH_TEXT).GetComponent<Text>();
+                }
+                return _text;
+            }
+        }
+        public FilterPanel _filterPanel;
+        public const string PATH_FILTERPANEL = "CardListPanel/FilterPanel";
+        public FilterPanel filterPanel
+        {
+            get
+            {
+                if ((_filterPanel == null))
+                {
+                    _filterPanel = transform.Find(PATH_FILTERPANEL).GetComponent<FilterPanel>();
+                }
+                return _filterPanel;
             }
         }
     }

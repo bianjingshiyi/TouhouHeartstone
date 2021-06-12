@@ -10,8 +10,14 @@ namespace UI
         public Action<int, string> onDeckRename;
         public Action onDeckAdd;
 
+
+        public Action<string> onFileRemove;
+        public Action<string> onFileSelect;
+
+        string key;
         int id;
         public int ID => id;
+        public string KEY => key;
 
         partial void onAwake()
         {
@@ -19,12 +25,23 @@ namespace UI
             NameInputField.onEndEdit.AddListener((s) => { onDeckRename?.Invoke(id, s); });
             DeleteButtonIconGlass.asButton.onClick.AddListener(() => { onDeckRemove?.Invoke(id); });
             AddButtonBlack.asButton.onClick.AddListener(() => { onDeckAdd?.Invoke(); });
+
+            DeleteButtonIconGlass.asButton.onClick.AddListener(() => onFileRemove?.Invoke(key));
+            HeadImageButton.onClick.AddListener(() => onFileSelect?.Invoke(key));
         }
 
         public void SetContent(int id, string name, Sprite img)
         {
             this.id = id;
 
+            HeadImageButton.image.sprite = img;
+            NameInputField.text = name;
+            Text.text = name;
+        }
+
+        public void SetContent(string key, string name, Sprite img)
+        {
+            this.key = key;
             HeadImageButton.image.sprite = img;
             NameInputField.text = name;
             Text.text = name;

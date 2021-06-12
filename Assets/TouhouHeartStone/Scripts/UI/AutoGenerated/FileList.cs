@@ -10,26 +10,39 @@
 
 namespace UI
 {
-    using System;
-    using UnityEngine;
-    using UnityEngine.UI;
     using BJSYGameCore.UI;
-    using BJSYGameCore;
+    using UnityEngine.UI;
+    using UnityEngine;
+    using System;
     using UI;
+    using BJSYGameCore;
     
-    public partial class FileList : UIList<FileItem>
+    public partial class FileList : UIList<DeckListItem>
     {
         public void autoInit()
         {
+            _deckListItem = transform.Find(PATH_DECKLISTITEM).GetComponent<DeckListItem>();
             _asVerticalLayoutGroup = transform.Find(PATH_ASVERTICALLAYOUTGROUP).GetComponent<VerticalLayoutGroup>();
-            _fileItem = transform.Find(PATH_FILEITEM).GetComponent<FileItem>();
         }
 
-        protected override FileItem getDefaultItem()
+        protected override DeckListItem getDefaultItem()
         {
-            return fileItem;
+            return this.transform.Find("DeckListItem").GetComponent<DeckListItem>();
         }
 
+        public DeckListItem _deckListItem;
+        public const string PATH_DECKLISTITEM = "DeckListItem";
+        public DeckListItem deckListItem
+        {
+            get
+            {
+                if ((_deckListItem == null))
+                {
+                    _deckListItem = transform.Find(PATH_DECKLISTITEM).GetComponent<DeckListItem>();
+                }
+                return _deckListItem;
+            }
+        }
         public VerticalLayoutGroup _asVerticalLayoutGroup;
         public const string PATH_ASVERTICALLAYOUTGROUP = "";
         public VerticalLayoutGroup asVerticalLayoutGroup
@@ -41,19 +54,6 @@ namespace UI
                     _asVerticalLayoutGroup = transform.Find(PATH_ASVERTICALLAYOUTGROUP).GetComponent<VerticalLayoutGroup>();
                 }
                 return _asVerticalLayoutGroup;
-            }
-        }
-        public FileItem _fileItem;
-        public const string PATH_FILEITEM = "FileItem";
-        public FileItem fileItem
-        {
-            get
-            {
-                if ((_fileItem == null))
-                {
-                    _fileItem = transform.Find(PATH_FILEITEM).GetComponent<FileItem>();
-                }
-                return _fileItem;
             }
         }
     }

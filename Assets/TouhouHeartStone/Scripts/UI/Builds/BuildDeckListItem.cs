@@ -23,6 +23,8 @@ namespace UI
         float _dragThreshold = 50f;
         [SerializeField]
         bool _isDragging = false;
+
+        public bool DraggingAble = true;
         public CardDefine card { get; private set; }
         [SerializeField]
         int _count;
@@ -37,9 +39,12 @@ namespace UI
         }
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
-            _dragStartPosition = eventData.position;
-            _isDragging = false;
-            GetComponentInParent<ScrollRect>()?.SendMessage("OnBeginDrag", eventData, SendMessageOptions.DontRequireReceiver);
+            if (DraggingAble)
+            {
+                _dragStartPosition = eventData.position;
+                _isDragging = false;
+                GetComponentInParent<ScrollRect>()?.SendMessage("OnBeginDrag", eventData, SendMessageOptions.DontRequireReceiver);
+            }
         }
 
         Vector2 savedSizeDelta = Vector2.zero;
@@ -58,54 +63,66 @@ namespace UI
 
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
-            var delta = _dragStartPosition - eventData.position;
-            if (Math.Abs(delta.x) > _dragThreshold && Math.Abs(delta.x) > Math.Abs(delta.y))
+            if (DraggingAble)
             {
-                if (!_isDragging)
+                var delta = _dragStartPosition - eventData.position;
+                if (Math.Abs(delta.x) > _dragThreshold && Math.Abs(delta.x) > Math.Abs(delta.y))
                 {
-                    count--;
-                    //从列表中隐藏
-                    if (count < 1)
+                    if (!_isDragging)
                     {
-                        getChild("Root").hide();
-                        savedSizeDelta = rectTransform.sizeDelta;
-                        rectTransform.sizeDelta = Vector2.zero;
+                        count--;
+                        //从列表中隐藏
+                        if (count < 1)
+                        {
+                            getChild("Root").hide();
+                            savedSizeDelta = rectTransform.sizeDelta;
+                            rectTransform.sizeDelta = Vector2.zero;
+                        }
                     }
+                    _isDragging = true;
                 }
-                _isDragging = true;
-            }
-            if (_isDragging)
-            {
-                Build build = GetComponentInParent<Build>();
-                build.onDragDeckItem(this, eventData);
-            }
-            else
-            {
-                GetComponentInParent<ScrollRect>()?.SendMessage("OnDrag", eventData, SendMessageOptions.DontRequireReceiver);
+                if (_isDragging)
+                {
+                    Build build = GetComponentInParent<Build>();
+                    build.onDragDeckItem(this, eventData);
+                }
+                else
+                {
+                    GetComponentInParent<ScrollRect>()?.SendMessage("OnDrag", eventData, SendMessageOptions.DontRequireReceiver);
+                }
             }
         }
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
-            if (_isDragging)
+            if (DraggingAble)
             {
-                //结束拖拽
-                Build build = GetComponentInParent<Build>();
-                build.onReleaseDeckItem(this, eventData);
+                if (_isDragging)
+                {
+                    //结束拖拽
+                    Build build = GetComponentInParent<Build>();
+                    build.onReleaseDeckItem(this, eventData);
+                }
+                //gameObject.SetActive(true);
+                GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
             }
-            //gameObject.SetActive(true);
-            GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
         }
 
         void ISelectHandler.OnSelect(BaseEventData eventData)
         {
-            Build build = GetComponentInParent<Build>();
-            build.DeckItemSelect(this);
+            if (DraggingAble)
+            {
+                Build build = GetComponentInParent<Build>();
+                build.DeckItemSelect(this);
+            }
         }
 
         void IDeselectHandler.OnDeselect(BaseEventData eventData)
         {
-            Build build = GetComponentInParent<Build>();
-            build.DeckItemDeselect(this);
+            if (DraggingAble)
+            {
+                Build build = GetComponentInParent<Build>();
+                build.DeckItemDeselect(this);
+            }
         }
     }
 }
