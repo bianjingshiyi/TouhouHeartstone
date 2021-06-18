@@ -6,7 +6,6 @@ using TouhouHeartstone;
 using UI;
 using BJSYGameCore;
 using System.Reflection;
-using MukioI18n;
 using Game;
 
 namespace Controllers

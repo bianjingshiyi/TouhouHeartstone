@@ -16,15 +16,15 @@ namespace UI
     using BJSYGameCore.UI;
     using BJSYGameCore;
 
-    public partial class EditorPanel:UIObject
+    public partial class EditorPanel : UIObject
     {
         public void autoInit()
         {
             _deleteButton = transform.Find(PATH_DELETEBUTTON).GetComponent<Button>();
-            _deleteButton.onClick.AddListener(EleteButtonClickCallback);
+            _deleteButton.onClick.AddListener(deleteButtonClickCallback);
             _buildItemBuildDeckListItem = transform.Find(PATH_BUILDITEMBUILDDECKLISTITEM).GetComponent<BuildDeckListItem>();
             _backButton = transform.Find(PATH_BACKBUTTON).GetComponent<Button>();
-            _backButton.onClick.AddListener(AckButtonClickCallback);
+            _backButton.onClick.AddListener(backButtonClickCallback);
             _headImageButton = transform.Find(PATH_HEADIMAGEBUTTON).GetComponent<Button>();
             _headImageButton.onClick.AddListener(EadImageButtonClickCallback);
             _headImage = transform.Find(PATH_HEADIMAGE).GetComponent<Image>();
@@ -49,8 +49,8 @@ namespace UI
         }
         public void autoClear()
         {
-            _deleteButton.onClick.RemoveListener(EleteButtonClickCallback);
-            _backButton.onClick.RemoveListener(AckButtonClickCallback);
+            _deleteButton.onClick.RemoveListener(deleteButtonClickCallback);
+            _backButton.onClick.RemoveListener(backButtonClickCallback);
             _headImageButton.onClick.RemoveListener(EadImageButtonClickCallback);
         }
         public Button _deleteButton;
@@ -66,12 +66,12 @@ namespace UI
                 return _deleteButton;
             }
         }
-        public event Action<EditorPanel> onEleteButtonClick;
-        private void EleteButtonClickCallback()
+        public event Action<EditorPanel> onDeleteButtonClick;
+        private void deleteButtonClickCallback()
         {
-            if ((onEleteButtonClick != null))
+            if ((onDeleteButtonClick != null))
             {
-                onEleteButtonClick(this);
+                onDeleteButtonClick(this);
             }
         }
         public BuildDeckListItem _buildItemBuildDeckListItem;
@@ -100,12 +100,12 @@ namespace UI
                 return _backButton;
             }
         }
-        public event Action<EditorPanel> onAckButtonClick;
-        private void AckButtonClickCallback()
+        public event Action<EditorPanel> onBackButtonClick;
+        private void backButtonClickCallback()
         {
-            if ((onAckButtonClick != null))
+            if ((onBackButtonClick != null))
             {
-                onAckButtonClick(this);
+                onBackButtonClick(this);
             }
         }
         public Button _headImageButton;

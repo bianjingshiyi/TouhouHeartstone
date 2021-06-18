@@ -20,80 +20,41 @@ namespace UI
 {
     partial class Build
     {
-        CardManager cm => ui.getManager<CardManager>();
-        DeckManager dm => ui.getManager<DeckManager>();
-
-        LangManager lang => ui.getManager<LangManager>();
-
-        const string exportStringHeader = "# 醉梦传说卡组";
-
-        /// <summary>
-        /// 当前正在编辑的卡组ID
-        /// </summary>
-        int currentDeckID = 0;
-
-        /// <summary>
-        /// 当前正在编辑的卡组的Master卡的ID
-        /// </summary>
-        int currentEditingDeckMasterID = 0;
-
-        /// <summary>
-        /// 当前正在编辑的卡组的卡片
-        /// </summary>
-        List<int> currentDeckCards { get; set; } = new List<int>();
-
-        /// <summary>
-        /// 当前卡组是否修改
-        /// </summary>
-        bool deckChanged { get; set; } = false;
-
-        [TranslateMsg]
-        const string PILE_NOT_SAVE = "卡组尚未保存，退出后现有变更将丢失。\n是否退出？";
-
-        void onBackBtnClick()
+        #region 公有方法
+        #endregion
+        #region 私有方法
+        partial void onAwake()
         {
-            Main main = GetComponentInParent<Main>();
+            BackButtonBlack.asButton.onClick.AddListener(onBackBtnClick);
 
-            if (deckChanged)
-            {
-                UIDialog.ShowQuestion(lang._(StringTable.HINT_TITLE), lang._(PILE_NOT_SAVE), () =>
-                {
-                    main.display(main.MainMenu);
-                });
-            }
-            else
-            {
-                main.display(main.MainMenu);
-            }
-        }
+            FilterPanel.onFilterConditionChange += loadCardList;
+            FilterPanel.onSortChange += onSortChange;
 
-        [TranslateMsg]
-        const string PILE_NOT_COMPLETE = "当前卡组不完整，无法在游戏中使用。\n是否要保存？";
+            EditingDeckDeckListItem.onDeckRename += onDeckRename;
+            EditingDeckDeckListItem.SetMode(DeckListItem.Mode.DeckTitle);
 
-        /// <summary>
-        /// 保存卡组按下
-        /// </summary>
-        void onSaveDeckClick()
-        {
-            // 卡组保存
-            if (BuildDeckList.Select(i => i.count).Sum() < 30)
+            SaveButtonBlackIcon.asButton.onClick.AddListener(onSaveDeckClick);
+            ExportButtonBlackIcon.asButton.onClick.AddListener(onExportDeckClick);
+            ImportButtonBlackIcon.asButton.onClick.AddListener(tryImportDeck);
+            BackButtonBlackIcon.asButton.onClick.AddListener(() =>
             {
-                UIDialog.ShowQuestion(lang._(StringTable.HINT_TITLE), lang._(PILE_NOT_COMPLETE), () =>
-                {
-                    saveToDeck(currentDeckID);
-                    uiModeSwitch(true);
-                });
-            }
-            else
-            {
-                saveToDeck(currentDeckID);
                 uiModeSwitch(true);
-            }
+            });
+
+            UploadBtn.onClick.AddListener(onUploadDeckClick);
+            DownloadBtn.onClick.AddListener(onDownloadDeckClick);
+
+            MasterCardSelection.OnSelect += onMasterSelect;
+
+            HintMessageText.gameObject.SetActive(false);
+            LoadingImg.SetActive(false);
+            // UIDialog.gameObject.SetActive(false);
         }
-
-        [TranslateMsg]
-        const string PILE_EXPORTED = "卡组已导出到剪贴板";
-
+        private void OnEnable()
+        {
+            MasterCardSelection.hide();
+            uiModeSwitch(true);
+        }
         /// <summary>
         /// 导出卡组
         /// </summary>
@@ -111,25 +72,6 @@ namespace UI
 
             UIDialog.ShowConfirm(lang._(StringTable.HINT_TITLE), lang._(PILE_EXPORTED), null);
         }
-
-        [TranslateMsg]
-        const string NO_PILE_AVALIABLE = "剪贴板中没有可导入的卡组";
-
-        [TranslateMsg]
-        const string ERROR_TITLE = "错误";
-
-        [TranslateMsg]
-        const string CARD_NOT_EXISTS = "ID为{0}的卡不存在";
-
-        [TranslateMsg]
-        const string PILE_CODE_INCOMPLETE = "卡组代码不完整";
-
-        [TranslateMsg]
-        const string PILE_CODE_CORRUPTED = "卡组数据已损坏";
-
-        [TranslateMsg]
-        const string PILE_IMPORT_ERROR = "导入错误\n{0}";
-
         void tryImportDeck()
         {
             // 解析数据
@@ -166,7 +108,7 @@ namespace UI
                 {
                     dm.AddCard(deckID, cards[i]);
                 }
-                
+
                 // 进入编辑模式
                 reloadDeckList();
                 deckEnterEditMode((int)deckID);
@@ -185,72 +127,95 @@ namespace UI
                 Debug.LogWarning(e);
             }
         }
-
-        [TranslateMsg]
-        const string PILE_NOT_COMPLETE_EXPORT = "当前卡组不完整，无法在游戏中使用。\n是否要导出？";
-
         /// <summary>
-        /// 导出当前卡组
+        /// 保存到卡组中
         /// </summary>
-        void onExportDeckClick()
+        /// <param name="id"></param>
+        private void saveToDeck(int id)
         {
-            // 卡组保存
-            if (currentDeckCards.Count < 30)
+            dm.ClearDeck(id);
+            foreach (var card in currentDeckCards)
             {
-                UIDialog.ShowQuestion(lang._(StringTable.HINT_TITLE), lang._(PILE_NOT_COMPLETE_EXPORT), () =>
+                dm.AddCard(id, card);
+            }
+
+            // 更新Mark
+            reloadDeckList();
+        }
+        /// <summary>
+        /// 比较方法
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        int sortCompareMethod(BuildCardViewData a, BuildCardViewData b)
+        {
+            return FilterPanel.sortCompareMethod(a.define, b.define);
+        }
+        /// <summary>
+        /// 重载当前卡组的列表
+        /// </summary>
+        void reloadDeckList()
+        {
+            var decks = dm.GetDecks();
+
+            DeckList.clearItems();
+
+            foreach (var deck in decks)
+            {
+                Sprite spr = cm.getSkin(deck.MasterID)?.image;
+
+                var item = DeckList.addItem();
+                item.SetContent((int)deck.ID, deck.Name, spr);
+                item.SetMode(DeckListItem.Mode.DeckListItem);
+                item.SetSelectable(true);
+                item.SetWarning(dm.GetDeckCards(deck.ID).Count < 30);
+
+                item.onDeckSelect += deckEnterEditMode;
+                item.onDeckRemove += onDeckRemove;
+            }
+
+            var addBtn = DeckList.addItem();
+            addBtn.SetMode(DeckListItem.Mode.AddDeck);
+            addBtn.onDeckAdd += onDeckAdd;
+        }
+        #region UI回调
+        void onBackBtnClick()
+        {
+            Main main = GetComponentInParent<Main>();
+
+            if (deckChanged)
+            {
+                UIDialog.ShowQuestion(lang._(StringTable.HINT_TITLE), lang._(PILE_NOT_SAVE), () =>
                 {
-                    exportDeck();
+                    main.display(main.MainMenu);
                 });
             }
             else
             {
-                exportDeck();
+                main.display(main.MainMenu);
             }
         }
-
-        partial void onAwake()
+        /// <summary>
+        /// 保存卡组按下
+        /// </summary>
+        void onSaveDeckClick()
         {
-            BackButtonBlack.asButton.onClick.AddListener(onBackBtnClick);
-
-            FilterPanel.onFilterConditionChange += loadCardList;
-            FilterPanel.onSortChange += onSortChange;
-
-            EditingDeckDeckListItem.onDeckRename += onDeckRename;
-            EditingDeckDeckListItem.SetMode(DeckListItem.Mode.DeckTitle);
-
-            SaveButtonBlackIcon.asButton.onClick.AddListener(onSaveDeckClick);
-            ExportButtonBlackIcon.asButton.onClick.AddListener(onExportDeckClick);
-            ImportButtonBlackIcon.asButton.onClick.AddListener(tryImportDeck);
-            BackButtonBlackIcon.asButton.onClick.AddListener(() =>
+            // 卡组保存
+            if (BuildDeckList.Select(i => i.count).Sum() < 30)
             {
+                UIDialog.ShowQuestion(lang._(StringTable.HINT_TITLE), lang._(PILE_NOT_COMPLETE), () =>
+                {
+                    saveToDeck(currentDeckID);
+                    uiModeSwitch(true);
+                });
+            }
+            else
+            {
+                saveToDeck(currentDeckID);
                 uiModeSwitch(true);
-            });
-
-            UploadBtn.onClick.AddListener(onUploadDeckClick);
-            DownloadBtn.onClick.AddListener(onDownloadDeckClick);
-
-            MasterCardSelection.OnSelect += onMasterSelect;
-
-            HintMessageText.gameObject.SetActive(false);
-            LoadingImg.SetActive(false);
-            // UIDialog.gameObject.SetActive(false);
+            }
         }
-
-        [TranslateMsg]
-        const string PILE_UPLOAD_WARN_MSG = "卡组数据上传功能将会覆盖您在云端的数据，是否上传？";
-
-        [TranslateMsg]
-        const string PILE_UPLOAD_NO_LOGIN = "游客无法使用此功能。";
-
-        [TranslateMsg]
-        const string PILE_DOWNLOAD_WARN_MSG = "卡组数据下载功能将会从云端同步你的卡组数据并与本地数据合并，可能会覆盖本地的某些卡组，是否下载？";
-
-        [TranslateMsg]
-        const string PILE_UPLOAD_SUCCES = "卡组上传完毕";
-
-        [TranslateMsg]
-        const string PILE_DOWNLOAD_SUCCES = "卡组下载完毕";
-
         /// <summary>
         /// 上传卡组
         /// </summary>
@@ -281,7 +246,6 @@ namespace UI
                 }
             });
         }
-
         /// <summary>
         /// 下载卡组
         /// </summary>
@@ -311,34 +275,24 @@ namespace UI
                 }
             });
         }
-
         /// <summary>
-        /// 保存到卡组中
+        /// 导出当前卡组
         /// </summary>
-        /// <param name="id"></param>
-        private void saveToDeck(int id)
+        void onExportDeckClick()
         {
-            dm.ClearDeck(id);
-            foreach (var card in currentDeckCards)
+            // 卡组保存
+            if (currentDeckCards.Count < 30)
             {
-                dm.AddCard(id, card);
+                UIDialog.ShowQuestion(lang._(StringTable.HINT_TITLE), lang._(PILE_NOT_COMPLETE_EXPORT), () =>
+                {
+                    exportDeck();
+                });
             }
-
-            // 更新Mark
-            reloadDeckList();
+            else
+            {
+                exportDeck();
+            }
         }
-
-        /// <summary>
-        /// 比较方法
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        int sortCompareMethod(BuildCardViewData a, BuildCardViewData b)
-        {
-            return FilterPanel.sortCompareMethod(a.define, b.define);
-        }
-
         /// <summary>
         /// 修改了排序
         /// </summary>
@@ -347,41 +301,58 @@ namespace UI
             Array.Sort(displayedCardList, sortCompareMethod);
             BuildCardList.SetList(displayedCardList.ToArray());
         }
-
-        private void OnEnable()
-        {
-            MasterCardSelection.hide();
-            uiModeSwitch(true);
-        }
-
+        #endregion
+        #endregion
+        CardManager cm => ui.getManager<CardManager>();
+        DeckManager dm => ui.getManager<DeckManager>();
+        LangManager lang => ui.getManager<LangManager>();
+        const string exportStringHeader = "# 醉梦传说卡组";
         /// <summary>
-        /// 重载当前卡组的列表
+        /// 当前正在编辑的卡组ID
         /// </summary>
-        void reloadDeckList()
-        {
-            var decks = dm.GetDecks();
-
-            DeckList.clearItems();
-
-            foreach (var deck in decks)
-            {
-                Sprite spr = cm.getSkin(deck.MasterID)?.image;
-
-                var item = DeckList.addItem();
-                item.SetContent((int)deck.ID, deck.Name, spr);
-                item.SetMode(DeckListItem.Mode.DeckListItem);
-                item.SetSelectable(true);
-                item.SetWarning(dm.GetDeckCards(deck.ID).Count < 30);
-
-                item.onDeckSelect += deckEnterEditMode;
-                item.onDeckRemove += onDeckRemove;
-            }
-
-            var addBtn = DeckList.addItem();
-            addBtn.SetMode(DeckListItem.Mode.AddDeck);
-            addBtn.onDeckAdd += onDeckAdd;
-        }
-
+        int currentDeckID = 0;
+        /// <summary>
+        /// 当前正在编辑的卡组的Master卡的ID
+        /// </summary>
+        int currentEditingDeckMasterID = 0;
+        /// <summary>
+        /// 当前正在编辑的卡组的卡片
+        /// </summary>
+        List<int> currentDeckCards { get; set; } = new List<int>();
+        /// <summary>
+        /// 当前卡组是否修改
+        /// </summary>
+        bool deckChanged { get; set; } = false;
+        [TranslateMsg]
+        const string PILE_NOT_SAVE = "卡组尚未保存，退出后现有变更将丢失。\n是否退出？";
+        [TranslateMsg]
+        const string PILE_NOT_COMPLETE = "当前卡组不完整，无法在游戏中使用。\n是否要保存？";
+        [TranslateMsg]
+        const string PILE_EXPORTED = "卡组已导出到剪贴板";
+        [TranslateMsg]
+        const string NO_PILE_AVALIABLE = "剪贴板中没有可导入的卡组";
+        [TranslateMsg]
+        const string ERROR_TITLE = "错误";
+        [TranslateMsg]
+        const string CARD_NOT_EXISTS = "ID为{0}的卡不存在";
+        [TranslateMsg]
+        const string PILE_CODE_INCOMPLETE = "卡组代码不完整";
+        [TranslateMsg]
+        const string PILE_CODE_CORRUPTED = "卡组数据已损坏";
+        [TranslateMsg]
+        const string PILE_IMPORT_ERROR = "导入错误\n{0}";
+        [TranslateMsg]
+        const string PILE_NOT_COMPLETE_EXPORT = "当前卡组不完整，无法在游戏中使用。\n是否要导出？";
+        [TranslateMsg]
+        const string PILE_UPLOAD_WARN_MSG = "卡组数据上传功能将会覆盖您在云端的数据，是否上传？";
+        [TranslateMsg]
+        const string PILE_UPLOAD_NO_LOGIN = "游客无法使用此功能。";
+        [TranslateMsg]
+        const string PILE_DOWNLOAD_WARN_MSG = "卡组数据下载功能将会从云端同步你的卡组数据并与本地数据合并，可能会覆盖本地的某些卡组，是否下载？";
+        [TranslateMsg]
+        const string PILE_UPLOAD_SUCCES = "卡组上传完毕";
+        [TranslateMsg]
+        const string PILE_DOWNLOAD_SUCCES = "卡组下载完毕";
         /// <summary>
         /// 移除卡组并重载列表
         /// </summary>
@@ -767,7 +738,7 @@ namespace UI
                 newItem.update(DragCard.BuildDeckListItem.card, ui.getManager<CardManager>().getSkin(DragCard.BuildDeckListItem.card.defineNumber), 1);
                 deckItem = newItem;
             }
-            
+
             BuildDeckList.sortItems((a, b) =>
             {
                 if (a.card.getCost() != b.card.getCost())
@@ -804,7 +775,7 @@ namespace UI
 
         async Task UploadDeck()
         {
-            if (!client.AccountIsValid) 
+            if (!client.AccountIsValid)
                 return;
 
             List<DeckDataItem> deckToSend = new List<DeckDataItem>();
@@ -817,8 +788,9 @@ namespace UI
                 var cs = dm.GetDeckCards(item.ID);
                 foreach (var c in cs)
                     cards.Add((int)c.Value);
-                
-                deckToSend.Add(new DeckDataItem() {
+
+                deckToSend.Add(new DeckDataItem()
+                {
                     ID = (int)item.ID,
                     Name = item.Name,
                     Content = dm.DeckToString(cards.ToArray())

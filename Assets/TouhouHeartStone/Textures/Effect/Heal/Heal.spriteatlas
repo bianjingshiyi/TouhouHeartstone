@@ -7,7 +7,6 @@ SpriteAtlas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Heal
-  serializedVersion: 2
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -47,6 +46,7 @@ SpriteAtlas:
     - {fileID: 2800000, guid: 2c312e35567f0c64ca98fad427760752, type: 3}
     - {fileID: 2800000, guid: f2cf9b6e32274774ead499d4ecad5005, type: 3}
     - {fileID: 2800000, guid: b00dbc4c11db23a4ebbef95109983c32, type: 3}
+    totalSpriteSurfaceArea: 65536
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -85,4 +85,3 @@ SpriteAtlas:
   - Heal_10
   m_Tag: Heal
   m_IsVariant: 0
-  m_IsPlaceholder: 0

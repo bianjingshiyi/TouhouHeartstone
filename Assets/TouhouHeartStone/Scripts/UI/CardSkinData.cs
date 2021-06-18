@@ -76,6 +76,7 @@ namespace UI
         public string imagePath
         {
             get { return _imagePath; }
+            set { _imagePath = value; }
         }
         [SerializeField]
         string _desc;

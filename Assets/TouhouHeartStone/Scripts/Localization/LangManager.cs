@@ -81,6 +81,8 @@ namespace Game
         /// </summary>
         public event Func<CultureInfo, Task> OnCultureChange;
         #endregion
+        public const string CN = "zh-CN";
+        public const string EN = "en-US";
         /// <summary>
         /// 默认载入路径
         /// </summary>
@@ -90,13 +92,13 @@ namespace Game
         /// 载入的语言
         /// </summary>
         [SerializeField]
-        string[] langs = { "zh-CN", "en-US" };
+        string[] langs = { CN, EN };
 
         /// <summary>
         /// 默认语言
         /// </summary>
         [SerializeField]
-        string defaultLang = "zh-CN";
+        string defaultLang = CN;
 
         /// <summary>
         /// 不要加载默认语言

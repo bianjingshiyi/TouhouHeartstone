@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace UI
 {
-    partial class ActionNodeGraphPanel
+    public partial class ActionNodeGraphPanel
     {
         /// <summary>
         /// 在指定位置上创建一个具有指定名称，输入，常量值和输出的节点。
@@ -149,7 +149,7 @@ namespace UI
         /// </summary>
         public event Action onClickReturnButton;
     }
-    partial class ActionNodeItem
+    public partial class ActionNodeItem
     {
         public void addTargetCheckerItem()
         {

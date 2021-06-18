@@ -1,15 +1,10 @@
 ﻿using System;
 using UI;
 using BJSYGameCore;
+using Game;
 
 namespace Controllers
 {
-    [Serializable]
-    public class CardPoolInfo
-    {
-        public string cardPoolName;
-        public string imageResPath;
-    }
     public class GameCtrl : IController<MainCtrl>
     {
         public GameCtrl(IAppManager app, MainCtrl main, UI.Game ui)

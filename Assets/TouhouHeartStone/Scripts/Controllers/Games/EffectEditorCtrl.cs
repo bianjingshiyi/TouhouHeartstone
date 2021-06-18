@@ -3,6 +3,7 @@ using TouhouHeartstone;
 using UI;
 using BJSYGameCore;
 using System.Linq;
+using Game;
 
 namespace Controllers
 {
