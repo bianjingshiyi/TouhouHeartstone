@@ -6,6 +6,10 @@ namespace UI
     /// </summary>
     public partial class EffectEditorPanel
     {
+        /* 效果编辑器界面就是在动作编辑器界面的外面套了一层壳，左边用来编辑一些效果的属性，右边编辑动作
+         * 
+         * 
+         */
         /// <summary>
         /// 显示生效范围选项组
         /// </summary>
