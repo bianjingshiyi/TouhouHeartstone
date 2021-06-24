@@ -116,6 +116,14 @@ namespace UI
             throw new NotImplementedException();
         }
         /// <summary>
+        /// 设置效果列表
+        /// </summary>
+        /// <param name="effectNames"></param>
+        public void setEffects(string[] effectNames)
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
         /// 当更换了皮肤，参数为更换的皮肤索引。
         /// </summary>
         public event Action<int> onChangeSkin;
@@ -160,8 +168,12 @@ namespace UI
         /// </summary>
         public event Action<string> onChangeTag;
         /// <summary>
-        /// 当点击编辑效果按钮
+        /// 当点击编辑效果按钮，参数为效果索引。
         /// </summary>
-        public event Action onClickEditEffectButton;
+        public event Action<int> onClickEditEffectButton;
+        /// <summary>
+        /// 当点击添加效果按钮
+        /// </summary>
+        public event Action onClickAddEffectButton;
     }
 }

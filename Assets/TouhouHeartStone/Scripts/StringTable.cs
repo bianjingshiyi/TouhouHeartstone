@@ -24,7 +24,23 @@ namespace Game
         [TranslateMsg("所有按钮通用的删除")]
         public const string DELETE = "删除";
         #endregion
+        #region 收藏
+        [TranslateMsg("浏览卡牌界面中费用升序排序选项")]
+        public const string CARDVIEW_SORT_COST = "费用升序";
+        [TranslateMsg("浏览卡牌界面中费用降序排序选项")]
+        public const string CARDVIEW_SORT_COST_DESCENDING = "费用降序";
+        [TranslateMsg("浏览卡牌界面中稀有度升序排序选项")]
+        public const string CARDVIEW_SORT_RARE = "稀有度升序";
+        [TranslateMsg("浏览卡牌界面中稀有度降序排序选项")]
+        public const string CARDVIEW_SORT_RARE_DESCENDING = "稀有度降序";
+        [TranslateMsg("浏览卡牌界面中的中立卡牌筛选选项")]
+        public const string CARDVIEW_CHARACTER_NEUTRAL = "中立";
+        #endregion
         #region 编辑器
+        [TranslateMsg("编辑器中生效动作节点的名字")]
+        public const string EDITOR_NODE_NAME_ONENABLE = "生效";
+        [TranslateMsg("编辑器中失效动作节点的名字")]
+        public const string EDITOR_NODE_NAME_ONDISABLE = "失效";
         [TranslateMsg("编辑器中动作节点图里输出节点的名字")]
         public const string EDITOR_NODE_NAME_OUTPUT = "输出节点";
         [TranslateMsg("编辑器中动作节点图里触发器节点的名字")]
@@ -37,6 +53,8 @@ namespace Game
         public const string EDITOR_ERROR_INVALID_TYPE_CONNECT = "相互连接的输入输出类型必须可以相互转化";
         [TranslateMsg("编辑器错误提示")]
         public const string EDITOR_ERROR_OUTPUT_CONNECT_INPUT = "值输出只能与值输入相互连接";
+        [TranslateMsg("编辑器中编辑效果按钮显示文字")]
+        public const string EDITOR_EDIT_EFFECT = "编辑效果";
         #endregion
     }
 }

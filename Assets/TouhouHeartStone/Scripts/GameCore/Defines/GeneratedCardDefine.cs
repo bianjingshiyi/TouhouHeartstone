@@ -43,7 +43,7 @@ namespace TouhouHeartstone
         }
         public override string ToString()
         {
-            return "Generated<" + defineNumber + ">";
+            return "Generated<" + id + ">";
         }
     }
 }

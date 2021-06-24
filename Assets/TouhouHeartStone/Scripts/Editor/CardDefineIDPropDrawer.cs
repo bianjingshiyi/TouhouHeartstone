@@ -22,7 +22,7 @@ namespace TouhouHeartstone
 
         public static void draw(Rect position, SerializedProperty property, GUIContent label)
         {
-            int index = Array.FindIndex(getCardDefines(), c => c.defineNumber == property.intValue) + 1;
+            int index = Array.FindIndex(getCardDefines(), c => c.id == property.intValue) + 1;
             //if (label.text.StartsWith("Element", StringComparison.OrdinalIgnoreCase))
             if (index == 0)
                 label.text = "None";
@@ -52,7 +52,7 @@ namespace TouhouHeartstone
             });
             foreach (var group in getCardDefines().GroupBy(c => c.getCharacterID()))
             {
-                CardDefine character = getCardDefines().FirstOrDefault(c => c.defineNumber == group.Key);
+                CardDefine character = getCardDefines().FirstOrDefault(c => c.id == group.Key);
                 foreach (var define in group.OrderBy(c => c.GetType().Name))
                 {
                     string path = "";
@@ -70,9 +70,9 @@ namespace TouhouHeartstone
                     else if (typeId == CATEGORY.ITEM)
                         path += "/Item";
                     path += "/" + define.GetType().Name;
-                    menu.AddItem(new GUIContent(path), define.defineNumber == id, () =>
+                    menu.AddItem(new GUIContent(path), define.id == id, () =>
                     {
-                        property.intValue = define.defineNumber;
+                        property.intValue = define.id;
                         property.serializedObject.ApplyModifiedProperties();
                     });
                 }
@@ -103,7 +103,7 @@ namespace TouhouHeartstone
 
         public static CardDefine getCardDefine(int id)
         {
-            return getCardDefines().FirstOrDefault(c => c.defineNumber == id);
+            return getCardDefines().FirstOrDefault(c => c.id == id);
         }
     }
 

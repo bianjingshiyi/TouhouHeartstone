@@ -4,7 +4,7 @@ using Game;
 
 namespace Controllers
 {
-    public class TableCtrl : IController<MainCtrl>
+    class TableCtrl : IController<MainCtrl>
     {
         public TableCtrl(IAppManager app, MainCtrl main, Table ui)
         {

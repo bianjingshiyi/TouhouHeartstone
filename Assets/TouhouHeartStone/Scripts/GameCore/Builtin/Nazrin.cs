@@ -11,7 +11,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin : MasterCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NAZRIN | CATEGORY.MASTER | 0x000;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = Nazrin_Skill.ID;
     }
@@ -19,7 +19,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_Skill : SkillCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SKILL | 0x000;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new IEffect[]
@@ -49,7 +49,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_00 : ServantCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SERVANT | 0x000;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -63,7 +63,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_01 : SpellCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x001;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -91,7 +91,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_02 : ItemCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.ITEM | 0x002;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
@@ -129,7 +129,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_03 : ServantCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SERVANT | 0x003;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
@@ -159,7 +159,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_04 : SpellCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x004;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] {KEYWORD.MISSION, KEYWORD.UNIQUE};
 
@@ -189,7 +189,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_05 : ItemCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.ITEM | 0x005;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 2;
@@ -228,7 +228,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_06 : SpellCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x006;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override bool isToken { get; set; } = true;
 
@@ -269,7 +269,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_07 : SpellCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x007;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -312,7 +312,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_08 : ServantCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SERVANT | 0x008;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
@@ -342,7 +342,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_09 : ServantCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SERVANT | 0x009;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
 
@@ -372,7 +372,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_10 : SpellCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x010;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override bool isToken { get; set; } = true;
 
@@ -405,7 +405,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_11 : SpellCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x011;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
         private IEffect[] effects1 = new IEffect[]
@@ -440,7 +440,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_12 : SpellCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x012;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
         private IEffect[] effects1 = new IEffect[]
@@ -476,7 +476,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_13 : SpellCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x013;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
         private IEffect[] effects1 = new IEffect[]
@@ -509,7 +509,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_14 : SpellCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x014;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
 
         private IEffect[] effects1 = new IEffect[]
@@ -544,7 +544,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_15 : ServantCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SERVANT | 0x015;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 5;
@@ -577,7 +577,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_16 : SpellCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x016;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
 
         private IEffect[] effects1 = new IEffect[]
@@ -622,7 +622,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_17 : SpellCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x017;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
 
         private IEffect[] effects1 = new IEffect[]
@@ -656,7 +656,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_18 : SpellCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SPELL | 0x018;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
 
         private IEffect[] effects1 = new IEffect[]
@@ -686,7 +686,7 @@ namespace TouhouHeartstone.Builtin
     public class Nazrin_19 : ServantCardDefine
     {
         public const int ID = Nazrin.ID | CATEGORY.SERVANT | 0x019;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 7;
         public override int attack { get; set; } = 5;
         public override int life { get; set; } = 7;

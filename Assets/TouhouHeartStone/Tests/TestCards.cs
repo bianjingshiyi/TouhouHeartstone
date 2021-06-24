@@ -14,7 +14,7 @@ namespace Tests
     class TestMaster : MasterCardDefine
     {
         public const int ID = 0x0FF00000;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = TestSkill.ID;
 
@@ -33,7 +33,7 @@ namespace Tests
     class TestSkill : SkillCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SKILL | 0x000;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new LambdaSingleTargetEffect[0];
@@ -51,7 +51,7 @@ namespace Tests
     class TestServant : ServantCardDefine
     {
         public const int ID = 0x00110001;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
@@ -71,7 +71,7 @@ namespace Tests
     class TestServant_TurnEndEffect : ServantCardDefine
     {
         public const int ID = 0x00110002;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
@@ -104,7 +104,7 @@ namespace Tests
     class TestServant_ZeroAttack : ServantCardDefine
     {
         public const int ID = 0x00110003;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 4;
@@ -126,7 +126,7 @@ namespace Tests
     class TestServant_Reverse : ServantCardDefine
     {
         public const int ID = 0x00110004;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
@@ -158,7 +158,7 @@ namespace Tests
     class TestServant_Buff : ServantCardDefine
     {
         public const int ID = 0x00110005;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -211,7 +211,7 @@ namespace Tests
     public class RushServant : ServantCardDefine
     {
         public const int ID = 0x00110006;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
@@ -236,7 +236,7 @@ namespace Tests
     public class ShieldServant : ServantCardDefine
     {
         public const int ID = 0x00110007;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
@@ -261,7 +261,7 @@ namespace Tests
     public class StealthServant : ServantCardDefine
     {
         public const int ID = 0x00110008;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
@@ -304,7 +304,7 @@ namespace Tests
     public class DrainServant : ServantCardDefine
     {
         public const int ID = 0x00110009;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
@@ -330,7 +330,7 @@ namespace Tests
     public class PoisonousServant : ServantCardDefine
     {
         public const int ID = 0x0011000A;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
@@ -356,7 +356,7 @@ namespace Tests
     public class ElusiveServant : ServantCardDefine
     {
         public const int ID = 0x0011000B;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
@@ -382,7 +382,7 @@ namespace Tests
     public class TestMaster2 : MasterCardDefine
     {
         public const int ID = 0x0011000C;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = TestDamageSkill.ID;
 
@@ -401,7 +401,7 @@ namespace Tests
     class TestDamageSkill : SkillCardDefine
     {
         public const int ID = 0x0011000D;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -438,7 +438,7 @@ namespace Tests
     public class TestSpellCard : SpellCardDefine
     {
         public const int ID = 0x0011000E;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -475,7 +475,7 @@ namespace Tests
     public class DefaultServant : ServantCardDefine
     {
         public const int ID = 0x0011FFFF;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 7;
@@ -498,7 +498,7 @@ namespace Tests
     public class MountainGaint : ServantCardDefine
     {
         public const int ID = 0x00110010;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 12;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
@@ -614,7 +614,7 @@ namespace Tests
     public class TestFreeze : SpellCardDefine
     {
         public const int ID = 0x0011000F;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
 
         private IEffect[] effects1 = new IEffect[]
@@ -650,7 +650,7 @@ namespace Tests
     class SorcererApprentice : ServantCardDefine
     {
         public const int ID = 0x00110011;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
@@ -745,7 +745,7 @@ namespace Tests
     class FireBall : SpellCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x012;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
 
         private IEffect[] effects1 = new IEffect[]
@@ -790,7 +790,7 @@ namespace Tests
     public class Priestess : ServantCardDefine
     {
         public const int ID = 0x001100AA;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 1;
@@ -832,7 +832,7 @@ namespace Tests
     public class DiscoverCopy : SpellCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x013;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -858,7 +858,7 @@ namespace Tests
     public class TestWeapon : ItemCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.ITEM | 0x014;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
@@ -869,7 +869,7 @@ namespace Tests
     public class Corruption : SpellCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x015;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -909,7 +909,7 @@ namespace Tests
     public class TestFreezeBrain : SpellCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x016;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
 
         private IEffect[] effects1 = new IEffect[]
@@ -934,7 +934,7 @@ namespace Tests
     public class Lightspawn : ServantCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x017;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 5;
@@ -990,7 +990,7 @@ namespace Tests
     public class Velen : ServantCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x023;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 7;
         public override int attack { get; set; } = 7;
         public override int life { get; set; } = 7;
@@ -1040,7 +1040,7 @@ namespace Tests
     public class PowrOverwhelming : SpellCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x018;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
 
         private IEffect[] effects1 = new IEffect[]
@@ -1083,7 +1083,7 @@ namespace Tests
     public class FreezingTrap : SpellCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x019;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
 
@@ -1116,7 +1116,7 @@ namespace Tests
     public class Vaporize : SpellCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x020;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
 
@@ -1145,7 +1145,7 @@ namespace Tests
     public class ChargeServant : ServantCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x021;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -1159,7 +1159,7 @@ namespace Tests
     public class TestHeal : SpellCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x022;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
 
@@ -1189,7 +1189,7 @@ namespace Tests
     public class Polymorph : SpellCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x023;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
 
         private IEffect[] effects1 = new IEffect[]
@@ -1213,7 +1213,7 @@ namespace Tests
     public class EnemyOnlyBattleCry : ServantCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x024;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
@@ -1242,7 +1242,7 @@ namespace Tests
     public class Dreadsteed : ServantCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x025;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -1269,7 +1269,7 @@ namespace Tests
     public class Anubarak : ServantCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x026;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 9;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 4;
@@ -1297,7 +1297,7 @@ namespace Tests
     public class Nerubian : ServantCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SERVANT | 0x027;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
@@ -1305,7 +1305,7 @@ namespace Tests
     public class BlessingOfMight : SpellCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x28;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         private IEffect[] effects1 = new IEffect[]
@@ -1332,7 +1332,7 @@ namespace Tests
     public class InvokeCard : SpellCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x29;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
 
         private IEffect[] effects1 = new IEffect[]
@@ -1360,7 +1360,7 @@ namespace Tests
     public class DeadSpawn2Token_EndTurnDie : ServantCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x30;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -1396,7 +1396,7 @@ namespace Tests
     public class EndTurn1Spawn : ServantCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x31;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -1424,7 +1424,7 @@ namespace Tests
     public class UniqueServant : ServantCardDefine
     {
         public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x32;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;

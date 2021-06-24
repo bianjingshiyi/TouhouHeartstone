@@ -1669,7 +1669,7 @@ namespace Game
                     {
                         game.answers.answer(player.id, new DiscoverResponse()
                         {
-                            cardId = cardDefine.defineNumber
+                            cardId = cardDefine.id
                         });
                         closeDiscoverDialog();
                     });
@@ -1806,7 +1806,7 @@ namespace Game
         #region Skin
         public CardSkinData getSkin(TouhouCardEngine.Card card)
         {
-            CardSkinData skin = getManager<CardManager>().getSkin(card.define.defineNumber);
+            CardSkinData skin = getManager<CardManager>().getSkin(card.define.id);
             if (skin != null)
                 return skin;
             else
@@ -1814,7 +1814,7 @@ namespace Game
                 game.logger.logError("没有找到" + card + "对应的皮肤");
                 return new CardSkinData()
                 {
-                    id = card.define.defineNumber,
+                    id = card.define.id,
                     desc = card.define.ToString() + "（这张卡随时可能爆炸！）",
                     image = getManager<CardManager>().getDefaultSprite().Result,
                     name = card.define.GetType().Name
@@ -1823,7 +1823,7 @@ namespace Game
         }
         public CardSkinData getSkin(CardDefine define)
         {
-            CardSkinData skin = getManager<CardManager>().getSkin(define.defineNumber);
+            CardSkinData skin = getManager<CardManager>().getSkin(define.id);
             if (skin != null)
                 return skin;
             else
@@ -1831,7 +1831,7 @@ namespace Game
                 game.logger.logError("没有找到" + define + "对应的皮肤");
                 return new CardSkinData()
                 {
-                    id = define.defineNumber,
+                    id = define.id,
                     desc = define.ToString() + "（这张卡随时可能爆炸！）",
                     image = getManager<CardManager>().getDefaultSprite().Result,
                     name = define.GetType().Name

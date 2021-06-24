@@ -82,7 +82,7 @@ namespace Tests
             // 一定会有的卡
             var cd = cm.GetCardDefine(ExistsCardID);
             Assert.NotNull(cd);
-            Assert.AreEqual(cd.defineNumber, ExistsCardID);
+            Assert.AreEqual(cd.id, ExistsCardID);
 
             File.Delete(xlsFile);
         }
@@ -101,7 +101,7 @@ namespace Tests
             // 一定会有的卡
             var cd = cm.GetCardDefine(ExistsCardID);
             Assert.NotNull(cd);
-            Assert.AreEqual(cd.defineNumber, ExistsCardID);
+            Assert.AreEqual(cd.id, ExistsCardID);
         }
 
         /// <summary>
@@ -115,10 +115,10 @@ namespace Tests
             yield return new WaitUntil(() => task.IsCompleted);
             var cm = task.Result;
 
-            var cards = cm.GetCardDefines((cd) => { return cd.defineNumber == ExistsCardID; });
+            var cards = cm.GetCardDefines((cd) => { return cd.id == ExistsCardID; });
             Assert.NotNull(cards);
             Assert.AreEqual(cards.Length, 1);
-            Assert.AreEqual(cards[0].defineNumber, ExistsCardID);
+            Assert.AreEqual(cards[0].id, ExistsCardID);
         }
 
         [UnityTest]
@@ -168,11 +168,11 @@ namespace Tests
 
             Assert.NotNull(cards);
 
-            var existingCards = cards.Where(c => c.defineNumber == ExistsCardID);
+            var existingCards = cards.Where(c => c.id == ExistsCardID);
             Assert.True(existingCards.Count() > 0);
 
             var card = existingCards.First();
-            Assert.AreEqual(card.defineNumber, ExistsCardID);
+            Assert.AreEqual(card.id, ExistsCardID);
             Assert.AreEqual(card.type, "Master");
             Assert.AreEqual(card.getCost(), 0);
             Assert.AreEqual(card.getAttack(), 0);
@@ -244,11 +244,11 @@ namespace Tests
             var cards = task.Result;
 
             Assert.NotNull(cards);
-            var existingCards = cards.Where(c => c.defineNumber == ExistsCardID);
+            var existingCards = cards.Where(c => c.id == ExistsCardID);
             Assert.True(existingCards.Count() > 0);
 
             var card = existingCards.First();
-            Assert.AreEqual(card.defineNumber, ExistsCardID);
+            Assert.AreEqual(card.id, ExistsCardID);
             Assert.AreEqual(card.type, "Master");
             Assert.AreEqual(card.getCost(), 0);
             Assert.AreEqual(card.getAttack(), 0);

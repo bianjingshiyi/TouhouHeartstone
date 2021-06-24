@@ -5,7 +5,7 @@ using Game;
 
 namespace Controllers
 {
-    public class GameCtrl : IController<MainCtrl>
+    class GameCtrl : IController<MainCtrl>
     {
         public GameCtrl(IAppManager app, MainCtrl main, UI.Game ui)
         {

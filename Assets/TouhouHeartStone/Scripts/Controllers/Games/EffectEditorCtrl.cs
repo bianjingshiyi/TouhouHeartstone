@@ -7,7 +7,7 @@ using Game;
 
 namespace Controllers
 {
-    public partial class EffectEditorCtrl : IController<MainCtrl>
+    partial class EffectEditorCtrl : IController<MainCtrl>
     {
         public EffectEditorCtrl(IAppManager app, MainCtrl main, EffectEditorPanel compo)
         {
@@ -54,11 +54,11 @@ namespace Controllers
         }
         void onClickEditEnableActionButton()
         {
-            //TODO:加载动作图信息和显示动作图
+            main.lobbySceneCtrl.actionNodeGraphCtrl.openOnEnableActionGraph(_effect);
         }
         void onClickEditDisableActionButton()
         {
-            //TODO:加载动作图信息和显示动作图
+            main.lobbySceneCtrl.actionNodeGraphCtrl.openOnDisableActionGraph(_effect);
         }
         void onClickAddTriggerButton()
         {
@@ -70,7 +70,8 @@ namespace Controllers
         }
         void onClickEditTriggerButton(int index)
         {
-            //TODO:加载动作图信息和显示动作图
+            main.lobbySceneCtrl.actionNodeGraphCtrl.openTriggerGraph(
+                _effect.triggerList[index]);
         }
         #endregion
         public IAppManager app { get; }

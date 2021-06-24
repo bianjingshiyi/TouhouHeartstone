@@ -62,15 +62,15 @@ namespace TouhouHeartstone
             }
             _manager = EditorGUILayout.ObjectField("Table", _manager, typeof(CardManager), true) as CardManager;
             _scroll = EditorGUILayout.BeginScrollView(_scroll, GUILayout.Width(512), GUILayout.Height(512));
-            foreach (var card in _cardList.OrderBy(c => c.defineNumber))
+            foreach (var card in _cardList.OrderBy(c => c.id))
             {
                 if (!card.isObsolete())
-                    GUILayout.Label(card.defineNumber + " " + card.GetType().Name);
+                    GUILayout.Label(card.id + " " + card.GetType().Name);
                 else
                 {
                     var style = new GUIStyle(GUI.skin.label);
                     style.normal.textColor = Color.yellow;
-                    GUILayout.Label(card.defineNumber + " " + card.GetType().Name, style);
+                    GUILayout.Label(card.id + " " + card.GetType().Name, style);
                 }
             }
             EditorGUILayout.EndScrollView();
@@ -175,7 +175,7 @@ namespace TouhouHeartstone
             int classIndex = ExcelHelper.findColIndex(sheet, "Class");
             foreach (var pRow in sheet.Cells.Rows)
             {
-                if (numberToInt(pRow.Value.GetCell(idIndex).Value) == card.defineNumber)
+                if (numberToInt(pRow.Value.GetCell(idIndex).Value) == card.id)
                 {
                     return true;
                 }
@@ -193,7 +193,7 @@ namespace TouhouHeartstone
             int cardRow = sheet.Cells.Rows.Count;//如果表里没有这张卡，那么就新增
             foreach (var pRow in sheet.Cells.Rows)
             {
-                if (numberToInt(pRow.Value.GetCell(idIndex).Value) == card.defineNumber)
+                if (numberToInt(pRow.Value.GetCell(idIndex).Value) == card.id)
                 {
                     cardRow = pRow.Key;//如果有相同ID的卡，复写
                     sheet.Cells[cardRow, classIndex] = new Cell(card.GetType().Name);
@@ -201,11 +201,11 @@ namespace TouhouHeartstone
                 else if (pRow.Value.GetCell(classIndex).StringValue == card.GetType().Name)
                 {
                     cardRow = pRow.Key;//如果有相同类型的卡，复写
-                    sheet.Cells[cardRow, idIndex] = new Cell(card.defineNumber);
+                    sheet.Cells[cardRow, idIndex] = new Cell(card.id);
                 }
             }
 
-            sheet.Cells[cardRow, idIndex] = new Cell(card.defineNumber);
+            sheet.Cells[cardRow, idIndex] = new Cell(card.id);
             int typeIndex = ExcelHelper.findColIndex(sheet, "Type");
             if (card is ServantCardDefine)
                 sheet.Cells[cardRow, typeIndex] = new Cell("Servant");
@@ -235,7 +235,7 @@ namespace TouhouHeartstone
                 sheet.Cells[cardRow, keywordsIndex] = new Cell(null);
             if (_manager != null)
             {
-                var skin = _manager.getSkin(card.defineNumber);
+                var skin = _manager.getSkin(card.id);
                 int imageIndex = ExcelHelper.findColIndex(sheet, "Image");
                 if (skin == null)
                     sheet.Cells[cardRow, imageIndex] = new Cell(sheet.Cells[cardRow, imageIndex].StringValue);
@@ -304,7 +304,7 @@ namespace TouhouHeartstone
         }
         void saveCardToXml(CardDefine card, XmlDocument xml)
         {
-            xml["Card"]["ID"].InnerText = card.defineNumber.ToString();
+            xml["Card"]["ID"].InnerText = card.id.ToString();
             if (card is ServantCardDefine)
                 xml["Card"]["Type"].InnerText = "Servant";
             else if (card is MasterCardDefine)
@@ -324,7 +324,7 @@ namespace TouhouHeartstone
                 xml["Card"]["Keywords"].InnerText = null;
             if (_manager != null)
             {
-                var skin = _manager.getSkin(card.defineNumber);
+                var skin = _manager.getSkin(card.id);
                 xml["Card"]["Skin"]["Image"].InnerText = skin == null ? null : skin.image != null ? skin.image.name + ".png" : null;
                 xml["Card"]["Skin"]["Name"].InnerText = skin == null ? card.GetType().Name : skin.name;
                 xml["Card"]["Skin"]["Desc"].InnerText = skin == null ? null : skin.desc;

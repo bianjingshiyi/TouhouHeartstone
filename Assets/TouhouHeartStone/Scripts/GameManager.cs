@@ -294,7 +294,7 @@ namespace Game
                 _replaySystem.startRecord(game, game.players.Select(p =>
                 {
                     RoomPlayerData playerData = new RoomPlayerData(p.id, p.name, RoomPlayerType.human);
-                    playerData.setDeck(new int[] { p.getMaster().define.defineNumber }.Concat(p.getDeck().Select(c => c.define.defineNumber)).ToArray());
+                    playerData.setDeck(new int[] { p.getMaster().define.id }.Concat(p.getDeck().Select(c => c.define.id)).ToArray());
                     return playerData;
                 }).ToArray());
             onGameStart?.Invoke();
@@ -350,14 +350,14 @@ namespace Game
             if (game.getDefine(deck[0]) == null)
             {
                 UberDebug.LogError("非法角色ID" + deck[0] + "被替换为灵梦");
-                deck[0] = game.getDefine<Reimu>().defineNumber;
+                deck[0] = game.getDefine<Reimu>().id;
             }
             for (int i = 1; i < deck.Length; i++)
             {
                 if (game.getDefine(deck[i]) == null)
                 {
                     UberDebug.LogError("非法随从ID" + deck[i] + "被替换为小野菊");
-                    deck[i] = game.getDefine<RashFairy>().defineNumber;
+                    deck[i] = game.getDefine<RashFairy>().id;
                 }
             }
         }

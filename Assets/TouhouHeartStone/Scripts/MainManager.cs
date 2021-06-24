@@ -18,7 +18,7 @@ using System.IO;
 
 namespace Game
 {
-    public partial class MainCtrl : IController<MainCtrl>
+    partial class MainCtrl : IController<MainCtrl>
     {
         public MainCtrl(IAppManager appManager)
         {
@@ -44,7 +44,7 @@ namespace Game
         public IAppManager app { get; }
         public MainCtrl main => this;
     }
-    public class LobbySceneCtrl : IController<MainCtrl>
+    class LobbySceneCtrl : IController<MainCtrl>
     {
         public LobbySceneCtrl(IAppManager app, MainCtrl main, Scene scene)
         {
@@ -53,15 +53,17 @@ namespace Game
             mainMenuCtrl = new MainMenuCtrl(app, main, scene.findInstanceAt<Transform>("Canvas/Main/MainMenu").gameObject.GetComponent<MainMenu>());
             replaySelectCtrl = new ReplaySelectPanelCtrl(app, main, scene.findInstanceAt<Transform>("Canvas/Main/Replay").gameObject.GetComponent<ReplaySelectPanel>());
             editorCtrl = new EditorCtrl(app, main, scene.findInstanceAt<Transform>("Canvas/Main/EditorPanel").gameObject.GetComponent<EditorPanel>());
-            editorCtrl.onStart();
         }
         public IAppManager app { get; }
         public MainCtrl main { get; }
         public MainMenuCtrl mainMenuCtrl { get; }
         public ReplaySelectPanelCtrl replaySelectCtrl { get; }
         public EditorCtrl editorCtrl { get; }
+        public CardEditorCtrl cardEditorCtrl { get; }
+        public EffectEditorCtrl effectEditorCtrl { get; }
+        public ActionNodeGraphCtrl actionNodeGraphCtrl { get; }
     }
-    public class MainMenuCtrl : IController<MainCtrl>
+    class MainMenuCtrl : IController<MainCtrl>
     {
         public MainMenuCtrl(IAppManager app, MainCtrl main, MainMenu ui)
         {
@@ -83,7 +85,7 @@ namespace Game
         public IAppManager app { get; }
         MainMenu _ui;
     }
-    public partial class ReplaySelectPanelCtrl : IController<MainCtrl>
+    partial class ReplaySelectPanelCtrl : IController<MainCtrl>
     {
         public ReplaySelectPanelCtrl(IAppManager app, MainCtrl main, ReplaySelectPanel ui)
         {

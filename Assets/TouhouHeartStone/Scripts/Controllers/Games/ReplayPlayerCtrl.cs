@@ -10,7 +10,7 @@ using MongoDB.Bson.Serialization;
 
 namespace Controllers
 {
-    public class ReplayPlayerCtrl : IController<MainCtrl>
+    class ReplayPlayerCtrl : IController<MainCtrl>
     {
         public ReplayPlayerCtrl(IAppManager app, MainCtrl main, ReplayPlayerPanel ui)
         {

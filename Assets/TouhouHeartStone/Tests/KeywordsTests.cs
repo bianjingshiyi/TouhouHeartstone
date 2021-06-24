@@ -248,15 +248,15 @@ namespace Tests
             .Concat(Enumerable.Repeat(game.getDefine<ElusiveServant>(), 1)));
 
             game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.defineNumber == DefaultServant.ID), 0);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 0);
 
             game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<ElusiveServant>().cost && game.getCurrentPlayer() == elusivePlayer);
-            elusivePlayer.cmdUse(game, elusivePlayer.getHand().First(c => c.define.defineNumber == ElusiveServant.ID), 0);
+            elusivePlayer.cmdUse(game, elusivePlayer.getHand().First(c => c.define.id == ElusiveServant.ID), 0);
 
             game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<TestSpellCard>().cost && game.getCurrentPlayer() == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.defineNumber == TestSpellCard.ID), 0, defaultPlayer.getField()[0]);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == TestSpellCard.ID), 0, defaultPlayer.getField()[0]);
             Assert.AreEqual(6, defaultPlayer.getField()[0].getCurrentLife(game));//没有魔免的可以被法术指定
-            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.defineNumber == TestSpellCard.ID), 0, elusivePlayer.getField()[0]);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == TestSpellCard.ID), 0, elusivePlayer.getField()[0]);
             Assert.AreEqual(3, elusivePlayer.getField()[0].getCurrentLife(game));//魔免无法被法术指定
 
             game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<TestDamageSkill>().cost && game.getCurrentPlayer() == elusivePlayer);
@@ -289,7 +289,7 @@ namespace Tests
             //玩家0拍白板一张
 
             game.skipTurnUntil(() => oppo.getGem() >= game.getDefine<TestFreeze>().cost && game.getCurrentPlayer() == oppo);
-            oppo.cmdUse(game, oppo.getHand().First(c => c.define.defineNumber == TestFreeze.ID), 0, you.getField());
+            oppo.cmdUse(game, oppo.getHand().First(c => c.define.id == TestFreeze.ID), 0, you.getField());
             //玩家1释放冰环
 
             game.skipTurnUntil(() => you.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == you);
@@ -320,15 +320,15 @@ namespace Tests
             .Concat(Enumerable.Repeat(game.getDefine<Priestess>(), 2)));
 
             game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.defineNumber == DefaultServant.ID), 0);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 0);
             //玩家0拍白板一张
 
             game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<Priestess>().cost && game.getCurrentPlayer() == elusivePlayer);
-            elusivePlayer.cmdUse(game, elusivePlayer.getHand().First(c => c.define.defineNumber == Priestess.ID), 0);
+            elusivePlayer.cmdUse(game, elusivePlayer.getHand().First(c => c.define.id == Priestess.ID), 0);
             //玩家1拍女祭司
 
             game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.defineNumber == DefaultServant.ID), 1);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 1);
 
             game.Dispose();
         }

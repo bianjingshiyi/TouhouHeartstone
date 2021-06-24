@@ -13,7 +13,7 @@ namespace TouhouHeartstone.Builtin
     public class RashFairy : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x001;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -39,7 +39,7 @@ namespace TouhouHeartstone.Builtin
     public class HumanVillageGuard : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x002;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
@@ -64,7 +64,7 @@ namespace TouhouHeartstone.Builtin
     public class RifleHunter : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x003;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
@@ -93,7 +93,7 @@ namespace TouhouHeartstone.Builtin
     public class MissingSpecter : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x004;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 1;
@@ -122,7 +122,7 @@ namespace TouhouHeartstone.Builtin
     public class LostSpecter : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x005;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override bool isToken { get; set; } = true;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
@@ -148,7 +148,7 @@ namespace TouhouHeartstone.Builtin
     public class DrizzleFairy : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x006;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
@@ -172,7 +172,7 @@ namespace TouhouHeartstone.Builtin
     public class LuckyCoin : SpellCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x007;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 0;
         public override bool isToken { get; set; } = true;
 
@@ -198,7 +198,7 @@ namespace TouhouHeartstone.Builtin
     public class FlameFairy : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x008;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
@@ -232,7 +232,7 @@ namespace TouhouHeartstone.Builtin
     public class SunnyMilk : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x009;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
@@ -258,7 +258,7 @@ namespace TouhouHeartstone.Builtin
     public class LunaChild : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x010;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
@@ -287,7 +287,7 @@ namespace TouhouHeartstone.Builtin
     public class StarSphere : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x011;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 4;
@@ -315,7 +315,7 @@ namespace TouhouHeartstone.Builtin
     public class BeerFairy : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x012;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
@@ -344,7 +344,7 @@ namespace TouhouHeartstone.Builtin
     public class SunflowerWarleader : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x013;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 3;
@@ -387,7 +387,7 @@ namespace TouhouHeartstone.Builtin
     public class Cirno : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x014;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 5;
@@ -422,7 +422,7 @@ namespace TouhouHeartstone.Builtin
     public class Daiyousei : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x015;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 2;
@@ -457,7 +457,7 @@ namespace TouhouHeartstone.Builtin
     public class Cirno_IceFall : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x016;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 5;
@@ -491,7 +491,7 @@ namespace TouhouHeartstone.Builtin
     public class Clownpiece : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x017;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
@@ -551,7 +551,7 @@ namespace TouhouHeartstone.Builtin
     public class ForestFairy : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x018;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 8;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
@@ -591,7 +591,7 @@ namespace TouhouHeartstone.Builtin
     public class EternityLarva : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x019;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
@@ -633,7 +633,7 @@ namespace TouhouHeartstone.Builtin
     public class LilyWhite : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x020;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
@@ -672,7 +672,7 @@ namespace TouhouHeartstone.Builtin
     public class Daiyousei_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x021;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
@@ -701,7 +701,7 @@ namespace TouhouHeartstone.Builtin
     public class Cirno_N_YYM : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x022;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
@@ -730,7 +730,7 @@ namespace TouhouHeartstone.Builtin
     public class Cirno_N_HMX : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x023;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
@@ -764,7 +764,7 @@ namespace TouhouHeartstone.Builtin
     public class LettyWhiterock_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x024;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
@@ -797,7 +797,7 @@ namespace TouhouHeartstone.Builtin
     public class Chen_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x025;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
@@ -828,7 +828,7 @@ namespace TouhouHeartstone.Builtin
     public class Koakuma_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x026;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 3;
@@ -864,7 +864,7 @@ namespace TouhouHeartstone.Builtin
     public class AliceMargatroid_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x027;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
@@ -895,7 +895,7 @@ namespace TouhouHeartstone.Builtin
     public class Doll_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x028;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -909,7 +909,7 @@ namespace TouhouHeartstone.Builtin
     public class PatchouliKnowledge_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x029;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 3;
@@ -947,7 +947,7 @@ namespace TouhouHeartstone.Builtin
     public class LilyWhite_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x030;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
@@ -978,7 +978,7 @@ namespace TouhouHeartstone.Builtin
     public class KonpakuYoumu_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x031;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
@@ -991,7 +991,7 @@ namespace TouhouHeartstone.Builtin
     public class RemiliaScarlet_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x032;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 6;
@@ -1028,7 +1028,7 @@ namespace TouhouHeartstone.Builtin
     public class FlandreScarlet_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x033;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 4;
@@ -1062,7 +1062,7 @@ namespace TouhouHeartstone.Builtin
     public class IzayoiSakuya_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x037;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 1;
@@ -1099,7 +1099,7 @@ namespace TouhouHeartstone.Builtin
     public class YakumoRan_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x038;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 7;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 5;
@@ -1138,7 +1138,7 @@ namespace TouhouHeartstone.Builtin
     public class SaigyoujiYuyuko_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x039;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 8;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
@@ -1167,7 +1167,7 @@ namespace TouhouHeartstone.Builtin
     public class YakumoYukari_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x040;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 10;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
@@ -1203,7 +1203,7 @@ namespace TouhouHeartstone.Builtin
     public class Rumia_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x041;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
@@ -1239,7 +1239,7 @@ namespace TouhouHeartstone.Builtin
     public class LunasaPrismriver_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x042;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
@@ -1261,28 +1261,28 @@ namespace TouhouHeartstone.Builtin
 
         public static async Task bandAssemble(CardEngine game, Player player, int position)
         {
-            var lunasa = player.getField().FirstOrDefault(c => c.define.defineNumber == LunasaPrismriver_N.ID);
+            var lunasa = player.getField().FirstOrDefault(c => c.define.id == LunasaPrismriver_N.ID);
             if (lunasa == null)
             {
-                lunasa = player.findCardsWherever(game, c => c.define.defineNumber == LunasaPrismriver_N.ID,
+                lunasa = player.findCardsWherever(game, c => c.define.id == LunasaPrismriver_N.ID,
                     PileFlag.self | PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
                 if (lunasa != null)
                     await player.tryEnterField(game, lunasa.pile, lunasa, position);
             }
 
-            var merlin = player.getField().FirstOrDefault(c => c.define.defineNumber == MerlinPrismriver_N.ID);
+            var merlin = player.getField().FirstOrDefault(c => c.define.id == MerlinPrismriver_N.ID);
             if (merlin == null)
             {
-                merlin = player.findCardsWherever(game, c => c.define.defineNumber == MerlinPrismriver_N.ID,
+                merlin = player.findCardsWherever(game, c => c.define.id == MerlinPrismriver_N.ID,
                     PileFlag.self | PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
                 if (merlin != null)
                     await player.tryEnterField(game, merlin.pile, merlin, lunasa.pile.indexOf(lunasa) + 1);
             }
 
-            var lyrica = player.getField().FirstOrDefault(c => c.define.defineNumber == LyricaPrismriver_N.ID);
+            var lyrica = player.getField().FirstOrDefault(c => c.define.id == LyricaPrismriver_N.ID);
             if (lyrica == null)
             {
-                lyrica = player.findCardsWherever(game, c => c.define.defineNumber == LyricaPrismriver_N.ID,
+                lyrica = player.findCardsWherever(game, c => c.define.id == LyricaPrismriver_N.ID,
                     PileFlag.self | PileFlag.hand | PileFlag.grave | PileFlag.deck).random(game);
                 if (lyrica != null)
                     await player.tryEnterField(game, lyrica.pile, lyrica, merlin.pile.indexOf(merlin) + 1);
@@ -1296,7 +1296,7 @@ namespace TouhouHeartstone.Builtin
     public class MerlinPrismriver_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x043;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
@@ -1327,7 +1327,7 @@ namespace TouhouHeartstone.Builtin
     public class LyricaPrismriver_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x044;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
@@ -1360,7 +1360,7 @@ namespace TouhouHeartstone.Builtin
     public class WriggleNightbug_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x045;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
@@ -1394,7 +1394,7 @@ namespace TouhouHeartstone.Builtin
     public class Beetle_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x046;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -1421,7 +1421,7 @@ namespace TouhouHeartstone.Builtin
     public class Moth_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x047;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -1448,7 +1448,7 @@ namespace TouhouHeartstone.Builtin
     public class Spider_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x048;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 1;
@@ -1475,7 +1475,7 @@ namespace TouhouHeartstone.Builtin
     public class MystiaLorelei_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x049;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
@@ -1511,7 +1511,7 @@ namespace TouhouHeartstone.Builtin
     public class ReisenUdongeinInaba_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x050;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
 
@@ -1551,7 +1551,7 @@ namespace TouhouHeartstone.Builtin
     public class TewiInaba_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x051;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 3;
@@ -1587,7 +1587,7 @@ namespace TouhouHeartstone.Builtin
     public class KamishirasawaKeine_Human_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x052;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 4;
@@ -1626,7 +1626,7 @@ namespace TouhouHeartstone.Builtin
     public class KamishirasawaKeine_Beast_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x053;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 2;
@@ -1671,7 +1671,7 @@ namespace TouhouHeartstone.Builtin
     public class HuziwaraNoMokou_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x054;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 8;
         public override int attack { get; set; } = 7;
         public override int life { get; set; } = 3;
@@ -1716,7 +1716,7 @@ namespace TouhouHeartstone.Builtin
     public class YagokoroEirin_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x055;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 10;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
@@ -1729,7 +1729,7 @@ namespace TouhouHeartstone.Builtin
                 CardDefine[] options = g.getDefines().Where(c1 => c1 is GameOfLife_Rise_N ||
                                                                 c1 is GameOfLife_Fall_N ).ToArray();
                 var choice = await c.getOwner().chooseOne(g,options);
-                switch (choice.choose.defineNumber)
+                switch (choice.choose.id)
                 {
                     case GameOfLife_Rise_N.ID:
                         if (t.getCurrentLife(g) <= t.getLife(g) / 2)
@@ -1766,7 +1766,7 @@ namespace TouhouHeartstone.Builtin
     public class GameOfLife_Rise_N : SpellCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x056;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 10;
         public override bool isToken { get; set; } = true;
 
@@ -1792,7 +1792,7 @@ namespace TouhouHeartstone.Builtin
     public class GameOfLife_Fall_N : SpellCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x057;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 10;
         public override bool isToken { get; set; } = true;
 
@@ -1817,7 +1817,7 @@ namespace TouhouHeartstone.Builtin
     public class HouraisanKaguya_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x058;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 10;
         public override int attack { get; set; } = 5;
         public override int life { get; set; } = 10;
@@ -1898,7 +1898,7 @@ namespace TouhouHeartstone.Builtin
     public class ReturnOfImperishableNight_Eternity_N : SpellCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x059;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 10;
         public override bool isToken { get; set; } = true;
 
@@ -1924,7 +1924,7 @@ namespace TouhouHeartstone.Builtin
     public class EndOfImperishableNight_Instant_N : SpellCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x060;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 10;
         public override bool isToken { get; set; } = true;
 
@@ -1949,7 +1949,7 @@ namespace TouhouHeartstone.Builtin
     public class HoanMeirin_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x061;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 7;
@@ -1980,7 +1980,7 @@ namespace TouhouHeartstone.Builtin
     public class AkiSizuha_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x062;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 4;
@@ -2010,7 +2010,7 @@ namespace TouhouHeartstone.Builtin
     public class AkiMinoriko_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x063;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
@@ -2041,7 +2041,7 @@ namespace TouhouHeartstone.Builtin
     public class KagiyamaHina_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x064;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
@@ -2075,7 +2075,7 @@ namespace TouhouHeartstone.Builtin
     public class KawasiroNitori_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x065;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
@@ -2102,7 +2102,7 @@ namespace TouhouHeartstone.Builtin
     public class InubashiriMomizi_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x066;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 5;
@@ -2140,7 +2140,7 @@ namespace TouhouHeartstone.Builtin
     public class ShameimaruAya_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x067;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 3;
@@ -2174,7 +2174,7 @@ namespace TouhouHeartstone.Builtin
     public class MoriyaSuwako_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x068;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
@@ -2209,7 +2209,7 @@ namespace TouhouHeartstone.Builtin
     public class Frog_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x069;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
@@ -2224,7 +2224,7 @@ namespace TouhouHeartstone.Builtin
     public class Sanae_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x070;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 7;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 6;
@@ -2265,7 +2265,7 @@ namespace TouhouHeartstone.Builtin
     public class YasakaKanako_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x071;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 10;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
@@ -2311,7 +2311,7 @@ namespace TouhouHeartstone.Builtin
     public class Neutral_73 : SpellCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x073;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         public override bool isToken { get; set; } = true;
@@ -2344,7 +2344,7 @@ namespace TouhouHeartstone.Builtin
     public class Neutral_74 : SpellCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x074;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
 
         public override bool isToken { get; set; } = true;
@@ -2375,7 +2375,7 @@ namespace TouhouHeartstone.Builtin
     public class Kisume : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x075;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
@@ -2406,7 +2406,7 @@ namespace TouhouHeartstone.Builtin
     public class KurodaniYamame : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x076;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
 
@@ -2465,7 +2465,7 @@ namespace TouhouHeartstone.Builtin
     public class MizuhashiParsee : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x077;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
 
@@ -2521,7 +2521,7 @@ namespace TouhouHeartstone.Builtin
     public class HoshigumaYugi : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x078;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 9;
         public override int attack { get; set; } = 7;
 
@@ -2586,7 +2586,7 @@ namespace TouhouHeartstone.Builtin
     public class KomeijiSatori : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x079;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 1;
 
@@ -2648,7 +2648,7 @@ namespace TouhouHeartstone.Builtin
     public class KaenbyouRin : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x080;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 1;
 
@@ -2713,7 +2713,7 @@ namespace TouhouHeartstone.Builtin
     public class ReiujiUtsuho : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x081;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 6;
 
@@ -2765,7 +2765,7 @@ namespace TouhouHeartstone.Builtin
     public class KomeijiKoishi : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x082;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 1;
 

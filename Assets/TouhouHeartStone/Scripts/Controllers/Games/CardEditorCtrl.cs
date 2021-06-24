@@ -9,7 +9,7 @@ using Game;
 
 namespace Controllers
 {
-    public partial class CardEditorCtrl : IController<MainCtrl>
+    partial class CardEditorCtrl : IController<MainCtrl>
     {
         public CardEditorCtrl(IAppManager app, MainCtrl main, CardEditorPanel compo)
         {
@@ -30,6 +30,7 @@ namespace Controllers
             _compo.onChangeLife += onChangeLife;
             _compo.onChangeTag += onChangeTag;
             _compo.onClickEditEffectButton += onClickEditEffectButton;
+            _compo.onClickAddEffectButton += onClickAddEffectButton;
         }
         /// <summary>
         /// 打开一张卡片进行编辑
@@ -53,6 +54,8 @@ namespace Controllers
                 _compo.setTag(tags[0]);
             else
                 _compo.setTag(string.Empty);
+            GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
+            updateEffectList(effects);
         }
         void setCurSkinIndex(int skinIndex)
         {
@@ -69,6 +72,15 @@ namespace Controllers
             _compo.setSubName(_curCardSkin.subname);
             _compo.setImage(_curCardSkin.imagePath);
             _compo.setDesc(_curCardSkin.desc);
+        }
+        void updateEffectList(GeneratedEffect[] effects)
+        {
+            string[] effectNames = new string[effects.Length];
+            for (int i = 0; i < effectNames.Length; i++)
+            {
+                effectNames[i] = app.langManager.getString(StringTable.EDITOR_EDIT_EFFECT) + i;
+            }
+            _compo.setEffects(effectNames);
         }
         #region UI回调
         void onChangeSkin(int skinIndex)
@@ -199,9 +211,19 @@ namespace Controllers
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
         /// </summary>
-        void onClickEditEffectButton()
+        void onClickEditEffectButton(int index)
         {
-
+            GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
+            main.lobbySceneCtrl.effectEditorCtrl.displayEffect(effect);
+        }
+        /// <summary>
+        /// 当点击添加效果按钮，为卡牌定义添加一个新的空效果，并刷新效果列表。
+        /// </summary>
+        void onClickAddEffectButton()
+        {
+            GeneratedEffect[] effects = _cardDefine.getEffects().OfType<GeneratedEffect>().Append(new GeneratedEffect()).ToArray();
+            _cardDefine.setEffects(effects);
+            updateEffectList(effects);
         }
         #endregion
         public IAppManager app { get; }

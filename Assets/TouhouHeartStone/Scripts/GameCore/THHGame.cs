@@ -28,7 +28,7 @@ namespace TouhouHeartstone
         public static Player createPlayer(this CardEngine game, int id, string name, MasterCardDefine master,
             IEnumerable<CardDefine> deck)
         {
-            return game.getRule().createPlayer(game, id, name, master.defineNumber, deck.Select(d => d.defineNumber).ToArray()) as Player;
+            return game.getRule().createPlayer(game, id, name, master.id, deck.Select(d => d.id).ToArray()) as Player;
         }
 
         public static Player getPlayer(this CardEngine game, int id)
@@ -236,8 +236,8 @@ namespace TouhouHeartstone
         public static async Task<CardDefine> askSelect(this CardEngine game, Player player, IEnumerable<CardDefine> cards,
             int count = 3, string title = null)
         {
-            var selectedId = await game.askSelect(player, cards.Select(c => c.defineNumber).ToArray(), count, title);
-            CardDefine selectedCard = cards.First(c => c.defineNumber == selectedId);
+            var selectedId = await game.askSelect(player, cards.Select(c => c.id).ToArray(), count, title);
+            CardDefine selectedCard = cards.First(c => c.id == selectedId);
             return selectedCard;
         }
     }
@@ -378,7 +378,7 @@ namespace TouhouHeartstone
                 game.logger.logError("非法角色ID" + master + "被替换为灵梦");
             }
 
-            int luckyCoinId = new LuckyCoin().defineNumber;
+            int luckyCoinId = new LuckyCoin().id;
             for (int i = 1; i < deck.Length; i++)
             {
                 var define = game.getDefine(deck[i]);
@@ -989,7 +989,7 @@ namespace TouhouHeartstone
                 {
                     player.name,
                     card?.getFormatString(),
-                    string.Join("，", targets?.Select(c => "{card:" + c.define.defineNumber + "}"))
+                    string.Join("，", targets?.Select(c => "{card:" + c.define.id + "}"))
                 };
             }
         }

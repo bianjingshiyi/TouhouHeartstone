@@ -625,7 +625,7 @@ namespace TouhouHeartstone
                         show = cards.random(game);
                         await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
                         {
-                            game.logger.logTrace("揭示了{card:" + show.define.defineNumber + "}");
+                            game.logger.logTrace("揭示了{card:" + show.define.id + "}");
                         });
                         return show;
                     }
@@ -643,7 +643,7 @@ namespace TouhouHeartstone
                         show = cards.Where(c => c.isSpell()).random(game);
                         await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
                         {
-                            game.logger.logTrace("揭示了{card:" + show.define.defineNumber + "}");
+                            game.logger.logTrace("揭示了{card:" + show.define.id + "}");
                         });
                         return show;
 
@@ -662,7 +662,7 @@ namespace TouhouHeartstone
                         show = cards.Where(c => c.isServant()).random(game);
                         await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
                         {
-                            game.logger.logTrace("揭示了{card:" + show.define.defineNumber + "}");
+                            game.logger.logTrace("揭示了{card:" + show.define.id + "}");
                         });
                         return show;
 
@@ -681,7 +681,7 @@ namespace TouhouHeartstone
                         show = cards.Where(c => c.isItem()).random(game);
                         await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
                         {
-                            game.logger.logTrace("揭示了{card:" + show.define.defineNumber + "}");
+                            game.logger.logTrace("揭示了{card:" + show.define.id + "}");
                         });
                         return show;
 

@@ -414,7 +414,7 @@ namespace UI
         /// <returns></returns>
         private static bool isMaster(CardDefine c)
         {
-            if (c.defineNumber == 0)
+            if (c.id == 0)
                 return false;
             if (c.GetType().Assembly != typeof(THHGame).Assembly)
                 return false;
@@ -480,10 +480,10 @@ namespace UI
         void updateUIDeckCardsList()
         {
             BuildDeckList.clearItems();
-            foreach (var cards in currentDeckCards.Select(card => avaliableCards.FirstOrDefault(c => c.defineNumber == card)).Where(c => c != null).GroupBy(c => c.defineNumber))
+            foreach (var cards in currentDeckCards.Select(card => avaliableCards.FirstOrDefault(c => c.id == card)).Where(c => c != null).GroupBy(c => c.id))
             {
                 var item = BuildDeckList.addItem();
-                var skin = ui.getManager<CardManager>().getSkin(cards.First().defineNumber);
+                var skin = ui.getManager<CardManager>().getSkin(cards.First().id);
                 item.update(cards.First(), skin, cards.Count());
             }
             BuildDeckList.sortItems((a, b) =>
@@ -491,7 +491,7 @@ namespace UI
                 if (a.card.getCost() != b.card.getCost())
                     return a.card.getCost() - b.card.getCost();
                 else
-                    return a.card.defineNumber - b.card.defineNumber;
+                    return a.card.id - b.card.id;
             });
         }
 
@@ -534,7 +534,7 @@ namespace UI
                     )
                 )
             {
-                if (ui.getManager<CardManager>().tryGetSkin(card.defineNumber, out var skin))
+                if (ui.getManager<CardManager>().tryGetSkin(card.id, out var skin))
                 {
                     if (FilterPanel.cardFilter(card, skin))
                     {
@@ -565,7 +565,7 @@ namespace UI
             for (int i = 0; i < displayedCardList.Length; i++)
             {
                 var card = displayedCardList[i];
-                displayedCardList[i].useCount = currentDeckCards.Where(id => id == card.define.defineNumber).Count();
+                displayedCardList[i].useCount = currentDeckCards.Where(id => id == card.define.id).Count();
                 BuildCardList.SetContent(i, displayedCardList[i]);
             }
         }
@@ -578,7 +578,7 @@ namespace UI
             for (int i = 0; i < displayedCardList.Length; i++)
             {
                 var card = displayedCardList[i];
-                if (card.define.defineNumber == cardID)
+                if (card.define.id == cardID)
                 {
                     displayedCardList[i].useCount = count;
                     BuildCardList.SetContent(i, displayedCardList[i]);
@@ -595,7 +595,7 @@ namespace UI
 
         public void onDragCardItem(BuildCardListItem item, PointerEventData pointer)
         {
-            var cd = avaliableCards.Where(i => i.defineNumber == item.CardID).FirstOrDefault();
+            var cd = avaliableCards.Where(i => i.id == item.CardID).FirstOrDefault();
             onDragItem(cd, pointer.position);
         }
         public void onDragDeckItem(BuildDeckListItem item, PointerEventData pointer)
@@ -621,12 +621,12 @@ namespace UI
             }
             else
             {
-                if (currentDeckCards.Contains(item.card.defineNumber))
-                    currentDeckCards.Remove(item.card.defineNumber);
+                if (currentDeckCards.Contains(item.card.id))
+                    currentDeckCards.Remove(item.card.id);
 
                 // 更新可用信息
-                var cardCount = currentDeckCards.Where(i => i == item.card.defineNumber).Count();
-                updateCardRemainTextAt(item.card.defineNumber, cardCount);
+                var cardCount = currentDeckCards.Where(i => i == item.card.id).Count();
+                updateCardRemainTextAt(item.card.id, cardCount);
 
                 // 更新UI
                 if (item.count < 1)
@@ -651,8 +651,8 @@ namespace UI
                 DragCard.Card.display();
                 DragCard.BuildDeckListItem.hide();
             }
-            DragCard.BuildDeckListItem.update(card, ui.getManager<CardManager>().getSkin(card.defineNumber), 1);
-            DragCard.Card.setCard(card, ui.getManager<CardManager>().getSkin(card.defineNumber));
+            DragCard.BuildDeckListItem.update(card, ui.getManager<CardManager>().getSkin(card.id), 1);
+            DragCard.Card.setCard(card, ui.getManager<CardManager>().getSkin(card.id));
         }
 
         void showMessage(string msg)
@@ -686,7 +686,7 @@ namespace UI
         private void onReleaseItem()
         {
             var card = DragCard.BuildDeckListItem.card;
-            var cardCount = currentDeckCards.Where(i => i == card.defineNumber).Count();
+            var cardCount = currentDeckCards.Where(i => i == card.id).Count();
 
             // 最多30张牌
             if (currentDeckCards.Count >= 30)
@@ -715,11 +715,11 @@ namespace UI
             }
 
             // 添加卡
-            currentDeckCards.Add(card.defineNumber);
-            cardCount = currentDeckCards.Where(i => i == card.defineNumber).Count();
+            currentDeckCards.Add(card.id);
+            cardCount = currentDeckCards.Where(i => i == card.id).Count();
 
             // 更新可用信息
-            updateCardRemainTextAt(card.defineNumber, cardCount);
+            updateCardRemainTextAt(card.id, cardCount);
 
             // 标记为已经修改
             onDeckCardChange();
@@ -735,7 +735,7 @@ namespace UI
             else
             {
                 var newItem = BuildDeckList.addItem();
-                newItem.update(DragCard.BuildDeckListItem.card, ui.getManager<CardManager>().getSkin(DragCard.BuildDeckListItem.card.defineNumber), 1);
+                newItem.update(DragCard.BuildDeckListItem.card, ui.getManager<CardManager>().getSkin(DragCard.BuildDeckListItem.card.id), 1);
                 deckItem = newItem;
             }
 
@@ -744,7 +744,7 @@ namespace UI
                 if (a.card.getCost() != b.card.getCost())
                     return a.card.getCost() - b.card.getCost();
                 else
-                    return a.card.defineNumber - b.card.defineNumber;
+                    return a.card.id - b.card.id;
             });
         }
 
@@ -754,7 +754,7 @@ namespace UI
             DragCard.Card.display();
             DragCard.BuildDeckListItem.hide();
 
-            DragCard.Card.setCard(item.card, ui.getManager<CardManager>().getSkin(item.card.defineNumber));
+            DragCard.Card.setCard(item.card, ui.getManager<CardManager>().getSkin(item.card.id));
 
             var rt = DragCard.rectTransform;
             var rt2 = item.GetComponent<RectTransform>();

@@ -12,7 +12,7 @@ using System.IO;
 using MukioI18n;
 using NitoriNetwork.Common;
 using System.Threading.Tasks;
-
+using UnityEngine;
 namespace UI
 {
     public partial class ActionNodeGraphPanel
@@ -148,6 +148,18 @@ namespace UI
         /// 当点击返回之前编辑的动作图按钮
         /// </summary>
         public event Action onClickReturnButton;
+        /// <summary>
+        /// 自动生成位置的宽度间隔
+        /// </summary>
+        public float autoPosSpacingWidth => _autoPosSpacingWidth;
+        [SerializeField]
+        float _autoPosSpacingWidth = 600;
+        /// <summary>
+        /// 自动生成位置的高度间隔
+        /// </summary>
+        public float autoPosSpacingHeight => _autoPosSpacingHeight;
+        [SerializeField]
+        float _autoPosSpacingHeight = 300;
     }
     public partial class ActionNodeItem
     {
@@ -167,6 +179,14 @@ namespace UI
         public void getPos(out float x, out float y)
         {
             throw new NotImplementedException();
+        }
+        public float posX
+        {
+            get { throw new NotImplementedException(); }
+        }
+        public float posY
+        {
+            get { throw new NotImplementedException(); }
         }
     }
     public struct ActionNodeValueInfo

@@ -6,7 +6,7 @@ namespace TouhouHeartstone.Builtin
     public class Marisa : MasterCardDefine
     {
         public const int ID = 0x00200000 | CATEGORY.MASTER | 0x000;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
         public override int skillID { get; set; } = StartdustBullet.ID;
 
@@ -25,7 +25,7 @@ namespace TouhouHeartstone.Builtin
     public class StartdustBullet : SkillCardDefine
     {
         public const int ID = Marisa.ID | CATEGORY.SKILL | 0x000;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new IEffect[0];
@@ -46,7 +46,7 @@ namespace TouhouHeartstone.Builtin
     public class MasterSpark : SpellCardDefine
     {
         public const int ID = Marisa.ID | CATEGORY.SPELL | 0x000;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
 
         private IEffect[] effects1 = new IEffect[]
@@ -82,7 +82,7 @@ namespace TouhouHeartstone.Builtin
     public class MiniHakkero : ItemCardDefine
     {
         public const int ID = Marisa.ID | CATEGORY.ITEM | 0x001;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 3;
@@ -93,7 +93,7 @@ namespace TouhouHeartstone.Builtin
     public class StardustReverie : SpellCardDefine
     {
         public const int ID = Marisa.ID | CATEGORY.SPELL | 0x002;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new IEffect[]
@@ -129,7 +129,7 @@ namespace TouhouHeartstone.Builtin
     public class MagicEspionage : SpellCardDefine
     {
         public const int ID = Marisa.ID | CATEGORY.SPELL | 0x003;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
 
         private IEffect[] effects1 = new IEffect[]
@@ -165,7 +165,7 @@ namespace TouhouHeartstone.Builtin
     public class MagicBroom : ItemCardDefine
     {
         public const int ID = Marisa.ID | CATEGORY.ITEM | 0x004;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
@@ -176,7 +176,7 @@ namespace TouhouHeartstone.Builtin
     public class BlazingStar : SpellCardDefine
     {
         public const int ID = Marisa.ID | CATEGORY.SPELL | 0x005;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
 
         private IEffect[] effects1 = new IEffect[]
@@ -216,7 +216,7 @@ namespace TouhouHeartstone.Builtin
     public class MarisasBigHat : SpellCardDefine
     {
         public const int ID = Marisa.ID | CATEGORY.SPELL | 0x006;
-        public override int defineNumber { get; set; } = ID;
+        public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
 
         private IEffect[] effects1 = new IEffect[]

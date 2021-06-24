@@ -162,15 +162,15 @@ namespace Tests
             .Concat(Enumerable.Repeat(game.getDefine<MetalFatigue>(), 2)));
 
             game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.defineNumber == DefaultServant.ID), 0);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 0);
 
             elusivePlayer.cmdTurnEnd(game);
 
             game.skipTurnUntil(() => defaultPlayer.getGem() >= game.getDefine<DefaultServant>().cost && game.getCurrentPlayer() == defaultPlayer);
-            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.defineNumber == DefaultServant.ID), 0);
+            defaultPlayer.cmdUse(game, defaultPlayer.getHand().First(c => c.define.id == DefaultServant.ID), 0);
 
             game.skipTurnUntil(() => elusivePlayer.getGem() >= game.getDefine<MetalFatigue>().cost && game.getCurrentPlayer() == elusivePlayer);
-            elusivePlayer.cmdUse(game, elusivePlayer.getHand().First(c => c.define.defineNumber == MetalFatigue.ID), 0);
+            elusivePlayer.cmdUse(game, elusivePlayer.getHand().First(c => c.define.id == MetalFatigue.ID), 0);
 
             game.Dispose();
         }
