@@ -58,7 +58,7 @@ namespace Controllers
         /// 打开一个触发器的动作节点图
         /// </summary>
         /// <param name="trigger"></param>
-        public void openTriggerGraph(TriggerGraph trigger, ActionNodeGraphInfo graphInfo)
+        public void openTriggerGraph(TriggerGraph trigger)
         {
             _editObjectStack.Clear();
 
@@ -70,7 +70,6 @@ namespace Controllers
             _valueRef = null;
             _targetChecker = null;
             _trigger = trigger;
-            _graphInfo = graphInfo;
             //创建入口节点
             _entryNodeItem = _compo.createTriggerNode(0, 0, _trigger.eventName, _trigger.targetCheckerList.Count);
             if (_graphInfo != null)
@@ -78,31 +77,31 @@ namespace Controllers
                 //创建根节点
                 if (trigger.action != null)
                 {
-                    var actionNodeItem = createGraph4ActionNode(trigger.action, _graphInfo);
+                    var actionNodeItem = createGraph4ActionNode(trigger.action);
                     _compo.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
                 }
                 //创建离散节点
             }
             if (trigger.action != null)
             {
-                _graphInfo = graphInfoList.FirstOrDefault(g => g.rootActionNodeId == trigger.action.id);
-                if (_graphInfo == null)
-                {
-                    _graphInfo = new ActionNodeGraphInfo(trigger.action.id);
-                    _graphInfo.actionInfoDict[trigger.action.id] = new ActionNodeGraphNodeInfo(_compo.autoPosSpacingWidth, 0);
-                    graphInfoList.Add(_graphInfo);
-                }
-                var actionNodeItem = createGraph4ActionNode(trigger.action, _graphInfo);
+                var actionNodeItem = createGraph4ActionNode(trigger.action);
                 _compo.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
             }
         }
         #endregion
         #region 私有方法
+        /// <summary>
+        /// 打开某个效果的生效或者失效动作图
+        /// </summary>
+        /// <param name="effect"></param>
+        /// <param name="entryType"></param>
         void openActionGraph(GeneratedEffect effect, EntryType entryType)
         {
+            //清理数据
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
             _compo.clearGraph();
+            //缓存数据
             _entryType = entryType;
             _effect = effect;
             _valueRef = null;
@@ -112,19 +111,12 @@ namespace Controllers
             {
                 if (_effect.onEnableAction != null)
                 {
-                    _graphInfo = graphInfoList.FirstOrDefault(g => g.rootActionNodeId == _effect.onEnableAction.id);
-                    if (_graphInfo == null)
-                    {
-                        _graphInfo = new ActionNodeGraphInfo(_effect.onEnableAction.id)
-
-
-                    }
                     _entryNodeItem = _compo.createNode(0, 0,
                         app.langManager.getString(StringTable.EDITOR_NODE_NAME_ONENABLE),
                         new string[0],
                         new ActionNodeValueInfo[0],
                         new string[] { string.Empty });
-                    var actionNodeItem = createGraph4ActionNode(_effect.onEnableAction, graphInfo);
+                    var actionNodeItem = createGraph4ActionNode(_effect.onEnableAction);
                     _compo.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
                 }
                 else
@@ -140,13 +132,12 @@ namespace Controllers
             {
                 if (_effect.onDisableAction != null)
                 {
-                    ActionNodeGraphInfo graphInfo = graphInfoList.First(g => g.rootActionNodeId == _effect.onDisableAction.id);
-                    _entryNodeItem = _compo.createNode(graphInfo.entryInfo.posX, graphInfo.entryInfo.posY,
+                    _entryNodeItem = _compo.createNode(0, 0,
                         app.langManager.getString(StringTable.EDITOR_NODE_NAME_ONDISABLE),
                         new string[0],
                         new ActionNodeValueInfo[0],
                         new string[] { string.Empty });
-                    var actionNodeItem = createGraph4ActionNode(_effect.onDisableAction, graphInfo);
+                    var actionNodeItem = createGraph4ActionNode(_effect.onDisableAction);
                     _compo.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
                 }
                 else
@@ -175,9 +166,9 @@ namespace Controllers
             _valueRef = valueRef;
             _targetChecker = null;
             _trigger = null;
-            ActionNodeGraphInfo graphInfo = graphInfoList.First(g => g.rootActionNodeId == valueRef.action.id);
-            var actionNodeItem = createGraph4ActionNode(valueRef.action, graphInfo);
-            _outputNodeItem = _compo.createNode(graphInfo.outputInfo.posX, graphInfo.outputInfo.posY, app.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
+            var actionNodeItem = createGraph4ActionNode(valueRef.action);
+            _outputNodeItem = _compo.createNode(0, 0,
+                app.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
                 new string[] { string.Empty },
                 new ActionNodeValueInfo[0],
                 new string[0]);
@@ -193,9 +184,9 @@ namespace Controllers
             _valueRef = null;
             _targetChecker = targetChecker;
             _trigger = null;
-            ActionNodeGraphInfo graphInfo = graphInfoList.First(g => g.rootActionNodeId == targetChecker.condition.action.id);
-            var actionNodeItem = createGraph4ActionNode(targetChecker.condition.action, graphInfo);
-            _outputNodeItem = _compo.createNode(graphInfo.outputInfo.posX, graphInfo.outputInfo.posY, app.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
+            var actionNodeItem = createGraph4ActionNode(targetChecker.condition.action);
+            _outputNodeItem = _compo.createNode(0, 0,
+                app.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
                 new string[] { string.Empty },
                 new ActionNodeValueInfo[]
                 {
@@ -802,7 +793,7 @@ namespace Controllers
         }
     }
     /// <summary>
-    /// 动作节点图的编辑器信息，每张图以根节点为标记。
+    /// 动作节点图的编辑器信息，保存了每个效果的所有动作节点信息。
     /// </summary>
     [Serializable]
     class ActionNodeGraphInfo

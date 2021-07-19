@@ -22,7 +22,6 @@ namespace UI
         {
             _deleteButton = transform.Find(PATH_DELETEBUTTON).GetComponent<Button>();
             _deleteButton.onClick.AddListener(deleteButtonClickCallback);
-            _buildItemBuildDeckListItem = transform.Find(PATH_BUILDITEMBUILDDECKLISTITEM).GetComponent<BuildDeckListItem>();
             _backButton = transform.Find(PATH_BACKBUTTON).GetComponent<Button>();
             _backButton.onClick.AddListener(backButtonClickCallback);
             _headImageButton = transform.Find(PATH_HEADIMAGEBUTTON).GetComponent<Button>();
@@ -39,7 +38,6 @@ namespace UI
             _backButtonBlack = transform.Find(PATH_BACKBUTTONBLACK).GetComponent<ButtonBlack>();
             _fileList = transform.Find(PATH_FILELIST).GetComponent<FileList>();
             _buildCardList = transform.Find(PATH_BUILDCARDLIST).GetComponent<BuildCardList>();
-            _buildDeckList = transform.Find(PATH_BUILDDECKLIST).GetComponent<BuildDeckList>();
             _cardPoolListViewImage = transform.Find(PATH_CARDPOOLLISTVIEWIMAGE).GetComponent<Image>();
             _backButtonBlackIcon = transform.Find(PATH_BACKBUTTONBLACKICON).GetComponent<ButtonBlackIcon>();
             _saveButtonBlackIcon = transform.Find(PATH_SAVEBUTTONBLACKICON).GetComponent<ButtonBlackIcon>();
@@ -72,19 +70,6 @@ namespace UI
             if ((onDeleteButtonClick != null))
             {
                 onDeleteButtonClick(this);
-            }
-        }
-        public BuildDeckListItem _buildItemBuildDeckListItem;
-        public const string PATH_BUILDITEMBUILDDECKLISTITEM = "CardPoolListPanel/CardPoolEditView/DeckView/Viewport/BuildDeckList/BuildItem";
-        public BuildDeckListItem buildItemBuildDeckListItem
-        {
-            get
-            {
-                if ((_buildItemBuildDeckListItem == null))
-                {
-                    _buildItemBuildDeckListItem = transform.Find(PATH_BUILDITEMBUILDDECKLISTITEM).GetComponent<BuildDeckListItem>();
-                }
-                return _buildItemBuildDeckListItem;
             }
         }
         public Button _backButton;
@@ -283,19 +268,6 @@ namespace UI
                     _buildCardList = transform.Find(PATH_BUILDCARDLIST).GetComponent<BuildCardList>();
                 }
                 return _buildCardList;
-            }
-        }
-        public BuildDeckList _buildDeckList;
-        public const string PATH_BUILDDECKLIST = "CardPoolListPanel/CardPoolEditView/DeckView/Viewport/BuildDeckList";
-        public BuildDeckList buildDeckList
-        {
-            get
-            {
-                if ((_buildDeckList == null))
-                {
-                    _buildDeckList = transform.Find(PATH_BUILDDECKLIST).GetComponent<BuildDeckList>();
-                }
-                return _buildDeckList;
             }
         }
         public Image _cardPoolListViewImage;

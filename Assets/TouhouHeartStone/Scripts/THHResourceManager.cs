@@ -15,6 +15,7 @@ namespace BJSYGameCore
 {
     public class THHResourceManager : ResourceManager
     {
+        #region 公有方法
         [Obsolete("Use loadExcelAsDataSet instead.")]
         public Task<Workbook> loadExcel(string path, PlatformCompability platform = null, string curDir = null)
         {
@@ -95,6 +96,53 @@ namespace BJSYGameCore
                 return Task.FromResult(Resources.Load<T>(path.Replace("res:", "")));
             throw new NotImplementedException();
         }
+        public async override Task<T> loadAsync<T>(string path, string dir)
+        {
+            T res;
+            if (string.IsNullOrEmpty(path))
+                throw new ArgumentException("路径不能为空", nameof(path));
+            if (loadFromCache<T>(path, out var cachedRes))
+            {
+                //有缓存资源，直接返回缓存资源
+                return cachedRes;
+            }
+            else if (tryGetLoadOperation(path, typeof(T), out LoadResourceOperationBase operation))
+            {
+                //正在加载这个资源，等待加载过程完成并返回，避免重复加载
+                await operation.task;
+                res = (T)operation.resource;
+            }
+            else if (path.StartsWith(PATH_RES_PREFIX))
+            {
+                //从资源中加载
+                ResourceRequest request = Resources.LoadAsync(path.Substring(PATH_RES_PREFIX.Length, path.Length - PATH_RES_PREFIX.Length), typeof(T));
+                operation = new LoadResourceOperation(path, typeof(T), request);
+                addLoadOperation(operation);
+                await operation.task;
+                res = (T)operation.resource;
+            }
+            else
+            {
+                //尝试从外部文件中加载
+                if (typeof(Sprite).IsAssignableFrom(typeof(T)))
+                {
+                    //加载Sprite
+                    Texture2D texture = await loadTexture(path, dir);
+                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+                    res = (T)(object)sprite;
+                }
+                else if (typeof(Texture2D).IsAssignableFrom(typeof(T)))
+                {
+                    //加载Texture
+                    res = (T)(object)await loadTexture(path, dir);
+                }
+                else
+                    throw new InvalidOperationException("无法加载资源" + path);
+            }
+            saveToCache(path, res);
+            return res;
+        }
+        #endregion
         /// <summary>
         /// 尝试修改材质的扩展名，以便做Fallback
         /// </summary>
@@ -332,7 +380,7 @@ namespace BJSYGameCore
                 if (File.Exists(filePath))
                     return new FileStream(filePath, FileMode.Open);
             }
-            throw new FileNotFoundException("File not found.", path);
+            throw new FileNotFoundException("File not found " + path + " at " + curDir, path);
         }
         private async Task<byte[]> loadBytesByWebRequest(string path, string currDir)
         {

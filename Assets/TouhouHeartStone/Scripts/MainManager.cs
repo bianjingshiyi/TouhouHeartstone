@@ -71,6 +71,7 @@ namespace Game
             this.main = main;
             _ui = ui;
             _ui.onReplayButtonClick += onReplayButtonClick;
+            _ui.editorButton.onClick.AddListener(onEditorButtonClick);
         }
         public void display()
         {
@@ -80,6 +81,11 @@ namespace Game
         {
             _ui.gameObject.SetActive(false);
             await main.lobbySceneCtrl.replaySelectCtrl.displayAsync();
+        }
+        void onEditorButtonClick()
+        {
+            _ui.gameObject.SetActive(false);
+            main.lobbySceneCtrl.editorCtrl.display();
         }
         public MainCtrl main { get; }
         public IAppManager app { get; }
@@ -160,6 +166,7 @@ namespace Game
         public FileManager fileManager => new FileManager();
         public LangManager lang => getManager<LangManager>();
         public ILanguageManager langManager => getManager<LangManager>();
+        public IResourceManager resourceManager => getManager<ResourceManager>();
         MainCtrl _mainCtrl;
         [SerializeField]
         UnityEvent onLoadingFinish;

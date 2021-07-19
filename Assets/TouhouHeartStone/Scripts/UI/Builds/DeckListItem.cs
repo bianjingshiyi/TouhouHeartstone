@@ -28,6 +28,8 @@ namespace UI
 
             DeleteButtonIconGlass.asButton.onClick.AddListener(() => onFileRemove?.Invoke(key));
             HeadImageButton.onClick.AddListener(() => onFileSelect?.Invoke(key));
+            HeadImageButton.onClick.AddListener(onClickCallback);
+            DeleteButtonIconGlass.asButton.onClick.AddListener(onClickDeleteButtonCallback);
         }
 
         public void SetContent(int id, string name, Sprite img)
@@ -49,7 +51,7 @@ namespace UI
 
         public void SetSelectable(bool val)
         {
-            HeadImageButton.interactable = val; 
+            HeadImageButton.interactable = val;
         }
 
         public void SetWarning(bool val)
@@ -74,5 +76,15 @@ namespace UI
             NameInputField.gameObject.SetActive(mode == Mode.DeckTitle);
             DeleteButtonIconGlass.gameObject.SetActive(mode == Mode.DeckListItem);
         }
+        void onClickCallback()
+        {
+            onClick?.Invoke(this);
+        }
+        void onClickDeleteButtonCallback()
+        {
+            onClickDeleteButton?.Invoke(this);
+        }
+        public event Action<DeckListItem> onClick;
+        public event Action<DeckListItem> onClickDeleteButton;
     }
 }

@@ -55,6 +55,8 @@ namespace Game
         public const string EDITOR_ERROR_OUTPUT_CONNECT_INPUT = "值输出只能与值输入相互连接";
         [TranslateMsg("编辑器中编辑效果按钮显示文字")]
         public const string EDITOR_EDIT_EFFECT = "编辑效果";
+        [TranslateMsg("编辑器中询问玩家是否要删除卡池")]
+        public const string EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL = "你是否要删除这个卡池？";
         #endregion
     }
 }
