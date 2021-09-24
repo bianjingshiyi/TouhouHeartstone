@@ -13,51 +13,317 @@ using UnityEngine;
 
 namespace Controllers
 {
-    partial class EditorCtrl : IController<MainCtrl>
+    partial class EditorCtrl : GameObjectCtrl<MainSceneCtrl>, IController<MainCtrl>
     {
         #region 公有方法
-        public EditorCtrl()
+        public async void display(bool switchToView = true, bool reloadCardPoolInfos = true, int cardPoolIndex = -1, bool reloadCardPool = true)
         {
-        }
-        public EditorCtrl(IAppManager app, MainCtrl main, EditorPanel compo)
-        {
-            this.app = app;
-            this.main = main;
-            _compo = compo;
-            _compo.autoInit();
-            _compo.onBackButtonClick += onClickBackButton;
-            _compo.onClickCardPoolListItem += onClickCardPoolListItem;
-            _compo.onUpdateCardListItem += onUpdateCardListItem;
-            _compo.onClickCardListItem += onClickCardListItem;
-            _compo.onClickDeleteCardPoolButton += onClickDeleteCardPoolButton;
-            _compo.onClickAddCardPoolButton += onClickAddCardPoolButton;
-            _compo.onClickSaveCardPoolButton += onClickSaveCardPoolButton;
-            _compo.onClickReturnToCardPoolViewButton += onClickReturnToCardPoolViewButton;
-            _compo.onClickDeleteCurCardPoolButton += onClickDeleteCurCardPoolButton;
-            _compo.setSortTypes(new string[]
+            //显示界面
+            gameObject.SetActive(true);
+            //切换编辑模式
+            if (switchToView)
             {
-                app.langManager.getString(StringTable.CARDVIEW_SORT_COST),
-                app.langManager.getString(StringTable.CARDVIEW_SORT_COST_DESCENDING),
-                app.langManager.getString(StringTable.CARDVIEW_SORT_RARE),
-                app.langManager.getString(StringTable.CARDVIEW_SORT_RARE_DESCENDING)
-            });
-            _compo.onChangeSortTypeValue += onChangeSortTypeValue;
-        }
-        public async void display()
-        {
-            _compo.gameObject.SetActive(true);
-            _compo.switchRightPanelToView();
-            await getCardPoolsInfoAsync();
-            _compo.updateDeckList(_cardPoolInfoList.ToArray());
-            _compo.setSortType((int)_sortType);
-            //TODO:角色过滤器
-            _compo.setCharacterFilters(new string[]
+                //牌库浏览模式
+                _ui.switchRightPanelToView();
+                if (reloadCardPoolInfos)
+                {
+                    //重新加载所有牌库信息
+                    await getCardPoolsInfoAsync();
+                }
+                _ui.updateDeckList(_cardPoolInfoList.ToArray());
+                _ui.setSortType((int)_sortType);
+                //TODO:角色过滤器
+                _ui.setCharacterFilters(new string[]
+                {
+                game.langManager.getString(StringTable.CARDVIEW_CHARACTER_NEUTRAL)
+                });
+            }
+            else
             {
-                app.langManager.getString(StringTable.CARDVIEW_CHARACTER_NEUTRAL)
-            });
+                //牌库编辑模式
+                _ui.switchRightPanelToEdit();
+                //设置当前牌库
+                if (0 <= cardPoolIndex && cardPoolIndex < _cardPoolInfoList.Count)
+                {
+                    _curCardPoolPath = _cardPoolPathList[cardPoolIndex];
+                    _curCardPoolInfo = _cardPoolInfoList[cardPoolIndex];
+                }
+                //更新牌库信息
+                Sprite image = string.IsNullOrEmpty(_curCardPoolInfo.imageResPath) ? null :
+                    await getImage(_curCardPoolInfo.imageResPath);
+                _ui.updateCurCardPoolInfo(_curCardPoolInfo.cardPoolName, image);
+                //显示卡牌列表
+                if (reloadCardPool)
+                {
+                    //重新加载牌库信息
+                    await readCardPoolAsync(_curCardPoolPath);
+                }
+                CardSkinData[] cardSkins = _cardDefineList.Select(d => getCardSkinData(d)).ToArray();
+                string[] cardNames = new string[cardSkins.Length];
+                for (int i = 0; i < cardNames.Length; i++)
+                {
+                    cardNames[i] = cardSkins[i].name;
+                }
+                Sprite[] cardImages = new Sprite[cardSkins.Length];
+                for (int i = 0; i < cardImages.Length; i++)
+                {
+                    cardImages[i] = string.IsNullOrEmpty(cardSkins[i].imagePath) ? null :
+                        await getImage(cardSkins[i].imagePath);
+                }
+                _ui.updateCardPoolCardList(cardNames, cardImages);
+                //+1是为了显示新建卡牌按钮
+                _ui.updateCardListCount(_cardDefineList.Count + 1);
+            }
+        }
+        public void addSkin(CardSkinData skin)
+        {
+            _cardSkinList.Add(skin);
+        }
+        public IEnumerable<CardSkinData> getAllSkins()
+        {
+            return _cardSkinList;
+        }
+        public int removeSkins(Predicate<CardSkinData> filter)
+        {
+            return _cardSkinList.RemoveAll(filter);
+        }
+        /// <summary>
+        /// 将外部图片添加到缓存
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="sprite"></param>
+        public void addSpriteToCache(string path, Sprite sprite)
+        {
+            _externalSpriteCacheDict[path] = sprite;
+        }
+        /// <summary>
+        /// 尝试获取缓存的外部图片
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="sprite"></param>
+        /// <returns></returns>
+        public bool tryGetSpriteFromCache(string path, out Sprite sprite)
+        {
+            return _externalSpriteCacheDict.TryGetValue(path, out sprite);
+        }
+        public async Task<Sprite> getImage(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+            if (tryGetSpriteFromCache(path, out Sprite sprite))
+            {
+                return sprite;
+            }
+            byte[] bytes = await game.fileManager.readBinaryFile(path);
+            Texture2D texture = new Texture2D(512, 512);
+            texture.LoadImage(bytes);
+            sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
+            //添加到缓存
+            addSpriteToCache(path, sprite);
+            return sprite;
         }
         #endregion
         #region 私有方法
+        #region 生命周期
+        protected void Awake()
+        {
+            if (_ui == null)
+            {
+                _ui = GetComponentInChildren<EditorPanel>();
+            }
+            _ui.onClickReturnButton += onClickReturnButton;
+            _ui.onClickCardPoolListItem += onClickCardPoolListItem;
+            _ui.onUpdateCardListItem += onUpdateCardListItem;
+            _ui.onClickCardListItem += onClickCardListItem;
+            _ui.onClickDeleteCardPoolButton += onClickDeleteCardPoolButton;
+            _ui.onClickAddCardPoolButton += onClickAddCardPoolButton;
+            _ui.onClickSaveCardPoolButton += onClickSaveCardPoolButton;
+            _ui.onClickReturnToCardPoolViewButton += onClickReturnToCardPoolViewButton;
+            _ui.onClickDeleteCurCardPoolButton += onClickDeleteCurCardPoolButton;
+            _ui.setSortTypes(new string[]
+            {
+                game.langManager.getString(StringTable.CARDVIEW_SORT_COST),
+                game.langManager.getString(StringTable.CARDVIEW_SORT_COST_DESCENDING),
+                game.langManager.getString(StringTable.CARDVIEW_SORT_RARE),
+                game.langManager.getString(StringTable.CARDVIEW_SORT_RARE_DESCENDING)
+            });
+            _ui.onChangeSortTypeValue += onChangeSortTypeValue;
+        }
+        #endregion
+        #region 事件回调
+        /// <summary>
+        /// 当用户点击返回按钮，返回主菜单
+        /// </summary>
+        /// <param name="ui"></param>
+        void onClickReturnButton()
+        {
+            _ui.gameObject.SetActive(false);
+            scene.menu.display();
+        }
+        /// <summary>
+        /// 当用户点击卡池列表项，切换右侧栏到编辑卡牌状态，读取对应文件并显示卡牌列表
+        /// </summary>
+        /// <param name="index"></param>
+        void onClickCardPoolListItem(int index)
+        {
+            display(false, false, index, true);
+        }
+        /// <summary>
+        /// 当用户点击删除卡池按钮，弹出对话框询问用户是否确定删除卡池，确定则删除并刷新卡池列表
+        /// </summary>
+        /// <param name="index"></param>
+        void onClickDeleteCardPoolButton(int index)
+        {
+            _ui.findInstance<UIDialog>().ShowQuestion(null, app.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), () =>
+            {
+                app.fileManager.deleteFile(_cardPoolPathList[index]);
+                _cardPoolPathList.RemoveAt(index);
+                _cardPoolInfoList.RemoveAt(index);
+                _ui.updateDeckList(_cardPoolInfoList.ToArray());
+            });
+        }
+        /// <summary>
+        /// 当卡牌列表需要更新显示，更新对应物体的显示
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="item"></param>
+        async void onUpdateCardListItem(int index, RectTransform item)
+        {
+            EditorCardListItem cardListItem = item.GetComponentInChildren<EditorCardListItem>();
+            if (index < _cardDefineList.Count)
+            {
+                //显示卡牌
+                CardDefine cardDefine = _cardDefineList[index];
+                CardSkinData cardSkin = getCardSkinData(cardDefine);
+                cardListItem.card.setCard(cardDefine, cardSkin);
+                cardListItem.switchToCard();
+                if (cardSkin.image == null)
+                {
+                    cardListItem.card.setImage(await getImage(cardSkin.imagePath));
+                }
+            }
+            else
+            {
+                //新建卡牌按钮
+                cardListItem.switchToAddButton();
+            }
+        }
+        /// <summary>
+        /// 当点击新增卡池按钮，切换右侧栏到编辑卡池状态
+        /// </summary>
+        void onClickAddCardPoolButton()
+        {
+            _ui.switchRightPanelToEdit();
+            _curCardPoolPath = null;
+            _curCardPoolInfo = new CardPoolInfo();
+            _cardPoolInfoList.Add(_curCardPoolInfo);
+            _curCardPoolInfo.cardPoolName = "新建卡组";
+            _curCardPoolInfo.imageResPath = null;
+            _cardDefineList.Clear();
+            _cardSkinList.Clear();
+            _ui.updateCardPoolCardList(new string[0], new Sprite[0]);
+            //1是为了显示新建卡牌按钮
+            _ui.updateCardListCount(1);
+        }
+        /// <summary>
+        /// 当卡牌列表被点击，打开卡牌编辑器，如果是新建卡牌则新建卡牌并打开
+        /// </summary>
+        /// <param name="index"></param>
+        void onClickCardListItem(int index)
+        {
+            if (index < _cardDefineList.Count)
+            {
+                CardDefine cardDefine = _cardDefineList[index];
+                scene.cardEditor.displayCard(cardDefine);
+            }
+            else
+            {
+                //新建卡牌
+                CardDefine newCardDefine = new CardDefine();
+                newCardDefine.type = DEFINE.SERVANT;
+                _cardDefineList.Add(newCardDefine);
+                CardSkinData newCardSkin = new CardSkinData();
+                _cardSkinList.Add(newCardSkin);
+                scene.cardEditor.displayCard(newCardDefine);
+            }
+        }
+        void onChangeSortTypeValue(int index)
+        {
+            _sortType = (CardSortType)index;
+        }
+        /// <summary>
+        /// 当点击保存按钮，保存当前编辑的卡池
+        /// </summary>
+        async void onClickSaveCardPoolButton()
+        {
+            if (string.IsNullOrEmpty(_curCardPoolPath))
+            {
+                //没有指定地址
+                _curCardPoolPath = allocCardPoolPath(_curCardPoolInfo);
+            }
+            //对缓存的图片进行保存
+            foreach (var pair in _externalSpriteCacheDict)
+            {
+                //获取使用这张图片的第一个皮肤
+                CardSkinData skin = _cardSkinList.Find(s => s.imagePath == pair.Key);
+                if (skin == null)
+                {
+                    //没有皮肤使用，跳过
+                    continue;
+                }
+                //另存为图片
+                string path = Path.Combine("Textures", _curCardPoolInfo.cardPoolName, skin.id.ToString(), skin.skinId.ToString(), "Image.jpg");
+                await game.fileManager.saveFile(path, pair.Value.texture.EncodeToJPG());
+                Debug.Log("另存为图片" + path + "成功");
+                //替换所有引用这个图片的皮肤的图片地址
+                foreach (var otherSkin in _cardSkinList.Where(s => s.imagePath == pair.Key))
+                {
+                    otherSkin.imagePath = path;
+                }
+            }
+            //保存文件
+            await game.fileManager.saveFile(_curCardPoolPath, new string[]
+            {
+                _curCardPoolInfo.toJson(),//文件头信息
+                _cardDefineList.ToArray().toJson(),//卡牌
+                _cardSkinList.ToArray().toJson(),//皮肤
+                actionNodeGraphInfoList.ToArray().toJson()//编辑器信息
+            });
+            Debug.Log("保存卡池" + _curCardPoolPath + "成功");
+        }
+        /// <summary>
+        /// 当点击返回浏览卡池按钮，清空字段并切换回浏览卡池状态
+        /// </summary>
+        void onClickReturnToCardPoolViewButton()
+        {
+            returnToView();
+        }
+        /// <summary>
+        /// 当点击删除当前卡池按钮，弹出对话框询问，如果确认则删除当前卡池并切换到浏览状态
+        /// </summary>
+        void onClickDeleteCurCardPoolButton()
+        {
+            _ui.findInstance<UIDialog>().ShowConfirm(null, app.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), () =>
+            {
+                if (!string.IsNullOrEmpty(_curCardPoolPath))
+                {
+                    //删除当前卡池
+                    game.fileManager.deleteFile(_curCardPoolPath);
+                    int index = _cardPoolPathList.IndexOf(_curCardPoolPath);
+                    _cardPoolPathList.RemoveAt(index);
+                    _cardPoolInfoList.RemoveAt(index);
+                    _ui.updateDeckList(_cardPoolInfoList.ToArray());
+                }
+                else
+                {
+                    //当前卡池还没存过，不用删
+                }
+                returnToView();
+            });
+        }
+        #endregion
         /// <summary>
         /// 读取所有卡池文件中的卡池信息。
         /// </summary>
@@ -66,8 +332,8 @@ namespace Controllers
         {
             _cardPoolPathList.Clear();
             _cardPoolInfoList.Clear();
-            var files = app.fileManager.getFiles(DIRNAME, "*.ddcp", true);
-            var lines = await app.fileManager.readTextFiles(files);
+            var files = game.fileManager.getFiles(CARDPOOLS_DIR_NAME, "*.ddcp", true);
+            var lines = await game.fileManager.readTextFiles(files);
             for (int i = 0; i < files.Length; i++)
             {
                 _cardPoolPathList.Add(files[i]);
@@ -135,7 +401,7 @@ namespace Controllers
             //    });
             //    return;
             //}
-            var lines = await app.fileManager.readTextFile(DIRNAME + "/" + cardPoolPath, 1, 3);
+            var lines = await game.fileManager.readTextFile(cardPoolPath, 1, 3);
             if (lines.Length > 0)
             {
                 //卡牌
@@ -161,7 +427,7 @@ namespace Controllers
         /// <returns></returns>
         public Task saveCardPoolAsync(string cardPoolPath, CardPoolInfo info, CardDefine[] cardDefines)
         {
-            return app.fileManager.saveFile(DIRNAME + "/" + cardPoolPath, new string[]
+            return app.fileManager.saveFile(CARDPOOLS_DIR_NAME + "/" + cardPoolPath, new string[]
             {
                 info.toJson(),
                 cardDefines.toJson()
@@ -175,7 +441,7 @@ namespace Controllers
         private CardSkinData getCardSkinData(CardDefine cardDefine)
         {
             var cardSkinGroup = _cardSkinList.GroupBy(s => s.id).First(g => g.Key == cardDefine.id);
-            CardSkinData cardSkin = cardSkinGroup.FirstOrDefault(s => s.language == app.langManager.getLanguage());
+            CardSkinData cardSkin = cardSkinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
             if (cardSkin == null)
                 cardSkin = cardSkinGroup.FirstOrDefault();
             return cardSkin;
@@ -190,174 +456,19 @@ namespace Controllers
             _cardDefineList.Clear();
             _cardSkinList.Clear();
             actionNodeGraphInfoList.Clear();
-            _compo.switchRightPanelToView();
+            _ui.switchRightPanelToView();
         }
-        #region UI回调
-        /// <summary>
-        /// 当用户点击返回按钮，返回主菜单
-        /// </summary>
-        /// <param name="ui"></param>
-        void onClickBackButton(EditorPanel ui)
+        private string allocCardPoolPath(CardPoolInfo cardPool)
         {
-            _compo.gameObject.SetActive(false);
-            Main main = ui.GetComponentInParent<Main>();
-            main.display(main.MainMenu);
-        }
-        /// <summary>
-        /// 当用户点击卡池列表项，切换右侧栏到编辑卡牌状态，读取对应文件并显示卡牌列表
-        /// </summary>
-        /// <param name="index"></param>
-        async void onClickCardPoolListItem(int index)
-        {
-            _curCardPoolPath = _cardPoolPathList[index];
-            _curCardPoolInfo = _cardPoolInfoList[index];
-            //切换到编辑状态
-            _compo.switchRightPanelToEdit();
-            //更新牌库信息
-            Sprite image = await app.resourceManager.loadAsync<Sprite>(_curCardPoolInfo.imageResPath, Path.GetDirectoryName(_curCardPoolPath));
-            _compo.updateCurCardPoolInfo(_curCardPoolInfo.cardPoolName, image);
-            //显示卡牌列表
-            await readCardPoolAsync(_curCardPoolPath);
-            CardSkinData[] cardSkins = _cardDefineList.Select(d => getCardSkinData(d)).ToArray();
-            string[] cardNames = new string[cardSkins.Length];
-            for (int i = 0; i < cardNames.Length; i++)
-            {
-                cardNames[i] = cardSkins[i].name;
-            }
-            Sprite[] cardImages = new Sprite[cardSkins.Length];
-            for (int i = 0; i < cardImages.Length; i++)
-            {
-                cardImages[i] = await app.resourceManager.loadAsync<Sprite>(cardSkins[i].imagePath, Path.GetDirectoryName(_curCardPoolPath));
-            }
-            _compo.updateCardPoolCardList(cardNames, cardImages);
-            //+1是为了显示新建卡牌按钮
-            _compo.updateCardListCount(_cardDefineList.Count + 1);
-        }
-        /// <summary>
-        /// 当用户点击删除卡池按钮，弹出对话框询问用户是否确定删除卡池，确定则删除并刷新卡池列表
-        /// </summary>
-        /// <param name="index"></param>
-        void onClickDeleteCardPoolButton(int index)
-        {
-            _compo.findInstance<UIDialog>().ShowQuestion(null, app.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), () =>
-            {
-                app.fileManager.deleteFile(_cardPoolPathList[index]);
-                _cardPoolPathList.RemoveAt(index);
-                _cardPoolInfoList.RemoveAt(index);
-                _compo.updateDeckList(_cardPoolInfoList.ToArray());
-            });
-        }
-        /// <summary>
-        /// 当卡牌列表需要更新显示，更新对应物体的显示
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="item"></param>
-        void onUpdateCardListItem(int index, RectTransform item)
-        {
-            EditorCardListItem cardListItem = item.GetComponentInChildren<EditorCardListItem>();
-            if (index < _cardDefineList.Count)
-            {
-                //显示卡牌
-                CardDefine cardDefine = _cardDefineList[index];
-                CardSkinData cardSkin = getCardSkinData(cardDefine);
-                cardListItem.card.setCard(cardDefine, cardSkin);
-            }
-            else
-            {
-                //新建卡牌按钮
-                cardListItem.switchToAddButton();
-            }
-        }
-        /// <summary>
-        /// 当点击新增卡池按钮，切换右侧栏到编辑卡池状态
-        /// </summary>
-        void onClickAddCardPoolButton()
-        {
-            _compo.switchRightPanelToEdit();
-            _curCardPoolPath = null;
-            _cardDefineList.Clear();
-            _cardSkinList.Clear();
-            _compo.updateCardPoolCardList(new string[0], new Sprite[0]);
-            //1是为了显示新建卡牌按钮
-            _compo.updateCardListCount(1);
-        }
-        /// <summary>
-        /// 当卡牌列表被点击，打开卡牌编辑器，如果是新建卡牌则新建卡牌并打开
-        /// </summary>
-        /// <param name="index"></param>
-        void onClickCardListItem(int index)
-        {
-            if (index < _cardDefineList.Count)
-            {
-                CardDefine cardDefine = _cardDefineList[index];
-                CardSkinData[] cardSkins = _cardSkinList.Where(s => s.id == cardDefine.id).ToArray();
-                main.lobbySceneCtrl.cardEditorCtrl.displayCard(cardDefine, cardSkins);
-            }
-            else
-            {
-
-            }
-        }
-        void onChangeSortTypeValue(int index)
-        {
-            _sortType = (CardSortType)index;
-        }
-        /// <summary>
-        /// 当点击保存按钮，保存当前编辑的卡池
-        /// </summary>
-        async void onClickSaveCardPoolButton()
-        {
-            if (string.IsNullOrEmpty(_curCardPoolPath))
-            {
-                //没有指定地址
-            }
-            else
-            {
-            }
-            await app.fileManager.saveFile(_curCardPoolPath, new string[]
-                {
-                    _curCardPoolInfo.toJson(),//文件头信息
-                    _cardDefineList.ToArray().toJson(),//卡牌
-                    _cardSkinList.ToArray().toJson(),//皮肤
-                    actionNodeGraphInfoList.ToArray().toJson()//编辑器信息
-                });
-        }
-        /// <summary>
-        /// 当点击返回浏览卡池按钮，清空字段并切换回浏览卡池状态
-        /// </summary>
-        void onClickReturnToCardPoolViewButton()
-        {
-            returnToView();
-        }
-        /// <summary>
-        /// 当点击删除当前卡池按钮，弹出对话框询问，如果确认则删除当前卡池并切换到浏览状态
-        /// </summary>
-        void onClickDeleteCurCardPoolButton()
-        {
-            _compo.findInstance<UIDialog>().ShowConfirm(null, app.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), () =>
-            {
-                if (!string.IsNullOrEmpty(_curCardPoolPath))
-                {
-                    //删除当前卡池
-                    app.fileManager.deleteFile(_curCardPoolPath);
-                    int index = _cardPoolPathList.IndexOf(_curCardPoolPath);
-                    _cardPoolPathList.RemoveAt(index);
-                    _cardPoolInfoList.RemoveAt(index);
-                    _compo.updateDeckList(_cardPoolInfoList.ToArray());
-                }
-                else
-                {
-                    //当前卡池还没存过，不用删
-                }
-                returnToView();
-            });
+            return CARDPOOLS_DIR_NAME + "/" + cardPool.cardPoolName + ".ddcp";
         }
         #endregion
-        #endregion
+        [Obsolete("使用game属性替代")]
         public IAppManager app { get; }
+        [Obsolete("使用game属性替代")]
         public MainCtrl main { get; }
         public List<ActionNodeGraphInfo> actionNodeGraphInfoList { get; } = new List<ActionNodeGraphInfo>();
-        EditorPanel _compo;
+        EditorPanel _ui;
         List<string> _cardPoolPathList = new List<string>();
         List<CardPoolInfo> _cardPoolInfoList = new List<CardPoolInfo>();
         string _curCardPoolPath;
@@ -365,6 +476,7 @@ namespace Controllers
         readonly List<CardDefine> _cardDefineList = new List<CardDefine>();
         readonly List<CardSkinData> _cardSkinList = new List<CardSkinData>();
         CardSortType _sortType;
+        Dictionary<string, Sprite> _externalSpriteCacheDict = new Dictionary<string, Sprite>();
         int[] _masterIds;
         int _masterFilterIndex;
         /// <summary>
@@ -389,6 +501,6 @@ namespace Controllers
             /// </summary>
             rareDescending
         }
-        const string DIRNAME = "Cards";
+        const string CARDPOOLS_DIR_NAME = "CardPools";
     }
 }

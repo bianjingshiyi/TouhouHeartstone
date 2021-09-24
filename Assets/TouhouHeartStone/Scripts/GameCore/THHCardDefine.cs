@@ -30,10 +30,17 @@ namespace TouhouHeartstone
                 return false;
             return keywords.Contains(keyword);
         }
-
-        public static bool hasTag(this CardDefine define, string tag)
+        public static string[] getTags(this CardDefine define)
         {
             string[] tags = define.getProp<string[]>(DEFINE.TAGS);
+            if (tags == null)
+                return new string[0];
+            else
+                return tags;
+        }
+        public static bool hasTag(this CardDefine define, string tag)
+        {
+            string[] tags = define.getTags();
             if (tags == null)
                 return false;
             return tags.Contains(tag);

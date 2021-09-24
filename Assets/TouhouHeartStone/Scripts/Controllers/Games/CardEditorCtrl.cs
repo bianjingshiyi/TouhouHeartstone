@@ -1,96 +1,170 @@
 ﻿using System.Collections.Generic;
 using TouhouCardEngine;
 using TouhouHeartstone;
+using TouhouHeartstone.Builtin;
 using UI;
 using BJSYGameCore;
 using System;
 using System.Linq;
 using Game;
+using UnityEngine;
+using SFB;
+using UnityEngine.Networking;
+using System.Threading.Tasks;
+using TouhouCardEngine.Interfaces;
 
 namespace Controllers
 {
-    partial class CardEditorCtrl : IController<MainCtrl>
+    class CardEditorCtrl : GameObjectCtrl<MainSceneCtrl>, IController<MainCtrl>
     {
-        public CardEditorCtrl(IAppManager app, MainCtrl main, CardEditorPanel compo)
+        #region 私有方法
+        #region 生命周期
+        protected void Awake()
         {
-            this.app = app;
-            this.main = main;
-            _compo = compo;
+            if (_ui == null)
+            {
+                _ui = GetComponentInChildren<CardEditorPanel>();
+            }
             _types = new string[] { DEFINE.SERVANT, DEFINE.SPELL, DEFINE.ITEM };
-            _compo.setTypes(_types);
-            _compo.onChangeSkin += onChangeSkin;
-            _compo.onChangeLanguage += onChangeLanguage;
-            _compo.onChangeType += onChangeType;
-            _compo.onChangeCost += onChangeCost;
-            _compo.onChangeName += onChangeName;
-            _compo.onChangeSubName += onChangeSubName;
-            _compo.onSelectImage += onSelectImage;
-            _compo.onChangeDesc += onChangeDesc;
-            _compo.onChangeAttack += onChangeAttack;
-            _compo.onChangeLife += onChangeLife;
-            _compo.onChangeTag += onChangeTag;
-            _compo.onClickEditEffectButton += onClickEditEffectButton;
-            _compo.onClickAddEffectButton += onClickAddEffectButton;
+            _ui.setTypes(_types);
+            _ui.onChangeSkin += onChangeSkin;
+            _ui.onChangeSkinName += onChangeSkinName;
+            _ui.onClickDeleteSkinButton += onDeleteSkin;
+            _ui.onChangeLanguage += onChangeLanguage;
+            _ui.onChangeType += onChangeType;
+            _ui.onChangeCost += onChangeCost;
+            _ui.onChangeName += onChangeName;
+            _ui.onChangeSubName += onChangeSubName;
+            _ui.onNeedSelectImage += onNeedSelectImage;
+            _ui.onChangeDesc += onChangeDesc;
+            _ui.onChangeAttack += onChangeAttack;
+            _ui.onChangeLife += onChangeLife;
+            _tags = new string[] { string.Empty, TAG.BEAST, TAG.DEMON, TAG.ELEMENT, TAG.FAIRY, TAG.GOD, TAG.MACHINE };
+            _ui.setTags(_tags);
+            _ui.onChangeTag += onChangeTag;
+            _ui.onClickEditEffectButton += onClickEditEffectButton;
+            _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
+            _ui.onClickAddEffectButton += onClickAddEffectButton;
+            _ui.onClickBackgroundButton += onClickBackgroundButton;
         }
+        #endregion
+        #endregion
         /// <summary>
         /// 打开一张卡片进行编辑
         /// </summary>
-        public void displayCard(CardDefine cardDefine, CardSkinData[] cardSkins)
+        public void displayCard(CardDefine cardDefine)
         {
+            gameObject.SetActive(true);
             _cardDefine = cardDefine;
-            _cardSkinList.Clear();
-            _cardSkinList.AddRange(cardSkins);
-            _compo.setSkinNames(_cardSkinList.GroupBy(s => s.skinId)
-                .Select(g => g.FirstOrDefault(s => s.language == app.langManager.getLanguage()) is CardSkinData s2 ? s2.name : g.First().name)
-                .ToArray());
+            updateSkinNames();
             setCurSkinIndex(0);
-            //TODO:更换卡牌卡框
-            _compo.setType(Array.IndexOf(_types, _cardDefine.type));
-            _compo.setCost(_cardDefine.getProp<int>(DEFINE.COST).ToString());
-            _compo.setAttack(_cardDefine.getProp<int>(DEFINE.ATTACK).ToString());
-            _compo.setLife(_cardDefine.getProp<int>(DEFINE.LIFE).ToString());
+            _ui.setType(Array.IndexOf(_types, _cardDefine.type));
+            _ui.setCost(_cardDefine.getProp<int>(DEFINE.COST).ToString());
+            _ui.setAttack(_cardDefine.getProp<int>(DEFINE.ATTACK).ToString());
+            _ui.setLife(_cardDefine.getProp<int>(DEFINE.LIFE).ToString());
             string[] tags = _cardDefine.getProp<string[]>(DEFINE.TAGS);
             if (tags != null && tags.Length > 0)
-                _compo.setTag(tags[0]);
+            {
+                int index = Array.IndexOf(_tags, tags[0]);
+                if (index < 0)
+                    index = 0;
+                _ui.setTag(index);
+            }
             else
-                _compo.setTag(string.Empty);
+                _ui.setTag(0);
             GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
             updateEffectList(effects);
         }
-        void setCurSkinIndex(int skinIndex)
+
+        private void updateSkinNames()
         {
-            var skinGroup = _cardSkinList.GroupBy(s => s.skinId).ElementAt(skinIndex);
+            _ui.setSkinNames(getSkins().GroupBy(s => s.skinId)
+                .Select(g => g.FirstOrDefault(s => s.language == game.langManager.getLanguage()) is CardSkinData s2 ? s2.skinName : g.First().skinName)
+                .ToArray());
+        }
+        async void setCurSkinIndex(int skinIndex)
+        {
+            var skinGroup = getSkins().GroupBy(s => s.skinId).ElementAt(skinIndex);
             //获取对应语言的皮肤
-            _curCardSkin = skinGroup.FirstOrDefault(s => s.language == app.langManager.getLanguage());
+            _curCardSkin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
             //如果没有对应语言，就第一个
             if (_curCardSkin == null)
                 _curCardSkin = skinGroup.First();
-            _compo.setSkin(skinIndex);
-            _compo.setLanguage(Array.IndexOf(app.langManager.getLanguages(), _curCardSkin.language));
-            //TODO:更换卡牌卡框
-            _compo.setName(_curCardSkin.name);
-            _compo.setSubName(_curCardSkin.subname);
-            _compo.setImage(_curCardSkin.imagePath);
-            _compo.setDesc(_curCardSkin.desc);
+            _ui.setSkin(skinIndex);
+            _ui.setLanguage(Array.IndexOf(game.langManager.getLanguages(), _curCardSkin.language));
+            _ui.setName(_curCardSkin.name);
+            _ui.setSubName(_curCardSkin.subname);
+            _ui.setDesc(_curCardSkin.desc);
+            Sprite image = await scene.editor.getImage(_curCardSkin.imagePath);
+            if (image != null)
+            {
+                _ui.setImage(image);
+            }
+        }
+        int getSkinCount()
+        {
+            return getSkins().GroupBy(s => s.skinId).Count();
         }
         void updateEffectList(GeneratedEffect[] effects)
         {
             string[] effectNames = new string[effects.Length];
             for (int i = 0; i < effectNames.Length; i++)
             {
-                effectNames[i] = app.langManager.getString(StringTable.EDITOR_EDIT_EFFECT) + i;
+                effectNames[i] = game.langManager.getString(StringTable.EDITOR_EDIT_EFFECT) + i;
             }
-            _compo.setEffects(effectNames);
+            _ui.setEffects(effectNames);
+        }
+        int allocSkinId()
+        {
+            return getSkins().GroupBy(c => c.skinId).Select(g => g.Key).Max() + 1;
+        }
+        IEnumerable<CardSkinData> getSkins()
+        {
+            return scene.editor.getAllSkins().Where(c => c.id == _cardDefine.id);
         }
         #region UI回调
         void onChangeSkin(int skinIndex)
         {
+            if (skinIndex == getSkinCount())
+            {
+                //新建皮肤
+                _curCardSkin = new CardSkinData();
+                _curCardSkin.id = _cardDefine.id;
+                _curCardSkin.skinId = allocSkinId();
+                _curCardSkin.skinName = "新建皮肤";
+                scene.editor.addSkin(_curCardSkin);
+                updateSkinNames();
+            }
             setCurSkinIndex(skinIndex);
         }
-        void onChangeLanguage(int languageIndex)
+        void onChangeSkinName(string skinName)
         {
-            string language = app.langManager.getLanguages()[languageIndex];
-            var skinGroup = _cardSkinList.GroupBy(s => s.skinId).First(g => g.Key == _curCardSkin.skinId);
+            var skinGroup = getSkins().GroupBy(c => c.skinId).ToList();
+            int index = skinGroup.FindIndex(g => g.Key == _curCardSkin.skinId);
+            var curSkinGroup = skinGroup[index];
+            foreach (var skin in curSkinGroup)
+            {
+                skin.skinName = skinName;
+            }
+            updateSkinNames();
+            setCurSkinIndex(index);
+        }
+        private void onDeleteSkin()
+        {
+            var skinGroup = getSkins().GroupBy(c => c.skinId).ToList();
+            if (skinGroup.Count < 2)
+            {
+                Debug.LogWarning("你不能删除卡牌的最后一个皮肤");
+                return;
+            }
+            scene.editor.removeSkins(c => c.skinId == _curCardSkin.skinId);
+            updateSkinNames();
+            setCurSkinIndex(0);
+        }
+        async void onChangeLanguage(int languageIndex)
+        {
+            string language = game.langManager.getLanguages()[languageIndex];
+            var skinGroup = getSkins().GroupBy(s => s.skinId).First(g => g.Key == _curCardSkin.skinId);
             var targetSkin = skinGroup.FirstOrDefault(s => s.language == language);
             if (targetSkin == null)
             {
@@ -99,13 +173,18 @@ namespace Controllers
                 {
                     language = language
                 };
+                scene.editor.addSkin(targetSkin);
             }
             _curCardSkin = targetSkin;
-            _compo.setLanguage(languageIndex);
-            _compo.setName(_curCardSkin.name);
-            _compo.setSubName(_curCardSkin.subname);
-            _compo.setImage(_curCardSkin.imagePath);
-            _compo.setDesc(_curCardSkin.desc);
+            _ui.setLanguage(languageIndex);
+            _ui.setName(_curCardSkin.name);
+            _ui.setSubName(_curCardSkin.subname);
+            _ui.setDesc(_curCardSkin.desc);
+            Sprite image = await scene.editor.getImage(_curCardSkin.imagePath);
+            if (image != null)
+            {
+                _ui.setImage(image);
+            }
         }
         /// <summary>
         /// 当用户更改类型
@@ -114,7 +193,7 @@ namespace Controllers
         void onChangeType(int typeIndex)
         {
             _cardDefine.type = _types[typeIndex];
-            _compo.setType(typeIndex);
+            _ui.setType(typeIndex);
         }
         /// <summary>
         /// 当用户更改花费
@@ -125,7 +204,7 @@ namespace Controllers
             if (int.TryParse(cost, out int value))
             {
                 _cardDefine.setProp(DEFINE.COST, value);
-                _compo.setCost(cost);
+                _ui.setCost(cost);
             }
         }
         /// <summary>
@@ -135,7 +214,7 @@ namespace Controllers
         void onChangeName(string name)
         {
             _curCardSkin.name = name;
-            _compo.setName(name);
+            _ui.setName(name);
         }
         /// <summary>
         /// 当用户更改卡副名
@@ -143,20 +222,75 @@ namespace Controllers
         /// <param name="subName"></param>
         void onChangeSubName(string subName)
         {
-            _curCardSkin.name = subName;
-            _compo.setSubName(subName);
+            _curCardSkin.subname = subName;
+            _ui.setSubName(subName);
         }
         /// <summary>
-        /// 当用户选择完图片，更换卡图。如果选择的是外置图片，那么会在保存的时候将图片复制到相应路径，反之则不会。
+        /// 当需要用户选择图片，根据平台不同调用不同的插件方法，返回选择的贴图。新建的贴图需要缓存在内存中。
         /// </summary>
-        /// <param name="path"></param>
-        void onSelectImage(string path)
+        Task<Sprite> onNeedSelectImage()
         {
-            if (!string.IsNullOrEmpty(path))
+            TaskCompletionSource<Sprite> tcs = new TaskCompletionSource<Sprite>();
+            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
             {
-                _curImagePath = path;
-                _compo.setImage(_curImagePath);
+                //手机端
+                var permission = NativeGallery.GetImageFromGallery(path =>
+                {
+                    if (path != null)
+                    {
+                        if (!scene.editor.tryGetSpriteFromCache(path, out Sprite sprite))
+                        {
+                            Texture2D texture = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
+                            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
+                            //缓存外部图片
+                            scene.editor.addSpriteToCache(path, sprite);
+                        }
+                        //更改贴图路径为外部文件路径
+                        _curCardSkin.imagePath = path;
+                        tcs.SetResult(sprite);
+                    }
+                });
+                if (permission == NativeGallery.Permission.Denied)
+                {
+                    Debug.LogError("没有打开相册的权限");
+                }
             }
+            else
+            {
+                //默认PC
+                string[] paths = StandaloneFileBrowser.OpenFilePanel("", Application.persistentDataPath, new ExtensionFilter[]
+                {
+                    new ExtensionFilter("Image Files", "png","jpg")
+                }, false);
+                if (paths == null || paths.Length < 1)
+                {
+                    return null;
+                }
+                string path = paths[0];
+                UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(path);
+                uwr.SendWebRequest().completed += op =>
+                {
+                    if (uwr.isNetworkError || uwr.isHttpError)
+                    {
+                        Debug.LogError(uwr.error);
+                    }
+                    else
+                    {
+                        if (!scene.editor.tryGetSpriteFromCache(path, out Sprite sprite))
+                        {
+                            Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
+                            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
+                            //缓存外部图片
+                            scene.editor.addSpriteToCache(path, sprite);
+                        }
+                        //更改贴图路径为外部文件路径
+                        _curCardSkin.imagePath = path;
+                        tcs.SetResult(sprite);
+                    }
+                    uwr.Dispose();
+                };
+            }
+            return tcs.Task;
         }
         /// <summary>
         /// 当用户更改卡片描述
@@ -165,7 +299,7 @@ namespace Controllers
         void onChangeDesc(string desc)
         {
             _curCardSkin.desc = desc;
-            _compo.setDesc(desc);
+            _ui.setDesc(desc);
         }
         /// <summary>
         /// 当用户更改攻击力
@@ -176,7 +310,7 @@ namespace Controllers
             if (int.TryParse(attack, out int value))
             {
                 _cardDefine.setProp(DEFINE.ATTACK, value);
-                _compo.setAttack(attack);
+                _ui.setAttack(attack);
             }
         }
         /// <summary>
@@ -188,24 +322,23 @@ namespace Controllers
             if (int.TryParse(life, out int value))
             {
                 _cardDefine.setProp(DEFINE.LIFE, value);
-                _compo.setLife(life);
+                _ui.setLife(life);
             }
         }
         /// <summary>
         /// 当用户更改标签
         /// </summary>
-        /// <param name="tag"></param>
-        void onChangeTag(string tag)
+        void onChangeTag(int index)
         {
-            if (string.IsNullOrEmpty(tag))
+            if (index > 0)
             {
-                _cardDefine.setProp(DEFINE.TAGS, new string[0]);
-                _compo.setTag(string.Empty);
+                _cardDefine.setProp(DEFINE.TAGS, new string[] { _tags[index] });
+                _ui.setTag(index);
             }
             else
             {
-                _cardDefine.setProp(DEFINE.TAGS, new string[] { tag });
-                _compo.setTag(tag);
+                _cardDefine.setProp(DEFINE.TAGS, new string[0]);
+                _ui.setTag(0);
             }
         }
         /// <summary>
@@ -214,7 +347,22 @@ namespace Controllers
         void onClickEditEffectButton(int index)
         {
             GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
-            main.lobbySceneCtrl.effectEditorCtrl.displayEffect(effect);
+            scene.effectEditor.displayEffect(effect);
+        }
+        void onClickRemoveEffectButton(int index)
+        {
+            GeneratedEffect[] prevEffects = _cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
+            GeneratedEffect[] newEffects = new GeneratedEffect[prevEffects.Length - 1];
+            for (int i = 0; i < index; i++)
+            {
+                newEffects[i] = prevEffects[i];
+            }
+            for (int i = index; i < newEffects.Length; i++)
+            {
+                newEffects[i] = prevEffects[i + 1];
+            }
+            _cardDefine.setEffects(newEffects);
+            updateEffectList(newEffects);
         }
         /// <summary>
         /// 当点击添加效果按钮，为卡牌定义添加一个新的空效果，并刷新效果列表。
@@ -225,14 +373,22 @@ namespace Controllers
             _cardDefine.setEffects(effects);
             updateEffectList(effects);
         }
+        private void onClickBackgroundButton()
+        {
+            //返回上一个界面
+            gameObject.SetActive(false);
+            scene.editor.display(false, false, -1, false);
+            //保存卡牌编辑信息
+        }
         #endregion
+        [Obsolete]
         public IAppManager app { get; }
+        [Obsolete]
         public MainCtrl main { get; }
-        CardEditorPanel _compo;
+        CardEditorPanel _ui;
         string[] _types;
+        string[] _tags;
         CardDefine _cardDefine;
-        readonly List<CardSkinData> _cardSkinList = new List<CardSkinData>();
         CardSkinData _curCardSkin;
-        string _curImagePath;
     }
 }

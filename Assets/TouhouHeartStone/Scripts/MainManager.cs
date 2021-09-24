@@ -52,7 +52,7 @@ namespace Game
             this.main = main;
             mainMenuCtrl = new MainMenuCtrl(app, main, scene.findInstanceAt<Transform>("Canvas/Main/MainMenu").gameObject.GetComponent<MainMenu>());
             replaySelectCtrl = new ReplaySelectPanelCtrl(app, main, scene.findInstanceAt<Transform>("Canvas/Main/Replay").gameObject.GetComponent<ReplaySelectPanel>());
-            editorCtrl = new EditorCtrl(app, main, scene.findInstanceAt<Transform>("Canvas/Main/EditorPanel").gameObject.GetComponent<EditorPanel>());
+            //editorCtrl = new EditorCtrl(app, main, scene.findInstanceAt<Transform>("Canvas/Main/EditorPanel").gameObject.GetComponent<EditorPanel>());
         }
         public IAppManager app { get; }
         public MainCtrl main { get; }
@@ -71,7 +71,6 @@ namespace Game
             this.main = main;
             _ui = ui;
             _ui.onReplayButtonClick += onReplayButtonClick;
-            _ui.editorButton.onClick.AddListener(onEditorButtonClick);
         }
         public void display()
         {
@@ -84,7 +83,7 @@ namespace Game
         }
         void onEditorButtonClick()
         {
-            _ui.gameObject.SetActive(false);
+            //_ui.gameObject.SetActive(false);
             main.lobbySceneCtrl.editorCtrl.display();
         }
         public MainCtrl main { get; }

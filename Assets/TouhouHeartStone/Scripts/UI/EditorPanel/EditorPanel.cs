@@ -10,7 +10,7 @@ using UnityEngine.UI;
 namespace UI
 {
 
-    public partial class EditorPanel
+    partial class EditorPanel
     {
         #region 公有方法
         /// <summary>
@@ -110,12 +110,23 @@ namespace UI
         protected override void Awake()
         {
             base.Awake();
+            _returnButton.onClick.AddListener(onClickReturnButtonCallback);
             _addCardPoolButton.onClick.AddListener(onClickAddCardPoolButtonCallback);
             _saveCardPoolButton.onClick.AddListener(onClickSaveCardPoolButtonCallback);
             _returnToCardPoolViewButton.onClick.AddListener(onClickReturnToCardPoolViewButtonCallback);
             _deleteCurCardPoolButton.onClick.AddListener(onClickDeleteCurCardPoolButtonCallback);
+            if (_cardListLayoutGroup.cellPrefab.transform.parent == _cardListLayoutGroup.transform)
+            {
+                _cardListLayoutGroup.cellPrefab.gameObject.SetActive(false);
+            }
+            _cardListLayoutGroup.onEnableItem += onEnableCardListItem;
+            _cardListLayoutGroup.onDisableItem += onDisableCardListItem;
         }
         #region 事件回调
+        void onClickReturnButtonCallback()
+        {
+            onClickReturnButton?.Invoke();
+        }
         void onClickDeckListItem(DeckListItem item)
         {
             onClickCardPoolListItem?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform));
@@ -140,8 +151,24 @@ namespace UI
         {
             onClickDeleteCurCardPoolButton?.Invoke();
         }
+        private void onEnableCardListItem(int index, RectTransform item)
+        {
+            EditorCardListItem editorCardListItem = item.GetComponent<EditorCardListItem>();
+            editorCardListItem.onClick += onClickCardListItemCallback;
+        }
+        private void onDisableCardListItem(int index, RectTransform item)
+        {
+            EditorCardListItem editorCardListItem = item.GetComponent<EditorCardListItem>();
+            editorCardListItem.onClick -= onClickCardListItemCallback;
+        }
+        private void onClickCardListItemCallback(EditorCardListItem item)
+        {
+            int index = _cardListLayoutGroup.getItemIndex(item.transform as RectTransform);
+            onClickCardListItem?.Invoke(index);
+        }
         #endregion
         #endregion
+        public event Action onClickReturnButton;
         /// <summary>
         /// 当点击卡池列表项，参数为列表项索引
         /// </summary>
@@ -187,6 +214,8 @@ namespace UI
         /// </summary>
         public event Action<int> onChangeCharacterFilterValue;
         [SerializeField]
+        Button _returnButton;
+        [SerializeField]
         GameObject _deckList;
         [SerializeField]
         RectTransform _deckListRoot;
@@ -222,6 +251,7 @@ namespace UI
     [Serializable]
     public class CardPoolInfo
     {
+        public int cardPoolId;
         public string cardPoolName;
         public string imageResPath;
     }

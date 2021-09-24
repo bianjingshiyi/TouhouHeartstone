@@ -7,33 +7,27 @@ using UICard = UI.Card;
 using Card = TouhouCardEngine.Card;
 using System.Linq;
 using BJSYGameCore;
+using UnityEngine.UI;
+
 namespace Game
 {
     static class UIHelper
     {
         public static void setCard(this UICard ui, CardDefine card, CardSkinData skin)
         {
-            ui.servantCardFace.costPropNumber.text.text = card.getCost().ToString();
-            ui.spellCardFace.costPropNumber.text.text = card.getCost().ToString();
-            ui.itemCardFace.costPropNumber.text.text = card.getCost().ToString();
-            ui.servantCardFace.image.sprite = skin.image;
-            ui.spellCardFace.image.sprite = skin.image;
-            ui.itemCardFace.image.sprite = skin.image;
-            ui.servantCardFace.nameText.text = skin.name;
-            ui.servantCardFace.subNameText.text = skin.subname;
-            LangManager Lang = ui.ui.getManager<LangManager>();
-            if (card is ServantCardDefine) 
+            setCost(ui, card.getCost().ToString());
+            setImage(ui, skin.image);
+            setName(ui, skin.name);
+            setSubname(ui, skin.subname);
+            if (card is ServantCardDefine servantCardDefine)
             {
-                if ((card as ServantCardDefine).tags.FirstOrDefault() != null)
-                    ui.servantCardFace.raceNameText.text = Lang._(ui.ui.getManager<TableManager>().TranslateTagDic[(card as ServantCardDefine).tags.FirstOrDefault()]);
-                else
-                    ui.servantCardFace.raceNameText.text = null;
+                setTag(ui, servantCardDefine.tags.FirstOrDefault());
             }
-            ui.spellCardFace.nameText.text = skin.name;
-            ui.itemCardFace.nameText.text = skin.name;
-            ui.servantCardFace.descText.text = skin.desc;
-            ui.spellCardFace.descText.text = skin.desc;
-            ui.itemCardFace.descText.text = skin.desc;
+            else
+            {
+                setTag(ui, card.getTags().FirstOrDefault());
+            }
+            setDesc(ui, skin.desc);
             ui.isFaceup = true;
 
             if (card.type == DEFINE.MASTER)
@@ -59,6 +53,70 @@ namespace Game
             else
                 throw new NotImplementedException();
         }
+        public static void setAttack(this UICard ui, string attack)
+        {
+            ui.servantCardFace.attackPropNumber.text.text = attack;
+            ui.itemCardFace.attackPropNumber.text.text = attack;
+        }
+        public static void setLife(this UICard ui, string life)
+        {
+            ui.servantCardFace.lifePropNumber.text.text = life;
+            ui.itemCardFace.lifePropNumber.text.text = life;
+        }
+        public static void setDesc(this UICard ui, string desc)
+        {
+            ui.servantCardFace.descText.text = desc;
+            ui.spellCardFace.descText.text = desc;
+            ui.itemCardFace.descText.text = desc;
+        }
+
+        public static void setTag(this UICard ui, string tag)
+        {
+            LangManager Lang = ui.ui.getManager<LangManager>();
+            if (tag != null)
+            {
+                if (ui.ui.getManager<TableManager>().TranslateTagDic.TryGetValue(tag, out string text))
+                {
+                    ui.servantCardFace.raceNameText.text = Lang._(text);
+                }
+                else
+                {
+                    ui.servantCardFace.raceNameText.text = tag;
+                }
+            }
+            else
+                ui.servantCardFace.raceNameText.text = null;
+        }
+
+        public static void setSubname(this UICard ui, string subName)
+        {
+            ui.servantCardFace.subNameText.text = subName;
+        }
+        public static void setName(this UICard ui, string name)
+        {
+            ui.servantCardFace.nameText.text = name;
+            ui.spellCardFace.nameText.text = name;
+            ui.itemCardFace.nameText.text = name;
+        }
+
+        public static void setImage(this UICard ui, Sprite sprite)
+        {
+            ui.servantCardFace.image.sprite = sprite;
+            float aspect = sprite != null ? sprite.rect.width / sprite.rect.height : 1;
+            ui.servantCardFace.image.GetComponent<AspectRatioFitter>().aspectRatio = aspect;
+            ui.spellCardFace.image.sprite = sprite;
+            ui.spellCardFace.image.GetComponent<AspectRatioFitter>().aspectRatio = aspect;
+            ui.itemCardFace.image.sprite = sprite;
+            ui.itemCardFace.image.GetComponent<AspectRatioFitter>().aspectRatio = aspect;
+        }
+
+        public static void setCost(this UICard ui, string value)
+        {
+            ui.servantCardFace.costPropNumber.text.text = value;
+            ui.spellCardFace.costPropNumber.text.text = value;
+            ui.itemCardFace.costPropNumber.text.text = value;
+        }
+
         public static PropNumber getCostPropNum(this UICard ui, Card card)
         {
             switch (card.define.type)

@@ -1,3 +1,15 @@
-﻿{
-	"name": "Plugins"
+{
+    "name": "Plugins",
+    "references": [
+        "GUID:6e5063adab271564ba0098a06a8cebda"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

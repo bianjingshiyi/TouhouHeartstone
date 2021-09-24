@@ -62,6 +62,27 @@ namespace UI
         //    // IsFaceupController = IsFaceup.True;
         //    isFaceup = true;
         //}
+        public void setTypeByName(string typeName)
+        {
+            switch (typeName)
+            {
+                case DEFINE.MASTER:
+                    type = CATEGORY.MASTER;
+                    break;
+                case DEFINE.SPELL:
+                    type = CATEGORY.SPELL;
+                    break;
+                case DEFINE.ITEM:
+                    type = CATEGORY.ITEM;
+                    break;
+                case DEFINE.SKILL:
+                    type = CATEGORY.SKILL;
+                    break;
+                default://SERVANT
+                    type = CATEGORY.SERVANT;
+                    break;
+            }
+        }
         public void resetPosition()
         {
             rectTransform.anchoredPosition = Vector2.zero;

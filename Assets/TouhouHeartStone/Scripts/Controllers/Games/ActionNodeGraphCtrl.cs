@@ -11,29 +11,29 @@ using UnityEngine;
 
 namespace Controllers
 {
-    partial class ActionNodeGraphCtrl : IController<MainCtrl>
+    partial class ActionNodeGraphCtrl : GameObjectCtrl<MainSceneCtrl>, IController<MainCtrl>
     {
         #region 公有方法
-        public ActionNodeGraphCtrl(IAppManager app, MainCtrl main, ActionNodeGraphPanel compo)
-        {
-            this.app = app;
-            this.main = main;
-            _compo = compo;
-            _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly });
-            _backgroundMenuOptions = _actionDefineDict.Keys.ToArray();
-            _compo.onClickBackground += onClickBackground;
-            _compo.onLongPressBackground += onLongPressBackground;
-            _compo.onClickMenuItem += onClickMenuItem;
-            _compo.onConnectNodes += onConnectNodes;
-            _compo.onLongPressActionNode += onLongPressActionNode;
-            _compo.onActionNodeValueChange += onActionNodeValueChange;
-            _compo.onChangeTriggerEventName += onChangeTriggerEventName;
-            _compo.onClickTriggerEditConditionButton += onClickTriggerEditConditionButton;
-            _compo.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
-            _compo.onClickEditTargetCheckerButton += onClickEditTargetCheckerButton;
-            _compo.onClickRemoveTargetCheckerButton += onClickRemoveTargetCheckerButton;
-            _compo.onClickReturnButton += onClickReturnButton;
-        }
+        //public ActionNodeGraphCtrl(IAppManager app, MainCtrl main, ActionNodeGraphPanel compo)
+        //{
+        //    this.app = app;
+        //    this.main = main;
+        //    _ui = compo;
+        //    _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly });
+        //    _backgroundMenuOptions = _actionDefineDict.Keys.ToArray();
+        //    _ui.onClickBackground += onClickBackground;
+        //    _ui.onLongPressBackground += onLongPressBackground;
+        //    _ui.onClickMenuItem += onClickMenuItem;
+        //    _ui.onConnectNodes += onConnectNodes;
+        //    _ui.onLongPressActionNode += onLongPressActionNode;
+        //    _ui.onActionNodeValueChange += onActionNodeValueChange;
+        //    _ui.onChangeTriggerEventName += onChangeTriggerEventName;
+        //    _ui.onClickTriggerEditConditionButton += onClickTriggerEditConditionButton;
+        //    _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
+        //    _ui.onClickEditTargetCheckerButton += onClickEditTargetCheckerButton;
+        //    _ui.onClickRemoveTargetCheckerButton += onClickRemoveTargetCheckerButton;
+        //    _ui.onClickReturnButton += onClickReturnButton;
+        //}
         /// <summary>
         /// 打开一个效果的生效效果动作图。
         /// </summary>
@@ -41,6 +41,7 @@ namespace Controllers
         /// 
         public void openOnEnableActionGraph(GeneratedEffect effect)
         {
+            _ui.gameObject.SetActive(true);
             _editObjectStack.Clear();
             openActionGraph(effect, EntryType.onEnable);
         }
@@ -51,6 +52,7 @@ namespace Controllers
         /// 
         public void openOnDisableActionGraph(GeneratedEffect effect)
         {
+            _ui.gameObject.SetActive(true);
             _editObjectStack.Clear();
             openActionGraph(effect, EntryType.onDisable);
         }
@@ -60,36 +62,63 @@ namespace Controllers
         /// <param name="trigger"></param>
         public void openTriggerGraph(TriggerGraph trigger)
         {
+            _ui.gameObject.SetActive(true);
             _editObjectStack.Clear();
 
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
-            _compo.clearGraph();
+            _ui.clearGraph();
             _entryType = EntryType.none;
             _effect = null;
             _valueRef = null;
             _targetChecker = null;
             _trigger = trigger;
             //创建入口节点
-            _entryNodeItem = _compo.createTriggerNode(0, 0, _trigger.eventName, _trigger.targetCheckerList.Count);
+            _entryNodeItem = _ui.createTriggerNode(0, 0, _trigger.eventName, _trigger.targetCheckerList.Count);
             if (_graphInfo != null)
             {
                 //创建根节点
                 if (trigger.action != null)
                 {
                     var actionNodeItem = createGraph4ActionNode(trigger.action);
-                    _compo.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
+                    _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
                 }
                 //创建离散节点
             }
             if (trigger.action != null)
             {
                 var actionNodeItem = createGraph4ActionNode(trigger.action);
-                _compo.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
+                _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
             }
         }
         #endregion
         #region 私有方法
+        #region 生命周期
+        protected void Awake()
+        {
+            if (_ui == null)
+            {
+                _ui = GetComponent<ActionNodeGraphPanel>();
+            }
+            _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly });
+            _backgroundMenuOptions = _actionDefineDict.Keys.ToArray();
+            _ui.onClickBackground += onClickBackground;
+            _ui.onLongPressBackground += onLongPressBackground;
+            _ui.onClickMenuItem += onClickMenuItem;
+            _ui.onConnectNodes += onConnectNodes;
+            _ui.onUnconnectNodes += onUnconnectNodes;
+            _ui.onClickActionNode += onClickActionNode;
+            _ui.onLongPressActionNode += onLongPressActionNode;
+            _ui.onActionNodeValueChange += onActionNodeValueChange;
+            _ui.onChangeTriggerEventName += onChangeTriggerEventName;
+            _ui.onClickTriggerEditConditionButton += onClickTriggerEditConditionButton;
+            _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
+            _ui.onClickEditTargetCheckerButton += onClickEditTargetCheckerButton;
+            _ui.onClickRemoveTargetCheckerButton += onClickRemoveTargetCheckerButton;
+            _ui.onClickReturnButton += onClickReturnButton;
+            _ui.onActionNodeValueChange += onActionNodeValueChange;
+        }
+        #endregion
         /// <summary>
         /// 打开某个效果的生效或者失效动作图
         /// </summary>
@@ -100,7 +129,7 @@ namespace Controllers
             //清理数据
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
-            _compo.clearGraph();
+            _ui.clearGraph();
             //缓存数据
             _entryType = entryType;
             _effect = effect;
@@ -111,18 +140,18 @@ namespace Controllers
             {
                 if (_effect.onEnableAction != null)
                 {
-                    _entryNodeItem = _compo.createNode(0, 0,
-                        app.langManager.getString(StringTable.EDITOR_NODE_NAME_ONENABLE),
+                    _entryNodeItem = _ui.createNode(0, 0,
+                        game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONENABLE),
                         new string[0],
                         new ActionNodeValueInfo[0],
                         new string[] { string.Empty });
                     var actionNodeItem = createGraph4ActionNode(_effect.onEnableAction);
-                    _compo.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
+                    _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
                 }
                 else
                 {
-                    _entryNodeItem = _compo.createNode(0, 0,
-                        app.langManager.getString(StringTable.EDITOR_NODE_NAME_ONENABLE),
+                    _entryNodeItem = _ui.createNode(0, 0,
+                        game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONENABLE),
                         new string[0],
                         new ActionNodeValueInfo[0],
                         new string[] { string.Empty });
@@ -132,18 +161,18 @@ namespace Controllers
             {
                 if (_effect.onDisableAction != null)
                 {
-                    _entryNodeItem = _compo.createNode(0, 0,
-                        app.langManager.getString(StringTable.EDITOR_NODE_NAME_ONDISABLE),
+                    _entryNodeItem = _ui.createNode(0, 0,
+                        game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONDISABLE),
                         new string[0],
                         new ActionNodeValueInfo[0],
                         new string[] { string.Empty });
                     var actionNodeItem = createGraph4ActionNode(_effect.onDisableAction);
-                    _compo.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
+                    _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
                 }
                 else
                 {
-                    _entryNodeItem = _compo.createNode(0, 0,
-                        app.langManager.getString(StringTable.EDITOR_NODE_NAME_ONDISABLE),
+                    _entryNodeItem = _ui.createNode(0, 0,
+                        game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONDISABLE),
                         new string[0],
                         new ActionNodeValueInfo[0],
                         new string[] { string.Empty });
@@ -160,51 +189,51 @@ namespace Controllers
         {
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
-            _compo.clearGraph();
+            _ui.clearGraph();
             _entryType = EntryType.none;
             _effect = null;
             _valueRef = valueRef;
             _targetChecker = null;
             _trigger = null;
             var actionNodeItem = createGraph4ActionNode(valueRef.action);
-            _outputNodeItem = _compo.createNode(0, 0,
-                app.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
+            _returnNodeItem = _ui.createNode(0, 0,
+                game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
                 new string[] { string.Empty },
                 new ActionNodeValueInfo[0],
                 new string[0]);
-            _compo.connectNode(actionNodeItem, valueRef.index + 1, _outputNodeItem, 0);
+            _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
         }
         void openTargetCheckerGraph(TargetChecker targetChecker)
         {
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
-            _compo.clearGraph();
+            _ui.clearGraph();
             _entryType = EntryType.none;
             _effect = null;
             _valueRef = null;
             _targetChecker = targetChecker;
             _trigger = null;
             var actionNodeItem = createGraph4ActionNode(targetChecker.condition.action);
-            _outputNodeItem = _compo.createNode(0, 0,
-                app.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
+            _returnNodeItem = _ui.createNode(0, 0,
+                game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
                 new string[] { string.Empty },
                 new ActionNodeValueInfo[]
                 {
                     new ActionNodeValueInfo()
                     {
-                        name = app.langManager.getString(StringTable.EDITOR_VALUE_NAME_TARGET_TYPE),
+                        name = game.langManager.getString(StringTable.EDITOR_VALUE_NAME_TARGET_TYPE),
                         type = ActionNodeValueType.text,
                         value = _targetChecker.targetType
                     },
                     new ActionNodeValueInfo()
                     {
-                        name = app.langManager.getString(StringTable.EDITOR_VALUE_NAME_INVALID_MSG),
+                        name = game.langManager.getString(StringTable.EDITOR_VALUE_NAME_INVALID_MSG),
                         type = ActionNodeValueType.text,
                         value = _targetChecker.invalidMsg
                     }
                 },
                 new string[0]);
-            _compo.connectNode(actionNodeItem, valueRef.index + 1, _outputNodeItem, 0);
+            _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
         }
         /// <summary>
         /// 为动作节点以及其所有子节点创建动作节点图
@@ -239,14 +268,14 @@ namespace Controllers
                 if (sizeDict == null)
                     sizeDict = new Dictionary<ActionNode, Vector2>();
                 Vector2 size = calcActionNodeGraphSize(actionNode, sizeDict);
-                pos = new Vector2(prevNodeItem.posX - _compo.autoPosSpacingWidth, startPosOffset);
+                pos = new Vector2(prevNodeItem.posX - _ui.autoPosSpacingWidth, startPosOffset);
             }
             else
             {
                 //没有信息也没有前置节点，那我也不知道该放在哪里了。
                 pos = new Vector2(0, 0);
             }
-            actionNodeItem = _compo.createNode(pos.x, pos.y,
+            actionNodeItem = _ui.createNode(pos.x, pos.y,
                 getActionNodeName(actionNode),
                 getActionNodeInputNames(actionDefine),
                 getActionNodeConstValueInfo(actionNode),
@@ -267,7 +296,7 @@ namespace Controllers
                     sizeDict: sizeDict);
                 Vector2 size = calcActionNodeGraphSize(nextActionNode, sizeDict);
                 lastNodeOffset -= size.y;
-                _compo.connectNode(actionNodeItem, i, nextActionNodeItem, 0);
+                _ui.connectNode(actionNodeItem, i, nextActionNodeItem, 0);
             }
             //为输入节点创建节点图
             lastNodeOffset = 0;
@@ -286,7 +315,7 @@ namespace Controllers
                 lastNodeOffset -= size.y;
                 //输出索引要被动作分支占用若干个空位
                 //输入索引要被前置动作占用一个空位
-                _compo.connectNode(inputActionNodeItem, valueRef.action.branches.Length + valueRef.index, actionNodeItem, 1 + i);
+                _ui.connectNode(inputActionNodeItem, valueRef.action.branches.Length + valueRef.index, actionNodeItem, 1 + i);
             }
             return actionNodeItem;
         }
@@ -304,7 +333,7 @@ namespace Controllers
                 if (width > inputWidth)
                     inputWidth = width;
             }
-            size.x = _compo.autoPosSpacingWidth + inputWidth;
+            size.x = _ui.autoPosSpacingWidth + inputWidth;
             float inputHeight = 0;
             //计算输入的高度
             for (int i = 0; i < actionNode.inputs.Length; i++)
@@ -320,7 +349,7 @@ namespace Controllers
             //    branchHeight += calcActionNodeGraphSize(branchNode, sizeDict).y;
             //}
             //size.y = Math.Max(inputHeight, Math.Max(branchHeight, _compo.autoPosSpacingHeight));
-            size.y = Math.Max(inputHeight, _compo.autoPosSpacingHeight);
+            size.y = Math.Max(inputHeight, _ui.autoPosSpacingHeight);
             sizeDict[actionNode] = size;
             return size;
         }
@@ -335,7 +364,7 @@ namespace Controllers
         {
             _actionNodeList.Add(actionNode);
             var actionDefine = _actionDefineDict[actionNode.defineName];
-            var actionNodeItem = _compo.createNode(
+            var actionNodeItem = _ui.createNode(
                 posX,
                 posY,
                 getActionNodeName(actionNode),
@@ -368,13 +397,13 @@ namespace Controllers
                 _editObjectStack.Push(new DisplayInfo() { entryType = EntryType.none, editObject = _valueRef });
             else
                 _editObjectStack.Push(new DisplayInfo() { entryType = _entryType, editObject = _effect });
-            _compo.setReturnButtonActive(true);
+            _ui.setReturnButtonActive(true);
         }
         void popPrevEditObjectFromStackAndOpen()
         {
             DisplayInfo info = _editObjectStack.Pop();
             if (_editObjectStack.Count < 1)
-                _compo.setReturnButtonActive(false);
+                _ui.setReturnButtonActive(false);
             if (info.editObject is TriggerGraph trigger)
                 openTriggerGraph(trigger);
             else if (info.editObject is TargetChecker targetChecker)
@@ -437,7 +466,7 @@ namespace Controllers
         {
             _curPosX = posX;
             _curPosY = posY;
-            _compo.openMenu(posX, posY, _backgroundMenuOptions);
+            _ui.openMenu(posX, posY, _backgroundMenuOptions);
         }
         /// <summary>
         /// 当用户点击背景，隐藏菜单。
@@ -446,7 +475,7 @@ namespace Controllers
         /// <param name="posY"></param>
         void onClickBackground(float posX, float posY)
         {
-            _compo.closeMenu();
+            _ui.closeMenu();
         }
         /// <summary>
         /// 当用户点击菜单项，视具体点击的项目决定干什么
@@ -470,7 +499,7 @@ namespace Controllers
                         if (branchNodeIndex >= 0)
                         {
                             _actionNodeList[i].branches[branchNodeIndex] = null;
-                            _compo.unconnectNode(_actionNodeItemList[i], branchNodeIndex, actionNodeItem, 0);
+                            _ui.unconnectNode(_actionNodeItemList[i], branchNodeIndex, actionNodeItem, 0);
                         }
                         //断开输入
                         int inputValueRefIndex = Array.FindIndex(actionNode.inputs, v => v.action == _actionNodeList[i]);
@@ -479,14 +508,14 @@ namespace Controllers
                             var inputActionNode = _actionNodeList[i];
                             var inputValueRef = actionNode.inputs[inputValueRefIndex];
                             actionNode.inputs[inputValueRefIndex] = null;
-                            _compo.unconnectNode(_actionNodeItemList[i], inputActionNode.branches.Length + inputValueRef.index, actionNodeItem, 1 + inputValueRefIndex);
+                            _ui.unconnectNode(_actionNodeItemList[i], inputActionNode.branches.Length + inputValueRef.index, actionNodeItem, 1 + inputValueRefIndex);
                         }
                         //断开后一个动作
                         branchNodeIndex = Array.IndexOf(actionNode.branches, _actionNodeList[i]);
                         if (branchNodeIndex >= 0)
                         {
                             actionNode.branches[branchNodeIndex] = null;
-                            _compo.unconnectNode(actionNodeItem, branchNodeIndex, _actionNodeItemList[i], 0);
+                            _ui.unconnectNode(actionNodeItem, branchNodeIndex, _actionNodeItemList[i], 0);
                         }
                         //断开输出
                         inputValueRefIndex = Array.FindIndex(_actionNodeList[i].inputs, v => v.action == actionNode);
@@ -494,7 +523,7 @@ namespace Controllers
                         {
                             var inputValueRef = _actionNodeList[i].inputs[inputValueRefIndex];
                             _actionNodeList[i].inputs[inputValueRefIndex] = null;
-                            _compo.unconnectNode(actionNodeItem, actionNode.branches.Length + inputValueRef.index, _actionNodeItemList[i], 1 + inputValueRefIndex);
+                            _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + inputValueRef.index, _actionNodeItemList[i], 1 + inputValueRefIndex);
                         }
                     }
                     //从列表中移除
@@ -511,6 +540,7 @@ namespace Controllers
                 var actionNode = new ActionNode(option, new ActionValueRef[actionDefine.inputs.Length], new object[actionDefine.consts.Length], new ActionNode[1]);
                 createGraph4ActionNodeAt(actionNode, _curPosX, _curPosY);
             }
+            _ui.closeMenu();
         }
         /// <summary>
         /// 当用户连接节点，检查一下连接的合法性，如果合法那么连接，否则提示。
@@ -527,43 +557,44 @@ namespace Controllers
                 //入口节点更加特殊，它只有一个分支需要检查
                 if (rootActionNode != null)
                 {
+                    _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(rootActionNode), 0);
                     rootActionNode = null;
-                    _compo.unconnectNode(_entryNodeItem, 0, getActionNodeItem(rootActionNode), 0);
                 }
                 //如果输入已经和其他节点输出连接了的话，先断开连接
-                ActionValueRef outputValueRef = inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
+                ActionValueRef outputValueRef = inputIndex < inputActionNode.branches.Length ? null :
+                    inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
                 if (outputValueRef != null)
                 {
                     var actionNode = outputValueRef.action;
                     actionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
                     var actionNodeItem = getActionNodeItem(actionNode);
-                    _compo.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
+                    _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
                 }
                 //检查合法性
                 //入口节点只有一个输出节点
                 if (outputIndex != 0 || inputIndex != 0)
                 {
                     //值输出只能与值输入相互连接
-                    _compo.showErrorTip(app.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                    _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
                     return;
                 }
                 rootActionNode = inputActionNode;
             }
-            else if (inputActionNodeItem == _outputNodeItem)
+            else if (inputActionNodeItem == _returnNodeItem)
             {
                 ActionNode outputActionNode = getActionNode(outputActionNodeItem);
                 //出口节点也只有一个参数
                 if (rootActionNode != null)
                 {
+                    _ui.unconnectNode(getActionNodeItem(rootActionNode), valueRef.index + 1, _returnNodeItem, 0);
                     rootActionNode = null;
-                    _compo.unconnectNode(getActionNodeItem(rootActionNode), valueRef.index + 1, _outputNodeItem, 0);
                 }
                 //检查合法性
                 //输出值节点只有一个输出节点
                 if (outputIndex == 0)
                 {
                     //值输出只能与值输入相互连接
-                    _compo.showErrorTip(app.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                    _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
                     return;
                 }
                 rootActionNode = outputActionNode;
@@ -584,64 +615,139 @@ namespace Controllers
                     {
                         var actionNodeItem = _actionNodeItemList[i];
                         outputActionNode.branches[branchNodeIndex] = null;
-                        _compo.unconnectNode(outputActionNodeItem, branchNodeIndex, actionNodeItem, 0);
+                        _ui.unconnectNode(outputActionNodeItem, branchNodeIndex, actionNodeItem, 0);
                     }
                     //断开输出值引用的连接
-                    int valueRefIndex = Array.FindIndex(actionNode.inputs, v => v.action == outputActionNode);
+                    int valueRefIndex = Array.FindIndex(actionNode.inputs, v => v != null && v.action == outputActionNode);
                     if (valueRefIndex >= 0)
                     {
                         var actionNodeItem = _actionNodeItemList[i];
                         actionNode.inputs[valueRefIndex] = null;
-                        _compo.unconnectNode(outputActionNodeItem, actionNode.inputs[valueRefIndex].index, actionNodeItem, actionNode.branches.Length + valueRefIndex);
+                        _ui.unconnectNode(outputActionNodeItem, actionNode.inputs[valueRefIndex].index, actionNodeItem, actionNode.branches.Length + valueRefIndex);
                     }
                 }
                 //如果输入已经和其他节点输出连接了的话，先断开连接
-                ActionValueRef outputValueRef = inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
+                ActionValueRef outputValueRef = inputIndex < inputActionNode.branches.Length ? null :
+                    inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
                 if (outputValueRef != null)
                 {
                     var actionNode = outputValueRef.action;
                     actionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
                     var actionNodeItem = getActionNodeItem(actionNode);
-                    _compo.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
+                    _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
                 }
                 //检查合法性
-                var inputActionDefine = _actionDefineDict[inputActionNode.defineName];
-                var inputValueDefine = inputActionDefine.inputs[inputIndex - 1];
-                var outputActionDefine = _actionDefineDict[outputActionNode.defineName];
-                var outputValueDefine = outputActionDefine.outputs[outputIndex - outputActionNode.branches.Length];
                 if ((outputIndex < outputActionNode.branches.Length) != (inputIndex == 0))
                 {
                     //值输出只能与值输入相互连接
-                    _compo.showErrorTip(app.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                    _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
                     return;
                 }
-                if (!inputValueDefine.type.IsAssignableFrom(outputValueDefine.type) && !outputValueDefine.type.IsAssignableFrom(inputValueDefine.type))
+                if (outputIndex >= outputActionNode.branches.Length && inputIndex > 0)
                 {
-                    //相互连接的输入输出类型必须可以相互转化
-                    _compo.showErrorTip(app.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
-                    return;
+                    //值的相互连接
+                    var inputActionDefine = _actionDefineDict[inputActionNode.defineName];
+                    var inputValueDefine = inputActionDefine.inputs[inputIndex - 1];
+                    var outputActionDefine = _actionDefineDict[outputActionNode.defineName];
+                    var outputValueDefine = outputActionDefine.outputs[outputIndex - outputActionNode.branches.Length];
+                    if (!inputValueDefine.type.IsAssignableFrom(outputValueDefine.type) && !outputValueDefine.type.IsAssignableFrom(inputValueDefine.type))
+                    {
+                        //相互连接的输入输出类型必须可以相互转化
+                        _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
+                        return;
+                    }
+                    inputActionNode.inputs[inputIndex - 1] = new ActionValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length);
                 }
-                inputActionNode.inputs[inputIndex - 1] = new ActionValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length);
+                else
+                {
+                    //动作的相互连接
+                    outputActionNode.branches[outputIndex] = inputActionNode;
+                }
             }
-            _compo.connectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
+            _ui.connectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
+        }
+        /// <summary>
+        /// 当用户断开节点连接
+        /// </summary>
+        /// <param name="outputActionNodeItem"></param>
+        /// <param name="outputIndex"></param>
+        /// <param name="inputActionNodeItem"></param>
+        /// <param name="inputIndex"></param>
+        void onUnconnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
+        {
+            if (outputActionNodeItem == _entryNodeItem)
+            {
+                ActionNode inputActionNode = getActionNode(inputActionNodeItem);
+                if (inputActionNode == rootActionNode)
+                {
+                    //断开与入口动作节点的连接
+                    _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(rootActionNode), 0);
+                    rootActionNode = null;
+                }
+                else
+                {
+                    //断开与值节点的连接
+                    ActionValueRef outputValueRef = inputIndex < inputActionNode.branches.Length ? null :
+                        inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
+                    if (outputValueRef != null)
+                    {
+                        var actionNode = outputValueRef.action;
+                        actionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
+                        var actionNodeItem = getActionNodeItem(actionNode);
+                        _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
+                    }
+                }
+            }
+            else if (inputActionNodeItem == _returnNodeItem)
+            {
+                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+                if (rootActionNode == outputActionNode)
+                {
+                    //断开与返回值节点的连接
+                    _ui.unconnectNode(outputActionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
+                    rootActionNode = null;
+                }
+            }
+            else
+            {
+                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+                ActionNode inputActionNode = getActionNode(inputActionNodeItem);
+                if (outputIndex < outputActionNode.branches.Length)
+                {
+                    outputActionNode.branches[outputIndex] = null;
+                }
+                else
+                {
+                    inputActionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
+                }
+                _ui.unconnectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
+            }
+        }
+        /// <summary>
+        /// 当点击动作节点
+        /// </summary>
+        /// <param name="actionNodeItem"></param>
+        void onClickActionNode(ActionNodeItem actionNodeItem)
+        {
+            _ui.closeMenu();
         }
         /// <summary>
         /// 当用户长按节点，展开节点菜单。
         /// </summary>
         /// <param name="actionNodeItem"></param>
-        void onLongPressActionNode(ActionNodeItem actionNodeItem)
+        void onLongPressActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
         {
             //入口节点不能通过长按编辑
             if (actionNodeItem == _entryNodeItem)
                 return;
             //出口节点也不行
-            if (actionNodeItem == _outputNodeItem)
+            if (actionNodeItem == _returnNodeItem)
                 return;
             _curActionNode = getActionNode(actionNodeItem);
-            actionNodeItem.getPos(out float posX, out float posY);
-            _compo.openMenu(posX, posY, new string[]
+            Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
+            _ui.openMenu(position.x, position.y, new string[]
             {
-                app.langManager.getString(StringTable.DELETE),//删除
+                game.langManager.getString(StringTable.DELETE),//删除
             });
         }
         /// <summary>
@@ -652,7 +758,7 @@ namespace Controllers
         /// <param name="value"></param>
         void onActionNodeValueChange(ActionNodeItem actionNodeItem, int constIndex, object value)
         {
-            if (_targetChecker != null && actionNodeItem == _outputNodeItem)
+            if (_targetChecker != null && actionNodeItem == _returnNodeItem)
             {
                 if (constIndex == 0)
                     _targetChecker.targetType = (string)value;
@@ -679,6 +785,8 @@ namespace Controllers
         void onClickTriggerEditConditionButton()
         {
             pushCurEditObjectToStack();
+            if (_trigger.condition == null)
+                _trigger.condition = new ActionValueRef();
             openValueRefGraph(_trigger.condition);
         }
         /// <summary>
@@ -687,7 +795,12 @@ namespace Controllers
         void onClickAddTargetCheckerButton()
         {
             _trigger.targetCheckerList.Add(new TargetChecker(string.Empty, new ActionValueRef(null, 0), string.Empty));
-            _entryNodeItem.addTargetCheckerItem();
+            string[] targetCheckerNames = new string[_trigger.targetCheckerList.Count];
+            for (int i = 0; i < targetCheckerNames.Length; i++)
+            {
+                targetCheckerNames[i] = "目标" + (i + 1);
+            }
+            _entryNodeItem.updateTargetCheckerList(targetCheckerNames);
         }
         /// <summary>
         /// 当用户点击编辑目标按钮，将当前的编辑信息入栈，打开目标编辑
@@ -705,7 +818,12 @@ namespace Controllers
         void onClickRemoveTargetCheckerButton(int index)
         {
             _trigger.targetCheckerList.RemoveAt(index);
-            _entryNodeItem.removeTargetCheckerItemAt(index);
+            string[] targetCheckerNames = new string[_trigger.targetCheckerList.Count];
+            for (int i = 0; i < targetCheckerNames.Length; i++)
+            {
+                targetCheckerNames[i] = "目标" + (i + 1);
+            }
+            _entryNodeItem.updateTargetCheckerList(targetCheckerNames);
         }
         /// <summary>
         /// 当用户点击返回按钮，出栈之前的显示信息并重新打开之前的编辑界面
@@ -716,9 +834,11 @@ namespace Controllers
         }
         #endregion
         #endregion
+        [Obsolete]
         public IAppManager app { get; }
+        [Obsolete]
         public MainCtrl main { get; }
-        ActionNodeGraphPanel _compo;
+        ActionNodeGraphPanel _ui;
         Dictionary<string, ActionDefine> _actionDefineDict;
         string[] _backgroundMenuOptions;
         float _curPosX;
@@ -731,7 +851,7 @@ namespace Controllers
         /// </summary>
         ActionNodeGraphInfo _graphInfo;
         ActionNodeItem _entryNodeItem;
-        ActionNodeItem _outputNodeItem;
+        ActionNodeItem _returnNodeItem;
         ActionNode rootActionNode
         {
             get

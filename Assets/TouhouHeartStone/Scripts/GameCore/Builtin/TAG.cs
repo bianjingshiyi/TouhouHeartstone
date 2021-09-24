@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace TouhouHeartstone.Builtin
 {
-    class TAG
+    public class TAG
     {
         public const string FAIRY = "Fairy";
         public const string MACHINE = "Machine";

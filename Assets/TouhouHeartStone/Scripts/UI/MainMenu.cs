@@ -1,4 +1,5 @@
 ﻿using BJSYGameCore.UI;
+using System;
 using UnityEngine;
 
 namespace UI
@@ -11,6 +12,8 @@ namespace UI
         public EULAPanel EULAPanel => _eulaPanel;
 
         Main main => GetComponentInParent<Main>();
+        #region 私有方法
+        #region 生命周期
         protected override void Awake()
         {
             base.Awake();
@@ -34,12 +37,24 @@ namespace UI
             {
                 main.display(main.SettingPage);
             });
-            newsButton.onClick.AddListener(() => 
+            newsButton.onClick.AddListener(() =>
             {
                 // 等之后有空再改
                 newsPanel.gameObject.SetActive(true);
             });
+            editorButton.onClick.AddListener(onEditorButtonClickCallback);
         }
+        #endregion
+        #region 事件回调
+        private void onEditorButtonClickCallback()
+        {
+            onEditorButtonClick?.Invoke();
+        }
+        #endregion
+        #endregion
+        #region 事件
+        public event Action onEditorButtonClick;
+        #endregion
     }
 
 }

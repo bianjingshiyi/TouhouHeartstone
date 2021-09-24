@@ -1,32 +1,103 @@
-﻿using System;
+﻿using BJSYGameCore.UI;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 namespace UI
 {
     /// <summary>
     /// 效果编辑器UI脚本
     /// </summary>
-    public partial class EffectEditorPanel
+    public class EffectEditorPanel : MonoBehaviour
     {
-        /* 效果编辑器界面就是在动作编辑器界面的外面套了一层壳，左边用来编辑一些效果的属性，右边编辑动作
-         * 
-         * 
-         */
-        /// <summary>
-        /// 显示生效范围选项组
-        /// </summary>
-        /// <param name="names"></param>
-        /// <param name="values"></param>
-        public void displayActiveRangeToggleGroup(string[] names, bool[] values)
+        #region 公有方法
+        public void setActiveRanges(string[] activeRanges)
         {
-            throw new NotImplementedException();
+            _activeRangeDropdown.ClearOptions();
+            _activeRangeDropdown.AddOptions(new List<string>(activeRanges));
         }
+        public void setActiveRange(bool[] value)
+        {
+            _activeRangeDropdown.value = value;
+        }
+        public void updateTriggerList(string[] triggerNames)
+        {
+            if (triggerNames == null || triggerNames.Length < 1)
+            {
+                _triggerListRoot.gameObject.SetActive(false);
+            }
+            else
+            {
+                _triggerListRoot.gameObject.SetActive(true);
+                UIHelper.updateList(_triggerListRoot, _triggerListItemTemplate, _triggerItemList, triggerNames.Length, (i, itemRect) =>
+                {
+                    EditTriggerListItem item = itemRect.GetComponent<EditTriggerListItem>();
+                    item.updateView(triggerNames[i]);
+                }, itemRect =>
+                {
+                    EditTriggerListItem item = itemRect.GetComponent<EditTriggerListItem>();
+                    item.onClickEditButton += onClickTriggerListItemEditButton;
+                    item.onClickRemoveButton += onClickTriggerListItemRemoveButton;
+                }, itemRect =>
+                {
+                    EditTriggerListItem item = itemRect.GetComponent<EditTriggerListItem>();
+                    item.onClickEditButton -= onClickTriggerListItemEditButton;
+                    item.onClickRemoveButton -= onClickTriggerListItemRemoveButton;
+                });
+                LayoutRebuilder.ForceRebuildLayoutImmediate(_triggerListRoot);
+            }
+        }
+        #endregion
+        #region 私有方法
+        #region 生命周期
+        protected void Awake()
+        {
+            _activeRangeDropdown.onValueChanged.AddListener(onActiveRangeDropdownValueChangedCallback);
+            _editEnableActionButton.onClick.AddListener(onClickEditEnableActionButtonCallback);
+            _editDisableActionButton.onClick.AddListener(onClickEditDisableActionButtonCallback);
+            _addTriggerButton.onClick.AddListener(onClickAddTriggerButtonCallback);
+            if (_triggerListItemTemplate.transform.parent == _triggerListRoot)
+            {
+                _triggerListItemTemplate.gameObject.SetActive(false);
+            }
+            _returnButton.onClick.AddListener(onClickReturnButtonCallback);
+        }
+        #endregion
+        #region 事件回调
+        private void onActiveRangeDropdownValueChangedCallback(bool[] value)
+        {
+            onActiveRangeDropdownValueChanged?.Invoke(value);
+        }
+        private void onClickEditEnableActionButtonCallback()
+        {
+            onClickEditEnableActionButton?.Invoke();
+        }
+        private void onClickEditDisableActionButtonCallback()
+        {
+            onClickEditDisableActionButton?.Invoke();
+        }
+        private void onClickAddTriggerButtonCallback()
+        {
+            onClickAddTriggerButton?.Invoke();
+        }
+        private void onClickTriggerListItemEditButton(EditTriggerListItem item)
+        {
+            onClickEditTriggerButton?.Invoke(_triggerItemList.IndexOf(item.transform as RectTransform));
+        }
+        private void onClickTriggerListItemRemoveButton(EditTriggerListItem item)
+        {
+            onClickRemoveTriggerButton?.Invoke(_triggerItemList.IndexOf(item.transform as RectTransform));
+        }
+        private void onClickReturnButtonCallback()
+        {
+            onClickReturnButton?.Invoke();
+        }
+        #endregion
+        #endregion
         /// <summary>
         /// 当点击编辑生效范围按钮
         /// </summary>
-        public event Action onClickEditActiveRangeButton;
-        /// <summary>
-        /// 当结束生效范围编辑
-        /// </summary>
-        public event Action<bool[]> onCloseActiveRangeToggleGroup;
+        public event Action<bool[]> onActiveRangeDropdownValueChanged;
         /// <summary>
         /// 当点击编辑激活动作按钮
         /// </summary>
@@ -47,6 +118,25 @@ namespace UI
         /// 当点击编辑触发器按钮，参数为编辑的触发器索引。
         /// </summary>
         public event Action<int> onClickEditTriggerButton;
-        ToggleGroupPanel _activeRangeToggleGroup;
+        /// <summary>
+        /// 当点击返回按钮
+        /// </summary>
+        public event Action onClickReturnButton;
+        [SerializeField]
+        MultiSelectDropdown _activeRangeDropdown;
+        [SerializeField]
+        Button _editEnableActionButton;
+        [SerializeField]
+        Button _editDisableActionButton;
+        [SerializeField]
+        Button _addTriggerButton;
+        [SerializeField]
+        RectTransform _triggerListRoot;
+        [SerializeField]
+        RectTransform _triggerListItemTemplate;
+        [SerializeField]
+        List<RectTransform> _triggerItemList;
+        [SerializeField]
+        Button _returnButton;
     }
 }

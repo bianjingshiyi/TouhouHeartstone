@@ -9,16 +9,17 @@ namespace UI
         public void switchToCard()
         {
             _card.gameObject.SetActive(true);
-            _addButtonGameObject.SetActive(false);
+            _newCardButton.gameObject.SetActive(false);
         }
         public void switchToAddButton()
         {
             _card.gameObject.SetActive(false);
-            _addButtonGameObject.SetActive(true);
+            _newCardButton.gameObject.SetActive(true);
         }
         protected void Awake()
         {
             _button.onClick.AddListener(onClickCallback);
+            _newCardButton.onClick.AddListener(onClickCallback);
         }
         private void onClickCallback()
         {
@@ -29,7 +30,7 @@ namespace UI
         [SerializeField]
         Card _card;
         [SerializeField]
-        GameObject _addButtonGameObject;
+        Button _newCardButton;
         [SerializeField]
         Button _button;
     }

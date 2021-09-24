@@ -311,5 +311,32 @@ namespace Tests
             Assert.AreEqual(3, sheetB.Cells[2, 0].Value);
             Assert.AreEqual("CardB", sheetB.Cells[2, 1].Value);
         }
+        [Test]
+        public void saveJPGTest()
+        {
+            Texture2D texture = Resources.Load<Texture2D>("TestPicture");
+            byte[] bytes = texture.EncodeToJPG();
+            if (!Directory.Exists("Tests"))
+            {
+                Directory.CreateDirectory("Tests");
+            }
+            using (Stream stream = File.Create("Tests/TestPicture.jpg"))
+            {
+                BinaryWriter writer = new BinaryWriter(stream);
+                writer.Write(bytes);
+                writer.Flush();
+            }
+            using (Stream stream = File.Open("Tests/TestPicture.jpg", FileMode.Open))
+            {
+                BinaryReader reader = new BinaryReader(stream);
+                byte[] savedBytes = reader.ReadBytes((int)stream.Length);
+                texture.LoadImage(savedBytes);
+                Assert.AreEqual(bytes.Length, savedBytes.Length);
+                for (int i = 0; i < savedBytes.Length; i++)
+                {
+                    Assert.AreEqual(bytes[i], savedBytes[i]);
+                }
+            }
+        }
     }
 }
