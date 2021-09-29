@@ -14,7 +14,7 @@ namespace UI
             _triggerFieldsRoot.gameObject.SetActive(true);
             _inputRoot.gameObject.SetActive(false);
             _valueRoot.gameObject.SetActive(false);
-            _outputRoot.gameObject.SetActive(false);
+            _outputRoot.gameObject.SetActive(true);
         }
         public void switchToActionNode()
         {
@@ -114,27 +114,34 @@ namespace UI
                 });
             }
         }
-        public void setTrigger(string eventName, string[] targetCheckerNames)
+        public void setTrigger(string[] targetTypes, string eventName, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {
             _eventNameInputField.SetTextWithoutNotify(eventName);
-            updateTargetCheckerList(targetCheckerNames);
+            updateTargetCheckerList(targetTypes, targetCheckers);
         }
-        public void updateTargetCheckerList(string[] targetCheckerNames)
+        public void updateTargetCheckerList(string[] targetTypes, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {
-            UIHelper.updateList(_targetCheckerRoot, _targetCheckerTemplate, _targetCheckerList, targetCheckerNames.Length, (i, itemRect) =>
+            UIHelper.updateList(_targetCheckerRoot, _targetCheckerTemplate, _targetCheckerList, targetCheckers.Length, (i, itemRect) =>
             {
                 ActionNodeItemTriggerTargetChecker item = itemRect.GetComponent<ActionNodeItemTriggerTargetChecker>();
-                item.setName(targetCheckerNames[i]);
+                item.setTargetTypes(targetTypes);
+                item.setTargetType(targetCheckers[i].typeIndex);
+                item.setName(targetCheckers[i].name);
+                item.setErrorTip(targetCheckers[i].errorTip);
             }, itemRect =>
             {
                 ActionNodeItemTriggerTargetChecker item = itemRect.GetComponent<ActionNodeItemTriggerTargetChecker>();
+                item.onTargetDropdownValueChanged += onTargetCheckerTypeValueChangedCallback;
                 item.onClickEditButton += onClickEditTargetCheckerButtonCallback;
                 item.onClickRemoveButton += onClickRemoveTargetCheckerButtonCallback;
+                item.onErrorTipInputFieldValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             }, itemRect =>
             {
                 ActionNodeItemTriggerTargetChecker item = itemRect.GetComponent<ActionNodeItemTriggerTargetChecker>();
+                item.onTargetDropdownValueChanged -= onTargetCheckerTypeValueChangedCallback;
                 item.onClickEditButton -= onClickEditTargetCheckerButtonCallback;
                 item.onClickRemoveButton -= onClickRemoveTargetCheckerButtonCallback;
+                item.onErrorTipInputFieldValueChanged -= onTargetCheckerErrorTipValueChangedCallback;
             });
         }
         public int indexOfInput(ActionNodeItemInput input)
@@ -172,6 +179,10 @@ namespace UI
             if (_outputTemplate.transform.parent == _outputRoot)
             {
                 _outputTemplate.gameObject.SetActive(false);
+            }
+            if (_targetCheckerTemplate.transform.parent == _targetCheckerRoot)
+            {
+                _targetCheckerTemplate.gameObject.SetActive(false);
             }
             _eventNameInputField.onEndEdit.AddListener(onEndEditEventNameInputField);
             _editConditionButton.onClick.AddListener(onClickEditConditionButtonCallback);
@@ -219,6 +230,10 @@ namespace UI
         {
             onClickAddTargetCheckerButton?.Invoke(this);
         }
+        private void onTargetCheckerTypeValueChangedCallback(ActionNodeItemTriggerTargetChecker item, int value)
+        {
+            onTargetCheckerTypeValueChanged?.Invoke(this, _targetCheckerList.IndexOf(item.transform as RectTransform), value);
+        }
         private void onClickEditTargetCheckerButtonCallback(ActionNodeItemTriggerTargetChecker item)
         {
             onClickEditTargetCheckerButton?.Invoke(this, _targetCheckerList.IndexOf(item.transform as RectTransform));
@@ -226,6 +241,10 @@ namespace UI
         private void onClickRemoveTargetCheckerButtonCallback(ActionNodeItemTriggerTargetChecker item)
         {
             onClickRemoveTargetCheckerButton?.Invoke(this, _targetCheckerList.IndexOf(item.transform as RectTransform));
+        }
+        private void onTargetCheckerErrorTipValueChangedCallback(ActionNodeItemTriggerTargetChecker item, string value)
+        {
+            onTargetCheckerErrorTipValueChanged?.Invoke(this, _targetCheckerList.IndexOf(item.transform as RectTransform), value);
         }
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
@@ -270,8 +289,10 @@ namespace UI
         public event Action<ActionNodeItem, string> onEventNameChanged;
         public event Action<ActionNodeItem> onClickEditConditionButton;
         public event Action<ActionNodeItem> onClickAddTargetCheckerButton;
+        public event Action<ActionNodeItem, int, int> onTargetCheckerTypeValueChanged;
         public event Action<ActionNodeItem, int> onClickEditTargetCheckerButton;
         public event Action<ActionNodeItem, int> onClickRemoveTargetCheckerButton;
+        public event Action<ActionNodeItem, int, string> onTargetCheckerErrorTipValueChanged;
         #endregion
         public float posX
         {

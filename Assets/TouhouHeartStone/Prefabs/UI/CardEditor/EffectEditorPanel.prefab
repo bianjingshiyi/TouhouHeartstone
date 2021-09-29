@@ -2915,26 +2915,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1771722581948590070, guid: 1a01bfe52d247ac43b0f883165e03d8e,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1771722581948590070, guid: 1a01bfe52d247ac43b0f883165e03d8e,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1771722581948590070, guid: 1a01bfe52d247ac43b0f883165e03d8e,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1771722581948590070, guid: 1a01bfe52d247ac43b0f883165e03d8e,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2029024615763842767, guid: 1a01bfe52d247ac43b0f883165e03d8e,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -2962,11 +2942,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2055638981449368381, guid: 1a01bfe52d247ac43b0f883165e03d8e,
         type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 97.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2055638981449368381, guid: 1a01bfe52d247ac43b0f883165e03d8e,
-        type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
@@ -2977,12 +2952,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2055638981449368381, guid: 1a01bfe52d247ac43b0f883165e03d8e,
         type: 3}
-      propertyPath: m_AnchoredPosition.y
+      propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2055638981449368381, guid: 1a01bfe52d247ac43b0f883165e03d8e,
         type: 3}
-      propertyPath: m_SizeDelta.x
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2143601738040356946, guid: 1a01bfe52d247ac43b0f883165e03d8e,
@@ -4060,6 +4035,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4594363656915755941, guid: 1a01bfe52d247ac43b0f883165e03d8e,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6226173565633366005, guid: 1a01bfe52d247ac43b0f883165e03d8e,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -4078,6 +4058,11 @@ PrefabInstance:
     - target: {fileID: 6226173565633366005, guid: 1a01bfe52d247ac43b0f883165e03d8e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7177275842916179159, guid: 1a01bfe52d247ac43b0f883165e03d8e,
+        type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7336871014411101413, guid: 1a01bfe52d247ac43b0f883165e03d8e,
@@ -4121,26 +4106,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7674972924117553062, guid: 1a01bfe52d247ac43b0f883165e03d8e,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9107886021511309595, guid: 1a01bfe52d247ac43b0f883165e03d8e,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9107886021511309595, guid: 1a01bfe52d247ac43b0f883165e03d8e,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9107886021511309595, guid: 1a01bfe52d247ac43b0f883165e03d8e,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9107886021511309595, guid: 1a01bfe52d247ac43b0f883165e03d8e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0

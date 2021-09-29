@@ -11,10 +11,11 @@ namespace Controllers
 {
     partial class EffectEditorCtrl : GameObjectCtrl<MainSceneCtrl>
     {
-        public void displayEffect(GeneratedEffect effect)
+        public void displayEffect(GeneratedEffect effect, ActionNodeGraphInfo graphInfo)
         {
             _ui.gameObject.SetActive(true);
             _effect = effect;
+            this.graphInfo = graphInfo;
             bool[] activeRangeValue = new bool[_selectableRanges.Length];
             for (int i = 0; i < activeRangeValue.Length; i++)
             {
@@ -99,6 +100,7 @@ namespace Controllers
             _ui.updateTriggerList(triggerNames);
         }
         #endregion
+        public ActionNodeGraphInfo graphInfo { get; private set; }
         [Obsolete("使用game作为替代")]
         public IAppManager app { get; }
         EffectEditorPanel _ui;

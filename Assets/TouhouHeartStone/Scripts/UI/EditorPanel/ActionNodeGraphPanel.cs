@@ -58,6 +58,8 @@ namespace UI
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickEditTargetCheckerButton += onClickTriggerNodeEditTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
+            actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
+            actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             return actionNodeItem;
         }
         /// <summary>
@@ -68,7 +70,7 @@ namespace UI
         /// <param name="eventName"></param>
         /// <param name="targetCheckerCount"></param>
         /// <returns></returns>
-        public ActionNodeItem createTriggerNode(float posX, float posY, string eventName, int targetCheckerCount)
+        public ActionNodeItem createTriggerNode(float posX, float posY, string[] targetCheckerTypes, string eventName, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {
             ActionNodeItem actionNodeItem = Instantiate(_actionNodeItemTemplate, _actionNodesRoot);
             _actionNodeItemList.Add(actionNodeItem);
@@ -76,12 +78,12 @@ namespace UI
             RectTransform itemRect = actionNodeItem.transform as RectTransform;
             itemRect.anchoredPosition = new Vector2(posX, posY);
             actionNodeItem.switchToTriggerNode();
-            string[] targetCheckerNames = new string[targetCheckerCount];
-            for (int i = 0; i < targetCheckerNames.Length; i++)
+            actionNodeItem.setTrigger(targetCheckerTypes, eventName, targetCheckers);
+            string[] outputNames = new string[]
             {
-                targetCheckerNames[i] = "目标" + (i + 1);
-            }
-            actionNodeItem.setTrigger(eventName, targetCheckerNames);
+                string.Empty
+            };
+            actionNodeItem.setOutputs(outputNames);
             actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
             actionNodeItem.onDragInputNode += onDragInputNode;
             actionNodeItem.onEndDragInputNode += onEndDragInputNode;
@@ -99,6 +101,8 @@ namespace UI
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickEditTargetCheckerButton += onClickTriggerNodeEditTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
+            actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
+            actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             return actionNodeItem;
         }
         /// <summary>
@@ -152,6 +156,47 @@ namespace UI
             }
             Destroy(_connectionList[index].line.gameObject);
             _connectionList.RemoveAt(index);
+        }
+        /// <summary>
+        /// 将动作节点移动到图上的某个位置
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="graphPosition">动作图坐标系坐标</param>
+        public void moveActionNodeTo(ActionNodeItem item, Vector2 graphPosition)
+        {
+            item.transform.localPosition = graphPosition + _dragItemPositionOffset;
+            for (int i = 0; i < _connectionList.Count; i++)
+            {
+                if (_connectionList[i].outputNode == _dragItem || _connectionList[i].inputNode == _dragItem)
+                {
+                    Vector2 from = _connectionList[i].outputNode.getOutputWorldPosition(_connectionList[i].outputIndex);
+                    from = _actionNodesRoot.InverseTransformPoint(from);
+                    Vector2 to = _connectionList[i].inputNode.getInputWorldPosition(_connectionList[i].inputIndex);
+                    to = _actionNodesRoot.InverseTransformPoint(to);
+                    _connectionList[i].line.setPosition(from, to);
+                }
+            }
+        }
+        /// <summary>
+        /// 从图上移除一个指定节点
+        /// </summary>
+        /// <param name="node"></param>
+        public void removeNode(ActionNodeItem node)
+        {
+            //销毁节点UI
+            _actionNodeItemList.Remove(node);
+            Destroy(node.gameObject);
+            //销毁所有连线UI
+            for (int i = 0; i < _connectionList.Count; i++)
+            {
+                if (_connectionList[i].inputNode == node || _connectionList[i].outputNode == node)
+                {
+                    Destroy(_connectionList[i].line.gameObject);
+                    _connectionList.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+            }
         }
         /// <summary>
         /// 清空图上的所有节点和连线
@@ -254,6 +299,7 @@ namespace UI
                 _menuItemTemplate.gameObject.SetActive(false);
             }
             _menuRoot.gameObject.SetActive(false);
+            _returnButton.onClick.AddListener(onClickReturnButtonCallback);
         }
         #endregion
         #region 事件回调
@@ -453,18 +499,8 @@ namespace UI
         {
             if (item != _dragItem)
                 return;
-            item.transform.localPosition = (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position) + _dragItemPositionOffset;
-            for (int i = 0; i < _connectionList.Count; i++)
-            {
-                if (_connectionList[i].outputNode == _dragItem || _connectionList[i].inputNode == _dragItem)
-                {
-                    Vector2 from = _connectionList[i].outputNode.getOutputWorldPosition(_connectionList[i].outputIndex);
-                    from = _actionNodesRoot.InverseTransformPoint(from);
-                    Vector2 to = _connectionList[i].inputNode.getInputWorldPosition(_connectionList[i].inputIndex);
-                    to = _actionNodesRoot.InverseTransformPoint(to);
-                    _connectionList[i].line.setPosition(from, to);
-                }
-            }
+            Vector2 graphPosition = _actionNodesRoot.InverseTransformPoint(eventData.position);
+            onDragActionNode?.Invoke(item, graphPosition);
         }
         private void onEndDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
@@ -487,6 +523,10 @@ namespace UI
         {
             onClickAddTargetCheckerButton?.Invoke();
         }
+        private void onTargetCheckerTypeValueChangedCallback(ActionNodeItem item, int targetCheckerIndex, int value)
+        {
+            onTargetCheckerTypeValueChanged?.Invoke(targetCheckerIndex, value);
+        }
         private void onClickTriggerNodeEditTargetCheckerButton(ActionNodeItem item, int targetCheckerIndex)
         {
             onClickEditTargetCheckerButton?.Invoke(targetCheckerIndex);
@@ -495,9 +535,17 @@ namespace UI
         {
             onClickRemoveTargetCheckerButton?.Invoke(targetCheckerIndex);
         }
+        private void onTargetCheckerErrorTipValueChangedCallback(ActionNodeItem item, int targetCheckerIndex, string value)
+        {
+            onTargetCheckerErrorTipValueChanged?.Invoke(targetCheckerIndex, value);
+        }
         private void onClickMenuOption(ActionNodeGraphMenuOption item)
         {
             onClickMenuItem?.Invoke(_menuItemList.IndexOf(item.transform as RectTransform));
+        }
+        private void onClickReturnButtonCallback()
+        {
+            onClickReturnButton?.Invoke();
         }
         #endregion
         /// <summary>
@@ -540,6 +588,10 @@ namespace UI
         /// </summary>
         public event Action<ActionNodeItem> onClickActionNode;
         /// <summary>
+        /// 当拖拽节点，参数为拖拽的节点和图坐标位置
+        /// </summary>
+        public event Action<ActionNodeItem, Vector2> onDragActionNode;
+        /// <summary>
         /// 当长按节点，参数为长按的节点和长按的屏幕坐标
         /// </summary>
         public event Action<ActionNodeItem, Vector2> onLongPressActionNode;
@@ -560,6 +612,10 @@ namespace UI
         /// </summary>
         public event Action onClickAddTargetCheckerButton;
         /// <summary>
+        /// 当触发器节点的某个目标类型发生改变的时候，参数为发生改变的目标索引和目标值的索引
+        /// </summary>
+        public event Action<int, int> onTargetCheckerTypeValueChanged;
+        /// <summary>
         /// 当点击触发器节点的编辑目标按钮，参数为点击的按钮的索引
         /// </summary>
         public event Action<int> onClickEditTargetCheckerButton;
@@ -567,6 +623,10 @@ namespace UI
         /// 当点击触发器节点的删除目标按钮，参数为点击的按钮的索引
         /// </summary>
         public event Action<int> onClickRemoveTargetCheckerButton;
+        /// <summary>
+        /// 当触发器节点的某个目标错误提示发生改变，参数为发生改变的目标缩影和错误提示的字符串
+        /// </summary>
+        public event Action<int, string> onTargetCheckerErrorTipValueChanged;
         /// <summary>
         /// 当点击返回之前编辑的动作图按钮
         /// </summary>

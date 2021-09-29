@@ -347,7 +347,13 @@ namespace Controllers
         void onClickEditEffectButton(int index)
         {
             GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
-            scene.effectEditor.displayEffect(effect);
+            ActionNodeGraphInfo graphInfo = scene.editor.actionNodeGraphInfoList.Find(g => g.cardId == _cardDefine.id && g.effectIndex == index);
+            if (graphInfo == null)
+            {
+                graphInfo = new ActionNodeGraphInfo(_cardDefine.id, index);
+                scene.editor.actionNodeGraphInfoList.Add(graphInfo);
+            }
+            scene.effectEditor.displayEffect(effect, graphInfo);
         }
         void onClickRemoveEffectButton(int index)
         {

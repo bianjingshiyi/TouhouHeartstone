@@ -14,26 +14,6 @@ namespace Controllers
     partial class ActionNodeGraphCtrl : GameObjectCtrl<MainSceneCtrl>, IController<MainCtrl>
     {
         #region 公有方法
-        //public ActionNodeGraphCtrl(IAppManager app, MainCtrl main, ActionNodeGraphPanel compo)
-        //{
-        //    this.app = app;
-        //    this.main = main;
-        //    _ui = compo;
-        //    _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly });
-        //    _backgroundMenuOptions = _actionDefineDict.Keys.ToArray();
-        //    _ui.onClickBackground += onClickBackground;
-        //    _ui.onLongPressBackground += onLongPressBackground;
-        //    _ui.onClickMenuItem += onClickMenuItem;
-        //    _ui.onConnectNodes += onConnectNodes;
-        //    _ui.onLongPressActionNode += onLongPressActionNode;
-        //    _ui.onActionNodeValueChange += onActionNodeValueChange;
-        //    _ui.onChangeTriggerEventName += onChangeTriggerEventName;
-        //    _ui.onClickTriggerEditConditionButton += onClickTriggerEditConditionButton;
-        //    _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
-        //    _ui.onClickEditTargetCheckerButton += onClickEditTargetCheckerButton;
-        //    _ui.onClickRemoveTargetCheckerButton += onClickRemoveTargetCheckerButton;
-        //    _ui.onClickReturnButton += onClickReturnButton;
-        //}
         /// <summary>
         /// 打开一个效果的生效效果动作图。
         /// </summary>
@@ -44,6 +24,7 @@ namespace Controllers
             _ui.gameObject.SetActive(true);
             _editObjectStack.Clear();
             openActionGraph(effect, EntryType.onEnable);
+            _ui.setReturnButtonActive(false);
         }
         /// <summary>
         /// 打开一个效果的失效效果动作图。
@@ -55,6 +36,7 @@ namespace Controllers
             _ui.gameObject.SetActive(true);
             _editObjectStack.Clear();
             openActionGraph(effect, EntryType.onDisable);
+            _ui.setReturnButtonActive(false);
         }
         /// <summary>
         /// 打开一个触发器的动作节点图
@@ -64,6 +46,7 @@ namespace Controllers
         {
             _ui.gameObject.SetActive(true);
             _editObjectStack.Clear();
+            _ui.setReturnButtonActive(false);
 
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
@@ -74,21 +57,17 @@ namespace Controllers
             _targetChecker = null;
             _trigger = trigger;
             //创建入口节点
-            _entryNodeItem = _ui.createTriggerNode(0, 0, _trigger.eventName, _trigger.targetCheckerList.Count);
-            if (_graphInfo != null)
-            {
-                //创建根节点
-                if (trigger.action != null)
-                {
-                    var actionNodeItem = createGraph4ActionNode(trigger.action);
-                    _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
-                }
-                //创建离散节点
-            }
+            _entryNodeItem = _ui.createTriggerNode(0, 0, _targetCheckerTypes, _trigger.eventName, getTargetCheckerViewData());
+            //创建根节点
             if (trigger.action != null)
             {
                 var actionNodeItem = createGraph4ActionNode(trigger.action);
                 _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
+            }
+            //创建离散节点
+            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
+            {
+                createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
             }
         }
         #endregion
@@ -109,12 +88,15 @@ namespace Controllers
             _ui.onUnconnectNodes += onUnconnectNodes;
             _ui.onClickActionNode += onClickActionNode;
             _ui.onLongPressActionNode += onLongPressActionNode;
+            _ui.onDragActionNode += onDragActionNode;
             _ui.onActionNodeValueChange += onActionNodeValueChange;
             _ui.onChangeTriggerEventName += onChangeTriggerEventName;
             _ui.onClickTriggerEditConditionButton += onClickTriggerEditConditionButton;
             _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
+            _ui.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChanged;
             _ui.onClickEditTargetCheckerButton += onClickEditTargetCheckerButton;
             _ui.onClickRemoveTargetCheckerButton += onClickRemoveTargetCheckerButton;
+            _ui.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChanged;
             _ui.onClickReturnButton += onClickReturnButton;
             _ui.onActionNodeValueChange += onActionNodeValueChange;
         }
@@ -195,13 +177,16 @@ namespace Controllers
             _valueRef = valueRef;
             _targetChecker = null;
             _trigger = null;
-            var actionNodeItem = createGraph4ActionNode(valueRef.action);
             _returnNodeItem = _ui.createNode(0, 0,
                 game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
                 new string[] { string.Empty },
                 new ActionNodeValueInfo[0],
                 new string[0]);
-            _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
+            if (valueRef.action != null)
+            {
+                ActionNodeItem actionNodeItem = createGraph4ActionNode(valueRef.action);
+                _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
+            }
         }
         void openTargetCheckerGraph(TargetChecker targetChecker)
         {
@@ -229,7 +214,7 @@ namespace Controllers
                     {
                         name = game.langManager.getString(StringTable.EDITOR_VALUE_NAME_INVALID_MSG),
                         type = ActionNodeValueType.text,
-                        value = _targetChecker.invalidMsg
+                        value = _targetChecker.errorTip
                     }
                 },
                 new string[0]);
@@ -245,8 +230,8 @@ namespace Controllers
             var actionDefine = _actionDefineDict[actionNode.defineName];
             ActionNodeItem actionNodeItem;
             ActionNodeGraphNodeInfo nodeInfo =
-                _graphInfo != null && _graphInfo.actionInfoDict.ContainsKey(actionNode.id) ?
-                _graphInfo.actionInfoDict[actionNode.id] : null;
+                hasNodeInfo(actionNode) ?
+                getNodeInfo(actionNode) : null;
             Vector2 pos;
             if (nodeInfo != null)
             {
@@ -262,6 +247,8 @@ namespace Controllers
                     sizeDict = new Dictionary<ActionNode, Vector2>();
                 Vector2 size = calcActionNodeGraphSize(actionNode, sizeDict);
                 pos = new Vector2(prevNodeItem.posX + size.x, startPosOffset);
+                nodeInfo = new ActionNodeGraphNodeInfo(pos.x, pos.y);
+                setNodeInfo(actionNode, nodeInfo);
             }
             else if (nextNodeItem != null)
             {
@@ -269,17 +256,21 @@ namespace Controllers
                     sizeDict = new Dictionary<ActionNode, Vector2>();
                 Vector2 size = calcActionNodeGraphSize(actionNode, sizeDict);
                 pos = new Vector2(prevNodeItem.posX - _ui.autoPosSpacingWidth, startPosOffset);
+                nodeInfo = new ActionNodeGraphNodeInfo(pos.x, pos.y);
+                setNodeInfo(actionNode, nodeInfo);
             }
             else
             {
                 //没有信息也没有前置节点，那我也不知道该放在哪里了。
                 pos = new Vector2(0, 0);
+                nodeInfo = new ActionNodeGraphNodeInfo(pos.x, pos.y);
+                setNodeInfo(actionNode, nodeInfo);
             }
             actionNodeItem = _ui.createNode(pos.x, pos.y,
                 getActionNodeName(actionNode),
                 getActionNodeInputNames(actionDefine),
                 getActionNodeConstValueInfo(actionNode),
-                getActionDefineOutputNames(actionDefine));
+                getActionNodeOutputNames(actionNode));
             _actionNodeItemList.Add(actionNodeItem);
             //为动作分支创建节点图
             float lastNodeOffset = 0;
@@ -370,8 +361,11 @@ namespace Controllers
                 getActionNodeName(actionNode),
                 getActionNodeInputNames(actionDefine),
                 getActionNodeConstValueInfo(actionNode),
-                getActionDefineOutputNames(actionDefine));
+                getActionNodeOutputNames(actionNode));
             _actionNodeItemList.Add(actionNodeItem);
+            actionNode.id = allocActionNodeId();
+            graphInfo.freeActionNodeList.Add(actionNode);
+            setNodeInfo(actionNode, new ActionNodeGraphNodeInfo(posX, posY));
             return actionNodeItem;
         }
         ActionNodeItem getActionNodeItem(ActionNode actionNode)
@@ -453,10 +447,65 @@ namespace Controllers
             }
             return infoArray;
         }
-        string[] getActionDefineOutputNames(ActionDefine actionDefine)
+        string[] getActionNodeOutputNames(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输出的翻译，但是暂时先不这么做。
-            return actionDefine.outputs.Select(o => o.name).ToArray();
+            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            string[] outputNames = new string[actionDefine.outputs.Length + actionNode.branches.Length];
+            for (int i = 0; i < outputNames.Length; i++)
+            {
+                if (i < actionNode.branches.Length)
+                {
+                    //TODO:下一个动作节点不知道该叫啥，就先不给名字好了
+                    outputNames[i] = string.Empty;
+                }
+                else
+                {
+                    outputNames[i] = actionDefine.outputs[i - actionNode.branches.Length].name;
+                }
+            }
+            return outputNames;
+        }
+        /// <summary>
+        /// 为动作节点分配id，
+        /// </summary>
+        /// <returns></returns>
+        int allocActionNodeId()
+        {
+            int id = 1;
+            for (int i = 0; i < _actionNodeList.Count; i++)
+            {
+                if (_actionNodeList[i].id >= id)
+                    id = _actionNodeList[i].id + 1;
+            }
+            return id;
+        }
+        ActionNodeGraphNodeInfo getNodeInfo(ActionNode node)
+        {
+            return graphInfo.actionInfoDict[node.id.ToString()];
+        }
+        void setNodeInfo(ActionNode node, ActionNodeGraphNodeInfo graphNodeInfo)
+        {
+            graphInfo.actionInfoDict[node.id.ToString()] = graphNodeInfo;
+        }
+        bool hasNodeInfo(ActionNode node)
+        {
+            return graphInfo.actionInfoDict.ContainsKey(node.id.ToString());
+        }
+        bool removeNodeInfo(ActionNode node)
+        {
+            return graphInfo.actionInfoDict.Remove(node.id.ToString());
+        }
+        private (int typeIndex, string name, string errorTip)[] getTargetCheckerViewData()
+        {
+            var targetCheckers = new (int typeIndex, string name, string errorTip)[_trigger.targetCheckerList.Count];
+            for (int i = 0; i < targetCheckers.Length; i++)
+            {
+                targetCheckers[i].typeIndex = Array.IndexOf(_targetCheckerTypes, _trigger.targetCheckerList[i].targetType);
+                targetCheckers[i].name = "目标" + (i + 1);
+                targetCheckers[i].errorTip = _trigger.targetCheckerList[i].errorTip;
+            }
+            return targetCheckers;
         }
         #region UI回调
         /// <summary>
@@ -475,6 +524,7 @@ namespace Controllers
         /// <param name="posY"></param>
         void onClickBackground(float posX, float posY)
         {
+            _curActionNode = null;
             _ui.closeMenu();
         }
         /// <summary>
@@ -502,7 +552,7 @@ namespace Controllers
                             _ui.unconnectNode(_actionNodeItemList[i], branchNodeIndex, actionNodeItem, 0);
                         }
                         //断开输入
-                        int inputValueRefIndex = Array.FindIndex(actionNode.inputs, v => v.action == _actionNodeList[i]);
+                        int inputValueRefIndex = Array.FindIndex(actionNode.inputs, v => v != null && v.action == _actionNodeList[i]);
                         if (inputValueRefIndex >= 0)
                         {
                             var inputActionNode = _actionNodeList[i];
@@ -518,7 +568,7 @@ namespace Controllers
                             _ui.unconnectNode(actionNodeItem, branchNodeIndex, _actionNodeItemList[i], 0);
                         }
                         //断开输出
-                        inputValueRefIndex = Array.FindIndex(_actionNodeList[i].inputs, v => v.action == actionNode);
+                        inputValueRefIndex = Array.FindIndex(_actionNodeList[i].inputs, v => v != null && v.action == actionNode);
                         if (inputValueRefIndex >= 0)
                         {
                             var inputValueRef = _actionNodeList[i].inputs[inputValueRefIndex];
@@ -527,8 +577,13 @@ namespace Controllers
                         }
                     }
                     //从列表中移除
-                    _actionNodeList.RemoveAt(index);
-                    _actionNodeItemList.RemoveAt(index);
+                    _actionNodeList.RemoveAt(actionNodeIndex);
+                    _actionNodeItemList.RemoveAt(actionNodeIndex);
+                    //将节点从UI上移除
+                    _ui.removeNode(actionNodeItem);
+                    //从编辑器信息中删除
+                    removeNodeInfo(actionNode);
+                    graphInfo.freeActionNodeList.Remove(actionNode);
                 }
             }
             else
@@ -540,6 +595,7 @@ namespace Controllers
                 var actionNode = new ActionNode(option, new ActionValueRef[actionDefine.inputs.Length], new object[actionDefine.consts.Length], new ActionNode[1]);
                 createGraph4ActionNodeAt(actionNode, _curPosX, _curPosY);
             }
+            _curActionNode = null;
             _ui.closeMenu();
         }
         /// <summary>
@@ -579,6 +635,8 @@ namespace Controllers
                     return;
                 }
                 rootActionNode = inputActionNode;
+                //从离散节点列表中去掉被连接的节点
+                graphInfo.freeActionNodeList.Remove(inputActionNode);
             }
             else if (inputActionNodeItem == _returnNodeItem)
             {
@@ -599,6 +657,8 @@ namespace Controllers
                 }
                 rootActionNode = outputActionNode;
                 valueRef.index = outputIndex - 1;
+                //从离散节点列表中去掉被连接的节点
+                graphInfo.freeActionNodeList.Remove(outputActionNode);
             }
             else
             {
@@ -657,11 +717,15 @@ namespace Controllers
                         return;
                     }
                     inputActionNode.inputs[inputIndex - 1] = new ActionValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length);
+                    //输出值的节点一定不是离散节点
+                    graphInfo.freeActionNodeList.Remove(outputActionNode);
                 }
                 else
                 {
                     //动作的相互连接
                     outputActionNode.branches[outputIndex] = inputActionNode;
+                    //后一个动作节点一定不是离散节点
+                    graphInfo.freeActionNodeList.Remove(inputActionNode);
                 }
             }
             _ui.connectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
@@ -697,6 +761,9 @@ namespace Controllers
                         _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
                     }
                 }
+                //输入节点一定会变得离散
+                if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
+                    graphInfo.freeActionNodeList.Add(inputActionNode);
             }
             else if (inputActionNodeItem == _returnNodeItem)
             {
@@ -707,6 +774,9 @@ namespace Controllers
                     _ui.unconnectNode(outputActionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
                     rootActionNode = null;
                 }
+                //输出节点一定会变得离散
+                if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
+                    graphInfo.freeActionNodeList.Add(outputActionNode);
             }
             else
             {
@@ -715,10 +785,16 @@ namespace Controllers
                 if (outputIndex < outputActionNode.branches.Length)
                 {
                     outputActionNode.branches[outputIndex] = null;
+                    //输入节点一定会变得离散
+                    if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
+                        graphInfo.freeActionNodeList.Add(inputActionNode);
                 }
                 else
                 {
                     inputActionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
+                    //输出节点一定会变得离散
+                    if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
+                        graphInfo.freeActionNodeList.Add(outputActionNode);
                 }
                 _ui.unconnectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
             }
@@ -729,6 +805,7 @@ namespace Controllers
         /// <param name="actionNodeItem"></param>
         void onClickActionNode(ActionNodeItem actionNodeItem)
         {
+            _curActionNode = null;
             _ui.closeMenu();
         }
         /// <summary>
@@ -750,6 +827,18 @@ namespace Controllers
                 game.langManager.getString(StringTable.DELETE),//删除
             });
         }
+        void onDragActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
+        {
+            if (actionNodeItem == _entryNodeItem || actionNodeItem == _returnNodeItem)
+            {
+                //入口节点因为不是动作的一部分所以是不可以移动的。
+                return;
+            }
+            ActionNodeGraphNodeInfo nodeInfo = getNodeInfo(getActionNode(actionNodeItem));
+            nodeInfo.posX = graphPosition.x;
+            nodeInfo.posY = graphPosition.y;
+            _ui.moveActionNodeTo(actionNodeItem, graphPosition);
+        }
         /// <summary>
         /// 当用户更改节点的常量值，设置对应的常量。
         /// </summary>
@@ -763,7 +852,7 @@ namespace Controllers
                 if (constIndex == 0)
                     _targetChecker.targetType = (string)value;
                 else if (constIndex == 1)
-                    _targetChecker.invalidMsg = (string)value;
+                    _targetChecker.errorTip = (string)value;
             }
             else
             {
@@ -795,12 +884,11 @@ namespace Controllers
         void onClickAddTargetCheckerButton()
         {
             _trigger.targetCheckerList.Add(new TargetChecker(string.Empty, new ActionValueRef(null, 0), string.Empty));
-            string[] targetCheckerNames = new string[_trigger.targetCheckerList.Count];
-            for (int i = 0; i < targetCheckerNames.Length; i++)
-            {
-                targetCheckerNames[i] = "目标" + (i + 1);
-            }
-            _entryNodeItem.updateTargetCheckerList(targetCheckerNames);
+            _entryNodeItem.updateTargetCheckerList(_targetCheckerTypes, getTargetCheckerViewData());
+        }
+        void onTargetCheckerTypeValueChanged(int index, int value)
+        {
+            _trigger.targetCheckerList[index].targetType = _targetCheckerTypes[value];
         }
         /// <summary>
         /// 当用户点击编辑目标按钮，将当前的编辑信息入栈，打开目标编辑
@@ -818,12 +906,11 @@ namespace Controllers
         void onClickRemoveTargetCheckerButton(int index)
         {
             _trigger.targetCheckerList.RemoveAt(index);
-            string[] targetCheckerNames = new string[_trigger.targetCheckerList.Count];
-            for (int i = 0; i < targetCheckerNames.Length; i++)
-            {
-                targetCheckerNames[i] = "目标" + (i + 1);
-            }
-            _entryNodeItem.updateTargetCheckerList(targetCheckerNames);
+            _entryNodeItem.updateTargetCheckerList(_targetCheckerTypes, getTargetCheckerViewData());
+        }
+        void onTargetCheckerErrorTipValueChanged(int index, string value)
+        {
+            _trigger.targetCheckerList[index].errorTip = value;
         }
         /// <summary>
         /// 当用户点击返回按钮，出栈之前的显示信息并重新打开之前的编辑界面
@@ -845,11 +932,10 @@ namespace Controllers
         float _curPosY;
         readonly List<ActionNode> _actionNodeList = new List<ActionNode>();
         readonly List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
-        /// <summary>
-        /// 当前动作图的编辑器信息。它不一定存在，比如对于新建的图来讲它一定不存在，当退出图编辑的时候会自动保存。
-        /// 在打开一张图的时候，不应该假设它一定存在。
-        /// </summary>
-        ActionNodeGraphInfo _graphInfo;
+        ActionNodeGraphInfo graphInfo
+        {
+            get { return scene.effectEditor.graphInfo; }
+        }
         ActionNodeItem _entryNodeItem;
         ActionNodeItem _returnNodeItem;
         ActionNode rootActionNode
@@ -900,6 +986,11 @@ namespace Controllers
         TriggerGraph _trigger;
         ActionNode _curActionNode;
         readonly Stack<DisplayInfo> _editObjectStack = new Stack<DisplayInfo>();
+        string[] _targetCheckerTypes = new string[]
+        {
+            "Character",
+            "Servant"
+        };
         class DisplayInfo
         {
             public EntryType entryType;
@@ -925,7 +1016,7 @@ namespace Controllers
         }
         public int cardId;
         public int effectIndex;
-        public Dictionary<int, ActionNodeGraphNodeInfo> actionInfoDict = new Dictionary<int, ActionNodeGraphNodeInfo>();
+        public Dictionary<string, ActionNodeGraphNodeInfo> actionInfoDict = new Dictionary<string, ActionNodeGraphNodeInfo>();
         /// <summary>
         /// 离散的，并未与根节点相连的动作节点。
         /// </summary>
