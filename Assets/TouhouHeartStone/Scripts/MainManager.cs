@@ -166,6 +166,7 @@ namespace Game
         public LangManager lang => getManager<LangManager>();
         public ILanguageManager langManager => getManager<LangManager>();
         public IResourceManager resourceManager => getManager<ResourceManager>();
+        public CardManager card => getManager<CardManager>();
         MainCtrl _mainCtrl;
         [SerializeField]
         UnityEvent onLoadingFinish;
@@ -178,7 +179,6 @@ namespace Game
             base.onAwake();
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             Main main = ui.getObject<Main>();
-            main.MainMenu.vsBotButton.onClick.set(showLocalRoom);
             main.MainMenu.lANButton.onClick.set(() =>
             {
                 main.display(main.NetworkingPage);
@@ -330,23 +330,23 @@ namespace Game
             main.RoomPanel.SetInfo(currentRoomData);
 
             main.display(main.RoomPanel);
-            main.RoomPanel.OnStartClick += () =>
+            main.RoomPanel.onStartClick += () =>
             {
                 game.startLocalGame(currentRoomData);
             };
-            main.RoomPanel.OnQuitClick += () =>
+            main.RoomPanel.onQuitClick += () =>
             {
                 currentRoomData = null;
                 network.quitRoom();
 
                 main.display(main.MainMenu);
             };
-            main.RoomPanel.OnRoomPropUpdate += (name, obj) =>
+            main.RoomPanel.onRoomPropUpdate += (name, obj) =>
             {
                 currentRoomData.setProp(name, obj);
                 main.RoomPanel.SetInfo(currentRoomData);
             };
-            main.RoomPanel.OnPlayerRemove += (id) =>
+            main.RoomPanel.onPlayerRemove += (id) =>
             {
                 for (int i = 0; i < currentRoomData.playerDataList.Count; i++)
                 {
@@ -357,12 +357,12 @@ namespace Game
                 }
                 main.RoomPanel.SetInfo(currentRoomData);
             };
-            main.RoomPanel.OnAIPlayerAdd += () =>
+            main.RoomPanel.onAIPlayerAdd += () =>
             {
                 network.logic.AddAIPlayer();
                 main.RoomPanel.SetInfo(currentRoomData);
             };
-            main.RoomPanel.OnSetPlayerDeck += (id, deck) =>
+            main.RoomPanel.onSetPlayerDeck += (id, deck) =>
             {
                 for (int i = 0; i < currentRoomData.playerDataList.Count; i++)
                 {

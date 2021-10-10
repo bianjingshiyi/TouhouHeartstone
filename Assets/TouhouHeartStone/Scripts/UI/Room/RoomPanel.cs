@@ -37,7 +37,7 @@ namespace UI
 
                     var list = deckManager.GetDeckCards(deckID).Select(k => (int)k.Value).ToList();
                     list.Insert(0, deck.MasterID); // polyfill: 转换为传统的，第一张卡是master的格式
-                    OnSetPlayerDeck?.Invoke(selfPlayerID, list.ToArray());
+                    onSetPlayerDeck?.Invoke(selfPlayerID, list.ToArray());
                 });
             };
 
@@ -128,7 +128,7 @@ namespace UI
             {
                 if (isHost)
                 {
-                    OnStartClick?.Invoke();
+                    onStartClick?.Invoke();
                 }
                 else
                 {
@@ -138,7 +138,7 @@ namespace UI
 
             QuitButtonButtonBlack.asButton.onClick.set(() =>
             {
-                OnQuitClick?.Invoke();
+                onQuitClick?.Invoke();
             });
         }
 
@@ -242,7 +242,7 @@ namespace UI
                 {
                     if (id == aiPlayerData?.id)
                         aiPlayerData = null;
-                    OnPlayerRemove?.Invoke(id);
+                    onPlayerRemove?.Invoke(id);
                 };
 
                 if (player.type == RoomPlayerType.ai)
@@ -260,7 +260,7 @@ namespace UI
                             var list = deckManager.GetDeckCards(deckID).Select(k => (int)k.Value).ToList();
                             list.Insert(0, deck.MasterID); // polyfill: 转换为传统的，第一张卡是master的格式
 
-                            OnSetPlayerDeck?.Invoke(player.id, list.ToArray());
+                            onSetPlayerDeck?.Invoke(player.id, list.ToArray());
                         });
                     };
                 }
@@ -282,7 +282,7 @@ namespace UI
 
                 item.OnAddAIPlayer += () =>
                 {
-                    OnAIPlayerAdd?.Invoke();
+                    onAIPlayerAdd?.Invoke();
                 };
             }
 
@@ -336,7 +336,7 @@ namespace UI
 
         void notifyRoomSettingChange(GameOption option)
         {
-            OnRoomPropUpdate?.Invoke(RoomDataPropName.OPTION_GAMEOPTION, option);
+            onRoomPropUpdate?.Invoke(RoomDataPropName.OPTION_GAMEOPTION, option);
         }
 
         [TranslateMsg]
@@ -354,27 +354,27 @@ namespace UI
         /// <summary>
         /// 点击开始游戏后触发
         /// </summary>
-        public event Action OnStartClick;
+        public event Action onStartClick;
         /// <summary>
         /// 点击退出房间后触发
         /// </summary>
-        public event Action OnQuitClick;
+        public event Action onQuitClick;
         /// <summary>
         /// 房间信息更新（主要是设置）更新后触发
         /// </summary>
-        public event Action<string, object> OnRoomPropUpdate;
+        public event Action<string, object> onRoomPropUpdate;
         /// <summary>
         /// 点击删除玩家按钮后触发
         /// </summary>
-        public event Action<int> OnPlayerRemove;
+        public event Action<int> onPlayerRemove;
         /// <summary>
         /// 添加了AI玩家
         /// </summary>
-        public event Action OnAIPlayerAdd;
+        public event Action onAIPlayerAdd;
         /// <summary>
         /// 玩家牌组改变
         /// </summary>
-        public event Action<int, int[]> OnSetPlayerDeck;
+        public event Action<int, int[]> onSetPlayerDeck;
         /// <summary>
         /// 玩家准备或取消准备
         /// </summary>
@@ -384,12 +384,12 @@ namespace UI
         {
             aiPlayerData = null;
 
-            OnStartClick = null;
-            OnQuitClick = null;
-            OnRoomPropUpdate = null;
-            OnPlayerRemove = null;
-            OnAIPlayerAdd = null;
-            OnSetPlayerDeck = null;
+            onStartClick = null;
+            onQuitClick = null;
+            onRoomPropUpdate = null;
+            onPlayerRemove = null;
+            onAIPlayerAdd = null;
+            onSetPlayerDeck = null;
             OnPlayerReadyChange = null;
         }
     }

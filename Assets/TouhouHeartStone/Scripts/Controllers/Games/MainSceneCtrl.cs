@@ -11,6 +11,10 @@ namespace Controllers
             {
                 _menu = TransformHelper.findComponentInScene<MainMenuCtrl>(gameObject.scene);
             }
+            if (_room == null)
+            {
+                _room = TransformHelper.findComponentInScene<RoomCtrl>(gameObject.scene);
+            }
             if (_editor == null)
             {
                 _editor = TransformHelper.findComponentInScene<EditorCtrl>(gameObject.scene);
@@ -19,7 +23,16 @@ namespace Controllers
             {
                 _cardEditor = TransformHelper.findComponentInScene<CardEditorCtrl>(gameObject.scene);
             }
+            if (_effectEditor == null)
+            {
+                _effectEditor = TransformHelper.findComponentInScene<EffectEditorCtrl>(gameObject.scene);
+            }
+            if (_actionNodeGraphCtrl == null)
+            {
+                _actionNodeGraphCtrl = TransformHelper.findComponentInScene<ActionNodeGraphCtrl>(gameObject.scene);
+            }
             _menu.gameObject.SetActive(true);
+            _room.gameObject.SetActive(false);
             _editor.gameObject.SetActive(false);
             _cardEditor.gameObject.SetActive(false);
             _effectEditor.gameObject.SetActive(false);
@@ -28,6 +41,10 @@ namespace Controllers
         public MainMenuCtrl menu
         {
             get { return _menu; }
+        }
+        public RoomCtrl room
+        {
+            get { return _room; }
         }
         public EditorCtrl editor
         {
@@ -47,6 +64,8 @@ namespace Controllers
         }
         [SerializeField]
         MainMenuCtrl _menu;
+        [SerializeField]
+        RoomCtrl _room;
         [SerializeField]
         EditorCtrl _editor;
         [SerializeField]

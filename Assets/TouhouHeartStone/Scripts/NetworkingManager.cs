@@ -543,30 +543,30 @@ namespace Game
         {
             roomPanel.ResetEvents();
 
-            roomPanel.OnQuitClick += () =>
+            roomPanel.onQuitClick += () =>
             {
                 quitRoom();
                 ui.parent.display(ui);
             };
-            roomPanel.OnStartClick += () =>
+            roomPanel.onStartClick += () =>
             {
                 logic.StartGame();
             };
-            roomPanel.OnRoomPropUpdate += (name, obj) =>
+            roomPanel.onRoomPropUpdate += (name, obj) =>
             {
                 if (isHost)
                 {
                     logic.SetRoomProp(name, obj);
                 }
             };
-            roomPanel.OnPlayerRemove += (id) =>
+            roomPanel.onPlayerRemove += (id) =>
             {
                 if (isHost)
                 {
                     logic.RemovePlayer(id);
                 }
             };
-            roomPanel.OnSetPlayerDeck += (id, cards) =>
+            roomPanel.onSetPlayerDeck += (id, cards) =>
             {
                 _ = logic.SetPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, cards);
             };

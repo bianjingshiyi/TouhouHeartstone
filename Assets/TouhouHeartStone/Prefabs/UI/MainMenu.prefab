@@ -245,7 +245,6 @@ MonoBehaviour:
   _useController: 0
   _initStates: []
   _buttonPanel: {fileID: 0}
-  _vsBotButton: {fileID: 0}
   _lANButton: {fileID: 0}
   _serverButton: {fileID: 0}
   _buildButton: {fileID: 0}
@@ -262,6 +261,7 @@ MonoBehaviour:
   _quitButton: {fileID: 0}
   _editorButton: {fileID: 7210059783043712106}
   _eulaPanel: {fileID: 4477834188440846498}
+  _vsBotButton: {fileID: 4708996516089299843}
 --- !u!95 &7871270485528993334
 Animator:
   serializedVersion: 3
@@ -293,7 +293,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b58bf32e96c63c418a1f73553a9eee0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ui: {fileID: 0}
+  _scene: {fileID: 0}
+  _ui: {fileID: 7871270485528993333}
 --- !u!1 &7871270487088672147
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,6 +791,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8c8c74bbb06b6ea40ad81817661f5a02, type: 3}
+--- !u!114 &4708996516089299843 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4672701324696096551, guid: 8c8c74bbb06b6ea40ad81817661f5a02,
+    type: 3}
+  m_PrefabInstance: {fileID: 108493729077922980}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7176640393361882401 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7068960446769918341, guid: 8c8c74bbb06b6ea40ad81817661f5a02,
@@ -915,12 +928,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7efdad880e3329644b3c031731c04d20, type: 3}
---- !u!224 &147137414074735003 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1294295753065507364, guid: 7efdad880e3329644b3c031731c04d20,
-    type: 3}
-  m_PrefabInstance: {fileID: 1440306990107341759}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8174166712726022085 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7101198882889487482, guid: 7efdad880e3329644b3c031731c04d20,
@@ -933,6 +940,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a927a5218be7ca449bad651c9bf90b93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &147137414074735003 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1294295753065507364, guid: 7efdad880e3329644b3c031731c04d20,
+    type: 3}
+  m_PrefabInstance: {fileID: 1440306990107341759}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1992927965153409768
 PrefabInstance:
   m_ObjectHideFlags: 0

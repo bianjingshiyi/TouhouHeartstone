@@ -15,14 +15,50 @@ using System.IO;
 using MukioI18n;
 using NitoriNetwork.Common;
 using System.Threading.Tasks;
+using UnityEngine.UI;
 
 namespace UI
 {
     partial class Build
     {
         #region 公有方法
+        public void switchRightPanelToDeck()
+        {
+            _switchRightToFilterButton.gameObject.SetActive(true);
+            _switchRightToDeckButton.gameObject.SetActive(false);
+            _deckRightPanel.SetActive(true);
+            _filterDetailRightPanel.SetActive(false);
+        }
+        public void switchRightPanelToFilterDetail()
+        {
+            _switchRightToFilterButton.gameObject.SetActive(false);
+            _switchRightToDeckButton.gameObject.SetActive(true);
+            _deckRightPanel.SetActive(false);
+            _filterDetailRightPanel.SetActive(true);
+        }
+        public void addFilterDetailCardPoolItem(string cardPoolName)
+        {
+            RectTransform itemRect = Instantiate(_filterDetailCardPoolItemTemplate, _filterDetailCardPoolItemRoot);
+            itemRect.gameObject.SetActive(true);
+            BuildFilterDetailCardPoolItem item = itemRect.GetComponent<BuildFilterDetailCardPoolItem>();
+            item.setName(cardPoolName);
+            item.onValueChanged += onFilterDetialCardPoolItemToggleValueChangedCallback;
+        }
+        public void clearFilterDetailCardPoolItems()
+        {
+            for (int i = 0; i < _filterDetailCardPoolItemList.Count; i++)
+            {
+                if (_filterDetailCardPoolItemList[i] == null)
+                    continue;
+                BuildFilterDetailCardPoolItem item = _filterDetailCardPoolItemList[i].GetComponent<BuildFilterDetailCardPoolItem>();
+                item.onValueChanged -= onFilterDetialCardPoolItemToggleValueChangedCallback;
+                Destroy(_filterDetailCardPoolItemList[i].gameObject);
+            }
+            _filterDetailCardPoolItemList.Clear();
+        }
         #endregion
         #region 私有方法
+        #region 生命周期
         partial void onAwake()
         {
             BackButtonBlack.asButton.onClick.AddListener(onBackBtnClick);
@@ -49,12 +85,17 @@ namespace UI
             HintMessageText.gameObject.SetActive(false);
             LoadingImg.SetActive(false);
             // UIDialog.gameObject.SetActive(false);
+            _switchRightToDeckButton.onClick.AddListener(onSwitchRightToDeckButtonClickCallback);
+            _switchRightToFilterButton.onClick.AddListener(onSwitchRightToFilterDetailButtonClickCallback);
         }
         private void OnEnable()
         {
             MasterCardSelection.hide();
             uiModeSwitch(true);
         }
+        #endregion
+        #region 事件回调
+        #endregion
         /// <summary>
         /// 导出卡组
         /// </summary>
@@ -179,7 +220,7 @@ namespace UI
             addBtn.SetMode(DeckListItem.Mode.AddDeck);
             addBtn.onDeckAdd += onDeckAdd;
         }
-        #region UI回调
+        #region 事件回调
         void onBackBtnClick()
         {
             Main main = GetComponentInParent<Main>();
@@ -301,7 +342,24 @@ namespace UI
             Array.Sort(displayedCardList, sortCompareMethod);
             BuildCardList.SetList(displayedCardList.ToArray());
         }
+        private void onFilterDetialCardPoolItemToggleValueChangedCallback(BuildFilterDetailCardPoolItem item, bool value)
+        {
+            onFilterDetailCardPoolItemToggleValueChanged?.Invoke(_filterDetailCardPoolItemList.IndexOf(item.transform as RectTransform), value);
+        }
+        private void onSwitchRightToDeckButtonClickCallback()
+        {
+            onSwitchRightToDeckButtonClick?.Invoke();
+        }
+        private void onSwitchRightToFilterDetailButtonClickCallback()
+        {
+            onSwitchRightToFilterDetailButtonClick?.Invoke();
+        }
         #endregion
+        #endregion
+        #region 事件
+        public event Action onSwitchRightToFilterDetailButtonClick;
+        public event Action onSwitchRightToDeckButtonClick;
+        public event Action<int, bool> onFilterDetailCardPoolItemToggleValueChanged;
         #endregion
         CardManager cm => ui.getManager<CardManager>();
         DeckManager dm => ui.getManager<DeckManager>();
@@ -835,5 +893,21 @@ namespace UI
                 }
             }
         }
+        #region 属性字段
+        [SerializeField]
+        Button _switchRightToDeckButton;
+        [SerializeField]
+        Button _switchRightToFilterButton;
+        [SerializeField]
+        GameObject _deckRightPanel;
+        [SerializeField]
+        GameObject _filterDetailRightPanel;
+        [SerializeField]
+        RectTransform _filterDetailCardPoolItemRoot;
+        [SerializeField]
+        RectTransform _filterDetailCardPoolItemTemplate;
+        [SerializeField]
+        List<RectTransform> _filterDetailCardPoolItemList = new List<RectTransform>();
+        #endregion
     }
 }

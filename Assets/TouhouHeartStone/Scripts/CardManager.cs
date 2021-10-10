@@ -18,7 +18,7 @@ using System.Text.RegularExpressions;
 
 namespace Game
 {
-    public class CardManager : Manager
+    public partial class CardManager : Manager
     {
         [SerializeField]
         string _defaultImagePath = "Textures/DrBoom.png";

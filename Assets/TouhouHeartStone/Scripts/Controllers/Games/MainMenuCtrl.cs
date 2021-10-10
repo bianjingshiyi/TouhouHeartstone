@@ -1,61 +1,12 @@
-﻿using BJSYGameCore;
-using Game;
+﻿using Game;
+using System;
+using TouhouCardEngine;
+using TouhouHeartstone;
 using UI;
 using UnityEngine;
 
 namespace Controllers
 {
-    class SceneCtrl : MonoBehaviour
-    {
-        protected virtual void Start()
-        {
-            if (_game == null)
-            {
-                _game = TransformHelper.findComponentInAllScenes<MainManager>();
-            }
-        }
-        protected void Reset()
-        {
-            _game = TransformHelper.findComponentInAllScenes<MainManager>();
-        }
-        public MainManager game
-        {
-            get { return _game; }
-        }
-        [SerializeField]
-        MainManager _game;
-    }
-    class GameObjectCtrl<T> : MonoBehaviour where T : SceneCtrl
-    {
-        protected void Start()
-        {
-            if (_scene == null)
-            {
-                _scene = TransformHelper.findComponentInScene<T>(gameObject.scene);
-            }
-        }
-        protected void Reset()
-        {
-            _scene = TransformHelper.findComponentInScene<T>(gameObject.scene);
-        }
-        public MainManager game
-        {
-            get { return scene.game; }
-        }
-        public T scene
-        {
-            get
-            {
-                if (_scene == null)
-                {
-                    _scene = TransformHelper.findComponentInScene<T>(gameObject.scene);
-                }
-                return _scene;
-            }
-        }
-        [SerializeField]
-        T _scene;
-    }
     class MainMenuCtrl : GameObjectCtrl<MainSceneCtrl>
     {
         #region 公有方法
@@ -72,10 +23,26 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<MainMenu>();
             }
+            _ui.onVsBotButtonClick += onClickVsBotButton;            
             _ui.onEditorButtonClick += onEditorButtonClick;
         }
         #endregion
         #region 事件回调
+        private async void onClickVsBotButton()
+        {
+            //Main main = _ui.getObject<Main>();
+            await scene.game.network.logic.CreateLocalRoom();
+            RoomData currentRoomData = scene.game.network.logic.CurrentRoom;
+            currentRoomData.maxPlayerCount = 2; // 炉石两个人
+
+            HearthstoneOption option = new HearthstoneOption();
+            var rand = new byte[4];
+            System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
+            option.randomSeed = BitConverter.ToInt32(rand, 0);
+            currentRoomData.setOption(option);
+
+            scene.room.display(currentRoomData);
+        }
         private void onEditorButtonClick()
         {
             _ui.gameObject.SetActive(false);

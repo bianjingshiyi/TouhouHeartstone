@@ -1,7 +1,7 @@
 ﻿using BJSYGameCore.UI;
 using System;
 using UnityEngine;
-
+using UnityEngine.UI;
 namespace UI
 {
     partial class MainMenu : UIObject
@@ -18,6 +18,7 @@ namespace UI
         {
             base.Awake();
             autoInit();
+            _vsBotButton.onClick.AddListener(onVsBotButtonClickCallback);
             buildButton.onClick.AddListener(() =>
             {
                 main.display(main.Build);
@@ -50,11 +51,18 @@ namespace UI
         {
             onEditorButtonClick?.Invoke();
         }
+        private void onVsBotButtonClickCallback()
+        {
+            onVsBotButtonClick?.Invoke();
+        }
         #endregion
         #endregion
         #region 事件
+        public event Action onVsBotButtonClick;
         public event Action onEditorButtonClick;
         #endregion
+        [SerializeField]
+        Button _vsBotButton;
     }
 
 }

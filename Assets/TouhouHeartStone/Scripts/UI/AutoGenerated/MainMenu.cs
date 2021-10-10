@@ -15,14 +15,12 @@ namespace UI
     using BJSYGameCore;
     using UnityEngine.UI;
     using UI;
-    
+
     public partial class MainMenu
     {
         public void autoInit()
         {
             this._buttonPanel = this.transform.Find(PATH_BUTTONPANEL).gameObject;
-            _vsBotButton = transform.Find(PATH_VSBOTBUTTON).GetComponent<Button>();
-            _vsBotButton.onClick.AddListener(SBotButtonClickCallback);
             _lANButton = transform.Find(PATH_LANBUTTON).GetComponent<Button>();
             _lANButton.onClick.AddListener(ANButtonClickCallback);
             _serverButton = transform.Find(PATH_SERVERBUTTON).GetComponent<Button>();
@@ -50,7 +48,6 @@ namespace UI
         }
         public void autoClear()
         {
-            _vsBotButton.onClick.RemoveListener(SBotButtonClickCallback);
             _lANButton.onClick.RemoveListener(ANButtonClickCallback);
             _serverButton.onClick.RemoveListener(ErverButtonClickCallback);
             _buildButton.onClick.RemoveListener(UildButtonClickCallback);
@@ -72,27 +69,6 @@ namespace UI
                     this._buttonPanel = this.transform.Find(PATH_BUTTONPANEL).gameObject;
                 }
                 return this._buttonPanel;
-            }
-        }
-        public Button _vsBotButton;
-        public const string PATH_VSBOTBUTTON = "ButtonPanel/MainBtn/VsBot";
-        public Button vsBotButton
-        {
-            get
-            {
-                if ((_vsBotButton == null))
-                {
-                    _vsBotButton = transform.Find(PATH_VSBOTBUTTON).GetComponent<Button>();
-                }
-                return _vsBotButton;
-            }
-        }
-        public event Action<MainMenu> onSBotButtonClick;
-        private void SBotButtonClickCallback()
-        {
-            if ((onSBotButtonClick != null))
-            {
-                onSBotButtonClick(this);
             }
         }
         public Button _lANButton;
