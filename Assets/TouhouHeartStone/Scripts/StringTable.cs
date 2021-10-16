@@ -35,6 +35,28 @@ namespace Game
         public const string CARDVIEW_SORT_RARE_DESCENDING = "稀有度降序";
         [TranslateMsg("浏览卡牌界面中的中立卡牌筛选选项")]
         public const string CARDVIEW_CHARACTER_NEUTRAL = "中立";
+        [TranslateMsg("构筑卡牌界面中新建卡组的默认名称")]
+        public const string BUILD_NEW_DECK_DEFAULT_NAME = "新建卡组";
+        [TranslateMsg("当达到一副卡组可以携带的卡牌数量上限时的提示")]
+        public const string BUILD_TIP_DECK_MAX_SIZE = "你不能在一副卡组中携带更多卡牌";
+        [TranslateMsg("当达到一张卡牌携带数量上限的时候的提示")]
+        public const string BUILD_TIP_CARD_MAX_COUNT = "你不能携带更多同一张卡牌";
+        [TranslateMsg("当卡组添加角色无法携带的卡牌的时候的提示")]
+        public const string BUILD_TIP_CARD_CARRY_LIMIT = "你不能将这张卡牌添加到卡组中，因为卡组使用的角色无法携带它";
+        [TranslateMsg]
+        public const string BUILD_CONFIRM_UPLOAD = "卡组数据上传功能将会覆盖您在云端的数据，是否上传？";
+        [TranslateMsg]
+        public const string BUILD_CONFIRM_DOWNLOAD = "卡组数据下载功能将会从云端同步你的卡组数据并与本地数据合并，可能会覆盖本地的某些卡组，是否下载？";
+        [TranslateMsg]
+        public const string BUILD_DECK_UPLOAD_COMPLETE = "卡组上传完毕";
+        [TranslateMsg]
+        public const string BUILD_DECK_DOWNLOAD_COMPLETE = "卡组下载完毕";
+        [TranslateMsg]
+        public const string BUILD_ERROR_DECKCODE_FORMATE_ERROR = "卡组代码格式错误";
+        [TranslateMsg]
+        public const string BUILD_ERROR_IMPORT_FAILED = "导入失败\n{0}";
+        [TranslateMsg]
+        public const string BUILD_CONFIRM_EXIT_WITHOUT_SAVE = "卡组尚未保存，退出后现有变更将丢失。\n是否退出？";
         #endregion
         #region 编辑器
         [TranslateMsg("编辑器中生效动作节点的名字")]
@@ -57,6 +79,12 @@ namespace Game
         public const string EDITOR_EDIT_EFFECT = "编辑效果";
         [TranslateMsg("编辑器中询问玩家是否要删除卡池")]
         public const string EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL = "你是否要删除这个卡池？";
+        #endregion
+        #region 错误
+        [TranslateMsg]
+        public const string ERROR_CARD_WITH_ID_NOT_EXISTS = "不存在ID为{0}的卡。";
+        [TranslateMsg]
+        public const string ERROR_INVALID_IN_VISITOR_MODE = "游客无法使用此功能。";
         #endregion
     }
 }

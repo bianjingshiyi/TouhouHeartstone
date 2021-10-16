@@ -95,7 +95,7 @@ namespace Controllers
             _ui.setName(_curCardSkin.name);
             _ui.setSubName(_curCardSkin.subname);
             _ui.setDesc(_curCardSkin.desc);
-            Sprite image = await scene.editor.getImage(_curCardSkin.imagePath);
+            Sprite image = await game.card.loadExternalImage(_curCardSkin.imagePath);
             if (image != null)
             {
                 _ui.setImage(image);
@@ -180,7 +180,7 @@ namespace Controllers
             _ui.setName(_curCardSkin.name);
             _ui.setSubName(_curCardSkin.subname);
             _ui.setDesc(_curCardSkin.desc);
-            Sprite image = await scene.editor.getImage(_curCardSkin.imagePath);
+            Sprite image = await game.card.loadExternalImage(_curCardSkin.imagePath);
             if (image != null)
             {
                 _ui.setImage(image);
@@ -238,12 +238,12 @@ namespace Controllers
                 {
                     if (path != null)
                     {
-                        if (!scene.editor.tryGetSpriteFromCache(path, out Sprite sprite))
+                        if (!game.card.tryGetSpriteFromCache(path, out Sprite sprite))
                         {
                             Texture2D texture = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
                             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
                             //缓存外部图片
-                            scene.editor.addSpriteToCache(path, sprite);
+                            game.card.addSpriteToCache(path, sprite);
                         }
                         //更改贴图路径为外部文件路径
                         _curCardSkin.imagePath = path;
@@ -276,12 +276,12 @@ namespace Controllers
                     }
                     else
                     {
-                        if (!scene.editor.tryGetSpriteFromCache(path, out Sprite sprite))
+                        if (!game.card.tryGetSpriteFromCache(path, out Sprite sprite))
                         {
                             Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
                             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
                             //缓存外部图片
-                            scene.editor.addSpriteToCache(path, sprite);
+                            game.card.addSpriteToCache(path, sprite);
                         }
                         //更改贴图路径为外部文件路径
                         _curCardSkin.imagePath = path;

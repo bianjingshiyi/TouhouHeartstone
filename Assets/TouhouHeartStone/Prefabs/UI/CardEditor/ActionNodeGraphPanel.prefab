@@ -245,6 +245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scene: {fileID: 0}
+  _ui: {fileID: 5916370020909694337}
 --- !u!114 &5916370020909694337
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -925,6 +925,7 @@ namespace Controllers
         public IAppManager app { get; }
         [Obsolete]
         public MainCtrl main { get; }
+        [SerializeField]
         ActionNodeGraphPanel _ui;
         Dictionary<string, ActionDefine> _actionDefineDict;
         string[] _backgroundMenuOptions;
@@ -1007,7 +1008,7 @@ namespace Controllers
     /// 动作节点图的编辑器信息，保存了每个效果的所有动作节点信息。
     /// </summary>
     [Serializable]
-    class ActionNodeGraphInfo
+    public class ActionNodeGraphInfo
     {
         public ActionNodeGraphInfo(int cardId, int effectIndex)
         {
@@ -1023,7 +1024,7 @@ namespace Controllers
         public List<ActionNode> freeActionNodeList = new List<ActionNode>();
     }
     [Serializable]
-    class ActionNodeGraphNodeInfo
+    public class ActionNodeGraphNodeInfo
     {
         public ActionNodeGraphNodeInfo(float posX, float posY)
         {

@@ -100,11 +100,14 @@ namespace Controllers
             _ui.updateTriggerList(triggerNames);
         }
         #endregion
+        #region 属性字段
         public ActionNodeGraphInfo graphInfo { get; private set; }
+        [SerializeField]
+        EffectEditorPanel _ui;
         [Obsolete("使用game作为替代")]
         public IAppManager app { get; }
-        EffectEditorPanel _ui;
         GeneratedEffect _effect;
         string[] _selectableRanges;
+        #endregion
     }
 }

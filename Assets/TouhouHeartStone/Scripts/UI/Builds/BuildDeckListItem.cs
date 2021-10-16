@@ -83,7 +83,7 @@ namespace UI
                 }
                 if (_isDragging)
                 {
-                    Build build = GetComponentInParent<Build>();
+                    BuildCardPanel build = GetComponentInParent<BuildCardPanel>();
                     build.onDragDeckItem(this, eventData);
                 }
                 else
@@ -99,7 +99,7 @@ namespace UI
                 if (_isDragging)
                 {
                     //结束拖拽
-                    Build build = GetComponentInParent<Build>();
+                    BuildCardPanel build = GetComponentInParent<BuildCardPanel>();
                     build.onReleaseDeckItem(this, eventData);
                 }
                 //gameObject.SetActive(true);
@@ -111,7 +111,7 @@ namespace UI
         {
             if (DraggingAble)
             {
-                Build build = GetComponentInParent<Build>();
+                BuildCardPanel build = GetComponentInParent<BuildCardPanel>();
                 build.DeckItemSelect(this);
             }
         }
@@ -120,7 +120,7 @@ namespace UI
         {
             if (DraggingAble)
             {
-                Build build = GetComponentInParent<Build>();
+                BuildCardPanel build = GetComponentInParent<BuildCardPanel>();
                 build.DeckItemDeselect(this);
             }
         }

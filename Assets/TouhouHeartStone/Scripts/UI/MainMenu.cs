@@ -19,9 +19,9 @@ namespace UI
             base.Awake();
             autoInit();
             _vsBotButton.onClick.AddListener(onVsBotButtonClickCallback);
+            _buildCardButton.onClick.AddListener(onBuildCardButtonClickCallback);
             buildButton.onClick.AddListener(() =>
             {
-                main.display(main.Build);
             });
             quitButton.onClick.AddListener(() =>
             {
@@ -47,22 +47,29 @@ namespace UI
         }
         #endregion
         #region 事件回调
+        private void onVsBotButtonClickCallback()
+        {
+            onVsBotButtonClick?.Invoke();
+        }
         private void onEditorButtonClickCallback()
         {
             onEditorButtonClick?.Invoke();
         }
-        private void onVsBotButtonClickCallback()
+        private void onBuildCardButtonClickCallback()
         {
-            onVsBotButtonClick?.Invoke();
+            onBuildCardButtonClick?.Invoke();
         }
         #endregion
         #endregion
         #region 事件
         public event Action onVsBotButtonClick;
         public event Action onEditorButtonClick;
+        public event Action onBuildCardButtonClick;
         #endregion
         [SerializeField]
         Button _vsBotButton;
+        [SerializeField]
+        Button _buildCardButton;
     }
 
 }

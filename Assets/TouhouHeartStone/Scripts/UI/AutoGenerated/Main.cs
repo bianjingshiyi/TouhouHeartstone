@@ -14,7 +14,7 @@ namespace UI
     using UnityEngine;
     using UnityEngine.UI;
     using BJSYGameCore.UI;
-    
+
     public partial class Main : UIPageGroup
     {
         protected override void Awake()
@@ -26,7 +26,6 @@ namespace UI
         public void autoBind()
         {
             this._Game = this.transform.Find("Game").GetComponent<Game>();
-            this._Build = this.transform.Find("Build").GetComponent<Build>();
             this._MainMenu = this.transform.Find("MainMenu").GetComponent<MainMenu>();
             this._AboutPage = this.transform.Find("AboutPage").GetComponent<AboutPage>();
             this._NetworkingPage = this.transform.Find("NetworkingPage").GetComponent<NetworkingPage>();
@@ -34,23 +33,7 @@ namespace UI
             this._SettingPage = this.transform.Find("SettingPage").GetComponent<SettingPage>();
             this._Loading = this.transform.Find("Loading").GetComponent<Loading>();
             this._Dialog = this.transform.Find("Dialog").GetComponent<Dialog>();
-            this._editorPanel = this.transform.Find("EditorPanel").GetComponent<EditorPanel>();
         }
-
-        [SerializeField()]
-        private EditorPanel _editorPanel;
-        public EditorPanel EditorPanel
-        {
-            get
-            {
-                if ((this._editorPanel == null))
-                {
-                    this._editorPanel = this.transform.Find("EditorPanel").GetComponent<EditorPanel>();
-                }
-                return this._editorPanel;
-            }
-        }
-
         [SerializeField()]
         private Game _Game;
         public Game Game
@@ -62,19 +45,6 @@ namespace UI
                     this._Game = this.transform.Find("Game").GetComponent<Game>();
                 }
                 return this._Game;
-            }
-        }
-        [SerializeField()]
-        private Build _Build;
-        public Build Build
-        {
-            get
-            {
-                if ((this._Build == null))
-                {
-                    this._Build = this.transform.Find("Build").GetComponent<Build>();
-                }
-                return this._Build;
             }
         }
         [SerializeField()]
@@ -172,7 +142,6 @@ namespace UI
         {
             return new UIObject[] {
                     this.Game,
-                    this.Build,
                     this.MainMenu,
                     this.AboutPage,
                     this.NetworkingPage,
@@ -180,7 +149,6 @@ namespace UI
                     this.SettingPage,
                     this.Loading,
                     this.Dialog,
-                    this.EditorPanel        
             };
         }
         partial void onAwake();

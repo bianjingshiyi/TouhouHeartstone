@@ -1,7 +1,6 @@
 ﻿using BJSYGameCore;
 using Game;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouHeartstone;
@@ -10,43 +9,6 @@ using UnityEngine;
 
 namespace Controllers
 {
-    class BuildCtrl : GameObjectCtrl<MainSceneCtrl>
-    {
-        #region 私有方法
-        #region 生命周期
-        protected void Awake()
-        {
-            if (_ui == null)
-            {
-                _ui = GetComponent<Build>();
-            }
-            _ui.onSwitchRightToFilterDetailButtonClick += onSwitchRightToFilterDetailButtonClick;
-            _ui.onFilterDetailCardPoolItemToggleValueChanged += onFilterDetailCardPoolItemToggleValueChanged;
-        }
-        #endregion
-        #region 事件回调
-        private async void onSwitchRightToFilterDetailButtonClick()
-        {
-            _ui.switchRightPanelToFilterDetail();
-            await game.card.getCardPoolInfosAsync(game.fileManager, (path, info) =>
-            {
-                _ui.addFilterDetailCardPoolItem(info.cardPoolName);
-                _cardPoolList.Add((path, info, false));
-            });
-        }
-        private void onFilterDetailCardPoolItemToggleValueChanged(int index, bool value)
-        {
-            //保存当前引用的卡池文件状态
-            _cardPoolList[index] = (_cardPoolList[index].path, _cardPoolList[index].info, value);
-            //TODO:重新加载卡池
-        }
-        #endregion
-        #endregion
-        [SerializeField]
-        List<(string path, CardPoolInfo info, bool isEnabled)> _cardPoolList = new List<(string path, CardPoolInfo info, bool isEnabled)>();
-        [SerializeField]
-        Build _ui;
-    }
     class RoomCtrl : GameObjectCtrl<MainSceneCtrl>
     {
         #region 公有方法

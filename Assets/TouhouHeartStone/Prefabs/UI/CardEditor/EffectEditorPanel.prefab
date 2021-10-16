@@ -916,6 +916,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scene: {fileID: 0}
+  _ui: {fileID: 6529176977908812934}
 --- !u!1 &6020091101718493618
 GameObject:
   m_ObjectHideFlags: 0

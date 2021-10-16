@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 namespace UI
 {
     partial class DeckListItem
     {
         public Action<int> onDeckSelect;
-        public Action<int> onDeckRemove;
         public Action<int, string> onDeckRename;
         public Action onDeckAdd;
 
@@ -21,17 +21,21 @@ namespace UI
 
         partial void onAwake()
         {
-            HeadImageButton.onClick.AddListener(() => { onDeckSelect?.Invoke(id); });
             NameInputField.onEndEdit.AddListener((s) => { onDeckRename?.Invoke(id, s); });
-            DeleteButtonIconGlass.asButton.onClick.AddListener(() => { onDeckRemove?.Invoke(id); });
             AddButtonBlack.asButton.onClick.AddListener(() => { onDeckAdd?.Invoke(); });
 
             DeleteButtonIconGlass.asButton.onClick.AddListener(() => onFileRemove?.Invoke(key));
             HeadImageButton.onClick.AddListener(() => onFileSelect?.Invoke(key));
+
             HeadImageButton.onClick.AddListener(onClickCallback);
             DeleteButtonIconGlass.asButton.onClick.AddListener(onClickDeleteButtonCallback);
+            NameInputField.onEndEdit.AddListener(onEndEditNameInputField);
         }
-
+        public void updateView(string name, Sprite image)
+        {
+            _nameText.text = name;
+            _image.sprite = image;
+        }
         public void SetContent(int id, string name, Sprite img)
         {
             this.id = id;
@@ -54,7 +58,7 @@ namespace UI
             HeadImageButton.interactable = val;
         }
 
-        public void SetWarning(bool val)
+        public void setWarning(bool val)
         {
             NotCompleteImage.gameObject.SetActive(val);
         }
@@ -78,13 +82,25 @@ namespace UI
         }
         void onClickCallback()
         {
+            onDeckSelect?.Invoke(id);
             onClick?.Invoke(this);
         }
         void onClickDeleteButtonCallback()
         {
             onClickDeleteButton?.Invoke(this);
         }
+        void onEndEditNameInputField(string value)
+        {
+            onNameInputFieldValueChanged?.Invoke(this, value);
+        }
         public event Action<DeckListItem> onClick;
         public event Action<DeckListItem> onClickDeleteButton;
+        public event Action<DeckListItem, string> onNameInputFieldValueChanged;
+        #region 属性字段
+        [SerializeField]
+        Text _nameText;
+        [SerializeField]
+        Image _image;
+        #endregion
     }
 }

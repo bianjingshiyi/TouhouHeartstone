@@ -23,7 +23,7 @@ namespace UI
 
             quitButton.onClick.AddListener(() =>
             {
-                ui.getManager<UIManager>().getObject<UIDialog>()?.ShowQuestion(StringTable.HINT_TITLE, QUIT_GAME_QUESTION, () => {
+                ui.getObject<UIDialog>()?.ShowQuestion(StringTable.HINT_TITLE, QUIT_GAME_QUESTION, () => {
                     Main main = GetComponentInParent<Main>();
                     main.game.quitGame();
                     main.display(main.MainMenu);

@@ -205,7 +205,7 @@ namespace UI
                 // 只有30张卡的卡组才能选择
                 bool isFinish = deckManager.GetDeckCards(def.ID).Count >= 30;
                 item.SetSelectable(isFinish);
-                item.SetWarning(!isFinish);
+                item.setWarning(!isFinish);
             });
             DeckPanelMasterCardSelection.display();
             DeckPanelMasterCardSelection.ClearEvents();

@@ -31,7 +31,7 @@ namespace UI
             }
             if (_isDragging)
             {
-                Build build = GetComponentInParent<Build>();
+                BuildCardPanel build = GetComponentInParent<BuildCardPanel>();
                 build.onDragCardItem(this, eventData);
             }
             else
@@ -44,7 +44,7 @@ namespace UI
             if (_isDragging)
             {
                 // 结束拖拽
-                Build build = GetComponentInParent<Build>();
+                BuildCardPanel build = GetComponentInParent<BuildCardPanel>();
                 build.onReleaseCardItem(this, eventData);
             }
             _isDragging = false;
@@ -82,7 +82,7 @@ namespace UI
             var delta = eventData.pressPosition - eventData.position;
             if (delta.sqrMagnitude < 25)
             {
-                GetComponentInParent<Build>().onClickHandCard();
+                GetComponentInParent<BuildCardPanel>().onClickHandCard();
             }
         }
     }

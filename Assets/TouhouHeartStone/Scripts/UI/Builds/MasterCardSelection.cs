@@ -4,6 +4,7 @@ using BJSYGameCore;
 using System.Collections.Generic;
 using TouhouCardEngine;
 using System.Linq;
+using UnityEngine;
 
 namespace UI
 {
@@ -26,7 +27,8 @@ namespace UI
                 var skin = cardManager.getSkin(deck.MasterID);
                 c.SetContent((int)deck.ID, deck.Name, skin?.image);
                 c.SetMode(DeckListItem.Mode.DeckSelect);
-                c.onDeckSelect += (id) => {
+                c.onDeckSelect += (id) =>
+                {
                     OnSelect?.Invoke(id);
                 };
                 action?.Invoke(deck, c);
@@ -42,22 +44,40 @@ namespace UI
                 var skin = cardManager.getSkin(card);
                 c.SetContent(card, skin?.name, skin?.image);
                 c.SetMode(DeckListItem.Mode.DeckSelect);
-                c.onDeckSelect += (id) => {
+                c.onDeckSelect += (id) =>
+                {
                     OnSelect?.Invoke(id);
                 };
             }
         }
-
+        public void updateItemList((string name, Sprite image)[] viewData)
+        {
+            MasterCardList.clearItems();
+            for (int i = 0; i < viewData.Length; i++)
+            {
+                var c = MasterCardList.addItem();
+                _itemList.Add(c.transform as RectTransform);
+                c.updateView(viewData[i].name, viewData[i].image);
+                c.SetMode(DeckListItem.Mode.DeckSelect);
+                c.onClick += onClickItemCallback;
+            }
+        }
         public void SetItems(IEnumerable<CardDefine> cards)
         {
             SetItems(cards.Select(c => c.id));
         }
 
         public event Action<int> OnSelect;
-
+        public event Action<int> onClickItem;
         public void ClearEvents()
         {
             OnSelect = null;
         }
+        private void onClickItemCallback(DeckListItem item)
+        {
+            onClickItem?.Invoke(_itemList.IndexOf(item.transform as RectTransform));
+        }
+        [SerializeField]
+        List<RectTransform> _itemList = new List<RectTransform>();
     }
 }

@@ -164,7 +164,7 @@ namespace Game
         }
 
         /// <summary>
-        /// 获取所有牌组定义
+        /// 获取所有卡组定义
         /// </summary>
         /// <returns></returns>
         public IEnumerable<DeckDefine> GetDecks()

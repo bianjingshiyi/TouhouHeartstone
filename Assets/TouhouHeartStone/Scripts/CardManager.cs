@@ -20,6 +20,12 @@ namespace Game
 {
     public partial class CardManager : Manager
     {
+        #region 生命周期
+        protected void Reset()
+        {
+            _game = TransformHelper.findComponentInScene<MainManager>(gameObject.scene);
+        }
+        #endregion
         [SerializeField]
         string _defaultImagePath = "Textures/DrBoom.png";
         [SerializeField]
@@ -511,6 +517,14 @@ namespace Game
             }
             return true;
         }
+        #region 属性字段
+        public MainManager game
+        {
+            get { return _game; }
+        }
+        [SerializeField]
+        MainManager _game;
+        #endregion
     }
 
     [Serializable]

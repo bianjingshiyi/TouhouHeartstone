@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace Controllers
 {
-    partial class EditorCtrl : GameObjectCtrl<MainSceneCtrl>, IController<MainCtrl>
+    partial class EditorCtrl : GameObjectCtrl<MainSceneCtrl>
     {
         #region 公有方法
         public async void display(bool switchToView = true, bool reloadCardPoolInfos = true, int cardPoolIndex = -1, bool reloadCardPool = true)
@@ -30,7 +30,7 @@ namespace Controllers
                     //重新加载所有牌库信息
                     await getCardPoolsInfoAsync();
                 }
-                _ui.updateDeckList(_cardPoolInfoList.ToArray());
+                await updateCardPoolListUI();
                 _ui.setSortType((int)_sortType);
                 //TODO:角色过滤器
                 _ui.setCharacterFilters(new string[]
@@ -50,7 +50,7 @@ namespace Controllers
                 }
                 //更新牌库信息
                 Sprite image = string.IsNullOrEmpty(_curCardPoolInfo.imageResPath) ? null :
-                    await getImage(_curCardPoolInfo.imageResPath);
+                    await game.card.loadExternalImage(_curCardPoolInfo.imageResPath);
                 _ui.updateCurCardPoolInfo(_curCardPoolInfo.cardPoolName, image);
                 //显示卡牌列表
                 if (reloadCardPool)
@@ -58,19 +58,16 @@ namespace Controllers
                     //重新加载牌库信息
                     await readCardPoolAsync(_curCardPoolPath);
                 }
-                CardSkinData[] cardSkins = _cardDefineList.Select(d => getCardSkinData(d)).ToArray();
-                string[] cardNames = new string[cardSkins.Length];
-                for (int i = 0; i < cardNames.Length; i++)
+                (string name, Sprite image, int count)[] viewData = new (string name, Sprite image, int count)[_cardDefineList.Count];
+                for (int i = 0; i < viewData.Length; i++)
                 {
-                    cardNames[i] = cardSkins[i].name;
+                    CardSkinData skin = getCardSkinData(_cardDefineList[i]);
+                    viewData[i].name = skin.name;
+                    viewData[i].image = string.IsNullOrEmpty(skin.imagePath) ? null :
+                        await game.card.loadExternalImage(skin.imagePath);
+                    viewData[i].count = 0;
                 }
-                Sprite[] cardImages = new Sprite[cardSkins.Length];
-                for (int i = 0; i < cardImages.Length; i++)
-                {
-                    cardImages[i] = string.IsNullOrEmpty(cardSkins[i].imagePath) ? null :
-                        await getImage(cardSkins[i].imagePath);
-                }
-                _ui.updateCardPoolCardList(cardNames, cardImages);
+                _ui.updateDeckCardList(viewData);
                 //+1是为了显示新建卡牌按钮
                 _ui.updateCardListCount(_cardDefineList.Count + 1);
             }
@@ -87,43 +84,6 @@ namespace Controllers
         {
             return _cardSkinList.RemoveAll(filter);
         }
-        /// <summary>
-        /// 将外部图片添加到缓存
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="sprite"></param>
-        public void addSpriteToCache(string path, Sprite sprite)
-        {
-            _externalSpriteCacheDict[path] = sprite;
-        }
-        /// <summary>
-        /// 尝试获取缓存的外部图片
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="sprite"></param>
-        /// <returns></returns>
-        public bool tryGetSpriteFromCache(string path, out Sprite sprite)
-        {
-            return _externalSpriteCacheDict.TryGetValue(path, out sprite);
-        }
-        public async Task<Sprite> getImage(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                return null;
-            }
-            if (tryGetSpriteFromCache(path, out Sprite sprite))
-            {
-                return sprite;
-            }
-            byte[] bytes = await game.fileManager.readBinaryFile(path);
-            Texture2D texture = new Texture2D(512, 512);
-            texture.LoadImage(bytes);
-            sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
-            //添加到缓存
-            addSpriteToCache(path, sprite);
-            return sprite;
-        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -137,9 +97,9 @@ namespace Controllers
             _ui.onClickCardPoolListItem += onClickCardPoolListItem;
             _ui.onUpdateCardListItem += onUpdateCardListItem;
             _ui.onClickCardListItem += onClickCardListItem;
-            _ui.onClickDeleteCardPoolButton += onClickDeleteCardPoolButton;
-            _ui.onClickAddCardPoolButton += onClickAddCardPoolButton;
-            _ui.onClickSaveCardPoolButton += onClickSaveCardPoolButton;
+            _ui.onClickDeckListItemDeleteButton += onClickDeleteCardPoolButton;
+            _ui.onClickDeckListAddButton += onClickAddCardPoolButton;
+            _ui.onClickSaveDeckButton += onClickSaveCardPoolButton;
             _ui.onClickReturnToCardPoolViewButton += onClickReturnToCardPoolViewButton;
             _ui.onClickDeleteCurCardPoolButton += onClickDeleteCurCardPoolButton;
             _ui.setSortTypes(new string[]
@@ -176,12 +136,12 @@ namespace Controllers
         /// <param name="index"></param>
         void onClickDeleteCardPoolButton(int index)
         {
-            _ui.findInstance<UIDialog>().ShowQuestion(null, app.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), () =>
+            _ui.findInstance<UIDialog>().ShowQuestion(null, game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
             {
-                app.fileManager.deleteFile(_cardPoolPathList[index]);
+                game.fileManager.deleteFile(_cardPoolPathList[index]);
                 _cardPoolPathList.RemoveAt(index);
                 _cardPoolInfoList.RemoveAt(index);
-                _ui.updateDeckList(_cardPoolInfoList.ToArray());
+                await updateCardPoolListUI();
             });
         }
         /// <summary>
@@ -199,10 +159,7 @@ namespace Controllers
                 CardSkinData cardSkin = getCardSkinData(cardDefine);
                 cardListItem.card.setCard(cardDefine, cardSkin);
                 cardListItem.switchToCard();
-                if (cardSkin.image == null)
-                {
-                    cardListItem.card.setImage(await getImage(cardSkin.imagePath));
-                }
+                cardListItem.card.setImage(cardSkin.image != null ? cardSkin.image : await game.card.loadExternalImage(cardSkin.imagePath));
             }
             else
             {
@@ -219,11 +176,12 @@ namespace Controllers
             _curCardPoolPath = null;
             _curCardPoolInfo = new CardPoolInfo();
             _cardPoolInfoList.Add(_curCardPoolInfo);
+            game.card.addExternalCardPool(_curCardPoolInfo.cardPoolId);
             _curCardPoolInfo.cardPoolName = "新建卡组";
             _curCardPoolInfo.imageResPath = null;
             _cardDefineList.Clear();
             _cardSkinList.Clear();
-            _ui.updateCardPoolCardList(new string[0], new Sprite[0]);
+            _ui.updateDeckCardList(new (string name, Sprite image, int count)[0]);
             //1是为了显示新建卡牌按钮
             _ui.updateCardListCount(1);
         }
@@ -246,6 +204,7 @@ namespace Controllers
                 _cardDefineList.Add(newCardDefine);
                 CardSkinData newCardSkin = new CardSkinData();
                 _cardSkinList.Add(newCardSkin);
+                game.card.addExternalCard(_curCardPoolInfo.cardPoolId, newCardDefine, newCardSkin);
                 scene.cardEditor.displayCard(newCardDefine);
             }
         }
@@ -264,7 +223,7 @@ namespace Controllers
                 _curCardPoolPath = allocCardPoolPath(_curCardPoolInfo);
             }
             //对缓存的图片进行保存
-            foreach (var pair in _externalSpriteCacheDict)
+            foreach (var pair in game.card.externalSpriteCacheDict)
             {
                 //获取使用这张图片的第一个皮肤
                 CardSkinData skin = _cardSkinList.Find(s => s.imagePath == pair.Key);
@@ -305,7 +264,7 @@ namespace Controllers
         /// </summary>
         void onClickDeleteCurCardPoolButton()
         {
-            _ui.findInstance<UIDialog>().ShowConfirm(null, app.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), () =>
+            _ui.findInstance<UIDialog>().ShowConfirm(null, game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
             {
                 if (!string.IsNullOrEmpty(_curCardPoolPath))
                 {
@@ -314,7 +273,7 @@ namespace Controllers
                     int index = _cardPoolPathList.IndexOf(_curCardPoolPath);
                     _cardPoolPathList.RemoveAt(index);
                     _cardPoolInfoList.RemoveAt(index);
-                    _ui.updateDeckList(_cardPoolInfoList.ToArray());
+                    await updateCardPoolListUI();
                 }
                 else
                 {
@@ -357,66 +316,11 @@ namespace Controllers
         {
             _cardDefineList.Clear();
             _cardSkinList.Clear();
-            //if (cardPoolPath == "Builtin.ddcp")
-            //{
-            //    //火神之光
-            //    _cardDefineList.AddRange(new CardDefine[]
-            //    {
-            //        new CardDefine(AgniShine.ID, DEFINE.SPELL, new Dictionary<string, object>()
-            //        {
-            //            { DEFINE.COST, 5 },
-            //            { DEFINE.TAGS, new string[] { Patchouli.FIRE } }
-            //        }, new GeneratedEffect[]
-            //        {
-            //            new GeneratedEffect(null, new TargetChecker[]
-            //            {
-            //                new TargetChecker("Character", null, "必须以角色为目标")
-            //            }, new ActionNode("Damage", new ActionValueRef[]
-            //            {
-            //                new ActionValueRef(new ActionNode("GetTarget", new object[] { "Target" })),
-            //                new ActionValueRef(new ActionNode("GetVariable", new object[] { "Card" })),
-            //                new ActionValueRef(new ActionNode("GetSpellDamage", new ActionValueRef[]
-            //                {
-            //                    new ActionValueRef(new ActionNode("GetOwner", new ActionValueRef[]
-            //                    {
-            //                        new ActionValueRef(new ActionNode("GetVariable", new object[] { "Card" }))
-            //                    })),
-            //                    new ActionValueRef(new ActionNode("IntegerConst", new object[] { 7 }))
-            //                }))
-            //            }), new string[0])
-            //        })
-            //    });
-            //    _cardSkinList.AddRange(new CardSkinData[]
-            //    {
-            //        new CardSkinData()
-            //        {
-            //            id = AgniShine.ID,
-            //            skinId = 0,
-            //            name = "火神之光",
-            //            desc = "对目标造成7点伤害",
-            //            illustrator = "fafa",
-            //            imagePath = "AgniShine.jpg",
-            //            language = LangManager.CN
-            //        }
-            //    });
-            //    return;
-            //}
-            var lines = await game.fileManager.readTextFile(cardPoolPath, 1, 3);
-            if (lines.Length > 0)
-            {
-                //卡牌
-                string json = lines[0];
-                _cardDefineList.AddRange(JsonHelper.fromJson<CardDefine[]>(json));
-                //皮肤
-                json = lines[1];
-                _cardSkinList.AddRange(JsonHelper.fromJson<CardSkinData[]>(json));
-                //编辑器信息
-                json = lines[2];
-                actionNodeGraphInfoList.Clear();
-                actionNodeGraphInfoList.AddRange(JsonHelper.fromJson<ActionNodeGraphInfo[]>(json));
-            }
-            else
-                throw new IOException("无法读取文件" + cardPoolPath);
+            var cards = await game.card.getExternalCardDefinesAsync(cardPoolPath, readEditorInfo: true);
+            _cardDefineList.AddRange(cards.defines);
+            _cardSkinList.AddRange(cards.skins);
+            actionNodeGraphInfoList.Clear();
+            actionNodeGraphInfoList.AddRange(cards.actionGraphInfos);
         }
         /// <summary>
         /// 将卡池保存到相对路径下
@@ -462,6 +366,20 @@ namespace Controllers
         {
             return CARDPOOLS_DIR_NAME + "/" + cardPool.cardPoolName + ".ddcp";
         }
+        /// <summary>
+        /// 更新卡池列表UI
+        /// </summary>
+        /// <returns></returns>
+        private async Task updateCardPoolListUI()
+        {
+            (string name, Sprite image)[] viewData = new (string name, Sprite image)[_cardPoolInfoList.Count];
+            for (int i = 0; i < viewData.Length; i++)
+            {
+                viewData[i].name = _cardPoolInfoList[i].cardPoolName;
+                viewData[i].image = await game.card.loadExternalImage(_cardPoolInfoList[i].imageResPath);
+            }
+            _ui.updateDeckList(viewData);
+        }
         #endregion
         [Obsolete("使用game属性替代")]
         public IAppManager app { get; }
@@ -476,7 +394,6 @@ namespace Controllers
         readonly List<CardDefine> _cardDefineList = new List<CardDefine>();
         readonly List<CardSkinData> _cardSkinList = new List<CardSkinData>();
         CardSortType _sortType;
-        Dictionary<string, Sprite> _externalSpriteCacheDict = new Dictionary<string, Sprite>();
         int[] _masterIds;
         int _masterFilterIndex;
         /// <summary>

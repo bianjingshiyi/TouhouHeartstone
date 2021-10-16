@@ -167,6 +167,7 @@ namespace Game
         public ILanguageManager langManager => getManager<LangManager>();
         public IResourceManager resourceManager => getManager<ResourceManager>();
         public CardManager card => getManager<CardManager>();
+        public DeckManager deck => getManager<DeckManager>();
         MainCtrl _mainCtrl;
         [SerializeField]
         UnityEvent onLoadingFinish;
@@ -406,5 +407,11 @@ namespace Game
         Task _loadCardTask = null;
         Task<ClientUpdateInfo> _getNewVersionTask = null;
         #endregion
+    }
+    public class UIManager : BJSYGameCore.UI.UIManager
+    {
+        public UIDialog dialog => _dialog;
+        [SerializeField]
+        UIDialog _dialog;
     }
 }

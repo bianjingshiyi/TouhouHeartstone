@@ -16,14 +16,14 @@ namespace UI
     using BJSYGameCore.UI;
     using BJSYGameCore;
 
-    public partial class Build : UIObject
+    partial class BuildCardPanel// : UIObject
     {
-        protected override void Awake()
-        {
-            base.Awake();
-            this.autoBind();
-            this.onAwake();
-        }
+        //protected override void Awake()
+        //{
+        //    base.Awake();
+        //    this.autoBind();
+        //    this.onAwake();
+        //}
         public void autoBind()
         {
             this._TitleBarImage = this.transform.Find("TitleBar").GetComponent<Image>();
@@ -47,7 +47,7 @@ namespace UI
             this._DeckViewScroll = this.transform.Find("DeckCardView").Find("DeckView").GetComponent<ScrollRect>();
             this._BuildDeckList = this.transform.Find("DeckCardView").Find("DeckView").Find("Viewport").Find("BuildDeckList").GetComponent<BuildDeckList>();
             this._CardViewScroll = this.transform.Find("CardView").GetComponent<ScrollRect>();
-            this._BuildCardList = this.transform.Find("CardView").Find("Viewport").Find("BuildCardList").GetComponent<BuildCardList>();
+            //this._BuildCardList = this.transform.Find("CardView").Find("Viewport").Find("BuildCardList").GetComponent<BuildCardList>();
             this._FilterPanel = this.transform.Find("FilterPanel").GetComponent<FilterPanel>();
             this._DragCard = this.transform.Find("DragCard").GetComponent<DragCard>();
             this._MasterCardSelection = this.transform.Find("MasterCardSelection").GetComponent<MasterCardSelection>();
@@ -327,19 +327,19 @@ namespace UI
                 return this._CardViewScroll;
             }
         }
-        [SerializeField()]
-        private BuildCardList _BuildCardList;
-        public BuildCardList BuildCardList
-        {
-            get
-            {
-                if ((this._BuildCardList == null))
-                {
-                    this._BuildCardList = this.transform.Find("CardView").Find("Viewport").Find("BuildCardList").GetComponent<BuildCardList>();
-                }
-                return this._BuildCardList;
-            }
-        }
+        //[SerializeField()]
+        //private BuildCardList _BuildCardList;
+        //public BuildCardList BuildCardList
+        //{
+        //    get
+        //    {
+        //        if ((this._BuildCardList == null))
+        //        {
+        //            this._BuildCardList = this.transform.Find("CardView").Find("Viewport").Find("BuildCardList").GetComponent<BuildCardList>();
+        //        }
+        //        return this._BuildCardList;
+        //    }
+        //}
         [SerializeField()]
         private FilterPanel _FilterPanel;
         public FilterPanel FilterPanel
