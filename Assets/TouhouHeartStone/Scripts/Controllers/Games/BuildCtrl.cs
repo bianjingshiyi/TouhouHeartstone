@@ -83,6 +83,9 @@ namespace Controllers
             _ui.onClickReturnButton += onReturnButtonClick;
             _ui.onUpdateCardListItem += onUpdateCardListItem;
             _ui.onStartDargCardListItem += onStartDragCardListItem;
+            _ui.onStartDragDeckCardListItem += onStartDragDeckCardListItem;
+            _ui.onEndDragCardListItem += onEndDragCardListItem;
+            _ui.onEndDragDeckCardListItem += onEndDragDeckCardListItem;
             _ui.setSortTypes(_sortTypes);
             _ui.onSortTypeValueChanged += onSortTypeValueChanged;
             _ui.onCharacterFilterValueChanged += onCharacterFiltersValueChanged;
@@ -149,49 +152,53 @@ namespace Controllers
         }
         private async void onStartDragCardListItem(int index)
         {
-            CardDefine card = _cardDefineList[index];
-            CardSkinData skin = getCardSkinData(card);
-            Sprite image = await game.card.loadCardImage(card.id);
-            _ui.dragCard.setCard(card, skin);
+            _dragCard = _cardDefineList[index];
+            CardSkinData skin = getCardSkinData(_dragCard);
+            Sprite image = await game.card.loadCardImage(_dragCard.id);
+            _ui.dragCard.setCard(_dragCard, skin);
             _ui.dragCard.setImage(image);
             _ui.dragDeckListItem.updateView(skin.name, image);
         }
-        private async void onEndDragCardListItem(int index)
+        private async void onEndDragCardListItem(bool isOverDeckCardList)
         {
-            CardDefine card = _cardDefineList[index];
-            var cardCount = _deck.cardList.Where(i => i == card.id).Count();
-
-            //卡组数量上限
-            if (_deck.cardList.Count >= _deckMaxSize)
-            {
-                _ui.showMessage(game.lang._(StringTable.BUILD_TIP_DECK_MAX_SIZE));
+            if (!isOverDeckCardList)
                 return;
-            }
-            //卡牌数量上限
-            if (cardCount >= 2 || (card.hasKeyword(KEYWORD.UNIQUE) && cardCount >= 1))
+            if (tryAddCardToDeck(_dragCard, out string errorTip))
             {
-                _ui.showMessage(game.lang._(StringTable.BUILD_TIP_CARD_MAX_COUNT));
-                return;
+                // 更新可用信息
+                _ui.updateCardListCount(_cardDefineList.Count);
+                // 更新UI
+                await updateDeckCardListUI();
             }
-            // 中立卡或自己的卡
-            if (card.getCharacterID() != CATEGORY.CHARACTER_NEUTRAL
-                && card.getCharacterID() != _deck.masterId)
-            {
-                _ui.showMessage(game.lang._(StringTable.BUILD_TIP_CARD_CARRY_LIMIT));
-                return;
-            }
-
-            // 添加卡
-            _deck.cardList.Add(card.id);
-
-            // 更新可用信息
+            else
+                _ui.showMessage(errorTip);
+        }
+        private async void onStartDragDeckCardListItem(int index)
+        {
+            var cards = _deck.cardList.OrderBy(id => game.card.GetCardDefine(id).getCost()).GroupBy(id => id).ToArray();
+            _dragCard = game.card.GetCardDefine(cards[index].Key);
+            _deck.cardList.Remove(cards[index].Key);
             _ui.updateCardListCount(_cardDefineList.Count);
-
-            // 标记为已经修改
-            _isDeckChanged = true;
-
-            // 更新UI
             await updateDeckCardListUI();
+            CardSkinData skin = getCardSkinData(_dragCard);
+            Sprite image = await game.card.loadCardImage(_dragCard.id);
+            _ui.dragCard.setCard(_dragCard, skin);
+            _ui.dragCard.setImage(image);
+            _ui.dragDeckListItem.updateView(skin.name, image);
+        }
+        private async void onEndDragDeckCardListItem(bool isOverDeckCardList)
+        {
+            if (!isOverDeckCardList)
+                return;
+            if (tryAddCardToDeck(_dragCard, out string errorTip))
+            {
+                // 更新可用信息
+                _ui.updateCardListCount(_cardDefineList.Count);
+                // 更新UI
+                await updateDeckCardListUI();
+            }
+            else
+                _ui.showMessage(errorTip);
         }
         private void onSortTypeValueChanged(int index)
         {
@@ -580,6 +587,35 @@ namespace Controllers
             else
                 return false;
         }
+        private bool tryAddCardToDeck(CardDefine card, out string errorTip)
+        {
+            //卡组数量上限
+            if (_deck.cardList.Count >= _deckMaxSize)
+            {
+                errorTip = game.lang._(StringTable.BUILD_TIP_DECK_MAX_SIZE);
+                return false;
+            }
+            //卡牌数量上限
+            int cardCount = _deck.cardList.Where(i => i == card.id).Count();
+            if (cardCount >= 2 || (card.hasKeyword(KEYWORD.UNIQUE) && cardCount >= 1))
+            {
+                errorTip = game.lang._(StringTable.BUILD_TIP_CARD_MAX_COUNT);
+                return false;
+            }
+            // 中立卡或自己的卡
+            if (card.getCharacterID() != CATEGORY.CHARACTER_NEUTRAL
+                && card.getCharacterID() != _deck.masterId)
+            {
+                errorTip = game.lang._(StringTable.BUILD_TIP_CARD_CARRY_LIMIT);
+                return false;
+            }
+            // 添加卡
+            _deck.cardList.Add(card.id);
+            // 标记为已经修改
+            _isDeckChanged = true;
+            errorTip = string.Empty;
+            return true;
+        }
         /// <summary>
         /// 保存卡组
         /// </summary>
@@ -716,6 +752,8 @@ namespace Controllers
         bool _isDeckChanged = false;
         [SerializeField]
         CardDefine[] _selectableMasters;
+        [SerializeField]
+        CardDefine _dragCard;
         List<(string path, CardPoolInfo info, bool isEnabled)> _cardPoolList = new List<(string path, CardPoolInfo info, bool isEnabled)>();
         List<CardDefine> _cardDefineList = new List<CardDefine>();
         List<CardSkinData> _cardSkinList = new List<CardSkinData>();

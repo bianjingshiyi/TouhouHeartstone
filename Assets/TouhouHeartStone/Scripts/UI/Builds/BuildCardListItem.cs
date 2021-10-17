@@ -32,7 +32,7 @@ namespace UI
             if (_isDragging)
             {
                 BuildCardPanel build = GetComponentInParent<BuildCardPanel>();
-                build.onDragCardItem(this, eventData);
+                //build.onDragCardItem(this, eventData);
             }
             else
             {
@@ -45,7 +45,7 @@ namespace UI
             {
                 // 结束拖拽
                 BuildCardPanel build = GetComponentInParent<BuildCardPanel>();
-                build.onReleaseCardItem(this, eventData);
+                //build.onReleaseCardItem(this, eventData);
             }
             _isDragging = false;
             GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);

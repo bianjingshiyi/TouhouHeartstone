@@ -84,7 +84,7 @@ namespace UI
                 if (_isDragging)
                 {
                     BuildCardPanel build = GetComponentInParent<BuildCardPanel>();
-                    build.onDragDeckItem(this, eventData);
+                    //build.onDragDeckItem(this, eventData);
                 }
                 else
                 {

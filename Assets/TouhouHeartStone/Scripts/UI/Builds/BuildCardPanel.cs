@@ -202,6 +202,7 @@ namespace UI
 
             _dragStartPosition = eventData.position;
             _isDragging = false;
+            eventData.Use();
         }
         private void onDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
         {
@@ -211,14 +212,18 @@ namespace UI
             var delta = _dragStartPosition - eventData.position;
             if (Math.Abs(delta.x) > _dragThreshold && Math.Abs(delta.x) > Math.Abs(delta.y))
             {
-                _isDragging = true;
-                onStartDargCardListItem?.Invoke(cardListLayoutGroup.getItemIndex(item.transform as RectTransform));
+                if (!_isDragging)
+                {
+                    _isDragging = true;
+                    onStartDargCardListItem?.Invoke(cardListLayoutGroup.getItemIndex(item.transform as RectTransform));
+                }
             }
             if (_isDragging)
             {
                 _dragCard.rectTransform.position = eventData.position;
                 showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
             }
+            eventData.Use();
         }
         private void onEndDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
         {
@@ -229,13 +234,58 @@ namespace UI
             {
                 // 结束拖拽
                 hideDragCard();
-                if (_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)))
-                {
-                    onEndDragCardListItem?.Invoke(cardListLayoutGroup.getItemIndex(item.transform as RectTransform));
-                }
+                onEndDragCardListItem?.Invoke(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
             }
             _isDragging = false;
-            GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
+            eventData.Use();
+            //GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
+        }
+        private void onBeginDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
+        {
+            if (!_enableDrag)
+                return;
+
+            _dragStartPosition = eventData.position;
+            _isDragging = false;
+            eventData.Use();
+            //GetComponentInParent<ScrollRect>()?.SendMessage("OnBeginDrag", eventData, SendMessageOptions.DontRequireReceiver);
+        }
+        private void onDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
+        {
+            if (!_enableDrag)
+                return;
+
+            var delta = _dragStartPosition - eventData.position;
+            if (Math.Abs(delta.x) > _dragThreshold && Math.Abs(delta.x) > Math.Abs(delta.y))
+            {
+                if (!_enableDrag)
+                {
+                    _isDragging = true;
+                    onStartDragDeckCardListItem?.Invoke(deckCardItemList.IndexOf(item.transform as RectTransform));
+                }
+            }
+            if (_isDragging)
+            {
+                _dragCard.rectTransform.position = eventData.position;
+                showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
+            }
+            eventData.Use();
+        }
+        private void onEndDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
+        {
+            if (!_enableDrag)
+            {
+                return;
+            }
+            if (_isDragging)
+            {
+                //结束拖拽
+                hideDragCard();
+                onEndDragDeckCardListItem?.Invoke(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
+            }
+            eventData.Use();
+            //gameObject.SetActive(true);
+            //GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
         }
         /// <summary>
         /// 修改了排序
@@ -288,7 +338,15 @@ namespace UI
         #endregion
         #region 事件
         public event Action<int> onStartDargCardListItem;
-        public event Action<int> onEndDragCardListItem;
+        public event Action<int> onStartDragDeckCardListItem;
+        /// <summary>
+        /// 当拖拽卡牌列表中的项目结束时调用，参数为是否位于卡组卡牌列表区域当中
+        /// </summary>
+        public event Action<bool> onEndDragCardListItem;
+        /// <summary>
+        /// 当拖拽卡组卡牌列表中的项目结束时调用，参数为是否位于卡组卡牌列表区域当中
+        /// </summary>
+        public event Action<bool> onEndDragDeckCardListItem;
         public event Action<int> onSortTypeValueChanged;
         public event Action<bool[]> onCharacterFilterValueChanged;
         public event Action<bool[]> onCostFilterValueChanged;
@@ -394,27 +452,8 @@ namespace UI
                 if (item.count < 1)
                     BuildDeckList.removeItem(item);
 
-                onDeckCardChange();
+                //onDeckCardChange();
             }
-        }
-        void onDragItem(CardDefine card, Vector2 position)
-        {
-            if (!_enableDrag) return;
-
-            DragCard.display();
-            DragCard.rectTransform.position = position;
-            if (DeckViewScroll.GetComponent<RectTransform>().rect.Contains(DeckViewScroll.GetComponent<RectTransform>().InverseTransformPoint(position)))
-            {
-                DragCard.BuildDeckListItem.display();
-                DragCard.Card.hide();
-            }
-            else
-            {
-                DragCard.Card.display();
-                DragCard.BuildDeckListItem.hide();
-            }
-            DragCard.BuildDeckListItem.update(card, ui.getManager<CardManager>().getSkin(card.id), 1);
-            DragCard.Card.setCard(card, ui.getManager<CardManager>().getSkin(card.id));
         }
 
 
@@ -424,25 +463,25 @@ namespace UI
 
         public void onClickHandCard()
         {
-            if (_enableDrag)
-                showMessage(lang._(DRAG_INSTEAD_CLICK));
+            //if (_enableDrag)
+            //    showMessage(lang._(DRAG_INSTEAD_CLICK));
         }
 
         public void DeckItemSelect(BuildDeckListItem item)
         {
-            DragCard.display();
-            DragCard.Card.display();
-            DragCard.BuildDeckListItem.hide();
+            //DragCard.display();
+            //DragCard.Card.display();
+            //DragCard.BuildDeckListItem.hide();
 
-            DragCard.Card.setCard(item.card, ui.getManager<CardManager>().getSkin(item.card.id));
+            //DragCard.Card.setCard(item.card, ui.getManager<CardManager>().getSkin(item.card.id));
 
-            var rt = DragCard.rectTransform;
-            var rt2 = item.GetComponent<RectTransform>();
+            //var rt = DragCard.rectTransform;
+            //var rt2 = item.GetComponent<RectTransform>();
 
-            Vector2 point = new Vector2(rt2.position.x - (rt2.rect.width + rt.rect.width) / 2, rt2.position.y);
-            point.y = Math.Max(point.y, rt.rect.height / 2 + 10);
+            //Vector2 point = new Vector2(rt2.position.x - (rt2.rect.width + rt.rect.width) / 2, rt2.position.y);
+            //point.y = Math.Max(point.y, rt.rect.height / 2 + 10);
 
-            rt.position = point;
+            //rt.position = point;
         }
 
         public void DeckItemDeselect(BuildDeckListItem item)

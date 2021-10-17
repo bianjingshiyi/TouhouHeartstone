@@ -236,6 +236,7 @@ namespace UI
         #endregion
         #region 属性字段
         public VirtualListLayoutGroup cardListLayoutGroup => _cardListLayoutGroup;
+        public List<RectTransform> deckCardItemList => _cardPoolCardItemList;
         [SerializeField]
         Button _returnButton;
         [SerializeField]
