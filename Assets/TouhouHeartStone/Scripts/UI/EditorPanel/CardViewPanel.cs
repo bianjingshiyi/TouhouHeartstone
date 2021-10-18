@@ -36,7 +36,7 @@ namespace UI
                 (i, item) =>
                 {
                     item.GetComponent<CardViewDeckCardListItem>().updateView(viewData[i].name, viewData[i].image, viewData[i].count);
-                });
+                }, onDeckCardListItemEnable, onDeckCardListItemDisable);
         }
         /// <summary>
         /// 设置卡牌列表数量（会引发卡牌列表刷新事件）
@@ -124,6 +124,10 @@ namespace UI
             _saveCardPoolButton.onClick.AddListener(onClickSaveCardPoolButtonCallback);
             _returnToCardPoolViewButton.onClick.AddListener(onClickReturnToCardPoolViewButtonCallback);
             _deleteCurCardPoolButton.onClick.AddListener(onClickDeleteCurCardPoolButtonCallback);
+            if (_cardPoolCardListItemTemplate.transform.parent == _cardPoolCardListRoot)
+            {
+                _cardPoolCardListItemTemplate.gameObject.SetActive(false);
+            }
         }
         #endregion
         #region 事件回调
@@ -157,6 +161,12 @@ namespace UI
         private void onDeckListItemNameInputFieldValueChanged(DeckListItem item, string value)
         {
             onDeckListItemNameValueChanged?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform), value);
+        }
+        protected virtual void onDeckCardListItemEnable(RectTransform itemRect)
+        {
+        }
+        protected virtual void onDeckCardListItemDisable(RectTransform itemRect)
+        {
         }
         private void onClickAddCardPoolButtonCallback()
         {

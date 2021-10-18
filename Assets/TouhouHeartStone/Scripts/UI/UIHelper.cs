@@ -15,21 +15,22 @@ namespace Game
     {
         public static void setCard(this UICard ui, CardDefine card, CardSkinData skin)
         {
-            setCost(ui, card.getCost().ToString());
-            setImage(ui, skin.image);
-            setName(ui, skin.name);
-            setSubname(ui, skin.subname);
-            if (card is ServantCardDefine servantCardDefine)
+            if (skin != null)
             {
-                setTag(ui, servantCardDefine.tags.FirstOrDefault());
+                setImage(ui, skin.image);
+                setName(ui, skin.name);
+                setSubname(ui, skin.subname);
+                setDesc(ui, skin.desc);
             }
             else
             {
-                setTag(ui, card.getTags().FirstOrDefault());
+                setImage(ui, null);
+                setName(ui, StringTable.BUILD_UNKNOW_CARD_NAME);
+                setSubname(ui, string.Empty);
+                setDesc(ui, string.Empty);
             }
-            setDesc(ui, skin.desc);
             ui.isFaceup = true;
-
+            setCost(ui, card.getCost().ToString());
             if (card.type == DEFINE.MASTER)
             {
                 ui.type = CATEGORY.MASTER;
@@ -52,6 +53,14 @@ namespace Game
             }
             else
                 throw new NotImplementedException();
+            if (card is ServantCardDefine servantCardDefine)
+            {
+                setTag(ui, servantCardDefine.tags.FirstOrDefault());
+            }
+            else
+            {
+                setTag(ui, card.getTags().FirstOrDefault());
+            }
         }
         public static void setAttack(this UICard ui, string attack)
         {

@@ -30,12 +30,12 @@ namespace Controllers
             _typeFiltersValue = new bool[_typeFilters.Length];
 
             loadCardListThenFilterAndSort();
-            _characterFilters = new int[] { CATEGORY.CHARACTER_NEUTRAL }.Concat(_cardDefineList.Where(c => c.type == DEFINE.MASTER).Select(c => c.id)).ToArray();
             _characterFiltersValue = new bool[_characterFilters.Length];
 
             //构筑卡组
             loadDeckList();
 
+            _ui.gameObject.SetActive(true);
             //UI更新
             _ui.setSortType(_sortType);
             _ui.setCharacterFilters(_characterFilters.Select(id =>
@@ -47,7 +47,8 @@ namespace Controllers
             _ui.setCharacterFilter(_characterFiltersValue);
             _ui.setCostFilter(_costFiltersValue);
             _ui.setTypeFilter(_typeFiltersValue);
-
+            _ui.updateCardListCount(_cardDefineList.Count);
+            _ui.setEnableDrag(false);
             await updateDeckListUI();
         }
         /// <summary>
@@ -59,15 +60,25 @@ namespace Controllers
             _deck = deck;
             _isDeckChanged = false;
 
+            //切换角色筛选
+            int index = Array.IndexOf(_characterFilters, deck.masterId);
+            _characterFiltersValue = new bool[_characterFilters.Length];
+            _characterFiltersValue[index] = true;
+            loadCardListThenFilterAndSort();
+
+            _ui.setCharacterFilter(_characterFiltersValue);
+
             // 皮肤
             CardSkinData masterSkin = game.card.getSkin(deck.masterId);
+            _ui.gameObject.SetActive(true);
             _ui.updateCurCardPoolInfo(deck.name, await loadDeckImage(deck));
             _ui.setCharacterName(masterSkin.name);
 
             // 更新UI
+            _ui.updateCardListCount(_cardDefineList.Count);
             _ui.setDeckListActive(false);
             _ui.setEditCardListActive(true);
-            _ui.setDeckCardCount(_deck.cardList.Count, _deckMaxSize);
+            _ui.setEnableDrag(true);
             _ui.hideDragCard();
             await updateDeckCardListUI();
         }
@@ -136,17 +147,16 @@ namespace Controllers
             {
                 //显示卡牌
                 CardDefine cardDefine = _cardDefineList[index];
+                //显示可用数量
+                item.switchToCard();
                 CardSkinData cardSkin = getCardSkinData(cardDefine);
                 item.card.setCard(cardDefine, cardSkin);
-                item.switchToCard();
-                if (cardSkin.image == null)
+                if (cardSkin != null && cardSkin.image == null)
                 {
                     item.card.setImage(await game.card.loadExternalImage(cardSkin.imagePath));
                 }
-                //显示可用数量
                 int max = cardDefine.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2;
                 int current = _deck.cardList.Where(id => id == cardDefine.id).Count();
-                //TODO:更新UI
                 item.setCount(current, max);
             }
         }
@@ -451,6 +461,11 @@ namespace Controllers
             CardDefine[] cardDefines = game.card.GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly
             && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null);
             _cardDefineList.AddRange(cardDefines);
+            for (int i = 0; i < _cardDefineList.Count; i++)
+            {
+                if (game.card.tryGetSkin(_cardDefineList[i].id, out CardSkinData skin))
+                    _cardSkinList.Add(skin);
+            }
             //外部卡池
             List<string> pathList = new List<string>();
             for (int i = 0; i < _cardPoolList.Count; i++)
@@ -461,6 +476,14 @@ namespace Controllers
             var cards = await game.card.getExternalCardDefinesAsync(pathList.ToArray());
             _cardDefineList.AddRange(cards.defines);
             _cardSkinList.AddRange(cards.skins);
+            //重设角色筛选选项
+            _characterFilters = new int[] { CATEGORY.CHARACTER_NEUTRAL }.Concat(_cardDefineList.Where(c => c.type == DEFINE.MASTER).Select(c => c.id)).ToArray();
+            //不显示英雄
+            _cardDefineList.RemoveAll(c => c.type == DEFINE.MASTER);
+            //不显示技能
+            _cardDefineList.RemoveAll(c => c.type == DEFINE.SKILL);
+            //不显示衍生物
+            _cardDefineList.RemoveAll(c => c.isToken());
             //角色
             if (_characterFilters != null && _characterFilters.Length > 0 &&
                 _characterFiltersValue != null && _characterFilters.Length == _characterFiltersValue.Length && _characterFiltersValue.Any(b => b))
@@ -468,7 +491,10 @@ namespace Controllers
                 _cardDefineList.RemoveAll(c =>
                 {
                     int index = Array.IndexOf(_characterFilters, c.getCharacterID());
-                    return !_characterFiltersValue[index];
+                    if (index < 0)
+                        return true;
+                    else
+                        return !_characterFiltersValue[index];
                 });
             }
             //费用
@@ -477,13 +503,13 @@ namespace Controllers
                 _cardDefineList.RemoveAll(c =>
                 {
                     int cost = c.getCost();
-                    if (cost >= 7 && !_costFiltersValue[7])
+                    if (cost >= 7)
                     {
-                        return false;
+                        return !_costFiltersValue[7];
                     }
-                    else if (cost <= 0 && !_costFiltersValue[0])
+                    else if (cost <= 0)
                     {
-                        return false;
+                        return !_costFiltersValue[0];
                     }
                     else
                     {
@@ -492,14 +518,15 @@ namespace Controllers
                 });
             }
             //类型
-            //不显示英雄
-            _cardDefineList.RemoveAll(c => c.type == DEFINE.MASTER);
             if (_typeFiltersValue != null && _typeFiltersValue.Length == _typeFilters.Length && _typeFiltersValue.Any(b => b))
             {
                 _cardDefineList.RemoveAll(c =>
                 {
                     int index = Array.IndexOf(_typeFilters, c.type);
-                    return _typeFiltersValue[index];
+                    if (index < 0)
+                        return true;
+                    else
+                        return !_typeFiltersValue[index];
                 });
             }
 
@@ -522,7 +549,7 @@ namespace Controllers
         /// <returns></returns>
         private CardSkinData getCardSkinData(CardDefine cardDefine)
         {
-            var cardSkinGroup = _cardSkinList.GroupBy(s => s.id).First(g => g.Key == cardDefine.id);
+            var cardSkinGroup = _cardSkinList.Where(s => s.id == cardDefine.id);
             CardSkinData cardSkin = cardSkinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
             if (cardSkin == null)
                 cardSkin = cardSkinGroup.FirstOrDefault();
@@ -541,7 +568,7 @@ namespace Controllers
                     id = (int)deckData.ID,
                     name = deckData.Name,
                     masterId = deckData.MasterID,
-                    cardList = game.deck.GetDeckCards(deckData.ID).Values.Cast<int>().ToList()
+                    cardList = game.deck.GetDeckCards(deckData.ID).Values.Select(id => (int)id).ToList()
                 });
             }
         }
@@ -719,6 +746,7 @@ namespace Controllers
         }
         private async Task updateDeckCardListUI()
         {
+            _ui.setDeckCardCount(_deck.cardList.Count, _deckMaxSize);
             var cards = _deck.cardList.OrderBy(id => game.card.GetCardDefine(id).getCost()).GroupBy(id => id).ToArray();
             (string name, Sprite image, int count)[] deckCardList = new (string name, Sprite image, int count)[cards.Length];
             for (int i = 0; i < deckCardList.Length; i++)

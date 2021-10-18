@@ -408,10 +408,4 @@ namespace Game
         Task<ClientUpdateInfo> _getNewVersionTask = null;
         #endregion
     }
-    public class UIManager : BJSYGameCore.UI.UIManager
-    {
-        public UIDialog dialog => _dialog;
-        [SerializeField]
-        UIDialog _dialog;
-    }
 }

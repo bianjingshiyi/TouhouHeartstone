@@ -23,7 +23,8 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<MainMenu>();
             }
-            _ui.onVsBotButtonClick += onClickVsBotButton;            
+            _ui.onVsBotButtonClick += onClickVsBotButton;
+            _ui.onBuildCardButtonClick += onBuildButtonClick;
             _ui.onEditorButtonClick += onEditorButtonClick;
         }
         #endregion
@@ -42,6 +43,11 @@ namespace Controllers
             currentRoomData.setOption(option);
 
             scene.room.display(currentRoomData);
+        }
+        private void onBuildButtonClick()
+        {
+            _ui.gameObject.SetActive(false);
+            scene.build.display();
         }
         private void onEditorButtonClick()
         {

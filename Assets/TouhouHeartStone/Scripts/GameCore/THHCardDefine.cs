@@ -45,5 +45,16 @@ namespace TouhouHeartstone
                 return false;
             return tags.Contains(tag);
         }
+        public static bool isToken(this CardDefine define)
+        {
+            if (define is THHCardDefine thhCardDefine)
+            {
+                return thhCardDefine.isToken;
+            }
+            else
+            {
+                return define.getProp<bool>(DEFINE.ISTOKEN);
+            }
+        }
     }
 }

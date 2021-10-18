@@ -15,6 +15,10 @@ namespace Controllers
             {
                 _room = TransformHelper.findComponentInScene<RoomCtrl>(gameObject.scene);
             }
+            if (_build == null)
+            {
+                _build = TransformHelper.findComponentInScene<BuildCtrl>(gameObject.scene);
+            }
             if (_editor == null)
             {
                 _editor = TransformHelper.findComponentInScene<EditorCtrl>(gameObject.scene);
@@ -33,6 +37,7 @@ namespace Controllers
             }
             _menu.gameObject.SetActive(true);
             _room.gameObject.SetActive(false);
+            _build.gameObject.SetActive(false);
             _editor.gameObject.SetActive(false);
             _cardEditor.gameObject.SetActive(false);
             _effectEditor.gameObject.SetActive(false);
@@ -46,6 +51,7 @@ namespace Controllers
         {
             get { return _room; }
         }
+        public BuildCtrl build => _build;
         public EditorCtrl editor
         {
             get { return _editor; }
@@ -66,6 +72,8 @@ namespace Controllers
         MainMenuCtrl _menu;
         [SerializeField]
         RoomCtrl _room;
+        [SerializeField]
+        BuildCtrl _build;
         [SerializeField]
         EditorCtrl _editor;
         [SerializeField]

@@ -11,12 +11,14 @@ namespace UI
         public void switchToCard()
         {
             _card.gameObject.SetActive(true);
-            _newCardButton.gameObject.SetActive(false);
+            if (_newCardButton != null)
+                _newCardButton.gameObject.SetActive(false);
         }
         public void switchToAddButton()
         {
             _card.gameObject.SetActive(false);
-            _newCardButton.gameObject.SetActive(true);
+            if (_newCardButton != null)
+                _newCardButton.gameObject.SetActive(true);
         }
         /// <summary>
         /// 设置卡牌的数量注脚，可以用于构筑界面
@@ -33,7 +35,8 @@ namespace UI
         protected void Awake()
         {
             _button.onClick.AddListener(onClickCallback);
-            _newCardButton.onClick.AddListener(onClickCallback);
+            if (_newCardButton != null)
+                _newCardButton.onClick.AddListener(onClickCallback);
         }
         #endregion
         #region 事件回调

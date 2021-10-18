@@ -105,7 +105,7 @@ namespace UI
         }
         public void setDeckCardCount(int count, int max)
         {
-            DeckCountText.text = count + "/" + max;
+            _deckCardCountText.text = count + "/" + max;
         }
         public void setEditCardListActive(bool value)
         {
@@ -168,16 +168,6 @@ namespace UI
             _downloadDeckButton.onClick.AddListener(onClickDownloadDeckButtonCallback);
         }
         #endregion
-        /// <summary>
-        /// 比较方法
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        int sortCompareMethod(BuildCardViewData a, BuildCardViewData b)
-        {
-            return FilterPanel.sortCompareMethod(a.define, b.define);
-        }
         #region 事件回调
         protected override void onEnableCardListItem(int index, RectTransform itemRect)
         {
@@ -215,12 +205,14 @@ namespace UI
                 if (!_isDragging)
                 {
                     _isDragging = true;
+                    showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
                     onStartDargCardListItem?.Invoke(cardListLayoutGroup.getItemIndex(item.transform as RectTransform));
                 }
             }
             if (_isDragging)
             {
                 _dragCard.rectTransform.position = eventData.position;
+                _dragDeckListItem.transform.position = eventData.position;
                 showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
             }
             eventData.Use();
@@ -240,6 +232,22 @@ namespace UI
             eventData.Use();
             //GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
         }
+        protected override void onDeckCardListItemEnable(RectTransform itemRect)
+        {
+            base.onDeckCardListItemEnable(itemRect);
+            CardViewDeckCardListItem item = itemRect.GetComponent<CardViewDeckCardListItem>();
+            item.onBeginDrag += onBeginDragDeckCardListItemCallback;
+            item.onDrag += onDragDeckCardListItemCallback;
+            item.onEndDrag += onEndDragDeckCardListItemCallback;
+        }
+        protected override void onDeckCardListItemDisable(RectTransform itemRect)
+        {
+            base.onDeckCardListItemDisable(itemRect);
+            CardViewDeckCardListItem item = itemRect.GetComponent<CardViewDeckCardListItem>();
+            item.onBeginDrag -= onBeginDragDeckCardListItemCallback;
+            item.onDrag -= onDragDeckCardListItemCallback;
+            item.onEndDrag -= onEndDragDeckCardListItemCallback;
+        }
         private void onBeginDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
         {
             if (!_enableDrag)
@@ -258,15 +266,17 @@ namespace UI
             var delta = _dragStartPosition - eventData.position;
             if (Math.Abs(delta.x) > _dragThreshold && Math.Abs(delta.x) > Math.Abs(delta.y))
             {
-                if (!_enableDrag)
+                if (!_isDragging)
                 {
                     _isDragging = true;
+                    showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
                     onStartDragDeckCardListItem?.Invoke(deckCardItemList.IndexOf(item.transform as RectTransform));
                 }
             }
             if (_isDragging)
             {
                 _dragCard.rectTransform.position = eventData.position;
+                _dragDeckListItem.transform.position = eventData.position;
                 showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
             }
             eventData.Use();
@@ -490,7 +500,7 @@ namespace UI
         }
         #region 属性字段
         public Card dragCard => _dragCard;
-        public DeckListItem dragDeckListItem => _dragDeckListItem;
+        public CardViewDeckCardListItem dragDeckListItem => _dragDeckListItem;
         [SerializeField]
         float _dragThreshold = 50f;
         [SerializeField]
@@ -529,7 +539,7 @@ namespace UI
         [SerializeField]
         Card _dragCard;
         [SerializeField]
-        DeckListItem _dragDeckListItem;
+        CardViewDeckCardListItem _dragDeckListItem;
         [SerializeField]
         Vector2 _dragStartPosition;
         [SerializeField]
@@ -538,8 +548,6 @@ namespace UI
         GameObject _editCardListRightPanel;
         [SerializeField]
         MasterCardSelection _masterSelectionPanel;
-        [SerializeField]
-        Button _saveDeckButton;
         [SerializeField]
         Button _exportDeckButton;
         [SerializeField]

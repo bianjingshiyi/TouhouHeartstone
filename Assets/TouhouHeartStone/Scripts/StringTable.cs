@@ -57,6 +57,8 @@ namespace Game
         public const string BUILD_ERROR_IMPORT_FAILED = "导入失败\n{0}";
         [TranslateMsg]
         public const string BUILD_CONFIRM_EXIT_WITHOUT_SAVE = "卡组尚未保存，退出后现有变更将丢失。\n是否退出？";
+        [TranslateMsg("未知卡牌的名字")]
+        public const string BUILD_UNKNOW_CARD_NAME = "未知卡牌";
         #endregion
         #region 编辑器
         [TranslateMsg("编辑器中生效动作节点的名字")]
