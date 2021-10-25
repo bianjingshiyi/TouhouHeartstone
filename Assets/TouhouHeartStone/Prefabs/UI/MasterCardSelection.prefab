@@ -99,6 +99,7 @@ MonoBehaviour:
   _CloseButtonBlack: {fileID: 2879956062623178347}
   _Scroll_View: {fileID: 4571073480032697433}
   _MasterCardList: {fileID: 6492719679207165952}
+  _itemList: []
 --- !u!114 &52094881315691938
 MonoBehaviour:
   m_ObjectHideFlags: 0

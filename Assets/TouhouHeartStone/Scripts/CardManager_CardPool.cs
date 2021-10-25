@@ -86,6 +86,17 @@ namespace Game
             _externalCardDefineDict[cardPoolId].Add(cardDefine);
             _externalCardSkinDict[cardPoolId].Add(cardSkin);
         }
+        public bool tryGetCardDefine(int cardId, out CardDefine card)
+        {
+            card = null;
+            foreach (var pair in _externalCardDefineDict)
+            {
+                card = pair.Value.Find(c => c.id == cardId);
+                if (card != null)
+                    return true;
+            }
+            return false;
+        }
         public async Task<Sprite> loadExternalImage(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -133,6 +144,17 @@ namespace Game
                 return loadExternalImage(skin.imagePath);
             }
         }
+        public bool tryGetExternalSkin(int cardId, out CardSkinData skin)
+        {
+            skin = null;
+            foreach (var pair in _externalCardSkinDict)
+            {
+                skin = pair.Value.Find(s => s.id == cardId);
+                if (skin != null)
+                    return true;
+            }
+            return false;
+        }
         #endregion
         #region 私有方法
         #endregion
@@ -142,6 +164,9 @@ namespace Game
             get { return _externalSpriteCacheDict; }
         }
         Dictionary<int, List<CardDefine>> _externalCardDefineDict = new Dictionary<int, List<CardDefine>>();
+        /// <summary>
+        /// 用于存储外部皮肤信息的字典，Key为卡池Id，值为卡池包含皮肤列表
+        /// </summary>
         Dictionary<int, List<CardSkinData>> _externalCardSkinDict = new Dictionary<int, List<CardSkinData>>();
         Dictionary<int, List<ActionNodeGraphInfo>> _externalCardActionGraphInfoDict = new Dictionary<int, List<ActionNodeGraphInfo>>();
         Dictionary<string, Sprite> _externalSpriteCacheDict = new Dictionary<string, Sprite>();

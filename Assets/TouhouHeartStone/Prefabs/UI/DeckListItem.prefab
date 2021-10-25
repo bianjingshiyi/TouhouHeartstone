@@ -320,6 +320,8 @@ MonoBehaviour:
   _NotCompleteImage: {fileID: 4764798575321623873}
   _NameInputField: {fileID: 6857781385975996181}
   _AddButtonBlack: {fileID: 1889630121312037514}
+  _nameText: {fileID: 7776951251826181916}
+  _image: {fileID: 2417525977472639122}
 --- !u!1 &2798740220505841231
 GameObject:
   m_ObjectHideFlags: 0

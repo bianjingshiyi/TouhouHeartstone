@@ -53,6 +53,7 @@ namespace UI
         public void updateItemList((string name, Sprite image)[] viewData)
         {
             MasterCardList.clearItems();
+            _itemList.Clear();
             for (int i = 0; i < viewData.Length; i++)
             {
                 var c = MasterCardList.addItem();

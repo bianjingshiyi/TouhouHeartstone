@@ -22,6 +22,10 @@ namespace Controllers
         /// </summary>
         public async void display()
         {
+            //清理字段
+            _deck = null;
+            _isDeckChanged = false;
+
             //卡牌收藏
             _sortType = 0;
             _characterFilters = null;
@@ -29,7 +33,7 @@ namespace Controllers
             _costFiltersValue = new bool[_costFilters.Length];
             _typeFiltersValue = new bool[_typeFilters.Length];
 
-            loadCardListThenFilterAndSort();
+            await loadCardListThenFilterAndSort();
             _characterFiltersValue = new bool[_characterFilters.Length];
 
             //构筑卡组
@@ -47,8 +51,14 @@ namespace Controllers
             _ui.setCharacterFilter(_characterFiltersValue);
             _ui.setCostFilter(_costFiltersValue);
             _ui.setTypeFilter(_typeFiltersValue);
+            _ui.switchRightPanelModeButtonGroup(true);
+            _ui.setCardListActive(true);
             _ui.updateCardListCount(_cardDefineList.Count);
             _ui.setEnableDrag(false);
+            //右侧栏
+            _ui.setDeckListActive(true);
+            _ui.setEditDeckPanelActive(false);
+            _ui.setRightFilterDetialPanelActive(false);
             await updateDeckListUI();
         }
         /// <summary>
@@ -64,7 +74,7 @@ namespace Controllers
             int index = Array.IndexOf(_characterFilters, deck.masterId);
             _characterFiltersValue = new bool[_characterFilters.Length];
             _characterFiltersValue[index] = true;
-            loadCardListThenFilterAndSort();
+            await loadCardListThenFilterAndSort();
 
             _ui.setCharacterFilter(_characterFiltersValue);
 
@@ -75,11 +85,17 @@ namespace Controllers
             _ui.setCharacterName(masterSkin.name);
 
             // 更新UI
+            _ui.switchRightPanelModeButtonGroup(true);
+            _ui.setCardListActive(true);
             _ui.updateCardListCount(_cardDefineList.Count);
             _ui.setDeckListActive(false);
             _ui.setEditCardListActive(true);
             _ui.setEnableDrag(true);
             _ui.hideDragCard();
+            //右侧栏
+            _ui.setDeckListActive(false);
+            _ui.setEditDeckPanelActive(true);
+            _ui.setRightFilterDetialPanelActive(false);
             await updateDeckCardListUI();
         }
         #endregion
@@ -105,6 +121,7 @@ namespace Controllers
             _ui.setTypeFilters(_typeFilters);
             _ui.onTypeFilterValueChanged += onTypeFilterValueChanged;
             _ui.onSwitchRightToFilterDetailButtonClick += onSwitchRightToFilterDetailButtonClick;
+            _ui.onSwitchRightToDeckButtonClick += onSwitchRightToDeckButtonClick;
             _ui.onFilterDetailCardPoolItemToggleValueChanged += onFilterDetailCardPoolItemToggleValueChanged;
             _ui.onClickDeckListItem += onClickDeckListItem;
             _ui.onClickDeckListItemDeleteButton += onClickDeckListItemDeleteButton;
@@ -112,6 +129,7 @@ namespace Controllers
             _ui.onClickDeckListAddButton += onClickDeckListAddButton;
             _ui.onClickMasterSelectPanelItem += onMasterSelect;
             _ui.onClickSaveDeckButton += onSaveDeckClick;
+            _ui.onClickExitEditButton += onExitEditButtonClick;
             _ui.onClickExportDeckButton += onExportDeckClick;
             _ui.onClickImportDeckButton += onClickImportButton;
             _ui.onClickUploadDeckButton += onUploadDeckClick;
@@ -155,9 +173,16 @@ namespace Controllers
                 {
                     item.card.setImage(await game.card.loadExternalImage(cardSkin.imagePath));
                 }
-                int max = cardDefine.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2;
-                int current = _deck.cardList.Where(id => id == cardDefine.id).Count();
-                item.setCount(current, max);
+                if (_deck == null)
+                {
+                    item.hideCount();
+                }
+                else
+                {
+                    int max = cardDefine.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2;
+                    int current = _deck.cardList.Where(id => id == cardDefine.id).Count();
+                    item.showCount(current, max);
+                }
             }
         }
         private async void onStartDragCardListItem(int index)
@@ -210,46 +235,72 @@ namespace Controllers
             else
                 _ui.showMessage(errorTip);
         }
-        private void onSortTypeValueChanged(int index)
+        private async void onSortTypeValueChanged(int index)
         {
             _sortType = index;
-            loadCardListThenFilterAndSort();
+            await loadCardListThenFilterAndSort();
             _ui.updateCardListCount(_cardDefineList.Count);
         }
-        private void onCharacterFiltersValueChanged(bool[] value)
+        private async void onCharacterFiltersValueChanged(bool[] value)
         {
             _characterFiltersValue = value;
-            loadCardListThenFilterAndSort();
+            await loadCardListThenFilterAndSort();
             _ui.updateCardListCount(_cardDefineList.Count);
         }
-        private void onCostFiltersValueChanged(bool[] value)
+        private async void onCostFiltersValueChanged(bool[] value)
         {
             _costFiltersValue = value;
-            loadCardListThenFilterAndSort();
+            await loadCardListThenFilterAndSort();
             _ui.updateCardListCount(_cardDefineList.Count);
         }
-        private void onTypeFilterValueChanged(bool[] value)
+        private async void onTypeFilterValueChanged(bool[] value)
         {
             _typeFiltersValue = value;
-            loadCardListThenFilterAndSort();
+            await loadCardListThenFilterAndSort();
             _ui.updateCardListCount(_cardDefineList.Count);
         }
+        /// <summary>
+        /// 当玩家点击切换右侧栏到编辑扩展牌库模式
+        /// </summary>
         private async void onSwitchRightToFilterDetailButtonClick()
         {
-            _ui.switchRightPanelToFilterDetail();
+            List<(string path, CardPoolInfo info, bool isEnabled)> newCardPoolList = new List<(string path, CardPoolInfo info, bool isEnabled)>();
+
             _ui.clearFilterDetailCardPoolItems();
+            _ui.switchRightPanelModeButtonGroup(false);
+            _ui.setDeckListActive(false);
+            _ui.setEditDeckPanelActive(false);
+            _ui.setRightFilterDetialPanelActive(true);
+
             await game.card.getCardPoolInfosAsync((path, info) =>
             {
-                _ui.addFilterDetailCardPoolItem(info.cardPoolName);
-                _cardPoolList.Add((path, info, false));
+                int index = _cardPoolList.FindIndex(item => item.path == path);
+                if (index < 0)
+                {
+                    newCardPoolList.Add((path, info, false));
+                    _ui.addFilterDetailCardPoolItem(info.cardPoolName, false);
+                }
+                else
+                {
+                    newCardPoolList.Add((path, info, _cardPoolList[index].isEnabled));
+                    _ui.addFilterDetailCardPoolItem(info.cardPoolName, _cardPoolList[index].isEnabled);
+                }
             });
+            _cardPoolList = newCardPoolList;
         }
-        private void onFilterDetailCardPoolItemToggleValueChanged(int index, bool value)
+        private void onSwitchRightToDeckButtonClick()
+        {
+            _ui.switchRightPanelModeButtonGroup(true);
+            _ui.setRightFilterDetialPanelActive(false);
+            _ui.setDeckListActive(_deck == null);
+            _ui.setEditDeckPanelActive(_deck != null);
+        }
+        private async void onFilterDetailCardPoolItemToggleValueChanged(int index, bool value)
         {
             //保存当前引用的卡池文件状态
             _cardPoolList[index] = (_cardPoolList[index].path, _cardPoolList[index].info, value);
             //应用筛选条件
-            loadCardListThenFilterAndSort();
+            await loadCardListThenFilterAndSort();
             //更新卡牌列表
             _ui.updateCardListCount(_cardDefineList.Count);
         }
@@ -268,7 +319,6 @@ namespace Controllers
         /// </summary>
         private async void onClickDeckListAddButton()
         {
-            _selectableMasters = _cardDefineList.Where(c => isAvailableCharacter(c)).ToArray();
             (string name, Sprite image)[] viewData = new (string name, Sprite image)[_selectableMasters.Length];
             for (int i = 0; i < viewData.Length; i++)
             {
@@ -321,6 +371,23 @@ namespace Controllers
             else
             {
                 saveDeck();
+            }
+        }
+        /// <summary>
+        /// 当玩家点击退出编辑模式按钮
+        /// </summary>
+        private void onExitEditButtonClick()
+        {
+            if (_isDeckChanged)
+            {
+                game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(StringTable.BUILD_CONFIRM_EXIT_WITHOUT_SAVE), () =>
+                {
+                    display();
+                });
+            }
+            else
+            {
+                display();
             }
         }
         private void onClickImportButton()
@@ -452,7 +519,7 @@ namespace Controllers
             });
         }
         #endregion
-        private async void loadCardListThenFilterAndSort()
+        private async Task loadCardListThenFilterAndSort()
         {
             _cardDefineList.Clear();
             _cardSkinList.Clear();
@@ -476,14 +543,16 @@ namespace Controllers
             var cards = await game.card.getExternalCardDefinesAsync(pathList.ToArray());
             _cardDefineList.AddRange(cards.defines);
             _cardSkinList.AddRange(cards.skins);
-            //重设角色筛选选项
-            _characterFilters = new int[] { CATEGORY.CHARACTER_NEUTRAL }.Concat(_cardDefineList.Where(c => c.type == DEFINE.MASTER).Select(c => c.id)).ToArray();
-            //不显示英雄
-            _cardDefineList.RemoveAll(c => c.type == DEFINE.MASTER);
-            //不显示技能
-            _cardDefineList.RemoveAll(c => c.type == DEFINE.SKILL);
             //不显示衍生物
             _cardDefineList.RemoveAll(c => c.isToken());
+            //不显示技能
+            _cardDefineList.RemoveAll(c => c.type == DEFINE.SKILL);
+            //重设角色筛选选项
+            _characterFilters = new int[] { CATEGORY.CHARACTER_NEUTRAL }.Concat(_cardDefineList.Where(c => c.type == DEFINE.MASTER).Select(c => c.id)).ToArray();
+            //重置可选英雄
+            _selectableMasters = _cardDefineList.Where(c => isAvailableCharacter(c)).ToArray();
+            //不显示英雄
+            _cardDefineList.RemoveAll(c => c.type == DEFINE.MASTER);
             //角色
             if (_characterFilters != null && _characterFilters.Length > 0 &&
                 _characterFiltersValue != null && _characterFilters.Length == _characterFiltersValue.Length && _characterFiltersValue.Any(b => b))

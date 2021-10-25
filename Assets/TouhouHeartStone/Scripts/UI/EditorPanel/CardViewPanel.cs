@@ -81,23 +81,9 @@ namespace UI
             }
             updateDeckList(deckViewData3);
         }
-        /// <summary>
-        /// 切换右侧栏到显示所有卡池
-        /// </summary>
-        public void switchRightPanelToView()
+        public void setEditDeckPanelActive(bool value)
         {
-            setDeckListActive(true);
-            setCardListActive(false);
-            _cardPoolEditPanel.SetActive(false);
-        }
-        /// <summary>
-        /// 切换右侧栏到显示编辑卡池
-        /// </summary>
-        public void switchRightPanelToEdit()
-        {
-            setDeckListActive(false);
-            setCardListActive(true);
-            _cardPoolEditPanel.SetActive(true);
+            _cardPoolEditPanel.SetActive(value);
         }
         public void updateCurCardPoolInfo(string name, Sprite image)
         {

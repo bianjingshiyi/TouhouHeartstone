@@ -25,9 +25,14 @@ namespace UI
         /// </summary>
         /// <param name="count"></param>
         /// <param name="max"></param>
-        public void setCount(int count, int max)
+        public void showCount(int count, int max)
         {
+            _countText.gameObject.SetActive(true);
             _countText.text = count + "/" + max;
+        }
+        public void hideCount()
+        {
+            _countText.gameObject.SetActive(false);
         }
         #endregion
         #region 私有方法

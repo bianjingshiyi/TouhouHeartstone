@@ -413,6 +413,8 @@ namespace Game
         /// <returns></returns>
         public CardDefine GetCardDefine(int id)
         {
+            if (tryGetCardDefine(id, out CardDefine card))
+                return card;
             return defineDic.ContainsKey(id) ? defineDic[id] : null;
         }
         /// <summary>
@@ -437,6 +439,8 @@ namespace Game
         /// <returns></returns>
         public CardSkinData getSkin(int id)
         {
+            if (tryGetExternalSkin(id, out CardSkinData skin))
+                return skin;
             if (tempSkinDic.ContainsKey(id))
                 return tempSkinDic[id];
             if (skinDic.ContainsKey(id))

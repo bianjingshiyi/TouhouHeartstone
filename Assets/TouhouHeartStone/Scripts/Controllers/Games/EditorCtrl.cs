@@ -24,7 +24,9 @@ namespace Controllers
             if (switchToView)
             {
                 //牌库浏览模式
-                _ui.switchRightPanelToView();
+                _ui.setCardListActive(false);
+                _ui.setDeckListActive(true);
+                _ui.setEditDeckPanelActive(false);
                 if (reloadCardPoolInfos)
                 {
                     //重新加载所有牌库信息
@@ -41,7 +43,9 @@ namespace Controllers
             else
             {
                 //牌库编辑模式
-                _ui.switchRightPanelToEdit();
+                _ui.setCardListActive(true);
+                _ui.setDeckListActive(false);
+                _ui.setEditDeckPanelActive(true);
                 //设置当前牌库
                 if (0 <= cardPoolIndex && cardPoolIndex < _cardPoolInfoList.Count)
                 {
@@ -172,7 +176,9 @@ namespace Controllers
         /// </summary>
         void onClickAddCardPoolButton()
         {
-            _ui.switchRightPanelToEdit();
+            _ui.setCardListActive(true);
+            _ui.setDeckListActive(false);
+            _ui.setEditDeckPanelActive(true);
             _curCardPoolPath = null;
             _curCardPoolInfo = new CardPoolInfo();
             _cardPoolInfoList.Add(_curCardPoolInfo);
@@ -360,7 +366,9 @@ namespace Controllers
             _cardDefineList.Clear();
             _cardSkinList.Clear();
             actionNodeGraphInfoList.Clear();
-            _ui.switchRightPanelToView();
+            _ui.setCardListActive(false);
+            _ui.setDeckListActive(true);
+            _ui.setEditDeckPanelActive(false);
         }
         private string allocCardPoolPath(CardPoolInfo cardPool)
         {

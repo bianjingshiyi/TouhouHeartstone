@@ -29,19 +29,14 @@ namespace UI
         {
             _enableDrag = value;
         }
-        public void switchRightPanelToDeck()
+        public void setRightFilterDetialPanelActive(bool value)
         {
-            _switchRightToFilterButton.gameObject.SetActive(true);
-            _switchRightToDeckButton.gameObject.SetActive(false);
-            _deckRightPanel.SetActive(true);
-            _filterDetailRightPanel.SetActive(false);
+            _filterDetailRightPanel.SetActive(value);
         }
-        public void switchRightPanelToFilterDetail()
+        public void switchRightPanelModeButtonGroup(bool isToEditExternalCardPool)
         {
-            _switchRightToFilterButton.gameObject.SetActive(false);
-            _switchRightToDeckButton.gameObject.SetActive(true);
-            _deckRightPanel.SetActive(false);
-            _filterDetailRightPanel.SetActive(true);
+            _switchRightToDeckButton.gameObject.SetActive(!isToEditExternalCardPool);
+            _switchRightToFilterButton.gameObject.SetActive(isToEditExternalCardPool);
         }
         public void setSortTypes(string[] sortTypes)
         {
@@ -79,12 +74,14 @@ namespace UI
         {
             _typeFilterDropdown.SetValueWithoutNotify(value);
         }
-        public void addFilterDetailCardPoolItem(string cardPoolName)
+        public void addFilterDetailCardPoolItem(string cardPoolName, bool value)
         {
             RectTransform itemRect = Instantiate(_filterDetailCardPoolItemTemplate, _filterDetailCardPoolItemRoot);
+            _filterDetailCardPoolItemList.Add(itemRect);
             itemRect.gameObject.SetActive(true);
             BuildFilterDetailCardPoolItem item = itemRect.GetComponent<BuildFilterDetailCardPoolItem>();
             item.setName(cardPoolName);
+            item.setValue(value);
             item.onValueChanged += onFilterDetialCardPoolItemToggleValueChangedCallback;
         }
         public void clearFilterDetailCardPoolItems()
@@ -147,10 +144,6 @@ namespace UI
         protected override void Awake()
         {
             base.Awake();
-            BackButtonBlackIcon.asButton.onClick.AddListener(() =>
-            {
-                uiModeSwitch(true);
-            });
 
             HintMessageText.gameObject.SetActive(false);
             setLoadingUIActive(false);
@@ -159,13 +152,18 @@ namespace UI
             _costFilterDropdown.onValueChanged.AddListener(onCostFilterValueChangedCallback);
             _typeFilterDropdown.onValueChanged.AddListener(onTypeFilterValueChangedCallback);
             _sortDropdown.onValueChanged.AddListener(onSortTypeValueChangedCallback);
-
             _switchRightToDeckButton.onClick.AddListener(onSwitchRightToDeckButtonClickCallback);
             _switchRightToFilterButton.onClick.AddListener(onSwitchRightToFilterDetailButtonClickCallback);
+
             _exportDeckButton.onClick.AddListener(onClickExportDeckButtonCallback);
+            _exitEditButton.onClick.AddListener(onClickExitEditButtonCallback);
             _importDeckButton.onClick.AddListener(onClickImportDeckButtonCallback);
             _uploadDeckButton.onClick.AddListener(onClickUploadDeckButtonCallback);
             _downloadDeckButton.onClick.AddListener(onClickDownloadDeckButtonCallback);
+            if (_filterDetailCardPoolItemTemplate.transform.parent == _filterDetailCardPoolItemRoot)
+            {
+                _filterDetailCardPoolItemTemplate.gameObject.SetActive(false);
+            }
         }
         #endregion
         #region 事件回调
@@ -332,6 +330,10 @@ namespace UI
         {
             onClickExportDeckButton?.Invoke();
         }
+        private void onClickExitEditButtonCallback()
+        {
+            onClickExitEditButton?.Invoke();
+        }
         private void onClickImportDeckButtonCallback()
         {
             onClickImportDeckButton?.Invoke();
@@ -370,6 +372,7 @@ namespace UI
             remove { _masterSelectionPanel.onClickItem -= value; }
         }
         public event Action onClickExportDeckButton;
+        public event Action onClickExitEditButton;
         public event Action onClickImportDeckButton;
         public event Action onClickDownloadDeckButton;
         public event Action onClickUploadDeckButton;
@@ -516,8 +519,6 @@ namespace UI
         [SerializeField]
         Button _switchRightToFilterButton;
         [SerializeField]
-        GameObject _deckRightPanel;
-        [SerializeField]
         RectTransform _deckListViewportRect;
         [SerializeField]
         GameObject _filterDetailRightPanel;
@@ -548,6 +549,8 @@ namespace UI
         GameObject _editCardListRightPanel;
         [SerializeField]
         MasterCardSelection _masterSelectionPanel;
+        [SerializeField]
+        Button _exitEditButton;
         [SerializeField]
         Button _exportDeckButton;
         [SerializeField]

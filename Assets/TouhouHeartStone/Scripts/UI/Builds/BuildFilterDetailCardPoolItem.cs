@@ -10,6 +10,10 @@ namespace UI
         {
             _nameText.text = name;
         }
+        public void setValue(bool value)
+        {
+            _toggle.SetIsOnWithoutNotify(value);
+        }
         protected void Awake()
         {
             _toggle.onValueChanged.AddListener(onToggleValueChanged);
