@@ -27,12 +27,18 @@ namespace UI
         /// <param name="max"></param>
         public void showCount(int count, int max)
         {
-            _countText.gameObject.SetActive(true);
+            if (_countGameObject == null)
+                return;
+            if (_countText == null)
+                return;
+            _countGameObject.SetActive(true);
             _countText.text = count + "/" + max;
         }
         public void hideCount()
         {
-            _countText.gameObject.SetActive(false);
+            if (_countGameObject == null)
+                return;
+            _countGameObject.SetActive(false);
         }
         #endregion
         #region 私有方法
@@ -77,6 +83,8 @@ namespace UI
         Button _newCardButton;
         [SerializeField]
         Button _button;
+        [SerializeField]
+        GameObject _countGameObject;
         [SerializeField]
         Text _countText;
         #endregion

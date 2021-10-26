@@ -56,5 +56,44 @@ namespace TouhouHeartstone
                 return define.getProp<bool>(DEFINE.ISTOKEN);
             }
         }
+        /// <summary>
+        /// 卡牌Id的符号位为负表示它是外部卡牌
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        public static bool isExternalCard(int cardId)
+        {
+            return cardId < 0;
+        }
+        public static bool isExternalCard(this CardDefine card)
+        {
+            return isExternalCard(card.id);
+        }
+        /// <summary>
+        /// 通过位运算获取卡牌Id中的卡池Id。卡池Id的掩码为0x7FFF0000
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        public static int getCardPoolId(int cardId)
+        {
+            return cardId << 1 >> 17;
+        }
+        public static int getCardPoolId(this CardDefine card)
+        {
+            return getCardPoolId(card.id);
+        }
+        /// <summary>
+        /// 通过位运算获得卡牌Id中卡牌序号。卡牌序号的掩码为0x0000FFFF
+        /// </summary>
+        /// <param name="cardId">采用符号位表示是否为外来，0x7FFF0000作为卡池掩码的卡牌Id</param>
+        /// <returns></returns>
+        public static int getCardNumber(int cardId)
+        {
+            return cardId << 16 >> 16;
+        }
+        public static int getCardNumber(this CardDefine card)
+        {
+            return getCardNumber(card.id);
+        }
     }
 }

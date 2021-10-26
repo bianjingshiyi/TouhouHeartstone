@@ -16,14 +16,17 @@ namespace UI
         {
             _nameText.text = name;
             _image.sprite = sprite;
-            if (count > 0)
+            if (_numberText != null)
             {
-                _numberText.gameObject.SetActive(true);
-                _numberText.text = count.ToString();
-            }
-            else
-            {
-                _numberText.gameObject.SetActive(false);
+                if (count > 0)
+                {
+                    _numberText.gameObject.SetActive(true);
+                    _numberText.text = count.ToString();
+                }
+                else
+                {
+                    _numberText.gameObject.SetActive(false);
+                }
             }
         }
         #endregion

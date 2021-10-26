@@ -13,8 +13,14 @@ namespace Game
     partial class CardManager
     {
         #region 公有方法
-        public async Task getCardPoolInfosAsync(Action<string, CardPoolInfo> onCardPoolInfoRead)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="onCardPoolInfoRead"></param>
+        /// <returns>Key为路径，Value为信息</returns>
+        public async Task<Dictionary<string, CardPoolInfo>> getCardPoolInfosAsync(Action<string, CardPoolInfo> onCardPoolInfoRead = null)
         {
+            Dictionary<string, CardPoolInfo> dict = new Dictionary<string, CardPoolInfo>();
             var files = game.fileManager.getFiles(CARDPOOLS_DIR_NAME, "*.ddcp", true);
             for (int i = 0; i < files.Length; i++)
             {
@@ -22,8 +28,11 @@ namespace Game
                 string[] lines = await game.fileManager.readTextFile(path, lineCount: 1);
                 if (lines == null || lines.Length < 1)
                     continue;
-                onCardPoolInfoRead?.Invoke(files[i], JsonHelper.fromJson<CardPoolInfo>(lines[0]));
+                CardPoolInfo cardPool = JsonHelper.fromJson<CardPoolInfo>(lines[0]);
+                dict.Add(files[i], cardPool);
+                onCardPoolInfoRead?.Invoke(files[i], cardPool);
             }
+            return dict;
         }
         public void addExternalCardPool(int cardPoolId)
         {
@@ -86,7 +95,7 @@ namespace Game
             _externalCardDefineDict[cardPoolId].Add(cardDefine);
             _externalCardSkinDict[cardPoolId].Add(cardSkin);
         }
-        public bool tryGetCardDefine(int cardId, out CardDefine card)
+        public bool tryGetExternalCardDefine(int cardId, out CardDefine card)
         {
             card = null;
             foreach (var pair in _externalCardDefineDict)

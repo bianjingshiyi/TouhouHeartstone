@@ -41,11 +41,4 @@ namespace UI
         }
         #endregion
     }
-    [Serializable]
-    public class CardPoolInfo
-    {
-        public int cardPoolId;
-        public string cardPoolName;
-        public string imageResPath;
-    }
 }

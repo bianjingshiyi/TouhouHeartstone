@@ -206,10 +206,6 @@ namespace UI
         /// </summary>
         public event Action onClickDeckListAddButton;
         /// <summary>
-        /// 当点击卡池列表项，参数为列表项索引
-        /// </summary>
-        public event Action<int> onClickCardPoolListItem;
-        /// <summary>
         /// 当点击保存卡池按钮
         /// </summary>
         public event Action onClickSaveDeckButton;

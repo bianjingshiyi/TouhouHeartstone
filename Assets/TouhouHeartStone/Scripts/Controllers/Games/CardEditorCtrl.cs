@@ -52,12 +52,13 @@ namespace Controllers
         /// <summary>
         /// 打开一张卡片进行编辑
         /// </summary>
-        public void displayCard(CardDefine cardDefine)
+        public void display(CardDefine cardDefine)
         {
             gameObject.SetActive(true);
             _cardDefine = cardDefine;
             updateSkinNames();
             setCurSkinIndex(0);
+            _ui.setId(_cardDefine.id);
             _ui.setType(Array.IndexOf(_types, _cardDefine.type));
             _ui.setCost(_cardDefine.getProp<int>(DEFINE.COST).ToString());
             _ui.setAttack(_cardDefine.getProp<int>(DEFINE.ATTACK).ToString());

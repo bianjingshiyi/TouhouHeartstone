@@ -1470,6 +1470,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _nameText: {fileID: 1326660416270515369}
   _image: {fileID: 1326660417840660628}
+  _numberText: {fileID: 0}
 --- !u!1 &1326660416723481988
 GameObject:
   m_ObjectHideFlags: 0
@@ -2071,6 +2072,7 @@ MonoBehaviour:
   _card: {fileID: 9037733212166598137}
   _newCardButton: {fileID: 2012293154811624765}
   _button: {fileID: 5620114689684088457}
+  _countText: {fileID: 0}
 --- !u!114 &5620114689684088457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2245,22 +2247,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _returnButton: {fileID: 8948504653524540086}
+  _cardPoolCardListRoot: {fileID: 856980106}
+  _cardPoolCardListItemTemplate: {fileID: 1326660416487321779}
+  _cardPoolCardItemList: []
+  _cardList: {fileID: 1310619565098722336}
+  _cardListLayoutGroup: {fileID: 4481729884227224237}
   _deckList: {fileID: 510947736}
   _deckListRoot: {fileID: 2025688739}
   _deckListItemTemplate: {fileID: 5062842280351447335}
   _deckItemList: []
   _addCardPoolButton: {fileID: 1550916871092358403}
   _cardPoolEditPanel: {fileID: 1163391249}
-  _cardPoolCardListRoot: {fileID: 856980106}
-  _cardPoolCardListItemTemplate: {fileID: 1326660416487321779}
-  _cardPoolCardItemList: []
   _saveCardPoolButton: {fileID: 1135144367208604448}
   _returnToCardPoolViewButton: {fileID: 1135144367877548246}
   _deleteCurCardPoolButton: {fileID: 5122350443120217039}
   _curCardPoolNameText: {fileID: 8781181965859790952}
   _curCardPoolImage: {fileID: 3728002604266653670}
-  _cardList: {fileID: 1310619565098722336}
-  _cardListLayoutGroup: {fileID: 4481729884227224237}
 --- !u!114 &2633333649658191229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3263,7 +3265,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8013433220169378468, guid: d3d9a315a19a75945bb48bfc666fc1b8, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: d3d9a315a19a75945bb48bfc666fc1b8, type: 3}
 --- !u!224 &7923023550863140228 stripped
 RectTransform:

@@ -37,7 +37,7 @@ namespace Controllers
                 //TODO:角色过滤器
                 _ui.setCharacterFilters(new string[]
                 {
-                game.langManager.getString(StringTable.CARDVIEW_CHARACTER_NEUTRAL)
+                    game.langManager.getString(StringTable.CARDVIEW_CHARACTER_NEUTRAL)
                 });
             }
             else
@@ -98,7 +98,7 @@ namespace Controllers
                 _ui = GetComponentInChildren<EditorPanel>();
             }
             _ui.onClickReturnButton += onClickReturnButton;
-            _ui.onClickCardPoolListItem += onClickCardPoolListItem;
+            _ui.onClickDeckListItem += onClickCardPoolListItem;
             _ui.onUpdateCardListItem += onUpdateCardListItem;
             _ui.onClickCardListItem += onClickCardListItem;
             _ui.onClickDeckListItemDeleteButton += onClickDeleteCardPoolButton;
@@ -153,7 +153,7 @@ namespace Controllers
         /// </summary>
         /// <param name="index"></param>
         /// <param name="item"></param>
-        async void onUpdateCardListItem(int index, RectTransform item)
+        private async void onUpdateCardListItem(int index, RectTransform item)
         {
             EditorCardListItem cardListItem = item.GetComponentInChildren<EditorCardListItem>();
             if (index < _cardDefineList.Count)
@@ -180,7 +180,10 @@ namespace Controllers
             _ui.setDeckListActive(false);
             _ui.setEditDeckPanelActive(true);
             _curCardPoolPath = null;
-            _curCardPoolInfo = new CardPoolInfo();
+            _curCardPoolInfo = new CardPoolInfo()
+            {
+                cardPoolId = allocCardPoolId()
+            };
             _cardPoolInfoList.Add(_curCardPoolInfo);
             game.card.addExternalCardPool(_curCardPoolInfo.cardPoolId);
             _curCardPoolInfo.cardPoolName = "新建卡组";
@@ -195,26 +198,25 @@ namespace Controllers
         /// 当卡牌列表被点击，打开卡牌编辑器，如果是新建卡牌则新建卡牌并打开
         /// </summary>
         /// <param name="index"></param>
-        void onClickCardListItem(int index)
+        private void onClickCardListItem(int index)
         {
             if (index < _cardDefineList.Count)
             {
                 CardDefine cardDefine = _cardDefineList[index];
-                scene.cardEditor.displayCard(cardDefine);
+                scene.cardEditor.display(cardDefine);
             }
             else
             {
                 //新建卡牌
-                CardDefine newCardDefine = new CardDefine();
-                newCardDefine.type = DEFINE.SERVANT;
+                CardDefine newCardDefine = new CardDefine(allocCardId(), DEFINE.SERVANT);
                 _cardDefineList.Add(newCardDefine);
                 CardSkinData newCardSkin = new CardSkinData();
                 _cardSkinList.Add(newCardSkin);
                 game.card.addExternalCard(_curCardPoolInfo.cardPoolId, newCardDefine, newCardSkin);
-                scene.cardEditor.displayCard(newCardDefine);
+                scene.cardEditor.display(newCardDefine);
             }
         }
-        void onChangeSortTypeValue(int index)
+        private void onChangeSortTypeValue(int index)
         {
             _sortType = (CardSortType)index;
         }
@@ -270,7 +272,7 @@ namespace Controllers
         /// </summary>
         void onClickDeleteCurCardPoolButton()
         {
-            _ui.findInstance<UIDialog>().ShowConfirm(null, game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
+            game.ui.dialog.ShowConfirm(null, game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
             {
                 if (!string.IsNullOrEmpty(_curCardPoolPath))
                 {
@@ -301,16 +303,22 @@ namespace Controllers
             var lines = await game.fileManager.readTextFiles(files);
             for (int i = 0; i < files.Length; i++)
             {
+                CardPoolInfo cardPool = JsonHelper.fromJson<CardPoolInfo>(lines[i][0]);
+                int index = _cardPoolInfoList.FindIndex(p => p.cardPoolId == cardPool.cardPoolId);
+                if (index >= 0)
+                {
+                    Debug.LogWarning("无法加载卡池" + files[i] + "，因为" + _cardPoolPathList[i] + "拥有与其相同的Id" + cardPool.cardPoolId);
+                    continue;
+                }
                 _cardPoolPathList.Add(files[i]);
-                _cardPoolInfoList.Add(JsonHelper.fromJson<CardPoolInfo>(lines[i][0]));
+                _cardPoolInfoList.Add(cardPool);
             }
-            ////测试用数据
-            //_cardPoolPaths[files.Length] = "Builtin.ddcp";
-            //_cardPoolInfos[files.Length] = new CardPoolInfo()
-            //{
-            //    cardPoolName = "Test",
-            //    imageResPath = "Textures/Patchouli/AgniShine.jpg"
-            //};
+            //尝试修复没有Id的卡池
+            for (int i = 0; i < _cardPoolInfoList.Count; i++)
+            {
+                if (_cardPoolInfoList[i].cardPoolId == 0)
+                    _cardPoolInfoList[i].cardPoolId = allocCardPoolId();
+            }
         }
         /// <summary>
         /// 读取卡池文件中的所有卡牌
@@ -318,7 +326,7 @@ namespace Controllers
         /// <param name="cardPoolPath">卡池文件相对路径</param>
         /// <returns></returns>
         /// <exception cref="IOException">当读取文件失败的时候抛出这个异常</exception>
-        public async Task readCardPoolAsync(string cardPoolPath)
+        private async Task readCardPoolAsync(string cardPoolPath)
         {
             _cardDefineList.Clear();
             _cardSkinList.Clear();
@@ -327,6 +335,20 @@ namespace Controllers
             _cardSkinList.AddRange(cards.skins);
             actionNodeGraphInfoList.Clear();
             actionNodeGraphInfoList.AddRange(cards.actionGraphInfos);
+            //尝试修复受损的数据
+            for (int i = 0; i < _cardDefineList.Count; i++)
+            {
+                if (_cardDefineList[i].id >= 0)
+                {
+                    //重新分配丢失的卡牌Id
+                    int id = allocCardId();
+                    foreach (var skin in _cardSkinList.Where(s => s.id == _cardDefineList[i].id))
+                    {
+                        skin.id = id;
+                    }
+                    _cardDefineList[i].id = id;
+                }
+            }
         }
         /// <summary>
         /// 将卡池保存到相对路径下
@@ -337,7 +359,7 @@ namespace Controllers
         /// <returns></returns>
         public Task saveCardPoolAsync(string cardPoolPath, CardPoolInfo info, CardDefine[] cardDefines)
         {
-            return app.fileManager.saveFile(CARDPOOLS_DIR_NAME + "/" + cardPoolPath, new string[]
+            return game.fileManager.saveFile(CARDPOOLS_DIR_NAME + "/" + cardPoolPath, new string[]
             {
                 info.toJson(),
                 cardDefines.toJson()
@@ -374,6 +396,27 @@ namespace Controllers
         {
             return CARDPOOLS_DIR_NAME + "/" + cardPool.cardPoolName + ".ddcp";
         }
+        private int allocCardPoolId()
+        {
+            for (int i = 1; i < 0x7FFF; i++)
+            {
+                if (_cardPoolInfoList.Exists(p => p.cardPoolId == i))
+                    continue;
+                return i;
+            }
+            throw new OverflowException("卡池数量已达上限");
+        }
+        private int allocCardId()
+        {
+            for (int i = 1; i < 0xFFFF; i++)
+            {
+                int cardId = 1 << 31 | _curCardPoolInfo.cardPoolId << 16 | i;
+                if (_cardDefineList.Exists(c => c.id == cardId))
+                    continue;
+                return cardId;
+            }
+            throw new OverflowException("卡牌数量已达上限");
+        }
         /// <summary>
         /// 更新卡池列表UI
         /// </summary>
@@ -389,10 +432,6 @@ namespace Controllers
             _ui.updateDeckList(viewData);
         }
         #endregion
-        [Obsolete("使用game属性替代")]
-        public IAppManager app { get; }
-        [Obsolete("使用game属性替代")]
-        public MainCtrl main { get; }
         public List<ActionNodeGraphInfo> actionNodeGraphInfoList { get; } = new List<ActionNodeGraphInfo>();
         EditorPanel _ui;
         List<string> _cardPoolPathList = new List<string>();
@@ -402,8 +441,6 @@ namespace Controllers
         readonly List<CardDefine> _cardDefineList = new List<CardDefine>();
         readonly List<CardSkinData> _cardSkinList = new List<CardSkinData>();
         CardSortType _sortType;
-        int[] _masterIds;
-        int _masterFilterIndex;
         /// <summary>
         /// 卡牌排序类型
         /// </summary>
@@ -427,5 +464,12 @@ namespace Controllers
             rareDescending
         }
         const string CARDPOOLS_DIR_NAME = "CardPools";
+    }
+    [Serializable]
+    public class CardPoolInfo
+    {
+        public int cardPoolId;
+        public string cardPoolName;
+        public string imageResPath;
     }
 }

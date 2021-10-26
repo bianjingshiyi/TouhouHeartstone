@@ -1106,6 +1106,7 @@ MonoBehaviour:
   _card: {fileID: 2687843560837955494}
   _newCardButton: {fileID: 0}
   _button: {fileID: 7254502652492761602}
+  _countGameObject: {fileID: 8838236063750279699}
   _countText: {fileID: 764161155441781529}
 --- !u!1 &3879115452841379861
 GameObject:

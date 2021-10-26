@@ -413,7 +413,7 @@ namespace Game
         /// <returns></returns>
         public CardDefine GetCardDefine(int id)
         {
-            if (tryGetCardDefine(id, out CardDefine card))
+            if (tryGetExternalCardDefine(id, out CardDefine card))
                 return card;
             return defineDic.ContainsKey(id) ? defineDic[id] : null;
         }

@@ -74,27 +74,44 @@ namespace UI
         {
             _typeFilterDropdown.SetValueWithoutNotify(value);
         }
-        public void addFilterDetailCardPoolItem(string cardPoolName, bool value)
+        //public void addFilterDetailCardPoolItem(string cardPoolName, bool value)
+        //{
+        //    RectTransform itemRect = Instantiate(_filterDetailCardPoolItemTemplate, _filterDetailCardPoolItemRoot);
+        //    _filterDetailCardPoolItemList.Add(itemRect);
+        //    itemRect.gameObject.SetActive(true);
+        //    BuildFilterDetailCardPoolItem item = itemRect.GetComponent<BuildFilterDetailCardPoolItem>();
+        //    item.setName(cardPoolName);
+        //    item.setValue(value);
+        //    item.onValueChanged += onFilterDetialCardPoolItemToggleValueChangedCallback;
+        //}
+        //public void clearFilterDetailCardPoolItems()
+        //{
+        //    for (int i = 0; i < _filterDetailCardPoolItemList.Count; i++)
+        //    {
+        //        if (_filterDetailCardPoolItemList[i] == null)
+        //            continue;
+        //        BuildFilterDetailCardPoolItem item = _filterDetailCardPoolItemList[i].GetComponent<BuildFilterDetailCardPoolItem>();
+        //        item.onValueChanged -= onFilterDetialCardPoolItemToggleValueChangedCallback;
+        //        Destroy(_filterDetailCardPoolItemList[i].gameObject);
+        //    }
+        //    _filterDetailCardPoolItemList.Clear();
+        //}
+        public void updateFilterDetailCardPoolList((string name, bool value)[] viewData)
         {
-            RectTransform itemRect = Instantiate(_filterDetailCardPoolItemTemplate, _filterDetailCardPoolItemRoot);
-            _filterDetailCardPoolItemList.Add(itemRect);
-            itemRect.gameObject.SetActive(true);
-            BuildFilterDetailCardPoolItem item = itemRect.GetComponent<BuildFilterDetailCardPoolItem>();
-            item.setName(cardPoolName);
-            item.setValue(value);
-            item.onValueChanged += onFilterDetialCardPoolItemToggleValueChangedCallback;
-        }
-        public void clearFilterDetailCardPoolItems()
-        {
-            for (int i = 0; i < _filterDetailCardPoolItemList.Count; i++)
+            BJSYGameCore.UI.UIHelper.updateList(_filterDetailCardPoolItemRoot, _filterDetailCardPoolItemTemplate, _filterDetailCardPoolItemList, viewData.Length, (i, itemRect) =>
             {
-                if (_filterDetailCardPoolItemList[i] == null)
-                    continue;
-                BuildFilterDetailCardPoolItem item = _filterDetailCardPoolItemList[i].GetComponent<BuildFilterDetailCardPoolItem>();
+                BuildFilterDetailCardPoolItem item = itemRect.GetComponent<BuildFilterDetailCardPoolItem>();
+                item.setName(viewData[i].name);
+                item.setValue(viewData[i].value);
+            }, itemRect =>
+            {
+                BuildFilterDetailCardPoolItem item = itemRect.GetComponent<BuildFilterDetailCardPoolItem>();
+                item.onValueChanged += onFilterDetialCardPoolItemToggleValueChangedCallback;
+            }, itemRect =>
+            {
+                BuildFilterDetailCardPoolItem item = itemRect.GetComponent<BuildFilterDetailCardPoolItem>();
                 item.onValueChanged -= onFilterDetialCardPoolItemToggleValueChangedCallback;
-                Destroy(_filterDetailCardPoolItemList[i].gameObject);
-            }
-            _filterDetailCardPoolItemList.Clear();
+            });
         }
         public void setCharacterName(string name)
         {

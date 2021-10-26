@@ -15,11 +15,10 @@ namespace UI
 {
     public class CardEditorPanel : MonoBehaviour
     {
-        /* 这个界面通过在卡牌编辑器界面点击卡牌打开，点击背景空白区域返回。
-         * 中央的卡面UI和普通的卡面UI不一样的地方在于它可以通过点击各个数字或者文字字段打开输入框进行编辑。
-         * 右侧栏负责装一些原本卡面上不显示的其它选项。
-         * 因为种族是预定义好的字符串，所以可能会需要一个Dropdown来显示它。
-         */
+        public void setId(int id)
+        {
+            _idText.text = id.ToString();
+        }
         /// <summary>
         /// 设置皮肤切换选项
         /// </summary>
@@ -470,6 +469,8 @@ namespace UI
         public event Action onClickBackgroundButton;
         [SerializeField]
         Card _card;
+        [SerializeField]
+        Text _idText;
         [SerializeField]
         Dropdown _typeDropdown;
         [SerializeField]

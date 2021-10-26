@@ -75,6 +75,16 @@ namespace Controllers
             _characterFiltersValue = new bool[_characterFilters.Length];
             _characterFiltersValue[index] = true;
             await loadCardListThenFilterAndSort();
+            //剔除卡组中无法识别的卡牌
+            for (int i = 0; i < deck.cardList.Count; i++)
+            {
+                if (game.card.GetCardDefine(deck.cardList[i]) == null)
+                {
+                    Debug.LogWarning("卡组中存在未知卡牌" + deck.cardList[i]);
+                    deck.cardList.RemoveAt(i);
+                    i--;
+                }
+            }
 
             _ui.setCharacterFilter(_characterFiltersValue);
 
@@ -264,29 +274,17 @@ namespace Controllers
         /// </summary>
         private async void onSwitchRightToFilterDetailButtonClick()
         {
-            List<(string path, CardPoolInfo info, bool isEnabled)> newCardPoolList = new List<(string path, CardPoolInfo info, bool isEnabled)>();
-
-            _ui.clearFilterDetailCardPoolItems();
+            (string name, bool value)[] viewData = new (string name, bool value)[_cardPoolList.Count];
+            for (int i = 0; i < viewData.Length; i++)
+            {
+                viewData[i].name = _cardPoolList[i].info.cardPoolName;
+                viewData[i].value = _cardPoolList[i].isEnabled;
+            }
+            _ui.updateFilterDetailCardPoolList(viewData);
             _ui.switchRightPanelModeButtonGroup(false);
             _ui.setDeckListActive(false);
             _ui.setEditDeckPanelActive(false);
             _ui.setRightFilterDetialPanelActive(true);
-
-            await game.card.getCardPoolInfosAsync((path, info) =>
-            {
-                int index = _cardPoolList.FindIndex(item => item.path == path);
-                if (index < 0)
-                {
-                    newCardPoolList.Add((path, info, false));
-                    _ui.addFilterDetailCardPoolItem(info.cardPoolName, false);
-                }
-                else
-                {
-                    newCardPoolList.Add((path, info, _cardPoolList[index].isEnabled));
-                    _ui.addFilterDetailCardPoolItem(info.cardPoolName, _cardPoolList[index].isEnabled);
-                }
-            });
-            _cardPoolList = newCardPoolList;
         }
         private void onSwitchRightToDeckButtonClick()
         {
@@ -298,7 +296,7 @@ namespace Controllers
         private async void onFilterDetailCardPoolItemToggleValueChanged(int index, bool value)
         {
             //保存当前引用的卡池文件状态
-            _cardPoolList[index] = (_cardPoolList[index].path, _cardPoolList[index].info, value);
+            _cardPoolList[index].isEnabled = value;
             //应用筛选条件
             await loadCardListThenFilterAndSort();
             //更新卡牌列表
@@ -534,9 +532,28 @@ namespace Controllers
                     _cardSkinList.Add(skin);
             }
             //外部卡池
+            var cardPools = await game.card.getCardPoolInfosAsync();
+            foreach (var pair in cardPools)
+            {
+                int index = _cardPoolList.FindIndex(item => item.path == pair.Key);
+                if (index < 0)
+                {
+                    _cardPoolList.Add(new CardPoolRuntimeData(pair.Key, pair.Value, false));
+                }
+                else
+                {
+                    _cardPoolList[index] = new CardPoolRuntimeData(pair.Key, pair.Value, _cardPoolList[index].isEnabled);
+                }
+            }
             List<string> pathList = new List<string>();
             for (int i = 0; i < _cardPoolList.Count; i++)
             {
+                //分析一下当前卡组是否有卡牌使用到了外部卡池
+                if (isDeckContainsExternalCard(_cardPoolList[i].info.cardPoolId))
+                {
+                    //如果包含，那这个卡池一定被激活
+                    _cardPoolList[i].isEnabled = true;
+                }
                 if (_cardPoolList[i].isEnabled)
                     pathList.Add(_cardPoolList[i].path);
             }
@@ -798,6 +815,18 @@ namespace Controllers
                 }
             }
         }
+        private bool isDeckContainsExternalCard(int cardPoolId)
+        {
+            if (_deck == null)
+                return false;
+            for (int i = 0; i < _deck.cardList.Count; i++)
+            {
+                int cardId = _deck.cardList[i];
+                if (CardDefineHelper.isExternalCard(cardId) && CardDefineHelper.getCardPoolId(cardId) == cardPoolId)
+                    return true;
+            }
+            return false;
+        }
         /// <summary>
         /// 更新卡组列表UI
         /// </summary>
@@ -851,7 +880,7 @@ namespace Controllers
         CardDefine[] _selectableMasters;
         [SerializeField]
         CardDefine _dragCard;
-        List<(string path, CardPoolInfo info, bool isEnabled)> _cardPoolList = new List<(string path, CardPoolInfo info, bool isEnabled)>();
+        List<CardPoolRuntimeData> _cardPoolList = new List<CardPoolRuntimeData>();
         List<CardDefine> _cardDefineList = new List<CardDefine>();
         List<CardSkinData> _cardSkinList = new List<CardSkinData>();
         readonly string[] _sortTypes = new string[]
@@ -885,6 +914,20 @@ namespace Controllers
         const string NO_PILE_AVALIABLE = "剪贴板中没有可导入的卡组";
         [TranslateMsg]
         const string PILE_NOT_COMPLETE_EXPORT = "当前卡组不完整，无法在游戏中使用。\n是否要导出？";
+        #region 内部类
+        class CardPoolRuntimeData
+        {
+            public CardPoolRuntimeData(string path, CardPoolInfo info, bool isEnabled)
+            {
+                this.path = path;
+                this.info = info;
+                this.isEnabled = isEnabled;
+            }
+            public string path;
+            public CardPoolInfo info;
+            public bool isEnabled;
+        }
+        #endregion
     }
     public struct CardDefineRef
     {
