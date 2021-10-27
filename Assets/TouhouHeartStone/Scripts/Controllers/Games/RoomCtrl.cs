@@ -6,7 +6,8 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
-
+using Deck = TouhouHeartstone.Deck;
+using System.Linq;
 namespace Controllers
 {
     class RoomCtrl : GameObjectCtrl<MainSceneCtrl>
@@ -75,13 +76,23 @@ namespace Controllers
             await game.network.logic.AddAIPlayer();
             _ui.SetInfo(_currentRoomData);
         }
-        private void onSetPlayerDeck(int playerId, int[] deck)
+        private void onSetPlayerDeck(int playerId, int[] cardsId)
         {
             for (int i = 0; i < _currentRoomData.playerDataList.Count; i++)
             {
                 var player = _currentRoomData.playerDataList[i];
                 if (player.id == playerId)
                 {
+                    Deck deck = _currentRoomData.playerDataList[i].getDeck();
+                    if (deck == null)
+                    {
+                        deck = new Deck(cardsId[0], cardsId.Skip(1));
+                    }
+                    else
+                    {
+                        deck.masterId = cardsId[0];
+                        deck.setCards(cardsId.Skip(1));
+                    }
                     _currentRoomData.playerDataList[i].setDeck(deck);
                     if (player.type == RoomPlayerType.ai)
                     {

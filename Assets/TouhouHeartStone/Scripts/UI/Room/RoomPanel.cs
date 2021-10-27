@@ -218,7 +218,7 @@ namespace UI
         }
 
         RoomPlayerData aiPlayerData;
-        
+
         public void SetInfo(RoomData room)
         {
             roomData = room;
@@ -313,7 +313,7 @@ namespace UI
                     {
                         // 主机检查卡组是否满
                         var decks = item.getDeck();
-                        if (decks == null || decks.Length < 30)
+                        if (decks == null || decks.getCardCount() < 30)
                             startable = false;
                     }
                     else
@@ -330,7 +330,7 @@ namespace UI
                 // 判断准备状态
                 var deck = selfPlayer.getDeck();
                 StartButtonButtonBlack.Text.text = selfPlayer.getReady() ? lang._(STR_REQUEST_PREPRAE) : lang._(STR_PREPARE);
-                StartButtonButtonBlack.asButton.setSelectable(deck != null && deck.Length == 31);
+                StartButtonButtonBlack.asButton.setSelectable(deck != null && deck.masterId != 0 && deck.getCardCount() == 30);
             }
         }
 
@@ -401,7 +401,7 @@ namespace UI
             RemoveButtonBlack.asButton.onClick.AddListener(() => OnPlayerRemove?.Invoke(playerData.id));
             ViewButtonBlack.asButton.onClick.AddListener(() =>
             {
-                int[] deck = playerData.getDeck();
+                int[] deck = playerData.getDeck().toIdArray(true);
                 if (deck != null)
                     OnPlayerViewDeck?.Invoke(deck);
             });
@@ -444,7 +444,7 @@ namespace UI
             playerData = data;
             NameText.text = data.name;
 
-            int[] deck = data.getDeck();
+            int[] deck = data.getDeck()?.toIdArray(true);
 
             CheckIconImage.gameObject.SetActive(data.getReady());
             CharacterText.text = deck != null ? this.findInstance<CardManager>().getSkin(deck[0]).name : "";

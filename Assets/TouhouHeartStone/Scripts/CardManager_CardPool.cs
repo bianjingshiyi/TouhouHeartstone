@@ -90,6 +90,23 @@ namespace Game
             else
                 throw new IOException("无法读取文件" + path);
         }
+        public async Task<CardDefine[]> getExternalCardDefinesAsync(IEnumerable<int> cardPoolsId)
+        {
+            List<CardDefine> cardDefineList = new List<CardDefine>();
+            var cardPoolInfoDict = await getCardPoolInfosAsync();
+            foreach (var cardPoolId in cardPoolsId)
+            {
+                foreach (var pair in cardPoolInfoDict)
+                {
+                    if (pair.Value.cardPoolId == cardPoolId)
+                    {
+                        var result = await getExternalCardDefinesAsync(pair.Key);
+                        cardDefineList.AddRange(result.defines);
+                    }
+                }
+            }
+            return cardDefineList.ToArray();
+        }
         public void addExternalCard(int cardPoolId, CardDefine cardDefine, CardSkinData cardSkin)
         {
             _externalCardDefineDict[cardPoolId].Add(cardDefine);

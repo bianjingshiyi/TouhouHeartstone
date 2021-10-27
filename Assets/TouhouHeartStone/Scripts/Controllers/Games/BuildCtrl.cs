@@ -11,7 +11,7 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
-
+using Deck = TouhouHeartstone.Deck;
 namespace Controllers
 {
     class BuildCtrl : GameObjectCtrl<MainSceneCtrl>
@@ -78,7 +78,7 @@ namespace Controllers
             //剔除卡组中无法识别的卡牌
             for (int i = 0; i < deck.cardList.Count; i++)
             {
-                if (game.card.GetCardDefine(deck.cardList[i]) == null)
+                if (game.card.GetCardDefine(deck.cardList[i].id) == null)
                 {
                     Debug.LogWarning("卡组中存在未知卡牌" + deck.cardList[i]);
                     deck.cardList.RemoveAt(i);
@@ -189,9 +189,17 @@ namespace Controllers
                 }
                 else
                 {
-                    int max = cardDefine.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2;
-                    int current = _deck.cardList.Where(id => id == cardDefine.id).Count();
-                    item.showCount(current, max);
+                    index = _deck.cardList.FindIndex(e => e.id == cardDefine.id);
+                    if (index >= 0)
+                    {
+                        int max = cardDefine.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2;
+                        int current = _deck.cardList[index].count;
+                        item.showCount(current, max);
+                    }
+                    else
+                    {
+                        item.hideCount();
+                    }
                 }
             }
         }
@@ -220,9 +228,12 @@ namespace Controllers
         }
         private async void onStartDragDeckCardListItem(int index)
         {
-            var cards = _deck.cardList.OrderBy(id => game.card.GetCardDefine(id).getCost()).GroupBy(id => id).ToArray();
-            _dragCard = game.card.GetCardDefine(cards[index].Key);
-            _deck.cardList.Remove(cards[index].Key);
+            var cards = _deck.cardList.OrderBy(e => game.card.GetCardDefine(e.id).getCost()).ToArray();
+            _dragCard = game.card.GetCardDefine(cards[index].id);
+            //从卡组中删除一张卡牌
+            _deck.cardList[index].count--;
+            if (_deck.cardList[index].count <= 0)
+                _deck.cardList.RemoveAt(index);
             _ui.updateCardListCount(_cardDefineList.Count);
             await updateDeckCardListUI();
             CardSkinData skin = getCardSkinData(_dragCard);
@@ -424,7 +435,7 @@ namespace Controllers
                     name = deckName,
                     masterId = master,
                 };
-                copiedDeck.cardList.AddRange(cards);
+                copiedDeck.addCards(cards);
 
                 // 进入编辑模式
                 display(copiedDeck);
@@ -649,13 +660,14 @@ namespace Controllers
             _deckList.Clear();
             foreach (var deckData in game.deck.GetDecks())
             {
-                _deckList.Add(new Deck()
+                Deck deck = new Deck()
                 {
                     id = (int)deckData.ID,
                     name = deckData.Name,
                     masterId = deckData.MasterID,
-                    cardList = game.deck.GetDeckCards(deckData.ID).Values.Select(id => (int)id).ToList()
-                });
+                };
+                deck.addCards(game.deck.GetDeckCards(deckData.ID).Values.Select(id => (int)id));
+                _deckList.Add(deck);
             }
         }
         /// <summary>
@@ -709,7 +721,7 @@ namespace Controllers
                 return false;
             }
             //卡牌数量上限
-            int cardCount = _deck.cardList.Where(i => i == card.id).Count();
+            int cardCount = _deck.getCardCount(card.id);
             if (cardCount >= 2 || (card.hasKeyword(KEYWORD.UNIQUE) && cardCount >= 1))
             {
                 errorTip = game.lang._(StringTable.BUILD_TIP_CARD_MAX_COUNT);
@@ -723,7 +735,7 @@ namespace Controllers
                 return false;
             }
             // 添加卡
-            _deck.cardList.Add(card.id);
+            _deck.addCard(card.id);
             // 标记为已经修改
             _isDeckChanged = true;
             errorTip = string.Empty;
@@ -735,7 +747,7 @@ namespace Controllers
         private void saveDeck()
         {
             game.deck.ClearDeck(_deck.id);
-            foreach (var card in _deck.cardList)
+            foreach (var card in _deck.toIdArray(includeMasterCard: false))
             {
                 game.deck.AddCard(_deck.id, card);
             }
@@ -748,11 +760,7 @@ namespace Controllers
         {
             string outputString = exportStringHeader + " " + _deck.name + "\n";
 
-            List<int> cards = new List<int>(1 + _deck.cardList.Count);
-            cards.Add(_deck.masterId);
-            cards.AddRange(_deck.cardList);
-
-            outputString += game.deck.DeckToString(cards.ToArray());
+            outputString += game.deck.DeckToString(_deck.toIdArray());
             GUIUtility.systemCopyBuffer = outputString;
 
             game.ui.dialog.ShowConfirm(game.lang._(StringTable.HINT_TITLE), game.lang._(PILE_EXPORTED), null);
@@ -765,15 +773,11 @@ namespace Controllers
             List<DeckDataItem> deckToSend = new List<DeckDataItem>();
             foreach (var deck in _deckList)
             {
-                List<int> cards = new List<int>();
-                cards.Add(deck.masterId);
-                cards.AddRange(deck.cardList);
-
                 deckToSend.Add(new DeckDataItem()
                 {
                     ID = deck.id,
                     Name = deck.name,
-                    Content = game.deck.DeckToString(cards.ToArray())
+                    Content = game.deck.DeckToString(deck.toIdArray())
                 });
             }
 
@@ -821,7 +825,7 @@ namespace Controllers
                 return false;
             for (int i = 0; i < _deck.cardList.Count; i++)
             {
-                int cardId = _deck.cardList[i];
+                int cardId = _deck.cardList[i].id;
                 if (CardDefineHelper.isExternalCard(cardId) && CardDefineHelper.getCardPoolId(cardId) == cardPoolId)
                     return true;
             }
@@ -845,13 +849,13 @@ namespace Controllers
         private async Task updateDeckCardListUI()
         {
             _ui.setDeckCardCount(_deck.cardList.Count, _deckMaxSize);
-            var cards = _deck.cardList.OrderBy(id => game.card.GetCardDefine(id).getCost()).GroupBy(id => id).ToArray();
-            (string name, Sprite image, int count)[] deckCardList = new (string name, Sprite image, int count)[cards.Length];
+            var cards = _deck.cardList.OrderBy(e => game.card.GetCardDefine(e.id).getCost()).ToArray();
+            (string name, Sprite image, int count)[] deckCardList = new (string name, Sprite image, int count)[_deck.cardList.Count];
             for (int i = 0; i < deckCardList.Length; i++)
             {
-                deckCardList[i].name = game.card.getSkin(cards[i].Key).name;
-                deckCardList[i].image = await game.card.loadCardImage(cards[i].Key);
-                deckCardList[i].count = cards[i].Count();
+                deckCardList[i].name = game.card.getSkin(cards[i].id).name;
+                deckCardList[i].image = await game.card.loadCardImage(cards[i].id);
+                deckCardList[i].count = cards[i].count;
             }
             _ui.updateDeckCardList(deckCardList);
         }
@@ -928,18 +932,5 @@ namespace Controllers
             public bool isEnabled;
         }
         #endregion
-    }
-    public struct CardDefineRef
-    {
-        public int poolId;
-        public int cardId;
-    }
-    [Serializable]
-    public class Deck
-    {
-        public int id;
-        public string name;
-        public int masterId;
-        public List<int> cardList = new List<int>();
     }
 }

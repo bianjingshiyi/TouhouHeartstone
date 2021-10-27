@@ -72,15 +72,15 @@ namespace Game
         public const string Extension = "zgrep";
         [SerializeField]
         Replay _currentReplay;
-        public void Play(string fileName)
+        public async void Play(string fileName)
         {
             string str = File.ReadAllText(Path.Combine(ReplayFolder(), fileName));
             Replay readRep = BsonSerializer.Deserialize(str, typeof(Replay)) as Replay;
-            getManager<GameManager>().startReplayGame(readRep);
 #if UNITY_EDITOR
             _currentReplay = readRep;
             _currentReplay.showContents();
 #endif
+            await getManager<GameManager>().startReplayGame(readRep);
         }
     }
 

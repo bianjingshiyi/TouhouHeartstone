@@ -10,9 +10,9 @@ namespace Game
 {
     public partial class GameManager
     {
-        public Task startReplayGame(ReplayData replay)
+        public async Task startReplayGame(ReplayData replay)
         {
-            CardEngine game = createGame(replay.option, replay.players.Select(p =>
+            CardEngine game = await createGame(replay.option, replay.players.Select(p =>
             {
                 RoomPlayerInfo player = new RoomPlayerInfo();
                 player.RoomID = p.id;
@@ -25,7 +25,7 @@ namespace Game
             displayGameUI(game, localPlayer);
             mode = GameMode.replay;
             //game.answers.onRequest += onReplayGameRequest;
-            return runGame(game, false);
+            await runGame(game, false);
         }
         void onReplayGameUpdate()
         {

@@ -344,7 +344,7 @@ namespace TouhouHeartstone
 
     public partial class HearthStoneRule : Rule
     {
-        public HearthStoneRule(CardDefine[] defines) : base(defines)
+        public HearthStoneRule(IEnumerable<CardDefine> defines) : base(defines)
         {
         }
 
@@ -354,8 +354,8 @@ namespace TouhouHeartstone
             var option = getOption(game);
             foreach (var playerInfo in players)
             {
-                var deck = playerInfo.getProp<int[]>("deck");
-                createPlayer(game, playerInfo.ID, playerInfo.Name, deck[0], deck.Skip(1).ToArray());
+                var deck = playerInfo.getProp<Deck>("deck");
+                createPlayer(game, playerInfo.ID, playerInfo.Name, deck.masterId, deck.toIdArray(false));
             }
             return Task.CompletedTask;
         }

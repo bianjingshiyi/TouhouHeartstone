@@ -15,7 +15,8 @@ using Game.Replays;
 using Controllers;
 using MongoDB.Bson.Serialization;
 using System.IO;
-
+using System.Linq;
+using Deck = TouhouHeartstone.Deck;
 namespace Game
 {
     partial class MainCtrl : IController<MainCtrl>
@@ -363,13 +364,23 @@ namespace Game
                 network.logic.AddAIPlayer();
                 main.RoomPanel.SetInfo(currentRoomData);
             };
-            main.RoomPanel.onSetPlayerDeck += (id, deck) =>
+            main.RoomPanel.onSetPlayerDeck += (id, cardsId) =>
             {
                 for (int i = 0; i < currentRoomData.playerDataList.Count; i++)
                 {
                     var player = currentRoomData.playerDataList[i];
                     if (player.id == id)
                     {
+                        Deck deck = currentRoomData.playerDataList[i].getDeck();
+                        if (deck != null)
+                        {
+                            deck.masterId = cardsId[0];
+                            deck.setCards(cardsId.Skip(1));
+                        }
+                        else
+                        {
+                            deck = new Deck(cardsId[0], cardsId.Skip(1));
+                        }
                         currentRoomData.playerDataList[i].setDeck(deck);
                         if (player.type == RoomPlayerType.ai)
                         {

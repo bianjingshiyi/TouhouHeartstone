@@ -19,7 +19,7 @@ using System.Text.RegularExpressions;
 using NitoriNetwork.Common;
 using MukioI18n;
 using MongoDB.Bson;
-
+using Deck = TouhouHeartstone.Deck;
 namespace Game
 {
     public partial class GameManager : Manager
@@ -116,10 +116,10 @@ namespace Game
         }
         #region 外部接口
         [Obsolete]
-        public Task startLocalGame(RoomInfo room)
+        public async Task startLocalGame(RoomInfo room)
         {
             //创建游戏
-            CardEngine game = createGame(room);
+            CardEngine game = await createGame(room);
             //初始化本地玩家，AI，UI
             foreach (var player in game.players)
             {
@@ -139,12 +139,12 @@ namespace Game
             }
             mode = GameMode.local;
             //开始游戏
-            return runGame(game);
+            await runGame(game);
         }
-        public Task startLocalGame(RoomData room)
+        public async Task startLocalGame(RoomData room)
         {
             //创建游戏
-            CardEngine game = createGame(room);
+            CardEngine game = await createGame(room);
             //初始化本地玩家，AI，UI
             foreach (var player in game.players)
             {
@@ -164,7 +164,7 @@ namespace Game
             }
             mode = GameMode.local;
             //开始游戏
-            return runGame(game);
+            await runGame(game);
         }
 
         [Obsolete("Use nwLogic", true)]
@@ -200,10 +200,10 @@ namespace Game
         {
             return startRemoteGame(nwLogic, room, headless);
         }
-        public Task startRemoteGame(IClient client, RoomData room, bool headless = false)
+        public async Task startRemoteGame(IClient client, RoomData room, bool headless = false)
         {
             //创建游戏
-            CardEngine game = createGame(room);
+            CardEngine game = await createGame(room);
             //将游戏与网络连接
             game.answers.client = client;
             //初始化本地玩家与UI
@@ -217,53 +217,33 @@ namespace Game
                 }
             }
             mode = GameMode.remote;
-            return runGame(game);
+            await runGame(game);
         }
-        public Task startReplayGame(Replay rep)
+        public async Task startReplayGame(Replay rep)
         {
-            CardEngine game = createGame(rep.option, rep.players);
+            CardEngine game = await createGame(rep.option, rep.players);
             new ReplayPlayer(rep, game);
             localPlayer = game.players.First();
             displayGameUI(game, localPlayer);
             mode = GameMode.replay;
-            return runGame(game);
+            await runGame(game);
         }
         public event Action onGameStart;
         #endregion
         #region 内部功能
         [Obsolete]
-        CardEngine createGame(RoomInfo room)
+        private Task<CardEngine> createGame(RoomInfo room)
         {
             if (room._persistDataList.Count > room.runtimeDic.Count)
                 room.deserialize();
             return createGame(room.getOption(), room.playerList);
         }
-        CardEngine createGame(RoomData room)
+        private Task<CardEngine> createGame(RoomData room)
         {
             return createGame(room.getOption(), room.playerDataList);
         }
-        CardEngine createGame(HearthstoneOption option, IEnumerable<IRoomPlayer> playerList)
+        private async Task<CardEngine> createGame(HearthstoneOption option, IEnumerable<IRoomPlayer> playerList)
         {
-            //             THHGame game = new THHGame(option, getManager<CardManager>().GetCardDefines())
-            //             {
-            //                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
-            //                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
-            //                 time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
-            //                 logger = new ULogger()
-            //             };
-            //             game.answers.game = game;
-            //             foreach (var info in playerList)
-            //             {
-            //                 var deck = info.getDeck();
-            //                 checkDeckValid(game, deck);
-            // #if UNITY_EDITOR
-            //                 //检查卡组合法性
-            //                 if (_useTestDeck)
-            // deck = _testDeck.toIdArray();
-            // #endif
-            //                 THHPlayer player = game.createPlayer(info.RoomID, info.name, game.getDefine(deck[0]) as MasterCardDefine,
-            //                     deck.Skip(1).Select(id => game.getDefine(id)));
-            //             }
             CardEngine game = new CardEngine()
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
@@ -275,15 +255,31 @@ namespace Game
 #if UNITY_EDITOR
             if (_useTestDeck)
             {
-                deck = _testDeck.toIdArray();
                 foreach (var player in playerList)
                 {
-                    player.setDeck(deck);
+                    player.setDeck(_testDeck);
                 }
             }
 #endif
-            game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly }, new HearthStoneRule(getManager<CardManager>().GetCardDefines()),
-                option, playerList.ToArray());
+            //加载外部卡牌
+            HashSet<int> cardPoolIdSet = new HashSet<int>();
+            foreach (var player in playerList)
+            {
+                Deck deck = player.getDeck();
+                foreach (var cardId in deck.cardList.Select(e => e.id))
+                {
+                    if (CardDefineHelper.isExternalCard(cardId) &&
+                        !cardPoolIdSet.Contains(CardDefineHelper.getCardPoolId(cardId)))
+                    {
+                        cardPoolIdSet.Add(CardDefineHelper.getCardPoolId(cardId));
+                    }
+                }
+            }
+            CardDefine[] externalCards = await cards.getExternalCardDefinesAsync(cardPoolIdSet);
+            await game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly },
+                new HearthStoneRule(getManager<CardManager>().GetCardDefines().Concat(externalCards)),
+                option,
+                playerList.ToArray());
             return game;
         }
 
@@ -294,7 +290,7 @@ namespace Game
                 _replaySystem.startRecord(game, game.players.Select(p =>
                 {
                     RoomPlayerData playerData = new RoomPlayerData(p.id, p.name, RoomPlayerType.human);
-                    playerData.setDeck(new int[] { p.getMaster().define.id }.Concat(p.getDeck().Select(c => c.define.id)).ToArray());
+                    playerData.setDeck(new Deck(p.getMaster().define.id, p.getDeck().Select(c => c.define.id)));
                     return playerData;
                 }).ToArray());
             onGameStart?.Invoke();
@@ -607,7 +603,7 @@ namespace Game
         {
             await getManager<MainManager>().fileManager.saveFile(
                 _replaySystem.getSaveDir() + "/" + _replaySystem.getSaveFileName(_replaySystem.replay) + "." + _replaySystem.getSaveFileExtension(),
-                _replaySystem.replay.players.Select(p => p.getDeck()[0]).ToArray().ToJson() + "\r\n" +
+                _replaySystem.replay.players.Select(p => p.getDeck().masterId).ToArray().ToJson() + "\r\n" +
                 _replaySystem.replay.ToJson());
         }
         #region Events
@@ -659,6 +655,8 @@ namespace Game
             Time.timeScale = GUILayout.HorizontalSlider(Time.timeScale, 0, 3, GUILayout.Width(300));
 #endif
         }
+        #region 属性字段
+        #endregion
     }
     public enum GameMode
     {
