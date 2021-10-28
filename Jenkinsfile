@@ -5,6 +5,7 @@ import org.lotlab.pipeline.QQBot
 import org.lotlab.pipeline.Docker
 import org.lotlab.pipeline.UnityBuilder
 import org.lotlab.pipeline.TencentCOS
+import org.lotlab.pipeline.BackblazeB2
 
 pipeline {
     agent any
@@ -157,14 +158,16 @@ pipeline {
         stage('Upload To NetDisk') {
             steps {
                 script {
-                    // Upload ALL package to CowTransfer (or other)
-                    withCredentials([string(credentialsId: 'cow_cookie', variable: 'cow_cookie')]) {
-                        script {
-                            def result = sh label: '', returnStdout: true, script: "$JENKINS_HOME/transfer cow --cookie=\"\$cow_cookie\" -s $WORKSPACE/Build/_artifact/ | grep 'Download Link' | awk '{print \$3}'"
-                            env.DOWNLOAD_LINK = result
-                            echo "${result}"
-                        }
+                    BackblazeB2 b2 = new BackblazeB2(this, 'sample', 'backblaze-b2', '7')
+                    b2.syncUploadKeep("${env.WORKSPACE}/Build/_artifact", 'b2://igsk-ci/snapshots')
+
+                    def files = findFiles excludes: '', glob: 'Build/_artifact/**'
+                    for (int i = 0; i < files.size(); i++) {
+                        def filename = files[i].name
+                        def url = "https://cdn.igsk.fun/snapshots/${filename} "
+                        env.DOWNLOAD_LINK += url
                     }
+                    echo "${env.DOWNLOAD_LINK}"
                 }
             }
         }
