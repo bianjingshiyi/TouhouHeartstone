@@ -158,8 +158,8 @@ pipeline {
         stage('Upload To NetDisk') {
             steps {
                 script {
-                    BackblazeB2 b2 = new BackblazeB2(this, 'sample', 'backblaze-b2', '7')
-                    b2.syncUploadKeep("${env.WORKSPACE}/Build/_artifact", 'b2://igsk-ci/snapshots')
+                    BackblazeB2 b2 = new BackblazeB2(this, 'sample', 'backblaze-b2')
+                    b2.syncUploadKeep("${env.WORKSPACE}/Build/_artifact", 'b2://igsk-ci/snapshots', '7')
 
                     def files = findFiles excludes: '', glob: 'Build/_artifact/**'
                     for (int i = 0; i < files.size(); i++) {
