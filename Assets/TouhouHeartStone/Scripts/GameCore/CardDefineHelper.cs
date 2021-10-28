@@ -5,6 +5,26 @@ namespace TouhouHeartstone
 {
     public static class CardDefineHelper
     {
+        public static bool isServant(this CardDefine card)
+        {
+            return card.type == DEFINE.SERVANT;
+        }
+        public static bool isMaster(this CardDefine card)
+        {
+            return card.type == DEFINE.MASTER;
+        }
+        public static bool isSkill(this CardDefine card)
+        {
+            return card.type == DEFINE.SKILL;
+        }
+        public static bool isSpell(this CardDefine card)
+        {
+            return card.type == DEFINE.SPELL;
+        }
+        public static bool isItem(this CardDefine card)
+        {
+            return card.type == DEFINE.ITEM;
+        }
         public static int getCost(this CardDefine card)
         {
             return card.getProp<int>(DEFINE.COST);

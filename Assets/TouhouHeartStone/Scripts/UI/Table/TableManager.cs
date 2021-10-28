@@ -121,7 +121,7 @@ namespace Game
                 ui.TipText.setAlpha(1/*_tipTimer.getRemainedTime() / _tipTimer.duration*/);
             }
 
-            
+
 
             if (game == null)
                 return;
@@ -673,7 +673,7 @@ namespace Game
                 {
                     //手牌在战场上大小和随从牌一致
                     hand.Card.rectTransform.localScale = Vector3.one * .4f / ui.SelfHandList.rectTransform.localScale.y;
-                    if (usingCard.define is ServantCardDefine)
+                    if (usingCard.define.isServant())
                     {
                         //如果手牌是随从，那么在场上的时候会有一个占位符，预览这个随从放下去的位置。
                         ui.SelfFieldList.defaultItem.rectTransform.SetAsFirstSibling();
@@ -682,7 +682,7 @@ namespace Game
                         ui.ServantPlaceHolder.display();
                         ui.ServantPlaceHolder.rectTransform.SetSiblingIndex(calcIndexInField(pointer.position) + 1);
                     }
-                    else if (usingCard.define is SpellCardDefine)
+                    else if (usingCard.define.isSpell())
                     {
                         if (usingCard.isNeedTarget(game, out var targets))
                         {
@@ -749,7 +749,7 @@ namespace Game
                     showTip(info);
                     resetUse(true, true);
                 }
-                else if (usingCard.define is ServantCardDefine)
+                else if (usingCard.isServant())
                 {
                     //松开鼠标，确认使用随从牌
                     int index = calcIndexInField(pointer.position);
@@ -771,7 +771,7 @@ namespace Game
                         resetUse(false, false);
                     }
                 }
-                else if (usingCard.define is SpellCardDefine)
+                else if (usingCard.isSpell())
                 {
                     if (usingCard.isNeedTarget(game, out _))
                     {
@@ -1017,14 +1017,14 @@ namespace Game
         {
             get
             {
-                if (_TranslateTagDic == null) 
-                { 
+                if (_TranslateTagDic == null)
+                {
                     _TranslateTagDic = new Dictionary<string, string>();
                     var T = typeof(TranslateTags);
                     FieldInfo[] fields = T.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance);
-                    for(int i=0;i<fields.Length;i++)
+                    for (int i = 0; i < fields.Length; i++)
                     {
-                        _TranslateTagDic.Add(fields[i].Name,fields[i].GetValue(null).ToString());
+                        _TranslateTagDic.Add(fields[i].Name, fields[i].GetValue(null).ToString());
                         //Debug.Log("这里是字典结果" + fields[i].Name + fields[i].GetValue(null).ToString());
                     }
                 }
@@ -1038,86 +1038,96 @@ namespace Game
         /// <param name="ui"></param>
         /// <param name="card"></param>
         /// <param name="isFaceup"></param>
-        public void setCard(UCard ui, Card card, bool isFaceup = true)
+        public async void setCard(UCard ui, Card card, bool isFaceup = true)
         {
-            CardSkinData skin = getSkin(card);
             ui.isFaceup = isFaceup;//因为isFaceup控制了很多GameObject的Active，所以它必须放在最上面。
-            if (card.define.type == DEFINE.SERVANT)
+            CardSkinData skin = getSkin(card);
+            ui.setCard(game, card, skin);
+            if (skin.image == null)
             {
-                ui.type = CATEGORY.SERVANT;
-                //ui.servantCardFace.Charactertype = card.define.getCharacterID();
-                ui.servantCardFace.image.sprite = skin.image;
-                ui.servantCardFace.nameText.text = skin.name;
-                if ((card.define as ServantCardDefine).tags.FirstOrDefault() != null)
-                    ui.servantCardFace.raceNameText.text = lang._(TranslateTagDic[(card.define as ServantCardDefine).tags.FirstOrDefault()]);
-                else
-                    ui.servantCardFace.raceNameText.text = null;
-                ui.servantCardFace.subNameText.text = skin.subname;
-                ui.servantCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
-                ui.servantCardFace.costPropNumber.text.text = card.getCost(game).ToString();
-                ui.servantCardFace.attackPropNumber.text.text = card.getAttack(game).ToString();
-                ui.servantCardFace.lifePropNumber.text.text = card.getLife(game).ToString();
+                ui.setImage(await getManager<CardManager>().loadCardImage(card.define.id));
             }
-            else if (card.define.type == DEFINE.SPELL)
-            {
-                ui.type = CATEGORY.SPELL;
-                ui.spellCardFace.image.sprite = skin.image;
-                ui.spellCardFace.nameText.text = skin.name;
-                ui.spellCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
-                ui.spellCardFace.costPropNumber.text.text = card.getCost(game).ToString();
-            }
-            else if (card.define.type == DEFINE.ITEM)
-            {
-                ui.type = CATEGORY.ITEM;
-                ui.itemCardFace.image.sprite = skin.image;
-                ui.itemCardFace.nameText.text = skin.name;
-                ui.itemCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
-                ui.itemCardFace.costPropNumber.text.text = card.getCost(game).ToString();
-                ui.itemCardFace.attackPropNumber.text.text = card.getAttack(game).ToString();
-                ui.itemCardFace.lifePropNumber.text.text = card.getLife(game).ToString();
-            }
-            else
-                throw new NotImplementedException();
+            //if (card.define.type == DEFINE.SERVANT)
+            //{
+            //    ui.type = CATEGORY.SERVANT;
+            //    //ui.servantCardFace.Charactertype = card.define.getCharacterID();
+            //    ui.servantCardFace.image.sprite = skin.image;
+            //    ui.servantCardFace.nameText.text = skin.name;
+            //    if ((card.define as ServantCardDefine).tags.FirstOrDefault() != null)
+            //        ui.servantCardFace.raceNameText.text = lang._(TranslateTagDic[(card.define as ServantCardDefine).tags.FirstOrDefault()]);
+            //    else
+            //        ui.servantCardFace.raceNameText.text = null;
+            //    ui.servantCardFace.subNameText.text = skin.subname;
+            //    ui.servantCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
+            //    ui.servantCardFace.costPropNumber.text.text = card.getCost(game).ToString();
+            //    ui.servantCardFace.attackPropNumber.text.text = card.getAttack(game).ToString();
+            //    ui.servantCardFace.lifePropNumber.text.text = card.getLife(game).ToString();
+            //}
+            //else if (card.define.type == DEFINE.SPELL)
+            //{
+            //    ui.type = CATEGORY.SPELL;
+            //    ui.spellCardFace.image.sprite = skin.image;
+            //    ui.spellCardFace.nameText.text = skin.name;
+            //    ui.spellCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
+            //    ui.spellCardFace.costPropNumber.text.text = card.getCost(game).ToString();
+            //}
+            //else if (card.define.type == DEFINE.ITEM)
+            //{
+            //    ui.type = CATEGORY.ITEM;
+            //    ui.itemCardFace.image.sprite = skin.image;
+            //    ui.itemCardFace.nameText.text = skin.name;
+            //    ui.itemCardFace.descText.text = CardDescHelper.replace(skin.desc, game, player, card);
+            //    ui.itemCardFace.costPropNumber.text.text = card.getCost(game).ToString();
+            //    ui.itemCardFace.attackPropNumber.text.text = card.getAttack(game).ToString();
+            //    ui.itemCardFace.lifePropNumber.text.text = card.getLife(game).ToString();
+            //}
+            //else
+            //    throw new NotImplementedException();
         }
-        public void setCard(UCard ui, CardDefine define, int cost, int attack, int life, bool isFaceUp = true)
+        public async void setCard(UCard ui, CardDefine define, int cost, int attack, int life, bool isFaceUp = true)
         {
             CardSkinData skin = getSkin(define);
             ui.isFaceup = isFaceUp;//因为isFaceup控制了很多GameObject的Active，所以它必须放在最上面。
-            if (define.type == DEFINE.SERVANT)
+            ui.setCard(define, skin);
+            if (skin.image == null)
             {
-                ui.type = CATEGORY.SERVANT;
-                ui.servantCardFace.image.sprite = skin.image;
-                ui.servantCardFace.nameText.text = skin.name;
-                if ((define as ServantCardDefine).tags.FirstOrDefault() != null)
-                    ui.servantCardFace.raceNameText.text = lang._(TranslateTagDic[(define as ServantCardDefine).tags.FirstOrDefault()]);
-                else
-                    ui.servantCardFace.raceNameText.text = null;
-                ui.servantCardFace.subNameText.text = skin.subname;
-                ui.servantCardFace.descText.text = skin.desc;
-                ui.servantCardFace.costPropNumber.text.text = cost.ToString();
-                ui.servantCardFace.attackPropNumber.text.text = attack.ToString();
-                ui.servantCardFace.lifePropNumber.text.text = life.ToString();
+                ui.setImage(await getManager<CardManager>().loadCardImage(define.id));
             }
-            else if (define.type == DEFINE.SPELL)
-            {
-                ui.type = CATEGORY.SPELL;
-                ui.spellCardFace.image.sprite = skin.image;
-                ui.spellCardFace.nameText.text = skin.name;
-                ui.spellCardFace.descText.text = skin.desc;
-                ui.spellCardFace.costPropNumber.text.text = cost.ToString();
-            }
-            else if (define.type == DEFINE.ITEM)
-            {
-                ui.type = CATEGORY.ITEM;
-                ui.itemCardFace.image.sprite = skin.image;
-                ui.itemCardFace.nameText.text = skin.name;
-                ui.itemCardFace.descText.text = skin.desc;
-                ui.itemCardFace.costPropNumber.text.text = cost.ToString();
-                ui.itemCardFace.attackPropNumber.text.text = attack.ToString();
-                ui.itemCardFace.lifePropNumber.text.text = life.ToString();
-            }
-            else
-                throw new NotImplementedException();
+            //if (define.type == DEFINE.SERVANT)
+            //{
+            //    ui.type = CATEGORY.SERVANT;
+            //    ui.servantCardFace.image.sprite = skin.image;
+            //    ui.servantCardFace.nameText.text = skin.name;
+            //    if ((define as ServantCardDefine).tags.FirstOrDefault() != null)
+            //        ui.servantCardFace.raceNameText.text = lang._(TranslateTagDic[(define as ServantCardDefine).tags.FirstOrDefault()]);
+            //    else
+            //        ui.servantCardFace.raceNameText.text = null;
+            //    ui.servantCardFace.subNameText.text = skin.subname;
+            //    ui.servantCardFace.descText.text = skin.desc;
+            //    ui.servantCardFace.costPropNumber.text.text = cost.ToString();
+            //    ui.servantCardFace.attackPropNumber.text.text = attack.ToString();
+            //    ui.servantCardFace.lifePropNumber.text.text = life.ToString();
+            //}
+            //else if (define.type == DEFINE.SPELL)
+            //{
+            //    ui.type = CATEGORY.SPELL;
+            //    ui.spellCardFace.image.sprite = skin.image;
+            //    ui.spellCardFace.nameText.text = skin.name;
+            //    ui.spellCardFace.descText.text = skin.desc;
+            //    ui.spellCardFace.costPropNumber.text.text = cost.ToString();
+            //}
+            //else if (define.type == DEFINE.ITEM)
+            //{
+            //    ui.type = CATEGORY.ITEM;
+            //    ui.itemCardFace.image.sprite = skin.image;
+            //    ui.itemCardFace.nameText.text = skin.name;
+            //    ui.itemCardFace.descText.text = skin.desc;
+            //    ui.itemCardFace.costPropNumber.text.text = cost.ToString();
+            //    ui.itemCardFace.attackPropNumber.text.text = attack.ToString();
+            //    ui.itemCardFace.lifePropNumber.text.text = life.ToString();
+            //}
+            //else
+            //    throw new NotImplementedException();
         }
         public void setCard(UCard ui, CardSnapshot snapshot, bool isFaceup = true)
         {
@@ -1342,7 +1352,7 @@ namespace Game
         }
         void onExitServant(ServantItem servant, PointerEventData pointer)
         {
-            _showCardTimer.reset();           
+            _showCardTimer.reset();
             hideLargeCard();
         }
         /// <summary>
@@ -1804,7 +1814,7 @@ namespace Game
         }
         #endregion
         #region Skin
-        public CardSkinData getSkin(TouhouCardEngine.Card card)
+        public CardSkinData getSkin(Card card)
         {
             CardSkinData skin = getManager<CardManager>().getSkin(card.define.id);
             if (skin != null)

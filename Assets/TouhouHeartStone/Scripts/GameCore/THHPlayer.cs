@@ -223,7 +223,7 @@ namespace TouhouHeartstone
                  {
                      await card.activeEffect(game, p, targets);
                  }
-                 else if (card.define is SpellCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SPELL))
+                 else if (card.isSpell())
                  {
                      //法术卡,释放效果
                      await p.getHand().moveTo(game, card, p.getWarp());
@@ -295,7 +295,7 @@ namespace TouhouHeartstone
         /// <param name="title"></param>
         /// <returns></returns>
         public static async Task<DiscoverEventArg> discover(this Player player, CardEngine game, IEnumerable<CardDefine> cardDefines, int count = 3,
-            string title = null , bool isShow = false)
+            string title = null, bool isShow = false)
         {
             if (!cardDefines.Any())
             {
@@ -388,8 +388,8 @@ namespace TouhouHeartstone
             //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
 
             var eventArg = await game.triggers.doEvent(new HearthStoneRule.ChooseOneEventArg() { player = player, options = options, choose = null, isShow = isShow }, async arg =>
-            {                
-                var selected = await game.askSelect(player,options, options.Count(), title);
+            {
+                var selected = await game.askSelect(player, options, options.Count(), title);
                 arg.choose = selected;
             });
             return eventArg;

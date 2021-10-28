@@ -614,7 +614,10 @@ namespace TouhouHeartstone
         }
         public static string[] getTags(this Card card, IGame game)
         {
-            return card.getProp<string[]>(game, nameof(ServantCardDefine.tags));
+            string[] tags = card.getProp<string[]>(game, nameof(DEFINE.TAGS));
+            if (tags == null)
+                return new string[0];
+            return tags;
         }
         public static Task<IPropChangeEventArg> setTags(this Card card, IGame game, string[] tags)
         {
@@ -664,7 +667,7 @@ namespace TouhouHeartstone
                 info = ONLY_SKILL_OR_HAND;
                 return false;
             }
-            if (card.define is ServantCardDefine servant)
+            if (card.define.isServant())
             {
                 if (player.getGem() < card.getCost(game))//费用不够
                 {
@@ -679,7 +682,7 @@ namespace TouhouHeartstone
                 info = null;
                 return true;
             }
-            else if (card.define is ItemCardDefine item)
+            else if (card.define.isItem())
             {
                 if (player.getGem() < card.getCost(game))//费用不够
                 {
@@ -689,14 +692,14 @@ namespace TouhouHeartstone
                 info = null;
                 return true;
             }
-            else if (card.define is SpellCardDefine spell)
+            else if (card.define.isSpell())
             {
                 if (player.getGem() < card.getCost(game))
                 {
                     info = NOT_ENOUGH_SPIRIT;
                     return false;
                 }
-                if (spell.hasKeyword(KEYWORD.SECRET))
+                if (card.hasKeyword(game, KEYWORD.SECRET))
                 {
                     if (card.getOwner().getHead().count >= card.getOwner().getHead().maxCount)
                     {
@@ -704,14 +707,14 @@ namespace TouhouHeartstone
                         info = NO_SPACE_FOR_TRAP;
                         return false;
                     }
-                    if (card.getOwner().getHead().Any(c => c.define == spell))
+                    if (card.getOwner().getHead().Any(c => c.define == card.define))
                     {
                         game.logger.log(DUPLICATED_TRAP);
                         info = DUPLICATED_TRAP;
                         return false;
                     }
                 }
-                if (spell.hasKeyword(KEYWORD.MISSION))
+                if (card.hasKeyword(game, KEYWORD.MISSION))
                 {
                     if (card.getOwner().getHead().count >= card.getOwner().getHead().maxCount)
                     {
@@ -729,7 +732,7 @@ namespace TouhouHeartstone
                 info = null;
                 return true;
             }
-            else if (card.define is SkillCardDefine skill)
+            else if (card.define.isSkill())
             {
                 if (card.isUsed(game))//已经用过了
                 {
@@ -741,7 +744,7 @@ namespace TouhouHeartstone
                     info = NOT_ENOUGH_SPIRIT;
                     return false;
                 }
-                if (skill.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect effect)
+                if (card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect effect)
                 {
                     if (!effect.checkCondition(game, card, null, new object[]
                     {
@@ -754,7 +757,7 @@ namespace TouhouHeartstone
                     info = null;
                     return true;
                 }
-                if (skill.getActiveEffect() is IActiveEffect activeEffect)
+                if (card.define.getActiveEffect() is IActiveEffect activeEffect)
                 {
                     if (!activeEffect.checkCondition(game, card, null))
                     {
@@ -820,6 +823,8 @@ namespace TouhouHeartstone
                             targetList.Add(servant);
                     }
                 }
+                targets = targetList.ToArray();
+                return true;
             }
             targets = null;
             return false;

@@ -62,6 +62,55 @@ namespace Game
                 setTag(ui, card.getTags().FirstOrDefault());
             }
         }
+        public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin)
+        {
+            if (skin != null)
+            {
+                setImage(ui, skin.image);
+                setName(ui, skin.name);
+                setSubname(ui, skin.subname);
+                setDesc(ui, skin.desc);
+            }
+            else
+            {
+                setImage(ui, null);
+                setName(ui, StringTable.BUILD_UNKNOW_CARD_NAME);
+                setSubname(ui, string.Empty);
+                setDesc(ui, string.Empty);
+            }
+            ui.isFaceup = true;
+            setCost(ui, card.getCost(game).ToString());
+            if (card.define.type == DEFINE.MASTER)
+            {
+                ui.type = CATEGORY.MASTER;
+            }
+            else if (card.define.type == DEFINE.SERVANT)
+            {
+                ui.type = CATEGORY.SERVANT;
+                ui.servantCardFace.attackPropNumber.text.text = card.getAttack(game).ToString();
+                ui.servantCardFace.lifePropNumber.text.text = card.getLife(game).ToString();
+            }
+            else if (card.define.type == DEFINE.SPELL)
+                ui.type = CATEGORY.SPELL;
+            else if (card.define.type == DEFINE.SKILL)
+                ui.type = CATEGORY.SKILL;
+            else if (card.define.type == DEFINE.ITEM)
+            {
+                ui.type = CATEGORY.ITEM;
+                ui.itemCardFace.attackPropNumber.text.text = card.getAttack(game).ToString();
+                ui.itemCardFace.lifePropNumber.text.text = card.getLife(game).ToString();
+            }
+            else
+                throw new NotImplementedException();
+            if (card.define is ServantCardDefine servantCardDefine)
+            {
+                setTag(ui, servantCardDefine.tags.FirstOrDefault());
+            }
+            else
+            {
+                setTag(ui, card.getTags(game).FirstOrDefault());
+            }
+        }
         public static void setAttack(this UICard ui, string attack)
         {
             ui.servantCardFace.attackPropNumber.text.text = attack;
