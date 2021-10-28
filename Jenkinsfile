@@ -162,9 +162,10 @@ pipeline {
                     b2.syncUploadKeep("${env.WORKSPACE}/Build/_artifact", 'b2://igsk-ci/snapshots', '7')
 
                     def files = findFiles excludes: '', glob: 'Build/_artifact/**'
+                    env.DOWNLOAD_LINK = ''
                     for (int i = 0; i < files.size(); i++) {
                         def filename = files[i].name
-                        def url = "https://cdn.igsk.fun/snapshots/${filename} "
+                        def url = "https://cdn.igsk.fun/snapshots/${filename} \n"
                         env.DOWNLOAD_LINK += url
                     }
                     echo "${env.DOWNLOAD_LINK}"
