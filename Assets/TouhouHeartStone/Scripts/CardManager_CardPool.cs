@@ -112,6 +112,19 @@ namespace Game
             _externalCardDefineDict[cardPoolId].Add(cardDefine);
             _externalCardSkinDict[cardPoolId].Add(cardSkin);
         }
+        public void removeExternalCard(CardDefine card)
+        {
+            //删除卡牌
+            foreach (var cardList in _externalCardDefineDict.Values)
+            {
+                cardList.Remove(card);
+            }
+            //删除皮肤
+            foreach (var skinList in _externalCardSkinDict.Values)
+            {
+                skinList.RemoveAll(s => s.id == card.id);
+            }
+        }
         public bool tryGetExternalCardDefine(int cardId, out CardDefine card)
         {
             card = null;
@@ -180,6 +193,28 @@ namespace Game
                     return true;
             }
             return false;
+        }
+        public CardSkinData[] getAllSkins(int cardId)
+        {
+            List<CardSkinData> skinList = new List<CardSkinData>();
+            for (int i = 0; i < _skins.Length; i++)
+            {
+                if (_skins[i].id == cardId)
+                {
+                    skinList.Add(_skins[i]);
+                }
+            }
+            foreach (var skins in _externalCardSkinDict.Values)
+            {
+                foreach (var skin in skins)
+                {
+                    if (skin.id == cardId)
+                    {
+                        skinList.Add(skin);
+                    }
+                }
+            }
+            return skinList.ToArray();
         }
         #endregion
         #region 私有方法

@@ -61,6 +61,10 @@ namespace Game
         public const string BUILD_UNKNOW_CARD_NAME = "未知卡牌";
         #endregion
         #region 编辑器
+        [TranslateMsg("编辑器中动作图编辑器的背景菜单中常量分类的名字")]
+        public const string EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST = "Const";
+        [TranslateMsg("编辑器中动作图编辑器的背景菜单中的返回上一层选项")]
+        public const string EDITOR_ACTIONGRAPH_MENU_RETURN = "返回上一层";
         [TranslateMsg("编辑器中生效动作节点的名字")]
         public const string EDITOR_NODE_NAME_ONENABLE = "生效";
         [TranslateMsg("编辑器中失效动作节点的名字")]

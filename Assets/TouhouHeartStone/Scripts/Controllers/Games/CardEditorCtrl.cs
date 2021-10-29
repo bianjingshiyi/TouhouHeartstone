@@ -17,49 +17,26 @@ namespace Controllers
 {
     class CardEditorCtrl : GameObjectCtrl<MainSceneCtrl>, IController<MainCtrl>
     {
-        #region 私有方法
-        #region 生命周期
-        protected void Awake()
-        {
-            if (_ui == null)
-            {
-                _ui = GetComponentInChildren<CardEditorPanel>();
-            }
-            _types = new string[] { DEFINE.SERVANT, DEFINE.SPELL, DEFINE.ITEM };
-            _ui.setTypes(_types);
-            _ui.onChangeSkin += onChangeSkin;
-            _ui.onChangeSkinName += onChangeSkinName;
-            _ui.onClickDeleteSkinButton += onDeleteSkin;
-            _ui.onChangeLanguage += onChangeLanguage;
-            _ui.onChangeType += onChangeType;
-            _ui.onChangeCost += onChangeCost;
-            _ui.onChangeName += onChangeName;
-            _ui.onChangeSubName += onChangeSubName;
-            _ui.onNeedSelectImage += onNeedSelectImage;
-            _ui.onChangeDesc += onChangeDesc;
-            _ui.onChangeAttack += onChangeAttack;
-            _ui.onChangeLife += onChangeLife;
-            _tags = new string[] { string.Empty, TAG.BEAST, TAG.DEMON, TAG.ELEMENT, TAG.FAIRY, TAG.GOD, TAG.MACHINE };
-            _ui.setTags(_tags);
-            _ui.onChangeTag += onChangeTag;
-            _ui.onClickEditEffectButton += onClickEditEffectButton;
-            _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
-            _ui.onClickAddEffectButton += onClickAddEffectButton;
-            _ui.onClickBackgroundButton += onClickBackgroundButton;
-        }
-        #endregion
-        #endregion
+        #region 公有方法
         /// <summary>
         /// 打开一张卡片进行编辑
         /// </summary>
-        public void display(CardDefine cardDefine)
+        public async void display(CardDefine cardDefine, CardDefine[] selectableCharacters)
         {
             gameObject.SetActive(true);
+            _selectableCharacters = selectableCharacters;
             _cardDefine = cardDefine;
             updateSkinNames();
-            setCurSkinIndex(0);
+            await setCurSkinIndex(0);
             _ui.setId(_cardDefine.id);
             _ui.setType(Array.IndexOf(_types, _cardDefine.type));
+            string[] charactersName = new string[selectableCharacters.Length + 1];
+            charactersName[0] = StringTable.CARDVIEW_CHARACTER_NEUTRAL;
+            for (int i = 1; i < charactersName.Length; i++)
+            {
+                charactersName[i] = game.card.getSkin(selectableCharacters[i - 1].id).name;
+            }
+            _ui.setSelectableCharacters(charactersName);
             _ui.setCost(_cardDefine.getProp<int>(DEFINE.COST).ToString());
             _ui.setAttack(_cardDefine.getProp<int>(DEFINE.ATTACK).ToString());
             _ui.setLife(_cardDefine.getProp<int>(DEFINE.LIFE).ToString());
@@ -76,6 +53,41 @@ namespace Controllers
             GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
             updateEffectList(effects);
         }
+        #endregion
+        #region 私有方法
+        #region 生命周期
+        protected void Awake()
+        {
+            if (_ui == null)
+            {
+                _ui = GetComponentInChildren<CardEditorPanel>();
+            }
+            _types = new string[] { DEFINE.SERVANT, DEFINE.SPELL, DEFINE.ITEM };
+            _ui.setTypes(_types);
+            _ui.onChangeSkin += onChangeSkin;
+            _ui.onChangeSkinName += onChangeSkinName;
+            _ui.onClickDeleteSkinButton += onDeleteSkin;
+            _ui.onChangeLanguage += onChangeLanguage;
+            _ui.onChangeType += onChangeType;
+            _ui.onChangeCharacter += onChangeCharacter;
+            _ui.onChangeCost += onChangeCost;
+            _ui.onChangeName += onChangeName;
+            _ui.onChangeSubName += onChangeSubName;
+            _ui.onNeedSelectImage += onNeedSelectImage;
+            _ui.onChangeDesc += onChangeDesc;
+            _ui.onChangeAttack += onChangeAttack;
+            _ui.onChangeLife += onChangeLife;
+            _tags = new string[] { string.Empty, TAG.BEAST, TAG.DEMON, TAG.ELEMENT, TAG.FAIRY, TAG.GOD, TAG.MACHINE };
+            _ui.setTags(_tags);
+            _ui.onChangeTag += onChangeTag;
+            _ui.onClickEditEffectButton += onClickEditEffectButton;
+            _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
+            _ui.onClickAddEffectButton += onClickAddEffectButton;
+            _ui.onClickBackgroundButton += onClickBackgroundButton;
+            _ui.onClickDeleteCardButton += onClickDeleteCardButton;
+        }
+        #endregion
+        #endregion
 
         private void updateSkinNames()
         {
@@ -83,7 +95,7 @@ namespace Controllers
                 .Select(g => g.FirstOrDefault(s => s.language == game.langManager.getLanguage()) is CardSkinData s2 ? s2.skinName : g.First().skinName)
                 .ToArray());
         }
-        async void setCurSkinIndex(int skinIndex)
+        private async Task setCurSkinIndex(int skinIndex)
         {
             var skinGroup = getSkins().GroupBy(s => s.skinId).ElementAt(skinIndex);
             //获取对应语言的皮肤
@@ -121,10 +133,10 @@ namespace Controllers
         }
         IEnumerable<CardSkinData> getSkins()
         {
-            return scene.editor.getAllSkins().Where(c => c.id == _cardDefine.id);
+            return game.card.getAllSkins(_cardDefine.id);
         }
         #region UI回调
-        void onChangeSkin(int skinIndex)
+        private async void onChangeSkin(int skinIndex)
         {
             if (skinIndex == getSkinCount())
             {
@@ -136,9 +148,9 @@ namespace Controllers
                 scene.editor.addSkin(_curCardSkin);
                 updateSkinNames();
             }
-            setCurSkinIndex(skinIndex);
+            await setCurSkinIndex(skinIndex);
         }
-        void onChangeSkinName(string skinName)
+        private async void onChangeSkinName(string skinName)
         {
             var skinGroup = getSkins().GroupBy(c => c.skinId).ToList();
             int index = skinGroup.FindIndex(g => g.Key == _curCardSkin.skinId);
@@ -148,9 +160,9 @@ namespace Controllers
                 skin.skinName = skinName;
             }
             updateSkinNames();
-            setCurSkinIndex(index);
+            await setCurSkinIndex(index);
         }
-        private void onDeleteSkin()
+        private async void onDeleteSkin()
         {
             var skinGroup = getSkins().GroupBy(c => c.skinId).ToList();
             if (skinGroup.Count < 2)
@@ -160,7 +172,7 @@ namespace Controllers
             }
             scene.editor.removeSkins(c => c.skinId == _curCardSkin.skinId);
             updateSkinNames();
-            setCurSkinIndex(0);
+            await setCurSkinIndex(0);
         }
         async void onChangeLanguage(int languageIndex)
         {
@@ -194,7 +206,18 @@ namespace Controllers
         void onChangeType(int typeIndex)
         {
             _cardDefine.type = _types[typeIndex];
-            _ui.setType(typeIndex);
+            //_ui.setType(typeIndex);
+        }
+        private void onChangeCharacter(int characterIndex)
+        {
+            if (characterIndex < 1)
+            {
+                _cardDefine.setProp(DEFINE.CHARACTER_ID, 0);
+            }
+            else
+            {
+                _cardDefine.setProp(DEFINE.CHARACTER_ID, _selectableCharacters[characterIndex - 1]);
+            }
         }
         /// <summary>
         /// 当用户更改花费
@@ -387,6 +410,14 @@ namespace Controllers
             scene.editor.display(false, false, -1, false);
             //保存卡牌编辑信息
         }
+        private void onClickDeleteCardButton()
+        {
+            //删除当前卡牌
+            game.card.removeExternalCard(_cardDefine);
+            //返回上个界面
+            gameObject.SetActive(false);
+            scene.editor.display(false, false, -1, true);
+        }
         #endregion
         [Obsolete]
         public IAppManager app { get; }
@@ -397,5 +428,6 @@ namespace Controllers
         string[] _tags;
         CardDefine _cardDefine;
         CardSkinData _curCardSkin;
+        CardDefine[] _selectableCharacters;
     }
 }

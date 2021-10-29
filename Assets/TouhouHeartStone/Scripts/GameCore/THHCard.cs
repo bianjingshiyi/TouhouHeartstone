@@ -1077,7 +1077,7 @@ namespace TouhouHeartstone
                 };
             }
         }
-        [ActionNodeMethod("Damage")]
+        [ActionNodeMethod("Damage", "Card")]
         [return: ActionNodeParam("DamageEvent")]
         public static Task<DamageEventArg> damage([ActionNodeParam("Card")] this Card card, CardEngine game, [ActionNodeParam("DamageSource")] Card source, [ActionNodeParam("Amount")] int value)
         {

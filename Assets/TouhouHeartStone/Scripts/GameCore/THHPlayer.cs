@@ -518,7 +518,7 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
-        [ActionNodeMethod("GetSpellDamage")]
+        [ActionNodeMethod("GetSpellDamage","Player")]
         [return: ActionNodeParam("Damage")]
         public static int getSpellDamage([ActionNodeParam("Player")] this Player player, CardEngine game, [ActionNodeParam("BaseDamage")] int baseDamage)
         {
@@ -1007,7 +1007,7 @@ namespace TouhouHeartstone
                     string.Join(", ", targets.Select(t => t is Card c ? c.getFormatString() : t.ToString()))
                 };
             }
-            [ActionNodeMethod("GetTarget")]
+            [ActionNodeMethod("GetTarget", "Player")]
             [return: ActionNodeParam("Target")]
             public static Card getTarget(ActiveEventArg eventArg, [ActionNodeParam("TargetName", true)] string targetName)
             {

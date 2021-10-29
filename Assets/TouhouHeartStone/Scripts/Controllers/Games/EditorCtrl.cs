@@ -203,7 +203,7 @@ namespace Controllers
             if (index < _cardDefineList.Count)
             {
                 CardDefine cardDefine = _cardDefineList[index];
-                scene.cardEditor.display(cardDefine);
+                scene.cardEditor.display(cardDefine, getSelectableCharacters());
             }
             else
             {
@@ -211,9 +211,10 @@ namespace Controllers
                 CardDefine newCardDefine = new CardDefine(allocCardId(), DEFINE.SERVANT);
                 _cardDefineList.Add(newCardDefine);
                 CardSkinData newCardSkin = new CardSkinData();
+                newCardSkin.id = newCardDefine.id;
                 _cardSkinList.Add(newCardSkin);
                 game.card.addExternalCard(_curCardPoolInfo.cardPoolId, newCardDefine, newCardSkin);
-                scene.cardEditor.display(newCardDefine);
+                scene.cardEditor.display(newCardDefine, getSelectableCharacters());
             }
         }
         private void onChangeSortTypeValue(int index)
@@ -295,7 +296,7 @@ namespace Controllers
         /// 读取所有卡池文件中的卡池信息。
         /// </summary>
         /// <returns>包含卡池文件相对路径和卡池信息键值对的字典</returns>
-        public async Task getCardPoolsInfoAsync()
+        private async Task getCardPoolsInfoAsync()
         {
             _cardPoolPathList.Clear();
             _cardPoolInfoList.Clear();
@@ -357,7 +358,7 @@ namespace Controllers
         /// <param name="info">卡池信息</param>
         /// <param name="cardDefines">卡池包含的卡片</param>
         /// <returns></returns>
-        public Task saveCardPoolAsync(string cardPoolPath, CardPoolInfo info, CardDefine[] cardDefines)
+        private Task saveCardPoolAsync(string cardPoolPath, CardPoolInfo info, CardDefine[] cardDefines)
         {
             return game.fileManager.saveFile(CARDPOOLS_DIR_NAME + "/" + cardPoolPath, new string[]
             {
@@ -416,6 +417,13 @@ namespace Controllers
                 return cardId;
             }
             throw new OverflowException("卡牌数量已达上限");
+        }
+        private CardDefine[] getSelectableCharacters()
+        {
+            List<CardDefine> cardList = new List<CardDefine>();
+            cardList.AddRange(game.card.GetCardDefines(c => c.isMaster(), true));
+            cardList.AddRange(_cardDefineList.Where(c => c.isMaster()));
+            return cardList.ToArray();
         }
         /// <summary>
         /// 更新卡池列表UI

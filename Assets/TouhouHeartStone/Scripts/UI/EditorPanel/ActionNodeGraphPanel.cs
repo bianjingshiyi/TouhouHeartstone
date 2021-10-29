@@ -228,6 +228,10 @@ namespace UI
         {
             _menuRoot.gameObject.SetActive(true);
             _menuRoot.anchoredPosition = new Vector2(posX, posY);
+            updateMenu(options);
+        }
+        public void updateMenu(string[] options)
+        {
             UIHelper.updateList(_menuRoot, _menuItemTemplate, _menuItemList, options.Length, (i, itemRect) =>
             {
                 ActionNodeGraphMenuOption item = itemRect.GetComponent<ActionNodeGraphMenuOption>();

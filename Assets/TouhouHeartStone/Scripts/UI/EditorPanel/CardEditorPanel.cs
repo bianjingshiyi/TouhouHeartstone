@@ -19,6 +19,15 @@ namespace UI
         {
             _idText.text = id.ToString();
         }
+        public void setSelectableCharacters(string[] charactersName)
+        {
+            _characterDropdown.ClearOptions();
+            _characterDropdown.AddOptions(new List<string>(charactersName));
+        }
+        private void setCharacter(int index)
+        {
+            _characterDropdown.SetValueWithoutNotify(index);
+        }
         /// <summary>
         /// 设置皮肤切换选项
         /// </summary>
@@ -220,6 +229,7 @@ namespace UI
                 _effectListItemTemplate.gameObject.SetActive(false);
             }
             _backgroundButton.onClick.AddListener(onBackgroundButtonClicked);
+            _deleteCardButton.onClick.AddListener(onClickDeleteCardButtonCallback);
         }
         #endregion
         #region 事件回调
@@ -397,8 +407,13 @@ namespace UI
         {
             onClickBackgroundButton?.Invoke();
         }
+        private void onClickDeleteCardButtonCallback()
+        {
+            onClickDeleteCardButton?.Invoke();
+        }
         #endregion
         #endregion
+        #region 事件
         /// <summary>
         /// 当更换了皮肤，参数为更换的皮肤索引。
         /// </summary>
@@ -419,6 +434,10 @@ namespace UI
         /// 当更换卡牌类型，参数为更改类型索引。
         /// </summary>
         public event Action<int> onChangeType;
+        /// <summary>
+        /// 当更换所属角色，参数为更换角色索引。
+        /// </summary>
+        public event Action<int> onChangeCharacter;
         /// <summary>
         /// 当卡牌费用值被更改，参数为用户输入费用。
         /// </summary>
@@ -467,12 +486,19 @@ namespace UI
         /// 当点击背景返回
         /// </summary>
         public event Action onClickBackgroundButton;
+        /// <summary>
+        /// 当点击删除卡牌按钮
+        /// </summary>
+        public event Action onClickDeleteCardButton;
+        #endregion
         [SerializeField]
         Card _card;
         [SerializeField]
         Text _idText;
         [SerializeField]
         Dropdown _typeDropdown;
+        [SerializeField]
+        Dropdown _characterDropdown;
         [SerializeField]
         Dropdown _skinDropdown;
         [SerializeField]
@@ -523,6 +549,8 @@ namespace UI
         InputField _lifeInputField;
         [SerializeField]
         Button _backgroundButton;
+        [SerializeField]
+        Button _deleteCardButton;
         [SerializeField]
         bool _disableUIEvent = false;
     }

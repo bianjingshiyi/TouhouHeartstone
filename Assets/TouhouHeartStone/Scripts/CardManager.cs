@@ -422,11 +422,22 @@ namespace Game
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public CardDefine[] GetCardDefines(Func<CardDefine, bool> filter = null)
+        public CardDefine[] GetCardDefines(Func<CardDefine, bool> filter = null, bool includeExternalCard = false)
         {
-            if (filter != null)
-                return defineDic.Values.Where(d => filter.Invoke(d)).ToArray();
-            return defineDic.Values.ToArray();
+            List<CardDefine> cardList = new List<CardDefine>();
+            if (includeExternalCard)
+            {
+                foreach (var externalCardList in _externalCardDefineDict.Values)
+                {
+                    cardList.AddRange(filter != null ?
+                        externalCardList.Where(c => filter.Invoke(c)) :
+                        externalCardList);
+                }
+            }
+            cardList.AddRange(filter != null ?
+                defineDic.Values.Where(d => filter.Invoke(d)) :
+                defineDic.Values);
+            return cardList.ToArray();
         }
         public CardSkinData getSkin(TouhouCardEngine.Card card)
         {
