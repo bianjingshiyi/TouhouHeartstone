@@ -232,19 +232,6 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &1581764274928103992
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2960854710007638675}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7319a628a9b508a43905318a25812492, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  comment: 
 --- !u!114 &5571646122193734983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -303,6 +290,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _alphaFadeSpeed: 0.15
+--- !u!114 &723181851680014647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2960854710007638675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d89001c3a7672c143af6d343519212b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comment: 
 --- !u!114 &5910837860135214983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1749,7 +1749,7 @@ PrefabInstance:
     - target: {fileID: 7828612899551654307, guid: 3ce2269361f968d4085b76fd07ce0433,
         type: 3}
       propertyPath: m_Text
-      value: "\u6240\u6709"
+      value: None
       objectReference: {fileID: 0}
     - target: {fileID: 7828612899758871004, guid: 3ce2269361f968d4085b76fd07ce0433,
         type: 3}
@@ -2030,7 +2030,7 @@ PrefabInstance:
     - target: {fileID: 7828612899551654307, guid: 3ce2269361f968d4085b76fd07ce0433,
         type: 3}
       propertyPath: m_Text
-      value: "\u6240\u6709"
+      value: None
       objectReference: {fileID: 0}
     - target: {fileID: 7828612899758871004, guid: 3ce2269361f968d4085b76fd07ce0433,
         type: 3}
@@ -2429,6 +2429,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DropdownCharacter
+      objectReference: {fileID: 0}
+    - target: {fileID: 7828612899551654307, guid: 3ce2269361f968d4085b76fd07ce0433,
+        type: 3}
+      propertyPath: m_Text
+      value: None
       objectReference: {fileID: 0}
     - target: {fileID: 7828612899758871004, guid: 3ce2269361f968d4085b76fd07ce0433,
         type: 3}
