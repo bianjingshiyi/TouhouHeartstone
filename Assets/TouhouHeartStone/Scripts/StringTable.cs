@@ -85,6 +85,70 @@ namespace Game
         public const string EDITOR_EDIT_EFFECT = "编辑效果";
         [TranslateMsg("编辑器中询问玩家是否要删除卡池")]
         public const string EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL = "你是否要删除这个卡池？";
+        #region 动作
+        #region 游戏
+        [TranslateMsg("动作图编辑器中动作节点分类之游戏")]
+        public const string EDITOR_NODE_CATEGORY_GAME = "Game";
+        [TranslateMsg("动作图编辑器中动作节点名称之这张卡牌")]
+        public const string EDITOR_NODE_NAME_THIS_CARD = "ThisCard";
+        #endregion
+        #region 玩家
+        [TranslateMsg("动作图编辑器中动作节点分类之玩家")]
+        public const string EDITOR_NODE_CATEGORY_PLAYER = "Player";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取牌堆")]
+        public const string EDITOR_NODE_NAME_GET_PILE = "GetPile";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取法术伤害")]
+        public const string EDITOR_NODE_NAME_GET_SPELL_DAMAGE = "GetSpellDamage";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取目标")]
+        public const string EDITOR_NODE_NAME_GET_TARGET = "GetTarget";
+        #endregion
+        #region 牌堆
+        [TranslateMsg("动作图编辑器中动作节点分类之牌堆")]
+        public const string EDITOR_NODE_CATEGORY_PILE = "Pile";
+        [TranslateMsg("动作图编辑器中动作节点名称之玩家牌堆是否发生改变")]
+        public const string EDITOR_NODE_NAME_IS_PLAYER_PILE_CHANGED = "IsPlayerPileChanged";
+        #endregion
+        #region 卡牌
+        [TranslateMsg("动作图编辑器中动作节点分类之卡牌")]
+        public const string EDITOR_NODE_CATEGORY_CARD = "Card";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取卡牌拥有者")]
+        public const string EDITOR_NODE_NAME_GET_OWNER = "GetOwner";
+        [TranslateMsg("动作图编辑器中动作节点名称之添加整数修改器")]
+        public const string EDITOR_NODE_NAME_ADD_INT_MODIFIER = "AddIntModifier";
+        [TranslateMsg("动作图编辑器中动作节点名称之移除修改器")]
+        public const string EDITOR_NODE_NAME_REMOVE_MODIFIER = "RemoveModifier";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取属性")]
+        public const string EDITOR_NODE_NAME_GET_PROPERTY = "GetProperty";
+        [TranslateMsg("动作图编辑器中动作节点名称之设置属性")]
+        public const string EDITOR_NODE_NAME_SET_PROPERTY = "SetProperty";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取唯一属性名")]
+        public const string EDITOR_NODE_NAME_GET_UNIQUE_PROPERTY_NAME = "GetUniquePropertyName";
+        [TranslateMsg("动作图编辑器中动作节点名称之造成伤害")]
+        public const string EDITOR_NODE_NAME_DAMAGE = "Damage";
+        #endregion
+        #region 修改器
+        [TranslateMsg("动作图编辑器中动作节点分类之修改器")]
+        public const string EDITOR_NODE_CATEGORY_MODIFIER = "Modifier";
+        [TranslateMsg("动作图编辑器中动作节点名称之设置整数修改器值")]
+        public const string EDITOR_NODE_NAME_SET_INT_PROP_MODIFIER_VALUE = "SetIntPropModifierValue";
+        #endregion
+        #region 事件
+        [TranslateMsg("动作图编辑器中动作节点分类之事件")]
+        public const string EDITOR_NODE_CATEGORY_EVENT = "Event";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取变量")]
+        public const string EDITOR_NODE_NAME_GET_VARIABLE = "GetVariable";
+        [TranslateMsg("动作图编辑器中动作节点名称之设置变量")]
+        public const string EDITOR_NODE_NAME_SET_VARIABLE = "SetVariable";
+        #endregion
+        #region 集合运算
+        [TranslateMsg("动作图编辑器中动作节点分类之集合运算")]
+        public const string EDITOR_NODE_CATEGORY_COLLECTION_OPERATION = "CollectionOperation";
+        [TranslateMsg("动作图编辑器中动作节点名称之集合相减")]
+        public const string EDITOR_NODE_NAME_EXCEPT = "Except";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取元素数量")]
+        public const string EDITOR_NODE_NAME_GET_COUNT = "GetCount";
+        #endregion
+        #endregion
         #endregion
         #region 错误
         [TranslateMsg]
