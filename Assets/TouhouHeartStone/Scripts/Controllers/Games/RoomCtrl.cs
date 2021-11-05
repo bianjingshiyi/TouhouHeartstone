@@ -21,7 +21,7 @@ namespace Controllers
             _ui.SetMode(RoomPanel.Mode.Local);
             _ui.SetSelfID(scene.game.network.logic.localPlayer.id);
             _ui.SetRightText("");
-            _ui.SetInfo(roomData);
+            _ui.SetInfo(roomData, true);
 
             _ui.gameObject.SetActive(true);
         }

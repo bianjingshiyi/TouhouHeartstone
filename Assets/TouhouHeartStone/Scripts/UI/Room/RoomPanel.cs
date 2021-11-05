@@ -15,7 +15,126 @@ namespace UI
 {
     partial class RoomPanel
     {
+        #region 公有方法
+        public void SetInfo(RoomData room, bool clearAIPlayerData = false)
+        {
+            if (clearAIPlayerData)
+            {
+                aiPlayerData = null;
+            }
+            roomData = room;
 
+            RoomPlayerData selfPlayer = null;
+
+            RoomPlayerList.clearItems();
+            foreach (var player in room.playerDataList)
+            {
+                // 顺便获取自己的引用
+                if (player.id == selfPlayerID)
+                    selfPlayer = player;
+
+                var item = RoomPlayerList.addItem();
+                item.SetPlayerInfo(player);
+                item.OnPlayerViewDeck += viewDeck;
+
+                // 仅当自己是主机且此玩家不是自己时，设置为可以移除
+                item.SetRemoveable(isHost && selfPlayerID != player.id);
+                item.OnPlayerRemove += (id) =>
+                {
+                    if (id == aiPlayerData?.id)
+                        aiPlayerData = null;
+                    onPlayerRemove?.Invoke(id);
+                };
+
+                if (player.type == RoomPlayerType.ai)
+                {
+                    aiPlayerData = player;
+
+                    item.SetMode(RoomPlayerListItem.PlayerListMode.AIPlayer);
+                    item.OnSetAIDeck += () =>
+                    {
+                        showDeckSelectionPanel((deckID) =>
+                        {
+                            var deck = deckManager.GetDeck(deckID);
+                            var skin = cardManager.getSkin(deck.MasterID);
+
+                            var list = deckManager.GetDeckCards(deckID).Select(k => (int)k.Value).ToList();
+                            list.Insert(0, deck.MasterID); // polyfill: 转换为传统的，第一张卡是master的格式
+
+                            onSetPlayerDeck?.Invoke(player.id, list.ToArray());
+                        });
+                    };
+                }
+                else
+                {
+                    item.SetMode(RoomPlayerListItem.PlayerListMode.Player);
+                }
+            }
+
+            if (selfPlayer == null)
+            {
+                Debug.LogWarning($"SelfPlayer是空的。PlayerID：{selfPlayerID}, players: {room.playerDataList.Select(e => e.id.ToString())}");
+            }
+
+            if (currentMode == Mode.Local && aiPlayerData == null)
+            {
+                var item = RoomPlayerList.addItem();
+                item.SetMode(RoomPlayerListItem.PlayerListMode.AddAI);
+
+                item.OnAddAIPlayer += () =>
+                {
+                    onAIPlayerAdd?.Invoke();
+                };
+            }
+
+            // 设置房间选项
+            try
+            {
+                HearthstoneOption option = room.getOption();
+                var seed = option.randomSeed;
+                RandomSeedContainerGameOptionItemText.InputField.text = seed == 0 ? "" : seed.ToString();
+                ShuffleContainerGameOptionItemToggle.Toggle.isOn = option.shuffle;
+                InitReplacementContainerGameOptionItemText.InputField.text = option.timeoutForInitReplace.ToString();
+                TurnTimeContainerGameOptionItemText.InputField.text = option.timeoutForTurn.ToString();
+                IsSortedToggleGameOptionItemToggle.Toggle.isOn = option.sortedPlayers != null;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            if (isHost)
+            {
+                // 判断是否可以开始游戏
+                bool startable = room.playerDataList.Count == room.maxPlayerCount;
+
+                foreach (var item in room.playerDataList)
+                {
+                    if (item.id == selfPlayerID)
+                    {
+                        // 主机检查卡组是否满
+                        var decks = item.getDeck();
+                        if (decks == null || decks.getCardCount() < 30)
+                            startable = false;
+                    }
+                    else
+                    {
+                        // 其他检查是否准备好
+                        startable &= item.getReady();
+                    }
+                }
+
+                StartButtonButtonBlack.asButton.setSelectable(startable);
+            }
+            else
+            {
+                // 判断准备状态
+                var deck = selfPlayer.getDeck();
+                StartButtonButtonBlack.Text.text = selfPlayer.getReady() ? lang._(STR_REQUEST_PREPRAE) : lang._(STR_PREPARE);
+                StartButtonButtonBlack.asButton.setSelectable(deck != null && deck.masterId != 0 && deck.getCardCount() == 30);
+            }
+        }
+        #endregion
         RoomData roomData;
 
         DeckManager deckManager => this.findInstance<DeckManager>();
@@ -218,121 +337,6 @@ namespace UI
         }
 
         RoomPlayerData aiPlayerData;
-
-        public void SetInfo(RoomData room)
-        {
-            roomData = room;
-
-            RoomPlayerData selfPlayer = null;
-
-            RoomPlayerList.clearItems();
-            foreach (var player in room.playerDataList)
-            {
-                // 顺便获取自己的引用
-                if (player.id == selfPlayerID)
-                    selfPlayer = player;
-
-                var item = RoomPlayerList.addItem();
-                item.SetPlayerInfo(player);
-                item.OnPlayerViewDeck += viewDeck;
-
-                // 仅当自己是主机且此玩家不是自己时，设置为可以移除
-                item.SetRemoveable(isHost && selfPlayerID != player.id);
-                item.OnPlayerRemove += (id) =>
-                {
-                    if (id == aiPlayerData?.id)
-                        aiPlayerData = null;
-                    onPlayerRemove?.Invoke(id);
-                };
-
-                if (player.type == RoomPlayerType.ai)
-                {
-                    aiPlayerData = player;
-
-                    item.SetMode(RoomPlayerListItem.PlayerListMode.AIPlayer);
-                    item.OnSetAIDeck += () =>
-                    {
-                        showDeckSelectionPanel((deckID) =>
-                        {
-                            var deck = deckManager.GetDeck(deckID);
-                            var skin = cardManager.getSkin(deck.MasterID);
-
-                            var list = deckManager.GetDeckCards(deckID).Select(k => (int)k.Value).ToList();
-                            list.Insert(0, deck.MasterID); // polyfill: 转换为传统的，第一张卡是master的格式
-
-                            onSetPlayerDeck?.Invoke(player.id, list.ToArray());
-                        });
-                    };
-                }
-                else
-                {
-                    item.SetMode(RoomPlayerListItem.PlayerListMode.Player);
-                }
-            }
-
-            if (selfPlayer == null)
-            {
-                Debug.LogWarning($"SelfPlayer是空的。PlayerID：{selfPlayerID}, players: {room.playerDataList.Select(e => e.id.ToString())}");
-            }
-
-            if (currentMode == Mode.Local && aiPlayerData == null)
-            {
-                var item = RoomPlayerList.addItem();
-                item.SetMode(RoomPlayerListItem.PlayerListMode.AddAI);
-
-                item.OnAddAIPlayer += () =>
-                {
-                    onAIPlayerAdd?.Invoke();
-                };
-            }
-
-            // 设置房间选项
-            try
-            {
-                HearthstoneOption option = room.getOption();
-                var seed = option.randomSeed;
-                RandomSeedContainerGameOptionItemText.InputField.text = seed == 0 ? "" : seed.ToString();
-                ShuffleContainerGameOptionItemToggle.Toggle.isOn = option.shuffle;
-                InitReplacementContainerGameOptionItemText.InputField.text = option.timeoutForInitReplace.ToString();
-                TurnTimeContainerGameOptionItemText.InputField.text = option.timeoutForTurn.ToString();
-                IsSortedToggleGameOptionItemToggle.Toggle.isOn = option.sortedPlayers != null;
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
-
-            if (isHost)
-            {
-                // 判断是否可以开始游戏
-                bool startable = room.playerDataList.Count == room.maxPlayerCount;
-
-                foreach (var item in room.playerDataList)
-                {
-                    if (item.id == selfPlayerID)
-                    {
-                        // 主机检查卡组是否满
-                        var decks = item.getDeck();
-                        if (decks == null || decks.getCardCount() < 30)
-                            startable = false;
-                    }
-                    else
-                    {
-                        // 其他检查是否准备好
-                        startable &= item.getReady();
-                    }
-                }
-
-                StartButtonButtonBlack.asButton.setSelectable(startable);
-            }
-            else
-            {
-                // 判断准备状态
-                var deck = selfPlayer.getDeck();
-                StartButtonButtonBlack.Text.text = selfPlayer.getReady() ? lang._(STR_REQUEST_PREPRAE) : lang._(STR_PREPARE);
-                StartButtonButtonBlack.asButton.setSelectable(deck != null && deck.masterId != 0 && deck.getCardCount() == 30);
-            }
-        }
 
         void notifyRoomSettingChange(GameOption option)
         {
