@@ -89,6 +89,7 @@ namespace UI
         {
             _curCardPoolNameText.text = name;
             _curCardPoolImage.sprite = image;
+            _deckNameInputField.SetTextWithoutNotify(name);
         }
         #endregion
         #region 私有方法
@@ -114,6 +115,8 @@ namespace UI
             {
                 _cardPoolCardListItemTemplate.gameObject.SetActive(false);
             }
+            _editDeckNameButton.onClick.AddListener(onClickEditDeckNameButtonCallback);
+            _deckNameInputField.onEndEdit.AddListener(onEndEditDeckNameInputFieldCallback);
         }
         #endregion
         #region 事件回调
@@ -170,6 +173,19 @@ namespace UI
         {
             onClickDeleteCurCardPoolButton?.Invoke();
         }
+        private void onClickEditDeckNameButtonCallback()
+        {
+            //编辑名称模式
+            _deckNameInputField.gameObject.SetActive(true);
+            _curCardPoolNameText.gameObject.SetActive(false);
+        }
+        private void onEndEditDeckNameInputFieldCallback(string value)
+        {
+            _deckNameInputField.gameObject.SetActive(false);
+            _curCardPoolNameText.gameObject.SetActive(true);
+            _curCardPoolNameText.text = value;
+            onDeckNameInputFieldValueChanged?.Invoke(value);
+        }
         #endregion
         #endregion
         #region 事件
@@ -225,6 +241,10 @@ namespace UI
         /// 当改变角色过滤器的值，参数为更改的索引
         /// </summary>
         public event Action<int> onChangeCharacterFilterValue;
+        /// <summary>
+        /// 当牌库名称被更改，参数为更改的名称。
+        /// </summary>
+        public event Action<string> onDeckNameInputFieldValueChanged;
         #endregion
         #region 属性字段
         public VirtualListLayoutGroup cardListLayoutGroup => _cardListLayoutGroup;
@@ -263,6 +283,10 @@ namespace UI
         Text _curCardPoolNameText;
         [SerializeField]
         Image _curCardPoolImage;
+        [SerializeField]
+        Button _editDeckNameButton;
+        [SerializeField]
+        InputField _deckNameInputField;
         #endregion
     }
 }

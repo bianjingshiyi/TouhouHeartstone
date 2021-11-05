@@ -114,6 +114,7 @@ namespace Controllers
                 game.langManager.getString(StringTable.CARDVIEW_SORT_RARE_DESCENDING)
             });
             _ui.onChangeSortTypeValue += onChangeSortTypeValue;
+            _ui.onDeckNameInputFieldValueChanged += onDeckNameInputFieldValueChanged;
         }
         #endregion
         #region 事件回调
@@ -264,14 +265,14 @@ namespace Controllers
         /// <summary>
         /// 当点击返回浏览卡池按钮，清空字段并切换回浏览卡池状态
         /// </summary>
-        void onClickReturnToCardPoolViewButton()
+        private void onClickReturnToCardPoolViewButton()
         {
             returnToView();
         }
         /// <summary>
         /// 当点击删除当前卡池按钮，弹出对话框询问，如果确认则删除当前卡池并切换到浏览状态
         /// </summary>
-        void onClickDeleteCurCardPoolButton()
+        private void onClickDeleteCurCardPoolButton()
         {
             game.ui.dialog.ShowConfirm(null, game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
             {
@@ -290,6 +291,10 @@ namespace Controllers
                 }
                 returnToView();
             });
+        }
+        private void onDeckNameInputFieldValueChanged(string value)
+        {
+            _curCardPoolInfo.cardPoolName = value;
         }
         #endregion
         /// <summary>

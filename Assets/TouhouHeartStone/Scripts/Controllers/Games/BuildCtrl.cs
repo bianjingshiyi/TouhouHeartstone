@@ -20,7 +20,7 @@ namespace Controllers
         /// <summary>
         /// 进入收藏模式
         /// </summary>
-        public async void display()
+        public async void display(bool reloadDeckList = true)
         {
             //清理字段
             _deck = null;
@@ -36,8 +36,11 @@ namespace Controllers
             await loadCardListThenFilterAndSort();
             _characterFiltersValue = new bool[_characterFilters.Length];
 
-            //构筑卡组
-            loadDeckList();
+            if (reloadDeckList)
+            {
+                //构筑卡组
+                loadDeckList();
+            }
 
             _ui.gameObject.SetActive(true);
             //UI更新
@@ -144,10 +147,11 @@ namespace Controllers
             _ui.onClickImportDeckButton += onClickImportButton;
             _ui.onClickUploadDeckButton += onUploadDeckClick;
             _ui.onClickDownloadDeckButton += onDownloadDeckClick;
+            _ui.onDeckNameInputFieldValueChanged += onDeckNameInputFieldValueChanged;
         }
         #endregion
         #region 事件回调
-        void onReturnButtonClick()
+        private void onReturnButtonClick()
         {
             if (_isDeckChanged)
             {
@@ -298,12 +302,13 @@ namespace Controllers
             _ui.setEditDeckPanelActive(false);
             _ui.setRightFilterDetialPanelActive(true);
         }
-        private void onSwitchRightToDeckButtonClick()
+        private async void onSwitchRightToDeckButtonClick()
         {
             _ui.switchRightPanelModeButtonGroup(true);
             _ui.setRightFilterDetialPanelActive(false);
             _ui.setDeckListActive(_deck == null);
             _ui.setEditDeckPanelActive(_deck != null);
+            await updateDeckCardListUI();
         }
         private async void onFilterDetailCardPoolItemToggleValueChanged(int index, bool value)
         {
@@ -359,7 +364,7 @@ namespace Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="name"></param>
-        async void onDeckListItemNameValueChanged(int index, string name)
+        private async void onDeckListItemNameValueChanged(int index, string name)
         {
             _deckList[index].name = name;
             game.deck.RenameDeck(_deckList[index].id, name);
@@ -368,7 +373,7 @@ namespace Controllers
         /// <summary>
         /// 点击保存卡组按钮
         /// </summary>
-        void onSaveDeckClick()
+        private void onSaveDeckClick()
         {
             // 卡组保存
             if (_deck.cardList.Count < _deckMaxSize)
@@ -392,12 +397,12 @@ namespace Controllers
             {
                 game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(StringTable.BUILD_CONFIRM_EXIT_WITHOUT_SAVE), () =>
                 {
-                    display();
+                    display(false);
                 });
             }
             else
             {
-                display();
+                display(false);
             }
         }
         private void onClickImportButton()
@@ -527,6 +532,10 @@ namespace Controllers
                     _ui.setLoadingUIActive(false);
                 }
             });
+        }
+        private void onDeckNameInputFieldValueChanged(string value)
+        {
+            _deck.name = value;
         }
         #endregion
         private async Task loadCardListThenFilterAndSort()
