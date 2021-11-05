@@ -32,7 +32,7 @@ namespace Controllers
                     //重新加载所有牌库信息
                     await getCardPoolsInfoAsync();
                 }
-                await updateCardPoolListUI();
+                await updateDeckListUI();
                 _ui.setSortType((int)_sortType);
                 //TODO:角色过滤器
                 _ui.setCharacterFilters(new string[]
@@ -62,16 +62,7 @@ namespace Controllers
                     //重新加载牌库信息
                     await readCardPoolAsync(_curCardPoolPath);
                 }
-                (string name, Sprite image, int count)[] viewData = new (string name, Sprite image, int count)[_cardDefineList.Count];
-                for (int i = 0; i < viewData.Length; i++)
-                {
-                    CardSkinData skin = getCardSkinData(_cardDefineList[i]);
-                    viewData[i].name = skin.name;
-                    viewData[i].image = string.IsNullOrEmpty(skin.imagePath) ? null :
-                        await game.card.loadExternalImage(skin.imagePath);
-                    viewData[i].count = 0;
-                }
-                _ui.updateDeckCardList(viewData);
+                await updateDeckCardListUI();
                 //+1是为了显示新建卡牌按钮
                 _ui.updateCardListCount(_cardDefineList.Count + 1);
             }
@@ -122,7 +113,7 @@ namespace Controllers
         /// 当用户点击返回按钮，返回主菜单
         /// </summary>
         /// <param name="ui"></param>
-        void onClickReturnButton()
+        private void onClickReturnButton()
         {
             _ui.gameObject.SetActive(false);
             scene.menu.display();
@@ -131,7 +122,7 @@ namespace Controllers
         /// 当用户点击卡池列表项，切换右侧栏到编辑卡牌状态，读取对应文件并显示卡牌列表
         /// </summary>
         /// <param name="index"></param>
-        void onClickCardPoolListItem(int index)
+        private void onClickCardPoolListItem(int index)
         {
             display(false, false, index, true);
         }
@@ -139,14 +130,14 @@ namespace Controllers
         /// 当用户点击删除卡池按钮，弹出对话框询问用户是否确定删除卡池，确定则删除并刷新卡池列表
         /// </summary>
         /// <param name="index"></param>
-        void onClickDeleteCardPoolButton(int index)
+        private void onClickDeleteCardPoolButton(int index)
         {
             _ui.findInstance<UIDialog>().ShowQuestion(null, game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
             {
                 game.fileManager.deleteFile(_cardPoolPathList[index]);
                 _cardPoolPathList.RemoveAt(index);
                 _cardPoolInfoList.RemoveAt(index);
-                await updateCardPoolListUI();
+                await updateDeckListUI();
             });
         }
         /// <summary>
@@ -191,7 +182,7 @@ namespace Controllers
             _curCardPoolInfo.imageResPath = null;
             _cardDefineList.Clear();
             _cardSkinList.Clear();
-            _ui.updateDeckCardList(new (string name, Sprite image, int count)[0]);
+            //_ui.updateDeckCardList(new (string name, Sprite image, int count)[0]);
             //1是为了显示新建卡牌按钮
             _ui.updateCardListCount(1);
         }
@@ -265,9 +256,9 @@ namespace Controllers
         /// <summary>
         /// 当点击返回浏览卡池按钮，清空字段并切换回浏览卡池状态
         /// </summary>
-        private void onClickReturnToCardPoolViewButton()
+        private async void onClickReturnToCardPoolViewButton()
         {
-            returnToView();
+            await returnToView();
         }
         /// <summary>
         /// 当点击删除当前卡池按钮，弹出对话框询问，如果确认则删除当前卡池并切换到浏览状态
@@ -283,13 +274,13 @@ namespace Controllers
                     int index = _cardPoolPathList.IndexOf(_curCardPoolPath);
                     _cardPoolPathList.RemoveAt(index);
                     _cardPoolInfoList.RemoveAt(index);
-                    await updateCardPoolListUI();
+                    await updateDeckListUI();
                 }
                 else
                 {
                     //当前卡池还没存过，不用删
                 }
-                returnToView();
+                await returnToView();
             });
         }
         private void onDeckNameInputFieldValueChanged(string value)
@@ -387,7 +378,7 @@ namespace Controllers
         /// <summary>
         /// 清空字段并切换到浏览状态
         /// </summary>
-        private void returnToView()
+        private async Task returnToView()
         {
             _curCardPoolPath = null;
             _curCardPoolInfo = null;
@@ -397,6 +388,7 @@ namespace Controllers
             _ui.setCardListActive(false);
             _ui.setDeckListActive(true);
             _ui.setEditDeckPanelActive(false);
+            await updateDeckListUI();
         }
         private string allocCardPoolPath(CardPoolInfo cardPool)
         {
@@ -434,7 +426,7 @@ namespace Controllers
         /// 更新卡池列表UI
         /// </summary>
         /// <returns></returns>
-        private async Task updateCardPoolListUI()
+        private async Task updateDeckListUI()
         {
             (string name, Sprite image)[] viewData = new (string name, Sprite image)[_cardPoolInfoList.Count];
             for (int i = 0; i < viewData.Length; i++)
@@ -444,9 +436,23 @@ namespace Controllers
             }
             _ui.updateDeckList(viewData);
         }
+        private async Task updateDeckCardListUI()
+        {
+            (string name, Sprite image, int count)[] viewData = new (string name, Sprite image, int count)[_cardDefineList.Count];
+            for (int i = 0; i < viewData.Length; i++)
+            {
+                CardSkinData skin = getCardSkinData(_cardDefineList[i]);
+                viewData[i].name = skin.name;
+                viewData[i].image = string.IsNullOrEmpty(skin.imagePath) ? null :
+                    await game.card.loadExternalImage(skin.imagePath);
+                viewData[i].count = 0;
+            }
+            _ui.updateDeckCardList(viewData);
+        }
         #endregion
         public List<ActionNodeGraphInfo> actionNodeGraphInfoList { get; } = new List<ActionNodeGraphInfo>();
-        EditorPanel _ui;
+        [SerializeField]
+        private EditorPanel _ui;
         List<string> _cardPoolPathList = new List<string>();
         List<CardPoolInfo> _cardPoolInfoList = new List<CardPoolInfo>();
         string _curCardPoolPath;

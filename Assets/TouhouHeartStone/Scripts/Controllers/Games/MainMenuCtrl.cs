@@ -46,6 +46,7 @@ namespace Controllers
             option.randomSeed = BitConverter.ToInt32(rand, 0);
             currentRoomData.setOption(option);
 
+            hide();
             scene.room.display(currentRoomData);
         }
         private void onBuildButtonClick()
