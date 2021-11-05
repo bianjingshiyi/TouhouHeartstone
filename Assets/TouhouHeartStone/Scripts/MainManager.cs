@@ -160,22 +160,6 @@ namespace Game
     }
     public class MainManager : Manager, IAppManager
     {
-        public UIManager ui => getManager<UIManager>();
-        public NetworkingManager network => getManager<NetworkingManager>();
-        public GameManager game => getManager<GameManager>();
-        public FileManager fileManager => new FileManager();
-        public LangManager lang => getManager<LangManager>();
-        public ILanguageManager langManager => getManager<LangManager>();
-        public IResourceManager resourceManager => getManager<ResourceManager>();
-        public CardManager card => getManager<CardManager>();
-        public DeckManager deck => getManager<DeckManager>();
-        MainCtrl _mainCtrl;
-        [SerializeField]
-        UnityEvent onLoadingFinish;
-        Main mainUI => ui.getObject<Main>();
-
-        RoomData currentRoomData;
-
         protected override void onAwake()
         {
             base.onAwake();
@@ -203,7 +187,7 @@ namespace Game
             _mainCtrl = new MainCtrl(this);
             _mainCtrl.onAwake();
         }
-        protected void Start()
+        protected async void Start()
         {
             StageLogger logger = new StageLogger(new int[] { 1, 2, 50 });
             logger.OnStageChange += (progress, text) =>
@@ -220,6 +204,13 @@ namespace Game
                 logger
             );
             _mainCtrl.onStart();
+            if (_mainSceneCtrl == null)
+            {
+                _mainSceneCtrl = TransformHelper.findComponentInAllScenes<MainSceneCtrl>();
+            }
+            _mainSceneCtrl.menu.hide();
+            await _loadCardTask;
+            _mainSceneCtrl.menu.display();
         }
         protected void Update()
         {
@@ -410,11 +401,29 @@ namespace Game
             else
                 Debug.LogError(e);
         }
-        #region 私有成员
+        #region 私有方法
         string getCurrentVersion()
         {
             return BuildInformation.Instance.Version;
         }
+        #endregion
+        #region 属性字段
+        public UIManager ui => getManager<UIManager>();
+        public NetworkingManager network => getManager<NetworkingManager>();
+        public GameManager game => getManager<GameManager>();
+        public FileManager fileManager => new FileManager();
+        public LangManager lang => getManager<LangManager>();
+        public ILanguageManager langManager => getManager<LangManager>();
+        public IResourceManager resourceManager => getManager<ResourceManager>();
+        public CardManager card => getManager<CardManager>();
+        public DeckManager deck => getManager<DeckManager>();
+        [SerializeField]
+        MainSceneCtrl _mainSceneCtrl;
+        MainCtrl _mainCtrl;
+        [SerializeField]
+        UnityEvent onLoadingFinish;
+        Main mainUI => ui.getObject<Main>();
+        RoomData currentRoomData;
         Task _loadCardTask = null;
         Task<ClientUpdateInfo> _getNewVersionTask = null;
         #endregion

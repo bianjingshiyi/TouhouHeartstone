@@ -230,6 +230,7 @@ namespace Controllers
         {
             var cards = _deck.cardList.OrderBy(e => game.card.GetCardDefine(e.id).getCost()).ToArray();
             _dragCard = game.card.GetCardDefine(cards[index].id);
+            index = _deck.cardList.IndexOf(cards[index]);
             //从卡组中删除一张卡牌
             _deck.cardList[index].count--;
             if (_deck.cardList[index].count <= 0)
@@ -283,7 +284,7 @@ namespace Controllers
         /// <summary>
         /// 当玩家点击切换右侧栏到编辑扩展牌库模式
         /// </summary>
-        private async void onSwitchRightToFilterDetailButtonClick()
+        private void onSwitchRightToFilterDetailButtonClick()
         {
             (string name, bool value)[] viewData = new (string name, bool value)[_cardPoolList.Count];
             for (int i = 0; i < viewData.Length; i++)

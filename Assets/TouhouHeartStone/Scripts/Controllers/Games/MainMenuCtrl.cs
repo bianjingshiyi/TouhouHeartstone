@@ -14,6 +14,10 @@ namespace Controllers
         {
             gameObject.SetActive(true);
         }
+        public void hide()
+        {
+            gameObject.SetActive(false);
+        }
         #endregion
         #region 私有方法
         #region 生命周期
