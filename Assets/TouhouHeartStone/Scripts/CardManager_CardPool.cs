@@ -39,6 +39,14 @@ namespace Game
             _externalCardDefineDict.Add(cardPoolId, new List<CardDefine>());
             _externalCardSkinDict.Add(cardPoolId, new List<CardSkinData>());
         }
+        /// <summary>
+        /// 从可持续文件中加载所有外部卡牌，包括数据和皮肤
+        /// </summary>
+        /// <returns></returns>
+        public async Task loadAllExternalCards()
+        {
+
+        }
         public async Task<(CardDefine[] defines, CardSkinData[] skins)> getExternalCardDefinesAsync(string[] paths)
         {
             List<CardDefine> defineList = new List<CardDefine>();
@@ -146,10 +154,50 @@ namespace Game
             {
                 return sprite;
             }
-            byte[] bytes = await game.fileManager.readBinaryFile(path);
-            Texture2D texture = new Texture2D(512, 512);
-            texture.LoadImage(bytes);
-            sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
+            if (path.StartsWith("res:"))
+            {
+                //Unity资源
+                sprite = Resources.Load<Sprite>(path.Substring(4, path.Length - 4));
+                if (sprite == null)
+                {
+                    Debug.LogError("加载图片" + path + "失败");
+                }
+            }
+            else if (path.StartsWith("sa:"))
+            {
+                byte[] bytes;
+                try
+                {
+                    try
+                    {
+                        bytes = await game.fileManager.readStreamingBinaryFile(path.Substring(3, path.Length - 3));
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        //可能是后缀不对
+                        bytes = await game.fileManager.readStreamingBinaryFile(
+                            path.EndsWith(".png") ?
+                            path.Substring(3, path.Length - 3).Replace(".png", ".jpg") :
+                            path.Substring(3, path.Length - 3).Replace(".jpg", ".png"));
+                    }
+                    Texture2D texture = new Texture2D(512, 512);
+                    texture.LoadImage(bytes);
+                    sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
+                }
+                catch (IOException e)
+                {
+                    Debug.LogError("加载图片" + path + "失败：" + e);
+                    sprite = null;
+                }
+            }
+            else
+            {
+                //外部贴图
+                byte[] bytes = await game.fileManager.readBinaryFile(path);
+                Texture2D texture = new Texture2D(512, 512);
+                texture.LoadImage(bytes);
+                sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
+            }
             //添加到缓存
             addSpriteToCache(path, sprite);
             return sprite;

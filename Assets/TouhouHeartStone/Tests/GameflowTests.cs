@@ -677,7 +677,7 @@ namespace Tests
 
             //开始游戏
             CardManager cardManager = new GameObject(nameof(CardManager)).AddComponent<CardManager>();
-            yield return cardManager.load(new Assembly[] { typeof(TestMaster).Assembly }).wait();
+            yield return cardManager.loadBuiltinCards(new Assembly[] { typeof(TestMaster).Assembly }).wait();
             GameManager localGameManager = new GameObject(nameof(GameManager)).AddComponent<GameManager>();
             localClient.addInvokeTarget(localGameManager);
             localGameManager.client = localClient;
@@ -822,7 +822,7 @@ namespace Tests
 
             //开始游戏
             CardManager cardManager = new GameObject(nameof(CardManager)).AddComponent<CardManager>();
-            yield return cardManager.load(new Assembly[] { typeof(TestMaster).Assembly }).wait();
+            yield return cardManager.loadBuiltinCards(new Assembly[] { typeof(TestMaster).Assembly }).wait();
             GameManager localGameManager = new GameObject(nameof(GameManager)).AddComponent<GameManager>();
             localClient.addInvokeTarget(localGameManager);
             localGameManager.client = localClient;

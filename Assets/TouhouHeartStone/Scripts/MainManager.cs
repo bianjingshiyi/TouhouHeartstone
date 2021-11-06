@@ -195,21 +195,36 @@ namespace Game
                 mainUI.Loading.LoggerText.text = text;
                 mainUI.Loading.ProgressBarSlider.value = progress;
             };
-            //加载卡片资源
-            _loadCardTask = getManager<CardManager>().load(
-                new System.Reflection.Assembly[] { typeof(THHGame).Assembly },
-                new string[] { "TouhouHeartstone", "TouhouHeartstone.Builtin" },
-                false,
-                null,
-                logger
-            );
             _mainCtrl.onStart();
             if (_mainSceneCtrl == null)
             {
                 _mainSceneCtrl = TransformHelper.findComponentInAllScenes<MainSceneCtrl>();
             }
             _mainSceneCtrl.menu.hide();
-            await _loadCardTask;
+            //加载内置卡片数据
+            _loadCardTask = card.loadBuiltinCards(
+                new System.Reflection.Assembly[] { typeof(THHGame).Assembly },
+                new string[] { "TouhouHeartstone", "TouhouHeartstone.Builtin" },
+                false,
+                null,
+                logger,
+                false
+            );
+            //加载外部卡片数据
+            //var result = await card.getCardPoolInfosAsync();
+            //foreach (var pair in result)
+            //{
+            //    try
+            //    {
+            //        await card.getExternalCardDefinesAsync(pair.Key);
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Debug.LogError("加载外部卡池" + pair.Key + "失败：" + e);
+            //    }
+            //}
+            if (_loadCardTask != null)
+                await _loadCardTask;
             _mainSceneCtrl.menu.display();
         }
         protected void Update()

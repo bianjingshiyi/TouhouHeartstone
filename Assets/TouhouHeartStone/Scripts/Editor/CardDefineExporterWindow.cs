@@ -104,7 +104,7 @@ namespace TouhouHeartstone
         }
         async void exportAsExcel(List<CardDefine> cardList)
         {
-            await _manager.load();
+            await _manager.loadBuiltinCards();
 
             _templatePath = EditorUtility.OpenFilePanel("选择模板文件",
                 File.Exists(_templatePath) ? Path.GetDirectoryName(_templatePath) : Application.dataPath, "xls");
@@ -143,7 +143,7 @@ namespace TouhouHeartstone
         }
         async void overrideToExcel(List<CardDefine> cardList)
         {
-            await _manager.load();
+            await _manager.loadBuiltinCards();
 
             if (EditorHelper.trySelectFilePath(ref _outputPath, "选择要覆盖的文件", "Cards", "xls"))
             {

@@ -54,16 +54,16 @@ namespace Game
         /// 加载配置路径中的所有卡片和皮肤。
         /// </summary>
         /// <returns></returns>
-        public Task load(Assembly[] assemblies = default, string[] namespaces = null, bool builtinOnly = false, ILogger logger = null, StageLogger screenLogger = null)
+        public Task loadBuiltinCards(Assembly[] assemblies = default, string[] namespaces = null, bool builtinOnly = false, ILogger logger = null, StageLogger screenLogger = null, bool loadResources = true)
         {
-            return load(builtinOnly ? new string[0] : _externalCardPaths, assemblies, namespaces, logger, screenLogger);
+            return load(builtinOnly ? new string[0] : _externalCardPaths, assemblies, namespaces, logger, screenLogger, loadResources);
         }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
         /// </summary>
         /// <param name="excelPaths"></param>
         /// <returns></returns>
-        public async Task load(string[] excelPaths, Assembly[] assemblies = default, string[] namespaces = null, ILogger logger = null, StageLogger screenLogger = null)
+        public async Task load(string[] excelPaths, Assembly[] assemblies = default, string[] namespaces = null, ILogger logger = null, StageLogger screenLogger = null, bool loadResources = true)
         {
             //加载内置卡片
             screenLogger?.NextStage("加载内置卡片");
@@ -168,7 +168,7 @@ namespace Game
             {
                 try
                 {
-                    CardSkinData[] skins = await loadSkins(path, logger: screenLogger);
+                    CardSkinData[] skins = await loadSkins(path, logger: screenLogger, loadResources: loadResources);
                     foreach (var skin in skins)
                     {
                         if (skinDic.ContainsKey(skin.id))
@@ -251,7 +251,7 @@ namespace Game
         /// <param name="platform">当前平台</param>
         /// <param name="logger">提示用Logger</param>
         /// <returns></returns>
-        public async Task<CardSkinData[]> loadSkins(string path, PlatformCompability platform = null, StageLogger logger = null)
+        public async Task<CardSkinData[]> loadSkins(string path, PlatformCompability platform = null, StageLogger logger = null, bool loadResources = true)
         {
             platform = platform ?? PlatformCompability.Current;
 
@@ -273,7 +273,7 @@ namespace Game
 
                     if (datarow.ReadCol("Ignore", false))
                         continue;
-                    CardSkinData skin = await loadSkinInCardTable(path, datarow, logger);
+                    CardSkinData skin = await loadSkinInCardTable(path, datarow, logger, loadResources);
                     int index = skins.FindIndex(s => s.id == skin.id);
                     if (index > 0)
                         skins[index] = skin;
@@ -291,7 +291,7 @@ namespace Game
                 {
                     var datarow = skinTable.Rows[i];
 
-                    CardSkinData skin = await loadSkinInSkinTable(path, datarow);
+                    CardSkinData skin = await loadSkinInSkinTable(path, datarow, loadResources);
                     int index = skins.FindIndex(s => s.id == skin.id);
                     if (index > 0)
                         skins[index] = skin;
@@ -306,7 +306,7 @@ namespace Game
             return skins.ToArray();
         }
 
-        private async Task<CardSkinData> loadSkinInCardTable(string path, DataRow datarow, StageLogger logger = null)
+        private async Task<CardSkinData> loadSkinInCardTable(string path, DataRow datarow, StageLogger logger = null, bool loadResources = true)
         {
             //加载文字信息
             var skin = new CardSkinData()
@@ -319,35 +319,51 @@ namespace Game
             //加载图片
             string imagePath = datarow.ReadCol("Image", "");
 
-            try
+            if (loadResources)
             {
-                if (imagePath.StartsWith("res:"))
+                try
                 {
-                    skin.image = Resources.Load<Sprite>(imagePath.Replace("res:", string.Empty));
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(imagePath))
+                    if (imagePath.StartsWith("res:"))
                     {
-                        skin.image = await getDefaultSprite();
+                        skin.image = Resources.Load<Sprite>(imagePath.Replace("res:", string.Empty));
                     }
                     else
                     {
-                        Texture2D texture = await getManager<THHResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
-                        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
-                        skin.image = sprite;
+                        if (string.IsNullOrEmpty(imagePath))
+                        {
+                            skin.image = await getDefaultSprite();
+                        }
+                        else
+                        {
+                            Texture2D texture = await getManager<THHResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
+                            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+                            skin.image = sprite;
+                        }
                     }
                 }
+                catch (Exception e)
+                {
+                    Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
+                    skin.image = await getDefaultSprite();
+                }
             }
-            catch (Exception e)
+            else
             {
-                Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
-                skin.image = await getDefaultSprite();
+                if (imagePath == null || imagePath.StartsWith("res:"))
+                {
+                    //什么也不做
+                }
+                else
+                {
+                    //标记贴图路径为流文件
+                    imagePath = "sa:" + Path.GetDirectoryName(path) + "/" + imagePath;
+                }
+                skin.imagePath = imagePath;
             }
 
             return skin;
         }
-        private async Task<CardSkinData> loadSkinInSkinTable(string path, DataRow datarow)
+        private async Task<CardSkinData> loadSkinInSkinTable(string path, DataRow datarow, bool loadResources = true)
         {
             //加载文字信息
             var skin = new CardSkinData()
@@ -358,37 +374,67 @@ namespace Game
             };
             //加载图片
             string imagePath = datarow.ReadCol("Image", "");
-            try
+            if (loadResources)
             {
-                if (imagePath.StartsWith("res:"))
+                try
                 {
-                    skin.image = Resources.Load<Sprite>(imagePath.Replace("res:", string.Empty));
+                    if (imagePath.StartsWith("res:"))
+                    {
+                        skin.image = Resources.Load<Sprite>(imagePath.Replace("res:", string.Empty));
+                    }
+                    else
+                    {
+                        Texture2D texture = await getManager<THHResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
+                        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+                        skin.image = sprite;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
+                    skin.image = await getDefaultSprite();
+                }
+            }
+            else
+            {
+                if (imagePath == null || imagePath.StartsWith("res:"))
+                {
+                    //什么也不做
                 }
                 else
                 {
-                    Texture2D texture = await getManager<THHResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
-                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
-                    skin.image = sprite;
+                    //标记为流文件
+                    imagePath = "sa:" + Path.GetDirectoryName(path) + "/" + imagePath;
                 }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
-                skin.image = await getDefaultSprite();
+                skin.imagePath = imagePath;
             }
             //加载音效
             string soundPath = datarow.ReadCol("Sound_onUse", "");
-            if (!string.IsNullOrEmpty(soundPath))
-                skin.sound_onUse = await getManager<THHResourceManager>().loadAudio(soundPath);
+            if (loadResources)
+            {
+                if (!string.IsNullOrEmpty(soundPath))
+                    skin.sound_onUse = await getManager<THHResourceManager>().loadAudio(soundPath);
+            }
+            else
+            {
+                skin.soundPath_onUse = soundPath;
+            }
             //加载投射物
             string projPath = datarow.ReadCol("Projectile", "");
-            if (!string.IsNullOrEmpty(projPath))
+            if (loadResources)
             {
-                skin.projectile = await getManager<THHResourceManager>().loadObject<Projectile>(projPath);
-                if (skin.projectile == null)
-                    UberDebug.LogWarningChannel("Card", skin + "加载投射物" + projPath + "失败");
-                else
-                    UberDebug.LogChannel("Card", skin + "加载投射物" + skin.projectile);
+                if (!string.IsNullOrEmpty(projPath))
+                {
+                    skin.projectile = await getManager<THHResourceManager>().loadObject<Projectile>(projPath);
+                    if (skin.projectile == null)
+                        UberDebug.LogWarningChannel("Card", skin + "加载投射物" + projPath + "失败");
+                    else
+                        UberDebug.LogChannel("Card", skin + "加载投射物" + skin.projectile);
+                }
+            }
+            else
+            {
+                skin.projectilePath = projPath;
             }
             return skin;
         }

@@ -702,7 +702,7 @@ namespace Controllers
         /// <returns></returns>
         private bool isDeckHasErrorTip(Deck deck)
         {
-            return deck.cardList.Count < _deckMaxSize;
+            return deck.cardList.Sum(i => i.count) < _deckMaxSize;
         }
         /// <summary>
         /// 判断是不是可用的角色
@@ -858,7 +858,7 @@ namespace Controllers
         }
         private async Task updateDeckCardListUI()
         {
-            _ui.setDeckCardCount(_deck.cardList.Count, _deckMaxSize);
+            _ui.setDeckCardCount(_deck.cardList.Sum(e => e.count), _deckMaxSize);
             var cards = _deck.cardList.OrderBy(e => game.card.GetCardDefine(e.id).getCost()).ToArray();
             (string name, Sprite image, int count)[] deckCardList = new (string name, Sprite image, int count)[_deck.cardList.Count];
             for (int i = 0; i < deckCardList.Length; i++)
