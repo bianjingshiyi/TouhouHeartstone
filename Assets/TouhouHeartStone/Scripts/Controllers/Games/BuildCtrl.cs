@@ -20,7 +20,7 @@ namespace Controllers
         /// <summary>
         /// 进入收藏模式
         /// </summary>
-        public async void display(bool reloadDeckList = true)
+        public async void display()
         {
             //清理字段
             _deck = null;
@@ -35,12 +35,6 @@ namespace Controllers
 
             await loadCardListThenFilterAndSort();
             _characterFiltersValue = new bool[_characterFilters.Length];
-
-            if (reloadDeckList)
-            {
-                //构筑卡组
-                loadDeckList();
-            }
 
             _ui.gameObject.SetActive(true);
             //UI更新
@@ -321,12 +315,12 @@ namespace Controllers
         }
         private void onClickDeckListItem(int index)
         {
-            display(_deckList[index]);
+            display(deckList[index]);
         }
         private async void onClickDeckListItemDeleteButton(int index)
         {
-            game.deck.RemoveDeck(_deckList[index].id);
-            _deckList.RemoveAt(index);
+            game.deck.RemoveDeck(deckList[index].id);
+            deckList.RemoveAt(index);
             await updateDeckListUI();
         }
         /// <summary>
@@ -366,8 +360,8 @@ namespace Controllers
         /// <param name="name"></param>
         private async void onDeckListItemNameValueChanged(int index, string name)
         {
-            _deckList[index].name = name;
-            game.deck.RenameDeck(_deckList[index].id, name);
+            deckList[index].name = name;
+            game.deck.RenameDeck(deckList[index].id, name);
             await updateDeckListUI();
         }
         /// <summary>
@@ -376,7 +370,7 @@ namespace Controllers
         private void onSaveDeckClick()
         {
             // 卡组保存
-            if (_deck.cardList.Count < _deckMaxSize)
+            if (_deck.cardList.Count < game.deck.deckMaxSize)
             {
                 game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(PILE_NOT_COMPLETE), () =>
                 {
@@ -397,12 +391,12 @@ namespace Controllers
             {
                 game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(StringTable.BUILD_CONFIRM_EXIT_WITHOUT_SAVE), () =>
                 {
-                    display(false);
+                    display();
                 });
             }
             else
             {
-                display(false);
+                display();
             }
         }
         private void onClickImportButton()
@@ -462,7 +456,7 @@ namespace Controllers
         private void onExportDeckClick()
         {
             // 卡组保存
-            if (_deck.cardList.Count < _deckMaxSize)
+            if (_deck.cardList.Count < game.deck.deckMaxSize)
             {
                 game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(PILE_NOT_COMPLETE_EXPORT), () =>
                 {
@@ -663,24 +657,6 @@ namespace Controllers
             return cardSkin;
         }
         /// <summary>
-        /// 加载构筑卡组列表
-        /// </summary>
-        private void loadDeckList()
-        {
-            _deckList.Clear();
-            foreach (var deckData in game.deck.GetDecks())
-            {
-                Deck deck = new Deck()
-                {
-                    id = (int)deckData.ID,
-                    name = deckData.Name,
-                    masterId = deckData.MasterID,
-                };
-                deck.addCards(game.deck.GetDeckCards(deckData.ID).Values.Select(id => (int)id));
-                _deckList.Add(deck);
-            }
-        }
-        /// <summary>
         /// 获取卡组的封面贴图
         /// </summary>
         /// <param name="deck"></param>
@@ -694,15 +670,6 @@ namespace Controllers
             {
                 return game.card.loadExternalImage(skin.imagePath);
             }
-        }
-        /// <summary>
-        /// 判断卡组中是否存在需要提示的错误
-        /// </summary>
-        /// <param name="deck"></param>
-        /// <returns></returns>
-        private bool isDeckHasErrorTip(Deck deck)
-        {
-            return deck.cardList.Sum(i => i.count) < _deckMaxSize;
         }
         /// <summary>
         /// 判断是不是可用的角色
@@ -725,7 +692,7 @@ namespace Controllers
         private bool tryAddCardToDeck(CardDefine card, out string errorTip)
         {
             //卡组数量上限
-            if (_deck.cardList.Count >= _deckMaxSize)
+            if (_deck.cardList.Count >= game.deck.deckMaxSize)
             {
                 errorTip = game.lang._(StringTable.BUILD_TIP_DECK_MAX_SIZE);
                 return false;
@@ -781,7 +748,7 @@ namespace Controllers
                 return;
 
             List<DeckDataItem> deckToSend = new List<DeckDataItem>();
-            foreach (var deck in _deckList)
+            foreach (var deck in deckList)
             {
                 deckToSend.Add(new DeckDataItem()
                 {
@@ -847,18 +814,18 @@ namespace Controllers
         /// <returns></returns>
         private async Task updateDeckListUI()
         {
-            (string name, Sprite image, bool errorTip)[] viewData = new (string name, Sprite image, bool errorTip)[_deckList.Count];
-            for (int i = 0; i < _deckList.Count; i++)
+            (string name, Sprite image, bool errorTip)[] viewData = new (string name, Sprite image, bool errorTip)[deckList.Count];
+            for (int i = 0; i < deckList.Count; i++)
             {
-                viewData[i].name = _deckList[i].name;
-                viewData[i].image = await loadDeckImage(_deckList[i]);
-                viewData[i].errorTip = isDeckHasErrorTip(_deckList[i]);
+                viewData[i].name = deckList[i].name;
+                viewData[i].image = await loadDeckImage(deckList[i]);
+                viewData[i].errorTip = game.deck.isValidDeck(deckList[i]);
             }
             _ui.updateDeckList(viewData);
         }
         private async Task updateDeckCardListUI()
         {
-            _ui.setDeckCardCount(_deck.cardList.Sum(e => e.count), _deckMaxSize);
+            _ui.setDeckCardCount(_deck.cardList.Sum(e => e.count), game.deck.deckMaxSize);
             var cards = _deck.cardList.OrderBy(e => game.card.GetCardDefine(e.id).getCost()).ToArray();
             (string name, Sprite image, int count)[] deckCardList = new (string name, Sprite image, int count)[_deck.cardList.Count];
             for (int i = 0; i < deckCardList.Length; i++)
@@ -870,6 +837,8 @@ namespace Controllers
             _ui.updateDeckCardList(deckCardList);
         }
         #endregion
+        #region 属性字段
+        List<Deck> deckList => game.deck.getOrLoadDeckList();
         [SerializeField]
         BuildCardPanel _ui;
         [SerializeField]
@@ -882,10 +851,6 @@ namespace Controllers
         bool[] _costFiltersValue;
         [SerializeField]
         bool[] _typeFiltersValue;
-        [SerializeField]
-        int _deckMaxSize = 30;
-        [SerializeField]
-        List<Deck> _deckList = new List<Deck>();
         [SerializeField]
         Deck _deck;
         [SerializeField]
@@ -928,6 +893,7 @@ namespace Controllers
         const string NO_PILE_AVALIABLE = "剪贴板中没有可导入的卡组";
         [TranslateMsg]
         const string PILE_NOT_COMPLETE_EXPORT = "当前卡组不完整，无法在游戏中使用。\n是否要导出？";
+        #endregion
         #region 内部类
         class CardPoolRuntimeData
         {

@@ -10,7 +10,7 @@ using UnityEngine;
 using BJSYGameCore.UI;
 using NitoriNetwork.Common;
 using MukioI18n;
-
+using UnityEngine.UI;
 namespace UI
 {
     partial class RoomPanel
@@ -87,7 +87,7 @@ namespace UI
                 };
             }
 
-            // 设置房间选项
+            //设置房间选项
             try
             {
                 HearthstoneOption option = room.getOption();
@@ -141,30 +141,6 @@ namespace UI
         CardManager cardManager => this.findInstance<CardManager>();
 
         LangManager lang => this.findInstance<LangManager>();
-
-        partial void onAwake()
-        {
-            StartButtonButtonBlack.asButton.setSelectable(false);
-            DeckSelectionDeckListItem.SetMode(DeckListItem.Mode.DeckSelect);
-            DeckSelectionDeckListItem.onDeckSelect += (_) =>
-            {
-                showDeckSelectionPanel((deckID) =>
-                {
-                    var deck = deckManager.GetDeck(deckID);
-                    var skin = cardManager.getSkin(deck.MasterID);
-                    DeckSelectionDeckListItem.SetContent(deckID, deck.Name, skin.image);
-
-                    var list = deckManager.GetDeckCards(deckID).Select(k => (int)k.Value).ToList();
-                    list.Insert(0, deck.MasterID); // polyfill: 转换为传统的，第一张卡是master的格式
-                    onSetPlayerDeck?.Invoke(selfPlayerID, list.ToArray());
-                });
-            };
-
-            DeckPanelMasterCardSelection.hide();
-            DeckViewMasterCardSelection.hide();
-
-            initEvents();
-        }
 
         [TranslateMsg]
         private const string Cards_Name = "选择你的卡组";
@@ -315,7 +291,304 @@ namespace UI
             DeckViewMasterCardSelection.SetItems(cards);
             DeckViewMasterCardSelection.display();
         }
+        #region 公有方法
+        public void updatePlayerList((string playerName, string characterName, bool canViewDeck, bool canSetDeck, bool canRemove)[] viewData)
+        {
+            BJSYGameCore.UI.UIHelper.updateList(_playerRoot, _playerTemplate, _playerList, viewData.Length, (i, itemRect) =>
+            {
+                RoomPlayerListItem item = itemRect.GetComponent<RoomPlayerListItem>();
+                item.NameText.text = viewData[i].playerName;
+                item.CharacterText.text = viewData[i].characterName;
+                if (viewData[i].canSetDeck)
+                {
+                    item.ViewButtonBlack.gameObject.SetActive(false);
+                    item.SetButtonBlack.gameObject.SetActive(true);
+                }
+                else if (viewData[i].canViewDeck)
+                {
+                    item.ViewButtonBlack.gameObject.SetActive(true);
+                    item.SetButtonBlack.gameObject.SetActive(false);
+                }
+                item.RemoveButtonBlack.asButton.interactable = viewData[i].canRemove;
+            }, itemRect =>
+            {
+                RoomPlayerListItem item = itemRect.GetComponent<RoomPlayerListItem>();
+                item.onClickViewDeckButton += onClickPlayerListItemViewDeckButtonCallback;
+                item.onClickSetDeckButton += onClickPlayerListItemSetDeckButtonCallback;
+                item.onClickRemoveButton += onClickPlayerListItemRemoveButtonCallback;
+            }, itemRect =>
+            {
+                RoomPlayerListItem item = itemRect.GetComponent<RoomPlayerListItem>();
+                item.onClickViewDeckButton -= onClickPlayerListItemViewDeckButtonCallback;
+                item.onClickSetDeckButton -= onClickPlayerListItemSetDeckButtonCallback;
+                item.onClickRemoveButton -= onClickPlayerListItemRemoveButtonCallback;
+            });
+        }
+        public void displayAddAIButton(bool value)
+        {
+            _addAIPlayerButton.gameObject.SetActive(value);
+        }
+        public void displayIPText(bool value)
+        {
+            _ipText.gameObject.SetActive(value);
+        }
+        public void setIPText(string text)
+        {
+            _ipText.text = text;
+        }
+        public void setRandomSeed(int value)
+        {
+            _randomSeedInputField.SetTextWithoutNotify(value.ToString());
+        }
+        public void enableRandomSeed(bool value)
+        {
+            _randomSeedInputField.interactable = value;
+        }
+        public void setShuffle(bool value)
+        {
+            _shuffleToggle.SetIsOnWithoutNotify(value);
+        }
+        public void enableShuffle(bool value)
+        {
+            _shuffleToggle.interactable = value;
+        }
+        public void setInitReplaceTime(float value)
+        {
+            _initReplaceTimeInputField.SetTextWithoutNotify(value.ToString());
+        }
+        public void enableInitReplaceTime(bool value)
+        {
+            _initReplaceTimeInputField.interactable = value;
+        }
+        public void setTurnTime(float value)
+        {
+            _turnTimeInputField.SetTextWithoutNotify(value.ToString());
+        }
+        public void enableTurnTime(bool value)
+        {
+            _turnTimeInputField.interactable = value;
+        }
+        public void setDisableRandomPlayerActOrder(bool value)
+        {
+            _disableRandomPlayerActOrderToggle.SetIsOnWithoutNotify(value);
+        }
+        public void enableDisableRandomPlayerActOrder(bool value)
+        {
+            _disableRandomPlayerActOrderToggle.interactable = value;
+        }
+        public void updateLocalPlayerDeck(string deckName, Sprite deckImage)
+        {
+            _localPlayerDeckNameText.text = deckName;
+            _localPlayerDeckImage.sprite = deckImage;
+        }
+        public void displayDeckSelectPanel((string name, Sprite image, bool isWarning)[] viewData)
+        {
+            DeckPanelMasterCardSelection.display();
+            DeckPanelMasterCardSelection.updateItemList(viewData);
+        }
+        public void hideDeckSelectPanel()
+        {
+            DeckPanelMasterCardSelection.hide();
+        }
+        public void displayStartButton(bool value)
+        {
+            _startButton.gameObject.SetActive(value);
+        }
+        public void enableStartButton(bool value)
+        {
+            _startButton.interactable = value;
+        }
+        public void displayReadyButton(bool value)
+        {
+            _readyButton.gameObject.SetActive(value);
+        }
+        public void displayCancleReadyButton(bool value)
+        {
+            _cancleReadyButton.gameObject.SetActive(value);
+        }
+        #endregion
+        #region 私有方法
+        #region 生命周期
+        partial void onAwake()
+        {
+            StartButtonButtonBlack.asButton.setSelectable(false);
+            DeckSelectionDeckListItem.SetMode(DeckListItem.Mode.DeckSelect);
+            DeckSelectionDeckListItem.onDeckSelect += (_) =>
+            {
+                showDeckSelectionPanel((deckID) =>
+                {
+                    var deck = deckManager.GetDeck(deckID);
+                    var skin = cardManager.getSkin(deck.MasterID);
+                    DeckSelectionDeckListItem.SetContent(deckID, deck.Name, skin.image);
 
+                    var list = deckManager.GetDeckCards(deckID).Select(k => (int)k.Value).ToList();
+                    list.Insert(0, deck.MasterID); // polyfill: 转换为传统的，第一张卡是master的格式
+                    onSetPlayerDeck?.Invoke(selfPlayerID, list.ToArray());
+                });
+            };
+            initEvents();
+
+            DeckPanelMasterCardSelection.hide();
+            DeckViewMasterCardSelection.hide();
+            if (_playerTemplate.transform.parent == _playerRoot)
+            {
+                _playerTemplate.gameObject.SetActive(false);
+            }
+            _addAIPlayerButton.onClick.AddListener(onClickAddAIPlayerButtonCallback);
+            _selectDeckButton.onClick.AddListener(onClickSelectDeckButtonCallback);
+            DeckPanelMasterCardSelection.onClickItem += onClickDeckSelectItemCallback;
+            //_randomSeedInputField.onValueChanged.AddListener(onRandomSeedInputFieldValueChangedCallback);
+            _randomSeedInputField.onEndEdit.AddListener(onRandomSeedInputFieldValueChangedCallback);
+            _shuffleToggle.onValueChanged.AddListener(onShuffleToggleValueChangedCallback);
+            _initReplaceTimeInputField.onEndEdit.AddListener(onInitReplaceTimeInputFieldValueChangedCallback);
+            _turnTimeInputField.onEndEdit.AddListener(onTurnTimeInputFieldValueChangedCallback);
+            _disableRandomPlayerActOrderToggle.onValueChanged.AddListener(onDisableRandomPlayerActOrderValueChangedCallback);
+            _startButton.onClick.AddListener(onClickStartButtonCallback);
+            _readyButton.onClick.AddListener(onClickReadyButtonCallback);
+            _cancleReadyButton.onClick.AddListener(onClickCancleReadyButtonCallback);
+            _quitButton.onClick.AddListener(onClickQuitButtonCallback);
+        }
+        #endregion
+        #region 事件回调
+        private void onClickPlayerListItemViewDeckButtonCallback(RoomPlayerListItem item)
+        {
+            onClickPlayerItemViewDeckButton?.Invoke(_playerList.IndexOf(item.transform as RectTransform));
+        }
+        private void onClickPlayerListItemSetDeckButtonCallback(RoomPlayerListItem item)
+        {
+            onClickPlayerItemSetDeckButton?.Invoke(_playerList.IndexOf(item.transform as RectTransform));
+        }
+        private void onClickPlayerListItemRemoveButtonCallback(RoomPlayerListItem item)
+        {
+            onClickPlayerItemRemoveButton?.Invoke(_playerList.IndexOf(item.transform as RectTransform));
+        }
+        private void onClickAddAIPlayerButtonCallback()
+        {
+            onClickAddAIPlayerButton?.Invoke();
+        }
+        private void onClickSelectDeckButtonCallback()
+        {
+            onClickSelectDeckButton?.Invoke();
+        }
+        private void onClickDeckSelectItemCallback(int index)
+        {
+            onClickDeckSelectPanelItem?.Invoke(index);
+        }
+        private void onRandomSeedInputFieldValueChangedCallback(string value)
+        {
+            if (int.TryParse(value, out int seed))
+            {
+                onRandomSeedInputFieldValueChanged?.Invoke(seed);
+            }
+        }
+        private void onShuffleToggleValueChangedCallback(bool value)
+        {
+            onShuffleToggleValueChanged?.Invoke(value);
+        }
+        private void onInitReplaceTimeInputFieldValueChangedCallback(string text)
+        {
+            if (float.TryParse(text, out float value))
+            {
+                onInitReplaceTimeInputFieldValueChanged?.Invoke(value);
+            }
+        }
+        private void onTurnTimeInputFieldValueChangedCallback(string text)
+        {
+            if (float.TryParse(text, out float value))
+            {
+                onTurnTimeInputFieldValueChanged?.Invoke(value);
+            }
+        }
+        private void onDisableRandomPlayerActOrderValueChangedCallback(bool value)
+        {
+            onDisableRandomPlayerActOrderToggleValueChanged?.Invoke(value);
+        }
+        private void onClickStartButtonCallback()
+        {
+            onClickStartButton?.Invoke();
+        }
+        private void onClickReadyButtonCallback()
+        {
+            onClickReadyButton?.Invoke();
+        }
+        private void onClickCancleReadyButtonCallback()
+        {
+            onClickCancleReadyButton?.Invoke();
+        }
+        private void onClickQuitButtonCallback()
+        {
+            onClickQuitButton?.Invoke();
+        }
+        #endregion
+        #endregion
+        #region 事件
+        /// <summary>
+        /// 当点击玩家查看卡组按钮，参数为玩家索引
+        /// </summary>
+        public event Action<int> onClickPlayerItemViewDeckButton;
+        /// <summary>
+        /// 当点击玩家设置卡组按钮，参数为玩家索引
+        /// </summary>
+        public event Action<int> onClickPlayerItemSetDeckButton;
+        /// <summary>
+        /// 当点击玩家移除按钮，参数为玩家索引
+        /// </summary>
+        public event Action<int> onClickPlayerItemRemoveButton;
+        /// <summary>
+        /// 当点击添加AI玩家按钮
+        /// </summary>
+        public event Action onClickAddAIPlayerButton;
+        public event Action onClickSelectDeckButton;
+        public event Action<int> onClickDeckSelectPanelItem;
+        /// <summary>
+        /// 当房主更改房间随机种子，参数为更改后的随机种子值
+        /// </summary>
+        public event Action<int> onRandomSeedInputFieldValueChanged;
+        public event Action<bool> onShuffleToggleValueChanged;
+        public event Action<float> onInitReplaceTimeInputFieldValueChanged;
+        public event Action<float> onTurnTimeInputFieldValueChanged;
+        public event Action<bool> onDisableRandomPlayerActOrderToggleValueChanged;
+        public event Action onClickStartButton;
+        public event Action onClickReadyButton;
+        public event Action onClickCancleReadyButton;
+        public event Action onClickQuitButton;
+        #endregion
+        #region 属性字段
+        [SerializeField]
+        RectTransform _playerRoot;
+        [SerializeField]
+        RectTransform _playerTemplate;
+        [SerializeField]
+        List<RectTransform> _playerList = new List<RectTransform>();
+        [SerializeField]
+        Button _addAIPlayerButton;
+        [SerializeField]
+        Text _ipText;
+        [SerializeField]
+        InputField _randomSeedInputField;
+        [SerializeField]
+        Toggle _shuffleToggle;
+        [SerializeField]
+        InputField _initReplaceTimeInputField;
+        [SerializeField]
+        InputField _turnTimeInputField;
+        [SerializeField]
+        Toggle _disableRandomPlayerActOrderToggle;
+        [SerializeField]
+        Text _localPlayerDeckNameText;
+        [SerializeField]
+        Image _localPlayerDeckImage;
+        [SerializeField]
+        Button _selectDeckButton;
+        [SerializeField]
+        Button _startButton;
+        [SerializeField]
+        Button _readyButton;
+        [SerializeField]
+        Button _cancleReadyButton;
+        [SerializeField]
+        Button _quitButton;
+        #endregion
         void showDeckSelectionPanel(Action<int> onDeckSelect)
         {
             var decks = deckManager.GetDecks();
@@ -329,11 +602,13 @@ namespace UI
             DeckPanelMasterCardSelection.display();
             DeckPanelMasterCardSelection.ClearEvents();
 
-            DeckPanelMasterCardSelection.OnSelect += (id) =>
+            DeckPanelMasterCardSelection.OnSelect += onSelectCallback;
+            void onSelectCallback(int id)
             {
                 DeckPanelMasterCardSelection.hide();
                 onDeckSelect(id);
-            };
+                DeckPanelMasterCardSelection.OnSelect -= onSelectCallback;
+            }
         }
 
         RoomPlayerData aiPlayerData;
@@ -418,6 +693,9 @@ namespace UI
             {
                 OnSetAIDeck?.Invoke();
             });
+            ViewButtonBlack.asButton.onClick.AddListener(onClickViewDeckButtonCallback);
+            SetButtonBlack.asButton.onClick.AddListener(onClickSetDeckButtonCallback);
+            RemoveButtonBlack.asButton.onClick.AddListener(onClickRemoveButtonCallback);
         }
         [Obsolete]
         RoomPlayerInfo playerInfo;
@@ -485,25 +763,42 @@ namespace UI
             SetButtonBlack.gameObject.SetActive(mode == PlayerListMode.AIPlayer);
             AddImage.gameObject.SetActive(mode == PlayerListMode.AddAI);
         }
-
+        #region 私有方法
+        #region 事件回调
+        private void onClickViewDeckButtonCallback()
+        {
+            onClickViewDeckButton?.Invoke(this);
+        }
+        private void onClickSetDeckButtonCallback()
+        {
+            onClickSetDeckButton?.Invoke(this);
+        }
+        private void onClickRemoveButtonCallback()
+        {
+            onClickRemoveButton?.Invoke(this);
+        }
+        #endregion
+        #endregion
+        #region 事件
         /// <summary>
         /// 点击移除玩家后的事件
         /// </summary>
         public event Action<int> OnPlayerRemove;
-
         /// <summary>
         /// 点击设置AI牌组后的事件
         /// </summary>
         public event Action OnSetAIDeck;
-
         /// <summary>
         /// 点击查看玩家牌组后的事件
         /// </summary>
         public event Action<int[]> OnPlayerViewDeck;
-
         /// <summary>
         /// 点击添加AI玩家的事件
         /// </summary>
         public event Action OnAddAIPlayer;
+        public event Action<RoomPlayerListItem> onClickViewDeckButton;
+        public event Action<RoomPlayerListItem> onClickSetDeckButton;
+        public event Action<RoomPlayerListItem> onClickRemoveButton;
+        #endregion
     }
 }

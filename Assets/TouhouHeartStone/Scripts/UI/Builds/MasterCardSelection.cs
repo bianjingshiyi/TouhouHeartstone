@@ -63,6 +63,21 @@ namespace UI
                 c.onClick += onClickItemCallback;
             }
         }
+        public void updateItemList((string name, Sprite image, bool isWarning)[] viewData)
+        {
+            MasterCardList.clearItems();
+            _itemList.Clear();
+            for (int i = 0; i < viewData.Length; i++)
+            {
+                var c = MasterCardList.addItem();
+                _itemList.Add(c.transform as RectTransform);
+                c.updateView(viewData[i].name, viewData[i].image);
+                c.setWarning(viewData[i].isWarning);
+                c.SetMode(DeckListItem.Mode.DeckSelect);
+                c.SetSelectable(!viewData[i].isWarning);
+                c.onClick += onClickItemCallback;
+            }
+        }
         public void SetItems(IEnumerable<CardDefine> cards)
         {
             SetItems(cards.Select(c => c.id));

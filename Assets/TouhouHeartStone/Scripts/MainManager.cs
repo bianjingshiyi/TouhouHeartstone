@@ -318,85 +318,85 @@ namespace Game
         [TranslateMsg]
         private const string MMANGGE_MYSELF = "自己";
 
-        private void showLocalRoom()
-        {
-            Main main = ui.getObject<Main>();
-            _ = network.logic.CreateLocalRoom();
-            currentRoomData = network.logic.CurrentRoom;
-            currentRoomData.maxPlayerCount = 2; // 炉石两个人
+        //private void showLocalRoom()
+        //{
+        //    Main main = ui.getObject<Main>();
+        //    _ = network.logic.CreateLocalRoom();
+        //    currentRoomData = network.logic.CurrentRoom;
+        //    currentRoomData.maxPlayerCount = 2; // 炉石两个人
 
-            HearthstoneOption option = new HearthstoneOption();
-            var rand = new byte[4];
-            System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
-            option.randomSeed = BitConverter.ToInt32(rand, 0);
-            currentRoomData.setOption(option);
+        //    HearthstoneOption option = new HearthstoneOption();
+        //    var rand = new byte[4];
+        //    System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
+        //    option.randomSeed = BitConverter.ToInt32(rand, 0);
+        //    currentRoomData.setOption(option);
 
-            main.RoomPanel.ResetEvents();
-            main.RoomPanel.SetMode(RoomPanel.Mode.Local);
-            main.RoomPanel.SetSelfID(network.logic.localPlayer.id);
-            main.RoomPanel.SetRightText("");
-            main.RoomPanel.SetInfo(currentRoomData);
+        //    main.RoomPanel.ResetEvents();
+        //    main.RoomPanel.SetMode(RoomPanel.Mode.Local);
+        //    main.RoomPanel.SetSelfID(network.logic.localPlayer.id);
+        //    main.RoomPanel.SetRightText("");
+        //    main.RoomPanel.SetInfo(currentRoomData);
 
-            main.display(main.RoomPanel);
-            main.RoomPanel.onStartClick += () =>
-            {
-                game.startLocalGame(currentRoomData);
-            };
-            main.RoomPanel.onQuitClick += () =>
-            {
-                currentRoomData = null;
-                network.quitRoom();
+        //    main.display(main.RoomPanel);
+        //    main.RoomPanel.onStartClick += () =>
+        //    {
+        //        game.startLocalGame(currentRoomData);
+        //    };
+        //    main.RoomPanel.onQuitClick += () =>
+        //    {
+        //        currentRoomData = null;
+        //        network.quitRoom();
 
-                main.display(main.MainMenu);
-            };
-            main.RoomPanel.onRoomPropUpdate += (name, obj) =>
-            {
-                currentRoomData.setProp(name, obj);
-                main.RoomPanel.SetInfo(currentRoomData);
-            };
-            main.RoomPanel.onPlayerRemove += (id) =>
-            {
-                for (int i = 0; i < currentRoomData.playerDataList.Count; i++)
-                {
-                    if (currentRoomData.playerDataList[i].id == id)
-                    {
-                        currentRoomData.playerDataList.RemoveAt(i--);
-                    }
-                }
-                main.RoomPanel.SetInfo(currentRoomData);
-            };
-            main.RoomPanel.onAIPlayerAdd += () =>
-            {
-                network.logic.AddAIPlayer();
-                main.RoomPanel.SetInfo(currentRoomData);
-            };
-            main.RoomPanel.onSetPlayerDeck += (id, cardsId) =>
-            {
-                for (int i = 0; i < currentRoomData.playerDataList.Count; i++)
-                {
-                    var player = currentRoomData.playerDataList[i];
-                    if (player.id == id)
-                    {
-                        Deck deck = currentRoomData.playerDataList[i].getDeck();
-                        if (deck != null)
-                        {
-                            deck.masterId = cardsId[0];
-                            deck.setCards(cardsId.Skip(1));
-                        }
-                        else
-                        {
-                            deck = new Deck(cardsId[0], cardsId.Skip(1));
-                        }
-                        currentRoomData.playerDataList[i].setDeck(deck);
-                        if (player.type == RoomPlayerType.ai)
-                        {
-                            player.setReady(true);
-                        }
-                    }
-                }
-                main.RoomPanel.SetInfo(currentRoomData);
-            };
-        }
+        //        main.display(main.MainMenu);
+        //    };
+        //    main.RoomPanel.onRoomPropUpdate += (name, obj) =>
+        //    {
+        //        currentRoomData.setProp(name, obj);
+        //        main.RoomPanel.SetInfo(currentRoomData);
+        //    };
+        //    main.RoomPanel.onPlayerRemove += (id) =>
+        //    {
+        //        for (int i = 0; i < currentRoomData.playerDataList.Count; i++)
+        //        {
+        //            if (currentRoomData.playerDataList[i].id == id)
+        //            {
+        //                currentRoomData.playerDataList.RemoveAt(i--);
+        //            }
+        //        }
+        //        main.RoomPanel.SetInfo(currentRoomData);
+        //    };
+        //    main.RoomPanel.onAIPlayerAdd += () =>
+        //    {
+        //        network.logic.AddAIPlayer();
+        //        main.RoomPanel.SetInfo(currentRoomData);
+        //    };
+        //    main.RoomPanel.onSetPlayerDeck += (id, cardsId) =>
+        //    {
+        //        for (int i = 0; i < currentRoomData.playerDataList.Count; i++)
+        //        {
+        //            var player = currentRoomData.playerDataList[i];
+        //            if (player.id == id)
+        //            {
+        //                Deck deck = currentRoomData.playerDataList[i].getDeck();
+        //                if (deck != null)
+        //                {
+        //                    deck.masterId = cardsId[0];
+        //                    deck.setCards(cardsId.Skip(1));
+        //                }
+        //                else
+        //                {
+        //                    deck = new Deck(cardsId[0], cardsId.Skip(1));
+        //                }
+        //                currentRoomData.playerDataList[i].setDeck(deck);
+        //                if (player.type == RoomPlayerType.ai)
+        //                {
+        //                    player.setReady(true);
+        //                }
+        //            }
+        //        }
+        //        main.RoomPanel.SetInfo(currentRoomData);
+        //    };
+        //}
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
             if (e.Exception != null)

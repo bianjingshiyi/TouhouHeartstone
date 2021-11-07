@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Game
 {
-    public class DeckManager : Manager
+    public partial class DeckManager : Manager
     {
         #region DB
         public SqlDatabase db => getManager<DatabaseManager>().Database;
@@ -43,7 +43,7 @@ namespace Game
 
             if (!hasRow)
                 db.Execute($@"ALTER TABLE {tableDeck} ADD COLUMN masterID INTEGER;", null);
-            
+
 
             db.Execute($@"
             CREATE TABLE IF NOT EXISTS {tableCards}(
@@ -399,7 +399,7 @@ namespace Game
             byte[] result = new byte[dstLen];
 
             result[0] = ZMHeaderByte1;
-            result[1] = ZMHeaderByte2; 
+            result[1] = ZMHeaderByte2;
             result[2] = 2; // Version
             result[3] = bytes[srcLen - 4]; // Len的MSB。因为它不会大于256，所以直接使用
 
@@ -486,7 +486,7 @@ namespace Game
             var i = 0;
 
             bytes[i++] = GzipHeaderByte1; // header, 2 bytes
-            bytes[i++] = GzipHeaderByte2; 
+            bytes[i++] = GzipHeaderByte2;
             bytes[i++] = 0x08; // CM, 8 = Deflate
             bytes[i++] = 0x00; // FLAG, disable all feature
 
