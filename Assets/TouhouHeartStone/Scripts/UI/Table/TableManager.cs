@@ -337,7 +337,7 @@ namespace Game
 
         private bool tryCancelUse()
         {
-            if (usingCard != null && usingCard.define is ServantCardDefine && isSelectingTarget)
+            if (usingCard != null && usingCard.define.isServant() && isSelectingTarget)
             {
                 resetUse(true, true);
                 return true;
@@ -419,10 +419,9 @@ namespace Game
         /// <param name="master"></param>
         /// <param name="card"></param>
         /// <param name="isSelectable"></param>
-        public void setMaster(Master master, Card card, bool isSelectable = false)
+        public async void setMaster(Master master, Card card, bool isSelectable = false)
         {
             CardSkinData skin = getSkin(card);
-            master.Image.sprite = skin.image;
             master.LifePropNumber.text.text = card.getCurrentLife(game).ToString();
             if (card.getAttack(game) > 0)
             {
@@ -489,9 +488,6 @@ namespace Game
                 master.onCanAttackFalse.invokeAfterAnim();
             }
 
-
-
-
             if (card.hasKeyword(game, KEYWORD.SHIELD))
                 master.ShieldImage.display();
             else
@@ -505,6 +501,14 @@ namespace Game
             {
                 master.onShackleFalse.invokeBeforeAnim();
                 master.onShackleFalse.invokeAfterAnim();
+            }
+            if (skin.image != null)
+            {
+                master.Image.sprite = skin.image;
+            }
+            else
+            {
+                master.Image.sprite = await getManager<CardManager>().loadCardImage(card.define.id);
             }
         }
 
@@ -534,7 +538,7 @@ namespace Game
                 return false;
             }
         }
-        public void setItem(Item item, Card card)
+        public async void setItem(Item item, Card card)
         {
             if (card == null)
             {
@@ -543,8 +547,14 @@ namespace Game
             }
             item.display();
             CardSkinData skin = getSkin(card);
-            item.Image.sprite = skin.image;
-
+            if (skin.image != null)
+            {
+                item.Image.sprite = skin.image;
+            }
+            else
+            {
+                item.Image.sprite = await getManager<CardManager>().loadCardImage(card.define.id);
+            }
         }
         private void onItemPointerExit(Item item, PointerEventData pointer)
         {
@@ -1210,13 +1220,9 @@ namespace Game
         /// <param name="servant"></param>
         /// <param name="card"></param>
         /// <param name="isSelectable"></param>
-        public void setServant(ServantItem servant, Card card, bool isSelectable = false, int attack = -1, int life = -1)
+        public async void setServant(ServantItem servant, Card card, bool isSelectable = false, int attack = -1, int life = -1)
         {
             CardSkinData skin = getSkin(card);
-            if (skin != null)
-            {
-                servant.image.sprite = skin.image;
-            }
             servant.attackPropNumber.text.text = attack < 0 ? card.getAttack(game).ToString() : attack.ToString();
             servant.lifePropNumber.text.text = life < 0 ? card.getCurrentLife(game).ToString() : life.ToString();
 
@@ -1338,6 +1344,12 @@ namespace Game
             //else
             //    servant.shieldImage.hide();
             //getChild("Root").getChild("Shield").gameObject.SetActive(card.isShield());
+            if (skin != null && skin.image != null)
+            {
+                servant.image.sprite = skin.image;
+            }
+            else
+                servant.image.sprite = await getManager<CardManager>().loadCardImage(card.define.id);
         }
         [SerializeField]
         BJSYGameCore.Timer _showCardTimer = new BJSYGameCore.Timer() { duration = 0.25f };
@@ -1543,17 +1555,13 @@ namespace Game
         /// 设置随从定义
         /// </summary>
         /// <param name="servant"></param>
-        /// <param name="card"></param>
-        public void setServant(ServantItem servant, CardDefine card)
+        /// <param name="cardDefine"></param>
+        public async void setServant(ServantItem servant, CardDefine cardDefine)
         {
-            CardSkinData skin = getSkin(card);
-            if (skin != null)
-            {
-                servant.image.sprite = skin.image;
-            }
-            servant.attackPropNumber.text.text = card.getAttack().ToString();
-            servant.lifePropNumber.text.text = card.getLife().ToString();
-            if (card.hasKeyword(KEYWORD.TAUNT))
+            CardSkinData skin = getSkin(cardDefine);
+            servant.attackPropNumber.text.text = cardDefine.getAttack().ToString();
+            servant.lifePropNumber.text.text = cardDefine.getLife().ToString();
+            if (cardDefine.hasKeyword(KEYWORD.TAUNT))
             {
                 servant.onTauntTrue.invokeBeforeAnim();
                 servant.onTauntTrue.invokeAfterAnim();
@@ -1563,6 +1571,12 @@ namespace Game
                 servant.onTauntFalse.invokeBeforeAnim();
                 servant.onTauntFalse.invokeAfterAnim();
             }
+            if (skin != null && skin.image != null)
+            {
+                servant.image.sprite = skin.image;
+            }
+            else
+                servant.image.sprite = await getManager<CardManager>().loadCardImage(cardDefine.id);
         }
         /// <summary>
         /// 从随从获取对应的卡

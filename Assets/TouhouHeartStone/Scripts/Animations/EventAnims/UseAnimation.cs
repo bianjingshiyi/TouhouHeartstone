@@ -4,6 +4,7 @@ using UnityEngine;
 using UI;
 using BJSYGameCore.UI;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Game
 {
@@ -16,6 +17,8 @@ namespace Game
         AnimAnim _useAnim;
         AnimAnim _equipAnim;
         TableAnimation _targetedAnim;
+        Task<AudioClip> _loadSoundTask;
+        Task<Projectile> _loadProjectileTask;
         public override bool update(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
         {
             UIObject sourceActor;
@@ -123,9 +126,25 @@ namespace Game
                             return false;
                         table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
                     }
-                    table.getManager<SEManager>().playSE(table.getSkin(eventArg.card).sound_onUse);
-                    if (tryTargetedAnim(table, table.ui.EnemyMaster, eventArg, time))
-                        return false;
+                    CardSkinData skin = table.getSkin(eventArg.card);
+                    if (skin != null && !string.IsNullOrEmpty(skin.soundPath_onUse))
+                    {
+                        AudioClip sound;
+                        if (_loadSoundTask == null)
+                        {
+                            _loadSoundTask = table.getManager<THHResourceManager>().loadAudio(skin.soundPath_onUse);
+                        }
+                        if (!_loadSoundTask.IsCompleted)
+                            return false;
+                        else
+                        {
+                            sound = _loadSoundTask.Result;
+                            _loadSoundTask = null;
+                        }
+                        table.getManager<SEManager>().playSE(sound);
+                        if (tryTargetedAnim(table, table.ui.EnemyMaster, eventArg, time))
+                            return false;
+                    }
                 }
             }
             else if (eventArg.card.isSkill())
@@ -140,7 +159,18 @@ namespace Game
                     table.setSkill(table.ui.EnemySkill, eventArg.card);
                     sourceActor = table.ui.EnemySkill;
                 }
-                table.getManager<SEManager>().playSE(table.getSkin(eventArg.card).sound_onUse);
+                CardSkinData skin = table.getSkin(eventArg.card);
+                if (skin != null && !string.IsNullOrEmpty(skin.soundPath_onUse))
+                {
+                    if (_loadSoundTask == null)
+                    {
+                        _loadSoundTask = table.getManager<THHResourceManager>().loadAudio(skin.soundPath_onUse);
+                    }
+                    if (_loadSoundTask.IsCompleted)
+                    {
+                        table.getManager<SEManager>().playSE(_loadSoundTask.Result);
+                    }
+                }
                 if (tryTargetedAnim(table, sourceActor, eventArg, time))
                     return false;
             }
@@ -179,7 +209,7 @@ namespace Game
                         return false;
                 }
             }
-            if (table.game.answers.getRequests(eventArg.player.id).FirstOrDefault() is DiscoverRequest&&eventArg.player!=table.player)
+            if (table.game.answers.getRequests(eventArg.player.id).FirstOrDefault() is DiscoverRequest && eventArg.player != table.player)
                 table.ui.Waiting.SetActive(true);
             return true;
         }
@@ -187,23 +217,32 @@ namespace Game
         {
             if (eventArg.targets != null && eventArg.targets.Length > 0 && eventArg.targets[0] is var targetCard)
             {
-                if (table.getSkin(eventArg.card) is var skin && skin.projectile != null)
+                if (table.getSkin(eventArg.card) is var skin && !string.IsNullOrEmpty(skin.projectilePath))
                 {
-                    UIObject targetActor;
-                    if (table.tryGetMaster(targetCard, out var targetMaster))
-                        targetActor = targetMaster;
-                    else if (table.tryGetServant(targetCard, out var targetServant))
-                        targetActor = targetServant;
-                    else
-                        throw new ActorNotFoundException(targetCard);
-                    if (_targetedAnim == null)
+                    if (_loadProjectileTask == null)
                     {
-                        _targetedAnim = new ProjectileAnimation(
-                            table.createProjectile(skin.projectile, sourceActor.rectTransform, targetActor.rectTransform),
-                            targetActor);
+                        _loadProjectileTask = table.getManager<THHResourceManager>().loadObject<Projectile>(skin.projectilePath);
                     }
-                    if (!_targetedAnim.update(table, time))
+                    if (!_loadProjectileTask.IsCompleted)
                         return true;
+                    else
+                    {
+                        UIObject targetActor;
+                        if (table.tryGetMaster(targetCard, out var targetMaster))
+                            targetActor = targetMaster;
+                        else if (table.tryGetServant(targetCard, out var targetServant))
+                            targetActor = targetServant;
+                        else
+                            throw new ActorNotFoundException(targetCard);
+                        if (_targetedAnim == null)
+                        {
+                            _targetedAnim = new ProjectileAnimation(
+                                table.createProjectile(_loadProjectileTask.Result, sourceActor.rectTransform, targetActor.rectTransform),
+                                targetActor);
+                        }
+                        if (!_targetedAnim.update(table, time))
+                            return true;
+                    }
                 }
                 else
                 {

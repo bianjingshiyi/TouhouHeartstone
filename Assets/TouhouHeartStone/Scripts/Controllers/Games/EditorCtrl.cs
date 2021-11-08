@@ -235,7 +235,20 @@ namespace Controllers
                 }
                 //另存为图片
                 string path = Path.Combine("Textures", _curCardPoolInfo.cardPoolName, skin.id.ToString(), skin.skinId.ToString(), "Image.jpg");
-                await game.fileManager.saveFile(path, pair.Value.texture.EncodeToJPG());
+                if (pair.Value is Sprite sprite)
+                {
+                    await game.fileManager.saveFile(path, sprite.texture.EncodeToJPG());
+                }
+                else if (pair.Value is Task<Sprite> task)
+                {
+                    sprite = await task;
+                    await game.fileManager.saveFile(path, sprite.texture.EncodeToJPG());
+                }
+                else
+                {
+                    Debug.LogWarning("图片" + path + "为空");
+                    continue;
+                }
                 Debug.Log("另存为图片" + path + "成功");
                 //替换所有引用这个图片的皮肤的图片地址
                 foreach (var otherSkin in _cardSkinList.Where(s => s.imagePath == pair.Key))

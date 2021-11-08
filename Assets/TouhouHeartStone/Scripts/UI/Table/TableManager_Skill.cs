@@ -32,10 +32,9 @@ namespace Game
         /// </summary>
         /// <param name="skill"></param>
         /// <param name="card"></param>
-        public void setSkill(Skill skill, Card card)
+        public async void setSkill(Skill skill, Card card)
         {
             CardSkinData skin = getSkin(card);
-            skill.image.sprite = skin.image;
             skill.costPropNumber.text.text = card.getCost(game).ToString();
             if (card.isUsed(game))
             {
@@ -62,6 +61,10 @@ namespace Game
                 skill.isUsable = false;
                 skill.asButton.interactable = false;
             }
+            if (skin != null && skin.image != null)
+                skill.image.sprite = skin.image;
+            else
+                skill.image.sprite = await getManager<CardManager>().loadCardImage(card.define.id);
         }
         /// <summary>
         /// 技能点击处理

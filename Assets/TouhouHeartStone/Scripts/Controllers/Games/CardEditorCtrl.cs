@@ -258,11 +258,12 @@ namespace Controllers
             if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
             {
                 //手机端
-                var permission = NativeGallery.GetImageFromGallery(path =>
+                var permission = NativeGallery.GetImageFromGallery(async path =>
                 {
                     if (path != null)
                     {
-                        if (!game.card.tryGetSpriteFromCache(path, out Sprite sprite))
+                        Sprite sprite = await game.card.getSpriteFromCache(path);
+                        if (sprite == null)
                         {
                             Texture2D texture = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
                             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
@@ -292,7 +293,7 @@ namespace Controllers
                 }
                 string path = paths[0];
                 UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(path);
-                uwr.SendWebRequest().completed += op =>
+                uwr.SendWebRequest().completed += async op =>
                 {
                     if (uwr.isNetworkError || uwr.isHttpError)
                     {
@@ -300,7 +301,8 @@ namespace Controllers
                     }
                     else
                     {
-                        if (!game.card.tryGetSpriteFromCache(path, out Sprite sprite))
+                        Sprite sprite = await game.card.getSpriteFromCache(path);
+                        if (sprite == null)
                         {
                             Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
                             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);

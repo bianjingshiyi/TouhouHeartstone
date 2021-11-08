@@ -150,7 +150,7 @@ namespace Game
             {
                 return null;
             }
-            if (tryGetSpriteFromCache(path, out Sprite sprite))
+            if (await getSpriteFromCache(path) is Sprite sprite)
             {
                 return sprite;
             }
@@ -209,17 +209,25 @@ namespace Game
         /// <param name="sprite"></param>
         public void addSpriteToCache(string path, Sprite sprite)
         {
-            _externalSpriteCacheDict[path] = sprite;
+            externalSpriteCacheDict[path] = sprite;
         }
         /// <summary>
-        /// 尝试获取缓存的外部图片
+        /// 获取缓存的外部图片
         /// </summary>
         /// <param name="path"></param>
-        /// <param name="sprite"></param>
         /// <returns></returns>
-        public bool tryGetSpriteFromCache(string path, out Sprite sprite)
+        public Task<Sprite> getSpriteFromCache(string path)
         {
-            return _externalSpriteCacheDict.TryGetValue(path, out sprite);
+            if (externalSpriteCacheDict.TryGetValue(path, out object value))
+            {
+                if (value is Sprite)
+                {
+                    return Task.FromResult(value as Sprite);
+                }
+                else if (value is Task<Sprite> task)
+                    return task;
+            }
+            return Task.FromResult<Sprite>(null);
         }
         public Task<Sprite> loadCardImage(int cardId)
         {
@@ -268,17 +276,13 @@ namespace Game
         #region 私有方法
         #endregion
         #region 属性字段
-        public Dictionary<string, Sprite> externalSpriteCacheDict
-        {
-            get { return _externalSpriteCacheDict; }
-        }
+        public Dictionary<string, object> externalSpriteCacheDict { get; } = new Dictionary<string, object>();
         Dictionary<int, List<CardDefine>> _externalCardDefineDict = new Dictionary<int, List<CardDefine>>();
         /// <summary>
         /// 用于存储外部皮肤信息的字典，Key为卡池Id，值为卡池包含皮肤列表
         /// </summary>
         Dictionary<int, List<CardSkinData>> _externalCardSkinDict = new Dictionary<int, List<CardSkinData>>();
         Dictionary<int, List<ActionNodeGraphInfo>> _externalCardActionGraphInfoDict = new Dictionary<int, List<ActionNodeGraphInfo>>();
-        Dictionary<string, Sprite> _externalSpriteCacheDict = new Dictionary<string, Sprite>();
         const string CARDPOOLS_DIR_NAME = "CardPools";
         #endregion
     }
