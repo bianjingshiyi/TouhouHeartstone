@@ -305,6 +305,18 @@ namespace UI
             _menuRoot.gameObject.SetActive(false);
             _returnButton.onClick.AddListener(onClickReturnButtonCallback);
         }
+        protected void Update()
+        {
+            //更新线段位置
+            foreach (ActionNodeConnectionData connection in _connectionList)
+            {
+                Vector2 from = connection.outputNode.getOutputWorldPosition(connection.outputIndex);
+                from = _actionNodesRoot.InverseTransformPoint(from);
+                Vector2 to = connection.inputNode.getInputWorldPosition(connection.inputIndex);
+                to = _actionNodesRoot.InverseTransformPoint(to);
+                connection.line.setPosition(from, to);
+            }
+        }
         #endregion
         #region 事件回调
         private void onPointerDownBackgroundImage(BaseEventData eventData)
