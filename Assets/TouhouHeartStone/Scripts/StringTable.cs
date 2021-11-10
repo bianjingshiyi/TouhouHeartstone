@@ -150,15 +150,28 @@ namespace Game
         [TranslateMsg("动作图编辑器中动作输入名称之值")]
         public const string EDITOR_INPUT_NAME_VALUE = "值";
         [TranslateMsg("动作图编辑器中动作输入名称之是设置")]
-        public const string EDITOR_INPUT_NAME_IS_VALUE = "是设置";
+        public const string EDITOR_INPUT_NAME_IS_SET = "是设置";
         [TranslateMsg("动作图编辑器中动作节点名称之获取唯一属性名")]
         public const string EDITOR_NODE_NAME_GET_UNIQUE_PROPERTY_NAME = "获取唯一属性名";
         [TranslateMsg("动作图编辑器中动作输出名称之属性名称")]
         public const string EDITOR_NODE_PARAM_NAME_PROPERTY_NAME = "属性名称";
         [TranslateMsg("动作图编辑器中动作节点名称之造成伤害")]
         public const string EDITOR_NODE_NAME_DAMAGE = "造成伤害";
+        [TranslateMsg("动作图编辑器节点参数名称之属性变更事件")]
+        public const string EDITOR_NODE_PARAM_NAME_PROP_CHANGE_EVENT = "属性变更事件";
+        [TranslateMsg("动作图编辑器节点参数名称之集合")]
+        public const string EDITOR_NODE_PARAM_NAME_COLLECTION = "集合";
+        [TranslateMsg("动作图编辑器节点参数名称变量名称")]
+        public const string EDITOR_NODE_PARAM_NAME_VARIABLE_NAME = "变量名";
+        [TranslateMsg("动作图编辑器节点参数名称之已更改")]
+        public const string EDITOR_NODE_PARAM_NAME_IS_CHANGED = "已变更";
+        [TranslateMsg("动作图编辑器节点参数名称之目标")]
+        public const string EDITOR_NODE_PARAM_NAME_TARGET = "目标";
+        [TranslateMsg("动作图编辑器节点参数名称之目标名称")]
+        public const string EDITOR_NODE_PARAM_NAME_TARGET_NAME = "目标名称";
+
         #endregion
-        #region 修改器
+        #region 修改器 
         [TranslateMsg("动作图编辑器中动作节点分类之修改器")]
         public const string EDITOR_NODE_CATEGORY_MODIFIER = "修改器";
         [TranslateMsg("动作图编辑器中动作节点名称之设置整数修改器值")]
