@@ -6,6 +6,7 @@ using System.Linq;
 using Game;
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 namespace Controllers
 {
@@ -43,7 +44,12 @@ namespace Controllers
                 PILE.ITEM,
                 PILE.HEAD
             };
-            _ui.setActiveRanges(_selectableRanges);
+            string[] activeRanges = new string[_selectableRanges.Length];
+            for (int i = 0; i < activeRanges.Length; i++)
+            {
+                activeRanges[i] = game.langManager.getString(_pileOptionNameDict[_selectableRanges[i]]);
+            }
+            _ui.setActiveRanges(activeRanges);
             _ui.onActiveRangeDropdownValueChanged += onActiveRangeDropdownValueChanged;
             _ui.onClickEditEnableActionButton += onClickEditEnableActionButton;
             _ui.onClickEditDisableActionButton += onClickEditDisableActionButton;
@@ -108,6 +114,17 @@ namespace Controllers
         public IAppManager app { get; }
         GeneratedEffect _effect;
         string[] _selectableRanges;
+        readonly Dictionary<string, string> _pileOptionNameDict = new Dictionary<string, string>()
+        {
+            { PILE.FIELD, StringTable.GAME_FIELD }  ,
+            { PILE.HAND, StringTable.GAME_HAND },
+            { PILE.DECK, StringTable.GAME_DECK },
+            { PILE.GRAVE, StringTable.GAME_GRAVE },
+            { PILE.MASTER, StringTable.GAME_MASTER } ,
+            { PILE.SKILL, StringTable.GAME_SKILL },
+            { PILE.ITEM, StringTable.GAME_ITEM },
+            { PILE.HEAD, StringTable.GAME_DELAY }
+        };
         #endregion
     }
 }

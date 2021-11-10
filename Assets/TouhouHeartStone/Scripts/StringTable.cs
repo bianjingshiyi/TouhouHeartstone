@@ -86,69 +86,105 @@ namespace Game
         [TranslateMsg("编辑器中询问玩家是否要删除卡池")]
         public const string EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL = "你是否要删除这个卡池？";
         #region 动作
+        #region 内置
+        [TranslateMsg("动作图编辑器中动作节点名称之整数运算")]
+        public const string EDITOR_NODE_NAME_INTEGER_OPERATION = "整数运算";
+        [TranslateMsg("动作图编辑器中动作节点名称之逻辑运算")]
+        public const string EDIOTR_NODE_NAME_LOGIC_OPERATION = "逻辑运算";
+        [TranslateMsg("动作图编辑器中动作节点名称之比较")]
+        public const string EDIOTR_NODE_NAME_COMPARE = "比较";
+        [TranslateMsg("动作图编辑器中动作节点名称之固定整数")]
+        public const string EDIOTR_NODE_NAME_INTEGER_CONST = "固定整数";
+        [TranslateMsg("动作图编辑器中动作节点名称之固定字符串")]
+        public const string EDIOTR_NODE_NAME_STRING_CONST = "固定字符串";
+        [TranslateMsg("动作图编辑器中动作节点名称之固定真值")]
+        public const string EDIOTR_NODE_NAME_BOOLEAN_CONST = "固定真值";
+        #endregion
         #region 游戏
         [TranslateMsg("动作图编辑器中动作节点分类之游戏")]
-        public const string EDITOR_NODE_CATEGORY_GAME = "Game";
+        public const string EDITOR_NODE_CATEGORY_GAME = "游戏";
         [TranslateMsg("动作图编辑器中动作节点名称之这张卡牌")]
-        public const string EDITOR_NODE_NAME_THIS_CARD = "ThisCard";
+        public const string EDITOR_NODE_NAME_THIS_CARD = "这张卡牌";
         #endregion
         #region 玩家
         [TranslateMsg("动作图编辑器中动作节点分类之玩家")]
-        public const string EDITOR_NODE_CATEGORY_PLAYER = "Player";
+        public const string EDITOR_NODE_CATEGORY_PLAYER = "玩家";
         [TranslateMsg("动作图编辑器中动作节点名称之获取牌堆")]
-        public const string EDITOR_NODE_NAME_GET_PILE = "GetPile";
+        public const string EDITOR_NODE_NAME_GET_PILE = "获取牌堆";
         [TranslateMsg("动作图编辑器中动作节点名称之获取法术伤害")]
-        public const string EDITOR_NODE_NAME_GET_SPELL_DAMAGE = "GetSpellDamage";
+        public const string EDITOR_NODE_NAME_GET_SPELL_DAMAGE = "获取法术伤害";
         [TranslateMsg("动作图编辑器中动作节点名称之获取目标")]
-        public const string EDITOR_NODE_NAME_GET_TARGET = "GetTarget";
+        public const string EDITOR_NODE_NAME_GET_TARGET = "获取目标";
         #endregion
         #region 牌堆
         [TranslateMsg("动作图编辑器中动作节点分类之牌堆")]
-        public const string EDITOR_NODE_CATEGORY_PILE = "Pile";
+        public const string EDITOR_NODE_CATEGORY_PILE = "牌堆";
         [TranslateMsg("动作图编辑器中动作节点名称之玩家牌堆是否发生改变")]
-        public const string EDITOR_NODE_NAME_IS_PLAYER_PILE_CHANGED = "IsPlayerPileChanged";
+        public const string EDITOR_NODE_NAME_IS_PLAYER_PILE_CHANGED = "玩家牌堆是否发生改变";
         #endregion
         #region 卡牌
         [TranslateMsg("动作图编辑器中动作节点分类之卡牌")]
-        public const string EDITOR_NODE_CATEGORY_CARD = "Card";
+        public const string EDITOR_NODE_CATEGORY_CARD = "卡牌";
         [TranslateMsg("动作图编辑器中动作节点名称之获取卡牌拥有者")]
-        public const string EDITOR_NODE_NAME_GET_OWNER = "GetOwner";
+        public const string EDITOR_NODE_NAME_GET_OWNER = "获取卡牌拥有者";
         [TranslateMsg("动作图编辑器中动作节点名称之添加整数修改器")]
-        public const string EDITOR_NODE_NAME_ADD_INT_MODIFIER = "AddIntModifier";
+        public const string EDITOR_NODE_NAME_ADD_INT_MODIFIER = "添加整数修改器";
         [TranslateMsg("动作图编辑器中动作节点名称之移除修改器")]
-        public const string EDITOR_NODE_NAME_REMOVE_MODIFIER = "RemoveModifier";
+        public const string EDITOR_NODE_NAME_REMOVE_MODIFIER = "移除修改器";
         [TranslateMsg("动作图编辑器中动作节点名称之获取属性")]
-        public const string EDITOR_NODE_NAME_GET_PROPERTY = "GetProperty";
+        public const string EDITOR_NODE_NAME_GET_PROPERTY = "获取属性";
         [TranslateMsg("动作图编辑器中动作节点名称之设置属性")]
-        public const string EDITOR_NODE_NAME_SET_PROPERTY = "SetProperty";
+        public const string EDITOR_NODE_NAME_SET_PROPERTY = "设置属性";
         [TranslateMsg("动作图编辑器中动作节点名称之获取唯一属性名")]
-        public const string EDITOR_NODE_NAME_GET_UNIQUE_PROPERTY_NAME = "GetUniquePropertyName";
+        public const string EDITOR_NODE_NAME_GET_UNIQUE_PROPERTY_NAME = "获取唯一属性名";
         [TranslateMsg("动作图编辑器中动作节点名称之造成伤害")]
-        public const string EDITOR_NODE_NAME_DAMAGE = "Damage";
+        public const string EDITOR_NODE_NAME_DAMAGE = "造成伤害";
         #endregion
         #region 修改器
         [TranslateMsg("动作图编辑器中动作节点分类之修改器")]
-        public const string EDITOR_NODE_CATEGORY_MODIFIER = "Modifier";
+        public const string EDITOR_NODE_CATEGORY_MODIFIER = "修改器";
         [TranslateMsg("动作图编辑器中动作节点名称之设置整数修改器值")]
-        public const string EDITOR_NODE_NAME_SET_INT_PROP_MODIFIER_VALUE = "SetIntPropModifierValue";
+        public const string EDITOR_NODE_NAME_SET_INT_PROP_MODIFIER_VALUE = "设置整数修改器值";
         #endregion
         #region 事件
         [TranslateMsg("动作图编辑器中动作节点分类之事件")]
-        public const string EDITOR_NODE_CATEGORY_EVENT = "Event";
+        public const string EDITOR_NODE_CATEGORY_EVENT = "事件";
         [TranslateMsg("动作图编辑器中动作节点名称之获取变量")]
-        public const string EDITOR_NODE_NAME_GET_VARIABLE = "GetVariable";
+        public const string EDITOR_NODE_NAME_GET_VARIABLE = "获取变量";
         [TranslateMsg("动作图编辑器中动作节点名称之设置变量")]
-        public const string EDITOR_NODE_NAME_SET_VARIABLE = "SetVariable";
+        public const string EDITOR_NODE_NAME_SET_VARIABLE = "设置变量";
         #endregion
         #region 集合运算
         [TranslateMsg("动作图编辑器中动作节点分类之集合运算")]
-        public const string EDITOR_NODE_CATEGORY_COLLECTION_OPERATION = "CollectionOperation";
+        public const string EDITOR_NODE_CATEGORY_COLLECTION_OPERATION = "集合运算";
         [TranslateMsg("动作图编辑器中动作节点名称之集合相减")]
-        public const string EDITOR_NODE_NAME_EXCEPT = "Except";
+        public const string EDITOR_NODE_NAME_EXCEPT = "集合相减";
         [TranslateMsg("动作图编辑器中动作节点名称之获取元素数量")]
-        public const string EDITOR_NODE_NAME_GET_COUNT = "GetCount";
+        public const string EDITOR_NODE_NAME_GET_COUNT = "获取元素数量";
         #endregion
         #endregion
+        #endregion
+        #region 游戏
+        [TranslateMsg("游戏中战场概念的名称")]
+        public const string GAME_FIELD = "战场";
+        [TranslateMsg("游戏中手牌概念的名称")]
+        public const string GAME_HAND = "手牌";
+        [TranslateMsg("游戏中牌库概念的名称")]
+        public const string GAME_DECK = "牌库";
+        [TranslateMsg("游戏中墓地概念的名称")]
+        public const string GAME_GRAVE = "墓地";
+        [TranslateMsg("游戏中玩家角色概念的名称")]
+        public const string GAME_MASTER = "英雄";
+        [TranslateMsg("游戏中技能概念的名称")]
+        public const string GAME_SKILL = "技能";
+        [TranslateMsg("游戏中物品概念的名称")]
+        public const string GAME_ITEM = "物品";
+        [TranslateMsg("游戏中延迟区概念的名称")]
+        public const string GAME_DELAY = "延迟";
+        [TranslateMsg("游戏中卡牌可选的目标类型之角色")]
+        public const string GAME_TARGET_TYPE_CHARACTER = "角色";
+        [TranslateMsg("游戏中卡牌可选的目标类型之随从")]
+        public const string GAME_TARGET_TYPE_SERVANT = "随从";
         #endregion
         #region 错误
         [TranslateMsg]

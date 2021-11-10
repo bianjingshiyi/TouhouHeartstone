@@ -1957,6 +1957,7 @@ MonoBehaviour:
   _characterFilterDropdown: {fileID: 4311439444831694437}
   _costFilterDropdown: {fileID: 1707562851883356223}
   _typeFilterDropdown: {fileID: 641637923487826687}
+  _cardListScrollRect: {fileID: 3879115453052716248}
   _switchRightToDeckButton: {fileID: 1340948374183896201}
   _switchRightToFilterButton: {fileID: 7398240246793405636}
   _deckListViewportRect: {fileID: 3879115452320181790}
@@ -1970,7 +1971,8 @@ MonoBehaviour:
   _dragCard: {fileID: 2687843559556911165}
   _dragDeckListItem: {fileID: 1445402813763428810}
   _dragStartPosition: {x: 0, y: 0}
-  _isDragging: 0
+  _isDraggingHorizontal: 0
+  _isDraggingVertical: 0
   _editCardListRightPanel: {fileID: 3879115452516319064}
   _masterSelectionPanel: {fileID: 9137776130128265509}
   _exitEditButton: {fileID: 6835868563013034219}
@@ -1997,8 +1999,6 @@ MonoBehaviour:
   _characterFiltersValue: 
   _costFiltersValue: 
   _typeFiltersValue: 
-  _deckMaxSize: 30
-  _deckList: []
   _deck:
     id: 0
     name: 

@@ -57,7 +57,7 @@ namespace Controllers
             _targetChecker = null;
             _trigger = trigger;
             //创建入口节点
-            _entryNodeItem = _ui.createTriggerNode(0, 0, _targetCheckerTypes, _trigger.eventName, getTargetCheckerViewData());
+            _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), _trigger.eventName, getTargetCheckerViewData());
             //创建根节点
             if (trigger.action != null)
             {
@@ -94,22 +94,31 @@ namespace Controllers
                     //反射方法的选项要带上它的分类
                     if (string.IsNullOrEmpty(method.category))
                     {
-                        menuItem = new BackgroundMenuItem(method.methodName);
+                        menuItem = new BackgroundMenuItem(_nameTextDict.TryGetValue(method.methodName, out string text) ?
+                            game.langManager.getString(text) :
+                            method.methodName);
                         menuItem.action = onMenuClick_CreateNode;
                         _backgroundMenuOptionList.Add(menuItem);
                     }
                     else
                     {
-                        menuCategory = _backgroundMenuOptionList.FirstOrDefault(e => e.title == method.category);
+                        menuCategory = _backgroundMenuOptionList.FirstOrDefault(e => e.title ==
+                           (_nameTextDict.TryGetValue(method.category, out string categoryText) ?
+                                game.langManager.getString(categoryText) :
+                                method.category));
                         if (menuCategory == null)
                         {
-                            menuCategory = new BackgroundMenuItem(method.category);
+                            menuCategory = new BackgroundMenuItem(_nameTextDict.TryGetValue(method.category, out string categoryText) ?
+                            game.langManager.getString(categoryText) :
+                            method.category);
                             menuCategory.action = onMenuClick_EnterSubMenu;
                             _backgroundMenuOptionList.Add(menuCategory);
                         }
                         if (menuCategory.childList == null)
                             menuCategory.childList = new List<BackgroundMenuItem>();
-                        menuItem = new BackgroundMenuItem(method.methodName);
+                        menuItem = new BackgroundMenuItem(_nameTextDict.TryGetValue(method.methodName, out string text) ?
+                            game.langManager.getString(text) :
+                            method.methodName);
                         menuItem.action = onMenuClick_CreateNode;
                         menuCategory.childList.Add(menuItem);
                     }
@@ -128,13 +137,17 @@ namespace Controllers
                         }
                         if (menuCategory.childList == null)
                             menuCategory.childList = new List<BackgroundMenuItem>();
-                        menuItem = new BackgroundMenuItem(defineName.Substring(0, defineName.Length - 5));
+                        menuItem = new BackgroundMenuItem(_nameTextDict.TryGetValue(defineName.Substring(0, defineName.Length - 5), out string text) ?
+                            game.langManager.getString(text) :
+                            defineName.Substring(0, defineName.Length - 5));
                         menuItem.action = onMenuClick_CreateNode;
                         menuCategory.childList.Add(menuItem);
                     }
                     else
                     {
-                        menuItem = new BackgroundMenuItem(defineName);
+                        menuItem = new BackgroundMenuItem(_nameTextDict.TryGetValue(defineName, out string text) ?
+                            game.langManager.getString(text) :
+                            defineName);
                         menuItem.action = onMenuClick_CreateNode;
                         _backgroundMenuOptionList.Add(menuItem);
                     }
@@ -576,7 +589,7 @@ namespace Controllers
         void onClickAddTargetCheckerButton()
         {
             _trigger.targetCheckerList.Add(new TargetChecker(string.Empty, new ActionValueRef(null, 0), string.Empty));
-            _entryNodeItem.updateTargetCheckerList(_targetCheckerTypes, getTargetCheckerViewData());
+            _entryNodeItem.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTargetCheckerViewData());
         }
         void onTargetCheckerTypeValueChanged(int index, int value)
         {
@@ -598,7 +611,7 @@ namespace Controllers
         void onClickRemoveTargetCheckerButton(int index)
         {
             _trigger.targetCheckerList.RemoveAt(index);
-            _entryNodeItem.updateTargetCheckerList(_targetCheckerTypes, getTargetCheckerViewData());
+            _entryNodeItem.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTargetCheckerViewData());
         }
         void onTargetCheckerErrorTipValueChanged(int index, string value)
         {
@@ -920,8 +933,15 @@ namespace Controllers
         }
         string getActionNodeName(ActionNode actionNode)
         {
-            //TODO:这里应该考虑动作节点名称的翻译，但是暂时先不这么做。
-            return actionNode.defineName;
+            if (_nameTextDict.TryGetValue(actionNode.defineName, out string text))
+            {
+                return game.langManager.getString(text);
+            }
+            else
+            {
+                Debug.LogWarning("没有找到动作" + actionNode.defineName + "对应的名称");
+                return actionNode.defineName;
+            }
         }
         string[] getActionNodeInputNames(ActionDefine actionDefine)
         {
@@ -1042,6 +1062,15 @@ namespace Controllers
             _menuLayerStack = index;
             _ui.updateMenu(titleList.ToArray());
         }
+        private string[] getTranslatedTargetCheckerTypes()
+        {
+            string[] targetCheckerTypes = new string[_targetCheckerTypes.Length];
+            for (int i = 0; i < targetCheckerTypes.Length; i++)
+            {
+                targetCheckerTypes[i] = game.langManager.getString(_nameTextDict[_targetCheckerTypes[i]]);
+            }
+            return targetCheckerTypes;
+        }
         #endregion
         [Obsolete]
         public IAppManager app { get; }
@@ -1112,9 +1141,48 @@ namespace Controllers
         readonly Stack<DisplayInfo> _editObjectStack = new Stack<DisplayInfo>();
         string[] _targetCheckerTypes = new string[]
         {
-            "Character",
-            "Servant"
+            TARGET_TYPE_CHARACTER,
+            TARGET_TYPE_SERVANT
         };
+        readonly Dictionary<string, string> _nameTextDict = new Dictionary<string, string>()
+        {
+            { TARGET_TYPE_CHARACTER, StringTable.GAME_TARGET_TYPE_CHARACTER },
+            { TARGET_TYPE_SERVANT, StringTable.GAME_TARGET_TYPE_SERVANT },
+            //节点名称
+            { "IntegerOperation", StringTable.EDITOR_NODE_NAME_INTEGER_OPERATION },
+            { "LogicOperation", StringTable.EDIOTR_NODE_NAME_LOGIC_OPERATION },
+            { "Compare", StringTable.EDIOTR_NODE_NAME_COMPARE },
+            { "IntegerConst", StringTable.EDIOTR_NODE_NAME_INTEGER_CONST },
+            { "StringConst", StringTable.EDIOTR_NODE_NAME_STRING_CONST },
+            { "BooleanConst", StringTable.EDIOTR_NODE_NAME_BOOLEAN_CONST },
+            { "Game", StringTable.EDITOR_NODE_CATEGORY_GAME },
+            { "ThisCard", StringTable.EDITOR_NODE_NAME_THIS_CARD },
+            { "Player", StringTable.EDITOR_NODE_CATEGORY_PLAYER },
+            { "GetPile", StringTable.EDITOR_NODE_NAME_GET_PILE },
+            { "GetSpellDamage", StringTable.EDITOR_NODE_NAME_GET_SPELL_DAMAGE },
+            { "GetTarget", StringTable.EDITOR_NODE_NAME_GET_TARGET },
+            { "Pile", StringTable.EDITOR_NODE_CATEGORY_PILE },
+            { "IsPlayerPileChanged", StringTable.EDITOR_NODE_NAME_IS_PLAYER_PILE_CHANGED },
+            { "Card", StringTable.EDITOR_NODE_CATEGORY_CARD },
+            { "GetOwner", StringTable.EDITOR_NODE_NAME_GET_OWNER },
+            { "AddIntModifier", StringTable.EDITOR_NODE_NAME_ADD_INT_MODIFIER },
+            { "RemoveModifier", StringTable.EDITOR_NODE_NAME_REMOVE_MODIFIER },
+            { "GetProperty", StringTable.EDITOR_NODE_NAME_GET_PROPERTY },
+            { "SetProperty", StringTable.EDITOR_NODE_NAME_SET_PROPERTY },
+            { "GetUniquePropertyName", StringTable.EDITOR_NODE_NAME_GET_UNIQUE_PROPERTY_NAME },
+            { "Damage", StringTable.EDITOR_NODE_NAME_DAMAGE },
+            { "Modifier", StringTable.EDITOR_NODE_CATEGORY_MODIFIER },
+            { "SetIntPropModifierValue", StringTable.EDITOR_NODE_NAME_SET_INT_PROP_MODIFIER_VALUE },
+            { "Event", StringTable.EDITOR_NODE_CATEGORY_EVENT },
+            { "GetVariable", StringTable.EDITOR_NODE_NAME_GET_VARIABLE },
+            { "SetVariable", StringTable.EDITOR_NODE_NAME_SET_VARIABLE },
+            { "CollectionOperation", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION },
+            { "Except", StringTable.EDITOR_NODE_NAME_EXCEPT },
+            { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT }
+        };
+        public const string TARGET_TYPE_CHARACTER = "Character";
+        public const string TARGET_TYPE_SERVANT = "Servant";
+        #region 内部类
         class DisplayInfo
         {
             public EntryType entryType;
@@ -1136,6 +1204,7 @@ namespace Controllers
             public Action action;
             public List<BackgroundMenuItem> childList;
         }
+        #endregion
     }
     /// <summary>
     /// 动作节点图的编辑器信息，保存了每个效果的所有动作节点信息。

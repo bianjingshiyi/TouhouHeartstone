@@ -202,50 +202,61 @@ namespace UI
         }
         private void onBeginDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
         {
-            if (!_enableDrag)
-                return;
-
             _dragStartPosition = eventData.position;
-            _isDragging = false;
+            _isDraggingHorizontal = false;
+            _isDraggingVertical = false;
             eventData.Use();
         }
         private void onDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
         {
-            if (!_enableDrag)
-                return;
-
-            var delta = _dragStartPosition - eventData.position;
-            if (Math.Abs(delta.x) > _dragThreshold && Math.Abs(delta.x) > Math.Abs(delta.y))
+            if (!_isDraggingHorizontal && !_isDraggingVertical)
             {
-                if (!_isDragging)
+                var delta = _dragStartPosition - eventData.position;
+                if (delta.magnitude > 0)
                 {
-                    _isDragging = true;
-                    showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
-                    onStartDargCardListItem?.Invoke(cardListLayoutGroup.getItemIndex(item.transform as RectTransform));
+                    if (Math.Abs(delta.x) > Math.Abs(delta.y))
+                    {
+                        if (_enableDrag && Math.Abs(delta.x) > _dragThreshold)
+                        {
+                            _isDraggingHorizontal = true;
+                            showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
+                            onStartDargCardListItem?.Invoke(cardListLayoutGroup.getItemIndex(item.transform as RectTransform));
+                        }
+                    }
+                    else
+                    {
+                        _isDraggingVertical = true;
+                        _cardListScrollRect.OnBeginDrag(eventData);
+                    }
                 }
             }
-            if (_isDragging)
+            else if (_isDraggingHorizontal)
             {
                 _dragCard.rectTransform.position = eventData.position;
                 _dragDeckListItem.transform.position = eventData.position;
                 showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
             }
+            else if (_isDraggingVertical)
+            {
+                _cardListScrollRect.OnDrag(eventData);
+            }
             eventData.Use();
         }
         private void onEndDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
         {
-            if (!_enableDrag)
-                return;
-
-            if (_isDragging)
+            if (_isDraggingHorizontal)
             {
                 // 结束拖拽
                 hideDragCard();
                 onEndDragCardListItem?.Invoke(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
+                _isDraggingHorizontal = false;
             }
-            _isDragging = false;
+            else if (_isDraggingVertical)
+            {
+                _cardListScrollRect.OnEndDrag(eventData);
+                _isDraggingVertical = false;
+            }
             eventData.Use();
-            //GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
         }
         protected override void onDeckCardListItemEnable(RectTransform itemRect)
         {
@@ -269,9 +280,8 @@ namespace UI
                 return;
 
             _dragStartPosition = eventData.position;
-            _isDragging = false;
+            _isDraggingHorizontal = false;
             eventData.Use();
-            //GetComponentInParent<ScrollRect>()?.SendMessage("OnBeginDrag", eventData, SendMessageOptions.DontRequireReceiver);
         }
         private void onDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
         {
@@ -281,14 +291,14 @@ namespace UI
             var delta = _dragStartPosition - eventData.position;
             if (Math.Abs(delta.x) > _dragThreshold && Math.Abs(delta.x) > Math.Abs(delta.y))
             {
-                if (!_isDragging)
+                if (!_isDraggingHorizontal)
                 {
-                    _isDragging = true;
+                    _isDraggingHorizontal = true;
                     showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
                     onStartDragDeckCardListItem?.Invoke(deckCardItemList.IndexOf(item.transform as RectTransform));
                 }
             }
-            if (_isDragging)
+            if (_isDraggingHorizontal)
             {
                 _dragCard.rectTransform.position = eventData.position;
                 _dragDeckListItem.transform.position = eventData.position;
@@ -302,7 +312,7 @@ namespace UI
             {
                 return;
             }
-            if (_isDragging)
+            if (_isDraggingHorizontal)
             {
                 //结束拖拽
                 hideDragCard();
@@ -532,6 +542,8 @@ namespace UI
         [SerializeField]
         MultiSelectDropdown _typeFilterDropdown;
         [SerializeField]
+        ScrollRect _cardListScrollRect;
+        [SerializeField]
         Button _switchRightToDeckButton;
         [SerializeField]
         Button _switchRightToFilterButton;
@@ -561,7 +573,9 @@ namespace UI
         [SerializeField]
         Vector2 _dragStartPosition;
         [SerializeField]
-        bool _isDragging = false;
+        bool _isDraggingHorizontal = false;
+        [SerializeField]
+        bool _isDraggingVertical = false;
         [SerializeField]
         GameObject _editCardListRightPanel;
         [SerializeField]

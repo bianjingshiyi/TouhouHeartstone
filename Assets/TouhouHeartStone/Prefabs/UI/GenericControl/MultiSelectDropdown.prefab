@@ -293,10 +293,10 @@ MonoBehaviour:
     - m_Text: Option C
       m_Image: {fileID: 0}
   _noOption:
-    m_Text: None
+    m_Text: 
     m_Image: {fileID: 0}
   _mixOption:
-    m_Text: ...
+    m_Text: 
     m_Image: {fileID: 0}
   _onValueChanged:
     m_PersistentCalls:
