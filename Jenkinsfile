@@ -165,7 +165,7 @@ pipeline {
                     env.DOWNLOAD_LINK = ''
                     for (int i = 0; i < files.size(); i++) {
                         def filename = files[i].name
-                        def url = URLEncoder.encode("https://cdn.igsk.fun/snapshots/${filename}")
+                        def url = 'https://cdn.igsk.fun/snapshots/' + URLEncoder.encode(filename)
                         env.DOWNLOAD_LINK += "${filename}: ${url} \n" 
                     }
                     echo "${env.DOWNLOAD_LINK}"
