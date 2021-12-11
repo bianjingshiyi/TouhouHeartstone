@@ -1095,7 +1095,7 @@ namespace Tests
             Assert.AreEqual(9, yugi.getCost(game));
             oppo.cmdUse<DefaultServant>(game, out var def);
             Assert.AreEqual(9 - def.getAttack(game), yugi.getCost(game));
-            def.addBuff(game, new GeneratedBuff(1, new AttackModifier(2)));
+            def.addBuff(game, new CodeBuff(1, new AttackModifier(2)));
             Assert.AreEqual(9 - def.getAttack(game), yugi.getCost(game));
             def.setDead(game, true);
             game.updateDeath();

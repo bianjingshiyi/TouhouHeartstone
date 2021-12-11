@@ -21,13 +21,13 @@ namespace Controllers
         /// <summary>
         /// 打开一张卡片进行编辑
         /// </summary>
-        public async void display(CardDefine cardDefine, CardDefine[] selectableCharacters)
+        public async Task display(int cardPoolId, CardDefine cardDefine, CardDefine[] selectableCharacters)
         {
             gameObject.SetActive(true);
             _selectableCharacters = selectableCharacters;
+            _cardPoolId = cardPoolId;
             _cardDefine = cardDefine;
             updateSkinNames();
-            await setCurSkinIndex(0);
             _ui.setId(_cardDefine.id);
             _ui.setType(Array.IndexOf(_types, _cardDefine.type));
             string[] charactersName = new string[selectableCharacters.Length + 1];
@@ -37,6 +37,8 @@ namespace Controllers
                 charactersName[i] = game.card.getSkin(selectableCharacters[i - 1].id).name;
             }
             _ui.setSelectableCharacters(charactersName);
+            //中立为0，有角色则为index+1
+            _ui.setCharacter(Array.FindIndex(_selectableCharacters, c => c.id == cardDefine.getCharacterID()) + 1);
             _ui.setCost(_cardDefine.getProp<int>(DEFINE.COST).ToString());
             _ui.setAttack(_cardDefine.getProp<int>(DEFINE.ATTACK).ToString());
             _ui.setLife(_cardDefine.getProp<int>(DEFINE.LIFE).ToString());
@@ -52,6 +54,14 @@ namespace Controllers
                 _ui.setTag(0);
             GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
             updateEffectList(effects);
+            _ui.closeAllEdit();
+            if (cardDefine.isSpell())
+                _ui.switchToSpell();
+            else if (cardDefine.isItem())
+                _ui.switchToItem();
+            else
+                _ui.switchToServant();
+            await setCurSkinIndex(0);
         }
         #endregion
         #region 私有方法
@@ -82,7 +92,8 @@ namespace Controllers
             _ui.onChangeTag += onChangeTag;
             _ui.onClickEditEffectButton += onClickEditEffectButton;
             _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
-            _ui.onClickAddEffectButton += onClickAddEffectButton;
+            _ui.setEffectTypes(game.card.getEffectNames());
+            _ui.onClickAddEffectMenu += onClickAddEffectMenu;
             _ui.onClickBackgroundButton += onClickBackgroundButton;
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
         }
@@ -120,12 +131,7 @@ namespace Controllers
         }
         void updateEffectList(GeneratedEffect[] effects)
         {
-            string[] effectNames = new string[effects.Length];
-            for (int i = 0; i < effectNames.Length; i++)
-            {
-                effectNames[i] = game.langManager.getString(StringTable.EDITOR_EDIT_EFFECT) + i;
-            }
-            _ui.setEffects(effectNames);
+            _ui.setEffects(game.card.getEffectNames(effects));
         }
         int allocSkinId()
         {
@@ -370,7 +376,7 @@ namespace Controllers
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
         /// </summary>
-        void onClickEditEffectButton(int index)
+        private void onClickEditEffectButton(int index)
         {
             GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
             ActionNodeGraphInfo graphInfo = scene.editor.actionNodeGraphInfoList.Find(g => g.cardId == _cardDefine.id && g.effectIndex == index);
@@ -379,9 +385,9 @@ namespace Controllers
                 graphInfo = new ActionNodeGraphInfo(_cardDefine.id, index);
                 scene.editor.actionNodeGraphInfoList.Add(graphInfo);
             }
-            scene.effectEditor.displayEffect(effect, graphInfo);
+            scene.effectEditor.displayEffect(_cardPoolId, _cardDefine, effect, graphInfo);
         }
-        void onClickRemoveEffectButton(int index)
+        private void onClickRemoveEffectButton(int index)
         {
             GeneratedEffect[] prevEffects = _cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
             GeneratedEffect[] newEffects = new GeneratedEffect[prevEffects.Length - 1];
@@ -399,9 +405,17 @@ namespace Controllers
         /// <summary>
         /// 当点击添加效果按钮，为卡牌定义添加一个新的空效果，并刷新效果列表。
         /// </summary>
-        void onClickAddEffectButton()
+        void onClickAddEffectMenu(int index)
         {
-            GeneratedEffect[] effects = _cardDefine.getEffects().OfType<GeneratedEffect>().Append(new GeneratedEffect()).ToArray();
+            GeneratedEffect[] effects;
+            if (index == 1)
+            {
+                effects = _cardDefine.getEffects().OfType<GeneratedEffect>().Append(new GeneratedHalo()).ToArray();
+            }
+            else
+            {
+                effects = _cardDefine.getEffects().OfType<GeneratedEffect>().Append(new GeneratedEffect()).ToArray();
+            }
             _cardDefine.setEffects(effects);
             updateEffectList(effects);
         }
@@ -428,6 +442,7 @@ namespace Controllers
         CardEditorPanel _ui;
         string[] _types;
         string[] _tags;
+        int _cardPoolId;
         CardDefine _cardDefine;
         CardSkinData _curCardSkin;
         CardDefine[] _selectableCharacters;

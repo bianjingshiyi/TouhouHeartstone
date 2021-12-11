@@ -525,12 +525,22 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Clownpiece.ID;
         public override int id { get; } = ID;
 
-        public override PropModifier[] modifiers { get; } = new PropModifier[]
+        private readonly PropModifier[] modifiers1 = new PropModifier[]
         {
             new AttackModifier(2)
         };
 
-        public override IPassiveEffect[] effects { get; }
+        public override PropModifier[] getPropertyModifiers(CardEngine game)
+        {
+            return modifiers1;
+        }
+
+        private readonly IPassiveEffect[] effects1;
+
+        public override IPassiveEffect[] getEffects(CardEngine game)
+        {
+            return effects1;
+        }
 
         public override int instanceID
         {
@@ -772,7 +782,7 @@ namespace TouhouHeartstone.Builtin
         private IEffect[] effects1 = new IEffect[]
         {
             new ConditionalPassiveEffect(
-                new Halo(new GeneratedBuff(ID, new CostModifier(1)), PileFlag.both | PileFlag.hand),
+                new Halo(new CodeBuff(ID, new CostModifier(1)), PileFlag.both | PileFlag.hand),
                 (g, c, b) => g.triggers.getRecordedEvents()
                     .skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg)
                     .OfType<HearthStoneRule.UseEventArg>()
@@ -807,7 +817,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(async (game, card) =>
             {
                 await card.addKeywords(game, KEYWORD.RUSH);
-                await card.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2)));
+                await card.addBuff(game, new CodeBuff(ID, new AttackModifier(2)));
             })
         };
 
@@ -933,7 +943,7 @@ namespace TouhouHeartstone.Builtin
         public static async Task effect(CardEngine game, Card card)
         {
             var elementCards = Patchouli.getElementCards(game);
-            var selectedCard1 = await card.getOwner().chooseOne(game, elementCards,isShow: false, title: "投入魔法");
+            var selectedCard1 = await card.getOwner().chooseOne(game, elementCards, isShow: false, title: "投入魔法");
             var selectedCard2 = await card.getOwner()
                 .chooseOne(game, elementCards.Where(define => define != selectedCard1.choose), isShow: false, title: "投入魔法");
             var result = Patchouli.getMixCards(game, selectedCard1.choose, selectedCard2.choose);
@@ -957,7 +967,7 @@ namespace TouhouHeartstone.Builtin
             new AfterTurnStart(PileFlag.field, async (game, card, arg) =>
             {
                 foreach (var servant in card.getOwner().getField().Where(c => c != card))
-                    await servant.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
+                    await servant.addBuff(game, new CodeBuff(ID, new AttackModifier(1), new LifeModifier(1)));
             }, (game, card, arg) => { return arg.player == card.getOwner(); })
         };
 
@@ -1088,7 +1098,7 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().draw(game, out var draw);
             var drawed = draw.card;
-            await drawed.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true),
+            await drawed.addBuff(game, new CodeBuff(ID, new CostModifier(0, true),
                 new RemoveBuffBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.hand, ID)));
         }
     }
@@ -1125,7 +1135,7 @@ namespace TouhouHeartstone.Builtin
             var createToken =
                 await card.getOwner().createToken(game, game.getDefine<Chen_N>(), card.pile.indexOf(card) + 1);
             var chen = createToken.card;
-            await chen.addBuff(game, new GeneratedBuff(ID,
+            await chen.addBuff(game, new CodeBuff(ID,
                 new AttackModifier(3),
                 new LifeModifier(1)));
             await chen.addKeywords(game, KEYWORD.RUSH);
@@ -1486,7 +1496,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (g, c, t) =>
             {
-                await t.addBuff(g, new GeneratedBuff(ID, new AttackModifier(1, true),
+                await t.addBuff(g, new CodeBuff(ID, new AttackModifier(1, true),
                     new RemoveBuffAfter<HearthStoneRule.TurnStartEventArg>(PileFlag.field,
                         (g1, c1, b,a) => { return a.player == c.getOwner(); }, ID)));
             }, PileFlag.both | PileFlag.field)
@@ -1845,11 +1855,11 @@ namespace TouhouHeartstone.Builtin
             var choice = await c.getOwner().chooseOne(g, options, title: "选择一项");
             if (choice.choose is ReturnOfImperishableNight_Eternity_N)
             {
-                await c.getOwner().getMaster().addBuff(g, new GeneratedBuff(ID, 
+                await c.getOwner().getMaster().addBuff(g, new CodeBuff(ID,
                     new THHEffectBefore<HearthStoneRule.DrawEventArg>(
                         PileFlag.master,
-                       (g1, c1,b1,a1) => { return a1.player == c1.getOwner(); },
-                        async (g1, c1,b1, a1) => { a1.isCanceled = true; }),
+                       (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); },
+                        async (g1, c1, b1, a1) => { a1.isCanceled = true; }),
                     new THHEffectBefore<HearthStoneRule.BurnEventArg>(
                        PileFlag.master,
                        (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); },
@@ -1861,10 +1871,10 @@ namespace TouhouHeartstone.Builtin
                     new RemoveBuffAfterTimeUp<HearthStoneRule.TurnEndEventArg>(PileFlag.master, 2,
                        (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); })));
 
-                await g.getOpponent(c.getOwner()).getMaster().addBuff(g, new GeneratedBuff(ID,
+                await g.getOpponent(c.getOwner()).getMaster().addBuff(g, new CodeBuff(ID,
                     new THHEffectBefore<HearthStoneRule.DrawEventArg>(PileFlag.master,
-                        (g1, c1,b1, a1) => { return a1.player == c1.getOwner(); },
-                        async (g1, c1,b1, a1) => { a1.isCanceled = true; }),
+                        (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); },
+                        async (g1, c1, b1, a1) => { a1.isCanceled = true; }),
                     new THHEffectBefore<HearthStoneRule.BurnEventArg>(
                         PileFlag.master,
                         (g1, c1, b1, a1) => { return a1.player == c1.getOwner(); },
@@ -1958,7 +1968,7 @@ namespace TouhouHeartstone.Builtin
         private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field,
-                (g, c, a) => { return a.infoDic.ContainsKey(c); }, (g, c, a) => { return c.addBuff(g, new GeneratedBuff(ID, new AttackModifier(3))); })
+                (g, c, a) => { return a.infoDic.ContainsKey(c); }, (g, c, a) => { return c.addBuff(g, new CodeBuff(ID, new AttackModifier(3))); })
         };
 
         public override IEffect[] getEffects()
@@ -2480,7 +2490,7 @@ namespace TouhouHeartstone.Builtin
             {
                 if (game.getAllServants().Any(s => s.getAttack(game) > card.getAttack(game)))
                 {
-                    card.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2)));
+                    card.addBuff(game, new CodeBuff(ID, new AttackModifier(2)));
                 }
 
                 return Task.CompletedTask;
@@ -2637,7 +2647,7 @@ namespace TouhouHeartstone.Builtin
             }
 
             await card.getOwner().discover(game, usedCards.Select(c => c.define), title: "想起【......】");
-            
+
         }
     }
 
@@ -2702,7 +2712,7 @@ namespace TouhouHeartstone.Builtin
                 }
             }
 
-            await card.addBuff(game, new GeneratedBuff(ID, new AttackModifier(count)));
+            await card.addBuff(game, new CodeBuff(ID, new AttackModifier(count)));
         }
     }
 
@@ -2779,13 +2789,13 @@ namespace TouhouHeartstone.Builtin
             //     (game, card, arg) => arg.infoDic.Values.Select(info => info.source).Contains(card), null,
             //     async (game, card, arg) => card.setStealth(game, true)),
             new THHEffectBefore<HearthStoneRule.UseEventArg>(PileFlag.field,
-                (game, card, arg) => arg.targets.Length > 0, 
+                (game, card, arg) => arg.targets.Length > 0,
                 (game, card, arg) =>
                 {
                     var count = arg.targets.Count();
                     var availableTargets = arg.card.getAvaliableTargets(game).Where(c => c != card);
                     var newTargets = availableTargets.randomTake(game, count).ToArray();
-                    arg.targets = newTargets;
+                    arg.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS,newTargets);
                     return Task.CompletedTask;
                 }),
             new THHEffectBefore<THHCard.AttackEventArg>(PileFlag.field,

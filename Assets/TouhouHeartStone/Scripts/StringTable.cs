@@ -61,6 +61,10 @@ namespace Game
         public const string BUILD_UNKNOW_CARD_NAME = "未知卡牌";
         #endregion
         #region 编辑器
+        [TranslateMsg("编辑器中效果类型名称之通用效果")]
+        public const string EDITOR_EFFECT_NAME_NORMAL_EFFECT = "通用效果";
+        [TranslateMsg("编辑器中效果类型名称之光环效果")]
+        public const string EDITOR_EFFECT_NAME_HALO_EFFECT = "光环效果";
         [TranslateMsg("编辑器中动作图编辑器的背景菜单中常量分类的名字")]
         public const string EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST = "Const";
         [TranslateMsg("编辑器中动作图编辑器的背景菜单中的返回上一层选项")]
@@ -81,8 +85,8 @@ namespace Game
         public const string EDITOR_ERROR_INVALID_TYPE_CONNECT = "相互连接的输入输出类型必须可以相互转化";
         [TranslateMsg("编辑器错误提示")]
         public const string EDITOR_ERROR_OUTPUT_CONNECT_INPUT = "值输出只能与值输入相互连接";
-        [TranslateMsg("编辑器中编辑效果按钮显示文字")]
-        public const string EDITOR_EDIT_EFFECT = "编辑效果";
+        [TranslateMsg("编辑器中编辑效果按钮显示文字，参数为效果名称")]
+        public const string EDITOR_EDIT_EFFECT = "编辑{0}";
         [TranslateMsg("编辑器中询问玩家是否要删除卡池")]
         public const string EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL = "你是否要删除这个卡池？";
         #region 动作
@@ -105,6 +109,12 @@ namespace Game
         public const string EDITOR_NODE_CATEGORY_GAME = "游戏";
         [TranslateMsg("动作图编辑器中动作节点名称之这张卡牌")]
         public const string EDITOR_NODE_NAME_THIS_CARD = "这张卡牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取增益定义")]
+        public const string EDITOR_NODE_NAME_GET_BUFF_DEFINE = "获取增益定义";
+        [TranslateMsg("动作图编辑器中动作节点名称之Id编号")]
+        public const string EDITOR_PARAM_NAME_ID = "编号";
+        [TranslateMsg("动作图编辑器中动作节点名称之增益定义")]
+        public const string EDITOR_PARAM_NAME_BUFF_DEFINE = "增益定义";
         #endregion
         #region 玩家
         [TranslateMsg("动作图编辑器中动作节点分类之玩家")]
@@ -126,7 +136,7 @@ namespace Game
         [TranslateMsg("动作图编辑器中动作节点分类之卡牌")]
         public const string EDITOR_NODE_CATEGORY_CARD = "卡牌";
         [TranslateMsg("动作图编辑器中动作输入名称之卡牌")]
-        public const string EDITOR_INPUT_NAME_CARD = "卡牌";
+        public const string EDITOR_PARAM_NAME_CARD = "卡牌";
         [TranslateMsg("动作图编辑器中动作节点名称之获取卡牌拥有者")]
         public const string EDITOR_NODE_NAME_GET_OWNER = "获取卡牌拥有者";
         [TranslateMsg("动作图编辑器中动作输出名称之拥有者")]
@@ -142,34 +152,31 @@ namespace Game
         [TranslateMsg("动作图编辑器中动作节点名称之获取属性")]
         public const string EDITOR_NODE_NAME_GET_PROPERTY = "获取属性";
         [TranslateMsg("动作图编辑器中动作输入名称之属性名称")]
-        public const string EDITOR_INPUT_NAME_PROPERTY_NAME = "属性名称";
+        public const string EDITOR_PARAM_NAME_PROPERTY_NAME = "属性名称";
         [TranslateMsg("动作图编辑器中动作输出名称之值")]
         public const string EDITOR_NODE_PARAM_NAME_VALUE = "值";
         [TranslateMsg("动作图编辑器中动作节点名称之设置属性")]
         public const string EDITOR_NODE_NAME_SET_PROPERTY = "设置属性";
         [TranslateMsg("动作图编辑器中动作输入名称之值")]
-        public const string EDITOR_INPUT_NAME_VALUE = "值";
+        public const string EDITOR_PARAM_NAME_VALUE = "值";
         [TranslateMsg("动作图编辑器中动作输入名称之是设置")]
-        public const string EDITOR_INPUT_NAME_IS_SET = "是设置";
+        public const string EDITOR_PARAM_NAME_IS_VALUE = "是设置";
         [TranslateMsg("动作图编辑器中动作节点名称之获取唯一属性名")]
         public const string EDITOR_NODE_NAME_GET_UNIQUE_PROPERTY_NAME = "获取唯一属性名";
-        [TranslateMsg("动作图编辑器中动作输出名称之属性名称")]
-        public const string EDITOR_NODE_PARAM_NAME_PROPERTY_NAME = "属性名称";
         [TranslateMsg("动作图编辑器中动作节点名称之造成伤害")]
         public const string EDITOR_NODE_NAME_DAMAGE = "造成伤害";
-        [TranslateMsg("动作图编辑器节点参数名称之属性变更事件")]
-        public const string EDITOR_NODE_PARAM_NAME_PROP_CHANGE_EVENT = "属性变更事件";
-        [TranslateMsg("动作图编辑器节点参数名称之集合")]
-        public const string EDITOR_NODE_PARAM_NAME_COLLECTION = "集合";
-        [TranslateMsg("动作图编辑器节点参数名称变量名称")]
-        public const string EDITOR_NODE_PARAM_NAME_VARIABLE_NAME = "变量名";
-        [TranslateMsg("动作图编辑器节点参数名称之已更改")]
-        public const string EDITOR_NODE_PARAM_NAME_IS_CHANGED = "已变更";
-        [TranslateMsg("动作图编辑器节点参数名称之目标")]
-        public const string EDITOR_NODE_PARAM_NAME_TARGET = "目标";
-        [TranslateMsg("动作图编辑器节点参数名称之目标名称")]
-        public const string EDITOR_NODE_PARAM_NAME_TARGET_NAME = "目标名称";
-
+        [TranslateMsg("动作图编辑器中动作节点名称之添加增益")]
+        public const string EDITOR_NODE_NAME_ADD_BUFF = "添加增益";
+        [TranslateMsg("动作图编辑器中动作节点名称之是否为法术牌")]
+        public const string EDITOR_NODE_NAME_IS_SPELL = "是否为法术牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之移除增益")]
+        public const string EDITOR_NODE_NAME_REMOVE_BUFF = "移除增益";
+        [TranslateMsg("动作图编辑器中动作参数名称之增益是否移除")]
+        public const string EDITOR_PARAM_NAME_IS_BUFF_REMOVED = "增益是否移除";
+        [TranslateMsg("动作图编辑器中动作节点名称之该增益")]
+        public const string EDITOR_NODE_NAME_THIS_BUFF = "改增益";
+        [TranslateMsg("动作图编辑器中动作参数名称之增益")]
+        public const string EDITOR_PARAM_NAME_BUFF = "增益";
         #endregion
         #region 修改器 
         [TranslateMsg("动作图编辑器中动作节点分类之修改器")]
@@ -216,6 +223,22 @@ namespace Game
         public const string GAME_TARGET_TYPE_CHARACTER = "角色";
         [TranslateMsg("游戏中卡牌可选的目标类型之随从")]
         public const string GAME_TARGET_TYPE_SERVANT = "随从";
+        [TranslateMsg("游戏中卡牌的费用属性的名称")]
+        public const string GAME_CARD_PROP_NAME_COST = "花费";
+        [TranslateMsg("游戏中卡牌的攻击力属性的名称")]
+        public const string GAME_CARD_PROP_NAME_ATTACK = "攻击力";
+        [TranslateMsg("游戏中卡牌的生命值属性的名称")]
+        public const string GAME_CARD_PROP_NAME_LIFE = "生命值";
+        [TranslateMsg("游戏中卡牌的属性修改类型之增加")]
+        public const string GAME_CARD_PROP_MODIFY_ADD = "增加";
+        [TranslateMsg("游戏中卡牌的属性修改类型之减少")]
+        public const string GAME_CARD_PROP_MODIFY_SUB = "减少";
+        [TranslateMsg("游戏中卡牌的属性修改类型之乘以")]
+        public const string GAME_CARD_PROP_MODIFY_MUL = "乘以";
+        [TranslateMsg("游戏中卡牌的属性修改类型之除以")]
+        public const string GAME_CARD_PROP_MODIFY_DIV = "除以";
+        [TranslateMsg("游戏中卡牌的属性修改类型之变为")]
+        public const string GAME_CARD_PROP_MODIFY_SETTO = "变为";
         #endregion
         #region 错误
         [TranslateMsg]

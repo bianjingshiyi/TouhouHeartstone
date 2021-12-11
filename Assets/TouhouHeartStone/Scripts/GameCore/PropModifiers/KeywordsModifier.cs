@@ -5,20 +5,20 @@ namespace TouhouHeartstone
 {
     public class KeywordsModifier : PropModifier<string[]>
     {
-        public string[] keywords { get; }
         public enum ModifyType
         {
             add, remove, set
         }
         public ModifyType modifyType { get; }
-        public KeywordsModifier(ModifyType modifyType, params string[] keywords) : base(DEFINE.KEYWORDS, keywords)
+        public KeywordsModifier(ModifyType modifyType, params string[] keywords)
         {
+            propertyName = DEFINE.KEYWORDS;
             this.modifyType = modifyType;
-            this.keywords = keywords;
+            value = keywords;
         }
-        protected KeywordsModifier(KeywordsModifier origin) : base(origin)
+        protected KeywordsModifier(KeywordsModifier origin)
         {
-            keywords = origin.keywords;
+            value = origin.value;
             modifyType = origin.modifyType;
         }
         public override string[] calc(IGame game, Card card, string[] value)
@@ -26,11 +26,11 @@ namespace TouhouHeartstone
             switch (modifyType)
             {
                 case ModifyType.set:
-                    return keywords;
+                    return value;
                 case ModifyType.remove:
-                    return value != null ? value.Except(keywords).ToArray() : new string[0];
+                    return value != null ? value.Except(value).ToArray() : new string[0];
                 default:
-                    return value != null ? value.Union(keywords).ToArray() : keywords;
+                    return value != null ? value.Union(value).ToArray() : value;
             }
         }
         public override PropModifier clone()
@@ -42,11 +42,11 @@ namespace TouhouHeartstone
             switch (modifyType)
             {
                 case ModifyType.set:
-                    return "keywords = " + (keywords.Length > 0 ? string.Join(",", keywords) : "empty");
+                    return "keywords = " + (value.Length > 0 ? string.Join(",", value) : "empty");
                 case ModifyType.remove:
-                    return "keywords - " + (keywords.Length > 0 ? string.Join(",", keywords) : "empty");
+                    return "keywords - " + (value.Length > 0 ? string.Join(",", value) : "empty");
                 default:
-                    return "keywords + " + (keywords.Length > 0 ? string.Join(",", keywords) : "empty");
+                    return "keywords + " + (value.Length > 0 ? string.Join(",", value) : "empty");
             }
         }
     }

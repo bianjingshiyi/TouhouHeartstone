@@ -15,6 +15,7 @@ namespace UI
         {
             _activeRangeDropdown.ClearOptions();
             _activeRangeDropdown.AddOptions(new List<string>(activeRanges));
+            _effectPropListTemplate.GetComponent<ValueInputField>().setupPileNames(activeRanges);
         }
         public void setActiveRange(bool[] value)
         {
@@ -46,6 +47,32 @@ namespace UI
                 });
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_triggerListRoot);
             }
+        }
+        public void updatePropList(ActionNodeValueInfo[] valueInfos)
+        {
+            UIHelper.updateList(_effectPropListRoot, _effectPropListTemplate, _effectPropList, valueInfos.Length, (i, itemRect) =>
+            {
+                ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                item.setValueInfo(valueInfos[i].name, valueInfos[i]);
+            }, itemRect =>
+            {
+                ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                item.onValueChanged += onPropValueChangedCallback;
+                item.onClickButton += onClickPropButtonCallback;
+                item.onItemValueChanged += onPropItemValueChangedCallback;
+                item.onClickItemButton += onClickPropItemButtonCallback;
+                item.onClickAddItemButton += onClickPropAddItemButtonCallback;
+                item.onClickItemRemoveButton += onClickPropItemRemoveButtonCallback;
+            }, itemRect =>
+            {
+                ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                item.onValueChanged -= onPropValueChangedCallback;
+                item.onClickButton -= onClickPropButtonCallback;
+                item.onItemValueChanged -= onPropItemValueChangedCallback;
+                item.onClickItemButton -= onClickPropItemButtonCallback;
+                item.onClickAddItemButton -= onClickPropAddItemButtonCallback;
+                item.onClickItemRemoveButton -= onClickPropItemRemoveButtonCallback;
+            });
         }
         #endregion
         #region 私有方法
@@ -88,12 +115,37 @@ namespace UI
         {
             onClickRemoveTriggerButton?.Invoke(_triggerItemList.IndexOf(item.transform as RectTransform));
         }
+        private void onPropValueChangedCallback(ValueInputField item, object value)
+        {
+            onPropValueChanged?.Invoke(_effectPropList.IndexOf(item.transform as RectTransform), value);
+        }
+        private void onClickPropButtonCallback(ValueInputField item)
+        {
+            onClickPropButton?.Invoke(_effectPropList.IndexOf(item.transform as RectTransform));
+        }
+        private void onPropItemValueChangedCallback(ValueInputField item, int itemIndex, object value)
+        {
+            onPropItemValueChanged?.Invoke(_effectPropList.IndexOf(item.transform as RectTransform), itemIndex, value);
+        }
+        public void onClickPropItemButtonCallback(ValueInputField item, int index)
+        {
+            onClickPropItemButton?.Invoke(_effectPropList.IndexOf(item.transform as RectTransform), index);
+        }
+        public void onClickPropAddItemButtonCallback(ValueInputField item)
+        {
+            onClickPropAddItemButton?.Invoke(_effectPropList.IndexOf(item.transform as RectTransform));
+        }
+        public void onClickPropItemRemoveButtonCallback(ValueInputField item, int index)
+        {
+            onClickPropItemRemoveButton?.Invoke(_effectPropList.IndexOf(item.transform as RectTransform), index);
+        }
         private void onClickReturnButtonCallback()
         {
             onClickReturnButton?.Invoke();
         }
         #endregion
         #endregion
+        #region 事件
         /// <summary>
         /// 当点击编辑生效范围按钮
         /// </summary>
@@ -119,9 +171,35 @@ namespace UI
         /// </summary>
         public event Action<int> onClickEditTriggerButton;
         /// <summary>
+        /// 当属性列表项值发生改变，参数为发生改变的项目索引和改变值
+        /// </summary>
+        public event Action<int, object> onPropValueChanged;
+        /// <summary>
+        /// 当属性列表项目列表中的项目的值发生改变，参数为项目索引和项目列表中项目的索引以及改变的值。
+        /// </summary>
+        public event Action<int, int, object> onPropItemValueChanged;
+        /// <summary>
+        /// 当点击属性列表项的按钮，参数为点击的项目索引
+        /// </summary>
+        public event Action<int> onClickPropButton;
+        /// <summary>
+        /// 当点击属性列表项目列表中的项目，参数为项目索引和项目列表中项目的索引
+        /// </summary>
+        public event Action<int, int> onClickPropItemButton;
+        /// <summary>
+        /// 当点击属性列表项目列表的添加项目按钮，参数为项目索引
+        /// </summary>
+        public event Action<int> onClickPropAddItemButton;
+        /// <summary>
+        /// 当点击属性列表项目列表中的项目的移除按钮，参数为项目索引和项目列表中项目的索引
+        /// </summary>
+        public event Action<int, int> onClickPropItemRemoveButton;
+        /// <summary>
         /// 当点击返回按钮
         /// </summary>
         public event Action onClickReturnButton;
+        #endregion
+        #region 属性字段
         [SerializeField]
         MultiSelectDropdown _activeRangeDropdown;
         [SerializeField]
@@ -137,6 +215,13 @@ namespace UI
         [SerializeField]
         List<RectTransform> _triggerItemList;
         [SerializeField]
+        RectTransform _effectPropListRoot;
+        [SerializeField]
+        RectTransform _effectPropListTemplate;
+        [SerializeField]
+        List<RectTransform> _effectPropList = new List<RectTransform>();
+        [SerializeField]
         Button _returnButton;
+        #endregion
     }
 }

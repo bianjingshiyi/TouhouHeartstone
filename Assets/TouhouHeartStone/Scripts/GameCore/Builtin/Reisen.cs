@@ -69,7 +69,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x001;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.SECRET};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -103,13 +103,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = {TAG.BEAST};
+        public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field,
                 (g, c, a) => { return a.player == c.getOwner() && a.card.isSkill(); },
-                async (g, c, a) => { await c.addBuff(g, new GeneratedBuff(ID, new AttackModifier(3, true))); }
+                async (g, c, a) => { await c.addBuff(g, new CodeBuff(ID, new AttackModifier(3, true))); }
             )
         };
 
@@ -132,7 +132,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x003;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.SECRET};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -164,7 +164,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x004;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.SECRET};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -202,7 +202,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x005;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.SECRET};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -254,7 +254,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 2;
         public override bool isToken { get; set; } = true;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.TAUNT};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
     }
 
     /// <summary>
@@ -266,7 +266,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Reisen.ID | CATEGORY.SPELL | 0x007;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.SECRET};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.SECRET };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -281,7 +281,7 @@ namespace TouhouHeartstone.Builtin
                     Card[] range = a.card.getAvaliableTargets(g);
                     Card newTarget = range.Where(target => !target.Equals(a.targets)).random(g);
                     Card[] targets = new Card[] {newTarget};
-                    a.targets = targets;
+                    a.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS, targets);
                     return Task.CompletedTask;
                 })
         };
@@ -324,9 +324,9 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await card.getOwner().getSkill().addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true),
+            await card.getOwner().getSkill().addBuff(game, new CodeBuff(ID, new CostModifier(0, true),
                 new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PileFlag.skill,
-                    (g, c,b, a) => { return a.player == c.getOwner() && a.card.isSkill(); }, ID)));
+                    (g, c, b, a) => { return a.player == c.getOwner() && a.card.isSkill(); }, ID)));
             if (card.getOwner().getSkill().isUsed(game))
             {
                 await card.getOwner().getSkill().setUsed(game, false);
@@ -350,8 +350,8 @@ namespace TouhouHeartstone.Builtin
             {
                 if (!target.containBuff(ID))
                 {
-                    await target.addBuff(game, new GeneratedBuff(ID, new AttackModifier(3), new LifeModifier(3)));
-                    await target.addBuff(game, new GeneratedBuff(ID,
+                    await target.addBuff(game, new CodeBuff(ID, new AttackModifier(3), new LifeModifier(3)));
+                    await target.addBuff(game, new CodeBuff(ID,
                         new THHEffectAfter<HearthStoneRule.TurnStartEventArg>(
                             PileFlag.field,
                             (g1, c1, a1) => a1.player == card.getOwner(),
@@ -366,7 +366,7 @@ namespace TouhouHeartstone.Builtin
                 }
                 else
                 {
-                    await target.addBuff(game, new GeneratedBuff(ID, new AttackModifier(3), new LifeModifier(3)));
+                    await target.addBuff(game, new CodeBuff(ID, new AttackModifier(3), new LifeModifier(3)));
                     await target.setDead(game, true);
                     await game.getAllServants().damage(game, target, target.getAttack(game));
                 }
@@ -426,7 +426,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 8;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE}; //关键词标签：
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE }; //关键词标签：
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -499,7 +499,7 @@ namespace TouhouHeartstone.Builtin
             {
                 var arg = await THHCard.setDefine(card.getOwner().getSkill(), game,
                     game.getDefine<LunaticShoot_MindDropping>());
-                await card.getOwner().getSkill().addBuff(game, new GeneratedBuff(ID,
+                await card.getOwner().getSkill().addBuff(game, new CodeBuff(ID,
                     new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field,
                         (g, c, a) => { return a.player == c.getOwner() && a.card.isSkill(); },
                         async (g, c, a) =>
@@ -545,7 +545,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 4;
-        public override string[] tags { get; set; } = {TAG.BEAST};
+        public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -574,7 +574,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 3;
-        public override string[] tags { get; set; } = {TAG.BEAST};
+        public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -605,8 +605,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE, KEYWORD.STEALTH}; //关键词标签：
-        public override string[] tags { get; set; } = {TAG.BEAST};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE, KEYWORD.STEALTH }; //关键词标签：
+        public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -668,24 +668,24 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
+            await card.getOwner().getMaster().addBuff(game, new CodeBuff(ID,
                 new THHEffectBefore<THHCard.DamageEventArg>(PileFlag.field,
                     (g, c, b, a) =>
                     {
                         return a.infoDic.Any(p =>
                             p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill());
-                    },(g, c, b, a) =>
-                    {
-                        foreach (var p in a.infoDic)
-                        {
-                            if (p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill())
-                                p.Value.damageValue *= 2;
-                        }
+                    }, (g, c, b, a) =>
+                     {
+                         foreach (var p in a.infoDic)
+                         {
+                             if (p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill())
+                                 p.Value.damageValue *= 2;
+                         }
 
-                        return Task.CompletedTask;
-                    }),
+                         return Task.CompletedTask;
+                     }),
                 new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PileFlag.master,
-                    (g, c,b, a) => { return a.player == c.getOwner() && a.card.isSkill(); }, ID)));
+                    (g, c, b, a) => { return a.player == c.getOwner() && a.card.isSkill(); }, ID)));
         }
     }
 
@@ -711,7 +711,7 @@ namespace TouhouHeartstone.Builtin
                            a.card.define is SpellCardDefine &&
                            a.card.hasKeyword(g, KEYWORD.SECRET);
                 },
-                async (g, c, a) => { await c.addBuff(g, new GeneratedBuff(ID, new LifeModifier(1))); })
+                async (g, c, a) => { await c.addBuff(g, new CodeBuff(ID, new LifeModifier(1))); })
         };
 
         public override IEffect[] getEffects()
@@ -771,6 +771,6 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 0;
         public override int life { get; set; } = 2;
         public override bool isToken { get; set; } = true;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.TAUNT};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
     }
 }

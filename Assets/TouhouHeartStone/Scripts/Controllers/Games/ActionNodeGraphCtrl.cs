@@ -8,10 +8,12 @@ using BJSYGameCore;
 using System.Reflection;
 using Game;
 using UnityEngine;
+using BJSYGameCore.UI;
+using System.Threading.Tasks;
 
 namespace Controllers
 {
-    partial class ActionNodeGraphCtrl : GameObjectCtrl<MainSceneCtrl>, IController<MainCtrl>
+    partial class ActionNodeGraphCtrl : GameObjectCtrl<MainSceneCtrl>, IController<MainCtrl>, IUICtrl
     {
         #region 公有方法
         /// <summary>
@@ -19,56 +21,83 @@ namespace Controllers
         /// </summary>
         /// <param name="effect"></param>
         /// 
-        public void openOnEnableActionGraph(GeneratedEffect effect)
+        public void openOnEnableActionGraph(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect)
         {
-            _ui.gameObject.SetActive(true);
-            _editObjectStack.Clear();
-            openActionGraph(effect, EntryType.onEnable);
-            _ui.setReturnButtonActive(false);
+            display(new DisplayInfo(cardPoolId, cardDefine, nameof(GeneratedEffect.onEnableAction), effect, null));
         }
         /// <summary>
         /// 打开一个效果的失效效果动作图。
         /// </summary>
         /// <param name="effect"></param>
         /// 
-        public void openOnDisableActionGraph(GeneratedEffect effect)
+        public void openOnDisableActionGraph(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect)
         {
-            _ui.gameObject.SetActive(true);
-            _editObjectStack.Clear();
-            openActionGraph(effect, EntryType.onDisable);
-            _ui.setReturnButtonActive(false);
+            display(new DisplayInfo(cardPoolId, cardDefine, nameof(GeneratedEffect.onDisableAction), effect, null));
+        }
+        public void openActionGraph(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect, string entryType)
+        {
+            display(new DisplayInfo(cardPoolId, cardDefine, entryType, effect, null));
+        }
+        public Task openActionValueRefGraph(int cardPoolId, CardDefine cardDefine, ActionValueRef valueRef)
+        {
+            return display(new DisplayInfo(cardPoolId, cardDefine, null, valueRef, null));
         }
         /// <summary>
         /// 打开一个触发器的动作节点图
         /// </summary>
         /// <param name="trigger"></param>
-        public void openTriggerGraph(TriggerGraph trigger)
+        public void openTriggerGraph(int cardPoolId, CardDefine cardDefine, TriggerGraph trigger)
         {
-            _ui.gameObject.SetActive(true);
-            _editObjectStack.Clear();
-            _ui.setReturnButtonActive(false);
-
-            _actionNodeList.Clear();
-            _actionNodeItemList.Clear();
-            _ui.clearGraph();
-            _entryType = EntryType.none;
-            _effect = null;
-            _valueRef = null;
-            _targetChecker = null;
-            _trigger = trigger;
-            //创建入口节点
-            _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), _trigger.eventName, getTargetCheckerViewData());
-            //创建根节点
-            if (trigger.action != null)
+            display(new DisplayInfo(cardPoolId, cardDefine, null, trigger, null));
+        }
+        public Task display(UIDisplayInfo uiDisplayInfo)
+        {
+            if (uiDisplayInfo is DisplayInfo info)
             {
-                var actionNodeItem = createGraph4ActionNode(trigger.action);
-                _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
+                _editObjectStack.Clear();
+                if (info.editObjectStack != null)
+                {
+                    for (int i = 0; i < info.editObjectStack.Length; i++)
+                    {
+                        _editObjectStack.Push(info.editObjectStack[i]);
+                    }
+                }
+                if (_editObjectStack.Count < 1)
+                    _ui.setReturnButtonActive(false);
+                _curCardPoolId = info.cardPoolId;
+                _cardDefine = info.cardDefine;
+                _ui.gameObject.SetActive(true);
+                if (info.editObject is TriggerGraph trigger)
+                    openTriggerGraph(trigger);
+                else if (info.editObject is TargetChecker targetChecker)
+                    openTargetCheckerGraph(targetChecker);
+                else if (info.editObject is ActionValueRef valueRef)
+                    openValueRefGraph(valueRef);
+                else if (info.editObject is GeneratedEffect effect)
+                    openActionGraph(effect, info.entryType);
+                return Task.CompletedTask;
             }
-            //创建离散节点
-            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
-            {
-                createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
-            }
+            throw new NotImplementedException();
+        }
+        public UIDisplayInfo getCurrentDisplayInfo()
+        {
+            object editObject;
+            if (_trigger != null)
+                editObject = _trigger;
+            else if (_targetChecker != null)
+                editObject = _targetChecker;
+            else if (_valueRef != null)
+                editObject = _valueRef;
+            else if (_effect != null)
+                editObject = _effect;
+            else
+                return null;
+            return new DisplayInfo(_curCardPoolId, _cardDefine, _entryType, editObject, _editObjectStack.Count > 0 ? _editObjectStack.ToArray() : null);
+        }
+        public Task hide()
+        {
+            gameObject.SetActive(false);
+            return Task.CompletedTask;
         }
         #endregion
         #region 私有方法
@@ -80,7 +109,6 @@ namespace Controllers
                 _ui = GetComponent<ActionNodeGraphPanel>();
             }
             _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly });
-            //_backgroundMenuOptions = _actionDefineDict.Keys.Select(funcName => game.langManager.getString(funcName)).ToArray();
             //生成节点菜单
             _backgroundMenuOptionList = new List<BackgroundMenuItem>();
             foreach (var pair in _actionDefineDict)
@@ -155,7 +183,8 @@ namespace Controllers
                 void onMenuClick_CreateNode()
                 {
                     createActionNodeAtCurPos(defineName, actionDefine);
-                    _ui.closeMenu();
+                    _menuLayerStack = null;
+                    closeMenu();
                 }
                 void onMenuClick_EnterSubMenu()
                 {
@@ -180,13 +209,25 @@ namespace Controllers
             _ui.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChanged;
             _ui.onClickReturnButton += onClickReturnButton;
             _ui.onActionNodeValueChange += onActionNodeValueChange;
+            //增益
+            _ui.onItemBuffChanged += onItemBuffChangedCallback;
+            _ui.onClickItemNewBuffButton += onClickItemNewBuffButtonCallback;
+            _ui.onClickItemDeleteBuffButton += onClickItemDeleteBuffButtonCallback;
+            _ui.onClickItemAddPropModifierButton += onClickItemAddPropModifierButtonCallback;
+            _ui.onClickItemRemovePropModifierButton += onClickItemRemovePropModifierButtonCallback;
+            _ui.onItemPropModifierPropertyTypeChanged += onItemPropModifierPropertyTypeChangedCallback;
+            _ui.onItemPropModifierModifyTypeChanged += onItemPropModifierModifyTypeChangedCallback;
+            _ui.onItemPropModifierValueChanged += onItemPropModifierValueChangedCallback;
+            _ui.onItemPropModifierAddEffect += onItemPropModifierAddEffectCallback;
+            _ui.onItemPropModifierRemoveEffect += onItemPropModifierRemoveEffectCallback;
+            _ui.onItemPropModifierEditEffect += onItemPropModifierEditEffectCallback;
         }
         #endregion
         #region 事件回调
         /// <summary>
         /// 当用户长按背景，展开菜单。目前点菜单内容只有创建节点。
         /// </summary>
-        void onLongPressBackground(float posX, float posY)
+        private void onLongPressBackground(float posX, float posY)
         {
             _curPosX = posX;
             _curPosY = posY;
@@ -206,16 +247,16 @@ namespace Controllers
         /// </summary>
         /// <param name="posX"></param>
         /// <param name="posY"></param>
-        void onClickBackground(float posX, float posY)
+        private void onClickBackground(float posX, float posY)
         {
             _curActionNode = null;
-            _ui.closeMenu();
+            closeMenu();
         }
         /// <summary>
         /// 当用户点击菜单项，视具体点击的项目决定干什么
         /// </summary>
         /// <param name="index"></param>
-        void onClickMenuItem(int index)
+        private void onClickMenuItem(int index)
         {
             if (_curActionNode != null)
             {
@@ -269,7 +310,7 @@ namespace Controllers
                     removeNodeInfo(actionNode);
                     graphInfo.freeActionNodeList.Remove(actionNode);
                 }
-                _ui.closeMenu();
+                closeMenu();
             }
             else
             {
@@ -293,7 +334,7 @@ namespace Controllers
                     }
                     else
                     {
-                        optionList[index + 1].action?.Invoke();
+                        optionList[index - 1].action?.Invoke();
                     }
                 }
                 else
@@ -310,7 +351,7 @@ namespace Controllers
         /// <param name="outputIndex"></param>
         /// <param name="inputActionNodeItem"></param>
         /// <param name="inputIndex"></param>
-        void onConnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
+        private void onConnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
         {
             if (outputActionNodeItem == _entryNodeItem)
             {
@@ -392,8 +433,10 @@ namespace Controllers
                     }
                 }
                 //如果输入已经和其他节点输出连接了的话，先断开连接
-                ActionValueRef outputValueRef = inputIndex < inputActionNode.branches.Length ? null :
-                    inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
+                ActionValueRef outputValueRef =
+                    inputIndex < inputActionNode.branches.Length ||
+                    inputIndex - inputActionNode.branches.Length >= inputActionNode.inputs.Length ?
+                    null : inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
                 if (outputValueRef != null)
                 {
                     var actionNode = outputValueRef.action;
@@ -411,15 +454,37 @@ namespace Controllers
                 if (outputIndex >= outputActionNode.branches.Length && inputIndex > 0)
                 {
                     //值的相互连接
-                    var inputActionDefine = _actionDefineDict[inputActionNode.defineName];
-                    var inputValueDefine = inputActionDefine.inputs[inputIndex - 1];
                     var outputActionDefine = _actionDefineDict[outputActionNode.defineName];
                     var outputValueDefine = outputActionDefine.outputs[outputIndex - outputActionNode.branches.Length];
-                    if (!inputValueDefine.type.IsAssignableFrom(outputValueDefine.type) && !outputValueDefine.type.IsAssignableFrom(inputValueDefine.type))
+                    var inputActionDefine = _actionDefineDict[inputActionNode.defineName];
+                    if (inputActionDefine.inputs.Last().isParams && inputIndex - 1 >= inputActionDefine.inputs.Length - 1)
                     {
-                        //相互连接的输入输出类型必须可以相互转化
-                        _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
-                        return;
+                        //是允许输入多个值的参数
+                        var inputValueDefine = inputActionDefine.inputs.Last();
+                        if (!inputValueDefine.type.IsAssignableFrom(outputValueDefine.type) && !outputValueDefine.type.IsAssignableFrom(inputValueDefine.type))
+                        {
+                            //相互连接的输入输出类型必须可以相互转化
+                            _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
+                            return;
+                        }
+                        if (inputIndex - 1 >= inputActionNode.inputs.Length)
+                        {
+                            //如果是赋值给最后一个空白参数，那么自动添加一个空的参数
+                            ActionValueRef[] inputs = new ActionValueRef[inputActionNode.inputs.Length + 1];
+                            inputActionNode.inputs.CopyTo(inputs, 0);
+                            inputActionNode.inputs = inputs;
+                        }
+                        inputActionNodeItem.setInputs(getActionNodeInputNames(inputActionNode));
+                    }
+                    else
+                    {
+                        var inputValueDefine = inputActionDefine.inputs[inputIndex - 1];
+                        if (!inputValueDefine.type.IsAssignableFrom(outputValueDefine.type) && !outputValueDefine.type.IsAssignableFrom(inputValueDefine.type))
+                        {
+                            //相互连接的输入输出类型必须可以相互转化
+                            _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
+                            return;
+                        }
                     }
                     inputActionNode.inputs[inputIndex - 1] = new ActionValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length);
                     //输出值的节点一定不是离散节点
@@ -490,18 +555,40 @@ namespace Controllers
                 if (outputIndex < outputActionNode.branches.Length)
                 {
                     outputActionNode.branches[outputIndex] = null;
+                    _ui.unconnectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
                     //输入节点一定会变得离散
                     if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
                         graphInfo.freeActionNodeList.Add(inputActionNode);
                 }
                 else
                 {
-                    inputActionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
+                    ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
+                    if (inputActionDefine.inputs.Last().isParams && inputIndex - inputActionNode.branches.Length >= inputActionDefine.inputs.Length - 1)
+                    {
+                        //如果断开的是多参数节点
+                        List<ActionValueRef> inputList = new List<ActionValueRef>(inputActionNode.inputs);
+                        inputList.RemoveAt(inputIndex - inputActionNode.branches.Length);
+                        inputActionNode.inputs = inputList.ToArray();
+                        //断开所有连接再重新连接
+                        _ui.unconnectNodeAllInput(inputActionNodeItem);
+                        for (int i = 0; i < inputActionNode.branches.Length; i++)
+                        {
+                            _ui.connectNode(getActionNodeItem(inputActionNode.branches[i]), 0, inputActionNodeItem, i);
+                        }
+                        for (int i = inputActionNode.branches.Length; i < inputList.Count; i++)
+                        {
+                            _ui.connectNode(getActionNodeItem(inputList[i].action), inputList[i].index + 1, inputActionNodeItem, i);
+                        }
+                    }
+                    else
+                    {
+                        inputActionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
+                        _ui.unconnectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
+                    }
                     //输出节点一定会变得离散
                     if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
                         graphInfo.freeActionNodeList.Add(outputActionNode);
                 }
-                _ui.unconnectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
             }
         }
         /// <summary>
@@ -511,7 +598,7 @@ namespace Controllers
         void onClickActionNode(ActionNodeItem actionNodeItem)
         {
             _curActionNode = null;
-            _ui.closeMenu();
+            closeMenu();
         }
         /// <summary>
         /// 当用户长按节点，展开节点菜单。
@@ -576,7 +663,7 @@ namespace Controllers
         /// <summary>
         /// 当用户点击编辑条件按钮，将当前的编辑信息入栈，打开条件编辑
         /// </summary>
-        void onClickTriggerEditConditionButton()
+        private void onClickTriggerEditConditionButton()
         {
             pushCurEditObjectToStack();
             if (_trigger.condition == null)
@@ -599,7 +686,7 @@ namespace Controllers
         /// 当用户点击编辑目标按钮，将当前的编辑信息入栈，打开目标编辑
         /// </summary>
         /// <param name="index"></param>
-        void onClickEditTargetCheckerButton(int index)
+        private void onClickEditTargetCheckerButton(int index)
         {
             pushCurEditObjectToStack();
             openTargetCheckerGraph(_trigger.targetCheckerList[index]);
@@ -630,7 +717,7 @@ namespace Controllers
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="entryType"></param>
-        void openActionGraph(GeneratedEffect effect, EntryType entryType)
+        private void openActionGraph(GeneratedEffect effect, string entryType)
         {
             //清理数据
             _actionNodeList.Clear();
@@ -642,7 +729,8 @@ namespace Controllers
             _valueRef = null;
             _targetChecker = null;
             _trigger = null;
-            if (_entryType == EntryType.onEnable)
+            //显示UI
+            if (_entryType == nameof(GeneratedEffect.onEnableAction))
             {
                 if (_effect.onEnableAction != null)
                 {
@@ -663,7 +751,7 @@ namespace Controllers
                         new string[] { string.Empty });
                 }
             }
-            else if (entryType == EntryType.onDisable)
+            else if (entryType == nameof(GeneratedEffect.onDisableAction))
             {
                 if (_effect.onDisableAction != null)
                 {
@@ -691,12 +779,12 @@ namespace Controllers
         /// <param name="entryName"></param>
         /// <param name="valueRef"></param>
         /// <param name="graphInfo"></param>
-        void openValueRefGraph(ActionValueRef valueRef)
+        private void openValueRefGraph(ActionValueRef valueRef)
         {
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
             _ui.clearGraph();
-            _entryType = EntryType.none;
+            _entryType = null;
             _effect = null;
             _valueRef = valueRef;
             _targetChecker = null;
@@ -712,12 +800,12 @@ namespace Controllers
                 _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
             }
         }
-        void openTargetCheckerGraph(TargetChecker targetChecker)
+        private void openTargetCheckerGraph(TargetChecker targetChecker)
         {
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
             _ui.clearGraph();
-            _entryType = EntryType.none;
+            _entryType = null;
             _effect = null;
             _valueRef = null;
             _targetChecker = targetChecker;
@@ -743,6 +831,35 @@ namespace Controllers
                 },
                 new string[0]);
             _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
+        }
+        /// <summary>
+        /// 打开一个触发器的动作节点图
+        /// </summary>
+        /// <param name="trigger"></param>
+        private void openTriggerGraph(TriggerGraph trigger)
+        {
+            _actionNodeList.Clear();
+            _actionNodeItemList.Clear();
+            _entryType = null;
+            _effect = null;
+            _valueRef = null;
+            _targetChecker = null;
+            _trigger = trigger;
+            //显示UI
+            _ui.clearGraph();
+            //创建入口节点
+            _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), _trigger.eventName, getTargetCheckerViewData());
+            //创建根节点
+            if (trigger.action != null)
+            {
+                var actionNodeItem = createGraph4ActionNode(trigger.action);
+                _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
+            }
+            //创建离散节点
+            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
+            {
+                createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
+            }
         }
         /// <summary>
         /// 为动作节点以及其所有子节点创建动作节点图
@@ -790,12 +907,7 @@ namespace Controllers
                 nodeInfo = new ActionNodeGraphNodeInfo(pos.x, pos.y);
                 setNodeInfo(actionNode, nodeInfo);
             }
-            actionNodeItem = _ui.createNode(pos.x, pos.y,
-                getActionNodeName(actionNode),
-                getActionNodeInputNames(actionDefine),
-                getActionNodeConstValueInfo(actionNode),
-                getActionNodeOutputNames(actionNode));
-            _actionNodeItemList.Add(actionNodeItem);
+            actionNodeItem = createNode4ActionNodeAt(actionNode, pos.x, pos.y);
             //为动作分支创建节点图
             float lastNodeOffset = 0;
             for (int i = 0; i < actionNode.branches.Length; i++)
@@ -875,21 +987,95 @@ namespace Controllers
         /// <param name="posX"></param>
         /// <param name="posY"></param>
         /// <returns></returns>
-        ActionNodeItem createGraph4ActionNodeAt(ActionNode actionNode, float posX, float posY)
+        ActionNodeItem createNode4ActionNodeAt(ActionNode actionNode, float posX, float posY)
         {
-            _actionNodeList.Add(actionNode);
             var actionDefine = _actionDefineDict[actionNode.defineName];
-            var actionNodeItem = _ui.createNode(
-                posX,
-                posY,
-                getActionNodeName(actionNode),
-                getActionNodeInputNames(actionDefine),
-                getActionNodeConstValueInfo(actionNode),
-                getActionNodeOutputNames(actionNode));
+            ActionNodeItem actionNodeItem;
+            if (actionDefine is MethodActionDefine methodActionDefine && methodActionDefine.methodName == "GetBuffDefine")
+            {
+                GeneratedBuffDefine generatedBuffDefine = null;
+                if (actionNode.consts == null || actionNode.consts.Length < 1)
+                {
+                    generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
+                    actionNode.consts = new object[] { generatedBuffDefine.id };
+                }
+                else if (!(actionNode.consts[0] is int buffDefineId && game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine)))
+                {
+                    generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
+                    actionNode.consts[0] = generatedBuffDefine.id;
+                }
+                else
+                {
+                    generatedBuffDefine = buffDefine as GeneratedBuffDefine;
+                }
+                BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId);
+                ActionNodePropertyModifierViewData[] propModifiersViewData = new ActionNodePropertyModifierViewData[generatedBuffDefine.propModifierList.Count];
+                for (int i = 0; i < generatedBuffDefine.propModifierList.Count; i++)
+                {
+                    PropModifier propModifier = generatedBuffDefine.propModifierList[i];
+                    ActionNodePropertyModifierViewData propModifierViewData = new ActionNodePropertyModifierViewData();
+                    propModifiersViewData[i] = propModifierViewData;
+                    if (propModifier is CostModifier costModifier)
+                    {
+                        propModifierViewData.propertyTypeIndex = 0;
+                        if (costModifier.isSet)
+                            propModifierViewData.modifyTypeIndex = 1;
+                        else
+                            propModifierViewData.modifyTypeIndex = 0;
+                        propModifierViewData.valueType = ActionNodeValueType.integer;
+                        propModifierViewData.value = costModifier.value;
+                    }
+                    else if (propModifier is AttackModifier attackModifier)
+                    {
+                        propModifierViewData.propertyTypeIndex = 1;
+                        if (attackModifier.isSet)
+                            propModifierViewData.modifyTypeIndex = 1;
+                        else
+                            propModifierViewData.modifyTypeIndex = 0;
+                        propModifierViewData.valueType = ActionNodeValueType.integer;
+                        propModifierViewData.value = attackModifier.value;
+                    }
+                    else if (propModifier is LifeModifier lifeModifier)
+                    {
+                        propModifierViewData.propertyTypeIndex = 2;
+                        if (lifeModifier.isSet)
+                            propModifierViewData.modifyTypeIndex = 1;
+                        else
+                            propModifierViewData.modifyTypeIndex = 0;
+                        propModifierViewData.valueType = ActionNodeValueType.integer;
+                        propModifierViewData.value = lifeModifier.value;
+                    }
+                }
+                actionNodeItem = _ui.createNodeForBuff(posX, posY, new ActionNodeBuffViewData()
+                {
+                    buffId = generatedBuffDefine.id,
+                    buffNames = buffDefines.Select(b => b.ToString()).ToArray(),
+                    buffIndex = Array.IndexOf(buffDefines, generatedBuffDefine),
+                    propertyTypes = _propertyTypes.Select(s => game.langManager.getString(s)).ToArray(),
+                    modifyTypes = _modifyTypes,
+                    propModifiersViewData = propModifiersViewData,
+                    effectTypeNames = game.card.getEffectNames(),
+                    effectNames = game.card.getEffectNames(generatedBuffDefine.effectList.ToArray())
+                }, getActionNodeOutputNames(actionNode));
+            }
+            else
+            {
+                actionNodeItem = _ui.createNode(
+                    posX,
+                    posY,
+                    getActionNodeName(actionNode),
+                    getActionNodeInputNames(actionNode),
+                    getActionNodeConstValueInfo(actionNode),
+                    getActionNodeOutputNames(actionNode));
+            }
             _actionNodeItemList.Add(actionNodeItem);
-            actionNode.id = allocActionNodeId();
-            graphInfo.freeActionNodeList.Add(actionNode);
-            setNodeInfo(actionNode, new ActionNodeGraphNodeInfo(posX, posY));
+            if (!_actionNodeList.Contains(actionNode))
+            {
+                _actionNodeList.Add(actionNode);
+                actionNode.id = allocActionNodeId();
+                graphInfo.freeActionNodeList.Add(actionNode);
+                setNodeInfo(actionNode, new ActionNodeGraphNodeInfo(posX, posY));
+            }
             return actionNodeItem;
         }
         ActionNodeItem getActionNodeItem(ActionNode actionNode)
@@ -908,28 +1094,18 @@ namespace Controllers
         void pushCurEditObjectToStack()
         {
             if (_trigger != null)
-                _editObjectStack.Push(new DisplayInfo() { entryType = EntryType.none, editObject = _trigger });
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _cardDefine, null, _trigger, null));
             else if (_targetChecker != null)
-                _editObjectStack.Push(new DisplayInfo() { entryType = EntryType.none, editObject = _targetChecker });
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _cardDefine, null, _targetChecker, null));
             else if (_valueRef != null)
-                _editObjectStack.Push(new DisplayInfo() { entryType = EntryType.none, editObject = _valueRef });
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _cardDefine, null, _valueRef, null));
             else
-                _editObjectStack.Push(new DisplayInfo() { entryType = _entryType, editObject = _effect });
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _cardDefine, _entryType, _effect, null));
             _ui.setReturnButtonActive(true);
         }
         void popPrevEditObjectFromStackAndOpen()
         {
-            DisplayInfo info = _editObjectStack.Pop();
-            if (_editObjectStack.Count < 1)
-                _ui.setReturnButtonActive(false);
-            if (info.editObject is TriggerGraph trigger)
-                openTriggerGraph(trigger);
-            else if (info.editObject is TargetChecker targetChecker)
-                openTargetCheckerGraph(targetChecker);
-            else if (info.editObject is ActionValueRef valueRef)
-                openValueRefGraph(valueRef);
-            else if (info.editObject is GeneratedEffect effect)
-                openActionGraph(effect, info.entryType);
+            display(_editObjectStack.Pop());
         }
         string getActionNodeName(ActionNode actionNode)
         {
@@ -943,16 +1119,39 @@ namespace Controllers
                 return actionNode.defineName;
             }
         }
-        string[] getActionNodeInputNames(ActionDefine actionDefine)
+        string[] getActionNodeInputNames(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输入的翻译，但是暂时先不这么做。
-            string[] inputNames = new string[actionDefine.inputs.Length + 1];
-            inputNames[0] = string.Empty;
-            for (int i = 0; i < actionDefine.inputs.Length; i++)
+            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            List<string> inputNameList = new List<string>();
+            //前一个动作节点
+            inputNameList.Add(string.Empty);
+            //输入
+            string inputName;
+            for (int i = 0; i < actionNode.inputs.Length; i++)
             {
-                inputNames[i + 1] = actionDefine.inputs[i].name;
+                if (actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams && i >= actionDefine.inputs.Length - 1)
+                {
+                    inputName = actionDefine.inputs.Last().name;
+                    if (_nameTextDict.TryGetValue(inputName, out inputName))
+                    {
+                        inputName = game.langManager.getString(inputName);
+                    }
+                    inputNameList.Add(inputName + (i - actionDefine.inputs.Length + 2));
+                }
+                else
+                    inputNameList.Add(actionDefine.inputs[i].name);
             }
-            return inputNames;
+            if (actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams)
+            {
+                inputName = actionDefine.inputs.Last().name;
+                if (_nameTextDict.TryGetValue(inputName, out inputName))
+                {
+                    inputName = game.langManager.getString(inputName);
+                }
+                inputNameList.Add(inputName + (actionNode.inputs.Length - actionDefine.inputs.Length + 2));
+            }
+            return inputNameList.ToArray();
         }
         ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
         {
@@ -975,6 +1174,11 @@ namespace Controllers
                     infoArray[i].type = ActionNodeValueType.boolean;
                 else if (type == typeof(string))
                     infoArray[i].type = ActionNodeValueType.text;
+                else if (type.IsEnum)
+                {
+                    infoArray[i].type = ActionNodeValueType.enumValue;
+                    infoArray[i].enumType = type;
+                }
             }
             return infoArray;
         }
@@ -1038,10 +1242,13 @@ namespace Controllers
             }
             return targetCheckers;
         }
-        private void createActionNodeAtCurPos(string title, ActionDefine actionDefine)
+        private void createActionNodeAtCurPos(string defineName, ActionDefine actionDefine)
         {
-            var actionNode = new ActionNode(title, new ActionValueRef[actionDefine.inputs.Length], new object[actionDefine.consts.Length], new ActionNode[1]);
-            createGraph4ActionNodeAt(actionNode, _curPosX, _curPosY);
+            var actionNode = new ActionNode(defineName,
+                new ActionValueRef[actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams ? actionDefine.inputs.Length - 1 : actionDefine.inputs.Length],
+                new object[actionDefine.consts.Length],
+                new ActionNode[1]);
+            createNode4ActionNodeAt(actionNode, _curPosX, _curPosY);
         }
         private void enterSubMenu(int[] index)
         {
@@ -1061,6 +1268,11 @@ namespace Controllers
             }
             _menuLayerStack = index;
             _ui.updateMenu(titleList.ToArray());
+        }
+        private void closeMenu()
+        {
+            _menuLayerStack = null;
+            _ui.closeMenu();
         }
         private string[] getTranslatedTargetCheckerTypes()
         {
@@ -1097,10 +1309,12 @@ namespace Controllers
             {
                 if (_effect != null)
                 {
-                    if (_entryType == EntryType.onEnable)
+                    if (_entryType == nameof(GeneratedEffect.onEnableAction))
                         return _effect.onEnableAction;
-                    else if (_entryType == EntryType.onDisable)
+                    else if (_entryType == nameof(GeneratedEffect.onDisableAction))
                         return _effect.onDisableAction;
+                    else
+                        return _effect.getProp<ActionNode>(_entryType);
                 }
                 if (_trigger != null)
                     return _trigger.action;
@@ -1112,10 +1326,12 @@ namespace Controllers
             {
                 if (_effect != null)
                 {
-                    if (_entryType == EntryType.onEnable)
+                    if (_entryType == nameof(GeneratedEffect.onEnableAction))
                         _effect.onEnableAction = value;
-                    else if (_entryType == EntryType.onDisable)
+                    else if (_entryType == nameof(GeneratedEffect.onDisableAction))
                         _effect.onDisableAction = value;
+                    else
+                        _effect.setProp(_entryType, value);
                 }
                 else if (_trigger != null)
                     _trigger.action = value;
@@ -1123,7 +1339,9 @@ namespace Controllers
                     valueRef.action = value;
             }
         }
-        EntryType _entryType = EntryType.none;
+        string _entryType;
+        int _curCardPoolId = 0;
+        CardDefine _cardDefine;
         GeneratedEffect _effect;
         ActionValueRef valueRef
         {
@@ -1143,6 +1361,17 @@ namespace Controllers
         {
             TARGET_TYPE_CHARACTER,
             TARGET_TYPE_SERVANT
+        };
+        string[] _propertyTypes = new string[]
+        {
+            StringTable.GAME_CARD_PROP_NAME_COST,
+            StringTable.GAME_CARD_PROP_NAME_ATTACK,
+            StringTable.GAME_CARD_PROP_NAME_LIFE
+        };
+        string[] _modifyTypes = new string[]
+        {
+            StringTable.GAME_CARD_PROP_MODIFY_ADD,
+            StringTable.GAME_CARD_PROP_MODIFY_SETTO
         };
         readonly Dictionary<string, string> _nameTextDict = new Dictionary<string, string>()
         {
@@ -1183,16 +1412,21 @@ namespace Controllers
         public const string TARGET_TYPE_CHARACTER = "Character";
         public const string TARGET_TYPE_SERVANT = "Servant";
         #region 内部类
-        class DisplayInfo
+        public class DisplayInfo : UIDisplayInfo
         {
-            public EntryType entryType;
+            public DisplayInfo(int cardPoolId, CardDefine cardDefine, string entryType, object editObject, DisplayInfo[] editObjectStack)
+            {
+                this.cardPoolId = cardPoolId;
+                this.cardDefine = cardDefine;
+                this.entryType = entryType;
+                this.editObject = editObject;
+                this.editObjectStack = editObjectStack;
+            }
+            public int cardPoolId;
+            public CardDefine cardDefine;
+            public string entryType;
             public object editObject;
-        }
-        enum EntryType
-        {
-            none,
-            onEnable,
-            onDisable
+            public DisplayInfo[] editObjectStack;
         }
         class BackgroundMenuItem
         {

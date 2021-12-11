@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace UI
 {
-    public class CardEditorPanelEffectListItem : MonoBehaviour
+    public class EffectListItem : MonoBehaviour
     {
         public void update(string name)
         {
@@ -22,8 +22,8 @@ namespace UI
         {
             onRemoveButtonClick?.Invoke(this);
         }
-        public event Action<CardEditorPanelEffectListItem> onEditButtonClick;
-        public event Action<CardEditorPanelEffectListItem> onRemoveButtonClick;
+        public event Action<EffectListItem> onEditButtonClick;
+        public event Action<EffectListItem> onRemoveButtonClick;
         [SerializeField]
         Button _editButton;
         [SerializeField]

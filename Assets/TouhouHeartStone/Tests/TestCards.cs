@@ -191,12 +191,25 @@ namespace Tests
         {
             public const int ID = 0x001;
             public override int id { get; } = ID;
-            public override PropModifier[] modifiers { get; } = new PropModifier[]
+
+            private readonly PropModifier[] modifiers1 = new PropModifier[]
             {
                 new AttackModifier(1),
                 new LifeModifier(1)
             };
-            public override IPassiveEffect[] effects { get; }
+
+            public override PropModifier[] getPropertyModifiers(CardEngine game)
+            {
+                return modifiers1;
+            }
+
+            private readonly IPassiveEffect[] effects1;
+
+            public override IPassiveEffect[] getEffects(CardEngine game)
+            {
+                return effects1;
+            }
+
             public override int instanceID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
             public override Buff clone()
@@ -657,7 +670,7 @@ namespace Tests
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new Halo(new GeneratedBuff(ID, new CostModifier(-1)), PileFlag.self | PileFlag.hand,filter:(game,card)=>
+            new Halo(new CodeBuff(ID, new CostModifier(-1)), PileFlag.self | PileFlag.hand,filter:(game,card)=>
             {
                 return card.define is SpellCardDefine;
             })
@@ -766,12 +779,12 @@ namespace Tests
                     new ActionValueRef(new ActionNode("IntegerConst", new object[] { 6 }))
                 }))
             }), new string[0])
-            //,
-            //new LambdaSingleTargetEffect((game,card,target)=>
-            //{
-            //    target.damage(game, card, card.getOwner().getSpellDamage(game, 6));
-            //    return Task.CompletedTask;
-            //})
+            ,
+            new LambdaSingleTargetEffect((game,card,target)=>
+            {
+                target.damage(game, card, card.getOwner().getSpellDamage(game, 6));
+                return Task.CompletedTask;
+            })
         };
 
         public override IEffect[] getEffects()
@@ -876,7 +889,7 @@ namespace Tests
         {
             new LambdaSingleTargetEffect((g,c,t)=>
             {
-                return t.addBuff(g,new GeneratedBuff(ID,
+                return t.addBuff(g,new CodeBuff(ID,
                     new THHEffectBefore<HearthStoneRule.TurnStartEventArg>(PileFlag.field,(g1,c1,b1,a1)=>
                     {
                         return a1.player == c.getOwner();
@@ -1047,8 +1060,8 @@ namespace Tests
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
-                await target.addBuff(game,new GeneratedBuff(ID,new AttackModifier(4),new LifeModifier(4)));
-                await target.addBuff(game,new GeneratedBuff(ID,new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(
+                await target.addBuff(game,new CodeBuff(ID,new AttackModifier(4),new LifeModifier(4)));
+                await target.addBuff(game,new CodeBuff(ID,new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(
                     PileFlag.field,
                     (g1, c1,b1, a1) =>
                     {
@@ -1095,7 +1108,7 @@ namespace Tests
             },async(g,c,b,a)=>
             {
                  await a.card.fieldToHand(g);
-                 await a.card.addBuff(g, new GeneratedBuff(ID,new CostModifier(2)));
+                 await a.card.addBuff(g, new CodeBuff(ID,new CostModifier(2)));
             })
         };
 
@@ -1312,7 +1325,7 @@ namespace Tests
         {
             new LambdaSingleTargetEffect((g,c,t)=>
             {
-                return t.addBuff(g,new GeneratedBuff(ID, new AttackModifier(3)));
+                return t.addBuff(g,new CodeBuff(ID, new AttackModifier(3)));
             }, PileFlag.field | PileFlag.both),
         };
 

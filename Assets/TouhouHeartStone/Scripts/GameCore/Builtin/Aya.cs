@@ -59,8 +59,8 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
-                new Halo(new GeneratedBuff(ID, new CostModifier(-1)), PileFlag.self | PileFlag.hand,
+            await card.getOwner().getMaster().addBuff(game, new CodeBuff(ID,
+                new Halo(new CodeBuff(ID, new CostModifier(-1)), PileFlag.self | PileFlag.hand,
                     PileFlag.self | PileFlag.master, (g1, c1) => { return !c1.isSkill(); }),
                 new RemoveBuffBefore<HearthStoneRule.UseEventArg>(PileFlag.master,
                     (g, c, b, a) => { return a.player == card.getOwner() && !a.card.isSkill(); }, ID)));
@@ -88,7 +88,7 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID,
                 async (g, c, p) =>
                 {
-                    await c.getOwner().getHand().random(g).addBuff(g, new GeneratedBuff(ID, new CostModifier(-1)));
+                    await c.getOwner().getHand().random(g).addBuff(g, new CodeBuff(ID, new CostModifier(-1)));
                 })
         };
 
@@ -122,7 +122,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game, card, target) =>
                 {
                     await target.damage(game, card, card.getOwner().getSpellDamage(game, 2));
-                    await card.addBuff(game, new GeneratedBuff(ID,
+                    await card.addBuff(game, new CodeBuff(ID,
                         new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.hand,
                             (g, c,b, a) => { return a.player == c.getOwner(); },
                             async (g, c,b, a) =>
@@ -188,8 +188,8 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
-                new Halo(new GeneratedBuff(ID, new CostModifier(-2)), PileFlag.self | PileFlag.hand,
+            await card.getOwner().getMaster().addBuff(game, new CodeBuff(ID,
+                new Halo(new CodeBuff(ID, new CostModifier(-2)), PileFlag.self | PileFlag.hand,
                     PileFlag.self | PileFlag.master, (g1, c1) => { return !c1.isSkill(); }),
                 new RemoveBuffBefore<HearthStoneRule.UseEventArg>(PileFlag.master,
                     (g, c, b, a) => { return a.player == card.getOwner() && !a.card.isSkill(); }, ID)));
@@ -217,7 +217,7 @@ namespace TouhouHeartstone.Builtin
                     a.action = e1 =>
                     {
                         return c.getOwner().getHand().random(g)
-                            .addBuff(g, new GeneratedBuff(ID, new CostModifier(-1)));
+                            .addBuff(g, new CodeBuff(ID, new CostModifier(-1)));
                     };
                 })
         };
@@ -265,7 +265,7 @@ namespace TouhouHeartstone.Builtin
         {
             await card.getOwner().draw(game, out var draw);
             Card drawCard = draw.card;
-            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
+            await card.getOwner().getMaster().addBuff(game, new CodeBuff(ID,
                 new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.master,
                     (g, c,b, a) => { return a.card == drawCard; },
                     async (g, c,b, a) => { await effect(g, c); }),
@@ -457,7 +457,7 @@ namespace TouhouHeartstone.Builtin
                 (g, c,b, a) => { return a.card == c.getOwner().getMaster(); },
                 async (g, c,b, a) =>
                 {
-                    await c.getOwner().getHand().random(g).addBuff(g, new GeneratedBuff(ID, new CostModifier(-1)));
+                    await c.getOwner().getHand().random(g).addBuff(g, new CodeBuff(ID, new CostModifier(-1)));
                 })
         };
 
@@ -510,7 +510,7 @@ namespace TouhouHeartstone.Builtin
             await card.getOwner().draw(game, out var draw);
             Card drawCard = draw.card;
 
-            await card.addBuff(game, new GeneratedBuff(ID, new CostModifier(-cost)));
+            await card.addBuff(game, new CodeBuff(ID, new CostModifier(-cost)));
         }
     }
 
@@ -585,7 +585,7 @@ namespace TouhouHeartstone.Builtin
                     var cards = c.getOwner().getHand().randomTake(g, 3);
                     foreach (var ca in cards)
                     {
-                        await ca.addBuff(g, new GeneratedBuff(ID, new CostModifier(-1)));
+                        await ca.addBuff(g, new CodeBuff(ID, new CostModifier(-1)));
                     }
                 }
             )

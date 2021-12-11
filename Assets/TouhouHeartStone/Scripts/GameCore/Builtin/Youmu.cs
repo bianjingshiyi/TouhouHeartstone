@@ -135,11 +135,11 @@ namespace TouhouHeartstone.Builtin
         {
             if (!Youmu.isPreHeated(game, card))
                 await card.getOwner().getMaster().addBuff(game,
-                    new GeneratedBuff(ID, new AttackModifier(2),
+                    new CodeBuff(ID, new AttackModifier(2),
                     new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
             else
                 await card.getOwner().getMaster().addBuff(game,
-                    new GeneratedBuff(ID, new AttackModifier(3),
+                    new CodeBuff(ID, new AttackModifier(3),
                     new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
         }
     }
@@ -175,7 +175,7 @@ namespace TouhouHeartstone.Builtin
             {
                 var item = drawEvent.card;
                 if (Youmu.isPreHeated(game, card))
-                    await item.addBuff(game, new GeneratedBuff(ID, new LifeModifier(1)));
+                    await item.addBuff(game, new CodeBuff(ID, new LifeModifier(1)));
             }
         }
     }
@@ -210,7 +210,7 @@ namespace TouhouHeartstone.Builtin
             await card.getOwner().getMaster().gainArmor(game, 6);
             if (!Youmu.isPreHeated(game, card))
             {
-                await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID,
+                await card.getOwner().getMaster().addBuff(game, new CodeBuff(ID,
                     new BeforeTurnStart(PileFlag.field, async (g, c,b, a) =>
                     {
                         await c.loseArmor(g, 3);
@@ -266,7 +266,7 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID,async (game,card,p)=>
             {
                 var ghost = await card.getOwner().addCardToHand<Ghost>(game);
-                await ghost.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1), new LifeModifier(1)));
+                await ghost.addBuff(game, new CodeBuff(ID, new AttackModifier(1), new LifeModifier(1)));
             })
         };
 
@@ -311,7 +311,7 @@ namespace TouhouHeartstone.Builtin
             {
                 if(Youmu.isPreHeated(game,card))
                 {
-                    return card.addBuff(game,new GeneratedBuff(ID,new THHEffectAfter<THHCard.AttackEventArg>(PileFlag.item,(g,c,b,a)=>
+                    return card.addBuff(game,new CodeBuff(ID,new THHEffectAfter<THHCard.AttackEventArg>(PileFlag.item,(g,c,b,a)=>
                     {
                         return a.card == c.getOwner().getMaster();
                     },(g,c,b,a)=>
@@ -396,7 +396,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             Player player = card.getOwner();
-            await player.getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
+            await player.getMaster().addBuff(game, new CodeBuff(ID, new AttackModifier(2), new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
             Card[] servants = game.getOpponent(player).getField().OrderBy(c => c.getCurrentLife(game)).ToArray();
             foreach (Card target in servants)
             {
@@ -431,7 +431,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(card.getOwner().getMaster().getArmor(game)),
+            await card.getOwner().getMaster().addBuff(game, new CodeBuff(ID, new AttackModifier(card.getOwner().getMaster().getArmor(game)),
                 new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
             await card.getOwner().getMaster().loseArmor(game, card.getOwner().getMaster().getArmor(game));
         }
@@ -463,7 +463,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().gainArmor(game, 5);
-            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(ID, new AttackModifier(5),
+            await card.getOwner().getMaster().addBuff(game, new CodeBuff(ID, new AttackModifier(5),
                 new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
         }
     }
@@ -487,7 +487,7 @@ namespace TouhouHeartstone.Builtin
             },async(g,c,b,a)=>
             {
                 if(c.getOwner().getItem() != null)
-                    await c.getOwner().getItem().addBuff(g, new GeneratedBuff(ID, new AttackModifier(1)));
+                    await c.getOwner().getItem().addBuff(g, new CodeBuff(ID, new AttackModifier(1)));
             })
         };
 
@@ -531,7 +531,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getItem().addKeywords(game, KEYWORD.IMMUNITY);
-            await card.getOwner().getItem().addBuff(game, new GeneratedBuff(ID,
+            await card.getOwner().getItem().addBuff(game, new CodeBuff(ID,
                 new THHEffectBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.item,(g,c,b,a)=> 
                 {
                     return a.player == c.getOwner();
@@ -646,7 +646,7 @@ namespace TouhouHeartstone.Builtin
                     a1.action = async arg =>
                     {
                         Player player = c1.getOwner();
-                        await player.getItem().addBuff(g1,new GeneratedBuff(ID,new LifeModifier(c1.getLife(g1))));
+                        await player.getItem().addBuff(g1,new CodeBuff(ID,new LifeModifier(c1.getLife(g1))));
                         await player.getHand().moveTo(g1,c1,player.getGrave());
                     };
                    

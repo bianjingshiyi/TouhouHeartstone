@@ -115,6 +115,16 @@ namespace UI
         }
         public int type
         {
+            get
+            {
+                if (asAnimator.GetBool(ANIM_PARAM_ISSERVANT))
+                    return CATEGORY.SERVANT;
+                else if (asAnimator.GetBool(ANIM_PARAM_ISSPELL))
+                    return CATEGORY.SPELL;
+                else if (asAnimator.GetBool(ANIM_PARAM_ISITEM))
+                    return CATEGORY.ITEM;
+                return CATEGORY.NONE;
+            }
             set
             {
                 switch (value)

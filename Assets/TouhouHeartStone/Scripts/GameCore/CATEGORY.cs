@@ -14,6 +14,7 @@ namespace TouhouHeartstone
         public const int CATEGORY_MASK = 0x000ff000;
         public const int CARDID_MASK = 0x00000fff;
 
+        public const int NONE = 0x00000000;
         public const int MASTER = 0x00000000;
         public const int SKILL = 0x00001000;
         public const int SERVANT = 0x00002000;

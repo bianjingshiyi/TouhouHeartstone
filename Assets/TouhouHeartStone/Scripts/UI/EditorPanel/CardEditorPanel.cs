@@ -24,7 +24,7 @@ namespace UI
             _characterDropdown.ClearOptions();
             _characterDropdown.AddOptions(new List<string>(charactersName));
         }
-        private void setCharacter(int index)
+        public void setCharacter(int index)
         {
             _characterDropdown.SetValueWithoutNotify(index);
         }
@@ -45,9 +45,7 @@ namespace UI
         /// <param name="skinIndex"></param>
         public void setSkin(int skinIndex)
         {
-            _disableUIEvent = true;
-            _skinDropdown.value = skinIndex;
-            _disableUIEvent = false;
+            _skinDropdown.SetValueWithoutNotify(skinIndex);
         }
         public void setLanguages(string[] languages)
         {
@@ -60,9 +58,7 @@ namespace UI
         /// <param name="languageIndex"></param>
         public void setLanguage(int languageIndex)
         {
-            _disableUIEvent = true;
-            _languageDropdown.value = languageIndex;
-            _disableUIEvent = false;
+            _languageDropdown.SetValueWithoutNotify(languageIndex);
         }
         /// <summary>
         /// 设置可选的卡牌类型
@@ -79,10 +75,8 @@ namespace UI
         /// <param name="typeIndex"></param>
         public void setType(int typeIndex)
         {
-            _disableUIEvent = true;
-            _typeDropdown.value = typeIndex;
+            _typeDropdown.SetValueWithoutNotify(typeIndex);
             _card.setTypeByName(_typeDropdown.options[typeIndex].text);
-            _disableUIEvent = false;
         }
         /// <summary>
         /// 设置费用
@@ -91,6 +85,7 @@ namespace UI
         public void setCost(string cost)
         {
             _card.setCost(cost);
+            _costInputField.SetTextWithoutNotify(cost);
         }
         /// <summary>
         /// 设置卡牌名称
@@ -99,6 +94,7 @@ namespace UI
         public void setName(string name)
         {
             _card.setName(name);
+            _nameInputField.SetTextWithoutNotify(name);
         }
         /// <summary>
         /// 设置卡牌副名
@@ -107,6 +103,7 @@ namespace UI
         public void setSubName(string subName)
         {
             _card.setSubname(subName);
+            _subnameInputField.SetTextWithoutNotify(subName);
         }
         /// <summary>
         /// 设置卡牌的图片。
@@ -123,6 +120,7 @@ namespace UI
         public void setDesc(string text)
         {
             _card.setDesc(text);
+            _descInputField.SetTextWithoutNotify(text);
         }
         /// <summary>
         /// 设置卡牌的攻击力
@@ -131,6 +129,7 @@ namespace UI
         public void setAttack(string attack)
         {
             _card.setAttack(attack);
+            _attackInputField.SetTextWithoutNotify(attack);
         }
         /// <summary>
         /// 设置卡牌的生命值
@@ -139,6 +138,7 @@ namespace UI
         public void setLife(string life)
         {
             _card.setLife(life);
+            _lifeInputField.SetTextWithoutNotify(life);
         }
         /// <summary>
         /// 设置卡牌可选的标签
@@ -155,10 +155,12 @@ namespace UI
         /// <param name="tag"></param>
         public void setTag(int index)
         {
-            _disableUIEvent = true;
             _card.setTag(_tagDropdown.options[index].text);
-            _tagDropdown.value = index;
-            _disableUIEvent = false;
+            _tagDropdown.SetValueWithoutNotify(index);
+        }
+        public void setEffectTypes(string[] effectTypeNames)
+        {
+            _effectList.setAddEffectMenu(effectTypeNames);
         }
         /// <summary>
         /// 设置效果列表
@@ -166,21 +168,60 @@ namespace UI
         /// <param name="effectNames"></param>
         public void setEffects(string[] effectNames)
         {
-            BJSYGameCore.UI.UIHelper.updateList(_effectListRoot, _effectListItemTemplate, _effectList, effectNames.Length, (i, item) =>
-            {
-                CardEditorPanelEffectListItem effectListItem = item.GetComponent<CardEditorPanelEffectListItem>();
-                effectListItem.update(effectNames[i]);
-            }, itemRect =>
-            {
-                CardEditorPanelEffectListItem item = itemRect.GetComponent<CardEditorPanelEffectListItem>();
-                item.onEditButtonClick += onClickEffectListItemEditButton;
-                item.onRemoveButtonClick += onClickEffectListItemRemoveButton;
-            }, itemRect =>
-            {
-                CardEditorPanelEffectListItem item = itemRect.GetComponent<CardEditorPanelEffectListItem>();
-                item.onEditButtonClick -= onClickEffectListItemEditButton;
-                item.onRemoveButtonClick -= onClickEffectListItemRemoveButton;
-            });
+            _effectList.updateList(effectNames);
+        }
+        public void switchToServant()
+        {
+            _editSubnameButton.gameObject.SetActive(true);
+            _editTagButton.gameObject.SetActive(true);
+            _editAttackButton.gameObject.SetActive(true);
+            _editLifeButton.gameObject.SetActive(true);
+            _nameInputField.transform.position = _card.servantCardFace.nameText.transform.position;
+        }
+        public void switchToSpell()
+        {
+            _editSubnameButton.gameObject.SetActive(false);
+            _editTagButton.gameObject.SetActive(false);
+            _editAttackButton.gameObject.SetActive(false);
+            _editLifeButton.gameObject.SetActive(false);
+            _nameInputField.transform.position = _card.spellCardFace.nameText.transform.position;
+        }
+        public void switchToItem()
+        {
+            _editSubnameButton.gameObject.SetActive(false);
+            _editTagButton.gameObject.SetActive(false);
+            _editAttackButton.gameObject.SetActive(true);
+            _editLifeButton.gameObject.SetActive(true);
+            _nameInputField.transform.position = _card.itemCardFace.nameText.transform.position;
+        }
+        public void closeAllEdit()
+        {
+            _skinDropdown.Hide();
+            _languageDropdown.Hide();
+            _characterDropdown.Hide();
+            _typeDropdown.Hide();
+            _tagDropdown.Hide();
+            _editTagButton.gameObject.SetActive(true);
+            _tagDropdown.gameObject.SetActive(false);
+            _costInputField.DeactivateInputField();
+            _editCostButton.gameObject.SetActive(true);
+            _costInputField.gameObject.SetActive(false);
+            _attackInputField.DeactivateInputField();
+            _editAttackButton.gameObject.SetActive(true);
+            _attackInputField.gameObject.SetActive(false);
+            _lifeInputField.DeactivateInputField();
+            _editLifeButton.gameObject.SetActive(true);
+            _lifeInputField.gameObject.SetActive(false);
+            _skinNameInputField.DeactivateInputField();
+            _nameInputField.DeactivateInputField();
+            _editNameButton.gameObject.SetActive(true);
+            _nameInputField.gameObject.SetActive(false);
+            _subnameInputField.DeactivateInputField();
+            _editSubnameButton.gameObject.SetActive(true);
+            _subnameInputField.gameObject.SetActive(false);
+            _descInputField.DeactivateInputField();
+            _editDescButton.gameObject.SetActive(true);
+            _descInputField.gameObject.SetActive(false);
         }
         #region 私有方法
         #region 生命周期
@@ -223,11 +264,9 @@ namespace UI
             _costInputField.onEndEdit.AddListener(onCostInputFieldEndEdit);
             _attackInputField.onEndEdit.AddListener(onAttackInputFieldEndEdit);
             _lifeInputField.onEndEdit.AddListener(onLifeInputFieldEndEdit);
-            _addEffectButton.onClick.AddListener(onAddEffectButtonClicked);
-            if (_effectListItemTemplate.transform.parent == _effectListRoot)
-            {
-                _effectListItemTemplate.gameObject.SetActive(false);
-            }
+            _effectList.onClickAddEffect += onAddEffectButtonClicked;
+            _effectList.onClickItemEditButton += onClickEffectListItemEditButton;
+            _effectList.onClickItemRemoveButton += onClickEffectListItemRemoveButton;
             _backgroundButton.onClick.AddListener(onBackgroundButtonClicked);
             _deleteCardButton.onClick.AddListener(onClickDeleteCardButtonCallback);
         }
@@ -290,27 +329,21 @@ namespace UI
         {
             _editNameButton.gameObject.SetActive(false);
             _nameInputField.gameObject.SetActive(true);
-            _disableUIEvent = true;
-            _nameInputField.text = null;
-            _disableUIEvent = false;
+            _nameInputField.SetTextWithoutNotify(_card.getName());
             _nameInputField.Select();
         }
         private void onEditSubnameButtonClicked()
         {
             _editSubnameButton.gameObject.SetActive(false);
             _subnameInputField.gameObject.SetActive(true);
-            _disableUIEvent = true;
-            _subnameInputField.text = null;
-            _disableUIEvent = false;
+            _subnameInputField.SetTextWithoutNotify(_card.getSubname());
             _subnameInputField.Select();
         }
         private void onEditDescButtonClicked()
         {
             _editDescButton.gameObject.SetActive(false);
             _descInputField.gameObject.SetActive(true);
-            _disableUIEvent = true;
-            _descInputField.text = null;
-            _disableUIEvent = false;
+            _descInputField.SetTextWithoutNotify(_card.getDesc());
             _descInputField.Select();
         }
         private async void onEditImageButtonClicked()
@@ -391,17 +424,17 @@ namespace UI
             _editLifeButton.gameObject.SetActive(true);
             onChangeLife?.Invoke(text);
         }
-        private void onClickEffectListItemEditButton(CardEditorPanelEffectListItem item)
+        private void onClickEffectListItemEditButton(int index)
         {
-            onClickEditEffectButton?.Invoke(_effectList.IndexOf(item.transform as RectTransform));
+            onClickEditEffectButton?.Invoke(index);
         }
-        private void onClickEffectListItemRemoveButton(CardEditorPanelEffectListItem item)
+        private void onClickEffectListItemRemoveButton(int index)
         {
-            onClickRemoveEffectButton?.Invoke(_effectList.IndexOf(item.transform as RectTransform));
+            onClickRemoveEffectButton?.Invoke(index);
         }
-        private void onAddEffectButtonClicked()
+        private void onAddEffectButtonClicked(int index)
         {
-            onClickAddEffectButton?.Invoke();
+            onClickAddEffectMenu?.Invoke(index);
         }
         private void onBackgroundButtonClicked()
         {
@@ -481,7 +514,7 @@ namespace UI
         /// <summary>
         /// 当点击添加效果按钮
         /// </summary>
-        public event Action onClickAddEffectButton;
+        public event Action<int> onClickAddEffectMenu;
         /// <summary>
         /// 当点击背景返回
         /// </summary>
@@ -510,13 +543,7 @@ namespace UI
         [SerializeField]
         Dropdown _languageDropdown;
         [SerializeField]
-        RectTransform _effectListRoot;
-        [SerializeField]
-        RectTransform _effectListItemTemplate;
-        [SerializeField]
-        List<RectTransform> _effectList = new List<RectTransform>();
-        [SerializeField]
-        Button _addEffectButton;
+        EffectList _effectList;
         [SerializeField]
         Button _editNameButton;
         [SerializeField]

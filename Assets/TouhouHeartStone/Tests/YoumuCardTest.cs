@@ -123,7 +123,7 @@ namespace Tests
             oppo.cmdUse(game, oppo.getHand().First(), 1);
             oppo.cmdTurnEnd(game);
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 4);
-            you.getMaster().addBuff(game, new GeneratedBuff(0, new AttackModifier(5, true)));
+            you.getMaster().addBuff(game, new CodeBuff(0, new AttackModifier(5, true)));
             you.cmdUse(game, you.getHand().getCard<Roukanken>());//使用楼观剑
             Assert.IsInstanceOf<Roukanken>(you.getItem().define);
             you.cmdAttack(game, you.getMaster(), target: oppo.getField()[0]);
@@ -213,45 +213,45 @@ namespace Tests
             Assert.AreEqual(0, you.getField().getCard<HalfPhantom>().getAttack(game));
             Assert.AreEqual(4, you.getField().getCard<HalfPhantom>().getLife(game));
         }
-        
+
         [Test]
         public void HalfPhantomBackToHandTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(HalfPhantom.ID, 1));
-            you.getMaster().setArmor(game,2);
-            game.skipUntilCanUse<HalfPhantom>(you);
-            you.cmdUse<HalfPhantom>(game);
-            Assert.AreEqual(you.getMaster().getArmor(game),you.getField().getCard<HalfPhantom>().getAttack(game));
-            you.getField().getCard<HalfPhantom>().fieldToHand(game);
-            Assert.True(you.getField().count==0);
+            you.getMaster().setArmor(game, 2);
             game.skipUntilCanUse<HalfPhantom>(you);
             you.cmdUse<HalfPhantom>(game);
             Assert.AreEqual(you.getMaster().getArmor(game), you.getField().getCard<HalfPhantom>().getAttack(game));
-            Assert.AreEqual(4+you.getMaster().getArmor(game), you.getField().getCard<HalfPhantom>().getLife(game));
+            you.getField().getCard<HalfPhantom>().fieldToHand(game);
+            Assert.True(you.getField().count == 0);
+            game.skipUntilCanUse<HalfPhantom>(you);
+            you.cmdUse<HalfPhantom>(game);
+            Assert.AreEqual(you.getMaster().getArmor(game), you.getField().getCard<HalfPhantom>().getAttack(game));
+            Assert.AreEqual(4 + you.getMaster().getArmor(game), you.getField().getCard<HalfPhantom>().getLife(game));
             you.getMaster().gainArmor(game, 2);
             Assert.AreEqual(you.getMaster().getArmor(game), you.getField().getCard<HalfPhantom>().getAttack(game));
         }
-        
+
         [Test]
         public void HalfPhantomBurgeoningRiseTest()
         {
             TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(HalfPhantom.ID, 1),new KeyValuePair<int, int>(BurgeoningRise.ID,1));
-            you.getMaster().setArmor(game,2);
+                new KeyValuePair<int, int>(HalfPhantom.ID, 1), new KeyValuePair<int, int>(BurgeoningRise.ID, 1));
+            you.getMaster().setArmor(game, 2);
             game.skipUntilCanUse<HalfPhantom>(you);
             you.cmdUse<HalfPhantom>(game, out var s);
-            Assert.AreEqual(you.getMaster().getArmor(game),s.getAttack(game));
+            Assert.AreEqual(you.getMaster().getArmor(game), s.getAttack(game));
             game.skipUntilCanUse<BurgeoningRise>(you);
             you.cmdUse(game, you.getHand().getCard<BurgeoningRise>(), targets: s);
-            s.setDead(game,true);
+            s.setDead(game, true);
             game.updateDeath();
-            Assert.AreEqual(1,you.getField().count);
+            Assert.AreEqual(1, you.getField().count);
             s = you.getField()[0];
             Assert.True(s.define is HalfPhantom);
-            Assert.AreEqual(3+you.getMaster().getArmor(game), s.getAttack(game));
+            Assert.AreEqual(3 + you.getMaster().getArmor(game), s.getAttack(game));
             you.getMaster().gainArmor(game, 2);
-            Assert.AreEqual(3+you.getMaster().getArmor(game), s.getAttack(game));
+            Assert.AreEqual(3 + you.getMaster().getArmor(game), s.getAttack(game));
         }
 
         [Test]
@@ -380,18 +380,18 @@ namespace Tests
             Assert.AreEqual(27, oppo.getMaster().getCurrentLife(game));
             Assert.AreEqual(1, you.getItem().getCurrentLife(game));
         }
-        
+
         [Test]
         public void HalfPhatomPropChangeEventTest()
         {
-            TestGameflow.createGame<HoshigumaYugi,HalfPhantom>(out var game, out var you, out var oppo);
+            TestGameflow.createGame<HoshigumaYugi, HalfPhantom>(out var game, out var you, out var oppo);
             game.skipUntilCanUse<HalfPhantom>(oppo);
             oppo.getMaster().setArmor(game, 2);
             oppo.cmdUse<HalfPhantom>(game, out var s);
             var yugi = you.getHand().getCard<HoshigumaYugi>();
-            Assert.AreEqual(yugi.define.getCost(),yugi.getCost(game)+s.getAttack(game));
-            oppo.getMaster().setArmor(game,4);
-            Assert.AreEqual(yugi.define.getCost()-s.getAttack(game),yugi.getCost(game));
+            Assert.AreEqual(yugi.define.getCost(), yugi.getCost(game) + s.getAttack(game));
+            oppo.getMaster().setArmor(game, 4);
+            Assert.AreEqual(yugi.define.getCost() - s.getAttack(game), yugi.getCost(game));
         }
     }
 }

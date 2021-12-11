@@ -4,20 +4,22 @@ namespace TouhouHeartstone
 {
     public class CostModifier : IntPropModifier
     {
-        public CostModifier(int value) : base(nameof(ServantCardDefine.cost), value)
+        public CostModifier() : base(DEFINE.COST, 0)
         {
         }
-        public CostModifier(int value, bool isSet) : base(nameof(ServantCardDefine.cost), value, isSet)
+        public CostModifier(int value) : base(DEFINE.COST, value)
         {
         }
-        public CostModifier(int value, CheckConditionDelegate onCheckCondition) : base(nameof(ServantCardDefine.cost), value)
+        public CostModifier(int value, bool isSet) : base(DEFINE.COST, value, isSet)
         {
-            _onCheckCondition = onCheckCondition;
         }
-        CheckConditionDelegate _onCheckCondition;
+        public CostModifier(int value, CheckConditionDelegate onCheckCondition) : base(DEFINE.COST, value)
+        {
+            this.onCheckCondition = onCheckCondition;
+        }
         public override bool checkCondition(IGame game, Card card)
         {
-            if (_onCheckCondition != null && !_onCheckCondition(game as CardEngine, card))
+            if (onCheckCondition != null && !onCheckCondition(game as CardEngine, card))
                 return false;
             return base.checkCondition(game, card);
         }
@@ -28,5 +30,6 @@ namespace TouhouHeartstone
         {
             return new CostModifier(this);
         }
+        public CheckConditionDelegate onCheckCondition;
     }
 }

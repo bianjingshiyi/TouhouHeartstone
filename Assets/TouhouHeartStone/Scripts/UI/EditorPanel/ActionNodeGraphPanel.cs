@@ -19,7 +19,7 @@ using BJSYGameCore;
 using Timer = BJSYGameCore.Timer;
 namespace UI
 {
-    class ActionNodeGraphPanel : MonoBehaviour
+    public partial class ActionNodeGraphPanel : MonoBehaviour
     {
         #region 公有方法
         /// <summary>
@@ -31,27 +31,7 @@ namespace UI
         public ActionNodeItem createNode(float posX, float posY, string nodeName, string[] inputNames, ActionNodeValueInfo[] constsInfo, string[] outputNames)
         {
             //当对应名称数组长度为0的时候，直接隐藏列表根节点。
-            ActionNodeItem actionNodeItem = Instantiate(_actionNodeItemTemplate, _actionNodesRoot);
-            _actionNodeItemList.Add(actionNodeItem);
-            actionNodeItem.gameObject.SetActive(true);
-            RectTransform itemRect = actionNodeItem.transform as RectTransform;
-            itemRect.anchoredPosition = new Vector2(posX, posY);
-            actionNodeItem.switchToActionNode();
-            actionNodeItem.setName(nodeName);
-            actionNodeItem.setInputs(inputNames);
-            actionNodeItem.setConsts(constsInfo);
-            actionNodeItem.setOutputs(outputNames);
-            actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
-            actionNodeItem.onDragInputNode += onDragInputNode;
-            actionNodeItem.onEndDragInputNode += onEndDragInputNode;
-            actionNodeItem.onBeginDragOutputNode += onBeginDragOutputNode;
-            actionNodeItem.onDragOutputNode += onDragOutputNode;
-            actionNodeItem.onEndDragOutputNode += onEndDragOutputNode;
-            actionNodeItem.onPointerDown += onPointerDownActionNodeItem;
-            actionNodeItem.onPointerUp += onPointerUpActionNodeItem;
-            actionNodeItem.onBeginDrag += onBeginDragActionNodeItem;
-            actionNodeItem.onDrag += onDragActionNodeItem;
-            actionNodeItem.onEndDrag += onEndDragActionNodeItem;
+            ActionNodeItem actionNodeItem = createNode(posX, posY);
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
@@ -60,6 +40,11 @@ namespace UI
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
+            actionNodeItem.switchToActionNode();
+            actionNodeItem.setName(nodeName);
+            actionNodeItem.setInputs(inputNames);
+            actionNodeItem.setConsts(constsInfo);
+            actionNodeItem.setOutputs(outputNames);
             return actionNodeItem;
         }
         /// <summary>
@@ -156,6 +141,22 @@ namespace UI
             }
             Destroy(_connectionList[index].line.gameObject);
             _connectionList.RemoveAt(index);
+        }
+        /// <summary>
+        /// 断开指定节点的所有输入连接
+        /// </summary>
+        /// <param name="node"></param>
+        public void unconnectNodeAllInput(ActionNodeItem node)
+        {
+            for (int i = 0; i < _connectionList.Count; i++)
+            {
+                if (_connectionList[i].inputNode == node)
+                {
+                    Destroy(_connectionList[i].line.gameObject);
+                    _connectionList.RemoveAt(i);
+                    i--;
+                }
+            }
         }
         /// <summary>
         /// 将动作节点移动到图上的某个位置
@@ -577,6 +578,32 @@ namespace UI
             line.setPosition(from, to);
             return line;
         }
+        /// <summary>
+        /// 创建一个不确定类型的节点，必须在之后对其进行初始化。
+        /// </summary>
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
+        /// <returns></returns>
+        private ActionNodeItem createNode(float posX, float posY)
+        {
+            ActionNodeItem actionNodeItem = Instantiate(_actionNodeItemTemplate, _actionNodesRoot);
+            _actionNodeItemList.Add(actionNodeItem);
+            actionNodeItem.gameObject.SetActive(true);
+            RectTransform itemRect = actionNodeItem.transform as RectTransform;
+            itemRect.anchoredPosition = new Vector2(posX, posY);
+            actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
+            actionNodeItem.onDragInputNode += onDragInputNode;
+            actionNodeItem.onEndDragInputNode += onEndDragInputNode;
+            actionNodeItem.onBeginDragOutputNode += onBeginDragOutputNode;
+            actionNodeItem.onDragOutputNode += onDragOutputNode;
+            actionNodeItem.onEndDragOutputNode += onEndDragOutputNode;
+            actionNodeItem.onPointerDown += onPointerDownActionNodeItem;
+            actionNodeItem.onPointerUp += onPointerUpActionNodeItem;
+            actionNodeItem.onBeginDrag += onBeginDragActionNodeItem;
+            actionNodeItem.onDrag += onDragActionNodeItem;
+            actionNodeItem.onEndDrag += onEndDragActionNodeItem;
+            return actionNodeItem;
+        }
         #endregion
         #region 事件
         /// <summary>
@@ -640,7 +667,7 @@ namespace UI
         /// </summary>
         public event Action<int> onClickRemoveTargetCheckerButton;
         /// <summary>
-        /// 当触发器节点的某个目标错误提示发生改变，参数为发生改变的目标缩影和错误提示的字符串
+        /// 当触发器节点的某个目标错误提示发生改变，参数为发生改变的目标索引和错误提示的字符串
         /// </summary>
         public event Action<int, string> onTargetCheckerErrorTipValueChanged;
         /// <summary>
@@ -700,6 +727,7 @@ namespace UI
         public string name;
         public ActionNodeValueType type;
         public object value;
+        public Type enumType;
     }
     [Serializable]
     struct ActionNodeConnectionData
@@ -727,6 +755,34 @@ namespace UI
         /// <summary>
         /// 字符串
         /// </summary>
-        text
+        text,
+        /// <summary>
+        /// 枚举值
+        /// </summary>
+        enumValue,
+        /// <summary>
+        /// 牌堆名称集
+        /// </summary>
+        pileNameCollection,
+        /// <summary>
+        /// 标签集合
+        /// </summary>
+        tagCollection,
+        /// <summary>
+        /// 动作节点
+        /// </summary>
+        actionNode,
+        /// <summary>
+        /// 动作值引用
+        /// </summary>
+        actionValueRef,
+        /// <summary>
+        /// 触发器
+        /// </summary>
+        trigger,
+        /// <summary>
+        /// 触发器集合
+        /// </summary>
+        triggerCollection,
     }
 }

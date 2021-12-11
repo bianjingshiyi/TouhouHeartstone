@@ -25,7 +25,14 @@ namespace TouhouHeartstone
         {
             return card.define.type == DEFINE.MASTER;
         }
-        public static bool isSpell(this Card card)
+        /// <summary>
+        /// 这是不是一张法术牌
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [ActionNodeMethod("IsSpell", "Card")]
+        [return: ActionNodeParam("Value")]
+        public static bool isSpell([ActionNodeParam("Card")]this Card card)
         {
             return card.define.type == DEFINE.SPELL;
         }
@@ -593,7 +600,7 @@ namespace TouhouHeartstone
             {
                 foreach (var buff in card.getBuffs())
                 {
-                    if (buff.effects.OfType<DeathRattle>().Count() > 0)
+                    if (buff.getEffects(game as CardEngine).OfType<DeathRattle>().Count() > 0)
                     {
                         return true;
                     }
@@ -966,7 +973,7 @@ namespace TouhouHeartstone
             //然后触发buff亡语
             foreach (var buff in card.getBuffs())
             {
-                foreach (var deathRattle in buff.effects.OfType<DeathRattle>())
+                foreach (var deathRattle in buff.getEffects(game).OfType<DeathRattle>())
                 {
                     await deathRattle.execute(game, card, buff, new DeathEventArg()
                     {
@@ -1077,6 +1084,7 @@ namespace TouhouHeartstone
                 };
             }
         }
+        #region 动作定义
         [ActionNodeMethod("Damage", "Card")]
         [return: ActionNodeParam("DamageEvent")]
         public static Task<DamageEventArg> damage([ActionNodeParam("Card")] this Card card, CardEngine game, [ActionNodeParam("DamageSource")] Card source, [ActionNodeParam("Amount")] int value)
@@ -1093,6 +1101,7 @@ namespace TouhouHeartstone
                 return null;
             }
         }
+        #endregion
         public static Task<DamageEventArg> damage(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
             return damage(game, cards.ToDictionary(c => c, c => new DamageEventArg.Info(value, source)));
@@ -1859,8 +1868,5 @@ namespace TouhouHeartstone
                 };
             }
         }
-
-
-
     }
 }

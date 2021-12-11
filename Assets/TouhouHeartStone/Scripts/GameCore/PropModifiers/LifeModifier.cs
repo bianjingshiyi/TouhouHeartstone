@@ -55,7 +55,7 @@ namespace TouhouHeartstone
             if (isSet)
                 return card.setCurrentLife(game, (value));
             else
-                return card.setCurrentLife(game, (card.getCurrentLife(game) + value));
+                return card.setCurrentLife(game, card.getCurrentLife(game) + value);
         }
         bool resetCurrentLife { get; set; } = false;
         public override Task beforeRemove(IGame game, Card card)

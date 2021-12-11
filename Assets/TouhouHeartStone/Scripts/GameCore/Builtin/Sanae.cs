@@ -199,7 +199,7 @@ namespace TouhouHeartstone.Builtin
             }
             else
             {
-                you.getMaster().addBuff(game, new GeneratedBuff(ID,
+                you.getMaster().addBuff(game, new CodeBuff(ID,
                     new AfterTurnStart(PileFlag.field, async (g, c, a) =>
                     {
                         await you.addCardToHand<StarRitual>(game);
@@ -226,7 +226,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
                 await target.heal(game, card, 8);
-                await target.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field,
+                await target.addBuff(game, new CodeBuff(ID, new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field,
                         (g, c, a) =>
                         {
                             return a.player == card.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
@@ -377,7 +377,7 @@ namespace TouhouHeartstone.Builtin
         {
             new THHEffectAfter<THHCard.HealEventArg>(PileFlag.field,
                 (game, card, arg) => { return arg != null && arg.cards.Any(e => e == card); },
-                async (game, card, arg) => { await card.addBuff(game, new GeneratedBuff(ID, new AttackModifier(1))); })
+                async (game, card, arg) => { await card.addBuff(game, new CodeBuff(ID, new AttackModifier(1))); })
         };
 
         public override IEffect[] getEffects()
@@ -425,7 +425,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await you.tryEnterField(game, you.getDeck(), god, you.getField().count);
                 await god.addKeywords(game, KEYWORD.RUSH);
-                await god.addBuff(game, new GeneratedBuff(ID, new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.field,
+                await god.addBuff(game, new CodeBuff(ID, new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.field,
                     (g, c, a) => { return a.player == c.getOwner(); }, async (g, c, a) =>
                     {
                         //int index = game.randomInt(0, c.getOwner().deck.count);
@@ -909,7 +909,7 @@ namespace TouhouHeartstone.Builtin
             {
                 if (c.isServant())
                     await c.addBuff(game,
-                        new GeneratedBuff(ID, new CostModifier(5),
+                        new CodeBuff(ID, new CostModifier(5),
                             new RemoveBuffAfter<HearthStoneRule.TurnStartEventArg>(PileFlag.hand,
                                 (g, c1,b, a) => { return a.player == card.getOwner(); }, ID)));
             }
@@ -948,7 +948,7 @@ namespace TouhouHeartstone.Builtin
             {
                 Card card1 = card.getOwner().getGrave().Where(c => c.define == game.getDefine<MoriyaSuwako>()).random(game);
                 await card.getOwner().getGrave().moveTo(game, card1, card.getOwner().getHand());
-                await card1.addBuff(game, new GeneratedBuff(ID, new AttackModifier(2), new LifeModifier(2)));
+                await card1.addBuff(game, new CodeBuff(ID, new AttackModifier(2), new LifeModifier(2)));
             }
         }
     }

@@ -217,7 +217,7 @@ namespace TouhouHeartstone.Builtin
             {
                 i = c.getCost(game);
                 await c.setDefine(game, game.getDefine<Nazrin_06>());
-                await c.addBuff(game, new GeneratedBuff(ID, new CostModifier(i, true)));
+                await c.addBuff(game, new CodeBuff(ID, new CostModifier(i, true)));
             }
         }
     }
@@ -252,7 +252,7 @@ namespace TouhouHeartstone.Builtin
             CardDefine[] defines = game.getDefines().Where(c => c.hasKeyword(KEYWORD.UNIQUE) && c is ServantCardDefine s && !s.isToken).ToArray();
             var arg = await card.getOwner().discover(game, defines, title: "广告招租");
             var discovered = arg.discovered;
-            await discovered.addBuff(game, new GeneratedBuff(ID, new CostModifier(0, true)));
+            await discovered.addBuff(game, new CodeBuff(ID, new CostModifier(0, true)));
             // List<Card> unqueCards = card.getOwner().getNormalRandomPool((g, d) =>
             // {
             //     return d is ServantCardDefine && d.hasKeyword(KEYWORD.UNIQUE);
@@ -292,7 +292,7 @@ namespace TouhouHeartstone.Builtin
             var arg = await card.getOwner().discover(game,
                 game.getDefinesOf(card.getOwner().getMaster().id,CATEGORY.CHARACTER_NEUTRAL).Where(define => define is ServantCardDefine s && !s.isToken));
             await arg.discovered.addBuff(game,
-                new GeneratedBuff(ID, new CostModifier(5, true), new LifeModifier(5, true),
+                new CodeBuff(ID, new CostModifier(5, true), new LifeModifier(5, true),
                     new AttackModifier(5, true)));
             // List<Card> servantCards = card.getOwner().getNormalRandomPool((g, d) =>
             // {
@@ -464,7 +464,7 @@ namespace TouhouHeartstone.Builtin
             {
                 var arg1 = await card.getOwner().createToken(game, game.getDefine<Nazrin_00>());
                 await arg1.card.addBuff(game,
-                    new GeneratedBuff(ID, new AttackModifier(1),
+                    new CodeBuff(ID, new AttackModifier(1),
                         new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
             }
         }
@@ -645,7 +645,7 @@ namespace TouhouHeartstone.Builtin
             foreach (Card c in card.getOwner().getField())
             {
                 await c.addBuff(game,
-                    new GeneratedBuff(ID, new AttackModifier(2),new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
+                    new CodeBuff(ID, new AttackModifier(2),new KeywordsModifier(KeywordsModifier.ModifyType.add, KEYWORD.RUSH)));
             }
         }
     }
@@ -702,7 +702,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     var c = await card.getOwner().addCardToHand(game, arg.card.define);
                     await c.addBuff(game,
-                        new GeneratedBuff(ID, new CostModifier(5, true), new AttackModifier(5, true),
+                        new CodeBuff(ID, new CostModifier(5, true), new AttackModifier(5, true),
                             new LifeModifier(5, true)));
                 })
         };

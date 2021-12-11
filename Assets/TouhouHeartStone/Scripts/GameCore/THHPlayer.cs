@@ -9,7 +9,6 @@ namespace TouhouHeartstone
 {
     public static class THHPlayer
     {
-        public static Card getMaster(this Player player) => player.getPile(PILE.MASTER)[0];
         public static Card getSkill(this Player player) => player.getPile(PILE.SKILL)[0];
         public static Pile getDeck(this Player player) => player.getPile(PILE.DECK);
         public static Pile getInit(this Player player) => player.getPile(PILE.INIT);
@@ -207,46 +206,46 @@ namespace TouhouHeartstone
                 await card.setUsed(game, true);
             }
             await player.setGem(game, player.getGem() - card.getCost(game));//消耗法力值
-            await game.triggers.doEvent(new HearthStoneRule.UseEventArg() { player = player, card = card, position = position, cost = card.getCost(game), targets = targets }, async arg =>
-             {
-                 Player p = arg.player;
-                 card = arg.card;
-                 targets = arg.targets;
-                 game.logger.logTrace(p + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
-                 if (arg.card.define is ServantCardDefine || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
-                 {
-                     await player.tryEnterField(game, p.getHand(), arg.card, arg.position);//随从卡，将卡置入战场
-                     await card.ComeOnStage(game, p, targets);//触发战吼事件
-                                                              //await card.activeEffect(game, p, targets);//执行随从效果
-                 }
-                 else if (card.define is SkillCardDefine)
-                 {
-                     await card.activeEffect(game, p, targets);
-                 }
-                 else if (card.isSpell())
-                 {
-                     //法术卡,释放效果
-                     await p.getHand().moveTo(game, card, p.getWarp());
-                     if (card.hasKeyword(game, KEYWORD.SECRET) || card.hasKeyword(game, KEYWORD.MISSION))
-                         await player.tryEnterHead(game, player.getWarp(), card);
-                     else
-                     {
-                         await card.activeEffect(game, p, targets);
-                         await card.resetCard(game);
-                         if (card.hasKeyword(game, KEYWORD._RETURNHEAD))
-                         {
-                             await p.getWarp().moveTo(game, card, p.getHand());
-                         }
-                         await p.getWarp().moveTo(game, card, p.getGrave());//如果是普通法术，则送入墓地
-                     }
-                 }
-                 else if (card.define is ItemCardDefine || (card.define is GeneratedCardDefine gDefine && gDefine.type == DEFINE.ITEM))
-                 {
-                     //物品卡，置入物品栏
-                     await p.equip(game, card);
-                     await card.activeEffect(game, p, targets);
-                 }
-             });
+            await game.triggers.doEvent(new HearthStoneRule.UseEventArg(player, card, position, targets, card.getCost(game)), async arg =>
+            {
+                Player p = arg.player;
+                card = arg.card;
+                targets = arg.targets;
+                game.logger.logTrace(p + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
+                if (arg.card.isServant() || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
+                {
+                    await player.tryEnterField(game, p.getHand(), arg.card, arg.position);//随从卡，将卡置入战场
+                    await card.ComeOnStage(game, p, targets);//触发战吼事件
+                                                             //await card.activeEffect(game, p, targets);//执行随从效果
+                }
+                else if (card.isSkill())
+                {
+                    await card.activeEffect(game, p, targets);
+                }
+                else if (card.isSpell())
+                {
+                    //法术卡,释放效果
+                    await p.getHand().moveTo(game, card, p.getWarp());
+                    if (card.hasKeyword(game, KEYWORD.SECRET) || card.hasKeyword(game, KEYWORD.MISSION))
+                        await player.tryEnterHead(game, player.getWarp(), card);
+                    else
+                    {
+                        await card.activeEffect(game, p, targets);
+                        await card.resetCard(game);
+                        if (card.hasKeyword(game, KEYWORD._RETURNHEAD))
+                        {
+                            await p.getWarp().moveTo(game, card, p.getHand());
+                        }
+                        await p.getWarp().moveTo(game, card, p.getGrave());//如果是普通法术，则送入墓地
+                    }
+                }
+                else if (card.isItem() || (card.define is GeneratedCardDefine gDefine && gDefine.type == DEFINE.ITEM))
+                {
+                    //物品卡，置入物品栏
+                    await p.equip(game, card);
+                    await card.activeEffect(game, p, targets);
+                }
+            });
             await game.updateDeath();
             return true;
         }
@@ -518,7 +517,8 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
-        [ActionNodeMethod("GetSpellDamage","Player")]
+        #region 动作定义
+        [ActionNodeMethod("GetSpellDamage", "Player")]
         [return: ActionNodeParam("Damage")]
         public static int getSpellDamage([ActionNodeParam("Player")] this Player player, CardEngine game, [ActionNodeParam("BaseDamage")] int baseDamage)
         {
@@ -529,6 +529,9 @@ namespace TouhouHeartstone
             }
             return result;
         }
+        [ActionNodeMethod("GetMaster", "Player")]
+        public static Card getMaster([ActionNodeParam("Player")]this Player player) => player.getPile(PILE.MASTER)[0];
+        #endregion
         public static async Task<Card> shuffleCardToDeck(this Player player, CardEngine game, CardDefine define)
         {
             Card card = game.createCard(define);

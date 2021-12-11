@@ -195,8 +195,20 @@ namespace Tests
         class TestBuff : Buff
         {
             public override int id { get; } = 0;
-            public override PropModifier[] modifiers { get; } = null;
-            public override IPassiveEffect[] effects { get; }
+
+            private readonly PropModifier[] modifiers = null;
+
+            public override PropModifier[] getPropertyModifiers(CardEngine game)
+            {
+                return modifiers;
+            }
+
+            private readonly IPassiveEffect[] effects1;
+
+            public override IPassiveEffect[] getEffects(CardEngine game)
+            {
+                return effects1;
+            }
 
             public override int instanceID { get; set; } = 0;
 
@@ -679,7 +691,7 @@ namespace Tests
             game.skipUntilCanUse<DeadSpawn2Token_EndTurnDie>(you);
             you.cmdUse<EndTurn1Spawn>(game);
             you.cmdUse<DeadSpawn2Token_EndTurnDie>(game);
-            
+
 
             you.cmdTurnEnd(game);
             game.Dispose();

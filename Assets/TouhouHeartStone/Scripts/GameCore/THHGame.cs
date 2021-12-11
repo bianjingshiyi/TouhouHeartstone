@@ -937,11 +937,19 @@ namespace TouhouHeartstone
 
         public class UseEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-            public Card card;
-            public int position;
-            public int cost;
-            public Card[] targets;
+            public UseEventArg(Player player, Card card, int position, Card[] targets, int cost)
+            {
+                setVar(VAR_PLAYER, player);
+                setVar(VAR_CARD, card);
+                setVar(VAR_POSITION, position);
+                setVar(VAR_TARGETS, targets);
+                setVar(VAR_COST, cost);
+            }
+            public Player player => getVar<Player>(VAR_PLAYER);
+            public Card card => getVar<Card>(VAR_CARD);
+            public int position => getVar<int>(VAR_POSITION);
+            public int cost => getVar<int>(VAR_COST);
+            public Card[] targets => getVar<Card[]>(VAR_TARGETS);
 
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -992,6 +1000,11 @@ namespace TouhouHeartstone
                     string.Join("，", targets?.Select(c => "{card:" + c.define.id + "}"))
                 };
             }
+            public const string VAR_PLAYER = "Player";
+            public const string VAR_CARD = "Card";
+            public const string VAR_POSITION = "Position";
+            public const string VAR_COST = "Cost";
+            public const string VAR_TARGETS = "Targets";
         }
 
         public class EnterFieldEventArg : EventArg, IDescribableEventArg

@@ -1,5 +1,6 @@
 ﻿using BJSYGameCore;
 using Game;
+using MongoDB.Bson.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -190,12 +191,12 @@ namespace Controllers
         /// 当卡牌列表被点击，打开卡牌编辑器，如果是新建卡牌则新建卡牌并打开
         /// </summary>
         /// <param name="index"></param>
-        private void onClickCardListItem(int index)
+        private async void onClickCardListItem(int index)
         {
             if (index < _cardDefineList.Count)
             {
                 CardDefine cardDefine = _cardDefineList[index];
-                scene.cardEditor.display(cardDefine, getSelectableCharacters());
+                await scene.cardEditor.display(_curCardPoolInfo.cardPoolId, cardDefine, getSelectableCharacters());
             }
             else
             {
@@ -206,7 +207,7 @@ namespace Controllers
                 newCardSkin.id = newCardDefine.id;
                 _cardSkinList.Add(newCardSkin);
                 game.card.addExternalCard(_curCardPoolInfo.cardPoolId, newCardDefine, newCardSkin);
-                scene.cardEditor.display(newCardDefine, getSelectableCharacters());
+                await scene.cardEditor.display(_curCardPoolInfo.cardPoolId, newCardDefine, getSelectableCharacters());
             }
         }
         private void onChangeSortTypeValue(int index)
@@ -262,7 +263,8 @@ namespace Controllers
                 _curCardPoolInfo.toJson(),//文件头信息
                 _cardDefineList.ToArray().toJson(),//卡牌
                 _cardSkinList.ToArray().toJson(),//皮肤
-                actionNodeGraphInfoList.ToArray().toJson()//编辑器信息
+                actionNodeGraphInfoList.ToArray().toJson(),//编辑器信息
+                game.card.getBuffDefines(_curCardPoolInfo.cardPoolId).toJson()//增益
             });
             Debug.Log("保存卡池" + _curCardPoolPath + "成功");
         }
@@ -340,6 +342,8 @@ namespace Controllers
         {
             _cardDefineList.Clear();
             _cardSkinList.Clear();
+            BsonClassMap.RegisterClassMap<GeneratedHalo>();
+            BsonClassMap.RegisterClassMap<CostModifier>();
             var cards = await game.card.getExternalCardDefinesAsync(cardPoolPath, readEditorInfo: true);
             _cardDefineList.AddRange(cards.defines);
             _cardSkinList.AddRange(cards.skins);
@@ -359,21 +363,6 @@ namespace Controllers
                     _cardDefineList[i].id = id;
                 }
             }
-        }
-        /// <summary>
-        /// 将卡池保存到相对路径下
-        /// </summary>
-        /// <param name="cardPoolPath">相对路径</param>
-        /// <param name="info">卡池信息</param>
-        /// <param name="cardDefines">卡池包含的卡片</param>
-        /// <returns></returns>
-        private Task saveCardPoolAsync(string cardPoolPath, CardPoolInfo info, CardDefine[] cardDefines)
-        {
-            return game.fileManager.saveFile(CARDPOOLS_DIR_NAME + "/" + cardPoolPath, new string[]
-            {
-                info.toJson(),
-                cardDefines.toJson()
-            });
         }
         /// <summary>
         /// 获取卡牌定义对应的皮肤数据

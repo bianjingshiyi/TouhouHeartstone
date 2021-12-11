@@ -116,10 +116,18 @@ namespace Game
             ui.servantCardFace.attackPropNumber.text.text = attack;
             ui.itemCardFace.attackPropNumber.text.text = attack;
         }
+        public static string getAttack(this UICard ui)
+        {
+            return ui.servantCardFace.attackPropNumber.text.text;
+        }
         public static void setLife(this UICard ui, string life)
         {
             ui.servantCardFace.lifePropNumber.text.text = life;
             ui.itemCardFace.lifePropNumber.text.text = life;
+        }
+        public static string getLife(this UICard ui)
+        {
+            return ui.servantCardFace.lifePropNumber.text.text;
         }
         public static void setDesc(this UICard ui, string desc)
         {
@@ -127,7 +135,10 @@ namespace Game
             ui.spellCardFace.descText.text = desc;
             ui.itemCardFace.descText.text = desc;
         }
-
+        public static string getDesc(this UICard ui)
+        {
+            return ui.servantCardFace.descText.text;
+        }
         public static void setTag(this UICard ui, string tag)
         {
             LangManager Lang = ui.ui.getManager<LangManager>();
@@ -145,10 +156,17 @@ namespace Game
             else
                 ui.servantCardFace.raceNameText.text = null;
         }
-
+        public static string getTag(this UICard ui)
+        {
+            return ui.servantCardFace.raceNameText.text;
+        }
         public static void setSubname(this UICard ui, string subName)
         {
             ui.servantCardFace.subNameText.text = subName;
+        }
+        public static string getSubname(this UICard ui)
+        {
+            return ui.servantCardFace.subNameText.text;
         }
         public static void setName(this UICard ui, string name)
         {
@@ -156,7 +174,10 @@ namespace Game
             ui.spellCardFace.nameText.text = name;
             ui.itemCardFace.nameText.text = name;
         }
-
+        public static string getName(this UICard ui)
+        {
+            return ui.servantCardFace.nameText.text;
+        }
         public static void setImage(this UICard ui, Sprite sprite)
         {
             ui.servantCardFace.image.sprite = sprite;
@@ -167,14 +188,16 @@ namespace Game
             ui.itemCardFace.image.sprite = sprite;
             ui.itemCardFace.image.GetComponent<AspectRatioFitter>().aspectRatio = aspect;
         }
-
         public static void setCost(this UICard ui, string value)
         {
             ui.servantCardFace.costPropNumber.text.text = value;
             ui.spellCardFace.costPropNumber.text.text = value;
             ui.itemCardFace.costPropNumber.text.text = value;
         }
-
+        public static string getCost(this UICard ui)
+        {
+            return ui.servantCardFace.costPropNumber.text.text;
+        }
         public static PropNumber getCostPropNum(this UICard ui, Card card)
         {
             switch (card.define.type)

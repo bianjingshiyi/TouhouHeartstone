@@ -7,10 +7,12 @@ using UnityEngine.EventSystems;
 
 namespace UI
 {
-    public class ActionNodeItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public partial class ActionNodeItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
+        #region 公有方法
         public void switchToTriggerNode()
         {
+            _buffFieldsRoot.gameObject.SetActive(false);
             _triggerFieldsRoot.gameObject.SetActive(true);
             _inputRoot.gameObject.SetActive(false);
             _valueRoot.gameObject.SetActive(false);
@@ -18,6 +20,7 @@ namespace UI
         }
         public void switchToActionNode()
         {
+            _buffFieldsRoot.gameObject.SetActive(false);
             _triggerFieldsRoot.gameObject.SetActive(false);
             _inputRoot.gameObject.SetActive(true);
             _valueRoot.gameObject.SetActive(true);
@@ -73,15 +76,15 @@ namespace UI
                 });
                 UIHelper.updateList(_valueRoot, _valueTemplate, _valueList, valueInfos.Length, (i, itemRect) =>
                 {
-                    ActionNodeItemConstValue item = itemRect.GetComponent<ActionNodeItemConstValue>();
+                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.setValueInfo(valueInfos[i]);
                 }, itemRect =>
                 {
-                    ActionNodeItemConstValue item = itemRect.GetComponent<ActionNodeItemConstValue>();
+                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.onValueChanged += onConstValueChangedCallback;
                 }, itemRect =>
                 {
-                    ActionNodeItemConstValue item = itemRect.GetComponent<ActionNodeItemConstValue>();
+                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.onValueChanged -= onConstValueChangedCallback;
                 });
             }
@@ -160,6 +163,7 @@ namespace UI
         {
             return _outputList[index].GetComponent<ActionNodeItemOutput>().getNodeWorldPosition();
         }
+        #endregion
         #region 私有方法
         #region 生命周期
         protected void Awake()
@@ -187,6 +191,12 @@ namespace UI
             _eventNameInputField.onEndEdit.AddListener(onEndEditEventNameInputField);
             _editConditionButton.onClick.AddListener(onClickEditConditionButtonCallback);
             _addTargetCheckerButton.onClick.AddListener(onClickAddTargetCheckerButtonCallback);
+            _newBuffButton.onClick.AddListener(onClickNewBuffButtonCallback);
+            _deleteBuffButton.onClick.AddListener(onClickDeleteBuffButtonCallback);
+            _addPropModifierButton.onClick.AddListener(onClickAddPropModifierButtonCallback);
+            _effectList.onClickAddEffect += onClickPropertyModifierAddEffectMenuCallback;
+            _effectList.onClickItemRemoveButton += onClickPropertyModifierEffectRemoveButtonCallback;
+            _effectList.onClickItemEditButton += onClickPropertyModifierEffectEditButtonCallback;
         }
         #endregion
         #region 事件回调
@@ -214,7 +224,7 @@ namespace UI
         {
             onEndDragOutputNode?.Invoke(this, item, eventData);
         }
-        private void onConstValueChangedCallback(ActionNodeItemConstValue item, object value)
+        private void onConstValueChangedCallback(ValueInputField item, object value)
         {
             onConstValueChanged?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform), value);
         }
@@ -294,6 +304,7 @@ namespace UI
         public event Action<ActionNodeItem, int> onClickRemoveTargetCheckerButton;
         public event Action<ActionNodeItem, int, string> onTargetCheckerErrorTipValueChanged;
         #endregion
+        #region 属性字段
         public float posX
         {
             get { throw new NotImplementedException(); }
@@ -342,5 +353,6 @@ namespace UI
         List<RectTransform> _targetCheckerList = new List<RectTransform>();
         [SerializeField]
         Button _addTargetCheckerButton;
+        #endregion
     }
 }
