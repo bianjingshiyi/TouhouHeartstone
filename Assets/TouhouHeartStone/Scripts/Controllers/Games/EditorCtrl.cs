@@ -54,8 +54,7 @@ namespace Controllers
                     _curCardPoolInfo = _cardPoolInfoList[cardPoolIndex];
                 }
                 //更新牌库信息
-                Sprite image = string.IsNullOrEmpty(_curCardPoolInfo.imageResPath) ? null :
-                    await game.card.loadExternalImage(_curCardPoolInfo.imageResPath);
+                Sprite image = await loadExternalImage(_curCardPoolInfo.imageResPath);
                 _ui.updateCurCardPoolInfo(_curCardPoolInfo.cardPoolName, image);
                 //显示卡牌列表
                 if (reloadCardPool)
@@ -156,7 +155,7 @@ namespace Controllers
                 CardSkinData cardSkin = getCardSkinData(cardDefine);
                 cardListItem.card.setCard(cardDefine, cardSkin);
                 cardListItem.switchToCard();
-                cardListItem.card.setImage(cardSkin.image != null ? cardSkin.image : await game.card.loadExternalImage(cardSkin.imagePath));
+                cardListItem.card.setImage(await loadExternalImage(cardSkin.imagePath));
             }
             else
             {
@@ -224,6 +223,7 @@ namespace Controllers
                 //没有指定地址
                 _curCardPoolPath = allocCardPoolPath(_curCardPoolInfo);
             }
+            string path;
             //对缓存的图片进行保存
             foreach (var pair in game.card.externalSpriteCacheDict)
             {
@@ -235,20 +235,41 @@ namespace Controllers
                     continue;
                 }
                 //另存为图片
-                string path = Path.Combine("Textures", _curCardPoolInfo.cardPoolName, skin.id.ToString(), skin.skinId.ToString(), "Image.jpg");
-                if (pair.Value is Sprite sprite)
+                if (game.card.isStandardCardPool(_curCardPoolInfo))
                 {
-                    await game.fileManager.saveFile(path, sprite.texture.EncodeToJPG());
-                }
-                else if (pair.Value is Task<Sprite> task)
-                {
-                    sprite = await task;
-                    await game.fileManager.saveFile(path, sprite.texture.EncodeToJPG());
+                    path = Path.Combine("ExternalData/Textures", _curCardPoolInfo.cardPoolName, skin.id.ToString(), skin.skinId.ToString(), "Image.jpg");
+                    if (pair.Value is Sprite sprite)
+                    {
+                        await game.fileManager.saveFile(path, sprite.texture.EncodeToJPG());
+                    }
+                    else if (pair.Value is Task<Sprite> task)
+                    {
+                        sprite = await task;
+                        await game.fileManager.saveFile(path, sprite.texture.EncodeToJPG());
+                    }
+                    else
+                    {
+                        Debug.LogWarning("图片" + path + "为空");
+                        continue;
+                    }
                 }
                 else
                 {
-                    Debug.LogWarning("图片" + path + "为空");
-                    continue;
+                    path = Path.Combine("Textures", _curCardPoolInfo.cardPoolName, skin.id.ToString(), skin.skinId.ToString(), "Image.jpg");
+                    if (pair.Value is Sprite sprite)
+                    {
+                        await game.fileManager.savePersistentFile(path, sprite.texture.EncodeToJPG());
+                    }
+                    else if (pair.Value is Task<Sprite> task)
+                    {
+                        sprite = await task;
+                        await game.fileManager.savePersistentFile(path, sprite.texture.EncodeToJPG());
+                    }
+                    else
+                    {
+                        Debug.LogWarning("图片" + path + "为空");
+                        continue;
+                    }
                 }
                 Debug.Log("另存为图片" + path + "成功");
                 //替换所有引用这个图片的皮肤的图片地址
@@ -258,7 +279,15 @@ namespace Controllers
                 }
             }
             //保存文件
-            await game.fileManager.saveFile(_curCardPoolPath, new string[]
+            path = _curCardPoolPath;
+#if UNITY_EDITOR
+            if (game.card.isStandardCardPool(_curCardPoolInfo) &&
+                path.StartsWith(Path.Combine(Application.persistentDataPath, game.card.cardPoolDirName)))
+            {
+                path = path.Replace(Path.Combine(Application.persistentDataPath, game.card.cardPoolDirName), game.card.editorCardPoolDirName);
+            }
+#endif
+            await game.fileManager.saveFile(path, new string[]
             {
                 _curCardPoolInfo.toJson(),//文件头信息
                 _cardDefineList.ToArray().toJson(),//卡牌
@@ -266,7 +295,7 @@ namespace Controllers
                 actionNodeGraphInfoList.ToArray().toJson(),//编辑器信息
                 game.card.getBuffDefines(_curCardPoolInfo.cardPoolId).toJson()//增益
             });
-            Debug.Log("保存卡池" + _curCardPoolPath + "成功");
+            Debug.Log("保存卡池" + path + "成功");
         }
         /// <summary>
         /// 当点击返回浏览卡池按钮，清空字段并切换回浏览卡池状态
@@ -311,18 +340,17 @@ namespace Controllers
         {
             _cardPoolPathList.Clear();
             _cardPoolInfoList.Clear();
-            var files = game.fileManager.getFiles(CARDPOOLS_DIR_NAME, "*.ddcp", true);
-            var lines = await game.fileManager.readTextFiles(files);
-            for (int i = 0; i < files.Length; i++)
+            var result = await game.card.getCardPoolInfosAsync();
+            foreach (var pair in result)
             {
-                CardPoolInfo cardPool = JsonHelper.fromJson<CardPoolInfo>(lines[i][0]);
+                CardPoolInfo cardPool = pair.Value;
                 int index = _cardPoolInfoList.FindIndex(p => p.cardPoolId == cardPool.cardPoolId);
                 if (index >= 0)
                 {
-                    Debug.LogWarning("无法加载卡池" + files[i] + "，因为" + _cardPoolPathList[i] + "拥有与其相同的Id" + cardPool.cardPoolId);
+                    Debug.LogWarning("无法加载卡池" + pair.Key + "，因为" + _cardPoolPathList[index] + "拥有与其相同的Id" + cardPool.cardPoolId);
                     continue;
                 }
-                _cardPoolPathList.Add(files[i]);
+                _cardPoolPathList.Add(pair.Key);
                 _cardPoolInfoList.Add(cardPool);
             }
             //尝试修复没有Id的卡池
@@ -394,7 +422,7 @@ namespace Controllers
         }
         private string allocCardPoolPath(CardPoolInfo cardPool)
         {
-            return CARDPOOLS_DIR_NAME + "/" + cardPool.cardPoolName + ".ddcp";
+            return game.card.cardPoolDirName + "/" + cardPool.cardPoolName + ".ddcp";
         }
         private int allocCardPoolId()
         {
@@ -434,7 +462,7 @@ namespace Controllers
             for (int i = 0; i < viewData.Length; i++)
             {
                 viewData[i].name = _cardPoolInfoList[i].cardPoolName;
-                viewData[i].image = await game.card.loadExternalImage(_cardPoolInfoList[i].imageResPath);
+                viewData[i].image = await loadExternalImage(_cardPoolInfoList[i].imageResPath);
             }
             _ui.updateDeckList(viewData);
         }
@@ -445,11 +473,32 @@ namespace Controllers
             {
                 CardSkinData skin = getCardSkinData(_cardDefineList[i]);
                 viewData[i].name = skin.name;
-                viewData[i].image = string.IsNullOrEmpty(skin.imagePath) ? null :
-                    await game.card.loadExternalImage(skin.imagePath);
+                viewData[i].image = await loadExternalImage(skin.imagePath);
                 viewData[i].count = 0;
             }
             _ui.updateDeckCardList(viewData);
+        }
+        private Task<Sprite> loadExternalImage(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return Task.FromResult<Sprite>(null);
+            }
+            else
+            {
+#if UNITY_EDITOR
+                if (game.card.isStandardCardPool(_curCardPoolInfo) &&
+                    !(path.StartsWith("res:") || path.StartsWith("sa:")))//这些图片不是在Resources或者StreamingAssets中
+                {
+                    string fullPath = Path.GetFullPath(Path.Combine(game.card.editorTextureDirName, path));
+                    if (game.fileManager.isFileExist(fullPath))
+                        path = fullPath;
+                    else
+                        path = Path.GetFullPath(path);
+                }
+#endif
+                return game.card.loadExternalImage(path);
+            }
         }
         #endregion
         public List<ActionNodeGraphInfo> actionNodeGraphInfoList { get; } = new List<ActionNodeGraphInfo>();
@@ -484,7 +533,6 @@ namespace Controllers
             /// </summary>
             rareDescending
         }
-        const string CARDPOOLS_DIR_NAME = "CardPools";
     }
     [Serializable]
     public class CardPoolInfo

@@ -111,8 +111,8 @@ namespace Game
         public async Task displayAsync()
         {
             //读取Replay文件头
-            _paths = app.fileManager.getFiles(main.replays.getSaveDir(), "*." + main.replays.getSaveFileExtension(), true);
-            string[][] fileHeads = await app.fileManager.readTextFiles(_paths);
+            _paths = app.fileManager.getPersistentFiles(main.replays.getSaveDir(), "*." + main.replays.getSaveFileExtension(), true);
+            string[][] fileHeads = await app.fileManager.readPersistentTextFiles(_paths);
             //转化为显示数据并刷新显示
             ReplayItemViewData[] viewDatas = new ReplayItemViewData[fileHeads.Length];
             for (int i = 0; i < fileHeads.Length; i++)
@@ -138,7 +138,7 @@ namespace Game
         private async void onPlayButtonClick(ReplaySelectPanel ui)
         {
             string path = _paths[_selectIndex];
-            var content = await app.fileManager.readTextFile(path, 1, 1);
+            var content = await app.fileManager.readPersistentTextFile(path, 1, 1);
             string json = content[0];
             ReplayData replay = BsonSerializer.Deserialize<ReplayData>(json);
             hide();

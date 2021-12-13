@@ -5,8 +5,8 @@ using Controllers;
 using TouhouCardEngine;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
-using TouhouHeartstone;
 
 namespace Game
 {
@@ -14,91 +14,56 @@ namespace Game
     {
         #region 公有方法
         /// <summary>
-        /// 获取所有效果类型的名称
-        /// </summary>
-        /// <returns></returns>
-        public string[] getEffectNames()
-        {
-            return _effectTypes;
-        }
-        /// <summary>
-        /// 获取所有给定效果类型的名称
-        /// </summary>
-        /// <param name="effects"></param>
-        /// <returns></returns>
-        public string[] getEffectNames(GeneratedEffect[] effects)
-        {
-            string[] effectNames = new string[effects.Length];
-            for (int i = 0; i < effectNames.Length; i++)
-            {
-                string effectName;
-                if (effects[i] is GeneratedHalo)
-                    effectName = _effectTypes[1];
-                else
-                    effectName = _effectTypes[0];
-                effectNames[i] = string.Format(game.langManager.getString(StringTable.EDITOR_EDIT_EFFECT), effectName);
-            }
-            return effectNames;
-        }
-        public GeneratedEffect createEffectByIndex(int index)
-        {
-            if (index == 1)
-                return new GeneratedHalo();
-            else
-                return new GeneratedEffect();
-        }
-        public int getEffectTypeIndex(GeneratedEffect effect)
-        {
-            if (effect is GeneratedHalo)
-                return 1;
-            else
-                return 0;
-        }
-        #endregion
-        #region 属性字段
-        readonly string[] _effectTypes = new string[]
-        {
-            StringTable.EDITOR_EFFECT_NAME_NORMAL_EFFECT,
-            StringTable.EDITOR_EFFECT_NAME_HALO_EFFECT
-        };
-        #endregion
-    }
-    partial class CardManager
-    {
-        #region 公有方法
-        /// <summary>
-        /// 
+        /// 读取卡池信息
         /// </summary>
         /// <param name="onCardPoolInfoRead"></param>
         /// <returns>Key为路径，Value为信息</returns>
         public async Task<Dictionary<string, CardPoolInfo>> getCardPoolInfosAsync(Action<string, CardPoolInfo> onCardPoolInfoRead = null)
         {
             Dictionary<string, CardPoolInfo> dict = new Dictionary<string, CardPoolInfo>();
-            var files = game.fileManager.getFiles(CARDPOOLS_DIR_NAME, "*.ddcp", true);
-            for (int i = 0; i < files.Length; i++)
+            string[] fileList = getCardPoolsPath();
+            for (int i = 0; i < fileList.Length; i++)
             {
-                string path = files[i];
+                string path = fileList[i];
                 string[] lines = await game.fileManager.readTextFile(path, lineCount: 1);
                 if (lines == null || lines.Length < 1)
                     continue;
                 CardPoolInfo cardPool = JsonHelper.fromJson<CardPoolInfo>(lines[0]);
-                dict.Add(files[i], cardPool);
-                onCardPoolInfoRead?.Invoke(files[i], cardPool);
+                //去重，多份文件中可能包含相同的卡池
+                string conflictCardPoolPath = null;
+                foreach (var pair in dict)
+                {
+                    if (pair.Value.cardPoolId == cardPool.cardPoolId)
+                    {
+                        conflictCardPoolPath = pair.Key;
+                        break;
+                    }
+                }
+                if (conflictCardPoolPath != null)
+                {
+                    dict.Remove(conflictCardPoolPath);
+                }
+                dict.Add(fileList[i], cardPool);
+                onCardPoolInfoRead?.Invoke(fileList[i], cardPool);
             }
             return dict;
+        }
+        /// <summary>
+        /// 获取所有卡池的路径
+        /// </summary>
+        /// <returns></returns>
+        public string[] getCardPoolsPath()
+        {
+            List<string> fileList = new List<string>(game.fileManager.getPersistentFiles(_cardPoolDirName, "*." + _cardPoolFilePostfix, true));
+#if UNITY_EDITOR
+            fileList.AddRange(game.fileManager.getFiles(Path.GetFullPath(_editorCardPoolDirName), "*." + _cardPoolFilePostfix));
+#endif
+            return fileList.ToArray();
         }
         public void addExternalCardPool(int cardPoolId)
         {
             _externalCardDefineDict.Add(cardPoolId, new List<CardDefine>());
             _externalCardSkinDict.Add(cardPoolId, new List<CardSkinData>());
-        }
-        /// <summary>
-        /// 从可持续文件中加载所有外部卡牌，包括数据和皮肤
-        /// </summary>
-        /// <returns></returns>
-        public async Task loadAllExternalCards()
-        {
-
         }
         public async Task<(CardDefine[] defines, CardSkinData[] skins)> getExternalCardDefinesAsync(string[] paths)
         {
@@ -114,7 +79,9 @@ namespace Game
         }
         public async Task<(CardDefine[] defines, CardSkinData[] skins, ActionNodeGraphInfo[] actionGraphInfos)> getExternalCardDefinesAsync(string path, bool readEditorInfo = false)
         {
-            var lines = await game.fileManager.readTextFile(path, 0, 5);
+            var lines = Path.GetFullPath(path) == path ?
+                await game.fileManager.readTextFile(path, 0, 5) :
+                await game.fileManager.readPersistentTextFile(path, 0, 5);
             if (lines != null && lines.Length > 0)
             {
                 //卡池
@@ -269,7 +236,9 @@ namespace Game
             else
             {
                 //外部贴图
-                byte[] bytes = await game.fileManager.readBinaryFile(path);
+                byte[] bytes = Path.GetFullPath(path) == path ?//如果直接给出完整路径就直接从完整路径上读
+                    await game.fileManager.readBinaryFile(path) :
+                    await game.fileManager.readPersistentBinaryFile(path);
                 Texture2D texture = new Texture2D(512, 512);
                 texture.LoadImage(bytes);
                 sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
@@ -348,18 +317,38 @@ namespace Game
             }
             return skinList.ToArray();
         }
+        public bool isStandardCardPool(CardPoolInfo cardPool)
+        {
+            return _standardCardPoolsId.Contains(cardPool.cardPoolId);
+        }
         #endregion
         #region 私有方法
         #endregion
         #region 属性字段
         public Dictionary<string, object> externalSpriteCacheDict { get; } = new Dictionary<string, object>();
+        public string cardPoolDirName => _cardPoolDirName;
+        public string editorCardPoolDirName => _editorCardPoolDirName;
+        public string editorTextureDirName => _editorTextureDirName;
         Dictionary<int, List<CardDefine>> _externalCardDefineDict = new Dictionary<int, List<CardDefine>>();
         /// <summary>
         /// 用于存储外部皮肤信息的字典，Key为卡池Id，值为卡池包含皮肤列表
         /// </summary>
         Dictionary<int, List<CardSkinData>> _externalCardSkinDict = new Dictionary<int, List<CardSkinData>>();
         Dictionary<int, List<ActionNodeGraphInfo>> _externalCardActionGraphInfoDict = new Dictionary<int, List<ActionNodeGraphInfo>>();
-        const string CARDPOOLS_DIR_NAME = "CardPools";
+        [Header("卡池")]
+        [SerializeField]
+        string _cardPoolFilePostfix = "ddcp";
+        [SerializeField]
+        string _cardPoolDirName = "CardPools";
+        [SerializeField]
+        string _editorCardPoolDirName = "ExternalData/CardPools";
+        [SerializeField]
+        string _editorTextureDirName = "ExternalData/Textures";
+        [SerializeField]
+        int[] _standardCardPoolsId = new int[]
+{
+            1
+};
         #endregion
     }
 }

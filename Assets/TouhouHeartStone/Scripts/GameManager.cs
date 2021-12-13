@@ -601,7 +601,7 @@ namespace Game
         private const string GAME_MANAGER_REVEAL_DUEL = "信仰对决";
         private async void onSaveReplayButtonClick()
         {
-            await getManager<MainManager>().fileManager.saveFile(
+            await getManager<MainManager>().fileManager.savePersistentFile(
                 _replaySystem.getSaveDir() + "/" + _replaySystem.getSaveFileName(_replaySystem.replay) + "." + _replaySystem.getSaveFileExtension(),
                 _replaySystem.replay.players.Select(p => p.getDeck().masterId).ToArray().ToJson() + "\r\n" +
                 _replaySystem.replay.ToJson());
