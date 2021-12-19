@@ -125,7 +125,7 @@ namespace Controllers
             string cardPoolPath = game.card.getCardPoolPath(game.card.getCardPool(_cardPoolId));
             Sprite image = cardPoolPath.StartsWith("sa:") ?
                 await game.card.loadExternalImage(path, null) :
-                await game.card.loadExternalImage(path, game.card.getCardPoolPathRootDir(cardPoolPath));
+                await game.card.loadExternalImage(path, Path.Combine(game.card.getCardPoolPathRootDir(cardPoolPath), game.card.textureDirName));
             if (image != null)
             {
                 _ui.setImage(image);
