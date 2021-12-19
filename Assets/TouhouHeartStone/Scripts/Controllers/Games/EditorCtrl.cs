@@ -305,13 +305,13 @@ namespace Controllers
                 //如果是StreamingAssets，那要转存成可持续化文件
                 path = path.Substring(3, path.Length - 3);
             }
-//#if UNITY_EDITOR
-//            if (game.card.isStandardCardPool(_curCardPoolInfo) &&
-//                path.StartsWith(Path.Combine(Application.persistentDataPath, game.card.cardPoolDirName)))
-//            {
-//                path = path.Replace(Path.Combine(Application.persistentDataPath, game.card.cardPoolDirName), game.card.editorCardPoolDirName);
-//            }
-//#endif
+            //#if UNITY_EDITOR
+            //            if (game.card.isStandardCardPool(_curCardPoolInfo) &&
+            //                path.StartsWith(Path.Combine(Application.persistentDataPath, game.card.cardPoolDirName)))
+            //            {
+            //                path = path.Replace(Path.Combine(Application.persistentDataPath, game.card.cardPoolDirName), game.card.editorCardPoolDirName);
+            //            }
+            //#endif
             await game.fileManager.saveFile(path, new string[]
             {
                 _curCardPoolInfo.toJson(),//文件头信息
@@ -547,7 +547,8 @@ namespace Controllers
                 else
                 {
                     //因为在Editor下无法区分可持续化文件和工程文件，这里必须获取卡池目录的完整根目录
-                    return game.card.loadExternalImage(path, game.card.getCardPoolPathRootDir(game.card.getCardPoolPath(_curCardPoolInfo)));
+                    string dirName = Path.Combine(game.card.getCardPoolPathRootDir(game.card.getCardPoolPath(_curCardPoolInfo)), game.card.textureDirName);
+                    return game.card.loadExternalImage(path, dirName);
                 }
             }
         }
