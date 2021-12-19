@@ -179,7 +179,11 @@ namespace Controllers
                 item.card.setCard(cardDefine, cardSkin);
                 if (cardSkin != null && cardSkin.image == null)
                 {
-                    item.card.setImage(await game.card.loadExternalImage(cardSkin.imagePath));
+                    Sprite sprite = cardSkin.imagePath.StartsWith("sa:") ?
+                        await game.card.loadExternalImage(cardSkin.imagePath, null) :
+                        await game.card.loadExternalImage(cardSkin.imagePath, 
+                            game.card.getCardPoolPathRootDir(game.card.getCardPoolPath(game.card.getCardPoolOfCard(cardDefine))));
+                    item.card.setImage(sprite);
                 }
                 if (_deck == null)
                 {
@@ -668,7 +672,7 @@ namespace Controllers
                 return Task.FromResult(skin.image);
             else
             {
-                return game.card.loadExternalImage(skin.imagePath);
+                return game.card.loadExternalImage(skin.imagePath, null);
             }
         }
         /// <summary>

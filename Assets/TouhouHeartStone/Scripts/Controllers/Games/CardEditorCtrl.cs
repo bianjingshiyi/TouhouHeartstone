@@ -12,6 +12,7 @@ using SFB;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
 using TouhouCardEngine.Interfaces;
+using System.IO;
 
 namespace Controllers
 {
@@ -119,7 +120,12 @@ namespace Controllers
             _ui.setName(_curCardSkin.name);
             _ui.setSubName(_curCardSkin.subname);
             _ui.setDesc(_curCardSkin.desc);
-            Sprite image = await game.card.loadExternalImage(_curCardSkin.imagePath);
+            string path = _curCardSkin.imagePath;
+            //除了StreamingAssets以外，因为无法区分可持续化文件和工程文件必须获取完整根目录
+            string cardPoolPath = game.card.getCardPoolPath(game.card.getCardPool(_cardPoolId));
+            Sprite image = cardPoolPath.StartsWith("sa:") ?
+                await game.card.loadExternalImage(path, null) :
+                await game.card.loadExternalImage(path, game.card.getCardPoolPathRootDir(cardPoolPath));
             if (image != null)
             {
                 _ui.setImage(image);
@@ -199,7 +205,8 @@ namespace Controllers
             _ui.setName(_curCardSkin.name);
             _ui.setSubName(_curCardSkin.subname);
             _ui.setDesc(_curCardSkin.desc);
-            Sprite image = await game.card.loadExternalImage(_curCardSkin.imagePath);
+            Sprite image = await game.card.loadExternalImage(_curCardSkin.imagePath,
+                game.card.getCardPoolPathRootDir(game.card.getCardPoolPath(game.card.getCardPool(_cardPoolId))));
             if (image != null)
             {
                 _ui.setImage(image);

@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fc9705c2271be34eafdba1d519a67d6, type: 3}
+  m_Script: {fileID: 11500000, guid: d86bf4b13e82d324db3d96e7ae7c5dde, type: 3}
   m_Name: BundleInfoKeeper
   m_EditorClassIdentifier: 
-  version: 1
-  codeVersion: 1
-  bundleList: []
+  version: 
+  buildDate: 

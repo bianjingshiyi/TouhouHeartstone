@@ -13,6 +13,8 @@ namespace Game
         public const string NO = "否";
         [TranslateMsg("所有提示通用的错误")]
         public const string ERROR = "错误";
+        [TranslateMsg("所有玩家非法操作的提示")]
+        public const string INVALID_OPERATION = "非法操作";
         [TranslateMsg("发现了新版本的游戏，询问玩家是否要打开一个外部链接进行下载")]
         public const string WANNA_DOWNLOAD_NEW_VERSION = "发现了更新版本的游戏，是否下载？";
         [TranslateMsg("发现了新版本的游戏，但是没有适合的下载链接")]
@@ -89,6 +91,10 @@ namespace Game
         public const string EDITOR_EDIT_EFFECT = "编辑{0}";
         [TranslateMsg("编辑器中询问玩家是否要删除卡池")]
         public const string EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL = "你是否要删除这个卡池？";
+        [TranslateMsg("编辑器中提示玩家不能删除官方标准卡池")]
+        public const string EDITOR_DIALOG_CANNOT_DELETE_STANDARD_CARDPOOL = "你不能删除标准卡池";
+        [TranslateMsg("编辑器中提示玩家不能修改官方标准卡池")]
+        public const string EDITOR_DIALOG_CANNOT_MODIFY_STANDARD_CARDPOOL = "你不能修改标准卡池";
         #region 动作
         #region 内置
         [TranslateMsg("动作图编辑器中动作节点名称之整数运算")]

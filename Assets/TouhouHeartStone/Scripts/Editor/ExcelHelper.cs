@@ -1,6 +1,5 @@
 ﻿using System;
 using ExcelLibrary.SpreadSheet;
-
 namespace TouhouHeartstone
 {
     public static class ExcelHelper

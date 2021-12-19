@@ -20,18 +20,31 @@ namespace Game
         /// <returns>Key为路径，Value为信息</returns>
         public async Task<Dictionary<string, CardPoolInfo>> getCardPoolInfosAsync(Action<string, CardPoolInfo> onCardPoolInfoRead = null)
         {
-            Dictionary<string, CardPoolInfo> dict = new Dictionary<string, CardPoolInfo>();
+            Debug.Log("开始读取卡池信息");
+            _cardPoolDict.Clear();
             string[] fileList = getCardPoolsPath();
             for (int i = 0; i < fileList.Length; i++)
             {
                 string path = fileList[i];
-                string[] lines = await game.fileManager.readTextFile(path, lineCount: 1);
+                Debug.Log("开始读取卡池信息" + path);
+                string[] lines;
+                if (path.StartsWith("sa:"))
+                {
+                    lines = await game.fileManager.readStreamingTextFile(path.Substring(3, path.Length - 3), lineCount: 1);
+                }
+                else
+                {
+                    lines = await game.fileManager.readTextFile(path, lineCount: 1);
+                }
                 if (lines == null || lines.Length < 1)
+                {
+                    Debug.LogWarning("读取卡池信息" + path + "为空");
                     continue;
+                }
                 CardPoolInfo cardPool = JsonHelper.fromJson<CardPoolInfo>(lines[0]);
                 //去重，多份文件中可能包含相同的卡池
                 string conflictCardPoolPath = null;
-                foreach (var pair in dict)
+                foreach (var pair in _cardPoolDict)
                 {
                     if (pair.Value.cardPoolId == cardPool.cardPoolId)
                     {
@@ -41,12 +54,13 @@ namespace Game
                 }
                 if (conflictCardPoolPath != null)
                 {
-                    dict.Remove(conflictCardPoolPath);
+                    _cardPoolDict.Remove(conflictCardPoolPath);
                 }
-                dict.Add(fileList[i], cardPool);
-                onCardPoolInfoRead?.Invoke(fileList[i], cardPool);
+                _cardPoolDict.Add(path, cardPool);
+                onCardPoolInfoRead?.Invoke(path, cardPool);
+                Debug.Log("读取卡池信息" + path + "完毕");
             }
-            return dict;
+            return new Dictionary<string, CardPoolInfo>(_cardPoolDict);
         }
         /// <summary>
         /// 获取所有卡池的路径
@@ -54,10 +68,19 @@ namespace Game
         /// <returns></returns>
         public string[] getCardPoolsPath()
         {
-            List<string> fileList = new List<string>(game.fileManager.getPersistentFiles(_cardPoolDirName, "*." + _cardPoolFilePostfix, true));
-#if UNITY_EDITOR
-            fileList.AddRange(game.fileManager.getFiles(Path.GetFullPath(_editorCardPoolDirName), "*." + _cardPoolFilePostfix));
-#endif
+            //自定义卡池，C盘的完整地址或者是Android的Data地址
+            string searchPattern = string.Intern("*." + _cardPoolFilePostfix);
+            List<string> fileList = new List<string>(game.fileManager.getPersistentFiles(_cardPoolDirName, searchPattern, true));
+            if (Application.isEditor)
+            {
+                //编辑器下的官方卡池，位于项目文件夹下的ExternalData中
+                fileList.AddRange(game.fileManager.getFiles(Path.GetFullPath(_editorCardPoolDirName), searchPattern));
+            }
+            if (!Application.isEditor || _enableStreamingAssetsInEditor)
+            {
+                //官方卡池，以sa:开头的StreamingAssets
+                fileList.AddRange(game.fileManager.getStreamingFiles(_cardPoolDirName, searchPattern));
+            }
             return fileList.ToArray();
         }
         public void addExternalCardPool(int cardPoolId)
@@ -79,14 +102,36 @@ namespace Game
         }
         public async Task<(CardDefine[] defines, CardSkinData[] skins, ActionNodeGraphInfo[] actionGraphInfos)> getExternalCardDefinesAsync(string path, bool readEditorInfo = false)
         {
-            var lines = Path.GetFullPath(path) == path ?
-                await game.fileManager.readTextFile(path, 0, 5) :
-                await game.fileManager.readPersistentTextFile(path, 0, 5);
+            string[] lines;
+            if (path.StartsWith("sa:"))
+            {
+                //读取StreamingAssets
+                lines = await game.fileManager.readStreamingTextFile(path, 0, 5);
+            }
+            else if (Path.GetFullPath(path) == path)
+            {
+                //如果是绝对路径就从绝对路径上读取，这是因为在Editor模式下无法区分可持续化文件与工程文件所以使用绝对路径
+                lines = await game.fileManager.readTextFile(path, 0, 5);
+            }
+            else
+            {
+                //相对路径，只能从可持续化文件中读取
+                lines = await game.fileManager.readPersistentTextFile(path, 0, 5);
+            }
             if (lines != null && lines.Length > 0)
             {
                 //卡池
                 string json = lines[0];
                 CardPoolInfo cardPool = JsonHelper.fromJson<CardPoolInfo>(json);
+                path = Path.GetFullPath(path);
+                if (_cardPoolDict.ContainsKey(path))
+                {
+                    _cardPoolDict[path] = cardPool;
+                }
+                else
+                {
+                    _cardPoolDict.Add(path, cardPool);
+                }
                 if (_externalCardDefineDict.ContainsKey(cardPool.cardPoolId))
                 {
                     CardDefine[] defines = _externalCardDefineDict[cardPool.cardPoolId].ToArray();
@@ -113,27 +158,30 @@ namespace Game
                         _externalCardActionGraphInfoDict.Add(cardPool.cardPoolId, new List<ActionNodeGraphInfo>(actionGraphInfos));
                     }
                     //增益
+                    GeneratedBuffDefine[] buffDefines = null;
                     if (lines.Length > 4)
                     {
                         json = lines[4];
-                        GeneratedBuffDefine[] buffDefines = null;
-                        try
+                        if (!string.IsNullOrEmpty(json))
                         {
-                            buffDefines = JsonHelper.fromJson<GeneratedBuffDefine[]>(json);
+                            try
+                            {
+                                buffDefines = JsonHelper.fromJson<GeneratedBuffDefine[]>(json);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogError("加载" + path + "中的增益发生异常：" + e);
+                            }
                         }
-                        catch (Exception e)
-                        {
-                            Debug.LogError("加载" + path + "中的增益发生异常：" + e);
-                        }
-                        if (!_externalBuffDefineDict.TryGetValue(cardPool.cardPoolId, out var buffList) || buffList == null)
-                        {
-                            buffList = new List<GeneratedBuffDefine>();
-                            _externalBuffDefineDict[cardPool.cardPoolId] = buffList;
-                        }
-                        if (buffDefines != null)
-                        {
-                            buffList.AddRange(buffDefines);
-                        }
+                    }
+                    if (!_externalBuffDefineDict.TryGetValue(cardPool.cardPoolId, out var buffList) || buffList == null)
+                    {
+                        buffList = new List<GeneratedBuffDefine>();
+                        _externalBuffDefineDict[cardPool.cardPoolId] = buffList;
+                    }
+                    if (buffDefines != null)
+                    {
+                        buffList.AddRange(buffDefines);
                     }
                     return (defines, skins, actionGraphInfos);
                 }
@@ -187,11 +235,48 @@ namespace Game
             }
             return false;
         }
-        public async Task<Sprite> loadExternalImage(string path)
+        public CardPoolInfo getCardPoolOfCard(CardDefine card)
+        {
+            foreach (var pair in _externalCardDefineDict)
+            {
+                if (pair.Value.Contains(card))
+                {
+                    foreach (var cardPool in _cardPoolDict.Values)
+                    {
+                        if (cardPool.cardPoolId == pair.Key)
+                            return cardPool;
+                    }
+                }
+            }
+            return null;
+        }
+        public string getCardPoolPath(CardPoolInfo cardPool)
+        {
+            foreach (var pair in _cardPoolDict)
+            {
+                if (pair.Value.cardPoolId == cardPool.cardPoolId)
+                    return pair.Key;
+            }
+            return null;
+        }
+        public CardPoolInfo getCardPool(int cardPoolId)
+        {
+            foreach (var cardPool in _cardPoolDict.Values)
+            {
+                if (cardPool.cardPoolId == cardPoolId)
+                    return cardPool;
+            }
+            return null;
+        }
+        public async Task<Sprite> loadExternalImage(string path, string dirName)
         {
             if (string.IsNullOrEmpty(path))
             {
                 return null;
+            }
+            if (!string.IsNullOrEmpty(dirName))
+            {
+                path = Path.Combine(dirName, path);
             }
             if (await getSpriteFromCache(path) is Sprite sprite)
             {
@@ -281,9 +366,25 @@ namespace Game
                 return Task.FromResult(skin.image);
             else
             {
-                return loadExternalImage(skin.imagePath);
+                CardPoolInfo cardPool = getCardPoolOfCard(GetCardDefine(cardId));
+                if (skin.imagePath.StartsWith("sa:"))
+                    return loadExternalImage(skin.imagePath, null);
+                else
+                    return loadExternalImage(skin.imagePath, getCardPoolPathRootDir(getCardPoolPath(cardPool)));
             }
         }
+
+        public string getCardPoolPathRootDir(string path)
+        {
+            DirectoryInfo dirInfo = Directory.GetParent(path);
+            if (dirInfo.Name != cardPoolDirName)
+            {
+                dirInfo = dirInfo.Parent;
+            }
+            dirInfo = dirInfo.Parent;
+            return dirInfo.FullName;
+        }
+
         public bool tryGetExternalSkin(int cardId, out CardSkinData skin)
         {
             skin = null;
@@ -319,7 +420,11 @@ namespace Game
         }
         public bool isStandardCardPool(CardPoolInfo cardPool)
         {
-            return _standardCardPoolsId.Contains(cardPool.cardPoolId);
+            return isStandardCardPool(cardPool.cardPoolId);
+        }
+        public bool isStandardCardPool(int cardPoolId)
+        {
+            return _standardCardPoolsId.Contains(cardPoolId);
         }
         #endregion
         #region 私有方法
@@ -327,8 +432,14 @@ namespace Game
         #region 属性字段
         public Dictionary<string, object> externalSpriteCacheDict { get; } = new Dictionary<string, object>();
         public string cardPoolDirName => _cardPoolDirName;
+        public string textureDirName => _textureDirName;
         public string editorCardPoolDirName => _editorCardPoolDirName;
         public string editorTextureDirName => _editorTextureDirName;
+        public string cardPoolFilePostfix => _cardPoolFilePostfix;
+        /// <summary>
+        /// 键为文件地址，值为卡池信息
+        /// </summary>
+        Dictionary<string, CardPoolInfo> _cardPoolDict = new Dictionary<string, CardPoolInfo>();
         Dictionary<int, List<CardDefine>> _externalCardDefineDict = new Dictionary<int, List<CardDefine>>();
         /// <summary>
         /// 用于存储外部皮肤信息的字典，Key为卡池Id，值为卡池包含皮肤列表
@@ -337,18 +448,22 @@ namespace Game
         Dictionary<int, List<ActionNodeGraphInfo>> _externalCardActionGraphInfoDict = new Dictionary<int, List<ActionNodeGraphInfo>>();
         [Header("卡池")]
         [SerializeField]
+        bool _enableStreamingAssetsInEditor = false;
+        [SerializeField]
         string _cardPoolFilePostfix = "ddcp";
         [SerializeField]
         string _cardPoolDirName = "CardPools";
+        [SerializeField]
+        string _textureDirName = "Textures";
         [SerializeField]
         string _editorCardPoolDirName = "ExternalData/CardPools";
         [SerializeField]
         string _editorTextureDirName = "ExternalData/Textures";
         [SerializeField]
         int[] _standardCardPoolsId = new int[]
-{
+        {
             1
-};
+        };
         #endregion
     }
 }
