@@ -120,12 +120,19 @@ namespace Controllers
             _ui.setName(_curCardSkin.name);
             _ui.setSubName(_curCardSkin.subname);
             _ui.setDesc(_curCardSkin.desc);
+            Sprite image = null;
             string path = _curCardSkin.imagePath;
             //除了StreamingAssets以外，因为无法区分可持续化文件和工程文件必须获取完整根目录
-            string cardPoolPath = game.card.getCardPoolPath(game.card.getCardPool(_cardPoolId));
-            Sprite image = cardPoolPath.StartsWith("sa:") ?
-                await game.card.loadExternalImage(path, null) :
-                await game.card.loadExternalImage(path, Path.Combine(game.card.getCardPoolPathRootDir(cardPoolPath), game.card.textureDirName));
+            if (game.card.getCardPool(_cardPoolId) is CardPoolInfo cardPool &&
+                game.card.getCardPoolPath(cardPool) is string cardPoolPath &&
+                !cardPoolPath.StartsWith("sa:"))
+            {
+                image = await game.card.loadExternalImage(path, Path.Combine(game.card.getCardPoolPathRootDir(cardPoolPath), game.card.textureDirName));
+            }
+            else
+            {
+                image = await game.card.loadExternalImage(path, null);
+            }
             if (image != null)
             {
                 _ui.setImage(image);
