@@ -233,7 +233,7 @@ namespace UI
         }
         public void updateMenu(string[] options)
         {
-            UIHelper.updateList(_menuRoot, _menuItemTemplate, _menuItemList, options.Length, (i, itemRect) =>
+            UIHelper.updateList(_Content, _menuItemTemplate, _menuItemList, options.Length, (i, itemRect) =>
             {
                 ActionNodeGraphMenuOption item = itemRect.GetComponent<ActionNodeGraphMenuOption>();
                 item.setTitle(options[i]);
@@ -706,6 +706,8 @@ namespace UI
         List<ActionNodeConnectionData> _connectionList = new List<ActionNodeConnectionData>();
         [SerializeField]
         RectTransform _menuRoot;
+        [SerializeField]
+        RectTransform _Content;
         [SerializeField]
         RectTransform _menuItemTemplate;
         [SerializeField]
