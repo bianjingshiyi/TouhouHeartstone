@@ -799,7 +799,7 @@ namespace TouhouHeartstone
                     }
                 }
                 targets = targetList.ToArray();
-                return true;
+                return targets.Length > 0;
             }
             if (card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect triggerEffect)
             {
@@ -815,7 +815,7 @@ namespace TouhouHeartstone
                     }
                 }
                 targets = targetList.ToArray();
-                return true;
+                return targets.Length > 0;
             }
             if (card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault() is GeneratedEffect generatedEffect)
             {
@@ -831,7 +831,7 @@ namespace TouhouHeartstone
                     }
                 }
                 targets = targetList.ToArray();
-                return true;
+                return targets.Length > 0;
             }
             targets = null;
             return false;

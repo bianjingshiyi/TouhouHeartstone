@@ -43,31 +43,13 @@ namespace Controllers
             _effectEditor.gameObject.SetActive(false);
             _actionNodeGraphCtrl.gameObject.SetActive(false);
         }
-        public MainMenuCtrl menu
-        {
-            get { return _menu; }
-        }
-        public RoomCtrl room
-        {
-            get { return _room; }
-        }
+        public MainMenuCtrl menu => _menu;
+        public RoomCtrl room => _room;
         public BuildCtrl build => _build;
-        public EditorCtrl editor
-        {
-            get { return _editor; }
-        }
-        public CardEditorCtrl cardEditor
-        {
-            get { return _cardEditor; }
-        }
-        public EffectEditorCtrl effectEditor
-        {
-            get { return _effectEditor; }
-        }
-        public ActionNodeGraphCtrl actionNodeGraphCtrl
-        {
-            get { return _actionNodeGraphCtrl; }
-        }
+        public EditorCtrl editor => _editor;
+        public CardEditorCtrl cardEditor => _cardEditor;
+        public EffectEditorCtrl effectEditor => _effectEditor;
+        public ActionNodeGraphCtrl actionNodeGraphCtrl => _actionNodeGraphCtrl;
         [SerializeField]
         MainMenuCtrl _menu;
         [SerializeField]

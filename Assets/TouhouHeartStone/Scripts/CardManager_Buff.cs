@@ -56,6 +56,15 @@ namespace Game
             else
                 return new GeneratedBuffDefine[0];
         }
+        public GeneratedBuffDefine[] getBuffDefines(IEnumerable<int> cardPoolsId)
+        {
+            List<GeneratedBuffDefine> buffDefineList = new List<GeneratedBuffDefine>();
+            foreach (var id in cardPoolsId)
+            {
+                buffDefineList.AddRange(getBuffDefines(id));
+            }
+            return buffDefineList.ToArray();
+        }
         public string[] getBuffDefineNames(BuffDefine[] buffDefines)
         {
             string[] buffDefineNames = new string[buffDefines.Length];

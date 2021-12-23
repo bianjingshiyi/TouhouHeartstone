@@ -404,11 +404,7 @@ namespace Controllers
         {
             _cardDefineList.Clear();
             _cardSkinList.Clear();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedHalo)))
-                BsonClassMap.RegisterClassMap<GeneratedHalo>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(CostModifier)))
-                BsonClassMap.RegisterClassMap<CostModifier>();
-            var (defines, skins, actionGraphInfos) = await game.card.getExternalCardDefinesAsync(cardPoolPath, readEditorInfo: true);
+            var (defines, skins, actionGraphInfos) = await game.card.getExternalCardDefinesAsync(cardPoolPath);
             _cardDefineList.AddRange(defines);
             _cardSkinList.AddRange(skins);
             actionNodeGraphInfoList.Clear();

@@ -98,10 +98,19 @@ namespace UI
                 if (info.value is PileNameCollection pileNameCollection)
                 {
                     _value = pileNameCollection;
-                    bool[] boolValue = new bool[_pileNames.Length];
+                    for (int i = 0; i < pileNameCollection.Count; i++)
+                    {
+                        //剔除掉未知的PileName
+                        if (Array.IndexOf(_pileValues, pileNameCollection[i]) < 0)
+                        {
+                            pileNameCollection.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                    bool[] boolValue = new bool[_pileValues.Length];
                     for (int i = 0; i < boolValue.Length; i++)
                     {
-                        boolValue[i] = pileNameCollection.Contains(_pileNames[i]);
+                        boolValue[i] = pileNameCollection.Contains(_pileValues[i]);
                     }
                     _multiSelectDropdown.SetValueWithoutNotify(boolValue);
                 }
@@ -109,7 +118,7 @@ namespace UI
                 {
                     //如果集合为null，则立刻给它新建一个空的并触发事件。
                     _value = new PileNameCollection();
-                    _multiSelectDropdown.SetValueWithoutNotify(new bool[_pileNames.Length]);
+                    _multiSelectDropdown.SetValueWithoutNotify(new bool[_pileValues.Length]);
                     onValueChanged?.Invoke(this, _value);
                 }
             }
@@ -167,9 +176,10 @@ namespace UI
                 _listRoot.gameObject.SetActive(false);
             }
         }
-        public void setupPileNames(string[] pileNames)
+        public void setupPileNames(string[] pileNames, string[] pileValues)
         {
             _pileNames = pileNames;
+            _pileValues = pileValues;
         }
         #endregion
         #region 私有方法
@@ -230,14 +240,14 @@ namespace UI
                 bool isValueChanged = false;
                 for (int i = 0; i < value.Length; i++)
                 {
-                    if (value[i] && !pileNameCollection.Contains(_pileNames[i]))
+                    if (value[i] && !pileNameCollection.Contains(_pileValues[i]))
                     {
-                        pileNameCollection.Add(_pileNames[i]);
+                        pileNameCollection.Add(_pileValues[i]);
                         isValueChanged = true;
                     }
                     else if (!value[i])
                     {
-                        pileNameCollection.Remove(_pileNames[i]);
+                        pileNameCollection.Remove(_pileValues[i]);
                         isValueChanged = true;
                     }
                 }
@@ -309,6 +319,8 @@ namespace UI
         Button _removeItemButton;
         [SerializeField]
         string[] _pileNames;
+        [SerializeField]
+        string[] _pileValues;
         [SerializeField]
         ActionNodeValueType _valueType;
         object _value;

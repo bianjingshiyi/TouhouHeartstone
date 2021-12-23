@@ -415,6 +415,8 @@ namespace UI
             DeckSelectionDeckListItem.SetMode(DeckListItem.Mode.DeckSelect);
             DeckSelectionDeckListItem.onDeckSelect += (_) =>
             {
+                if (this.findInstance<Controllers.MainSceneCtrl>().room.isDisplay)
+                    return;
                 showDeckSelectionPanel((deckID) =>
                 {
                     var deck = deckManager.GetDeck(deckID);
@@ -680,6 +682,8 @@ namespace UI
             RemoveButtonBlack.asButton.onClick.AddListener(() => OnPlayerRemove?.Invoke(playerData.id));
             ViewButtonBlack.asButton.onClick.AddListener(() =>
             {
+                if (playerData == null)
+                    return;
                 int[] deck = playerData.getDeck().toIdArray(true);
                 if (deck != null)
                     OnPlayerViewDeck?.Invoke(deck);

@@ -179,10 +179,10 @@ namespace Controllers
                 item.card.setCard(cardDefine, cardSkin);
                 if (cardSkin != null && cardSkin.image == null)
                 {
-                    Sprite sprite = cardSkin.imagePath.StartsWith("sa:") ?
+                    Sprite sprite = cardSkin.imagePath.StartsWith("sa:") || cardSkin.imagePath.StartsWith("res:") ?
                         await game.card.loadExternalImage(cardSkin.imagePath, null) :
-                        await game.card.loadExternalImage(cardSkin.imagePath, 
-                            game.card.getCardPoolPathRootDir(game.card.getCardPoolPath(game.card.getCardPoolOfCard(cardDefine))));
+                        await game.card.loadExternalImage(cardSkin.imagePath,
+                            Path.Combine(game.card.getCardPoolPathRootDir(game.card.getCardPoolPath(game.card.getCardPoolOfCard(cardDefine))), game.card.textureDirName));
                     item.card.setImage(sprite);
                 }
                 if (_deck == null)
@@ -374,7 +374,7 @@ namespace Controllers
         private void onSaveDeckClick()
         {
             // 卡组保存
-            if (_deck.cardList.Count < game.deck.deckMaxSize)
+            if (_deck.cardList.Sum(i => i.count) < game.deck.deckMaxSize)
             {
                 game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(PILE_NOT_COMPLETE), () =>
                 {

@@ -228,6 +228,7 @@ namespace UI
         protected void Awake()
         {
             _typeDropdown.onValueChanged.AddListener(onTypeDropdownValueChanged);
+            _characterDropdown.onValueChanged.AddListener(onCharacterDropdownValueChanged);
             _skinDropdown.gameObject.SetActive(true);
             _skinDropdown.onValueChanged.AddListener(onSkinDropdownValueChanged);
             _changeSkinNameButton.gameObject.SetActive(true);
@@ -274,18 +275,14 @@ namespace UI
         #region 事件回调
         private void onTypeDropdownValueChanged(int value)
         {
-            if (_disableUIEvent)
-            {
-                return;
-            }
             onChangeType?.Invoke(value);
+        }
+        private void onCharacterDropdownValueChanged(int value)
+        {
+            onChangeCharacter?.Invoke(value);
         }
         private void onSkinDropdownValueChanged(int value)
         {
-            if (_disableUIEvent)
-            {
-                return;
-            }
             onChangeSkin?.Invoke(value);
         }
         private void onChangeSkinNameButtonClicked()
@@ -294,35 +291,23 @@ namespace UI
             _changeSkinNameButton.gameObject.SetActive(false);
             _deleteSkinButton.gameObject.SetActive(false);
             _skinNameInputField.gameObject.SetActive(true);
-            _disableUIEvent = true;
-            _skinNameInputField.text = null;
-            _disableUIEvent = false;
+            _skinNameInputField.SetTextWithoutNotify(null);
             _skinNameInputField.Select();
         }
         private void onSkinNameInputFieldEndEdit(string text)
         {
-            _disableUIEvent = true;
             _skinDropdown.gameObject.SetActive(true);
             _changeSkinNameButton.gameObject.SetActive(true);
             _deleteSkinButton.gameObject.SetActive(true);
             _skinNameInputField.gameObject.SetActive(false);
             onChangeSkinName?.Invoke(text);
-            _disableUIEvent = false;
         }
         private void onDeleteSkinButtonClicked()
         {
-            if (_disableUIEvent)
-            {
-                return;
-            }
             onClickDeleteSkinButton?.Invoke();
         }
         private void onLanguageDropdownValueChanged(int value)
         {
-            if (_disableUIEvent)
-            {
-                return;
-            }
             onChangeLanguage?.Invoke(value);
         }
         private void onEditNameButtonClicked()
@@ -398,10 +383,6 @@ namespace UI
         }
         private void onTagDropdownValueChanged(int value)
         {
-            if (_disableUIEvent)
-            {
-                return;
-            }
             _tagDropdown.gameObject.SetActive(false);
             _editTagButton.gameObject.SetActive(true);
             onChangeTag?.Invoke(value);
@@ -578,7 +559,5 @@ namespace UI
         Button _backgroundButton;
         [SerializeField]
         Button _deleteCardButton;
-        [SerializeField]
-        bool _disableUIEvent = false;
     }
 }

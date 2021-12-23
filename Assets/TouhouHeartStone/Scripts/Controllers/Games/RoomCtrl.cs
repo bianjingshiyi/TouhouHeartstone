@@ -9,34 +9,57 @@ using UnityEngine;
 using Deck = TouhouHeartstone.Deck;
 using System.Linq;
 using System.Collections.Generic;
+using BJSYGameCore.UI;
 
 namespace Controllers
 {
-    class RoomCtrl : GameObjectCtrl<MainSceneCtrl>
+    class RoomCtrl : GameObjectCtrl<MainSceneCtrl>, IUICtrl
     {
         #region 公有方法
+        public Task display(UIDisplayInfo displayInfo)
+        {
+            if (displayInfo is DisplayInfo info)
+            {
+                _currentRoomData = info.roomData;
+                _isLocalGame = info.isLocalGame;
+
+                _isDisplay = true;
+                _ui.gameObject.SetActive(true);
+                //_ui.ResetEvents();
+                //_ui.SetMode(RoomPanel.Mode.Local);
+                //_ui.SetSelfID(scene.game.network.logic.localPlayer.id);
+                //_ui.SetRightText("");
+                //_ui.SetInfo(roomData, true);
+                updatePlayerListUI();
+                if (_isLocalGame)
+                {
+                    _ui.displayIPText(false);
+                }
+                _ui.setRandomSeed(_currentRoomData.getOption().randomSeed);
+                _ui.setShuffle(_currentRoomData.getOption().shuffle);
+                _ui.setInitReplaceTime(_currentRoomData.getOption().timeoutForInitReplace);
+                _ui.setTurnTime(_currentRoomData.getOption().timeoutForTurn);
+                _ui.setDisableRandomPlayerActOrder(_currentRoomData.getOption().sortedPlayers != null);
+                updateUIStateForHost();
+                updateStartAndReadyButton();
+            }
+            return Task.CompletedTask;
+        }
+
+        public UIDisplayInfo getCurrentDisplayInfo()
+        {
+            return new DisplayInfo(_currentRoomData, _isLocalGame);
+        }
+
+        public Task hide()
+        {
+            _isDisplay = false;
+            _ui.gameObject.SetActive(false);
+            return Task.CompletedTask;
+        }
         public void display(RoomData roomData, bool isLocalGame)
         {
-            _currentRoomData = roomData;
-
-            _ui.gameObject.SetActive(true);
-            //_ui.ResetEvents();
-            //_ui.SetMode(RoomPanel.Mode.Local);
-            //_ui.SetSelfID(scene.game.network.logic.localPlayer.id);
-            //_ui.SetRightText("");
-            //_ui.SetInfo(roomData, true);
-            updatePlayerListUI();
-            if (isLocalGame)
-            {
-                _ui.displayIPText(false);
-            }
-            _ui.setRandomSeed(roomData.getOption().randomSeed);
-            _ui.setShuffle(roomData.getOption().shuffle);
-            _ui.setInitReplaceTime(roomData.getOption().timeoutForInitReplace);
-            _ui.setTurnTime(roomData.getOption().timeoutForTurn);
-            _ui.setDisableRandomPlayerActOrder(roomData.getOption().sortedPlayers != null);
-            updateUIStateForHost();
-            updateStartAndReadyButton();
+            display(new DisplayInfo(roomData, isLocalGame));
         }
         #endregion
         #region 私有方法
@@ -275,11 +298,30 @@ namespace Controllers
             _ui.displayDeckSelectPanel(viewData);
         }
         #endregion
+        #region 属性字段
+        public bool isDisplay => _isDisplay;
         [SerializeField]
         RoomPanel _ui;
         [SerializeField]
+        bool _isDisplay = false;
+        [SerializeField]
         RoomData _currentRoomData;
         [SerializeField]
+        bool _isLocalGame = true;
+        [SerializeField]
         int _selectDeckPlayerId = 0;
+        #endregion
+        #region 内部类
+        public class DisplayInfo : UIDisplayInfo
+        {
+            public DisplayInfo(RoomData roomData, bool isLocalGame)
+            {
+                this.roomData = roomData;
+                this.isLocalGame = isLocalGame;
+            }
+            public RoomData roomData;
+            public bool isLocalGame;
+        }
+        #endregion
     }
 }

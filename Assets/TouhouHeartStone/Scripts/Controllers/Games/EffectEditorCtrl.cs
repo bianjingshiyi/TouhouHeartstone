@@ -77,7 +77,7 @@ namespace Controllers
             {
                 activeRanges[i] = game.langManager.getString(_pileOptionNameDict[_selectableRanges[i]]);
             }
-            _ui.setActiveRanges(activeRanges);
+            _ui.setActiveRanges(activeRanges, _selectableRanges);
             _ui.onActiveRangeDropdownValueChanged += onActiveRangeDropdownValueChanged;
             _ui.onClickEditEnableActionButton += onClickEditEnableActionButton;
             _ui.onClickEditDisableActionButton += onClickEditDisableActionButton;

@@ -21,6 +21,11 @@ namespace Game
     public partial class CardManager : Manager
     {
         #region 生命周期
+        protected override void onAwake()
+        {
+            base.onAwake();
+            onAwake_CardPool();
+        }
         protected void Reset()
         {
             _game = TransformHelper.findComponentInScene<MainManager>(gameObject.scene);

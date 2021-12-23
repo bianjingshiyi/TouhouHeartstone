@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using MongoDB.Bson.Serialization;
+using TouhouHeartstone;
 
 namespace Game
 {
@@ -87,6 +89,7 @@ namespace Game
         {
             _externalCardDefineDict.Add(cardPoolId, new List<CardDefine>());
             _externalCardSkinDict.Add(cardPoolId, new List<CardSkinData>());
+            _externalCardActionGraphInfoDict.Add(cardPoolId, new List<ActionNodeGraphInfo>());
         }
         public async Task<(CardDefine[] defines, CardSkinData[] skins)> getExternalCardDefinesAsync(string[] paths)
         {
@@ -100,7 +103,7 @@ namespace Game
             }
             return (defineList.ToArray(), skinList.ToArray());
         }
-        public async Task<(CardDefine[] defines, CardSkinData[] skins, ActionNodeGraphInfo[] actionGraphInfos)> getExternalCardDefinesAsync(string path, bool readEditorInfo = false)
+        public async Task<(CardDefine[] defines, CardSkinData[] skins, ActionNodeGraphInfo[] actionGraphInfos)> getExternalCardDefinesAsync(string path)
         {
             string[] lines;
             if (path.StartsWith("sa:"))
@@ -136,7 +139,7 @@ namespace Game
                 {
                     CardDefine[] defines = _externalCardDefineDict[cardPool.cardPoolId].ToArray();
                     CardSkinData[] skins = _externalCardSkinDict[cardPool.cardPoolId].ToArray();
-                    ActionNodeGraphInfo[] actionGraphInfos = readEditorInfo ? _externalCardActionGraphInfoDict[cardPool.cardPoolId].ToArray() : null;
+                    ActionNodeGraphInfo[] actionGraphInfos = _externalCardActionGraphInfoDict[cardPool.cardPoolId].ToArray();
                     return (defines, skins, actionGraphInfos);
                 }
                 else
@@ -151,12 +154,9 @@ namespace Game
                     _externalCardSkinDict.Add(cardPool.cardPoolId, new List<CardSkinData>(skins));
                     //编辑器信息
                     ActionNodeGraphInfo[] actionGraphInfos = null;
-                    if (readEditorInfo)
-                    {
-                        json = lines[3];
-                        actionGraphInfos = JsonHelper.fromJson<ActionNodeGraphInfo[]>(json);
-                        _externalCardActionGraphInfoDict.Add(cardPool.cardPoolId, new List<ActionNodeGraphInfo>(actionGraphInfos));
-                    }
+                    json = lines[3];
+                    actionGraphInfos = JsonHelper.fromJson<ActionNodeGraphInfo[]>(json);
+                    _externalCardActionGraphInfoDict.Add(cardPool.cardPoolId, new List<ActionNodeGraphInfo>(actionGraphInfos));
                     //增益
                     GeneratedBuffDefine[] buffDefines = null;
                     if (lines.Length > 4)
@@ -367,10 +367,11 @@ namespace Game
             else
             {
                 CardPoolInfo cardPool = getCardPoolOfCard(GetCardDefine(cardId));
-                if (skin.imagePath.StartsWith("sa:"))
+                if (skin.imagePath.StartsWith("sa:") || skin.imagePath.StartsWith("res:"))
                     return loadExternalImage(skin.imagePath, null);
                 else
-                    return loadExternalImage(skin.imagePath, getCardPoolPathRootDir(getCardPoolPath(cardPool)));
+                    return loadExternalImage(skin.imagePath,
+                        Path.Combine(getCardPoolPathRootDir(getCardPoolPath(cardPool)), textureDirName));
             }
         }
 
@@ -428,6 +429,24 @@ namespace Game
         }
         #endregion
         #region 私有方法
+        private void onAwake_CardPool()
+        {
+            //注册序列化类型
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (var type in assembly.GetTypes())
+                {
+                    if ((type.IsSubclassOf(typeof(GeneratedEffect)) ||
+                        type.IsSubclassOf(typeof(PropModifier))) &&
+                        !BsonClassMap.IsClassMapRegistered(type))
+                    {
+                        BsonClassMap classMap = new BsonClassMap(type);
+                        classMap.AutoMap();
+                        BsonClassMap.RegisterClassMap(classMap);
+                    }
+                }
+            }
+        }
         #endregion
         #region 属性字段
         public Dictionary<string, object> externalSpriteCacheDict { get; } = new Dictionary<string, object>();

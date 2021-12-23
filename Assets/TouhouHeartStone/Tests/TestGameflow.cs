@@ -146,7 +146,7 @@ namespace Tests
             };
             game.answers.game = game;
             (game.triggers as TriggerManager).logger = game.logger;
-            game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly }, new HearthStoneRule(CardHelper.getCardDefines(logger)), option, new RoomPlayerInfo[0]).Wait();
+            game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly }, new HearthStoneRule(CardHelper.getCardDefines(logger), null), option, new RoomPlayerInfo[0]).Wait();
             return game;
         }
     }

@@ -232,11 +232,11 @@ namespace Controllers
         {
             if (characterIndex < 1)
             {
-                _cardDefine.setProp(DEFINE.CHARACTER_ID, 0);
+                _cardDefine.setCharacterID(0);
             }
             else
             {
-                _cardDefine.setProp(DEFINE.CHARACTER_ID, _selectableCharacters[characterIndex - 1]);
+                _cardDefine.setCharacterID(_selectableCharacters[characterIndex - 1].id);
             }
         }
         /// <summary>

@@ -45,7 +45,10 @@ namespace TouhouHeartstone
                 return define.getProp<int>(DEFINE.CHARACTER_ID);
             return getCharacterID(define.id);
         }
-
+        public static void setCharacterID(this CardDefine define, int characterId)
+        {
+            define.setProp(DEFINE.CHARACTER_ID, characterId);
+        }
         /// <summary>
         /// 获取给出的所有卡片定义的所属角色ID
         /// </summary>

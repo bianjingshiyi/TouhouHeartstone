@@ -344,7 +344,7 @@ namespace TouhouHeartstone
 
     public partial class HearthStoneRule : Rule
     {
-        public HearthStoneRule(IEnumerable<CardDefine> defines) : base(defines)
+        public HearthStoneRule(IEnumerable<CardDefine> defines, IEnumerable<BuffDefine> buffs) : base(defines, buffs)
         {
         }
 
