@@ -298,6 +298,8 @@ namespace Controllers
                 if (permission == NativeGallery.Permission.Denied)
                 {
                     Debug.LogError("没有打开相册的权限");
+                    // 拒绝权限后应当弹出框提示需要设置权限
+                    NativeGallery.OpenSettings();
                 }
             }
             else
