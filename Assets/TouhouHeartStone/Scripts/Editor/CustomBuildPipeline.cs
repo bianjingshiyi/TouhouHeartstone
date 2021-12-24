@@ -1,18 +1,23 @@
-﻿using CustomBuilder.Editor;
+﻿using CustomBuilder;
 using BJSYGameCore;
 using System;
 using UnityEngine;
 using UnityEditor;
 namespace TouhouHeartstone
 {
-    [InitializeOnLoad]
-    public class CustomBuildPipeline
+    [BuilderStep(-2)]
+    public class CustomBuildPipeline: IBuilderStep
     {
-        static CustomBuildPipeline()
+        public void ActionAfter()
         {
-            BuilderSteps.onUpdateBuildInformationObject += onUpdateBuildInformationObject;
-            Debug.Log("自定义构建管线初始化完成");
+            // do nothing yet.
         }
+
+        public void ActionBefore(object option)
+        {
+            onUpdateBuildInformationObject();
+        }
+
         private static void onUpdateBuildInformationObject()
         {
             StreamingAssetsInfo streamingAssetsInfo;
@@ -27,5 +32,6 @@ namespace TouhouHeartstone
             }
             Debug.Log("更新流文件信息成功", streamingAssetsInfo);
         }
+
     }
 }
