@@ -490,6 +490,15 @@ namespace Game
                 defineDic.Values);
             return cardList.ToArray();
         }
+        public CardDefine[] getCardDefines(int cardPoolId)
+        {
+            if (_externalCardDefineDict.TryGetValue(cardPoolId, out var cardDefineList))
+            {
+                return cardDefineList.ToArray();
+            }
+            else
+                return new CardDefine[0];
+        }
         public CardSkinData getSkin(TouhouCardEngine.Card card)
         {
             return getSkin(card.define.id);

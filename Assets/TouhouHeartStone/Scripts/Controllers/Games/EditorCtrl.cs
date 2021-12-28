@@ -59,7 +59,7 @@ namespace Controllers
                 //显示卡牌列表
                 if (reloadCardPool)
                 {
-                    //重新加载牌库信息
+                    //重新加载牌库中的所有卡牌和皮肤
                     await readCardPoolAsync(_curCardPoolPath);
                 }
                 await updateDeckCardListUI();
@@ -185,6 +185,7 @@ namespace Controllers
                 cardPoolId = allocCardPoolId()
             };
             _cardPoolInfoList.Add(_curCardPoolInfo);
+            _cardPoolPathList.Add(null);
             game.card.addExternalCardPool(_curCardPoolInfo.cardPoolId);
             _curCardPoolInfo.cardPoolName = "新建卡组";
             _curCardPoolInfo.imageResPath = null;
@@ -404,23 +405,26 @@ namespace Controllers
         {
             _cardDefineList.Clear();
             _cardSkinList.Clear();
-            var (defines, skins, actionGraphInfos) = await game.card.getExternalCardDefinesAsync(cardPoolPath);
-            _cardDefineList.AddRange(defines);
-            _cardSkinList.AddRange(skins);
             actionNodeGraphInfoList.Clear();
-            actionNodeGraphInfoList.AddRange(actionGraphInfos);
-            //尝试修复受损的数据
-            for (int i = 0; i < _cardDefineList.Count; i++)
+            if (!string.IsNullOrEmpty(cardPoolPath))
             {
-                if (_cardDefineList[i].id >= 0)
+                var (defines, skins, actionGraphInfos) = await game.card.getExternalCardDefinesAsync(cardPoolPath);
+                _cardDefineList.AddRange(defines);
+                _cardSkinList.AddRange(skins);
+                actionNodeGraphInfoList.AddRange(actionGraphInfos);
+                //尝试修复受损的数据
+                for (int i = 0; i < _cardDefineList.Count; i++)
                 {
-                    //重新分配丢失的卡牌Id
-                    int id = allocCardId();
-                    foreach (var skin in _cardSkinList.Where(s => s.id == _cardDefineList[i].id))
+                    if (_cardDefineList[i].id >= 0)
                     {
-                        skin.id = id;
+                        //重新分配丢失的卡牌Id
+                        int id = allocCardId();
+                        foreach (var skin in _cardSkinList.Where(s => s.id == _cardDefineList[i].id))
+                        {
+                            skin.id = id;
+                        }
+                        _cardDefineList[i].id = id;
                     }
-                    _cardDefineList[i].id = id;
                 }
             }
         }
