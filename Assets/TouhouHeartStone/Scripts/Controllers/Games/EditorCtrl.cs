@@ -464,7 +464,8 @@ namespace Controllers
         {
             for (int i = 1; i < 0x7FFF; i++)
             {
-                if (_cardPoolInfoList.Exists(p => p.cardPoolId == i))
+                if (_cardPoolInfoList.Exists(p => p.cardPoolId == i) ||//不能是已有的卡池ID
+                    game.card.isStandardCardPool(i))//不能是官方卡池ID
                     continue;
                 return i;
             }
