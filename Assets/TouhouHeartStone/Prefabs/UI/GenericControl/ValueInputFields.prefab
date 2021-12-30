@@ -110,6 +110,7 @@ MonoBehaviour:
   _addItemButton: {fileID: 5012735244073229222}
   _removeItemButton: {fileID: 3789860701060708911}
   _pileNames: []
+  _pileValues: []
   _valueType: 0
 --- !u!1 &1468405184553934221
 GameObject:
@@ -798,7 +799,8 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 223872248146437387, guid: 8f87f95af032014448691606aece594a, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8f87f95af032014448691606aece594a, type: 3}
 --- !u!114 &3858327608081035651 stripped
 MonoBehaviour:
@@ -957,7 +959,8 @@ PrefabInstance:
       propertyPath: m_Text
       value: '-'
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 223872248146437387, guid: 8f87f95af032014448691606aece594a, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8f87f95af032014448691606aece594a, type: 3}
 --- !u!224 &2082488632778146466 stripped
 RectTransform:
@@ -1099,7 +1102,8 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3094656552764620644, guid: 0acbac3ca2191e849bac9feaf02f3e2c, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0acbac3ca2191e849bac9feaf02f3e2c, type: 3}
 --- !u!114 &7598361313496275779 stripped
 MonoBehaviour:
@@ -1393,7 +1397,8 @@ PrefabInstance:
       propertyPath: m_Text
       value: +
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 223872248146437387, guid: 8f87f95af032014448691606aece594a, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8f87f95af032014448691606aece594a, type: 3}
 --- !u!1 &5946288084446425213 stripped
 GameObject:

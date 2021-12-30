@@ -1084,6 +1084,15 @@ namespace TouhouHeartstone
                 };
             }
         }
+        public static int getSkillId(this CardDefine cardDefine)
+        {
+            if (cardDefine is MasterCardDefine masterCardDefine)
+            {
+                return masterCardDefine.skillID;
+            }
+            else
+                return cardDefine.getProp<int>(DEFINE.CARD_PROP_SKILL_ID);
+        }
         #region 动作定义
         [ActionNodeMethod("Damage", "Card")]
         [return: ActionNodeParam("DamageEvent")]

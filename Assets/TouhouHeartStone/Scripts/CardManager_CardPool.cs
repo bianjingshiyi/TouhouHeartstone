@@ -91,6 +91,31 @@ namespace Game
             _externalCardSkinDict.Add(cardPoolId, new List<CardSkinData>());
             _externalCardActionGraphInfoDict.Add(cardPoolId, new List<ActionNodeGraphInfo>());
         }
+        public bool removeCardPool(int cardPoolId)
+        {
+            if (_externalCardDefineDict.ContainsKey(cardPoolId))
+            {
+                _externalCardDefineDict.Remove(cardPoolId);
+                _externalCardSkinDict.Remove(cardPoolId);
+                _externalCardActionGraphInfoDict.Remove(cardPoolId);
+                string path = null;
+                foreach (var pair in _cardPoolDict)
+                {
+                    if (pair.Value.cardPoolId == cardPoolId)
+                    {
+                        path = pair.Key;
+                        break;
+                    }
+                }
+                if (path != null)
+                {
+                    game.fileManager.deleteFile(path);
+                }
+                return true;
+            }
+            else
+                return false;
+        }
         public async Task<(CardDefine[] defines, CardSkinData[] skins)> getExternalCardDefinesAsync(string[] paths)
         {
             List<CardDefine> defineList = new List<CardDefine>();

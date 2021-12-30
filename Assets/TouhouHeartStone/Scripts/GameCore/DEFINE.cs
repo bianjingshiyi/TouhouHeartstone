@@ -2,6 +2,8 @@
 {
     public class DEFINE
     {
+        public const string PLAYER_PROP_DECK = "deck";
+
         public const string SERVANT = "Servant";
         public const string MASTER = "Master";
         public const string SKILL = "Skill";
@@ -15,5 +17,6 @@
         public const string ATTACK = "attack";
         public const string KEYWORDS = "keywords";
         public const string TAGS = "tags";
+        public const string CARD_PROP_SKILL_ID = "skillId";
     }
 }

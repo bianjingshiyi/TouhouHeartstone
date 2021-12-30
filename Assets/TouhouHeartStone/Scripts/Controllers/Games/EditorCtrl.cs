@@ -141,7 +141,7 @@ namespace Controllers
             {
                 _ui.findInstance<UIDialog>().ShowQuestion(null, game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
                 {
-                    game.fileManager.deleteFile(_cardPoolPathList[index]);
+                    game.card.removeCardPool(_cardPoolInfoList[index].cardPoolId);
                     _cardPoolPathList.RemoveAt(index);
                     _cardPoolInfoList.RemoveAt(index);
                     await updateDeckListUI();
@@ -174,7 +174,7 @@ namespace Controllers
         /// <summary>
         /// 当点击新增卡池按钮，切换右侧栏到编辑卡池状态
         /// </summary>
-        void onClickAddCardPoolButton()
+        async void onClickAddCardPoolButton()
         {
             _ui.setCardListActive(true);
             _ui.setDeckListActive(false);
@@ -194,6 +194,7 @@ namespace Controllers
             //_ui.updateDeckCardList(new (string name, Sprite image, int count)[0]);
             //1是为了显示新建卡牌按钮
             _ui.updateCardListCount(1);
+            await updateDeckCardListUI();
         }
         /// <summary>
         /// 当卡牌列表被点击，打开卡牌编辑器，如果是新建卡牌则新建卡牌并打开
@@ -345,19 +346,12 @@ namespace Controllers
             {
                 game.ui.dialog.ShowConfirm(null, game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
                 {
-                    if (!string.IsNullOrEmpty(_curCardPoolPath))
-                    {
-                        //删除当前卡池
-                        game.fileManager.deleteFile(_curCardPoolPath);
-                        int index = _cardPoolPathList.IndexOf(_curCardPoolPath);
-                        _cardPoolPathList.RemoveAt(index);
-                        _cardPoolInfoList.RemoveAt(index);
-                        await updateDeckListUI();
-                    }
-                    else
-                    {
-                        //当前卡池还没存过，不用删
-                    }
+                    //删除当前卡池
+                    game.card.removeCardPool(_curCardPoolInfo.cardPoolId);
+                    int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
+                    _cardPoolPathList.RemoveAt(index);
+                    _cardPoolInfoList.RemoveAt(index);
+                    await updateDeckListUI();
                     await returnToView();
                 });
             }

@@ -149,5 +149,44 @@ namespace Tests
             game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly }, new HearthStoneRule(CardHelper.getCardDefines(logger), null), option, new RoomPlayerInfo[0]).Wait();
             return game;
         }
+        public static CardEngine initSyncStandardGame(int[] playersId = null, IEnumerable<CardDefine> cardDefines = null)
+        {
+            TaskExceptionHandler.register();
+            ULogger logger = new ULogger(null) { blackList = new List<string>() { "Load" } };
+            if (cardDefines == null)
+            {
+                cardDefines = new CardDefine[]
+                {
+                    new TestMaster(),
+                    new TestSkill(),
+                    new TestServant(),
+                };
+            }
+            CardEngine game = new CardEngine(new HearthStoneRule(cardDefines, null))
+            {
+                answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
+                triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
+                time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
+                logger = logger
+            };
+            game.answers.game = game;
+            (game.triggers as TriggerManager).logger = game.logger;
+            if (playersId == null)
+                playersId = new int[] { 1, 2 };
+            Player[] players = new Player[playersId.Length];
+            for (int i = 0; i < players.Length; i++)
+            {
+                players[i] = new Player(i, "玩家" + i);
+                int[] deck = new int[31];
+                deck[0] = TestMaster.ID;
+                for (int j = 0; j < 30; j++)
+                {
+                    deck[j + 1] = TestServant.ID;
+                }
+                players[i].setProp(DEFINE.PLAYER_PROP_DECK, deck);
+            }
+            game.startGame(HearthstoneOption.Default, players);
+            return game;
+        }
     }
 }

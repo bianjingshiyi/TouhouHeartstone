@@ -29,9 +29,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator initTest()
         {
-            CardEngine game = TestGameflow.initStandardGame();
+            CardEngine game = TestGameflow.initSyncStandardGame();
 
-            game.runGame();
             yield return new WaitForSeconds(.1f);
 
             HearthStoneRule.InitEventArg init = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.InitEventArg) as HearthStoneRule.InitEventArg;

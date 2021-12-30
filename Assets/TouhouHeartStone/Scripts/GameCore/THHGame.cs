@@ -344,6 +344,82 @@ namespace TouhouHeartstone
 
     public partial class HearthStoneRule : Rule
     {
+        #region 公有方法
+        public override Task onGameStart(CardEngine game)
+        {
+            return game.triggers.doEvent(new InitEventArg(), async arg =>
+            {
+                //决定玩家行动顺序
+                if (game.getOption().sortedPlayers == null ||
+                    game.getOption().sortedPlayers.Length != game.players.Length)
+                {
+                    if (game.getOption().sortedPlayers != null &&
+                        game.getOption().sortedPlayers.Length != game.players.Length)
+                        game.logger?.logWarn("游戏参数玩家行动顺序长度与实际数量不匹配");
+                    List<Player> remainedList = new List<Player>(game.players);
+                    Player[] sortedPlayers = new Player[remainedList.Count];
+                    for (int i = 0; i < sortedPlayers.Length; i++)
+                    {
+                        int index = game.randomInt(0, remainedList.Count - 1);
+                        sortedPlayers[i] = remainedList[index];
+                        remainedList.RemoveAt(index);
+                    }
+
+                    game.setProp(GAME.SORTEDPLAYER, sortedPlayers);
+                }
+                else
+                    game.setProp(GAME.SORTEDPLAYER,
+                        game.getOption().sortedPlayers.Select(id => game.players.FirstOrDefault(p => p.id == id))
+                            .ToArray());
+
+                //设置生命值，洗牌，然后抽初始卡牌
+                for (int i = 0; i < getSortedPlayers(game).Length; i++)
+                {
+                    await getSortedPlayers(game)[i].getMaster().setCurrentLife(game, 30);
+                    if (getSortedPlayers(game)[i].getDeck().count < 1)
+                        continue;
+                    if (getOption(game).shuffle)
+                        getSortedPlayers(game)[i].getDeck().shuffle(game);
+                    int count = i == 0 ? 3 : 4;
+                    var cards = getSortedPlayers(game)[i].getDeck().Where(c => c.hasKeyword(game, KEYWORD.MISSION))
+                        .randomTake(game, count).ToList();
+                    cards.AddRange(getSortedPlayers(game)[i].getDeck().Except(cards).Reverse()
+                        .Take(count - cards.Count()));
+                    cards.Reverse();
+                    // var cards = getSortedPlayers(game)[i].getDeck().Skip(getSortedPlayers(game)[i].getDeck().count - count).Reverse()
+                    //     .ToArray();
+                    await getSortedPlayers(game)[i].getDeck().moveTo(game, cards, game.getSortedPlayers()[i].getInit());
+                }
+
+                game.logger.logTrace("游戏初始化，玩家行动顺序："
+                                     + string.Join("、", game.getSortedPlayers().Select(p => p.ToString())) + "，"
+                                     + "玩家英雄：" + string.Join("，",
+                                         getSortedPlayers(game).Select(p => p.getMaster() + "(" + p.getSkill() + ")")) +
+                                     "，"
+                                     + "初始卡牌：" + string.Join("；",
+                                         getSortedPlayers(game).Select(p =>
+                                             string.Join("、", p.getInit().Select(c => c.ToString())))));
+            });
+        }
+        public override async Task onPlayerInit(CardEngine game, Player player)
+        {
+            player.addPile(new Pile(game, PILE.MASTER, maxCount: 1));
+            player.addPile(new Pile(game, PILE.SKILL, maxCount: 1));
+            player.addPile(new Pile(game, PILE.DECK));
+            player.addPile(new Pile(game, PILE.HAND, maxCount: 10));
+            player.addPile(new Pile(game, PILE.INIT, maxCount: 4));
+            player.addPile(new Pile(game, PILE.FIELD, maxCount: 7));
+            player.addPile(new Pile(game, PILE.GRAVE));
+            player.addPile(new Pile(game, PILE.WARP));
+            player.addPile(new Pile(game, PILE.HEAD, maxCount: 5));
+            player.addPile(new Pile(game, PILE.ITEM, maxCount: 1));
+            int[] deck = player.getProp<int[]>(DEFINE.PLAYER_PROP_DECK);
+            int master = deck[0];
+            await player[PILE.MASTER].add(game, game.createCard(master));
+            await player[PILE.SKILL].add(game, game.createCard(game.getDefine(master).getSkillId()));
+            await player[PILE.DECK].add(game, deck.Select(d => game.createCard(d)));
+        }
+        #endregion
         public HearthStoneRule(IEnumerable<CardDefine> defines, IEnumerable<BuffDefine> buffs) : base(defines, buffs)
         {
         }
@@ -351,7 +427,6 @@ namespace TouhouHeartstone
         public override Task onGameInit(CardEngine game, GameOption options, IRoomPlayer[] players)
         {
             game.option = options;
-            var option = getOption(game);
             foreach (var playerInfo in players)
             {
                 var deck = playerInfo.getProp<Deck>("deck");
@@ -367,7 +442,7 @@ namespace TouhouHeartstone
 
         public HearthstoneOption getOption(CardEngine game) => game.option as HearthstoneOption;
 
-        public TouhouCardEngine.Player createPlayer(CardEngine game, int id, string name, int master, int[] deck)
+        public Player createPlayer(CardEngine game, int id, string name, int master, int[] deck)
         {
             if (game.getDefine(master) is MasterCardDefine masterCardDefine)
             {
@@ -398,7 +473,7 @@ namespace TouhouHeartstone
             return createPlayer(game, id, name, masterCardDefine, game.getDefines(deck));
         }
 
-        public TouhouCardEngine.Player createPlayer(CardEngine game, int id, string name, MasterCardDefine master,
+        public Player createPlayer(CardEngine game, int id, string name, MasterCardDefine master,
             IEnumerable<CardDefine> deck)
         {
             if (game.players.Any(p => p.id == id))
