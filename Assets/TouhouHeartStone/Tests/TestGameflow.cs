@@ -185,7 +185,7 @@ namespace Tests
                 }
                 players[i].setProp(DEFINE.PLAYER_PROP_DECK, deck);
             }
-            game.startGame(HearthstoneOption.Default, players);
+            _ = game.startGame(HearthstoneOption.Default, players);
             return game;
         }
     }

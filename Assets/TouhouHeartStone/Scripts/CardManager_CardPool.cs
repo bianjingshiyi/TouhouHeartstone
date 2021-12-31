@@ -91,6 +91,114 @@ namespace Game
             _externalCardSkinDict.Add(cardPoolId, new List<CardSkinData>());
             _externalCardActionGraphInfoDict.Add(cardPoolId, new List<ActionNodeGraphInfo>());
         }
+        public async Task saveCardPool(CardPoolInfo cardPool, CardDefine[] cardDefines, CardSkinData[] cardSkins, ActionNodeGraphInfo[] actionNodeGraphInfos)
+        {
+            if (!Application.isEditor && isStandardCardPool(cardPool))
+            {
+                //不能修改标准卡池，虽然其实玩家想改也没人能阻止就是了，最多是和别人玩会失去同步吧。
+                game.ui.dialog.ShowConfirm(StringTable.INVALID_OPERATION, StringTable.EDITOR_DIALOG_CANNOT_MODIFY_STANDARD_CARDPOOL, null);
+                return;
+            }
+            //如果当前的卡池没有被保存过，没有分配地址，则给它分配一个地址。
+            string cardPoolPath = null;
+            foreach (var pair in _cardPoolDict)
+            {
+                if (pair.Value == cardPool)
+                {
+                    cardPoolPath = pair.Key;
+                    break;
+                }
+            }
+            if (cardPoolPath == null)
+            {
+                //没有指定地址
+                cardPoolPath = allocCardPoolPath(cardPool);
+                _cardPoolDict.Add(cardPoolPath, cardPool);
+            }
+            string path;
+            //对缓存的图片进行保存
+            foreach (var pair in externalSpriteCacheDict)
+            {
+                //获取使用这张图片的第一个皮肤
+                CardSkinData skin = cardSkins.First(s => s.imagePath == pair.Key);
+                if (skin == null)
+                {
+                    //没有皮肤使用，跳过
+                    continue;
+                }
+                //另存为图片
+                if (isStandardCardPool(cardPool))
+                {
+                    path = Path.Combine(cardPool.cardPoolName, skin.id.ToString(), skin.skinId.ToString(), "Image.jpg");
+                    if (pair.Value is Sprite sprite)
+                    {
+                        await game.fileManager.saveFile(Path.Combine(editorTextureDirName, path), sprite.texture.EncodeToJPG());
+                    }
+                    else if (pair.Value is Task<Sprite> task)
+                    {
+                        sprite = await task;
+                        await game.fileManager.saveFile(Path.Combine(editorTextureDirName, path), sprite.texture.EncodeToJPG());
+                    }
+                    else
+                    {
+                        Debug.LogWarning("图片" + path + "为空");
+                        continue;
+                    }
+                }
+                else
+                {
+                    path = Path.Combine(cardPool.cardPoolName, skin.id.ToString(), skin.skinId.ToString(), "Image.jpg");
+                    if (pair.Value is Sprite sprite)
+                    {
+                        await game.fileManager.savePersistentFile(Path.Combine(textureDirName, path), sprite.texture.EncodeToJPG());
+                    }
+                    else if (pair.Value is Task<Sprite> task)
+                    {
+                        sprite = await task;
+                        await game.fileManager.savePersistentFile(Path.Combine(textureDirName, path), sprite.texture.EncodeToJPG());
+                    }
+                    else
+                    {
+                        Debug.LogWarning("图片" + path + "为空");
+                        continue;
+                    }
+                }
+                Debug.Log("另存为图片" + path + "成功");
+                //替换所有引用这个图片的皮肤的图片地址
+                foreach (var otherSkin in cardSkins.Where(s => s.imagePath == pair.Key))
+                {
+                    otherSkin.imagePath = path;
+                }
+            }
+            //保存文件
+            path = cardPoolPath;
+            if (isStandardCardPool(cardPool))
+            {
+                //官方卡池只能保存到指定路径下面，也就是工程文件
+                path = Path.Combine(editorCardPoolDirName, cardPool.cardPoolName + '.' + cardPoolFilePostfix);
+            }
+            else if (path.StartsWith("sa:"))
+            {
+                //如果是StreamingAssets，那要转存成可持续化文件
+                path = path.Substring(3, path.Length - 3);
+            }
+            //#if UNITY_EDITOR
+            //            if (game.card.isStandardCardPool(_curCardPoolInfo) &&
+            //                path.StartsWith(Path.Combine(Application.persistentDataPath, game.card.cardPoolDirName)))
+            //            {
+            //                path = path.Replace(Path.Combine(Application.persistentDataPath, game.card.cardPoolDirName), game.card.editorCardPoolDirName);
+            //            }
+            //#endif
+            await game.fileManager.saveFile(path, new string[]
+            {
+                cardPool.toJson(),//文件头信息
+                cardDefines.toJson(),//卡牌
+                cardSkins.toJson(),//皮肤
+                actionNodeGraphInfos.toJson(),//编辑器信息
+                game.card.getBuffDefines(cardPool.cardPoolId).toJson()//增益
+            });
+            Debug.Log("保存卡池" + path + "成功");
+        }
         public bool removeCardPool(int cardPoolId)
         {
             if (_externalCardDefineDict.ContainsKey(cardPoolId))
@@ -444,6 +552,16 @@ namespace Game
             }
             return skinList.ToArray();
         }
+        public CardSkinData[] getAllSkins()
+        {
+            List<CardSkinData> skinList = new List<CardSkinData>();
+            skinList.AddRange(_skins);
+            foreach (var pair in _externalCardSkinDict)
+            {
+                skinList.AddRange(pair.Value);
+            }
+            return skinList.ToArray();
+        }
         public bool isStandardCardPool(CardPoolInfo cardPool)
         {
             return isStandardCardPool(cardPool.cardPoolId);
@@ -471,6 +589,10 @@ namespace Game
                     }
                 }
             }
+        }
+        private string allocCardPoolPath(CardPoolInfo cardPool)
+        {
+            return Path.Combine(Application.persistentDataPath, cardPoolDirName, cardPool.cardPoolName + "." + cardPoolFilePostfix);
         }
         #endregion
         #region 属性字段
