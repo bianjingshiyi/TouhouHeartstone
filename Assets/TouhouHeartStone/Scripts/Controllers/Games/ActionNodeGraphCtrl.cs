@@ -108,7 +108,12 @@ namespace Controllers
             {
                 _ui = GetComponent<ActionNodeGraphPanel>();
             }
-            _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly });
+            _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
+            {
+                typeof(CardEngine).Assembly,
+                typeof(HearthStoneRule).Assembly,
+                typeof(EffectEditorLibrary).Assembly
+            });
             //生成节点菜单
             _backgroundMenuOptionList = new List<BackgroundMenuItem>();
             foreach (var pair in _actionDefineDict)

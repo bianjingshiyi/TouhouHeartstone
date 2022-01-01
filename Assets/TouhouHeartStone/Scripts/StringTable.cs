@@ -131,6 +131,22 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_SPELL_DAMAGE = "获取法术伤害";
         [TranslateMsg("动作图编辑器中动作节点名称之获取目标")]
         public const string EDITOR_NODE_NAME_GET_TARGET = "获取目标";
+        [TranslateMsg("动作图编辑器中动作节点名称之抽目标卡牌")]
+        public const string EDITOR_NODE_NAME_DRAW_TARGET_CARD = "抽目标卡牌";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之玩家")]
+        public const string EDITOR_PARAM_NAME_PLAYER = "玩家";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之抽牌事件")]
+        public const string EDITOR_PARAM_NAME_DRAW_EVENT = "抽牌事件";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之爆牌事件")]
+        public const string EDITOR_PARAM_NAME_BURN_EVENT = "爆牌事件";
+        [TranslateMsg("动作图编辑器中动作节点名称之从一定数量的卡牌中选择一张")]
+        public const string EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS = "从一定数量的卡牌中选择一张";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之数量")]
+        public const string EDITOR_PARAM_NAME_COUNT = "数量";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取牌库中满足条件的卡牌")]
+        public const string EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION = "获取牌库中满足条件的卡牌";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之条件")]
+        public const string EDITOR_PARAM_NAME_CONDITION = "条件";
         #endregion
         #region 牌堆
         [TranslateMsg("动作图编辑器中动作节点分类之牌堆")]
