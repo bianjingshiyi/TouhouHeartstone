@@ -120,7 +120,7 @@ namespace Game
             foreach (var pair in externalSpriteCacheDict)
             {
                 //获取使用这张图片的第一个皮肤
-                CardSkinData skin = cardSkins.First(s => s.imagePath == pair.Key);
+                CardSkinData skin = cardSkins.FirstOrDefault(s => s.imagePath == pair.Key);
                 if (skin == null)
                 {
                     //没有皮肤使用，跳过
