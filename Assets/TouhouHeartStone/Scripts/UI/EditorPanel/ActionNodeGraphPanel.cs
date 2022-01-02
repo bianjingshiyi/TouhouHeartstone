@@ -33,6 +33,7 @@ namespace UI
             //当对应名称数组长度为0的时候，直接隐藏列表根节点。
             ActionNodeItem actionNodeItem = createNode(posX, posY);
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
+            actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
             actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
@@ -81,6 +82,7 @@ namespace UI
             actionNodeItem.onDrag += onDragActionNodeItem;
             actionNodeItem.onEndDrag += onEndDragActionNodeItem;
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
+            actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
             actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
@@ -528,6 +530,10 @@ namespace UI
         {
             onActionNodeValueChange?.Invoke(item, constValueIndex, value);
         }
+        private void onClickActionNodeItemConstValueButton(ActionNodeItem item, int constValueIndex)
+        {
+            onClickActionNodeConstValueEditButton?.Invoke(item, constValueIndex);
+        }
         private void onTriggerNodeEventNameChanged(ActionNodeItem item, string eventName)
         {
             onChangeTriggerEventName?.Invoke(eventName);
@@ -642,6 +648,10 @@ namespace UI
         /// 当节点的常量值输入改变，参数为被改变的节点，常量值索引和改变的值
         /// </summary>
         public event Action<ActionNodeItem, int, object> onActionNodeValueChange;
+        /// <summary>
+        /// 当节点的常量的编辑按钮被点击，参数为被点击的节点和常量索引
+        /// </summary>
+        public event Action<ActionNodeItem, int> onClickActionNodeConstValueEditButton;
         /// <summary>
         /// 当触发器节点的事件名称改变，参数为更改后的事件名称
         /// </summary>

@@ -82,10 +82,12 @@ namespace UI
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.onValueChanged += onConstValueChangedCallback;
+                    item.onClickButton += onConstValueButtonClickCallback;
                 }, itemRect =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.onValueChanged -= onConstValueChangedCallback;
+                    item.onClickButton -= onConstValueButtonClickCallback;
                 });
             }
         }
@@ -228,6 +230,10 @@ namespace UI
         {
             onConstValueChanged?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform), value);
         }
+        private void onConstValueButtonClickCallback(ValueInputField item)
+        {
+            onClickConstValueButton?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform));
+        }
         private void onEndEditEventNameInputField(string eventName)
         {
             onEventNameChanged?.Invoke(this, eventName);
@@ -296,6 +302,7 @@ namespace UI
         public event Action<ActionNodeItem, ActionNodeItemOutput, BaseEventData> onDragOutputNode;
         public event Action<ActionNodeItem, ActionNodeItemOutput, BaseEventData> onEndDragOutputNode;
         public event Action<ActionNodeItem, int, object> onConstValueChanged;
+        public event Action<ActionNodeItem, int> onClickConstValueButton;
         public event Action<ActionNodeItem, string> onEventNameChanged;
         public event Action<ActionNodeItem> onClickEditConditionButton;
         public event Action<ActionNodeItem> onClickAddTargetCheckerButton;
@@ -307,11 +314,11 @@ namespace UI
         #region 属性字段
         public float posX
         {
-            get { throw new NotImplementedException(); }
+            get { return (transform as RectTransform).anchoredPosition.x; }
         }
         public float posY
         {
-            get { throw new NotImplementedException(); }
+            get { return (transform as RectTransform).anchoredPosition.y; }
         }
         [SerializeField]
         Text _nameText;

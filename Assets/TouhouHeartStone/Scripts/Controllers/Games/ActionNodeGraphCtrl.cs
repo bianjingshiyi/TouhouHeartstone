@@ -205,6 +205,7 @@ namespace Controllers
             _ui.onLongPressActionNode += onLongPressActionNode;
             _ui.onDragActionNode += onDragActionNode;
             _ui.onActionNodeValueChange += onActionNodeValueChange;
+            _ui.onClickActionNodeConstValueEditButton += onClickActionNodeConstValueEditButton;
             _ui.onChangeTriggerEventName += onChangeTriggerEventName;
             _ui.onClickTriggerEditConditionButton += onClickTriggerEditConditionButton;
             _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
@@ -213,7 +214,6 @@ namespace Controllers
             _ui.onClickRemoveTargetCheckerButton += onClickRemoveTargetCheckerButton;
             _ui.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChanged;
             _ui.onClickReturnButton += onClickReturnButton;
-            _ui.onActionNodeValueChange += onActionNodeValueChange;
             //增益
             _ui.onItemBuffChanged += onItemBuffChangedCallback;
             _ui.onClickItemNewBuffButton += onClickItemNewBuffButtonCallback;
@@ -657,6 +657,22 @@ namespace Controllers
                 actionNode.consts[constIndex] = value;
             }
         }
+        private void onClickActionNodeConstValueEditButton(ActionNodeItem actionNodeItem, int index)
+        {
+            ActionNode actionNode = getActionNode(actionNodeItem);
+            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            if (actionDefine.consts[index].type == typeof(ActionValueRef))
+            {
+                ActionValueRef value = actionNode.consts[index] as ActionValueRef;
+                if (value == null)
+                {
+                    value = new ActionValueRef();
+                    actionNode.consts[index] = value;
+                }
+                pushCurEditObjectToStack();
+                openValueRefGraph(value);
+            }
+        }
         /// <summary>
         /// 当用户更改触发器的事件名称，将事件名称改为更改值
         /// </summary>
@@ -953,6 +969,8 @@ namespace Controllers
         }
         Vector2 calcActionNodeGraphSize(ActionNode actionNode, Dictionary<ActionNode, Vector2> sizeDict)
         {
+            if (actionNode == null)
+                return Vector2.zero;
             if (sizeDict != null && sizeDict.ContainsKey(actionNode))
                 return sizeDict[actionNode];
             Vector2 size = new Vector2();
@@ -960,7 +978,7 @@ namespace Controllers
             float inputWidth = 0;
             for (int i = 0; i < actionNode.inputs.Length; i++)
             {
-                ActionNode inputNode = actionNode.inputs[i].action;
+                ActionNode inputNode = actionNode.inputs[i] != null ? actionNode.inputs[i].action : null;
                 float width = calcActionNodeGraphSize(inputNode, sizeDict).x;
                 if (width > inputWidth)
                     inputWidth = width;
@@ -970,7 +988,7 @@ namespace Controllers
             //计算输入的高度
             for (int i = 0; i < actionNode.inputs.Length; i++)
             {
-                ActionNode inputNode = actionNode.inputs[i].action;
+                ActionNode inputNode = actionNode.inputs[i] != null ? actionNode.inputs[i].action : null;
                 inputHeight += calcActionNodeGraphSize(inputNode, sizeDict).y;
             }
             //float branchHeight = 0;
@@ -1144,8 +1162,11 @@ namespace Controllers
                     }
                     inputNameList.Add(inputName + (i - actionDefine.inputs.Length + 2));
                 }
-                else
+                else if (i < actionDefine.inputs.Length)
+                {
+                    //有可能由于ActionDefine的参数数量变化导致存在的输入参数比实际的多，忽略已有的参数
                     inputNameList.Add(actionDefine.inputs[i].name);
+                }
             }
             if (actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams)
             {
@@ -1184,6 +1205,12 @@ namespace Controllers
                     infoArray[i].type = ActionNodeValueType.enumValue;
                     infoArray[i].enumType = type;
                 }
+                else if (type == typeof(ActionValueRef))
+                {
+                    infoArray[i].type = ActionNodeValueType.actionValueRef;
+                }
+                else
+                    throw new NotImplementedException("没有" + type + "对应的常数类型");
             }
             return infoArray;
         }
