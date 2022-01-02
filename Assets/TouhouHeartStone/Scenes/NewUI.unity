@@ -2640,7 +2640,7 @@ PrefabInstance:
     - target: {fileID: 6020091102220162482, guid: 4659cf81342551a4ba1145f37b06cd07,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 204.7002
+      value: 204.70117
       objectReference: {fileID: 0}
     - target: {fileID: 6020091102816268414, guid: 4659cf81342551a4ba1145f37b06cd07,
         type: 3}
@@ -5042,6 +5042,13 @@ MonoBehaviour:
   _externalCardPaths:
   - Cards/*.xls
   _game: {fileID: 1038691140}
+  _enableStreamingAssetsInEditor: 0
+  _cardPoolFilePostfix: ddcp
+  _cardPoolDirName: CardPools
+  _textureDirName: Textures
+  _editorCardPoolDirName: ExternalData/CardPools
+  _editorTextureDirName: ExternalData/Textures
+  _standardCardPoolsId: 01000000
 --- !u!4 &902763123
 Transform:
   m_ObjectHideFlags: 0
@@ -10994,12 +11001,12 @@ PrefabInstance:
     - target: {fileID: 3879115452854695899, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -235.00049
+      value: -235
       objectReference: {fileID: 0}
     - target: {fileID: 3879115453052716249, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -235.00049
+      value: -235
       objectReference: {fileID: 0}
     - target: {fileID: 3879115453052716249, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}
@@ -11454,7 +11461,7 @@ PrefabInstance:
     - target: {fileID: 5128666292216198938, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 483.3333
+      value: 483.33398
       objectReference: {fileID: 0}
     - target: {fileID: 5128666292216198938, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}

@@ -17,6 +17,8 @@ MonoBehaviour:
   - AssetBundles/AssetBundles.manifest
   - AssetBundles/test.picture
   - AssetBundles/test.picture.manifest
+  - "CardPools/\u65B0\u5EFA\u5361\u7EC4.ddcp"
+  - "CardPools/\u7ECF\u5178\u5361\u6C60.ddcp"
   - Cards/Cards.xls
   - Cards/Cards.xls.dataset
   - Cards/Nazrin.xls
@@ -246,3 +248,6 @@ MonoBehaviour:
   - Textures/LostSpecter.png
   - Textures/LuckyCoin.png
   - Textures/MissingSpecter.png
+  - "Textures/\u7ECF\u5178\u5361\u6C60/-2147418109/0/Image.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/-2147418110/0/Image.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/-2147418111/0/Image.jpg"

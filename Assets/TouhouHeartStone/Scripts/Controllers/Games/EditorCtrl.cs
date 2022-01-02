@@ -443,6 +443,8 @@ namespace Controllers
                 if (_curCardPoolPath.StartsWith("sa:"))
                 {
                     //StreamingAssets不需要区分根目录
+                    if (!path.StartsWith("sa:"))
+                        path = "sa:" + Path.Combine(game.card.textureDirName, path);
                     return game.card.loadExternalImage(path, null);
                 }
                 else
