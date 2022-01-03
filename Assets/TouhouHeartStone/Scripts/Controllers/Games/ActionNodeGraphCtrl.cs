@@ -233,6 +233,8 @@ namespace Controllers
         /// <summary>
         /// 当用户长按背景，展开菜单。目前点菜单内容只有创建节点。
         /// </summary>
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
         private void onLongPressBackground(float posX, float posY)
         {
             openMenu(posX, posY);
@@ -1303,6 +1305,8 @@ namespace Controllers
         /// <summary>
         /// 在对应位置打开菜单
         /// </summary>
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
         private void openMenu(float posX, float posY)
         {
             _curPosX = posX;
