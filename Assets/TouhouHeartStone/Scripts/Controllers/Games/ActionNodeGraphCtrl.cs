@@ -196,7 +196,8 @@ namespace Controllers
                     enterSubMenu(new int[] { _backgroundMenuOptionList.IndexOf(menuCategory) });
                 }
             }
-            _ui.onClickBackground += onClickBackground;
+            _ui.onLeftClickBackground += onLeftClickBackground;
+            _ui.onRightClickBackground += onRightClickBackground;
             _ui.onLongPressBackground += onLongPressBackground;
             _ui.onClickMenuItem += onClickMenuItem;
             _ui.onConnectNodes += onConnectNodes;
@@ -234,28 +235,26 @@ namespace Controllers
         /// </summary>
         private void onLongPressBackground(float posX, float posY)
         {
-            _curPosX = posX;
-            _curPosY = posY;
-            string[] options = new string[_backgroundMenuOptionList.Count];
-            for (int i = 0; i < options.Length; i++)
-            {
-                options[i] = _backgroundMenuOptionList[i].title;
-                if (_backgroundMenuOptionList[i].childList != null)
-                {
-                    options[i] += " >";
-                }
-            }
-            _ui.openMenu(posX, posY, options);
+            openMenu(posX, posY);
         }
         /// <summary>
-        /// 当用户点击背景，隐藏菜单。
+        /// 当用户左击背景，隐藏菜单。
         /// </summary>
-        /// <param name="posX"></param>
-        /// <param name="posY"></param>
-        private void onClickBackground(float posX, float posY)
+        /// <param name="posX">x坐标</param>
+        /// <param name="posY">y坐标</param>
+        private void onLeftClickBackground(float posX, float posY)
         {
             _curActionNode = null;
             closeMenu();
+        }
+        /// <summary>
+        /// 当用户右击背景，打开菜单。
+        /// </summary>
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
+        private void onRightClickBackground(float posX, float posY)
+        {
+            openMenu(posX, posY);
         }
         /// <summary>
         /// 当用户点击菜单项，视具体点击的项目决定干什么
@@ -1300,6 +1299,24 @@ namespace Controllers
             }
             _menuLayerStack = index;
             _ui.updateMenu(titleList.ToArray());
+        }
+        /// <summary>
+        /// 在对应位置打开菜单
+        /// </summary>
+        private void openMenu(float posX, float posY)
+        {
+            _curPosX = posX;
+            _curPosY = posY;
+            string[] options = new string[_backgroundMenuOptionList.Count];
+            for (int i = 0; i < options.Length; i++)
+            {
+                options[i] = _backgroundMenuOptionList[i].title;
+                if (_backgroundMenuOptionList[i].childList != null)
+                {
+                    options[i] += " >";
+                }
+            }
+            _ui.openMenu(posX, posY, options);
         }
         private void closeMenu()
         {

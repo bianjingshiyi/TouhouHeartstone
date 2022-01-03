@@ -336,7 +336,14 @@ namespace UI
             }
             else
             {
-                onClickBackground?.Invoke(localPoistion.x, localPoistion.y);
+                if ((eventData as PointerEventData).button == PointerEventData.InputButton.Right)
+                {
+                    onRightClickBackground?.Invoke(localPoistion.x, localPoistion.y);
+                }
+                else
+                {
+                    onLeftClickBackground?.Invoke(localPoistion.x, localPoistion.y);
+                }
             }
         }
         /// <summary>
@@ -613,9 +620,13 @@ namespace UI
         #endregion
         #region 事件
         /// <summary>
-        /// 当点击背景，参数为点击的x坐标与y坐标。
+        /// 当左击背景，参数为点击的x坐标与y坐标。
         /// </summary>
-        public event Action<float, float> onClickBackground;
+        public event Action<float, float> onLeftClickBackground;
+        /// <summary>
+        /// 当右击背景，参数为点击的x坐标与y坐标。
+        /// </summary>
+        public event Action<float, float> onRightClickBackground;
         /// <summary>
         /// 当长按背景，参数为长按点的x坐标与y坐标
         /// </summary>
