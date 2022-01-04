@@ -305,7 +305,7 @@ namespace Controllers
             else
             {
                 //默认PC
-                string[] paths = StandaloneFileBrowser.OpenFilePanel("", Application.persistentDataPath, new ExtensionFilter[]
+                string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", new ExtensionFilter[]
                 {
                     new ExtensionFilter("Image Files", "png","jpg")
                 }, false);
