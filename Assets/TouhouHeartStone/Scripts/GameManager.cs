@@ -276,7 +276,7 @@ namespace Game
                 }
             }
             CardDefine[] externalCards = await cards.getExternalCardDefinesAsync(cardPoolIdSet);
-            await game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly },
+            await game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly },
                 new HearthStoneRule(
                     getManager<CardManager>().GetCardDefines().Concat(externalCards),
                     getManager<CardManager>().getBuffDefines(cardPoolIdSet)),

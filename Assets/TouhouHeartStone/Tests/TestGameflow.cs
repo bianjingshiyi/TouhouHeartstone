@@ -6,6 +6,7 @@ using UnityEngine;
 using BJSYGameCore;
 using NitoriNetwork.Common;
 using System.Reflection;
+using Game;
 
 namespace Tests
 {
@@ -146,7 +147,7 @@ namespace Tests
             };
             game.answers.game = game;
             (game.triggers as TriggerManager).logger = game.logger;
-            game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly }, new HearthStoneRule(CardHelper.getCardDefines(logger), null), option, new RoomPlayerInfo[0]).Wait();
+            game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly }, new HearthStoneRule(CardHelper.getCardDefines(logger), null), option, new RoomPlayerInfo[0]).Wait();
             return game;
         }
         public static CardEngine initSyncStandardGame(int[] playersId = null, IEnumerable<CardDefine> cardDefines = null)
