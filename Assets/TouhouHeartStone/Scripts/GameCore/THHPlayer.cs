@@ -106,6 +106,10 @@ namespace TouhouHeartstone
         {
             return player.draw(game, out drawEvent, out _, out _);
         }
+        public static Task draw(this Player player, CardEngine game, out HearthStoneRule.DrawEventArg drawEvent, out HearthStoneRule.BurnEventArg burnEvent)
+        {
+            return player.draw(game, out drawEvent, out burnEvent, out _);
+        }
         public static Task draw(this Player player, CardEngine game)
         {
             return player.draw(game, out _, out _, out _);

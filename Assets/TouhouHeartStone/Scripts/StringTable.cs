@@ -2,7 +2,7 @@
 
 namespace Game
 {
-    public class StringTable
+    public partial class StringTable
     {
         #region 通用
         [TranslateMsg("所有按钮上通用的确认")]
@@ -199,6 +199,12 @@ namespace Game
         public const string EDITOR_NODE_NAME_THIS_BUFF = "改增益";
         [TranslateMsg("动作图编辑器中动作参数名称之增益")]
         public const string EDITOR_PARAM_NAME_BUFF = "增益";
+
+
+        [TranslateMsg("编辑器/卡牌/卡牌类型判断/节点名称")]
+        public const string EDITOR_NODE__IS_DEFINE = "卡牌类型判断";
+
+
         #endregion
         #region 修改器 
         [TranslateMsg("动作图编辑器中动作节点分类之修改器")]
@@ -222,6 +228,9 @@ namespace Game
         [TranslateMsg("动作图编辑器中动作节点名称之获取元素数量")]
         public const string EDITOR_NODE_NAME_GET_COUNT = "获取元素数量";
         #endregion
+
+
+
         #endregion
         #endregion
         #region 游戏
