@@ -1106,25 +1106,6 @@ namespace TouhouHeartstone
                     return (Card)eventArg.targets[0];
                 throw new NotImplementedException();
             }
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Targets",type=typeof(Card[])}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Targets",type=typeof(Card[])}
-                };
-            }
         }
 
         public class CreateTokenEventArg : EventArg, IDescribableEventArg
