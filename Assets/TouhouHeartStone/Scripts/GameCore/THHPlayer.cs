@@ -970,13 +970,32 @@ namespace TouhouHeartstone
             public Player player;
             public Card card;
             public object[] targets;
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){ name = "卡牌", type = typeof(Card)},
+                    new EventVariableInfo() { name = "玩家",type = typeof(Player)},
+                    new EventVariableInfo() { name = "目标卡牌",type = typeof(Card)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){ name = "卡牌", type = typeof(Card)},
+                    new EventVariableInfo() { name = "玩家",type = typeof(Player)},
+                    new EventVariableInfo() { name = "目标卡牌",type = typeof(Card)}
+                };
+            }
             public ActiveEventArg(Player player, Card card, object[] targets)
             {
                 this.player = player;
                 this.card = card;
                 this.targets = targets;
-                setVar("Player", player);
-                setVar("Card", card);
+                setVar("玩家", player);
+                setVar("卡牌", card);
+                setVar("目标卡牌", targets[0]);
                 setVar("Targets", targets);
             }
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
