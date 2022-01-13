@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace UI
 {
@@ -11,7 +12,8 @@ namespace UI
             node.switchToBuffNode();
             node.setBuffValues(viewData.buffNames);
             node.setBuffValue(viewData.buffIndex);
-            node.setBuffId(viewData.buffId.ToString());
+            node.setBuffLanguage(viewData.buffLanguageIndex);
+            node.setBuffSkin(viewData.buffName, viewData.buffDesc, viewData.buffImage);
             node.setupPropModifierTemplate(viewData.propertyTypes, viewData.modifyTypes);
             node.updatePropModifierList(viewData.propModifiersViewData);
             node.updateEffectList(viewData.effectTypeNames, viewData.effectNames);
@@ -94,7 +96,10 @@ namespace UI
     {
         public string[] buffNames;
         public int buffIndex;
-        public int buffId;
+        public int buffLanguageIndex;
+        public string buffName;
+        public string buffDesc;
+        public Sprite buffImage;
         public string[] propertyTypes;
         public string[] modifyTypes;
         public ActionNodePropertyModifierViewData[] propModifiersViewData;

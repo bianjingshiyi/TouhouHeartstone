@@ -93,6 +93,18 @@ namespace UI
             return actionNodeItem;
         }
         /// <summary>
+        /// 在指定位置上创建一个触发器节点
+        /// </summary>
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
+        /// <param name="eventTypeIndex"></param>
+        /// <param name="targetCheckers"></param>
+        /// <returns></returns>
+        public ActionNodeItem createTriggerNode(float posX, float posY, int eventTypeIndex, (int typeIndex, string name, string errorTip)[] targetCheckers)
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
         /// 将节点的指定输出连接到目标节点的输入上
         /// </summary>
         /// <param name="node"></param>
@@ -167,7 +179,10 @@ namespace UI
         /// <param name="graphPosition">动作图坐标系坐标</param>
         public void moveActionNodeTo(ActionNodeItem item, Vector2 graphPosition)
         {
+            //设置节点位置
             item.transform.localPosition = graphPosition + _dragItemPositionOffset;
+            //设置背景大小
+            //刷新连线位置
             for (int i = 0; i < _connectionList.Count; i++)
             {
                 if (_connectionList[i].outputNode == _dragItem || _connectionList[i].inputNode == _dragItem)
@@ -189,6 +204,7 @@ namespace UI
             //销毁节点UI
             _actionNodeItemList.Remove(node);
             Destroy(node.gameObject);
+            //设置背景大小
             //销毁所有连线UI
             for (int i = 0; i < _connectionList.Count; i++)
             {
@@ -278,6 +294,10 @@ namespace UI
         public Vector2 worldPositionToGraphPosition(Vector2 worldPosition)
         {
             return _actionNodesRoot.InverseTransformPoint(worldPosition);
+        }
+        public void init(string[] languages)
+        {
+            _actionNodeItemTemplate.setBuffLanguages(languages);
         }
         #endregion
         #region 私有方法
@@ -603,7 +623,9 @@ namespace UI
             _actionNodeItemList.Add(actionNodeItem);
             actionNodeItem.gameObject.SetActive(true);
             RectTransform itemRect = actionNodeItem.transform as RectTransform;
+            //设置当前节点的位置
             itemRect.anchoredPosition = new Vector2(posX, posY);
+            //调整当前背景大小
             actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
             actionNodeItem.onDragInputNode += onDragInputNode;
             actionNodeItem.onEndDragInputNode += onEndDragInputNode;

@@ -311,7 +311,7 @@ namespace Controllers
             actionNodeGraphInfoList.Clear();
             if (!string.IsNullOrEmpty(cardPoolPath))
             {
-                var (defines, skins, actionGraphInfos) = await game.card.getExternalCardDefinesAsync(cardPoolPath);
+                var (defines, skins, actionGraphInfos) = await game.card.getOrLoadCardPoolContents(cardPoolPath);
                 _cardDefineList.AddRange(defines);
                 _cardSkinList.AddRange(skins);
                 actionNodeGraphInfoList.AddRange(actionGraphInfos);
@@ -488,12 +488,5 @@ namespace Controllers
             /// </summary>
             rareDescending
         }
-    }
-    [Serializable]
-    public class CardPoolInfo
-    {
-        public int cardPoolId;
-        public string cardPoolName;
-        public string imageResPath;
     }
 }

@@ -26,9 +26,34 @@ namespace UI
         {
             _buffDropdown.SetValueWithoutNotify(index);
         }
-        public void setBuffId(string text)
+        /// <summary>
+        /// 设置皮肤语言索引
+        /// </summary>
+        /// <param name="languageIndex"></param>
+        public void setBuffLanguage(int languageIndex)
         {
-            _buffIdText.text = text;
+            _buffLanguageDropdown.SetValueWithoutNotify(languageIndex);
+        }
+        /// <summary>
+        /// 设置皮肤有哪些语言可选
+        /// </summary>
+        /// <param name="languages"></param>
+        public void setBuffLanguages(string[] languages)
+        {
+            _buffLanguageDropdown.ClearOptions();
+            _buffLanguageDropdown.AddOptions(new List<string>(languages));
+        }
+        /// <summary>
+        /// 设置增益皮肤
+        /// </summary>
+        /// <param name="buffName"></param>
+        /// <param name="buffDesc"></param>
+        /// <param name="buffImage"></param>
+        public void setBuffSkin(string buffName, string buffDesc, Sprite buffImage)
+        {
+            _buffNameInputField.SetTextWithoutNotify(buffName);
+            _buffDescInputField.SetTextWithoutNotify(buffDesc);
+            _buffImage.sprite = buffImage;
         }
         public void setupPropModifierTemplate(string[] propTypes, string[] modifyTypes)
         {
@@ -132,7 +157,13 @@ namespace UI
         [SerializeField]
         Button _deleteBuffButton;
         [SerializeField]
-        Text _buffIdText;
+        Dropdown _buffLanguageDropdown;
+        [SerializeField]
+        Image _buffImage;
+        [SerializeField]
+        InputField _buffNameInputField;
+        [SerializeField]
+        InputField _buffDescInputField;
         [SerializeField]
         RectTransform _propModifierRoot;
         [SerializeField]
