@@ -106,6 +106,7 @@ namespace Controllers
             {
                 _ui = GetComponent<ActionNodeGraphPanel>();
             }
+            loadEventTypes();
             _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
             {
                 typeof(CardEngine).Assembly,
@@ -780,6 +781,15 @@ namespace Controllers
                 pushCurEditObjectToStack();
                 await openValueRefGraph(value);
             }
+        }
+        /// <summary>
+        /// 当用户更改触发器的事件类型索引，更改触发器的事件名称并更新触发器ui信息
+        /// </summary>
+        /// <param name="typeIndex"></param>
+        private void onChangeTriggerEventTypeIndex(int typeIndex)
+        {
+            _trigger.eventName = _eventTypeInfoList[typeIndex].eventName;
+            _entryNodeItem.setOutputs(getTriggerOutputNames());
         }
         /// <summary>
         /// 当用户更改触发器的事件名称，将事件名称改为更改值
@@ -1619,7 +1629,12 @@ namespace Controllers
             }
             return infoArray;
         }
-        string[] getActionNodeOutputNames(ActionNode actionNode)
+        /// <summary>
+        /// 获取动作节点的输出值的名称。
+        /// </summary>
+        /// <param name="actionNode"></param>
+        /// <returns></returns>
+        private string[] getActionNodeOutputNames(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输出的翻译，但是暂时先不这么做。
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
@@ -1635,6 +1650,23 @@ namespace Controllers
                 {
                     outputNames[i] = actionDefine.outputs[i - actionNode.branches.Length].name;
                 }
+            }
+            return outputNames;
+        }
+        /// <summary>
+        /// 获取当前触发器的输出值的名称。
+        /// </summary>
+        /// <returns></returns>
+        private string[] getTriggerOutputNames()
+        {
+            int typeIndex = getEventTypeIndex(_trigger.eventName);
+            EventTypeInfo eventTypeInfo = _eventTypeInfoList[typeIndex];
+            string[] outputNames = new string[eventTypeInfo.variableInfos.Length];
+            for (int i = 0; i < outputNames.Length; i++)
+            {
+                //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
+                //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
+                outputNames[i] = game.langManager.getString(eventTypeInfo.variableInfos[i].name);
             }
             return outputNames;
         }
