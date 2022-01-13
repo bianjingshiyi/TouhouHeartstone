@@ -13,9 +13,10 @@ namespace Game
         #region 行动
         [TranslateMsg("编辑器/行动_集合名称")]
         public const string EDITOR_CATEGORY__ACTION__NAME = "行动";
+        public const string EDITOR_NODE__PRAMA__PLAYER = "Player";
 
-            #region 简单抽牌节点
-            [TranslateMsg("编辑器/行动/简单抽牌节点_名称")]
+        #region 简单抽牌节点
+        [TranslateMsg("编辑器/行动/简单抽牌节点_名称")]
             public const string EDITOR_NODE__SIMPLE_DRAW_CARD__NAME = "简单抽牌";
             [TranslateMsg("编辑器/行动/简单抽牌节点_参数_抽牌玩家")]
             public const string EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER = "Player";

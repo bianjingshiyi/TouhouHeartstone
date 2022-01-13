@@ -862,16 +862,63 @@ namespace TouhouHeartstone
                 public int gem;
                 public Card[] hands;
             }
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Hands",type=typeof(Card[])},
+                    new EventVariableInfo(){name = "InitedGem",type=typeof(int)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Hands",type=typeof(Card[])},
+                    new EventVariableInfo(){name = "InitedGem",type=typeof(int)}
+                };
+            }
         }
 
         public class TurnStartEventArg : EventArg
         {
             public Player player;
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)}
+                };
+            }
         }
 
         public class TurnEndEventArg : EventArg
         {
             public Player player;
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)}
+                };
+            }
         }
 
         public class GameEndEventArg : EventArg
@@ -884,6 +931,25 @@ namespace TouhouHeartstone
             public Player player;
             public Card[] cards;
             public Card[] replacedCards;
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Cards",type=typeof(Card[])},
+                    new EventVariableInfo(){name = "ReplacedCards",type=typeof(Card[])}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Cards",type=typeof(Card[])},
+                    new EventVariableInfo(){name = "ReplacedCards",type=typeof(Card[])}
+                };
+            }
         }
 
         public class SetMaxGemEventArg : EventArg, IDescribableEventArg
@@ -923,6 +989,23 @@ namespace TouhouHeartstone
                     value
                 };
             }
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Value",type=typeof(int)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Value",type=typeof(int)}
+                };
+            }
         }
 
         public class BurnEventArg : EventArg, IDescribableEventArg
@@ -957,6 +1040,23 @@ namespace TouhouHeartstone
             object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
             {
                 return new object[] { player.name, card.getFormatString() };
+            }
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Card",type=typeof(Card)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Card",type=typeof(Card)}
+                };
             }
         }
 
@@ -1006,6 +1106,24 @@ namespace TouhouHeartstone
                 {
                     player.name,
                     choose.GetType().Name
+                };
+            }
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Options;",type=typeof(IEnumerable<CardDefine>)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Options;",type=typeof(IEnumerable<CardDefine>)},
+                    new EventVariableInfo(){name = "Choose;",type=typeof(IEnumerable<CardDefine>)}
                 };
             }
         }
@@ -1080,6 +1198,29 @@ namespace TouhouHeartstone
             public const string VAR_POSITION = "Position";
             public const string VAR_COST = "Cost";
             public const string VAR_TARGETS = "Targets";
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
+                    new EventVariableInfo(){name = "Index",type=typeof(int)},
+                    new EventVariableInfo(){name = "Cost",type=typeof(int)},
+                    new EventVariableInfo(){name = "Targets",type=typeof(Card[])}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
+                    new EventVariableInfo(){name = "Index",type=typeof(int)},
+                    new EventVariableInfo(){name = "Cost",type=typeof(int)},
+                    new EventVariableInfo(){name = "Targets",type=typeof(Card[])}
+                };
+            }
         }
 
         public class EnterFieldEventArg : EventArg, IDescribableEventArg
@@ -1124,6 +1265,25 @@ namespace TouhouHeartstone
                     position
                 };
             }
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
+                    new EventVariableInfo(){name = "Index",type=typeof(int)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
+                    new EventVariableInfo(){name = "Index",type=typeof(int)}
+                };
+            }
         }
 
         public class RebornEventArg : EventArg, IDescribableEventArg
@@ -1162,6 +1322,25 @@ namespace TouhouHeartstone
                 {
                     player.name,
                     card.getFormatString()
+                };
+            }
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
+                    new EventVariableInfo(){name = "Index",type=typeof(int)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
+                    new EventVariableInfo(){name = "Index",type=typeof(int)}
                 };
             }
         }
@@ -1203,6 +1382,23 @@ namespace TouhouHeartstone
                 {
                     player.name,
                     card?.getFormatString()
+                };
+            }
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Card",type=typeof(Card)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
+                    new EventVariableInfo(){name = "Card",type=typeof(Card)}
                 };
             }
         }
