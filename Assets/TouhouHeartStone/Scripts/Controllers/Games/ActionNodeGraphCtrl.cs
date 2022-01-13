@@ -977,7 +977,7 @@ namespace Controllers
             //显示UI
             _ui.clearGraph();
             //创建入口节点
-            int eventTypeIndex = Array.IndexOf(getEventTypes(), trigger.eventName);
+            int eventTypeIndex = getEventTypeIndex(trigger.eventName);
             if (eventTypeIndex < 0)
             {
                 _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), _trigger.eventName, getTargetCheckerViewData());
@@ -1509,21 +1509,31 @@ namespace Controllers
             {
                 foreach (var type in assembly.GetTypes())
                 {
-                    if (type.IsSubclassOf(typeof(EventArg)))
+                    if (type.IsSubclassOf(typeof(EventArg))//是EventArg
+                        && !type.IsAbstract//不是抽象类
+                        )
                     {
-
+                        EventArg eventArg = Activator.CreateInstance(type) as EventArg;
+                        //发生时事件
+                        _eventTypeInfoList.Add(new EventTypeInfo()
+                        {
+                            eventName = game.triggers.getNameBefore(eventArg),
+                            variableInfos = eventArg.getBeforeEventVarInfos()
+                        });
+                        //发生后事件
+                        _eventTypeInfoList.Add(new EventTypeInfo()
+                        {
+                            eventName = game.triggers.getNameAfter(eventArg),
+                            variableInfos = eventArg.getAfterEventVarInfos()
+                        });
                     }
                 }
             }
             //以后可能有自定义的事件类型，不过先不管
         }
-        /// <summary>
-        /// 获取所有事件类型
-        /// </summary>
-        /// <returns></returns>
-        private string[] getEventTypes()
+        private int getEventTypeIndex(string eventName)
         {
-
+            return _eventTypeInfoList.FindIndex(e => e.eventName == eventName);
         }
         string getActionNodeName(ActionNode actionNode)
         {
