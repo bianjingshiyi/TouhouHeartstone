@@ -20,6 +20,7 @@ namespace Controllers
         /// 打开一个效果的生效效果动作图。
         /// </summary>
         /// <param name="effect"></param>
+        /// 
         public void openOnEnableActionGraph(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect)
         {
             display(new DisplayInfo(cardPoolId, cardDefine, nameof(GeneratedEffect.onEnableAction), effect, null));
@@ -28,6 +29,7 @@ namespace Controllers
         /// 打开一个效果的失效效果动作图。
         /// </summary>
         /// <param name="effect"></param>
+        /// 
         public void openOnDisableActionGraph(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect)
         {
             display(new DisplayInfo(cardPoolId, cardDefine, nameof(GeneratedEffect.onDisableAction), effect, null));
@@ -39,14 +41,6 @@ namespace Controllers
         public Task openActionValueRefGraph(int cardPoolId, CardDefine cardDefine, ActionValueRef valueRef)
         {
             return display(new DisplayInfo(cardPoolId, cardDefine, null, valueRef, null));
-        }
-        /// <summary>
-        /// 打开一个触发器的动作节点图
-        /// </summary>
-        /// <param name="trigger"></param>
-        public void openTriggerGraph(int cardPoolId, CardDefine cardDefine, TriggerGraph trigger)
-        {
-            display(new DisplayInfo(cardPoolId, cardDefine, null, trigger, null));
         }
         public Task display(UIDisplayInfo uiDisplayInfo)
         {
@@ -66,13 +60,13 @@ namespace Controllers
                 _cardDefine = info.cardDefine;
                 _ui.gameObject.SetActive(true);
                 if (info.editObject is TriggerGraph trigger)
-                    return openTriggerGraph(trigger);
+                    openTriggerGraph(trigger);
                 else if (info.editObject is TargetChecker targetChecker)
-                    return openTargetCheckerGraph(targetChecker);
+                    openTargetCheckerGraph(targetChecker);
                 else if (info.editObject is ActionValueRef valueRef)
-                    return openValueRefGraph(valueRef);
+                    openValueRefGraph(valueRef);
                 else if (info.editObject is GeneratedEffect effect)
-                    return openActionGraph(effect, info.entryType);
+                    openActionGraph(effect, info.entryType);
                 return Task.CompletedTask;
             }
             throw new NotImplementedException();
@@ -106,7 +100,6 @@ namespace Controllers
             {
                 _ui = GetComponent<ActionNodeGraphPanel>();
             }
-            loadEventTypes();
             _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
             {
                 typeof(CardEngine).Assembly,
@@ -226,8 +219,6 @@ namespace Controllers
             _ui.onItemPropModifierAddEffect += onItemPropModifierAddEffectCallback;
             _ui.onItemPropModifierRemoveEffect += onItemPropModifierRemoveEffectCallback;
             _ui.onItemPropModifierEditEffect += onItemPropModifierEditEffectCallback;
-
-            _ui.init(game.langManager.getLanguages());
         }
         #endregion
         #region 事件回调
@@ -766,7 +757,7 @@ namespace Controllers
                 actionNode.consts[constIndex] = value;
             }
         }
-        private async void onClickActionNodeConstValueEditButton(ActionNodeItem actionNodeItem, int index)
+        private void onClickActionNodeConstValueEditButton(ActionNodeItem actionNodeItem, int index)
         {
             ActionNode actionNode = getActionNode(actionNodeItem);
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
@@ -779,69 +770,8 @@ namespace Controllers
                     actionNode.consts[index] = value;
                 }
                 pushCurEditObjectToStack();
-                await openValueRefGraph(value);
+                openValueRefGraph(value);
             }
-        }
-        /// <summary>
-        /// 当用户更改触发器的事件类型索引，更改触发器的事件名称并更新触发器ui信息
-        /// </summary>
-        /// <param name="typeIndex"></param>
-        private void onChangeTriggerEventTypeIndex(int typeIndex)
-        {
-            _trigger.eventName = _eventTypeInfoList[typeIndex].eventName;
-            _entryNodeItem.setOutputs(getTriggerOutputNames());
-        }
-        /// <summary>
-        /// 当用户更改触发器的事件名称，将事件名称改为更改值
-        /// </summary>
-        /// <param name="eventName"></param>
-        void onChangeTriggerEventName(string eventName)
-        {
-            _trigger.eventName = eventName;
-        }
-        /// <summary>
-        /// 当用户点击编辑条件按钮，将当前的编辑信息入栈，打开条件编辑
-        /// </summary>
-        private async void onClickTriggerEditConditionButton()
-        {
-            pushCurEditObjectToStack();
-            if (_trigger.condition == null)
-                _trigger.condition = new ActionValueRef();
-            await openValueRefGraph(_trigger.condition);
-        }
-        /// <summary>
-        /// 当用户点击新增目标按钮，为当前触发器新建目标检查器，然后在UI列表中新增项目
-        /// </summary>
-        void onClickAddTargetCheckerButton()
-        {
-            _trigger.targetCheckerList.Add(new TargetChecker(string.Empty, new ActionValueRef(null, 0), string.Empty));
-            _entryNodeItem.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTargetCheckerViewData());
-        }
-        void onTargetCheckerTypeValueChanged(int index, int value)
-        {
-            _trigger.targetCheckerList[index].targetType = _targetCheckerTypes[value];
-        }
-        /// <summary>
-        /// 当用户点击编辑目标按钮，将当前的编辑信息入栈，打开目标编辑
-        /// </summary>
-        /// <param name="index"></param>
-        private async void onClickEditTargetCheckerButton(int index)
-        {
-            pushCurEditObjectToStack();
-            await openTargetCheckerGraph(_trigger.targetCheckerList[index]);
-        }
-        /// <summary>
-        /// 当用户点击删除目标按钮，为当前触发器删除目标检查器，然后在UI列表中也删除对应索引项目
-        /// </summary>
-        /// <param name="index"></param>
-        void onClickRemoveTargetCheckerButton(int index)
-        {
-            _trigger.targetCheckerList.RemoveAt(index);
-            _entryNodeItem.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTargetCheckerViewData());
-        }
-        void onTargetCheckerErrorTipValueChanged(int index, string value)
-        {
-            _trigger.targetCheckerList[index].errorTip = value;
         }
         /// <summary>
         /// 当用户点击返回按钮，出栈之前的显示信息并重新打开之前的编辑界面
@@ -856,7 +786,7 @@ namespace Controllers
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="entryType"></param>
-        private async Task openActionGraph(GeneratedEffect effect, string entryType)
+        private void openActionGraph(GeneratedEffect effect, string entryType)
         {
             //清理数据
             _actionNodeList.Clear();
@@ -878,7 +808,7 @@ namespace Controllers
                         new string[0],
                         new ActionNodeValueInfo[0],
                         new string[] { string.Empty });
-                    ActionNodeItem actionNodeItem = await createGraph4ActionNode(_effect.onEnableAction);
+                    var actionNodeItem = createGraph4ActionNode(_effect.onEnableAction);
                     _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
                 }
                 else
@@ -899,7 +829,7 @@ namespace Controllers
                         new string[0],
                         new ActionNodeValueInfo[0],
                         new string[] { string.Empty });
-                    ActionNodeItem actionNodeItem = await createGraph4ActionNode(_effect.onDisableAction);
+                    var actionNodeItem = createGraph4ActionNode(_effect.onDisableAction);
                     _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
                 }
                 else
@@ -918,7 +848,7 @@ namespace Controllers
         /// <param name="entryName"></param>
         /// <param name="valueRef"></param>
         /// <param name="graphInfo"></param>
-        private async Task openValueRefGraph(ActionValueRef valueRef)
+        private void openValueRefGraph(ActionValueRef valueRef)
         {
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
@@ -935,11 +865,11 @@ namespace Controllers
                 new string[0]);
             if (valueRef.action != null)
             {
-                ActionNodeItem actionNodeItem = await createGraph4ActionNode(valueRef.action);
+                ActionNodeItem actionNodeItem = createGraph4ActionNode(valueRef.action);
                 _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
             }
         }
-        private async Task openTargetCheckerGraph(TargetChecker targetChecker)
+        private void openTargetCheckerGraph(TargetChecker targetChecker)
         {
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
@@ -949,7 +879,7 @@ namespace Controllers
             _valueRef = null;
             _targetChecker = targetChecker;
             _trigger = null;
-            ActionNodeItem actionNodeItem = await createGraph4ActionNode(targetChecker.condition.action);
+            var actionNodeItem = createGraph4ActionNode(targetChecker.condition.action);
             _returnNodeItem = _ui.createNode(0, 0,
                 game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
                 new string[] { string.Empty },
@@ -972,47 +902,10 @@ namespace Controllers
             _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
         }
         /// <summary>
-        /// 打开一个触发器的动作节点图
-        /// </summary>
-        /// <param name="trigger"></param>
-        private async Task openTriggerGraph(TriggerGraph trigger)
-        {
-            _actionNodeList.Clear();
-            _actionNodeItemList.Clear();
-            _entryType = null;
-            _effect = null;
-            _valueRef = null;
-            _targetChecker = null;
-            _trigger = trigger;
-            //显示UI
-            _ui.clearGraph();
-            //创建入口节点
-            int eventTypeIndex = getEventTypeIndex(trigger.eventName);
-            if (eventTypeIndex < 0)
-            {
-                _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), _trigger.eventName, getTargetCheckerViewData());
-            }
-            else
-            {
-                _entryNodeItem = _ui.createTriggerNode(0, 0, eventTypeIndex, getTargetCheckerViewData());
-            }
-            //创建根节点
-            if (trigger.action != null)
-            {
-                ActionNodeItem actionNodeItem = await createGraph4ActionNode(trigger.action);
-                _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
-            }
-            //创建离散节点
-            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
-            {
-                await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
-            }
-        }
-        /// <summary>
         /// 为动作节点以及其所有子节点创建动作节点图
         /// </summary>
         /// <param name="actionNode"></param>
-        private async Task<ActionNodeItem> createGraph4ActionNode(ActionNode actionNode, ActionNodeItem prevNodeItem = null, ActionNodeItem nextNodeItem = null, float startPosOffset = 0, Dictionary<ActionNode, Vector2> sizeDict = null)
+        private ActionNodeItem createGraph4ActionNode(ActionNode actionNode, ActionNodeItem prevNodeItem = null, ActionNodeItem nextNodeItem = null, float startPosOffset = 0, Dictionary<ActionNode, Vector2> sizeDict = null)
         {
             _actionNodeList.Add(actionNode);
             ActionNodeItem actionNodeItem;
@@ -1053,7 +946,7 @@ namespace Controllers
                 nodeInfo = new ActionNodeGraphNodeInfo(pos.x, pos.y);
                 setNodeInfo(actionNode, nodeInfo);
             }
-            actionNodeItem = await createNodeUI4ActionNodeAt(actionNode, pos.x, pos.y);
+            actionNodeItem = createNode4ActionNodeAt(actionNode, pos.x, pos.y);
             //为动作分支创建节点图
             float lastNodeOffset = 0;
             for (int i = 0; i < actionNode.branches.Length; i++)
@@ -1063,7 +956,7 @@ namespace Controllers
                     continue;
                 if (sizeDict == null)
                     sizeDict = new Dictionary<ActionNode, Vector2>();
-                ActionNodeItem nextActionNodeItem = await createGraph4ActionNode(nextActionNode,
+                var nextActionNodeItem = createGraph4ActionNode(nextActionNode,
                     prevNodeItem: actionNodeItem,
                     startPosOffset: lastNodeOffset,
                     sizeDict: sizeDict);
@@ -1085,7 +978,7 @@ namespace Controllers
                 {
                     if (!tryGetActionNodeItem(inputActionNode, out ActionNodeItem inputActionNodeItem))
                     {
-                        inputActionNodeItem = await createGraph4ActionNode(inputActionNode,
+                        inputActionNodeItem = createGraph4ActionNode(inputActionNode,
                             nextNodeItem: actionNodeItem,
                             startPosOffset: lastNodeOffset,
                             sizeDict: sizeDict);
@@ -1159,49 +1052,32 @@ namespace Controllers
             return size;
         }
         /// <summary>
-        /// 在指定位置上为动作节点创建节点图UI，不包括它的子节点。
+        /// 在指定位置上为动作节点创建节点图，不包括它的子节点。
         /// </summary>
         /// <param name="actionNode"></param>
         /// <param name="posX"></param>
         /// <param name="posY"></param>
-        /// <returns>动作节点对应的UI组件</returns>
-        private async Task<ActionNodeItem> createNodeUI4ActionNodeAt(ActionNode actionNode, float posX, float posY)
+        /// <returns></returns>
+        ActionNodeItem createNode4ActionNodeAt(ActionNode actionNode, float posX, float posY)
         {
-            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            var actionDefine = _actionDefineDict[actionNode.defineName];
             ActionNodeItem actionNodeItem;
             if (actionDefine is MethodActionDefine methodActionDefine && methodActionDefine.methodName == "GetBuffDefine")
             {
-                //如果是获取增益定义节点，那么它和普通的节点不一样，会显示增益的编辑界面。
-                //先获取节点的增益
                 GeneratedBuffDefine generatedBuffDefine = null;
-                BuffSkin buffSkin = null;
                 if (actionNode.consts == null || actionNode.consts.Length < 1)
                 {
-                    //节点没有增益，那么就为它新建一个
                     generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
                     actionNode.consts = new object[] { generatedBuffDefine.id };
-                    //同时还有增益的皮肤，也要新建一个
-                    buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
                 }
                 else if (!(actionNode.consts[0] is int buffDefineId && game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine)))
                 {
-                    //读到了增益id，但是查无此增益，那么重新创建一个
                     generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
                     actionNode.consts[0] = generatedBuffDefine.id;
-                    //皮肤也要新建一个
-                    buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
                 }
                 else
                 {
-                    //获取到了增益id，并且确实存在对应的增益
                     generatedBuffDefine = buffDefine as GeneratedBuffDefine;
-                    //获取增益对应的皮肤
-                    buffSkin = game.card.getBuffSkin(generatedBuffDefine);
-                    if (buffSkin == null)
-                    {
-                        //如果不存在皮肤，那就创建一个
-                        buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
-                    }
                 }
                 BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId);
                 ActionNodePropertyModifierViewData[] propModifiersViewData = new ActionNodePropertyModifierViewData[generatedBuffDefine.propModifierList.Count];
@@ -1243,12 +1119,9 @@ namespace Controllers
                 }
                 actionNodeItem = _ui.createNodeForBuff(posX, posY, new ActionNodeBuffViewData()
                 {
+                    buffId = generatedBuffDefine.id,
                     buffNames = buffDefines.Select(b => b.ToString()).ToArray(),
                     buffIndex = Array.IndexOf(buffDefines, generatedBuffDefine),
-                    buffLanguageIndex = Array.IndexOf(game.langManager.getLanguages(), buffSkin.language),
-                    buffName = buffSkin.name,
-                    buffDesc = buffSkin.desc,
-                    buffImage = await game.card.loadImage(buffSkin.imagePath, _curCardPoolId),
                     propertyTypes = _propertyTypes.Select(s => game.langManager.getString(s)).ToArray(),
                     modifyTypes = _modifyTypes,
                     propModifiersViewData = propModifiersViewData,
@@ -1508,43 +1381,6 @@ namespace Controllers
         {
             display(_editObjectStack.Pop());
         }
-        /// <summary>
-        /// 加载所有事件类型
-        /// </summary>
-        private void loadEventTypes()
-        {
-            _eventTypeInfoList.Clear();
-            //通过反射加载硬编码的事件类型
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                foreach (var type in assembly.GetTypes())
-                {
-                    if (type.IsSubclassOf(typeof(EventArg))//是EventArg
-                        && !type.IsAbstract//不是抽象类
-                        )
-                    {
-                        EventArg eventArg = Activator.CreateInstance(type) as EventArg;
-                        //发生时事件
-                        _eventTypeInfoList.Add(new EventTypeInfo()
-                        {
-                            eventName = game.triggers.getNameBefore(eventArg),
-                            variableInfos = eventArg.getBeforeEventVarInfos()
-                        });
-                        //发生后事件
-                        _eventTypeInfoList.Add(new EventTypeInfo()
-                        {
-                            eventName = game.triggers.getNameAfter(eventArg),
-                            variableInfos = eventArg.getAfterEventVarInfos()
-                        });
-                    }
-                }
-            }
-            //以后可能有自定义的事件类型，不过先不管
-        }
-        private int getEventTypeIndex(string eventName)
-        {
-            return _eventTypeInfoList.FindIndex(e => e.eventName == eventName);
-        }
         string getActionNodeName(ActionNode actionNode)
         {
             if (_nameTextDict.TryGetValue(actionNode.defineName, out string text))
@@ -1629,12 +1465,7 @@ namespace Controllers
             }
             return infoArray;
         }
-        /// <summary>
-        /// 获取动作节点的输出值的名称。
-        /// </summary>
-        /// <param name="actionNode"></param>
-        /// <returns></returns>
-        private string[] getActionNodeOutputNames(ActionNode actionNode)
+        string[] getActionNodeOutputNames(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输出的翻译，但是暂时先不这么做。
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
@@ -1650,23 +1481,6 @@ namespace Controllers
                 {
                     outputNames[i] = actionDefine.outputs[i - actionNode.branches.Length].name;
                 }
-            }
-            return outputNames;
-        }
-        /// <summary>
-        /// 获取当前触发器的输出值的名称。
-        /// </summary>
-        /// <returns></returns>
-        private string[] getTriggerOutputNames()
-        {
-            int typeIndex = getEventTypeIndex(_trigger.eventName);
-            EventTypeInfo eventTypeInfo = _eventTypeInfoList[typeIndex];
-            string[] outputNames = new string[eventTypeInfo.variableInfos.Length];
-            for (int i = 0; i < outputNames.Length; i++)
-            {
-                //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
-                //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
-                outputNames[i] = game.langManager.getString(eventTypeInfo.variableInfos[i].name);
             }
             return outputNames;
         }
@@ -1706,24 +1520,13 @@ namespace Controllers
         {
             return graphInfo.actionInfoDict.Remove(node.id.ToString());
         }
-        private (int typeIndex, string name, string errorTip)[] getTargetCheckerViewData()
-        {
-            var targetCheckers = new (int typeIndex, string name, string errorTip)[_trigger.targetCheckerList.Count];
-            for (int i = 0; i < targetCheckers.Length; i++)
-            {
-                targetCheckers[i].typeIndex = Array.IndexOf(_targetCheckerTypes, _trigger.targetCheckerList[i].targetType);
-                targetCheckers[i].name = "目标" + (i + 1);
-                targetCheckers[i].errorTip = _trigger.targetCheckerList[i].errorTip;
-            }
-            return targetCheckers;
-        }
         private void createActionNodeAtCurPos(string defineName, ActionDefine actionDefine)
         {
             var actionNode = new ActionNode(defineName,
                 new ActionValueRef[actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams ? actionDefine.inputs.Length - 1 : actionDefine.inputs.Length],
                 new object[actionDefine.consts.Length],
                 new ActionNode[1]);
-            createNodeUI4ActionNodeAt(actionNode, _curPosX, _curPosY);
+            createNode4ActionNodeAt(actionNode, _curPosX, _curPosY);
         }
         private void enterSubMenu(int[] index)
         {
@@ -1785,7 +1588,6 @@ namespace Controllers
         public MainCtrl main { get; }
         [SerializeField]
         ActionNodeGraphPanel _ui;
-        List<EventTypeInfo> _eventTypeInfoList = new List<EventTypeInfo>();
         Dictionary<string, ActionDefine> _actionDefineDict;
         int[] _menuLayerStack = new int[0];
         List<BackgroundMenuItem> _backgroundMenuOptionList = new List<BackgroundMenuItem>();
@@ -1965,10 +1767,5 @@ namespace Controllers
         }
         public float posX;
         public float posY;
-    }
-    class EventTypeInfo
-    {
-        public string eventName;
-        public EventVariableInfo[] variableInfos;
     }
 }
