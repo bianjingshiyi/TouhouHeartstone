@@ -146,6 +146,10 @@ namespace UI
         public event Action<ActionNodeItem, int> onPropModifierAddEffect;
         public event Action<ActionNodeItem, int> onPropModifierRemoveEffect;
         public event Action<ActionNodeItem, int> onPropModifierEditEffect;
+        public event Action<ActionNodeItem, string> onBuffNameChanged;
+        public event Action<ActionNodeItem, string> onBuffDescChanged;
+        public event Action<ActionNodeItem, string> onBuffLanguageChanged;
+        public event Action<ActionNodeItem> onNeedSelectBuffImage;
         #endregion
         #region 属性字段
         [SerializeField]

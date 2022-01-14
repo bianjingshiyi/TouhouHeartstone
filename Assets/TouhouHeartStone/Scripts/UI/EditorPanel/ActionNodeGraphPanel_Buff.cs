@@ -29,6 +29,10 @@ namespace UI
             node.onPropModifierAddEffect += onItemPropModifierAddEffectCallback;
             node.onPropModifierRemoveEffect += onItemPropModifierRemoveEffectCallback;
             node.onPropModifierEditEffect += onItemPropModifierEditEffectCallback;
+            node.onBuffNameChanged += onItemBuffNameChangedCallback;
+            node.onBuffDescChanged += onItemBuffDescChangedCallback;
+            node.onBuffLanguageChanged += onItemBuffLanguageChangedCallback;
+            node.onNeedSelectBuffImage += onItemNeedSelectBuffImageCallback;
             return node;
         }
         #endregion
@@ -77,6 +81,22 @@ namespace UI
         {
             onItemPropModifierEditEffect?.Invoke(item, index);
         }
+        private void onItemBuffNameChangedCallback(ActionNodeItem item, string value)
+        {
+            onItemBuffNameChanged?.Invoke(item, value);
+        }
+        private void onItemBuffDescChangedCallback(ActionNodeItem item, string value)
+        {
+            onItemBuffDescChanged?.Invoke(item, value);
+        }
+        private void onItemBuffLanguageChangedCallback(ActionNodeItem item, string value)
+        {
+            onItemBuffLanguageChanged?.Invoke(item, value);
+        }
+        private void onItemNeedSelectBuffImageCallback(ActionNodeItem item)
+        {
+            onItemNeedSelectBuffImage?.Invoke(item);
+        }
         #endregion
         #region 事件
         public event Action<ActionNodeItem, int> onItemBuffChanged;
@@ -90,6 +110,11 @@ namespace UI
         public event Action<ActionNodeItem, int> onItemPropModifierAddEffect;
         public event Action<ActionNodeItem, int> onItemPropModifierRemoveEffect;
         public event Action<ActionNodeItem, int> onItemPropModifierEditEffect;
+        public event Action<ActionNodeItem, string> onItemBuffNameChanged;
+        public event Action<ActionNodeItem, string> onItemBuffDescChanged;
+        public event Action<ActionNodeItem, string> onItemBuffLanguageChanged;
+        public event Action<ActionNodeItem> onItemNeedSelectBuffImage;
+
         #endregion
     }
     public class ActionNodeBuffViewData

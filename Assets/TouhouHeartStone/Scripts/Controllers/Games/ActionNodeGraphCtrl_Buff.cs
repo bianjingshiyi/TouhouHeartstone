@@ -4,6 +4,7 @@ using UI;
 using System;
 using UnityEngine;
 using System.Threading.Tasks;
+using SFB;
 
 namespace Controllers
 {
@@ -128,6 +129,79 @@ namespace Controllers
                     scene.editor.actionNodeGraphInfoList.Add(graphInfo);
                 }
                 await scene.effectEditor.displayEffect(_curCardPoolId, _cardDefine, generatedBuffDefine.effectList[index], graphInfo);
+            }
+        }
+        private async void onItemBuffNameChangedCallback(ActionNodeItem item, string value)
+        {
+            int buffDefineId = (int)getActionNode(item).consts[0];
+            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
+                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            {
+                var buffSkin = getOrCreateBuffSkin(generatedBuffDefine);
+                buffSkin.name = value;
+                await updateBuffActionNode(item, generatedBuffDefine, buffSkin);
+            }
+        }
+        private async void onItemBuffDescChangedCallback(ActionNodeItem item, string value)
+        {
+            int buffDefineId = (int)getActionNode(item).consts[0];
+            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
+                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            {
+                var buffSkin = getOrCreateBuffSkin(generatedBuffDefine);
+                buffSkin.desc = value;
+                await updateBuffActionNode(item, generatedBuffDefine, buffSkin);
+            }
+        }
+        private async void onItemBuffLanguageChangedCallback(ActionNodeItem item, string value)
+        {
+            int buffDefineId = (int)getActionNode(item).consts[0];
+            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
+                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            {
+                var buffSkin = getOrCreateBuffSkin(generatedBuffDefine);
+                buffSkin.language = value;
+                await updateBuffActionNode(item, generatedBuffDefine, buffSkin);
+            }
+        }
+        private async void onItemNeedSelectBuffImage(ActionNodeItem item)
+        {
+            string imagePath = "";
+            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+            {
+                //手机端
+                var permission = NativeGallery.GetImageFromGallery(path =>
+                {
+                    imagePath = path;
+                });
+                if (permission == NativeGallery.Permission.Denied)
+                {
+                    Debug.LogError("没有打开相册的权限");
+                    // 拒绝权限后应当弹出框提示需要设置权限
+                    NativeGallery.OpenSettings();
+                }
+            }
+            else
+            {
+                //默认PC
+                string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", new ExtensionFilter[]
+                {
+                    new ExtensionFilter("Image Files", "png","jpg")
+                }, false);
+                if (paths == null || paths.Length < 1)
+                {
+                    return;
+                }
+                imagePath = paths[0];
+            }
+            
+            int buffDefineId = (int)getActionNode(item).consts[0];
+            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
+                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            {
+                var buffSkin = getOrCreateBuffSkin(generatedBuffDefine);
+                buffSkin.imagePath = imagePath;
+                await updateBuffActionNode(item, generatedBuffDefine, buffSkin);
             }
         }
         #endregion

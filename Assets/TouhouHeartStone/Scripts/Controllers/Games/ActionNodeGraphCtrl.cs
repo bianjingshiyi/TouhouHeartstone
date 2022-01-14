@@ -222,6 +222,10 @@ namespace Controllers
             _ui.onItemPropModifierAddEffect += onItemPropModifierAddEffectCallback;
             _ui.onItemPropModifierRemoveEffect += onItemPropModifierRemoveEffectCallback;
             _ui.onItemPropModifierEditEffect += onItemPropModifierEditEffectCallback;
+            _ui.onItemBuffNameChanged += onItemBuffNameChangedCallback;
+            _ui.onItemBuffDescChanged += onItemBuffDescChangedCallback;
+            _ui.onItemBuffLanguageChanged += onItemBuffLanguageChangedCallback;
+            _ui.onItemNeedSelectBuffImage += onItemNeedSelectBuffImage;
         }
         #endregion
         #region 事件回调
