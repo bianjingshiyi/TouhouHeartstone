@@ -1119,7 +1119,6 @@ namespace Controllers
                 }
                 actionNodeItem = _ui.createNodeForBuff(posX, posY, new ActionNodeBuffViewData()
                 {
-                    buffId = generatedBuffDefine.id,
                     buffNames = buffDefines.Select(b => b.ToString()).ToArray(),
                     buffIndex = Array.IndexOf(buffDefines, generatedBuffDefine),
                     propertyTypes = _propertyTypes.Select(s => game.langManager.getString(s)).ToArray(),
