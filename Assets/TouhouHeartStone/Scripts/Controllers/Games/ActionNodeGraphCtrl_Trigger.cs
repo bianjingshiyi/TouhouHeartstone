@@ -1,5 +1,7 @@
 ﻿using TouhouCardEngine;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Controllers
 {
@@ -17,6 +19,11 @@ namespace Controllers
         #endregion
         #region 私有方法
         #region 事件回调
+        private void onChangeTriggerTypeIndex(int typeIndex)
+        {
+            _trigger.eventName = getEventTypeNameByIndex(typeIndex);
+            _entryNodeItem.setOutputs(getTriggerOutputNames());
+        }
         /// <summary>
         /// 当用户更改触发器的事件名称，将事件名称改为更改值
         /// </summary>
@@ -28,12 +35,12 @@ namespace Controllers
         /// <summary>
         /// 当用户点击编辑条件按钮，将当前的编辑信息入栈，打开条件编辑
         /// </summary>
-        private void onClickTriggerEditConditionButton()
+        private async void onClickTriggerEditConditionButton()
         {
             pushCurEditObjectToStack();
             if (_trigger.condition == null)
                 _trigger.condition = new ActionValueRef();
-            openValueRefGraph(_trigger.condition);
+            await openValueRefGraph(_trigger.condition);
         }
         /// <summary>
         /// 当用户点击新增目标按钮，为当前触发器新建目标检查器，然后在UI列表中新增项目
@@ -51,10 +58,10 @@ namespace Controllers
         /// 当用户点击编辑目标按钮，将当前的编辑信息入栈，打开目标编辑
         /// </summary>
         /// <param name="index"></param>
-        private void onClickEditTargetCheckerButton(int index)
+        private async void onClickEditTargetCheckerButton(int index)
         {
             pushCurEditObjectToStack();
-            openTargetCheckerGraph(_trigger.targetCheckerList[index]);
+            await openTargetCheckerGraph(_trigger.targetCheckerList[index]);
         }
         /// <summary>
         /// 当用户点击删除目标按钮，为当前触发器删除目标检查器，然后在UI列表中也删除对应索引项目
@@ -74,7 +81,7 @@ namespace Controllers
         /// 打开一个触发器的动作节点图
         /// </summary>
         /// <param name="trigger"></param>
-        private void openTriggerGraph(TriggerGraph trigger)
+        private async Task openTriggerGraph(TriggerGraph trigger)
         {
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
@@ -90,13 +97,13 @@ namespace Controllers
             //创建根节点
             if (trigger.action != null)
             {
-                var actionNodeItem = createGraph4ActionNode(trigger.action);
+                var actionNodeItem = await createGraph4ActionNode(trigger.action);
                 _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
             }
             //创建离散节点
             for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
             {
-                createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
+                await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
             }
         }
         private (int typeIndex, string name, string errorTip)[] getTriggerTargetCheckerViewData()
@@ -110,6 +117,72 @@ namespace Controllers
             }
             return targetCheckers;
         }
+        /// <summary>
+        /// 获取当前触发器的输出值的名称。
+        /// </summary>
+        /// <returns></returns>
+        private string[] getTriggerOutputNames()
+        {
+            int typeIndex = getEventTypeIndex(_trigger.eventName);
+            EventTypeInfo eventTypeInfo = _eventTypeInfoList[typeIndex];
+            string[] outputNames = new string[eventTypeInfo.variableInfos.Length];
+            for (int i = 0; i < outputNames.Length; i++)
+            {
+                //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
+                //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
+                outputNames[i] = game.langManager.getString(eventTypeInfo.variableInfos[i].name);
+            }
+            return outputNames;
+        }
+        /// <summary>
+        /// 加载所有事件类型
+        /// </summary>
+        private void loadEventTypes()
+        {
+            _eventTypeInfoList.Clear();
+            //通过反射加载硬编码的事件类型
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (var type in assembly.GetTypes())
+                {
+                    if (type.IsSubclassOf(typeof(EventArg))//是EventArg
+                        && !type.IsAbstract//不是抽象类
+                        )
+                    {
+                        EventArg eventArg = Activator.CreateInstance(type) as EventArg;
+                        //发生时事件
+                        _eventTypeInfoList.Add(new EventTypeInfo()
+                        {
+                            eventName = game.triggers.getNameBefore(eventArg),
+                            variableInfos = eventArg.getBeforeEventVarInfos()
+                        });
+                        //发生后事件
+                        _eventTypeInfoList.Add(new EventTypeInfo()
+                        {
+                            eventName = game.triggers.getNameAfter(eventArg),
+                            variableInfos = eventArg.getAfterEventVarInfos()
+                        });
+                    }
+                }
+            }
+            //以后可能有自定义的事件类型，不过先不管
+        }
+        private int getEventTypeIndex(string eventName)
+        {
+            return _eventTypeInfoList.FindIndex(e => e.eventName == eventName);
+        }
+        private string getEventTypeNameByIndex(int index)
+        {
+            return _eventTypeInfoList[index].eventName;
+        }
         #endregion
+        #region 属性字段
+        List<EventTypeInfo> _eventTypeInfoList = new List<EventTypeInfo>();
+        #endregion
+    }
+    class EventTypeInfo
+    {
+        public string eventName;
+        public EventVariableInfo[] variableInfos;
     }
 }

@@ -60,14 +60,15 @@ namespace Controllers
                 _cardDefine = info.cardDefine;
                 _ui.gameObject.SetActive(true);
                 if (info.editObject is TriggerGraph trigger)
-                    openTriggerGraph(trigger);
+                    return openTriggerGraph(trigger);
                 else if (info.editObject is TargetChecker targetChecker)
-                    openTargetCheckerGraph(targetChecker);
+                    return openTargetCheckerGraph(targetChecker);
                 else if (info.editObject is ActionValueRef valueRef)
-                    openValueRefGraph(valueRef);
+                    return openValueRefGraph(valueRef);
                 else if (info.editObject is GeneratedEffect effect)
-                    openActionGraph(effect, info.entryType);
-                return Task.CompletedTask;
+                    return openActionGraph(effect, info.entryType);
+                else
+                    return Task.CompletedTask;
             }
             throw new NotImplementedException();
         }
@@ -100,6 +101,7 @@ namespace Controllers
             {
                 _ui = GetComponent<ActionNodeGraphPanel>();
             }
+            loadEventTypes();
             _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
             {
                 typeof(CardEngine).Assembly,
@@ -177,11 +179,10 @@ namespace Controllers
                         _backgroundMenuOptionList.Add(menuItem);
                     }
                 }
-                void onMenuClick_CreateNode()
+                async void onMenuClick_CreateNode()
                 {
-                    createActionNodeAtCurPos(defineName, actionDefine);
-                    _menuLayerStack = null;
                     closeMenu();
+                    await createActionNodeAtCurPos(defineName, actionDefine);
                 }
                 void onMenuClick_EnterSubMenu()
                 {
@@ -199,6 +200,7 @@ namespace Controllers
             _ui.onDragActionNode += onDragActionNode;
             _ui.onActionNodeValueChange += onActionNodeValueChange;
             _ui.onClickActionNodeConstValueEditButton += onClickActionNodeConstValueEditButton;
+            //触发
             _ui.onChangeTriggerEventName += onChangeTriggerEventName;
             _ui.onClickTriggerEditConditionButton += onClickTriggerEditConditionButton;
             _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
@@ -757,7 +759,7 @@ namespace Controllers
                 actionNode.consts[constIndex] = value;
             }
         }
-        private void onClickActionNodeConstValueEditButton(ActionNodeItem actionNodeItem, int index)
+        private async void onClickActionNodeConstValueEditButton(ActionNodeItem actionNodeItem, int index)
         {
             ActionNode actionNode = getActionNode(actionNodeItem);
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
@@ -770,7 +772,7 @@ namespace Controllers
                     actionNode.consts[index] = value;
                 }
                 pushCurEditObjectToStack();
-                openValueRefGraph(value);
+                await openValueRefGraph(value);
             }
         }
         /// <summary>
@@ -786,7 +788,7 @@ namespace Controllers
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="entryType"></param>
-        private void openActionGraph(GeneratedEffect effect, string entryType)
+        private async Task openActionGraph(GeneratedEffect effect, string entryType)
         {
             //清理数据
             _actionNodeList.Clear();
@@ -808,7 +810,7 @@ namespace Controllers
                         new string[0],
                         new ActionNodeValueInfo[0],
                         new string[] { string.Empty });
-                    var actionNodeItem = createGraph4ActionNode(_effect.onEnableAction);
+                    var actionNodeItem = await createGraph4ActionNode(_effect.onEnableAction);
                     _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
                 }
                 else
@@ -829,7 +831,7 @@ namespace Controllers
                         new string[0],
                         new ActionNodeValueInfo[0],
                         new string[] { string.Empty });
-                    var actionNodeItem = createGraph4ActionNode(_effect.onDisableAction);
+                    var actionNodeItem = await createGraph4ActionNode(_effect.onDisableAction);
                     _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
                 }
                 else
@@ -848,7 +850,7 @@ namespace Controllers
         /// <param name="entryName"></param>
         /// <param name="valueRef"></param>
         /// <param name="graphInfo"></param>
-        private void openValueRefGraph(ActionValueRef valueRef)
+        private async Task openValueRefGraph(ActionValueRef valueRef)
         {
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
@@ -865,11 +867,11 @@ namespace Controllers
                 new string[0]);
             if (valueRef.action != null)
             {
-                ActionNodeItem actionNodeItem = createGraph4ActionNode(valueRef.action);
+                ActionNodeItem actionNodeItem = await createGraph4ActionNode(valueRef.action);
                 _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
             }
         }
-        private void openTargetCheckerGraph(TargetChecker targetChecker)
+        private async Task openTargetCheckerGraph(TargetChecker targetChecker)
         {
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
@@ -879,7 +881,7 @@ namespace Controllers
             _valueRef = null;
             _targetChecker = targetChecker;
             _trigger = null;
-            var actionNodeItem = createGraph4ActionNode(targetChecker.condition.action);
+            var actionNodeItem = await createGraph4ActionNode(targetChecker.condition.action);
             _returnNodeItem = _ui.createNode(0, 0,
                 game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
                 new string[] { string.Empty },
@@ -905,7 +907,7 @@ namespace Controllers
         /// 为动作节点以及其所有子节点创建动作节点图
         /// </summary>
         /// <param name="actionNode"></param>
-        private ActionNodeItem createGraph4ActionNode(ActionNode actionNode, ActionNodeItem prevNodeItem = null, ActionNodeItem nextNodeItem = null, float startPosOffset = 0, Dictionary<ActionNode, Vector2> sizeDict = null)
+        private async Task<ActionNodeItem> createGraph4ActionNode(ActionNode actionNode, ActionNodeItem prevNodeItem = null, ActionNodeItem nextNodeItem = null, float startPosOffset = 0, Dictionary<ActionNode, Vector2> sizeDict = null)
         {
             _actionNodeList.Add(actionNode);
             ActionNodeItem actionNodeItem;
@@ -946,7 +948,7 @@ namespace Controllers
                 nodeInfo = new ActionNodeGraphNodeInfo(pos.x, pos.y);
                 setNodeInfo(actionNode, nodeInfo);
             }
-            actionNodeItem = createNode4ActionNodeAt(actionNode, pos.x, pos.y);
+            actionNodeItem = await createNodeUI4ActionNodeAt(actionNode, pos.x, pos.y);
             //为动作分支创建节点图
             float lastNodeOffset = 0;
             for (int i = 0; i < actionNode.branches.Length; i++)
@@ -956,7 +958,7 @@ namespace Controllers
                     continue;
                 if (sizeDict == null)
                     sizeDict = new Dictionary<ActionNode, Vector2>();
-                var nextActionNodeItem = createGraph4ActionNode(nextActionNode,
+                var nextActionNodeItem = await createGraph4ActionNode(nextActionNode,
                     prevNodeItem: actionNodeItem,
                     startPosOffset: lastNodeOffset,
                     sizeDict: sizeDict);
@@ -978,7 +980,7 @@ namespace Controllers
                 {
                     if (!tryGetActionNodeItem(inputActionNode, out ActionNodeItem inputActionNodeItem))
                     {
-                        inputActionNodeItem = createGraph4ActionNode(inputActionNode,
+                        inputActionNodeItem = await createGraph4ActionNode(inputActionNode,
                             nextNodeItem: actionNodeItem,
                             startPosOffset: lastNodeOffset,
                             sizeDict: sizeDict);
@@ -1052,32 +1054,49 @@ namespace Controllers
             return size;
         }
         /// <summary>
-        /// 在指定位置上为动作节点创建节点图，不包括它的子节点。
+        /// 在指定位置上为动作节点创建节点图UI，不包括它的子节点。
         /// </summary>
         /// <param name="actionNode"></param>
         /// <param name="posX"></param>
         /// <param name="posY"></param>
-        /// <returns></returns>
-        ActionNodeItem createNode4ActionNodeAt(ActionNode actionNode, float posX, float posY)
+        /// <returns>动作节点对应的UI组件</returns>
+        private async Task<ActionNodeItem> createNodeUI4ActionNodeAt(ActionNode actionNode, float posX, float posY)
         {
-            var actionDefine = _actionDefineDict[actionNode.defineName];
+            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
             ActionNodeItem actionNodeItem;
             if (actionDefine is MethodActionDefine methodActionDefine && methodActionDefine.methodName == "GetBuffDefine")
             {
+                //如果是获取增益定义节点，那么它和普通的节点不一样，会显示增益的编辑界面。
+                //先获取节点的增益
                 GeneratedBuffDefine generatedBuffDefine = null;
+                BuffSkin buffSkin = null;
                 if (actionNode.consts == null || actionNode.consts.Length < 1)
                 {
+                    //节点没有增益，那么就为它新建一个
                     generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
                     actionNode.consts = new object[] { generatedBuffDefine.id };
+                    //同时还有增益的皮肤，也要新建一个
+                    buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
                 }
                 else if (!(actionNode.consts[0] is int buffDefineId && game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine)))
                 {
+                    //读到了增益id，但是查无此增益，那么重新创建一个
                     generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
                     actionNode.consts[0] = generatedBuffDefine.id;
+                    //皮肤也要新建一个
+                    buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
                 }
                 else
                 {
+                    //获取到了增益id，并且确实存在对应的增益
                     generatedBuffDefine = buffDefine as GeneratedBuffDefine;
+                    //获取增益对应的皮肤
+                    buffSkin = game.card.getBuffSkin(generatedBuffDefine);
+                    if (buffSkin == null)
+                    {
+                        //如果不存在皮肤，那就创建一个
+                        buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
+                    }
                 }
                 BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId);
                 ActionNodePropertyModifierViewData[] propModifiersViewData = new ActionNodePropertyModifierViewData[generatedBuffDefine.propModifierList.Count];
@@ -1121,6 +1140,10 @@ namespace Controllers
                 {
                     buffNames = buffDefines.Select(b => b.ToString()).ToArray(),
                     buffIndex = Array.IndexOf(buffDefines, generatedBuffDefine),
+                    buffLanguageIndex = Array.IndexOf(game.langManager.getLanguages(), buffSkin.language),
+                    buffName = buffSkin.name,
+                    buffDesc = buffSkin.desc,
+                    buffImage = await game.card.loadImage(buffSkin.imagePath, _curCardPoolId),
                     propertyTypes = _propertyTypes.Select(s => game.langManager.getString(s)).ToArray(),
                     modifyTypes = _modifyTypes,
                     propModifiersViewData = propModifiersViewData,
@@ -1519,13 +1542,13 @@ namespace Controllers
         {
             return graphInfo.actionInfoDict.Remove(node.id.ToString());
         }
-        private void createActionNodeAtCurPos(string defineName, ActionDefine actionDefine)
+        private Task<ActionNodeItem> createActionNodeAtCurPos(string defineName, ActionDefine actionDefine)
         {
             var actionNode = new ActionNode(defineName,
                 new ActionValueRef[actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams ? actionDefine.inputs.Length - 1 : actionDefine.inputs.Length],
                 new object[actionDefine.consts.Length],
                 new ActionNode[1]);
-            createNode4ActionNodeAt(actionNode, _curPosX, _curPosY);
+            return createNodeUI4ActionNodeAt(actionNode, _curPosX, _curPosY);
         }
         private void enterSubMenu(int[] index)
         {
