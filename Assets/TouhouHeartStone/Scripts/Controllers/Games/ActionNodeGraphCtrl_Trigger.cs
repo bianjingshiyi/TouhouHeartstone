@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Controllers
 {
@@ -125,14 +126,19 @@ namespace Controllers
         {
             int typeIndex = getEventTypeIndex(_trigger.eventName);
             EventTypeInfo eventTypeInfo = _eventTypeInfoList[typeIndex];
-            string[] outputNames = new string[eventTypeInfo.variableInfos.Length];
-            for (int i = 0; i < outputNames.Length; i++)
+            if (eventTypeInfo.variableInfos != null)
             {
-                //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
-                //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
-                outputNames[i] = game.langManager.getString(eventTypeInfo.variableInfos[i].name);
+                string[] outputNames = new string[eventTypeInfo.variableInfos.Length];
+                for (int i = 0; i < outputNames.Length; i++)
+                {
+                    //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
+                    //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
+                    outputNames[i] = game.langManager.getString(eventTypeInfo.variableInfos[i].name);
+                }
+                return outputNames;
             }
-            return outputNames;
+            else
+                return null;
         }
         /// <summary>
         /// 加载所有事件类型
@@ -149,17 +155,26 @@ namespace Controllers
                         && !type.IsAbstract//不是抽象类
                         )
                     {
-                        EventArg eventArg = Activator.CreateInstance(type) as EventArg;
+                        EventArg eventArg;
+                        try
+                        {
+                            eventArg = Activator.CreateInstance(type) as EventArg;
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogWarning("无法加载事件类型" + type.FullName + "：" + e);
+                            continue;
+                        }
                         //发生时事件
                         _eventTypeInfoList.Add(new EventTypeInfo()
                         {
-                            eventName = game.triggers.getNameBefore(eventArg),
+                            eventName = EventHelper.getNameBefore(eventArg),
                             variableInfos = eventArg.getBeforeEventVarInfos()
                         });
                         //发生后事件
                         _eventTypeInfoList.Add(new EventTypeInfo()
                         {
-                            eventName = game.triggers.getNameAfter(eventArg),
+                            eventName = EventHelper.getNameAfter(eventArg),
                             variableInfos = eventArg.getAfterEventVarInfos()
                         });
                     }
