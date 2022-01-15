@@ -202,6 +202,7 @@ namespace Controllers
             _ui.onClickActionNodeConstValueEditButton += onClickActionNodeConstValueEditButton;
             //触发
             _ui.onChangeTriggerEventName += onChangeTriggerEventName;
+            _ui.onSelectedEventIndex += onChangeTriggerTypeIndex;
             _ui.onClickTriggerEditConditionButton += onClickTriggerEditConditionButton;
             _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
             _ui.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChanged;

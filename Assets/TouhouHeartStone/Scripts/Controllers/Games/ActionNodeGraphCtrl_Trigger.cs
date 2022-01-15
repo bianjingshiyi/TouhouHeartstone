@@ -1,6 +1,7 @@
 ﻿using TouhouCardEngine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -91,11 +92,16 @@ namespace Controllers
             _valueRef = null;
             _targetChecker = null;
             _trigger = trigger;
+            
+            //转成index
+            var triggerIndex = getEventTypeIndex(_trigger.eventName);
+
             //显示UI
             _ui.clearGraph();
             //创建入口节点
-            _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), _trigger.eventName, getTriggerTargetCheckerViewData());
-            //创建根节点
+            _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), triggerIndex, getTriggerTargetCheckerViewData());
+            //初始化事件选项
+            _entryNodeItem.SetEventOptions(_eventTypeInfoList.Select(i => i.eventName).ToList());
             if (trigger.action != null)
             {
                 var actionNodeItem = await createGraph4ActionNode(trigger.action);

@@ -3,6 +3,8 @@ using BJSYGameCore.UI;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Reflection;
+using Controllers;
 using UnityEngine.EventSystems;
 
 namespace UI
@@ -91,6 +93,17 @@ namespace UI
                 });
             }
         }
+
+        /**
+         * 设置初始选项
+         */
+        public void SetEventOptions(List<string> eventInfos)
+        {
+            eventInfos.ForEach(info =>
+            {
+                _eventNameDropDown.asDropdown.options.Add(new Dropdown.OptionData(info));
+            });
+        }
         public void setOutputs(string[] outputNames)
         {
             if (outputNames == null || outputNames.Length < 1)
@@ -119,9 +132,10 @@ namespace UI
                 });
             }
         }
-        public void setTrigger(string[] targetTypes, string eventName, (int typeIndex, string name, string errorTip)[] targetCheckers)
+        public void setTrigger(string[] targetTypes, int eventIndex, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {
-            _eventNameInputField.SetTextWithoutNotify(eventName);
+            // _eventNameInputField.SetTextWithoutNotify(eventName);
+            _eventNameDropDown.asDropdown.value = eventIndex;
             updateTargetCheckerList(targetTypes, targetCheckers);
         }
         public void updateTargetCheckerList(string[] targetTypes, (int typeIndex, string name, string errorTip)[] targetCheckers)
@@ -190,7 +204,8 @@ namespace UI
             {
                 _targetCheckerTemplate.gameObject.SetActive(false);
             }
-            _eventNameInputField.onEndEdit.AddListener(onEndEditEventNameInputField);
+            // _eventNameInputField.onEndEdit.AddListener(onEndEditEventNameInputField);
+            _eventNameDropDown.asDropdown.onValueChanged.AddListener(onChangeSelectedEventIndex);
             _editConditionButton.onClick.AddListener(onClickEditConditionButtonCallback);
             _addTargetCheckerButton.onClick.AddListener(onClickAddTargetCheckerButtonCallback);
             _newBuffButton.onClick.AddListener(onClickNewBuffButtonCallback);
@@ -237,6 +252,10 @@ namespace UI
         private void onEndEditEventNameInputField(string eventName)
         {
             onEventNameChanged?.Invoke(this, eventName);
+        }
+        private void onChangeSelectedEventIndex(int eventIndex)
+        {
+            onSelectedEventIndex?.Invoke(this, eventIndex);
         }
         private void onClickEditConditionButtonCallback()
         {
@@ -304,6 +323,7 @@ namespace UI
         public event Action<ActionNodeItem, int, object> onConstValueChanged;
         public event Action<ActionNodeItem, int> onClickConstValueButton;
         public event Action<ActionNodeItem, string> onEventNameChanged;
+        public event Action<ActionNodeItem, int> onSelectedEventIndex;
         public event Action<ActionNodeItem> onClickEditConditionButton;
         public event Action<ActionNodeItem> onClickAddTargetCheckerButton;
         public event Action<ActionNodeItem, int, int> onTargetCheckerTypeValueChanged;
@@ -350,6 +370,8 @@ namespace UI
         RectTransform _triggerFieldsRoot;
         [SerializeField]
         InputField _eventNameInputField;
+        [SerializeField]
+        DropdownLight _eventNameDropDown;
         [SerializeField]
         Button _editConditionButton;
         [SerializeField]

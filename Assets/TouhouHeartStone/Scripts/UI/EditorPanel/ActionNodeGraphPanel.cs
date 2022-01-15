@@ -34,7 +34,8 @@ namespace UI
             ActionNodeItem actionNodeItem = createNode(posX, posY);
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
-            actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
+            // actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
+            actionNodeItem.onSelectedEventIndex += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickEditTargetCheckerButton += onClickTriggerNodeEditTargetCheckerButton;
@@ -56,7 +57,7 @@ namespace UI
         /// <param name="eventName"></param>
         /// <param name="targetCheckerCount"></param>
         /// <returns></returns>
-        public ActionNodeItem createTriggerNode(float posX, float posY, string[] targetCheckerTypes, string eventName, (int typeIndex, string name, string errorTip)[] targetCheckers)
+        public ActionNodeItem createTriggerNode(float posX, float posY, string[] targetCheckerTypes, int eventIndex, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {
             ActionNodeItem actionNodeItem = Instantiate(_actionNodeItemTemplate, _actionNodesRoot);
             _actionNodeItemList.Add(actionNodeItem);
@@ -64,12 +65,14 @@ namespace UI
             RectTransform itemRect = actionNodeItem.transform as RectTransform;
             itemRect.anchoredPosition = new Vector2(posX, posY);
             actionNodeItem.switchToTriggerNode();
-            actionNodeItem.setTrigger(targetCheckerTypes, eventName, targetCheckers);
+            actionNodeItem.setTrigger(targetCheckerTypes, eventIndex, targetCheckers);
             string[] outputNames = new string[]
             {
                 string.Empty
             };
+            //onSelectedEventIndex
             actionNodeItem.setOutputs(outputNames);
+            
             actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
             actionNodeItem.onDragInputNode += onDragInputNode;
             actionNodeItem.onEndDragInputNode += onEndDragInputNode;
@@ -83,7 +86,8 @@ namespace UI
             actionNodeItem.onEndDrag += onEndDragActionNodeItem;
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
-            actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
+            // actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
+            actionNodeItem.onSelectedEventIndex += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickEditTargetCheckerButton += onClickTriggerNodeEditTargetCheckerButton;
@@ -565,6 +569,11 @@ namespace UI
         {
             onChangeTriggerEventName?.Invoke(eventName);
         }
+        
+        private void onTriggerNodeEventIndexChanged(ActionNodeItem item, int eventIndex)
+        {
+            onSelectedEventIndex?.Invoke(eventIndex);
+        }
         private void onClickTriggerNodeEditConditionButton(ActionNodeItem item)
         {
             onClickTriggerEditConditionButton?.Invoke();
@@ -689,6 +698,10 @@ namespace UI
         /// 当触发器节点的事件名称改变，参数为更改后的事件名称
         /// </summary>
         public event Action<string> onChangeTriggerEventName;
+        /// <summary>
+        /// 当触发器节点的事件名称改变，参数为更改后的事件名称的索引ID
+        /// </summary>
+        public event Action<int> onSelectedEventIndex;
         /// <summary>
         /// 当点击触发器节点的编辑条件按钮
         /// </summary>
